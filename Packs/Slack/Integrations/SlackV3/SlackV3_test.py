@@ -350,6 +350,56 @@ INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID = {
     "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUQUJRTVBLUDAiLCJhaWQiOiJBMDFUWFFBR0IyUCIsImNpZCI6IkMwMzNITEwzTjgxIn0"
 }
 
+SIMPLE_USER_MESSAGE = {
+    "token": "d8on5ZZu1q907qYxV65stnfx",
+    "team_id": "team_id",
+    "context_team_id": "context_team_id",
+    "context_enterprise_id": None,
+    "api_app_id": "api_app_id",
+    "event": {
+        "client_msg_id": "6af5a984-e50c-426f-abf0-d42c2246a9d1",
+        "type": "message",
+        "text": "messgae from user test_1",
+        "user": "USER_USER_1",
+        "ts": "1681650557.769109",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "UgHdS",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "messgae from user test_1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "ABCDFCFRTGY",
+        "channel": "ABCDFCFRTGR",
+        "event_ts": "1681650557.769109",
+        "channel_type": "group"
+    },
+    "type": "event_callback",
+    "event_id": "event_id",
+    "event_time": 1681650557,
+    "authorizations": [
+        {
+            "enterprise_id": None,
+            "team_id": "team_id",
+            "user_id": "user_id",
+            "is_bot": True,
+            "is_enterprise_install": False
+        }
+    ],
+    "is_ext_shared_channel": False,
+    "event_context": "event_context"
+}
+
 
 def test_exception_in_invite_to_mirrored_channel(mocker):
     import SlackV3
@@ -1886,7 +1936,8 @@ async def test_handle_dm_create_with_error(mocker):
 
     assert demisto_user == {'id': 'demisto_id'}
     assert incident_string == 'open 123 incident'
-    assert message_args == {'channel': 'ey', 'text': 'Failed creating incidents: omg'}
+    assert message_args == {'channel': 'ey',
+                            'text': 'Failed creating incidents: omg'}
 
 
 @pytest.mark.asyncio
@@ -1928,7 +1979,11 @@ async def test_translate_create(mocker):
                                                     'spengler@ghostbusters.example.com', demisto_user)
     type_data = await SlackV3.translate_create(type_message, 'spengler',
                                                'spengler@ghostbusters.example.com', demisto_user)
-
+    raw_json_prefix = '{"ReporterEmail": "spengler@ghostbusters.example.com", "Message": '
+    expected_res = {"name": "xyz", "role": "Analyst",
+                    "rawJSON": '{"ReporterEmail": "spengler@ghostbusters.example.com",'
+                               ' "Message": "create incident json={\\u201cname\\u201d:'
+                               ' \\u201cxyz\\u201d, \\u201crole\\u201d: \\u201cAnalyst\\u201d}"}'}
     create_args = SlackV3.create_incidents.call_args_list
     json_args = create_args[0][0][0]
     name_args = create_args[1][0][0]
@@ -1938,11 +1993,12 @@ async def test_translate_create(mocker):
     # Assert
 
     assert SlackV3.create_incidents.call_count == 4
-
-    assert json_args == [{"name": "xyz", "role": "Analyst"}]
-    assert name_args == [{"name": "eyy"}]
-    assert name_type_args == [{"name": "eyy", "type": "Access"}]
-    assert type_name_args == [{"name": "eyy", "type": "Access"}]
+    assert json_args[0] == expected_res
+    assert name_args == [{'name': 'eyy', 'rawJSON': raw_json_prefix + '"create incident name=eyy"}'}]
+    assert name_type_args == [{'name': 'eyy', 'type': 'Access',
+                               'rawJSON': raw_json_prefix + '"create incident name= eyy type= Access"}'}]
+    assert type_name_args == [{'name': 'eyy', 'type': 'Access',
+                               'rawJSON': raw_json_prefix + '"create incident  type= Access name= eyy"}'}]
 
     assert json_data == success_message
     assert wrong_json_data == 'No other properties other than json should be specified.'
@@ -1985,12 +2041,14 @@ async def test_translate_create_newline_json(mocker):
 
     create_args = SlackV3.create_incidents.call_args
     json_args = create_args[0][0]
-
+    raw_json = '{"ReporterEmail": "spengler@ghostbusters.example.com", "Message":' \
+               ' "            create incident json={            \\"name\\":\\"xyz\\",' \
+               '            \\"details\\": \\"1.1.1.1,8.8.8.8\\"                    }"}'
     # Assert
 
     assert SlackV3.create_incidents.call_count == 1
 
-    assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
+    assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8", 'rawJSON': raw_json}]
 
     assert json_data == success_message
 
@@ -4386,7 +4444,8 @@ TEST_BANK_MSG = [
     (INBOUND_MESSAGE_FROM_USER, False),
     (INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID, True),
     (INBOUND_EVENT_MESSAGE, False),
-    (INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID, True)
+    (INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID, True),
+    (SIMPLE_USER_MESSAGE, False)
 ]
 
 

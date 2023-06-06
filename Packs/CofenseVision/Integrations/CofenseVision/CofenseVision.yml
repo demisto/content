@@ -3,62 +3,59 @@ commonfields:
   id: Cofense Vision
   version: -1
 configuration:
-  - name: url
-    display: Server URL
-    required: true
-    defaultvalue:
-    type: 0
-    additionalinfo: Server URL to connect to Cofense Vision.
-  - name: credentials
-    display: Client ID
-    required: true
-    defaultvalue:
-    type: 9
-    additionalinfo:
-    displaypassword: Client Secret
-    hiddenusername: false
-  - name: threat_levels_good
-    display: Threat levels to be marked as Good
-    required: false
-    defaultvalue:
-    type: 0
-    additionalinfo: |-
-      Mapping of Cofense Vision threat level to XSOAR DbotScore.
-      For 'Good', DbotScore will be 1 and default threat level value is 'low'.
-      Comma separated values are supported.
-  - name: threat_levels_suspicious
-    display: Threat levels to be marked as Suspicious
-    required: false
-    defaultvalue:
-    type: 0
-    additionalinfo: |-
-      Mapping of Cofense Vision threat level to XSOAR DbotScore.
-      For 'Suspicious', DbotScore will be 2 and default threat level values are 'suspicious', 'moderate', 'substantial'.
-      Comma separated values are supported.
-  - name: threat_levels_bad
-    display: Threat levels to be marked as Bad
-    required: false
-    defaultvalue:
-    type: 0
-    additionalinfo: |-
-      Mapping of Cofense Vision threat level to XSOAR DbotScore.
-      For 'Bad', DbotScore will be 3 and default threat level values are 'malicious', 'severe', 'critical', 'high'.
-      Comma separated values are supported.
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    defaultvalue: 'false'
-    type: 8
-    additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    defaultvalue: 'false'
-    type: 8
-    additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
-description: The Cofense Vision integration provides commands to initiate advanced search jobs to hunt suspicious 
-  emails matching IOCs. It also contains commands to quarantine emails, download messages and their attachments, 
-  and aids to manage IOCs in the local repository to keep up with upcoming emerging threats.
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: Server URL to connect to Cofense Vision.
+- name: credentials
+  display: Client ID
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo:
+  displaypassword: Client Secret
+- name: threat_levels_good
+  display: Threat levels to be marked as Good
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: |-
+    Mapping of Cofense Vision threat level to XSOAR DbotScore.
+    For 'Good', DbotScore will be 1 and default threat level value is 'low'.
+    Comma separated values are supported.
+- name: threat_levels_suspicious
+  display: Threat levels to be marked as Suspicious
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: |-
+    Mapping of Cofense Vision threat level to XSOAR DbotScore.
+    For 'Suspicious', DbotScore will be 2 and default threat level values are 'suspicious', 'moderate', 'substantial'.
+    Comma separated values are supported.
+- name: threat_levels_bad
+  display: Threat levels to be marked as Bad
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: |-
+    Mapping of Cofense Vision threat level to XSOAR DbotScore.
+    For 'Bad', DbotScore will be 3 and default threat level values are 'malicious', 'severe', 'critical', 'high'.
+    Comma separated values are supported.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  defaultvalue: 'false'
+  type: 8
+  additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: 'false'
+  type: 8
+  additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
+description: The Cofense Vision integration provides commands to initiate advanced search jobs to hunt suspicious emails matching IOCs. It also contains commands to quarantine emails, download messages and their attachments, and aids to manage IOCs in the local repository to keep up with upcoming emerging threats.
 display: Cofense Vision
 name: Cofense Vision
 script:
@@ -132,8 +129,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves the full content of a message that matches the specified
-      Internet message ID and recipient email address of an email.
+    description: Retrieves the full content of a message that matches the specified Internet message ID and recipient email address of an email.
     execution: false
     name: cofense-message-metadata-get
     outputs:
@@ -297,9 +293,9 @@ script:
     - default: false
       description: |-
         Unique identifier of the email, enclosed in angle brackets.
-        
+
         Example: <AC6CAE11-779E-4044-BB25-110171AB0301@example.com>
-        
+
         Note: Users can get the ID by executing the "cofense-message-search-results-get" command.
       isArray: false
       name: internet_message_id
@@ -308,11 +304,11 @@ script:
     - default: false
       description: |-
         Email address of the recipient of the email.
-        
+
         Note: The email address can be a carbon copy (Cc) or blind
         carbon copy (Bcc) recipient but cannot be a shared mailbox or a
         distribution list.
-        
+
         Note: Users can get the recipient address by executing the "cofense-message-search-results-get" command.
       isArray: false
       name: recipient_address
@@ -342,8 +338,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Whether to remove (true) or not remove (false) quarantined emails
-        from the response.
+      description: Whether to remove (true) or not remove (false) quarantined emails from the response.
       isArray: false
       name: exclude_quarantine_emails
       predefined:
@@ -353,16 +348,14 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Start page of the results. The value must be a positive integer
-        or 0.
+      description: Start page of the results. The value must be a positive integer or 0.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results to retrieve per page. The value must be a
-        positive integer up to 2000.
+      description: The number of results to retrieve per page. The value must be a positive integer up to 2000.
       isArray: false
       name: size
       required: false
@@ -383,8 +376,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to include auto quarantine jobs (true) or not include auto
-        quarantine jobs (false).
+      description: Whether to include auto quarantine jobs (true) or not include auto quarantine jobs (false).
       isArray: false
       name: auto_quarantine
       predefined:
@@ -429,7 +421,7 @@ script:
     - default: false
       description: |-
         Unique MD5 hash identifier of one or more IOCs. Comma separated values are supported.
-        
+
         Example: 
         07fa1e91f99050521a87edc784e83fd5,07123459050525189160784e83fd5
       isArray: true
@@ -467,19 +459,16 @@ script:
       description: Client that created the quarantine job.
       type: String
     - contextPath: Cofense.QuarantineJob.createdDate
-      description: Date and time the quarantine job was created. The timestamp is
-        in UTC.
+      description: Date and time the quarantine job was created. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.modifiedBy
       description: Client that last updated the quarantine job.
       type: String
     - contextPath: Cofense.QuarantineJob.modifiedDate
-      description: Date and time the quarantine job was last modified. The timestamp
-        is in UTC.
+      description: Date and time the quarantine job was last modified. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.stopRequested
-      description: Whether a request was issued (true) or was not issued (false) to
-        stop the quarantine job.
+      description: Whether a request was issued (true) or was not issued (false) to stop the quarantine job.
       type: Boolean
     - contextPath: Cofense.QuarantineJob.emailCount
       description: Number of emails quarantined.
@@ -500,8 +489,7 @@ script:
       description: ID of the email assigned by the message transfer agent.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineEmails.originalFolderId
-      description: ID of the EWS folder where the email was located before it was
-        quarantined.
+      description: ID of the EWS folder where the email was located before it was quarantined.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineEmails.quarantinedDate
       description: The date when an email was quarantined.
@@ -522,8 +510,7 @@ script:
       description: ID of the quarantine job in Cofense Vision.
       type: Number
     - contextPath: Cofense.QuarantineJob.quarantineJobRuns.jobRunType
-      description: Type of Job depending on the operation being performed against
-        the emails.
+      description: Type of Job depending on the operation being performed against the emails.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineJobRuns.startedDate
       description: Date the quarantine job started.
@@ -535,8 +522,7 @@ script:
       description: Total number of emails in the quarantine job.
       type: Number
     - contextPath: Cofense.QuarantineJob.autoQuarantine
-      description: Whether the quarantine job was part of an auto quarantine action
-        (true) or was not part of an auto quarantine action (false).
+      description: Whether the quarantine job was part of an auto quarantine action (true) or was not part of an auto quarantine action (false).
       type: Boolean
     - contextPath: Cofense.QuarantineJob.matchingIOCs
       description: MD5 hash of one or more matching IOCs.
@@ -545,8 +531,7 @@ script:
       description: One or more IOC sources.
       type: Unknown
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.id
-      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and
-        "threat_value" attributes.
+      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
       type: String
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.type
       description: Type of the cofense resource which is always "ioc".
@@ -567,24 +552,19 @@ script:
       description: Date and time in UTC, after which this IOC expires.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.created_at
-      description: Date and time the quarantine data was created in the IOC repository.
-        The timestamp is in UTC.
+      description: Date and time the quarantine data was created in the IOC repository. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.first_quarantined_at
-      description: Date and time Cofense Vision quarantined the first email due to
-        this IOC. The timestamp is in UTC.
+      description: Date and time Cofense Vision quarantined the first email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.last_quarantined_at
-      description: Date and time Cofense Vision quarantined the last email due to
-        this IOC. The timestamp is in UTC.
+      description: Date and time Cofense Vision quarantined the last email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.match_count
-      description: Number of unique emails that matched the IOC while the IOC was
-        active.
+      description: Number of unique emails that matched the IOC while the IOC was active.
       type: Number
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.quarantine_count
-      description: Number of recipients who received emails matching the IOC while
-        the IOC was active.
+      description: Number of recipients who received emails matching the IOC while the IOC was active.
       type: Number
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.expired
       description: Whether the IOC is expired (true) or not expired (false).
@@ -600,7 +580,7 @@ script:
 
         Supported format:
         internetMessageID1:recipientAddress1, internetMessageID2:recipientAddress2
-        
+
         Where,
         internetMessageID: IDs of any emails in the particular account to be
         quarantined, with each internet message ID enclosed in angle brackets.
@@ -980,19 +960,16 @@ script:
       description: Client that created the quarantine job.
       type: String
     - contextPath: Cofense.QuarantineJob.createdDate
-      description: Date and time the quarantine job was created. The timestamp is
-        in UTC.
+      description: Date and time the quarantine job was created. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.modifiedBy
       description: Client that last updated the quarantine job.
       type: String
     - contextPath: Cofense.QuarantineJob.modifiedDate
-      description: Date and time the quarantine job was last modified. The timestamp
-        is in UTC.
+      description: Date and time the quarantine job was last modified. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.stopRequested
-      description: Whether a request was issued (true) or was not issued (false) to
-        stop the quarantine job.
+      description: Whether a request was issued (true) or was not issued (false) to stop the quarantine job.
       type: Boolean
     - contextPath: Cofense.QuarantineJob.emailCount
       description: Number of emails quarantined.
@@ -1013,8 +990,7 @@ script:
       description: ID of the email assigned by the message transfer agent.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineEmails.originalFolderId
-      description: ID of the EWS folder where the email was located before it was
-        quarantined.
+      description: ID of the EWS folder where the email was located before it was quarantined.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineEmails.quarantinedDate
       description: Date the email was quarantined.
@@ -1035,8 +1011,7 @@ script:
       description: ID of the quarantine job in Cofense Vision.
       type: Number
     - contextPath: Cofense.QuarantineJob.quarantineJobRuns.jobRunType
-      description: Type of Job depending on the operation being performed against
-        the emails.
+      description: Type of Job depending on the operation being performed against the emails.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineJobRuns.startedDate
       description: Date the quarantine job started.
@@ -1048,8 +1023,7 @@ script:
       description: Total number of emails in the quarantine job.
       type: Number
     - contextPath: Cofense.QuarantineJob.autoQuarantine
-      description: Whether the quarantine job was part of an auto quarantine action
-        (true) or was not part of an auto quarantine action (false).
+      description: Whether the quarantine job was part of an auto quarantine action (true) or was not part of an auto quarantine action (false).
       type: Boolean
     - contextPath: Cofense.QuarantineJob.matchingIOCs
       description: MD5 hash of one or more matching IOCs.
@@ -1058,8 +1032,7 @@ script:
       description: One or more IOC sources.
       type: Unknown
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.id
-      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and
-        "threat_value" attributes.
+      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
       type: String
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.type
       description: Type of the cofense resource which is always "ioc".
@@ -1080,24 +1053,19 @@ script:
       description: Date and time in UTC, after which this IOC expires.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.created_at
-      description: Date and time the quarantine data was created in the IOC repository.
-        The timestamp is in UTC.
+      description: Date and time the quarantine data was created in the IOC repository. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.first_quarantined_at
-      description: Date and time Cofense Vision quarantined the first email due to
-        this IOC. The timestamp is in UTC.
+      description: Date and time Cofense Vision quarantined the first email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.last_quarantined_at
-      description: Date and time Cofense Vision quarantined the last email due to
-        this IOC. The timestamp is in UTC.
+      description: Date and time Cofense Vision quarantined the last email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.match_count
-      description: Number of unique emails that matched the IOC while the IOC was
-        active.
+      description: Number of unique emails that matched the IOC while the IOC was active.
       type: Number
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.quarantine_count
-      description: Number of recipients who received emails matching the IOC while
-        the IOC was active.
+      description: Number of recipients who received emails matching the IOC while the IOC was active.
       type: Number
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.expired
       description: Whether the IOC is expired (true) or not expired (false).
@@ -1116,10 +1084,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of emails containing IOC matches to be quarantined. When message_count is present,
-        cofense vision quarantines a subset of the total number of emails containing IOC matches. The
-        value must be a non-zero and positive integer. If message_count is not present, all messages will 
-        be approved.
+      description: Number of emails containing IOC matches to be quarantined. When message_count is present, cofense vision quarantines a subset of the total number of emails containing IOC matches. The value must be a non-zero and positive integer. If message_count is not present, all messages will be approved.
       isArray: false
       name: message_count
       required: false
@@ -1129,12 +1094,12 @@ script:
     execution: false
     name: cofense-quarantine-job-approve
     outputs:
-      - contextPath: Cofense.QuarantineJob.id
-        description: ID of the quarantine job in cofense vision.
-        type: Number
-      - contextPath: Cofense.QuarantineJob.isApproved
-        description: Whether the quarantine job is successfully approved(true) or not(false).
-        type: Boolean
+    - contextPath: Cofense.QuarantineJob.id
+      description: ID of the quarantine job in cofense vision.
+      type: Number
+    - contextPath: Cofense.QuarantineJob.isApproved
+      description: Whether the quarantine job is successfully approved(true) or not(false).
+      type: Boolean
   - arguments:
     - default: false
       description: |-
@@ -1263,9 +1228,7 @@ script:
       description: Sequence of header field.
       type: Number
     - contextPath: Cofense.Search.Message.headers.partialIngest
-      description: '"Null" if no partially ingested messages found; otherwise, 
-        one or more of the following to describe the source of the 
-        ingestion failure: PARSE, ATTACHMENT, URL, UNKNOWN.'
+      description: '"Null" if no partially ingested messages found; otherwise, one or more of the following to describe the source of the ingestion failure: PARSE, ATTACHMENT, URL, UNKNOWN.'
       type: String
     - contextPath: Cofense.Search.Message.recipients.id
       description: The ID of the recipient.
@@ -1397,8 +1360,7 @@ script:
     name: cofense-ioc-delete
     outputs:
     - contextPath: Cofense.IOC.id
-      description: MD5 hash composed of the UTF-8 concatenation of "threat type" and
-        "threat value" attributes.
+      description: MD5 hash composed of the UTF-8 concatenation of "threat type" and "threat value" attributes.
       type: String
     - contextPath: Cofense.IOC.type
       description: Type of the cofense resource which is always "ioc".
@@ -1416,12 +1378,10 @@ script:
       description: Unique identifier assigned by the IOC source.
       type: String
     - contextPath: Cofense.IOC.metadata.source.created_at
-      description: Date and time the IOC source was first seen. The timestamp is in
-        UTC.
+      description: Date and time the IOC source was first seen. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.IOC.metadata.source.updated_at
-      description: Date and time the IOC source last updated the IOC. The timestamp
-        is in UTC.
+      description: Date and time the IOC source last updated the IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.IOC.metadata.source.requested_expiration
       description: Expiration date and time for this IOC in UTC.
@@ -1433,20 +1393,16 @@ script:
       description: Date and time, in UTC, after which this IOC expires.
       type: Date
     - contextPath: Cofense.IOC.metadata.quarantine.created_at
-      description: Date and time the quarantine data was created in the IOC repository.
-        The timestamp is in UTC.
+      description: Date and time the quarantine data was created in the IOC repository. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.IOC.metadata.quarantine.first_quarantined_at
-      description: Date and time the cofense vision quarantined the email due to
-        this IOC. The timestamp is in UTC.
+      description: Date and time the cofense vision quarantined the email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.IOC.metadata.quarantine.last_quarantined_at
-      description: Date and time the cofense vision last quarantined the email due
-        to this IOC. The timestamp is in UTC.
+      description: Date and time the cofense vision last quarantined the email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.IOC.metadata.quarantine.match_count
-      description: Number of unique emails that matched the IOC while the IOC was
-        active.
+      description: Number of unique emails that matched the IOC while the IOC was active.
       type: Number
     - contextPath: Cofense.IOC.metadata.quarantine.quarantine_count
       description: Number of times the email was quarantined.
@@ -1560,8 +1516,7 @@ script:
       description: ID of the email assigned by the message transfer agent.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineEmails.originalFolderId
-      description: ID of the EWS folder where the email was located before it was
-        quarantined.
+      description: ID of the EWS folder where the email was located before it was quarantined.
       type: String
     - contextPath: Cofense.QuarantineJob.quarantineEmails.quarantinedDate
       description: Date the email was quarantined.
@@ -1594,8 +1549,7 @@ script:
       description: Total number of emails in the quarantine job.
       type: Number
     - contextPath: Cofense.QuarantineJob.autoQuarantine
-      description: Whether the quarantine job was part of an auto quarantine action
-        (true) or was not part of an auto quarantine action (false).
+      description: Whether the quarantine job was part of an auto quarantine action (true) or was not part of an auto quarantine action (false).
       type: Boolean
     - contextPath: Cofense.QuarantineJob.matchingIOCs
       description: MD5 hash of one or more matching IOCs.
@@ -1604,8 +1558,7 @@ script:
       description: One or more IOC sources.
       type: Unknown
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.id
-      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and
-        "threat_value" attributes.
+      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
       type: String
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.type
       description: Type of the cofense resource which is always "ioc".
@@ -1626,24 +1579,19 @@ script:
       description: Date and time in UTC, after which this IOC expires.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.created_at
-      description: Date and time the quarantine data was created in the IOC repository.
-        The timestamp is in UTC.
+      description: Date and time the quarantine data was created in the IOC repository. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.first_quarantined_at
-      description: Date and time Cofense Vision quarantined the first email due to
-        this IOC. The timestamp is in UTC.
+      description: Date and time Cofense Vision quarantined the first email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.last_quarantined_at
-      description: Date and time Cofense Vision quarantined the last email due to
-        this IOC. The timestamp is in UTC.
+      description: Date and time Cofense Vision quarantined the last email due to this IOC. The timestamp is in UTC.
       type: Date
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.match_count
-      description: Number of unique emails that matched the IOC while the IOC was
-        active.
+      description: Number of unique emails that matched the IOC while the IOC was active.
       type: Number
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.quarantine_count
-      description: Number of recipients who received emails matching the IOC while
-        the IOC was active.
+      description: Number of recipients who received emails matching the IOC while the IOC was active.
       type: Number
     - contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.quarantine.expired
       description: Whether the IOC is expired (true) or not expired (false).
@@ -1939,8 +1887,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Synchronizes the update of data between the IOC source and the IOC repository. 
-      Retrieves the last updated IOC from the local IOC Repository. It may return an active or an expired IOC.
+    description: Synchronizes the update of data between the IOC source and the IOC repository. Retrieves the last updated IOC from the local IOC Repository. It may return an active or an expired IOC.
     execution: false
     name: cofense-last-ioc-get
     outputs:
@@ -2101,12 +2048,12 @@ script:
       isArray: false
       name: threat_type
       predefined:
-        - Domain
-        - 'MD5'
-        - 'Sender'
-        - 'SHA256'
-        - 'Subject'
-        - 'URL'
+      - Domain
+      - 'MD5'
+      - 'Sender'
+      - 'SHA256'
+      - 'Subject'
+      - 'URL'
       required: false
       secret: false
     - default: false
@@ -2181,119 +2128,111 @@ script:
     execution: false
     name: cofense-iocs-update
     outputs:
-      - contextPath: Cofense.IOC.id
-        description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and
-          "threat_value" attributes.
-        type: String
-      - contextPath: Cofense.IOC.type
-        description: Type of the cofense resource which is always "ioc".
-        type: String
-      - contextPath: Cofense.IOC.attributes.threat_type
-        description: Threat type of the IOC match.
-        type: String
-      - contextPath: Cofense.IOC.attributes.threat_value
-        description: Actual value of the IOC match in the email.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.threat_level
-        description: String that describes the severity of the threat.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.id
-        description: Unique identifier assigned by the IOC source.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.created_at
-        description: Date and time the IOC source included the IOC for the first time.
-          The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.source.updated_at
-        description: Date and time the IOC source last updated the IOC. The timestamp
-          is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.source.requested_expiration
-        description: Expiration date and time for this IOC in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.source_names
-        description: Array containing the IOC sources.
-        type: Unknown
-      - contextPath: Cofense.IOC.metadata.quarantine.expires_at
-        description: Date and time, in UTC, after which this IOC expires.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.created_at
-        description: Date and time the quarantine data was created in the IOC repository.
-          The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.first_quarantined_at
-        description: Date and time cofense vision quarantined the first email due to
-          this IOC. The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.last_quarantined_at
-        description: Date and time cofense vision quarantined the last email due to
-          this IOC. The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.match_count
-        description: Number of unique emails that matched the IOC while the IOC was
-          active.
-        type: Number
-      - contextPath: Cofense.IOC.metadata.quarantine.quarantine_count
-        description: Number of recipients who received emails matching the IOC while
-          the IOC was active.
-        type: Number
-      - contextPath: Cofense.IOC.metadata.quarantine.expired
-        description: Whether the IOC is expired (true) or not expired (false).
-        type: Boolean
-      - contextPath: Cofense.IOC.metadata.quarantine.wildcard
-        type: Boolean
-        description: Whether the wildcard matching is set (true) or not (false).
-      - contextPath: DBotScore.Indicator
-        type: String
-        description: The indicator that was tested.
-      - contextPath: DBotScore.Type
-        type: String
-        description: The indicator type.
-      - contextPath: DBotScore.Vendor
-        type: String
-        description: The vendor used to calculate the score.
-      - contextPath: DBotScore.Score
-        type: Number
-        description: The actual score.
-      - contextPath: Domain.Name
-        description: The domain name.
-        type: String
-      - contextPath: Domain.Malicious.Description
-        description: A description of the malicious domain.
-        type: String
-      - contextPath: Domain.Malicious.Vendor
-        description: The vendor who reported the domain as malicious.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: URL.Malicious.Description
-        description: A description of the malicious URL.
-        type: String
-      - contextPath: URL.Malicious.Vendor
-        description: The vendor who reported the URL as malicious.
-        type: String
-      - contextPath: Email.Address
-        description: The sender of the email.
-        type: String
-      - contextPath: Email.Malicious.Description
-        description: A description of the malicious email.
-        type: String
-      - contextPath: Email.Malicious.Vendor
-        description: The vendor who reported the email as malicious.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Malicious.Description
-        description: A description explaining why the file was determined to be malicious.
-        type: String
-      - contextPath: File.Malicious.Vendor
-        description: The vendor who reported the file as malicious.
-        type: String
+    - contextPath: Cofense.IOC.id
+      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
+      type: String
+    - contextPath: Cofense.IOC.type
+      description: Type of the cofense resource which is always "ioc".
+      type: String
+    - contextPath: Cofense.IOC.attributes.threat_type
+      description: Threat type of the IOC match.
+      type: String
+    - contextPath: Cofense.IOC.attributes.threat_value
+      description: Actual value of the IOC match in the email.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.threat_level
+      description: String that describes the severity of the threat.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.id
+      description: Unique identifier assigned by the IOC source.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.created_at
+      description: Date and time the IOC source included the IOC for the first time. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.source.updated_at
+      description: Date and time the IOC source last updated the IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.source.requested_expiration
+      description: Expiration date and time for this IOC in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.source_names
+      description: Array containing the IOC sources.
+      type: Unknown
+    - contextPath: Cofense.IOC.metadata.quarantine.expires_at
+      description: Date and time, in UTC, after which this IOC expires.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.created_at
+      description: Date and time the quarantine data was created in the IOC repository. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.first_quarantined_at
+      description: Date and time cofense vision quarantined the first email due to this IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.last_quarantined_at
+      description: Date and time cofense vision quarantined the last email due to this IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.match_count
+      description: Number of unique emails that matched the IOC while the IOC was active.
+      type: Number
+    - contextPath: Cofense.IOC.metadata.quarantine.quarantine_count
+      description: Number of recipients who received emails matching the IOC while the IOC was active.
+      type: Number
+    - contextPath: Cofense.IOC.metadata.quarantine.expired
+      description: Whether the IOC is expired (true) or not expired (false).
+      type: Boolean
+    - contextPath: Cofense.IOC.metadata.quarantine.wildcard
+      type: Boolean
+      description: Whether the wildcard matching is set (true) or not (false).
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor who reported the domain as malicious.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor who reported the URL as malicious.
+      type: String
+    - contextPath: Email.Address
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: A description of the malicious email.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: The vendor who reported the email as malicious.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor who reported the file as malicious.
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -2307,9 +2246,9 @@ script:
     - default: false
       description: |-
         Expiration date and time of the IOC. The timestamp is in UTC.
-        
+
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        
+
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
       isArray: false
       name: expires_at
@@ -2320,122 +2259,114 @@ script:
     execution: false
     name: cofense-ioc-update
     outputs:
-      - contextPath: Cofense.IOC.id
-        description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and
-          "threat_value" attributes.
-        type: String
-      - contextPath: Cofense.IOC.type
-        description: Type of the cofense resource which is always "ioc".
-        type: String
-      - contextPath: Cofense.IOC.attributes.threat_type
-        description: Threat type of the IOC match.
-        type: String
-      - contextPath: Cofense.IOC.attributes.threat_value
-        description: Actual value of the IOC match in the email.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.threat_level
-        description: String that describes the severity of the threat.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.id
-        description: Unique identifier assigned by the IOC source.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.created_at
-        description: Date and time the IOC source included the IOC for the first time.
-          The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.source.updated_at
-        description: Date and time the IOC source last updated the IOC. The timestamp
-          is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.source.requested_expiration
-        description: Expiration date and time for this IOC in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.source_names
-        description: Array containing the IOC sources.
-        type: Unknown
-      - contextPath: Cofense.IOC.metadata.quarantine.expires_at
-        description: Date and time, in UTC, after which this IOC expires.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.created_at
-        description: Date and time the quarantine data was created in the IOC repository.
-          The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.first_quarantined_at
-        description: Date and time cofense vision quarantined the first email due to
-          this IOC. The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.last_quarantined_at
-        description: Date and time cofense vision quarantined the last email due to
-          this IOC. The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.match_count
-        description: Number of unique emails that matched the IOC while the IOC was
-          active.
-        type: Number
-      - contextPath: Cofense.IOC.metadata.quarantine.quarantine_count
-        description: Number of recipients who received emails matching the IOC while
-          the IOC was active.
-        type: Number
-      - contextPath: Cofense.IOC.metadata.quarantine.expired
-        description: Whether the IOC is expired (true) or not expired (false).
-        type: Boolean
-      - contextPath: Cofense.IOC.metadata.quarantine.wildcard
-        type: Boolean
-        description: Whether the wildcard matching is set (true) or not (false).
-      - contextPath: DBotScore.Indicator
-        type: String
-        description: The indicator that was tested.
-      - contextPath: DBotScore.Type
-        type: String
-        description: The indicator type.
-      - contextPath: DBotScore.Vendor
-        type: String
-        description: The vendor used to calculate the score.
-      - contextPath: DBotScore.Score
-        type: Number
-        description: The actual score.
-      - contextPath: Domain.Name
-        description: The domain name.
-        type: String
-      - contextPath: Domain.Malicious.Description
-        description: A description of the malicious domain.
-        type: String
-      - contextPath: Domain.Malicious.Vendor
-        description: The vendor who reported the domain as malicious.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: URL.Malicious.Description
-        description: A description of the malicious URL.
-        type: String
-      - contextPath: URL.Malicious.Vendor
-        description: The vendor who reported the URL as malicious.
-        type: String
-      - contextPath: Email.Address
-        description: The sender of the email.
-        type: String
-      - contextPath: Email.Malicious.Description
-        description: A description of the malicious email.
-        type: String
-      - contextPath: Email.Malicious.Vendor
-        description: The vendor who reported the email as malicious.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Malicious.Description
-        description: A description explaining why the file was determined to be malicious.
-        type: String
-      - contextPath: File.Malicious.Vendor
-        description: The vendor who reported the file as malicious.
-        type: String
+    - contextPath: Cofense.IOC.id
+      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
+      type: String
+    - contextPath: Cofense.IOC.type
+      description: Type of the cofense resource which is always "ioc".
+      type: String
+    - contextPath: Cofense.IOC.attributes.threat_type
+      description: Threat type of the IOC match.
+      type: String
+    - contextPath: Cofense.IOC.attributes.threat_value
+      description: Actual value of the IOC match in the email.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.threat_level
+      description: String that describes the severity of the threat.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.id
+      description: Unique identifier assigned by the IOC source.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.created_at
+      description: Date and time the IOC source included the IOC for the first time. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.source.updated_at
+      description: Date and time the IOC source last updated the IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.source.requested_expiration
+      description: Expiration date and time for this IOC in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.source_names
+      description: Array containing the IOC sources.
+      type: Unknown
+    - contextPath: Cofense.IOC.metadata.quarantine.expires_at
+      description: Date and time, in UTC, after which this IOC expires.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.created_at
+      description: Date and time the quarantine data was created in the IOC repository. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.first_quarantined_at
+      description: Date and time cofense vision quarantined the first email due to this IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.last_quarantined_at
+      description: Date and time cofense vision quarantined the last email due to this IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.match_count
+      description: Number of unique emails that matched the IOC while the IOC was active.
+      type: Number
+    - contextPath: Cofense.IOC.metadata.quarantine.quarantine_count
+      description: Number of recipients who received emails matching the IOC while the IOC was active.
+      type: Number
+    - contextPath: Cofense.IOC.metadata.quarantine.expired
+      description: Whether the IOC is expired (true) or not expired (false).
+      type: Boolean
+    - contextPath: Cofense.IOC.metadata.quarantine.wildcard
+      type: Boolean
+      description: Whether the wildcard matching is set (true) or not (false).
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor who reported the domain as malicious.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor who reported the URL as malicious.
+      type: String
+    - contextPath: Email.Address
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: A description of the malicious email.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: The vendor who reported the email as malicious.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor who reported the file as malicious.
+      type: String
   - arguments:
     - default: false
-      description: |- 
+      description: |-
         A single IOC source value, to fetch the IOCs added or modified by that particular source. The value for source can contain uppercase letters, lowercase letters, numbers, and certain special characters ("." , "-" , "_" , "~").
 
         Example: "Triage-1" or "IOC_Source-2".
@@ -2454,7 +2385,7 @@ script:
       defaultValue: '50'
       description: |-
         The number of results to retrieve.
-        
+
         Maximum value is '2000'
       isArray: false
       name: size
@@ -2487,9 +2418,9 @@ script:
     - default: false
       description: |-
         Include only IOCs that were added to the repository after the given UTC date and time.
-        
+
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        
+
         Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
       isArray: false
       name: since
@@ -2629,119 +2560,111 @@ script:
     execution: false
     name: cofense-ioc-get
     outputs:
-      - contextPath: Cofense.IOC.id
-        description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and
-          "threat_value" attributes.
-        type: String
-      - contextPath: Cofense.IOC.type
-        description: Type of the cofense resource which is always "ioc".
-        type: String
-      - contextPath: Cofense.IOC.attributes.threat_type
-        description: Threat type of the IOC match.
-        type: String
-      - contextPath: Cofense.IOC.attributes.threat_value
-        description: Actual value of the IOC match in the email.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.threat_level
-        description: String that describes the severity of the threat.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.id
-        description: Unique identifier assigned by the IOC source.
-        type: String
-      - contextPath: Cofense.IOC.metadata.source.created_at
-        description: Date and time the IOC source included the IOC for the first time.
-          The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.source.updated_at
-        description: Date and time the IOC source last updated the IOC. The timestamp
-          is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.source.requested_expiration
-        description: Expiration date and time for this IOC in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.source_names
-        description: Array containing the IOC sources.
-        type: Unknown
-      - contextPath: Cofense.IOC.metadata.quarantine.expires_at
-        description: Date and time, in UTC, after which this IOC expires.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.created_at
-        description: Date and time the quarantine data was created in the IOC repository.
-          The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.first_quarantined_at
-        description: Date and time cofense vision quarantined the first email due to
-          this IOC. The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.last_quarantined_at
-        description: Date and time cofense vision quarantined the last email due to
-          this IOC. The timestamp is in UTC.
-        type: Date
-      - contextPath: Cofense.IOC.metadata.quarantine.match_count
-        description: Number of unique emails that matched the IOC while the IOC was
-          active.
-        type: Number
-      - contextPath: Cofense.IOC.metadata.quarantine.quarantine_count
-        description: Number of recipients who received emails matching the IOC while
-          the IOC was active.
-        type: Number
-      - contextPath: Cofense.IOC.metadata.quarantine.expired
-        description: Whether the IOC is expired (true) or not expired (false).
-        type: Boolean
-      - contextPath: Cofense.IOC.metadata.quarantine.wildcard
-        type: Boolean
-        description: Whether the wildcard matching is set (true) or not (false).
-      - contextPath: DBotScore.Indicator
-        type: String
-        description: The indicator that was tested.
-      - contextPath: DBotScore.Type
-        type: String
-        description: The indicator type.
-      - contextPath: DBotScore.Vendor
-        type: String
-        description: The vendor used to calculate the score.
-      - contextPath: DBotScore.Score
-        type: Number
-        description: The actual score.
-      - contextPath: Domain.Name
-        description: The domain name.
-        type: String
-      - contextPath: Domain.Malicious.Description
-        description: A description of the malicious domain.
-        type: String
-      - contextPath: Domain.Malicious.Vendor
-        description: The vendor who reported the domain as malicious.
-        type: String
-      - contextPath: URL.Data
-        description: The URL.
-        type: String
-      - contextPath: URL.Malicious.Description
-        description: A description of the malicious URL.
-        type: String
-      - contextPath: URL.Malicious.Vendor
-        description: The vendor who reported the URL as malicious.
-        type: String
-      - contextPath: Email.Address
-        description: The sender of the email.
-        type: String
-      - contextPath: Email.Malicious.Description
-        description: A description of the malicious email.
-        type: String
-      - contextPath: Email.Malicious.Vendor
-        description: The vendor who reported the email as malicious.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Malicious.Description
-        description: A description explaining why the file was determined to be malicious.
-        type: String
-      - contextPath: File.Malicious.Vendor
-        description: The vendor who reported the file as malicious.
-        type: String
+    - contextPath: Cofense.IOC.id
+      description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
+      type: String
+    - contextPath: Cofense.IOC.type
+      description: Type of the cofense resource which is always "ioc".
+      type: String
+    - contextPath: Cofense.IOC.attributes.threat_type
+      description: Threat type of the IOC match.
+      type: String
+    - contextPath: Cofense.IOC.attributes.threat_value
+      description: Actual value of the IOC match in the email.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.threat_level
+      description: String that describes the severity of the threat.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.id
+      description: Unique identifier assigned by the IOC source.
+      type: String
+    - contextPath: Cofense.IOC.metadata.source.created_at
+      description: Date and time the IOC source included the IOC for the first time. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.source.updated_at
+      description: Date and time the IOC source last updated the IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.source.requested_expiration
+      description: Expiration date and time for this IOC in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.source_names
+      description: Array containing the IOC sources.
+      type: Unknown
+    - contextPath: Cofense.IOC.metadata.quarantine.expires_at
+      description: Date and time, in UTC, after which this IOC expires.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.created_at
+      description: Date and time the quarantine data was created in the IOC repository. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.first_quarantined_at
+      description: Date and time cofense vision quarantined the first email due to this IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.last_quarantined_at
+      description: Date and time cofense vision quarantined the last email due to this IOC. The timestamp is in UTC.
+      type: Date
+    - contextPath: Cofense.IOC.metadata.quarantine.match_count
+      description: Number of unique emails that matched the IOC while the IOC was active.
+      type: Number
+    - contextPath: Cofense.IOC.metadata.quarantine.quarantine_count
+      description: Number of recipients who received emails matching the IOC while the IOC was active.
+      type: Number
+    - contextPath: Cofense.IOC.metadata.quarantine.expired
+      description: Whether the IOC is expired (true) or not expired (false).
+      type: Boolean
+    - contextPath: Cofense.IOC.metadata.quarantine.wildcard
+      type: Boolean
+      description: Whether the wildcard matching is set (true) or not (false).
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor who reported the domain as malicious.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor who reported the URL as malicious.
+      type: String
+    - contextPath: Email.Address
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: A description of the malicious email.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: The vendor who reported the email as malicious.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor who reported the file as malicious.
+      type: String
   - deprecated: false
     description: Retrieves a list of configured header keys that can be used to create a message search.
     execution: false
@@ -2753,7 +2676,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.11.59070
   feed: false
   isfetch: false
   longRunning: false

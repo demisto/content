@@ -1,0 +1,5 @@
+[file:FortiGate.yml]
+ignore=BA124
+
+[known_words]
+ccsrftoken

@@ -359,10 +359,10 @@ def test_send_mail(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    result = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
+    results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
-    assert result.get('Contents') == {
+    assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
@@ -381,9 +381,9 @@ def test_send_mail_with_trailing_comma(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    result = send_email(to="test@gmail.com,", subject="test")
+    results = send_email(to="test@gmail.com,", subject="test")
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert result.get('Contents') == {
+    assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
@@ -434,3 +434,30 @@ def test_get_items_from_mailbox(mocker, item_ids, should_throw_exception):
             get_items_from_mailbox(MockAccount(), item_ids=item_ids)
     else:
         assert get_items_from_mailbox(MockAccount(), item_ids=item_ids) == item_ids
+
+
+def test_categories_parse_item_as_dict():
+    """
+    Given -
+        a Message with categories.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        verify that the categories were parsed correctly.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='message4',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone.timezone('UTC')),
+                      categories=['Purple category', 'Orange category']
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert return_value.get("categories") == ['Purple category', 'Orange category']

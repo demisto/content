@@ -9,3 +9,7 @@ ignore=IM111
 
 [file:CheckPoint_image.png]
 ignore=IM111
+
+[file:CheckPointDownloadBackup.yml]
+ignore=BA124
+

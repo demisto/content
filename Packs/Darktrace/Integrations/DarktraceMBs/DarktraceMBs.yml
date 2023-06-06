@@ -49,7 +49,6 @@ configuration:
 - additionalinfo: Minimum Darktrace score for fetched incidents (0-100)
   defaultvalue: '0'
   display: Minimum Score
-  hidden: false
   name: min_score
   required: true
   type: 0
@@ -57,7 +56,6 @@ configuration:
 - additionalinfo: Maximum number of Darktrace model breaches to fetch at a time
   defaultvalue: '50'
   display: Maximum Model Breaches per Fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -65,7 +63,6 @@ configuration:
 - additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
   defaultvalue: 1 day ago
   display: First fetch time
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -269,7 +266,7 @@ script:
     - contextPath: Darktrace.Model.Component
       description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
       type: Unknown
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: true
   longRunning: false

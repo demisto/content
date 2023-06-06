@@ -1,8 +1,8 @@
 This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.
 
-Note: 
-- Final remediation tasks are manual by default. can be managed by "SearchAndDelete" and "BlockIndicators" inputs.
-- Please do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed.
+Note:
+- Final remediation tasks are manual by default. can be managed by "SearchAndDelete" and "BlockIndicators" inputs. 
+- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed.
 
 ## Dependencies
 
@@ -10,19 +10,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Process Microsoft's Anti-Spam Headers
 * Entity Enrichment - Phishing v2
-* Phishing - Indicators Hunting
+* TIM - Indicator Relationships Analysis
 * Process Email - Generic v2
-* Phishing - Machine Learning Analysis
-* Email Address Enrichment - Generic v2.1
-* Extract Indicators From File - Generic v2
-* Detonate File - Generic
-* Detect & Manage Phishing Campaigns
-* Block Indicators - Generic v3
 * Calculate Severity - Generic v2
+* Extract Indicators From File - Generic v2
+* Spear Phishing Investigation
+* Email Address Enrichment - Generic v2.1
 * Search And Delete Emails - Generic v2
+* Phishing - Machine Learning Analysis
+* Phishing - Indicators Hunting
+* Block Indicators - Generic v3
+* Detect & Manage Phishing Campaigns
 * Detonate URL - Generic
+* Detonate File - Generic
+* Process Microsoft's Anti-Spam Headers
 
 ### Integrations
 
@@ -30,15 +32,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* AssignAnalystToIncident
 * CheckEmailAuthenticity
 * SetAndHandleEmpty
+* Set
+* AssignAnalystToIncident
 
 ### Commands
 
-* send-mail
-* closeInvestigation
 * setIncident
+* setIndicator
+* closeInvestigation
+* send-mail
 
 ## Playbook Inputs
 
@@ -69,6 +73,9 @@ This playbook does not use any integrations.
 | ListenerMailbox | The mailbox which is being used to fetch phishing incidents. This mailbox would be excluded in the "Phishing - Indicators Hunting" playbook.<br/>In case the value of this input is empty, the value of the "Email To" incident field will be automatically used as the listener mailbox. |  | Optional |
 | SendMailInstance | The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used \(default\). |  | Optional |
 | OriginalAuthenticationHeader | This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.<br/>The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header. |  | Optional |
+| UserEngagement | Specify whether to engage with the user via email for investigation updates.<br/>Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement. | True | Optional |
+| TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | False | Optional |
+| KeyWordsToSearch | A comma-separated or list of keywords to search in the email body.<br/>For example: name of the organization finance app that the attacker might impersonate.<br/>This input is being used in the "Spear Phishing Investigation" sub-playbook. |  | Optional |
 
 ## Playbook Outputs
 

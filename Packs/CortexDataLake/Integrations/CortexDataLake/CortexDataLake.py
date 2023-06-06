@@ -18,12 +18,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBAL CONSTS '''
 ACCESS_TOKEN_CONST = 'access_token'  # guardrails-disable-line
-REFRESH_TOKEN_CONST = 'refresh_token'  # guardrails-disable-line
 EXPIRES_IN = 'expires_in'
 INSTANCE_ID_CONST = 'instance_id'
 API_URL_CONST = 'api_url'
-REGISTRATION_ID_CONST = 'reg_id'
-ENCRYPTION_KEY_CONST = 'auth_key'
 FIRST_FAILURE_TIME_CONST = 'first_failure_time'
 LAST_FAILURE_TIME_CONST = 'last_failure_time'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
@@ -90,7 +87,7 @@ class Client(BaseClient):
             INSTANCE_ID_CONST: instance_id
         }
         if refresh_token:
-            updated_integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
+            updated_integration_context.update({'refresh_token': refresh_token})
         demisto.setIntegrationContext(updated_integration_context)
         self.access_token = access_token
         self.api_url = api_url
@@ -100,7 +97,7 @@ class Client(BaseClient):
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get('url')
-        refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
+        refresh_token = oproxy_response.get('refresh_token')
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
@@ -465,6 +462,7 @@ def threat_context_transformer(row_content: dict) -> dict:
         'SourceIP': row_content.get('source_ip', {}).get('value'),
         'RuleMatched': row_content.get('rule_matched'),
         'ThreatCategory': row_content.get('threat_category', {}).get('value'),
+        'ThreatName': row_content.get('threat_name'),
         'LogSourceName': row_content.get('log_source_name'),
         'Subtype': row_content.get('sub_type', {}).get('value'),
         'Direction': row_content.get('direction_of_attack', {}).get('value'),
@@ -1148,15 +1146,18 @@ def fetch_incidents(client: Client,
 def main():
     os.environ['PAN_CREDENTIALS_DBFILE'] = os.path.join(gettempdir(), 'pancloud_credentials.json')
     params = demisto.params()
-    registration_id_and_url = params.get(REGISTRATION_ID_CONST).split('@')
+    registration_id_and_url = params.get('credentials_reg_id', {}).get('password') or params.get('reg_id')
+    # If there's a stored token in integration context, it's newer than current
+    refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
+    enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
+    if not enc_key or not refresh_token or not registration_id_and_url:
+        raise DemistoException('Key, Token and ID must be provided.')
+    registration_id_and_url = registration_id_and_url.split('@')
     if len(registration_id_and_url) != 2:
         token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
     else:
         token_retrieval_url = registration_id_and_url[1]
     registration_id = registration_id_and_url[0]
-    # If there's a stored token in integration context, it's newer than current
-    refresh_token = demisto.getIntegrationContext().get(REFRESH_TOKEN_CONST) or params.get(REFRESH_TOKEN_CONST)
-    enc_key = params.get(ENCRYPTION_KEY_CONST)
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()

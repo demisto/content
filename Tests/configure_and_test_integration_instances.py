@@ -289,13 +289,13 @@ class Build(ABC):
             (bool): whether new (current) marketplace was added to the pack_metadata or not
         """
         spaced_diff = " ".join(diff.split())
-        return (f'+ "{self.marketplace_name}"' in spaced_diff) and not (f'- "{self.marketplace_name}"' in spaced_diff)
+        return (f'+ "{self.marketplace_name}"' in spaced_diff) and f'- "{self.marketplace_name}"' not in spaced_diff
 
     def disable_instances(self):
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self, packs_not_to_install: Set[str] = None) -> Tuple[List[str], List[str]]:
+    def get_changed_integrations(self, packs_not_to_install: Set[str] | None = None) -> Tuple[List[str], List[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
         The modified list is exclude the packs_not_to_install and the new list is including it
@@ -362,6 +362,7 @@ class Build(ABC):
         """
         server_numeric_version: str = self.server_numeric_version
         tests: dict = self.tests
+        tests_for_iteration: list[dict]
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
             if self.is_nightly:
@@ -762,7 +763,7 @@ class CloudBuild(Build):
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.cloud_machine)]
-        self.marketplace_tag_name = options.marketplace_name
+        self.marketplace_tag_name: str = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
         self.marketplace_buckets = options.marketplace_buckets
 
@@ -1162,6 +1163,18 @@ def set_integration_params(build,
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        if integration['name'] == "Core REST API" and build.is_cloud:
+            integration_params[0]['params'] = {  # type: ignore
+                "url": build.base_url,
+                "creds_apikey": {
+                    "identifier": str(build.xdr_auth_id),
+                    "password": build.api_key,
+                },
+                "auth_method": "Standard",
+                "insecure": True,
+                "proxy": False,
+            }
+
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1219,7 +1232,7 @@ def set_module_params(param_conf, integration_params):
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials':
+        if key == 'credentials' or key == "creds_apikey":
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1651,7 +1664,9 @@ def get_non_added_packs_ids(build: Build):
     :param build: the build object
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    compare_against = (
+        'master~1' if build.branch_name == 'master' else 'origin/master'
+    )
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
     if os.getenv('CONTRIB_BRANCH'):
@@ -1743,7 +1758,7 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     return hidden_integrations_names
 
 
-def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str],
+def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str] | None,
                              modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
     """
     Add the turned non-hidden integrations names to the new integrations names list and
@@ -1784,20 +1799,21 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
     return first_added_to_marketplace
 
 
-def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
+def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
     """
-    Return a set of packs to install only in the post-update, and set not to install in pre-update.
+    Return a set of packs to install only in the pre-update, and set to install in post-update.
     Args:
-        modified_packs_names (Set[str]): The set of packs to install.
         build (Build): The build object.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
         (Set[str]): The set of the pack names that should be installed only in post update. (non-hidden packs or packs
                                                 that new to current marketplace)
     """
+    modified_packs_names = get_non_added_packs_ids(build)
+
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
+    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install),
                                                                       build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
@@ -1808,7 +1824,8 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
 
     packs_not_to_install_in_pre_update = set().union(*[packs_with_higher_min_version,
                                                        non_hidden_packs, first_added_to_marketplace])
-    return packs_not_to_install_in_pre_update, non_hidden_packs
+    packs_to_install_in_pre_update = modified_packs_names - packs_not_to_install_in_pre_update
+    return packs_to_install_in_pre_update, non_hidden_packs
 
 
 def get_packs_with_higher_min_version(packs_names: Set[str],
@@ -1880,16 +1897,15 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
-        modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_not_to_install(
-            modified_packs_names, build)
-        packs_to_install = modified_packs_names - packs_not_to_install_in_pre_update
-        build.install_packs(pack_ids=packs_to_install)
+        packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
+        logging.info("Installing packs in pre-update step")
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+        logging.info("Installing packs in post-update step")
         installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)

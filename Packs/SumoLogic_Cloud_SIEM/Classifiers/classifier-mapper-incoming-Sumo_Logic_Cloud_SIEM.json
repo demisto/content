@@ -1,51 +1,901 @@
 {
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "Sumo Logic Insight Mapper",
-	"feed": false,
-	"fromVersion": "6.2.0",
-	"id": "Sumo Logic Insight - Mapper",
-	"mapping": {
-		"Sumo Logic Insight": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Sumo Logic Cloud SIEM Insight Entity": {
+    "description": "Sumo Logic Cloud SIEM Mapper",
+    "feed": false,
+    "fromVersion": "6.2.0",
+    "id": "Sumo Logic Insight - Mapper",
+    "mapping": {
+        "Sumo Logic Insight": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+				"Alert Category": {
+					"simple": "source"
+				},
+				"Alert ID": {
+					"simple": "readableId"
+				},
+				"Assigned User": {
+					"simple": "assignedTo"
+				},
+				"Confidence Score": {
 					"complex": {
 						"filters": [],
-						"root": "entity",
+						"root": "confidence",
 						"transformers": [
 							{
-								"operator": "ConvertKeysToTableFieldFormat"
+								"args": {
+									"withSign": {
+										"value": {
+											"simple": "%"
+										}
+									}
+								},
+								"operator": "toPercent"
 							}
 						]
 					}
 				},
-				"Sumo Logic Cloud SIEM Insight Involved Entities": {
+				"Detected IPs": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_ip"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities",
+						"transformers": []
+					}
+				},
+				"Device MAC Address": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.[].entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_mac"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities.[]",
+						"transformers": []
+					}
+				},
+				"Domain Name": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_domain"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities",
+						"transformers": []
+					}
+				},
+				"External Link": {
 					"complex": {
 						"filters": [],
+						"root": "sumoUrl",
+						"transformers": []
+					}
+				},
+				"External Severity": {
+					"simple": "severity"
+				},
+				"File MD5": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_hash"
+										}
+									}
+								}
+							],
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.value"
+										}
+									},
+									"operator": "stringHasLength",
+									"right": {
+										"value": {
+											"simple": "32"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities",
+						"transformers": []
+					}
+				},
+				"File Names": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_file"
+										}
+									}
+								}
+							]
+						],
 						"root": "involvedEntities",
 						"transformers": [
 							{
-								"operator": "ConvertKeysToTableFieldFormat"
+								"operator": "uniq"
 							}
 						]
 					}
 				},
-				"Sumo Logic Cloud SIEM Insight Signals": {
+				"File SHA1": {
 					"complex": {
-						"filters": [],
-						"root": "signals",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_hash"
+										}
+									}
+								}
+							],
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.value"
+										}
+									},
+									"operator": "stringHasLength",
+									"right": {
+										"value": {
+											"simple": "40"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities.value",
+						"transformers": []
+					}
+				},
+				"File SHA256": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_hash"
+										}
+									}
+								}
+							],
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.value"
+										}
+									},
+									"operator": "stringHasLength",
+									"right": {
+										"value": {
+											"simple": "64"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities.value",
+						"transformers": []
+					}
+				},
+				"Hostnames": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_hostname"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities",
+						"transformers": []
+					}
+				},
+				"Investigation Stage": {
+					"simple": "status.displayName"
+				},
+				"MITRE Tactic ID": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "tags"
+										}
+									},
+									"operator": "containsGeneral",
+									"right": {
+										"value": {
+											"simple": "_mitreAttackTactic"
+										}
+									}
+								}
+							]
+						],
+						"root": "tags",
 						"transformers": [
 							{
-								"operator": "ConvertKeysToTableFieldFormat"
+								"args": {
+									"limit": {},
+									"replaceWith": {},
+									"toReplace": {
+										"value": {
+											"simple": "_mitreAttackTactic:"
+										}
+									}
+								},
+								"operator": "replace"
 							}
 						]
 					}
+				},
+				"MITRE Technique ID": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "tags"
+										}
+									},
+									"operator": "containsGeneral",
+									"right": {
+										"value": {
+											"simple": "_mitreAttackTechnique"
+										}
+									}
+								}
+							]
+						],
+						"root": "tags",
+						"transformers": [
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {},
+									"toReplace": {
+										"value": {
+											"simple": "_mitreAttackTechnique:"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"Process Names": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.[].entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_process"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities.[]",
+						"transformers": []
+					}
+				},
+                "Sumo Logic Cloud SIEM Insight Entity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Sumo Logic Cloud SIEM Insight Involved Entities": {
+                    "complex": {
+                        "filters": [],
+                        "root": "involvedEntities",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Sumo Logic Cloud SIEM Insight Signals": {
+                    "complex": {
+                        "filters": [],
+                        "root": "signals",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+				"Tags": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "tags"
+										}
+									},
+									"operator": "notContainsGeneral",
+									"right": {
+										"value": {
+											"simple": "_mitre"
+										}
+									}
+								}
+							]
+						],
+						"root": "tags",
+						"transformers": []
+					}
+				},
+				"URLs": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_url"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities",
+						"transformers": []
+					}
+				},
+				"Users": {
+					"complex": {
+						"accessor": "value",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_username"
+										}
+									}
+								},
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "involvedEntities.entityType"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "_email"
+										}
+									}
+								}
+							]
+						],
+						"root": "involvedEntities",
+						"transformers": [
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "readableId"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+				"details": {
+					"simple": "description"
 				}
-			}
-		}
-	},
-	"name": "Sumo Logic Insight - Mapper",
-	"type": "mapping-incoming",
-	"version": -1
+            }
+        },
+        "Sumo Logic Signal": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+				"Alert Category": {
+					"simple": "contentType"
+				},
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+				"Alert Name": {
+					"simple": "name"
+				},
+				"Alert Type ID": {
+					"simple": "ruleId"
+				},
+				"Description": {
+					"simple": "summary"
+				},
+				"Destination IP": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "allRecords.[].dstDevice_ip.isInternal"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "false"
+										}
+									}
+								}
+							]
+						],
+						"root": "allRecords.[].dstDevice_ip",
+						"transformers": []
+					}
+				},
+				"Destination Port": {
+					"simple": "allRecords.[].dstPort"
+				},
+				"Detection URL": {
+					"complex": {
+						"accessor": "threat_referenceUrl",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Device External IPs": {
+					"complex": {
+						"accessor": "device_ip",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "allRecords.[].device_ip_isInternal"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "false"
+										}
+									}
+								}
+							]
+						],
+						"root": "allRecords.[]",
+						"transformers": [
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
+				"Device Internal IPs": {
+					"complex": {
+						"accessor": "device_ip",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "allRecords.[].device_ip_isInternal"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "true"
+										}
+									}
+								}
+							]
+						],
+						"root": "allRecords.[]",
+						"transformers": [
+							{
+								"operator": "uniq"
+							}
+						]
+					}
+				},
+				"External Category Name": {
+					"simple": "stage"
+				},
+				"External Link": {
+					"simple": "sumoUrl"
+				},
+                "External Severity": {
+                    "simple": "severity"
+                },
+				"File MD5": {
+					"simple": "allRecords.[].file_hash_md5"
+				},
+				"File Names": {
+					"simple": "allRecords.[].file_basename"
+				},
+				"File SHA1": {
+					"simple": "allRecords.[].file_hash_sha1"
+				},
+				"File SHA256": {
+					"simple": "allRecords.[].file_hash_sha256"
+				},
+				"Hostnames": {
+					"simple": "allRecords.[].srcDevice_hostname_raw"
+				},
+				"MITRE Tactic ID": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "tags"
+										}
+									},
+									"operator": "containsGeneral",
+									"right": {
+										"value": {
+											"simple": "_mitreAttackTactic"
+										}
+									}
+								}
+							]
+						],
+						"root": "tags",
+						"transformers": [
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {},
+									"toReplace": {
+										"value": {
+											"simple": "_mitreAttackTactic:"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"MITRE Technique ID": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "tags"
+										}
+									},
+									"operator": "containsGeneral",
+									"right": {
+										"value": {
+											"simple": "_mitreAttackTechnique"
+										}
+									}
+								}
+							]
+						],
+						"root": "tags",
+						"transformers": [
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {},
+									"toReplace": {
+										"value": {
+											"simple": "_mitreAttackTechnique:"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"Policy Actions": {
+					"complex": {
+						"accessor": "action",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Record Count": {
+					"simple": "recordCount"
+				},
+				"Record Device Event ID": {
+					"complex": {
+						"accessor": "metadata_deviceEventId",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Record Event Product": {
+					"complex": {
+						"accessor": "metadata_product",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Record Event Vendor": {
+					"complex": {
+						"accessor": "metadata_vendor",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Record Message ID": {
+					"complex": {
+						"accessor": "metadata_sourceMessageId",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Record Source Category": {
+					"complex": {
+						"accessor": "metadata_sourceCategory",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Source External IPs": {
+					"complex": {
+						"accessor": "srcDevice_ip",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "allRecords.[].srcDevice_ip_isInternal"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"value": {
+											"simple": "false"
+										}
+									}
+								}
+							]
+						],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+				"Source Port": {
+					"simple": "allRecords.[].srcPort"
+				},
+				"Sumo Logic Cloud SIEM Record Fields": {
+					"simple": "allRecords.[0].fields"
+				},
+                "Sumo Logic Cloud SIEM Signal Entity": {
+                    "simple": "entity"
+                },
+                "Sumo Logic Cloud SIEM Signal Records": {
+                    "complex": {
+                        "filters": [],
+                        "root": "allRecords",
+                        "transformers": []
+                    }
+                },
+				"Tags": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "tags.[]"
+										}
+									},
+									"operator": "notContainsGeneral",
+									"right": {
+										"value": {
+											"simple": "_mitre"
+										}
+									}
+								}
+							]
+						],
+						"root": "tags.[]",
+						"transformers": []
+					}
+				},
+				"Users": {
+					"complex": {
+						"accessor": "user_username_raw",
+						"filters": [],
+						"root": "allRecords.[]",
+						"transformers": []
+					}
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "readableId"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+				"details": {
+					"simple": "description"
+				}
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "External Severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Sumo Logic Insight - Mapper",
+    "type": "mapping-incoming",
+    "version": -1
 }

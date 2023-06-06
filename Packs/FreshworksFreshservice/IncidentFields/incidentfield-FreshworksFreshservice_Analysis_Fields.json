@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FreshworksFreshservice Problem Request"
+    ],
+    "caseInsensitive": true,
+    "cliName": "freshworksfreshserviceanalysisfields",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_freshworksfreshserviceanalysisfields",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FreshworksFreshservice Analysis Fields",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

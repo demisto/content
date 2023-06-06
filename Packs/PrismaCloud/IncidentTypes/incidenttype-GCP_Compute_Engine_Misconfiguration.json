@@ -11,7 +11,7 @@
 	"id": "GCP Compute Engine Misconfiguration",
 	"locked": false,
 	"name": "GCP Compute Engine Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - GCP Compute Engine Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - GCP Compute Engine Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

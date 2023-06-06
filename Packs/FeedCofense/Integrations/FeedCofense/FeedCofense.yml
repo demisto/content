@@ -12,8 +12,7 @@ configuration:
   defaultvalue: 'true'
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -69,13 +68,10 @@ configuration:
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -89,11 +85,9 @@ configuration:
   - malware
   required: false
   type: 15
-- additionalinfo: This value also will be used as an expiration time - all indicators
-    before the given time will not be fetched.
+- additionalinfo: This value also will be used as an expiration time - all indicators before the given time will not be fetched.
   defaultvalue: 3 days
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  hidden: false
   name: fetch_time
   required: false
   type: 0
@@ -113,16 +107,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of context indicators to return. The default
-        value is 10.
+      description: The maximum number of context indicators to return. The default value is 10.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: 3 days
-      description: The time period (previous) for which to fetch indicators. For example,
-        a value of 3 days will return indicators from the previous three days.
+      description: The time period (previous) for which to fetch indicators. For example, a value of 3 days will return indicators from the previous three days.
       isArray: false
       name: from_time
       required: false
@@ -131,7 +123,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.11.54132
   feed: true
   isfetch: false
   longRunning: false

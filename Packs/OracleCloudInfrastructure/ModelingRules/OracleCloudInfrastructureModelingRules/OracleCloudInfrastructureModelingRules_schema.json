@@ -1,0 +1,32 @@
+{
+  "oracle_cloud_infrastructure_raw": {
+    "cloudEventsVersion": {
+      "type": "string",
+      "is_array": false
+    },
+    "contentType": {
+      "type": "string",
+      "is_array": false
+    },
+    "eventId": {
+      "type": "string",
+      "is_array": false
+    },
+    "eventTime": {
+      "type": "string",
+      "is_array": false
+    },
+    "eventType": {
+      "type": "string",
+      "is_array": false
+    },
+    "eventTypeVersion": {
+      "type": "string",
+      "is_array": false
+    },
+    "data": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

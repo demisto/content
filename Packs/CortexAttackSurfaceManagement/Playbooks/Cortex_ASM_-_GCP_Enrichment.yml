@@ -1,7 +1,9 @@
 id: Cortex ASM - GCP Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex ASM - GCP Enrichment
-description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
+description: Given the IP address this playbook enriches GCP and Firewall information.
 starttaskid: "0"
 tasks:
   "0":
@@ -50,8 +52,17 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      GcpIP:
+        complex:
+          root: inputs.RemoteIP
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -66,15 +77,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    scriptarguments:
-      GcpIP:
-        complex:
-          root: inputs.RemoteIP
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
   "2":
     id: "2"
     taskid: ee4812d0-34d9-41e9-8ddc-58390e5371eb
@@ -1121,7 +1123,12 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "29_9_#default#": 0.16,
+      "3_9_#default#": 0.13,
+      "4_9_#default#": 0.25,
+      "5_9_#default#": 0.1
+    },
     "paper": {
       "dimensions": {
         "height": 2205,
@@ -1143,4 +1150,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0

@@ -235,6 +235,27 @@ script:
       name: templateParams
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Text
+      description: Whether message response body type is text or HTML.
+      isArray: false
+      name: bodyType
+      predefined:
+      - HTML
+      - Text
+      required: false
+      secret: false
+    - default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      name: renderBody
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Replies to a mail using Gmail.
     execution: false
@@ -385,6 +406,23 @@ script:
       name: templateParams
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Text
+      description: Whether message response body type is text or HTML.
+      isArray: false
+      name: bodyType
+      predefined:
+      - HTML
+      - Text
+      required: false
+      secret: false
+    - default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      name: renderBody
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email using Gmail.
     execution: false
@@ -442,7 +480,7 @@ script:
     description: Retrieves attachments from a sent Gmail message.
     execution: false
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.49153
+  dockerimage: demisto/google-api-py3:1.0.0.58017
   isfetch: true
   longRunning: false
   longRunningPort: false

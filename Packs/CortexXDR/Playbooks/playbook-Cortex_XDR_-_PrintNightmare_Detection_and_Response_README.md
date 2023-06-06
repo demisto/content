@@ -11,27 +11,33 @@ This playbook includes the following tasks:
 ** Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Account Enrichment - Generic v2.1
+
 * Cortex XDR - Isolate Endpoint
-* Endpoint Enrichment - Generic v2.1
-* Block IP - Generic v2
 * Threat Hunting - Generic
+* Endpoint Enrichment - Generic v2.1
+* Account Enrichment - Generic v2.1
+* Block IP - Generic v2
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
+
 * SearchIncidentsV2
 
 ### Commands
-* enrichIndicators
-* xdr-get-incident-extra-data
+
 * ad-disable-account
+* xdr-get-incident-extra-data
+* enrichIndicators
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -42,9 +48,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | EnrichAutomatically | Whether to run indicators auto enrichment automatically  | True | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Cortex XDR - PrintNightmare Detection and Response](https://raw.githubusercontent.com/demisto/content/5e978763512b656661dc04ad65ce4f388dace3ac/Packs/CortexXDR/doc_files/Cortex_XDR_-_PrintNightmare_Detection_and_Response.png)
+
+![Cortex XDR - PrintNightmare Detection and Response](../doc_files/Cortex_XDR_-_PrintNightmare_Detection_and_Response.png)

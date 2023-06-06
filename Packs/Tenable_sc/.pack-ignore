@@ -2,7 +2,7 @@
 ignore=BA101
 
 [file:Tenable_sc.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126,BA108,BA109,BA124
 
 [file:README.md]
 ignore=RM104
@@ -11,3 +11,4 @@ ignore=RM104
 tenable-sc-get-scan-report
 tenable
 sc
+

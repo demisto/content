@@ -1336,6 +1336,19 @@ outputs:
   description: The endpoint MAC address.
 - contextPath: Endpoint.Vendor
   description: The integration name of the endpoint vendor.
+- contextPath: ActiveDirectory.Computers
+  description: The information about the hostname that was enriched using Active Directory.
+  type: unknown
+- contextPath: ActiveDirectory.Computers.dn
+  description: The computer distinguished name.
+- contextPath: ActiveDirectory.Computers.memberOf
+  description: Groups for which the computer is listed.
+- contextPath: ActiveDirectory.Computers.name
+  description: The computer name.
+- contextPath: Endpoint.Groups
+  description: Groups for which the computer is listed as a member.
+- contextPath: ActiveDirectory.ComputersPageCookie
+  description: An opaque string received in a paged search, used for requesting subsequent entries.
 tests:
 - Field polling test
 - test-domain-indicator
@@ -1361,3 +1374,4 @@ tests:
 - Isolate and unisolate endpoint - test
 - Block IP - Generic V3_Test
 fromversion: 5.0.0
+toversion: 6.7.9

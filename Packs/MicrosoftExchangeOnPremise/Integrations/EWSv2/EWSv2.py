@@ -118,7 +118,6 @@ MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
-
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
@@ -1128,6 +1127,11 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         if value:
             raw_dict[list_dict_field] = [parse_object_as_dict(x) for x in value]
 
+    for list_str_field in ["categories"]:
+        value = getattr(item, list_str_field, None)
+        if value:
+            raw_dict[list_str_field] = value
+
     if getattr(item, 'folder', None):
         raw_dict['folder'] = parse_folder_as_json(item.folder)
         folder_path = item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(
@@ -1140,7 +1144,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         new_dict = {}
         fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
                        'has_attachments', 'importance', 'message_id', 'last_modified_time',
-                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read']
+                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read', 'categories']
 
         # # Docker BC
         # if exchangelib.__version__ == "1.12.0":
@@ -1884,6 +1888,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
     for item in items:
         item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
                                              compact_fields=True)
+
         for attachment in item.attachments:
             if attachment is not None:
                 attachment.parent_item = item
@@ -1893,8 +1898,8 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
                     item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
                                                          compact_fields=True)
                     break
-        items_result.append(item_attachment)
 
+        items_result.append(item_attachment)
     hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
                   'receivedBy', 'author', 'toRecipients', ]
     if exchangelib.__version__ == "1.12.0":  # Docker BC
@@ -2257,13 +2262,14 @@ def get_none_empty_addresses(addresses_ls):
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None, from_mailbox=None,
-               raw_message=None, from_address=None):
+               raw_message=None, from_address=None, renderBody=False):
     if not manualAttachObj:
         manualAttachObj = []
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = get_none_empty_addresses(argToList(bcc))
     cc = get_none_empty_addresses(argToList(cc))
     to = get_none_empty_addresses(argToList(to))
+    render_body = argToBoolean(renderBody)
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
@@ -2279,13 +2285,21 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         'attachments': attachments_names
     }
 
-    return {
+    results = [{
         'Type': entryTypes['note'],
         'Contents': result_object,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sent email', result_object),
-    }
+    }]
+    if render_body:
+        results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['html'],
+            'Contents': htmlBody
+        })
+
+    return results
 
 
 def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
@@ -2358,6 +2372,7 @@ def sub_main():     # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
+
     fix_2010()
     try:
         protocol = get_protocol()

@@ -23,7 +23,6 @@ configuration:
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -33,30 +32,24 @@ configuration:
   type: 8
 - defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: A comma-separated list of dashboard IDs. Can be found by running
-    the "grafana-dashboards-search" command.
+- additionalinfo: A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search" command.
   display: Dashboard IDs to fetch
-  hidden: false
   name: dashboard_id
   required: false
   type: 0
 - additionalinfo: See "help".
   display: Panel ID to fetch
-  hidden: false
   name: panel_id
   required: false
   type: 0
 - display: Alert name to fetch
-  hidden: false
   name: alert_name
   required: false
   type: 0
 - display: States to fetch
-  hidden: false
   name: state
   options:
   - all
@@ -79,8 +72,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: A comma-separated list of dashboard IDs by which to filter the
-        results.
+      description: A comma-separated list of dashboard IDs by which to filter the results.
       isArray: true
       name: dashboard_id
       required: false
@@ -92,15 +84,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Value that is contained in the alert's name by which to filter
-        the results.
+      description: Value that is contained in the alert's name by which to filter the results.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of states by which to filter the results.
-        The options are: all, no_data, paused, alerting, ok, pending, unknown.'
+      description: 'A comma-separated list of states by which to filter the results. The options are: all, no_data, paused, alerting, ok, pending, unknown.'
       isArray: true
       name: state
       required: false
@@ -118,15 +108,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Value that is contained in the dashboard's name by which to filter
-        the results.
+      description: Value that is contained in the dashboard's name by which to filter the results.
       isArray: false
       name: dashboard_name
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of dashboard tags by which to filter the
-        results.
+      description: A comma-separated list of dashboard tags by which to filter the results.
       isArray: true
       name: dashboard_tag
       required: false
@@ -164,8 +152,7 @@ script:
       description: The date the alert was evaluated.
       type: Date
     - contextPath: Grafana.Alert.evalData
-      description: The metric that triggered the alert and made it change to the alerting
-        state.
+      description: The metric that triggered the alert and made it change to the alerting state.
       type: Unknown
     - contextPath: Grafana.Alert.executionError
       description: Alert execution error.
@@ -223,8 +210,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value contained in either the name, login, or email fields
-        by which to filter the results.
+      description: The value contained in either the name, login, or email fields by which to filter the results.
       isArray: false
       name: query
       required: false
@@ -259,8 +245,7 @@ script:
       description: The date the user was last seen.
       type: Date
     - contextPath: Grafana.User.lastSeenAtAge
-      description: When the user was last seen in minutes (m), years (Y), month (M),
-        days (d), etc.
+      description: When the user was last seen in minutes (m), years (Y), month (M), days (d), etc.
       type: String
     - contextPath: Grafana.User.authLabels
       description: User authentication labels
@@ -339,16 +324,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: User login (username). If login is not specified, email must be
-        specified.
+      description: User login (username). If login is not specified, email must be specified.
       isArray: false
       name: login
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'User theme when using Grafana''s interface. Possilble values:
-        "light" or "dark".'
+      description: 'User theme when using Grafana''s interface. Possilble values: "light" or "dark".'
       isArray: false
       name: theme
       predefined:
@@ -363,9 +346,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates a user by user ID. Login or email is mandatory. If you change
-      your own login information, you won't be able to continue querying as your username
-      (login) will change. Login and email should be unique.
+    description: Updates a user by user ID. Login or email is mandatory. If you change your own login information, you won't be able to continue querying as your username (login) will change. Login and email should be unique.
     execution: true
     name: grafana-user-update
   - arguments:
@@ -382,26 +363,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Start time. Time is interpreted as UTC. Values can be in either
-        ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00
-        GMT+3" (ISO date format), "3 days ago" (relative time), 1579039377301 (epoch
-        time).'
+      description: 'Start time. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days ago" (relative time), 1579039377301 (epoch time).'
       isArray: false
       name: time
       required: false
       secret: false
     - default: false
-      description: 'End time. Time is interpreted as UTC. Values can be in either
-        ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00
-        GMT+3" (ISO date format), "3 days ago" (relative time), 1579039377301 (epoch
-        time).'
+      description: 'End time. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days ago" (relative time), 1579039377301 (epoch time).'
       isArray: false
       name: time_end
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of tags by which to filter the dashboards
-        to add the annotation to.
+      description: A comma-separated list of tags by which to filter the dashboards to add the annotation to.
       isArray: true
       name: tags
       required: false
@@ -413,10 +387,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates an annotation in the Grafana database. The dashboard_id and
-      panel_id fields are optional. If they are not specified, a global annotation
-      is created and can be queried in any dashboard that adds the Grafana annotations
-      data source. When creating a region annotation include the time_end property.
+    description: Creates an annotation in the Grafana database. The dashboard_id and panel_id fields are optional. If they are not specified, a global annotation is created and can be queried in any dashboard that adds the Grafana annotations data source. When creating a region annotation include the time_end property.
     execution: false
     name: grafana-annotation-create
     outputs:
@@ -630,8 +601,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of dashboard IDs by which to filter the
-        results.
+      description: A comma-separated list of dashboard IDs by which to filter the results.
       isArray: true
       name: dashboard_ids
       required: false
@@ -644,8 +614,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to only return starred dashboards. Possible values: "true"
-        and "false".'
+      description: 'Whether to only return starred dashboards. Possible values: "true" and "false".'
       isArray: false
       name: starred
       predefined:
@@ -660,8 +629,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Index of the page of results to retrieve, when "limit" acts as
-        page size. Numbering starts at 1.
+      description: Index of the page of results to retrieve, when "limit" acts as page size. Numbering starts at 1.
       isArray: false
       name: page_number
       required: false
@@ -834,13 +802,10 @@ script:
       description: Alert frequency in seconds.
       type: Number
     - contextPath: Grafana.Alert.for
-      description: Once the alert rule has been firing for more than this duration
-        in nanoseconds, then the alert changes to "Alerting". Otherwise it goes from
-        "OK" to "Pending".
+      description: Once the alert rule has been firing for more than this duration in nanoseconds, then the alert changes to "Alerting". Otherwise it goes from "OK" to "Pending".
       type: Number
     - contextPath: Grafana.Alert.evalData
-      description: The metric that triggered the alert and made it change to the "Alerting"
-        state.
+      description: The metric that triggered the alert and made it change to the "Alerting" state.
       type: Unknown
     - contextPath: Grafana.Alert.newStateDate
       description: The date of the alert's new state.
@@ -923,7 +888,7 @@ script:
     - contextPath: Grafana.Organization.address
       description: Organization address.
       type: Unknown
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

@@ -20,37 +20,42 @@ Used Sub-playbooks:
 ***Disclaimer: This playbook does not ensure compliance to SANS regulations.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * IP Enrichment - Generic v2
-* Calculate Severity - Critical Assets v2
 * Account Enrichment - Generic v2.1
+* Calculate Severity - Critical Assets v2
+* SANS - Lessons Learned
 * Isolate Endpoint - Generic V2
 * Block Indicators - Generic v2
-* SANS - Lessons Learned
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * GenerateInvestigationSummaryReport
 
 ### Commands
-* send-mail
-* ad-expire-password
+
 * setIncident
+* ad-expire-password
 * closeInvestigation
-* ad-enable-account
 * ad-disable-account
+* send-mail
+* ad-enable-account
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | username | Username of the user who is suspected of the activity. | incident.username | Required |
-| src | Source endpoint that triggered the incident. | incident.src | Required |
 | traps_endpoint_id | Traps endpoint ID, used for endpoint isolation. | incident.agentid | Optional |
 | logins_count_threshold | The threshold for number of logins, from which the investigation and remediation will start automatically without waiting for the user's reply. Default is 10. | 10 | Optional |
 | severity_threshold | The threshold for the severity value from which an automatic remediation takes place. <br/>Specify the severity number \(default is Critical\):<br/>0 - Unknown<br/>0.5 - Informational<br/>1 - Low<br/>2 - Medium<br/>3 - High<br/>4 - Critical | 4 | Optional |
@@ -73,9 +78,12 @@ This playbook does not use any integrations.
 | Email | Email address to which to send the questions. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Brute Force Investigation - Generic - SANS](../doc_files/Brute_Force_Investigation_-_Generic_-_SANS.png)

@@ -811,6 +811,9 @@ script:
     - contextPath: EWS.Items.isRead
       description: The read status of the email.
       type: String
+    - contextPath: EWS.Items.categories
+      description: The categories of the email.
+      type: unknown
   - arguments:
     - default: false
       description: A CSV list if item IDs.
@@ -907,6 +910,9 @@ script:
     - contextPath: Email.HeadersMap
       description: The headers of the email.
       type: String
+    - contextPath: EWS.Items.categories
+      description: The categories of the email.
+      type: unknown
   - arguments:
     - default: false
       description: The item ID to move.
@@ -1272,6 +1278,16 @@ script:
       description: The contents (body) of the email to be sent.
     - name: htmlBody
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
+    - name: renderBody
+      default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - name: attachIDs
       description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
@@ -1296,7 +1312,6 @@ script:
   type: python
 tests:
 - pyEWS_Test
-- EWS search-mailbox test
 - EWS V2 Send Mail Test
 - EWS V2 Send Mail Test 2
 defaultmapperin: EWS v2-mapper

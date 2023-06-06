@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"The incident field Reporter Email Address was moved to the *CommonTypes* pack. Make sure to update the *CommonTypes* pack to the latest version in order to use that field."}

@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+# pack version: 3.2.0
 import io
 import json
 import traceback
@@ -7,8 +10,7 @@ from typing import Callable, List, Optional, Tuple
 
 import urllib3
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
 from dateutil.parser import parse
 
 ''' IMPORTS '''
@@ -108,10 +110,9 @@ def get_agents_outputs(agents):
 
 class Client(BaseClient):
 
-    def __init__(self, base_url, verify=True, proxy=False, headers=None, global_block=None, block_site_ids=None):
+    def __init__(self, base_url, verify=True, proxy=False, headers=None, block_site_ids=None):
         super().__init__(base_url, verify, proxy, headers=headers)
         self.block_site_ids = block_site_ids
-        self.global_block = global_block == 'None'
 
     def remove_hash_from_blocklist_request(self, hash_id) -> dict:
         body = {
@@ -251,14 +252,31 @@ class Client(BaseClient):
                             include_resolved_param=True):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
+        created_before_parsed = None
+        created_after_parsed = None
+        created_until_parsed = None
+        created_from_parsed = None
+        updated_from_parsed = None
+
+        if created_before:
+            created_before_parsed = dateparser.parse(created_before, settings={'TIMEZONE': 'UTC'})
+        if created_after:
+            created_after_parsed = dateparser.parse(created_after, settings={'TIMEZONE': 'UTC'})
+        if created_until:
+            created_until_parsed = dateparser.parse(created_until, settings={'TIMEZONE': 'UTC'})
+        if created_from:
+            created_from_parsed = dateparser.parse(created_from, settings={'TIMEZONE': 'UTC'})
+        if updated_from:
+            updated_from_parsed = dateparser.parse(updated_from, settings={'TIMEZONE': 'UTC'})
+
         params = assign_params(
             contentHashes=argToList(content_hash),
             mitigationStatuses=argToList(mitigation_status),
-            createdAt__lt=created_before,
-            createdAt__gt=created_after,
-            createdAt__lte=created_until,
-            createdAt__gte=created_from,
-            updatedAt__gte=updated_from,
+            createdAt__lt=created_before_parsed,
+            createdAt__gt=created_after_parsed,
+            createdAt__lte=created_until_parsed,
+            createdAt__gte=created_from_parsed,
+            updatedAt__gte=updated_from_parsed,
             resolved=argToBoolean(resolved) if include_resolved_param else None,
             displayName__like=display_name,
             displayName=display_name,
@@ -461,6 +479,15 @@ class Client(BaseClient):
 
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {}).get('queryId')
+
+    def create_status_request(self, query_id=None):
+        endpoint_url = 'dv/query-status'
+        params = {
+            'query_id': query_id
+        }
+
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
 
     def get_events_request(self, query_id=None, limit=None, cursor=None):
         endpoint_url = 'dv/events'
@@ -1898,16 +1925,26 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
     """
     Get the Alerts from server. Relevant to API Version 2.1
     """
+    created_until = None
+    created_from = None
+
     context_entries = []
     headers = ['AlertId', 'EventType', 'RuleName', 'EndpointName', 'SrcProcName', 'SrcProcPath', 'SrcProcCommandline',
                'SrcProcSHA1', 'SrcProcStartTime', 'SrcProcStorylineId', 'SrcParentProcName',
                'AlertCreatedAt', 'AgentId', 'AgentUUID', 'RuleName']
+
+    if args.get('created_until'):
+        created_until = dateparser.parse(str(args.get('created_until')), settings={'TIMEZONE': 'UTC'})
+
+    if args.get('created_from'):
+        created_from = dateparser.parse(str(args.get('created_from')), settings={'TIMEZONE': 'UTC'})
+
     query_params = assign_params(
         ruleName__contains=args.get('ruleName'),
         incidentStatus=args.get('incidentStatus'),
         analystVerdict=args.get('analystVerdict'),
-        createdAt__lte=args.get('created_until'),
-        createdAt__gte=args.get('created_from'),
+        createdAt__lte=created_until,
+        createdAt__gte=created_from,
         ids=argToList(args.get('alert_ids')),
         limit=int(args.get('limit', 1000)),
         siteIds=args.get('site_ids'),
@@ -2454,6 +2491,40 @@ def get_agent_command(client: Client, args: dict) -> CommandResults:
         raw_response=agents)
 
 
+def get_agent_mac_command(client: Client, args: dict) -> CommandResults:
+    """
+        Get single agent mac details via ID
+    """
+    # Set req list
+    mac_list = []
+
+    # Get arguments
+    agent_ids = argToList(args.get('agent_id'))
+
+    # Make request and get raw response
+    agents = client.get_agent_request(agent_ids)
+
+    if agents:
+        for agent in agents:
+            hostname = agent.get('computerName')
+            for interface in agent.get('networkInterfaces'):
+                int_dict = {}
+                int_dict['hostname'] = hostname
+                int_dict['int_name'] = interface.get('name')
+                int_dict['agent_id'] = agent.get('id')
+                int_dict['ip'] = interface.get('inet')
+                int_dict['mac'] = interface.get('physical')
+
+                mac_list.append(int_dict)
+
+    return CommandResults(
+        outputs_prefix='SentinelOne.MAC',
+        outputs=mac_list,
+        readable_output=tableToMarkdown('SentinelOne MAC Address Results', mac_list),
+        raw_response=agents
+    )
+
+
 def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults, str]:
     """
     Sends a "connect to network" command to all agents matching the input filter.
@@ -2609,7 +2680,23 @@ def create_query(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.Query',
         outputs_key_field='QueryID',
         outputs=context_entries,
-        raw_response=query_id)
+        raw_response=query_id
+    )
+
+
+def get_dv_query_status(client: Client, args: dict) -> CommandResults:
+    query_id = args.get('query_id')
+    status = client.create_status_request(query_id)
+
+    status['QueryID'] = query_id
+
+    return CommandResults(
+        readable_output=tableToMarkdown('SentinelOne Query Status', [status]),
+        outputs_prefix='SentinelOne.Query.Status',
+        outputs_key_field='QueryID',
+        outputs=status,
+        raw_response=status
+    )
 
 
 def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
@@ -2723,9 +2810,8 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raise DemistoException("You must specify a valid SHA1 hash")
 
     try:
-        if not client.global_block:
-            sites = client.block_site_ids.split(',')
-            demisto.debug(f'Sites: {sites}')
+        if sites := client.block_site_ids:
+            demisto.debug(f'Adding sha1 {sha1} to sites {sites}')
             result = client.add_hash_to_blocklists_request(value=sha1, description=args.get('description'),
                                                            os_type=args.get('os_type'), site_ids=sites, source=args.get('source'))
             status = {
@@ -3183,57 +3269,119 @@ def get_mirroring_fields(params):
     }
 
 
-def fetch_incidents(client: Client, params: dict, fetch_limit: int, first_fetch: str,
-                    fetch_threat_rank: int, fetch_site_ids: str):
-    last_run = demisto.getLastRun()
-    last_fetch = last_run.get('time')
+def fetch_threats(client: Client, args):
 
-    # handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
-        if not last_fetch:
-            raise DemistoException('Please provide an initial First fetch timestamp')
-        last_fetch = int(last_fetch.timestamp() * 1000)
+    incidents_threats = []
+    current_fetch = args.get('current_fetch')
 
-    current_fetch = last_fetch
-    incidents = []
-    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
-
-    threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string, site_ids=fetch_site_ids)
+    threats = client.get_threats_request(limit=args.get('fetch_limit'),
+                                         created_after=args.get('last_fetch_date_string'),
+                                         site_ids=args.get('fetch_site_ids'))
     for threat in threats:
         rank = threat.get('rank')
-        threat.update(get_mirroring_fields(params))
+        threat.update(get_mirroring_fields(args))
         try:
             rank = int(rank)
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if IS_VERSION_2_1 or rank >= fetch_threat_rank:
-            incident = threat_to_incident(threat)
+        if IS_VERSION_2_1 or rank >= args.get('fetch_threat_rank'):
+            incident = to_incident('Threat', threat)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = int(date_occurred_dt.timestamp() * 1000)
-            if incident_date > last_fetch:
-                incidents.append(incident)
+            if incident_date > int(args.get('last_fetch')):
+                incidents_threats.append(incident)
 
             if incident_date > current_fetch:
                 current_fetch = incident_date
+
+    return incidents_threats, current_fetch
+
+
+def fetch_alerts(client: Client, args):
+
+    incidents_alerts = []
+    current_fetch = args.get('current_fetch')
+
+    query_params = assign_params(
+        incidentStatus=','.join(args.get('fetch_incidentStatus')),
+        createdAt__gte=args.get('last_fetch_date_string'),
+        limit=args.get('fetch_limit'),
+        siteIds=args.get('fetch_site_ids')
+    )
+
+    alerts, pagination = client.get_alerts_request(query_params)
+    for alert in alerts:
+        severity = alert.get('ruleInfo').get('severity')
+
+        if str(severity) in args.get('fetch_severity'):
+            incident = to_incident('Alert', alert)
+            date_occurred_dt = parse(incident['occurred'])
+            incident_date = int(date_occurred_dt.timestamp() * 1000)
+            if incident_date > args.get('last_fetch'):
+                incidents_alerts.append(incident)
+
+            if incident_date > current_fetch:
+                current_fetch = incident_date
+
+    return incidents_alerts, current_fetch
+
+
+def fetch_handler(client: Client, args):
+
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get('time')
+
+    if last_fetch is None:
+        last_fetch = dateparser.parse(args.get('first_fetch_time'), settings={'TIMEZONE': 'UTC'})
+        if not last_fetch:
+            raise DemistoException('Please provide an initial First fetch timestamp')
+        last_fetch = int(last_fetch.timestamp() * 1000)
+
+    current_fetch = last_fetch
+    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+    args['last_fetch'] = last_fetch
+    args['last_fetch_date_string'] = last_fetch_date_string
+    args['current_fetch'] = current_fetch
+
+    if args.get('fetch_type') == 'Both':
+        alert_incidents, alert_current_fetch = fetch_alerts(client, args)
+        threat_incidents, threat_current_fetch = fetch_threats(client, args)
+
+        if alert_current_fetch > threat_current_fetch:
+            current_fetch = alert_current_fetch
+        else:
+            current_fetch = threat_current_fetch
+
+        incidents = alert_incidents + threat_incidents
+
+    elif args.get('fetch_type') == 'Alerts':
+        incidents, current_fetch = fetch_alerts(client, args)
+    elif args.get('fetch_type') == 'Threats':
+        incidents, current_fetch = fetch_threats(client, args)
 
     demisto.setLastRun({'time': current_fetch})
     demisto.incidents(incidents)
 
 
-def threat_to_incident(threat) -> dict:
-    threat_info = threat.get('threatInfo', {}) if IS_VERSION_2_1 else threat
+def to_incident(type, data):
     incident = {
-        "name": f'Sentinel One Threat: {threat_info.get("classification", "Not classified")}',
-        "labels": [
-            {"type": _type, "value": value if isinstance(value, str) else json.dumps(value)}
-            for _type, value in threat.items()
-        ],
-        "details": json.dumps(threat),
-        "occurred": threat_info.get("createdAt"),
-        "rawJSON": json.dumps(threat),
+        'details': json.dumps(data),
+        'rawJSON': json.dumps(data),
+        'labels': [{'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
+                   for _type, value in data.items()]
     }
+
+    if type == 'Threat':
+        incident_info = data.get('threatInfo', {}) if IS_VERSION_2_1 else data
+        incident['name'] = f'Sentinel One {type}: {incident_info.get("classification", "Not classified")}'
+        incident['occurred'] = incident_info.get('createdAt')
+
+    elif type == 'Alert':
+        incident['name'] = f'Sentinel One {type}: {data.get("ruleInfo").get("name")}'
+        incident['occurred'] = data.get('alertInfo').get('createdAt')
+
     return incident
 
 
@@ -3254,12 +3402,15 @@ def main():
 
     IS_VERSION_2_1 = api_version == '2.1'
 
+    fetch_type = params.get('fetch_type')
     first_fetch_time = params.get('fetch_time', '3 days')
+    fetch_severity = params.get('fetch_severity', [])
+    fetch_incidentStatus = params.get('fetch_incidentStatus', [])
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
-    block_site_ids = params.get('block_site_ids', 'None') or 'None'
-    global_block = block_site_ids == 'None'
+    block_site_ids = argToList(params.get('block_site_ids')) or []
+    mirror_direction = params.get('mirror_direction', None)
 
     headers = {
         'Authorization': 'ApiToken ' + token if token else 'ApiToken',
@@ -3280,6 +3431,7 @@ def main():
             'sentinelone-reactivate-site': reactivate_site_command,
             'sentinelone-list-agents': list_agents_command,
             'sentinelone-get-agent': get_agent_command,
+            'sentinelone-get-agent-mac': get_agent_mac_command,
             'sentinelone-get-groups': get_groups_command,
             'sentinelone-move-agent': move_agent_to_group_command,
             'sentinelone-delete-group': delete_group,
@@ -3288,6 +3440,7 @@ def main():
             'sentinelone-broadcast-message': broadcast_message,
             'sentinelone-get-events': get_events,
             'sentinelone-create-query': create_query,
+            'sentinelone-get-dv-query-status': get_dv_query_status,
             'sentinelone-get-processes': get_processes,
             'sentinelone-shutdown-agent': shutdown_agents,
             'sentinelone-uninstall-agent': uninstall_agent,
@@ -3347,13 +3500,26 @@ def main():
             headers=headers,
             proxy=proxy,
             block_site_ids=block_site_ids,
-            global_block=global_block
         )
 
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch'), first_fetch_time))
         if command == 'fetch-incidents':
-            fetch_incidents(client, params, fetch_limit, first_fetch_time, fetch_threat_rank, fetch_site_ids)
+            if fetch_type:
+                fetch_dict = {
+                    'fetch_type': fetch_type,
+                    'fetch_limit': fetch_limit,
+                    'first_fetch_time': first_fetch_time,
+                    'fetch_threat_rank': fetch_threat_rank,
+                    'fetch_site_ids': fetch_site_ids,
+                    'fetch_incidentStatus': fetch_incidentStatus,
+                    'fetch_severity': fetch_severity,
+                    'mirror_direction': mirror_direction
+                }
+
+                return_results(fetch_handler(client, fetch_dict))
+            else:
+                return_results('Please define what type to fetch. Alerts or Threats.')
 
         else:
             if command in commands['common']:

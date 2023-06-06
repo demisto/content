@@ -45,9 +45,7 @@ configuration:
   name: partition
   required: false
   type: 0
-- additionalinfo: The initial offset to start fetching from, not including the value
-    set (e.g., if 3 is set, the first event that will be fetched will be from offset
-    4). If you want to start from the earliest or latest, type in 'earliest' or 'latest'.
+- additionalinfo: The initial offset to start fetching from, not including the value set (e.g., if 3 is set, the first event that will be fetched will be from offset 4). If you want to start from the earliest or latest, type in 'earliest' or 'latest'.
   display: Offset to fetch messages from (Exclusive)
   name: first_fetch
   required: false
@@ -69,7 +67,6 @@ configuration:
     The maximum number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process takes a long time, consider increasing this value. Default is '1048576'.
   defaultvalue: '1048576'
   display: Maximum number of bytes per message
-  hidden: false
   name: max_bytes_per_message
   required: false
   type: 0
@@ -139,7 +136,7 @@ script:
       secret: false
     - default: false
       defaultValue: Earliest
-      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or an offest number. 
+      description: Message offset to filter by. Acceptable values are 'Earliest', 'Latest', or an offest number.
       isArray: false
       name: offset
       required: false
@@ -190,7 +187,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/confluent-kafka:1.0.0.51043
+  dockerimage: demisto/confluent-kafka:1.0.0.61456
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test

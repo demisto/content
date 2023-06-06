@@ -15,12 +15,10 @@ configuration:
   type: 9
 - display: Maximum number of incidents to fetch every time. Default is 50. Maximum is 500.
   defaultvalue: 50
-  hidden: false
   name: max_fetch
   required: false
   type: 0
 - display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days). Default is 3 days.
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -344,7 +342,7 @@ script:
     description: Adds new content to an existing policy dictionary.
     execution: false
     name: skyhigh-security-policy-dictionary-update
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

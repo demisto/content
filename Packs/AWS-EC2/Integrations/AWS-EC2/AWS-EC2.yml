@@ -80,6 +80,18 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+- display: PrivateLink service URL.
+  name: endpoint_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- display: STS PrivateLink URL.
+  name: sts_endpoint_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -6389,7 +6401,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.49886
+  dockerimage: demisto/boto3py3:1.0.0.52713
   feed: false
   isfetch: false
   longRunning: false

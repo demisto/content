@@ -2075,6 +2075,18 @@ script:
       description: Query string for searching shared drives.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "false"
+      description: 'Whether both My Drive and shared drive items should be included
+          in the results. Possible values: "true" and "false".'
+      isArray: false
+      name: include_items_from_all_drives
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
     - name: user_id
       description: The user's primary email address.
       required: false
@@ -2131,6 +2143,18 @@ script:
       description: The user's primary email address.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "false"
+      description: 'Whether both My Drive and shared drive items should be included
+          in the results. Possible values: "true" and "false".'
+      isArray: false
+      name: include_items_from_all_drives
+      predefined:
+        - "true"
+        - "false"
+      required: false
+      secret: false
     - name: fields
       description: The fields you want included in the response.
       required: false
@@ -3220,7 +3244,7 @@ script:
         - "false"
       required: false
       secret: false
-  dockerimage: demisto/googleapi-python3:1.0.0.50914
+  dockerimage: demisto/googleapi-python3:1.0.0.61820
   feed: false
   isfetch: true
   longRunning: false

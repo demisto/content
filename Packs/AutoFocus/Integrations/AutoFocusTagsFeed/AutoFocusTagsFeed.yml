@@ -2,7 +2,6 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AutoFocusTagsFeed
   version: -1
-defaultEnabled: true
 configuration:
 - display: AutoFocus Endpoint URL
   name: url
@@ -10,7 +9,6 @@ configuration:
   type: 0
   required: true
 - displaypassword: API key
-  hidden: false
   hiddenusername: true
   name: api_key
   required: false
@@ -103,8 +101,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus Tags.
-display: AutoFocus Tags Feed
+description: Deprecated. Use Unit 42 Intel Objects Feed instead. Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus Tags.
+display: AutoFocus Tags Feed (Deprecated)
 name: AutoFocusTagsFeed
 script:
   commands:
@@ -130,5 +128,6 @@ script:
   subtype: python3
   type: python
 tests:
-- AutoFocusTagsFeed-test
+- No tests
 fromversion: 6.5.0
+deprecated: true

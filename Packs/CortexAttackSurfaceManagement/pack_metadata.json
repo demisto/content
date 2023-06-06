@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.6.3",
+    "currentVersion": "1.6.17",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -34,6 +34,10 @@
         "GCP-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "GCP Enrichment and Remediation"
+        },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud by Palo Alto Networks"
         },
         "Nmap": {
             "mandatory": false,
@@ -72,6 +76,7 @@
         "Azure-Enrichment-Remediation",
         "CommonScripts",
         "GCP-Enrichment-Remediation",
+        "PrismaCloud",
         "Nmap",
         "Rapid7_Nexpose",
         "SplunkPy",

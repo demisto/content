@@ -3,3 +3,7 @@ ignore=IM111
 
 [file:MITRE_ATT&CK_v2.json]
 ignore=BA101
+
+[file:MITREIndicatorsByOpenIncidentsv2.yml]
+ignore=BA124
+

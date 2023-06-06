@@ -51,7 +51,6 @@ comment: This script is an example script of how to update an incident in Cherwe
 commonfields:
   id: CherwellUpdateIncident
   version: -1
-enabled: false
 name: CherwellUpdateIncident
 tags: [Cherwell]
 dependson:
@@ -68,8 +67,10 @@ script: '-'
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.58677
 subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

@@ -27,23 +27,17 @@ configuration:
   required: true
   type: 15
 - defaultvalue: '7'
-  display: IP Threshold. Minimum risk score for the IP to be considered malicious
-    (ranges from 1 to 10).
-  hidden: false
+  display: IP Threshold. Minimum risk score for the IP to be considered malicious (ranges from 1 to 10).
   name: ip_threshold
   required: false
   type: 0
 - defaultvalue: '7'
-  display: URL Threshold. Minimum risk score for the URL to be considered malicious
-    (ranges from 1 to 10).
-  hidden: false
+  display: URL Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
   name: url_threshold
   required: false
   type: 0
 - defaultvalue: '5'
-  display: CVE Threshold. Minimum risk score for the URL to be considered malicious
-    (ranges from 1 to 10).
-  hidden: false
+  display: CVE Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
   name: cve_threshold
   required: false
   type: 0
@@ -61,8 +55,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: IBM X-Force Exchange lets you receive threat intelligence about applications,
-  IP addresses, URls and hashes
+description: IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
 display: IBM X-Force Exchange v2
 name: XFE_v2
 script:
@@ -75,9 +68,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default IP threshold, as configured in
-        the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -122,9 +113,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default URL threshold, as configured in
-        the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -237,9 +226,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default URL threshold, as configured in
-        the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
       required: false
@@ -543,7 +530,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

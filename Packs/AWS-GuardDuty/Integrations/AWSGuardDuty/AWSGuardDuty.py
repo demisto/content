@@ -757,6 +757,8 @@ def main():  # pragma: no cover
     first_fetch_time = params.get('first_fetch_time', '10 minutes').strip()
     fetch_limit = arg_to_number(params.get('fetch_limit', 10))
     is_archive = argToBoolean(params.get('is_archive', False))
+    sts_endpoint_url = params.get('sts_endpoint_url') or None
+    endpoint_url = params.get('endpoint_url') or None
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -764,7 +766,7 @@ def main():  # pragma: no cover
 
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
-                               timeout, retries)
+                               timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
         args = demisto.args()
 
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'),

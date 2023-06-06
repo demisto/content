@@ -15,36 +15,41 @@ Used Sub-playbooks:
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Enrichment - Generic v2
-* Isolate Endpoint - Generic V2
+
 * Block Indicators - Generic v2
-* Calculate Severity - Critical Assets v2
 * Account Enrichment - Generic v2.1
+* Isolate Endpoint - Generic V2
+* IP Enrichment - Generic v2
+* Calculate Severity - Critical Assets v2
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * GenerateInvestigationSummaryReport
 
 ### Commands
-* ad-expire-password
+
+* ad-enable-account
+* closeInvestigation
 * send-mail
 * setIncident
-* ad-enable-account
 * ad-disable-account
-* closeInvestigation
+* ad-expire-password
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | username | Username of the user who is suspected of the activity. | incident.username | Required |
-| src | Source endpoint that triggered the incident. | incident.src | Required |
 | traps_endpoint_id | Traps endpoint ID, used for endpoint isolation. | incident.agentid | Optional |
 | logins_count_threshold | The threshold for number of logins, from which the investigation and remediation will start automatically without waiting for the user"s reply. Default is 10. | 10 | Optional |
 | severity_threshold | The threshold for the severity value from which an automatic remediation takes place. Specify the severity number \(default is Critical\): 0 - Unknown, 0.5 - Informational. 1 - Low, 2 - Medium, 3 - High, 4 - Critical | 4 | Optional |
@@ -65,9 +70,12 @@ This playbook does not use any integrations.
 | EDLServerIP | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:<br/>\* The IP address of the web server on which the files are stored.<br/>\* The web server IP address is configured in the integration instance. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Brute Force Investigation - Generic](../doc_files/Brute_Force_Investigation_-_Generic.png)

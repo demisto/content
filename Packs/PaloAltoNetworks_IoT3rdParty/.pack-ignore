@@ -32,4 +32,23 @@ ignore=PB106
 ignore=PB106
 
 [file:PaloAltoNetworksIoT3rdParty.yml]
-ignore=IN145
+ignore=IN145,BA124
+
+[file:SendAllPANWIoTDevicesToServiceNow.yml]
+ignore=BA124
+
+[file:SendPANWIoTDevicesToCiscoISE.yml]
+ignore=BA124
+
+[file:SendAllPANWIoTDevicesToCiscoISE.yml]
+ignore=BA124
+
+[file:GetCiscoISEActiveInstance.yml]
+ignore=BA124
+
+[file:GeneratePANWIoTDeviceTableQueryForServiceNow.yml]
+ignore=BA124
+
+[file:SendAllPANWIoTAssetsToSIEM.yml]
+ignore=BA124
+

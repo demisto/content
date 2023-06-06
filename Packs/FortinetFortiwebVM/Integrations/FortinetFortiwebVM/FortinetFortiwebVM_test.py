@@ -7,6 +7,8 @@ import pytest
 from CommonServerPython import *
 from FortinetFortiwebVM import Client, ClientV1, ClientV2, ErrorMessage, OutputTitle
 
+JSON_MIME_TYPE = "application/json"
+
 
 def load_mock_response(file_name: str) -> str:
     """
@@ -122,7 +124,10 @@ def test_api_fail_protected_hostname_group_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         protected_hostname_group_create_command(mock_client, args)
@@ -171,7 +176,10 @@ def test_input_fail_protected_hostname_group_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         protected_hostname_group_create_command(mock_client, args)
@@ -268,7 +276,10 @@ def test_api_fail_protected_hostname_group_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         protected_hostname_group_update_command(mock_client, args)
@@ -317,7 +328,10 @@ def test_input_fail_protected_hostname_group_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         protected_hostname_group_update_command(mock_client, args)
@@ -410,7 +424,10 @@ def test_api_fail_protected_hostname_group_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         protected_hostname_group_delete_command(mock_client, args)
@@ -591,7 +608,10 @@ def test_api_fail_protected_hostname_member_create_command(
     )
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     requests_mock.get(url=url, json=json_response_get, status_code=HTTPStatus.OK)
     with pytest.raises(DemistoException) as error_info:
@@ -676,7 +696,10 @@ def test_input_fail_protected_hostname_member_create_command(
     )
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     requests_mock.get(url=url, json=json_response_get, status_code=HTTPStatus.OK)
     with pytest.raises(ValueError) as error_info:
@@ -817,7 +840,10 @@ def test_api_fail_protected_hostname_member_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         protected_hostname_member_update_command(mock_client, args)
@@ -915,7 +941,10 @@ def test_input_fail_protected_hostname_member_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         protected_hostname_member_update_command(mock_client, args)
@@ -1021,7 +1050,10 @@ def test_fail_protected_hostname_member_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         protected_hostname_member_delete_command(mock_client, args)
@@ -1203,7 +1235,10 @@ def test_api_fail_ip_list_group_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         ip_list_group_create_command(mock_client, args)
@@ -1316,7 +1351,10 @@ def test_input_fail_ip_list_group_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         ip_list_group_create_command(mock_client, args)
@@ -1404,7 +1442,10 @@ def test_api_fail_ip_list_group_upadte_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         ip_list_group_update_command(mock_client, args)
@@ -1459,7 +1500,10 @@ def test_input_fail_ip_list_group_upadte_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         ip_list_group_update_command(mock_client, args)
@@ -1555,7 +1599,10 @@ def test_fail_ip_list_group_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         ip_list_group_delete_command(mock_client, args)
@@ -1741,7 +1788,10 @@ def test_api_fail_ip_list_member_create_command(
     json_response_get = load_mock_response("ip_list_member/v1_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     requests_mock.get(url=url, json=json_response_get)
 
@@ -1827,7 +1877,10 @@ def test_input_fail_ip_list_member_create_command(
     json_response_get = load_mock_response("ip_list_member/v1_list_success.json")
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     requests_mock.get(url=url, json=json_response_get)
 
@@ -1956,7 +2009,10 @@ def test_api_fail_ip_list_member_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         ip_list_member_update_command(mock_client, args)
@@ -2061,7 +2117,10 @@ def test_fail_ip_list_member_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         ip_list_member_delete_command(mock_client, args)
@@ -2270,7 +2329,10 @@ def test_api_fail_http_content_routing_member_add_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response_get)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {
         "policy_name": "policy",
@@ -2338,7 +2400,10 @@ def test_input_fail_http_content_routing_member_add_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response_get)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {
         "policy_name": "policy",
@@ -2464,7 +2529,10 @@ def test_api_fail_http_content_routing_member_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {"policy_name": "policy", "http_content_routing_policy": "1234", "id": 1}
 
@@ -2551,7 +2619,10 @@ def test_fail_http_content_routing_member_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {"policy_name": "policy", "id": 1}
     with pytest.raises(DemistoException) as error_info:
@@ -2726,7 +2797,10 @@ def test_api_fail_geo_ip_group_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {
         "name": "check",
@@ -2804,7 +2878,10 @@ def test_input_fail_geo_ip_group_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {
         "name": "check",
@@ -2913,7 +2990,10 @@ def test_fail_geo_ip_group_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {
         "name": "check",
@@ -3006,7 +3086,10 @@ def test_fail_geo_ip_group_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {"name": "check"}
     with pytest.raises(DemistoException) as error_info:
@@ -3193,6 +3276,7 @@ def test_api_fail_geo_ip_member_add_command(
         url=post_url,
         json=post_json_response,
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {"group_name": "ron", "countries": "Spain,France"}
     with pytest.raises(DemistoException) as error_info:
@@ -3278,7 +3362,10 @@ def test_fail_geo_ip_member_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         geo_ip_member_delete_command(mock_client, args)
@@ -3778,7 +3865,10 @@ def test_fail_server_policy_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(DemistoException) as error_info:
@@ -3921,7 +4011,10 @@ def test_input_fail_server_policy_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(ValueError) as error_info:
@@ -4074,7 +4167,10 @@ def test_api_fail_server_policy_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(DemistoException) as error_info:
@@ -4162,7 +4258,10 @@ def test_fail_server_policy_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {"name": "check"}
 
@@ -4334,7 +4433,10 @@ def test_api_fail_custom_whitelist_url_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(DemistoException) as error_info:
@@ -4400,7 +4502,10 @@ def test_input_fail_custom_whitelist_url_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(ValueError) as error_info:
@@ -4504,7 +4609,10 @@ def test_api_fail_custom_whitelist_parameter_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         custom_whitelist_parameter_create_command(mock_client, args)
@@ -4574,7 +4682,10 @@ def test_input_fail_custom_whitelist_parameter_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         custom_whitelist_parameter_create_command(mock_client, args)
@@ -4684,7 +4795,10 @@ def test_api_fail_custom_whitelist_cookie_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(DemistoException) as error_info:
@@ -4784,7 +4898,10 @@ def test_api_fail_custom_whitelist_header_field_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         custom_whitelist_header_field_create_command(mock_client, args)
@@ -4847,7 +4964,10 @@ def test_input_fail_custom_whitelist_header_field_create_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         custom_whitelist_header_field_create_command(mock_client, args)
@@ -4986,7 +5106,10 @@ def test_api_fail_custom_whitelist_url_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         custom_whitelist_url_update_command(mock_client, args)
@@ -5058,7 +5181,10 @@ def test_input_fail_custom_whitelist_url_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         custom_whitelist_url_update_command(mock_client, args)
@@ -5194,7 +5320,10 @@ def test_fail_custom_whitelist_parameter_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(DemistoException) as error_info:
         custom_whitelist_parameter_update_command(mock_client, args)
@@ -5262,7 +5391,10 @@ def test_input_fail_custom_whitelist_parameter_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     with pytest.raises(ValueError) as error_info:
         custom_whitelist_parameter_update_command(mock_client, args)
@@ -5393,7 +5525,10 @@ def test_api_fail_custom_whitelist_cookie_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(DemistoException) as error_info:
@@ -5462,7 +5597,10 @@ def test_input_fail_custom_whitelist_cookie_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(ValueError) as error_info:
@@ -5575,7 +5713,10 @@ def test_fail_custom_whitelist_header_field_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(DemistoException) as error_info:
@@ -5655,7 +5796,10 @@ def test_input_fail_custom_whitelist_header_field_update_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
 
     with pytest.raises(ValueError) as error_info:
@@ -5741,7 +5885,10 @@ def test_fail_custom_whitelist_delete_command(
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(
-        url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        url=url,
+        json=json_response,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
     )
     args = {"id": "1"}
 

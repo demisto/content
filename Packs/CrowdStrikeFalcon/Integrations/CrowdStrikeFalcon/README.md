@@ -32,8 +32,15 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
 - Real Time Response - Read and Write
 - Alerts - Read and Write
-- Hosts - Read
 - IOC Manager - Read and Write
+- IOA Exclusions - Read and Write
+- Machine Learning Exclusions - Read and Write
+- Detections - Read and Write
+- Hosts - Read and Write
+- Host Groups - Read and Write
+- Incidents - Read and Write
+- Spotlight Vulnerabilities - Read
+- User Management - Read
 
 ### Incident Mirroring
  
@@ -86,6 +93,7 @@ Searches for devices that match the query.
 | hostname | The host name of the device. | Optional | 
 | platform_name | The platform name of the device. Possible values are: "Windows","Mac", and "Linux". | Optional | 
 | site_name | The site name of the device. | Optional | 
+| extended_data | Whether or not to get additional data about the device. Possible values are: "Yes", "No". | Optional | 
 
 
 #### Context Output
@@ -490,6 +498,7 @@ Sends commands to hosts.
 | full_command | The full command to run. | Required | 
 | scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
 | target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
+| queue_offline | Any commands run against an offline-queued session will be queued up and executed when the host comes online. | Optional | 
 
 
 #### Context Output
@@ -875,6 +884,7 @@ Runs a script on the agent host.
 | host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 | raw | The PowerShell script code to run. | Optional | 
 | timeout | The amount of time to wait before the request times out (in seconds). Maximum is 600 (10 minutes). Default value is 30. | Optional | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 
 #### Context Output
@@ -3530,6 +3540,7 @@ Execute an active responder kill command on a single host.
 | --- | --- | --- |
 | host_id | The host ID in which you would like to kill the given process. | Required | 
 | process_ids | A comma-separated list of process IDs to kill. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3592,6 +3603,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 | host_ids | A comma-separated list of the hosts IDs in which you would like to remove the file. | Required | 
 | file_path | The path to a file or a directoty that you would like to remove. | Required | 
 | os | The operatin system of the hosts given. As the revome command is different in each operatin system, you can choose only one operating system. Possible values are: Windows, Linux, Mac. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3640,6 +3652,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | The host ID in which you would like to get the processes list from. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3699,6 +3712,7 @@ host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | The host ID in which you would like to get the network status and protocol statistics list from. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3759,6 +3773,7 @@ Windows hosts.
 | --- | --- | --- |
 | host_ids | A comma-separated list of the hosts IDs in which you would like to get the registry keys from. | Required | 
 | registry_keys | A comma-separated list of the registy keys, subkeys or value to get. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3825,6 +3840,7 @@ valid only for Windows hosts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_ids | A comma-separated list of the hosts IDs in which you would like to get the list of scheduled tasks from. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3886,6 +3902,7 @@ Gets the RTR extracted file contents for the specified file path.
 | interval_in_seconds | interval between polling. Default is 60 seconds. Must be higher than 10. | Optional | 
 | hosts_and_requests_ids | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
 | SHA256 | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -4273,3 +4290,711 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | CVE-2021-2222 | HIGH | 2021-09-16T15:12:42Z | 1 |
 
 
+### cs-falcon-create-ml-exclusion
+
+***
+Create an ML exclusion.
+
+#### Base Command
+
+`cs-falcon-create-ml-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | Value to match for exclusion. | Required | 
+| excluded_from | A comma-separated list from where to exclude the exclusion. Possible values are: blocking, extraction. | Required | 
+| comment | Comment describing why the exclusions were created. | Optional | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.MLExclusion.id | String | The ML exclusion ID. | 
+| CrowdStrike.MLExclusion.value | String | The ML exclusion value. | 
+| CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
+| CrowdStrike.MLExclusion.value_hash | String | An hash of the value field. | 
+| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
+| CrowdStrike.MLExclusion.groups.id | String | Group's ID that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.MLExclusion.groups.created_by | String | Indicate who created the group. | 
+| CrowdStrike.MLExclusion.groups.created_timestamp | Date | The date when the group was created. | 
+| CrowdStrike.MLExclusion.groups.modified_by | String | Indicate who last modified the group. | 
+| CrowdStrike.MLExclusion.groups.modified_timestamp | Date | The date when the group was last modified. | 
+| CrowdStrike.MLExclusion.applied_globally | Boolean | Whether the exclusion rule applies globally or only to specific entities. | 
+| CrowdStrike.MLExclusion.last_modified | Date | The date when the exclusion rule was last modified. | 
+| CrowdStrike.MLExclusion.modified_by | String | Indicate who last modified the rule. | 
+| CrowdStrike.MLExclusion.created_on | Date | Indicate who created the rule. | 
+| CrowdStrike.MLExclusion.created_by | String | The date when the exclusion rule was created. | 
+
+#### Command example
+```!cs-falcon-create-ml-exclusion value=/demo-test excluded_from=blocking groups=999999```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "MLExclusion": {
+            "applied_globally": false,
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:57:14.853546312Z",
+            "excluded_from": [
+                "blocking"
+            ],
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "last_modified": "2023-03-06T13:57:14.853546312Z",
+            "modified_by": "api-client-id:123456",
+            "regexp_value": "\\/demo-test",
+            "value": "/demo-test",
+            "value_hash": "abcdef123456"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon machine learning exclusion
+>|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | /demo-test | \/demo-test | abcdef123456 | ***values***: blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 |
+
+
+### cs-falcon-update-ml-exclusion
+
+***
+Updates an ML exclusion. At least one argument is required in addition to the ID argument.
+
+#### Base Command
+
+`cs-falcon-update-ml-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the exclusion to update. | Required | 
+| value | Value to match for the exclusion (the exclusion pattern). | Optional | 
+| comment | Comment describing why the exclusions were created. | Optional | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.MLExclusion.id | String | The ML exclusion ID. | 
+| CrowdStrike.MLExclusion.value | String | The ML exclusion value. | 
+| CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
+| CrowdStrike.MLExclusion.value_hash | String | An hash of the value field. | 
+| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
+| CrowdStrike.MLExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.MLExclusion.groups.created_by | String | Indicate who created the group. | 
+| CrowdStrike.MLExclusion.groups.created_timestamp | Date | The date when the group was created. | 
+| CrowdStrike.MLExclusion.groups.modified_by | String | Indicate who last modified the group. | 
+| CrowdStrike.MLExclusion.groups.modified_timestamp | Date | The date when the group was last modified. | 
+| CrowdStrike.MLExclusion.applied_globally | Boolean | Whether the exclusion rule applies globally or only to specific entities. | 
+| CrowdStrike.MLExclusion.last_modified | Date | The date when the exclusion rule was last modified. | 
+| CrowdStrike.MLExclusion.modified_by | String | Indicate who last modified the rule. | 
+| CrowdStrike.MLExclusion.created_on | Date | Indicate who created the rule. | 
+| CrowdStrike.MLExclusion.created_by | String | The date when the exclusion rule was created. | 
+
+#### Command example
+```!cs-falcon-update-ml-exclusion id=524fcaf1cbe93d09fffcf0737139896d comment=demo-comment```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "MLExclusion": {
+            "applied_globally": false,
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:56:25.940685483Z",
+            "excluded_from": [
+                "extraction",
+                "blocking"
+            ],
+            "groups": [
+                {
+                    "assignment_rule": "device_id:",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "524fcaf1cbe93d09fffcf0737139896d",
+            "last_modified": "2023-03-06T13:57:21.57829431Z",
+            "modified_by": "api-client-id:123456",
+            "regexp_value": "\\/demo",
+            "value": "/demo",
+            "value_hash": "53a21a31163cea6582840a4862f776cf"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon machine learning exclusion
+>|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 524fcaf1cbe93d09fffcf0737139896d | /demo | \/demo | 53a21a31163cea6582840a4862f776cf | ***values***: extraction, blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:21.57829431Z | api-client-id:123456 | 2023-03-06T13:56:25.940685483Z | api-client-id:123456 |
+
+
+### cs-falcon-delete-ml-exclusion
+
+***
+Delete the ML exclusions by ID.
+
+#### Base Command
+
+`cs-falcon-delete-ml-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of exclusion IDs to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cs-falcon-delete-ml-exclusion ids=123456```
+
+#### Human Readable Output
+
+>'The machine learning exclusions with IDs '123456' was successfully deleted.'
+
+### cs-falcon-search-ml-exclusion
+
+***
+Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
+
+#### Base Command
+
+### cs-falcon-search-ml-exclusion
+
+***
+Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
+
+#### Base Command
+
+`cs-falcon-search-ml-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
+| value | The value by which the exclusions should be filtered. | Optional | 
+| ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional | 
+| limit | The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied. | Optional | 
+| offset | The offset to start retrieving records from. Applies only if the IDs argument is not supplied. | Optional | 
+| sort | How to sort the retrieved exclusions. Possible values are: applied_globally.asc, applied_globally.desc, created_by.asc, created_by.desc, created_on.asc, created_on.desc, last_modified.asc, last_modified.desc, modified_by.asc, modified_by.desc, value.asc, value.desc. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.MLExclusion.id | String | The ML exclusion ID. | 
+| CrowdStrike.MLExclusion.value | String | The ML exclusion value. | 
+| CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
+| CrowdStrike.MLExclusion.value_hash | String | A hash of the value field. | 
+| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
+| CrowdStrike.MLExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.MLExclusion.groups.created_by | String | Indicate who created the group. | 
+| CrowdStrike.MLExclusion.groups.created_timestamp | Date | The date when the group was created. | 
+| CrowdStrike.MLExclusion.groups.modified_by | String | Indicate who last modified the group. | 
+| CrowdStrike.MLExclusion.groups.modified_timestamp | Date | The date when the group was last modified. | 
+| CrowdStrike.MLExclusion.applied_globally | Boolean | Whether the exclusion rule applies globally or only to specific entities. | 
+| CrowdStrike.MLExclusion.last_modified | Date | The date when the exclusion rule was last modified. | 
+| CrowdStrike.MLExclusion.modified_by | String | Indicate who last modified the rule. | 
+| CrowdStrike.MLExclusion.created_on | Date | Indicate who created the rule. | 
+| CrowdStrike.MLExclusion.created_by | String | The date when the exclusion rule was created. | 
+
+#### Command example
+```!cs-falcon-search-ml-exclusion limit=1```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "MLExclusion": {
+            "applied_globally": false,
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-01T18:51:07.196018144Z",
+            "excluded_from": [
+                "blocking"
+            ],
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "last_modified": "2023-03-01T18:51:07.196018144Z",
+            "modified_by": "api-client-id:123456",
+            "regexp_value": "\\/MosheTest2-432",
+            "value": "/MosheTest2-432",
+            "value_hash": "abcdef123456"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon machine learning exclusions
+>|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | /MosheTest2-432 | \/MosheTest2-432 | abcdef123456 | ***values***: blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 |
+
+
+### cs-falcon-create-ioa-exclusion
+
+***
+Create an IOA exclusion.
+
+#### Base Command
+
+`cs-falcon-create-ioa-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exclusion_name | Name of the exclusion. | Required | 
+| pattern_name | Name of the exclusion pattern. | Optional | 
+| pattern_id | ID of the exclusion pattern. | Required | 
+| cl_regex | Command line regular expression. | Required | 
+| ifn_regex | Image file name regular expression. | Required | 
+| comment | Comment describing why the exclusions were created. | Optional | 
+| description | Exclusion description. | Optional | 
+| detection_json | JSON formatted detection template. | Optional | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOAExclusion.id | String | A unique identifier for the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.name | String | The name of the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.description | String | A description of the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
+| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
+| CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.IOAExclusion.groups.created_by | String | Indicate who created the group. | 
+| CrowdStrike.IOAExclusion.groups.created_timestamp | Date | The date when the group was created. | 
+| CrowdStrike.IOAExclusion.groups.modified_by | String | Indicate who last modified the group. | 
+| CrowdStrike.IOAExclusion.groups.modified_timestamp | Date | The date when the group was last modified. | 
+| CrowdStrike.IOAExclusion.applied_globally | Boolean | Whether the exclusion rule applies globally or only to specific entities. | 
+| CrowdStrike.IOAExclusion.last_modified | Date | The date when the exclusion rule was last modified. | 
+| CrowdStrike.IOAExclusion.modified_by | String | Indicate who last modified the rule. | 
+| CrowdStrike.IOAExclusion.created_on | Date | Indicate who created the rule. | 
+| CrowdStrike.IOAExclusion.created_by | String | The date when the exclusion rule was created. | 
+
+#### Command example
+```!cs-falcon-create-ioa-exclusion exclusion_name=demo-test pattern_id=101010 cl_regex=.* ifn_regex="c:\\\\windows\\\\system32\\\\test.exe" groups=999999```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOAExclusion": {
+            "applied_globally": false,
+            "cl_regex": ".*",
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:57:41.746172897Z",
+            "description": "",
+            "detection_json": "",
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "ifn_regex": "c:\\\\windows\\\\system32\\\\test.exe",
+            "last_modified": "2023-03-06T13:57:41.746172897Z",
+            "modified_by": "api-client-id:123456",
+            "name": "demo-test",
+            "pattern_id": "101010",
+            "pattern_name": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon IOA exclusion
+>|Id|Name|PatternId|IfnRegex|ClRegex|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | demo-test | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 |
+
+
+### cs-falcon-update-ioa-exclusion
+
+***
+Updates an IOA exclusion. At least one argument is required in addition to the ID argument.
+
+#### Base Command
+
+`cs-falcon-update-ioa-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the exclusion to update. | Required | 
+| exclusion_name | Name of the exclusion. | Optional | 
+| pattern_id | ID of the exclusion pattern to update. | Optional | 
+| pattern_name | Name of the exclusion pattern. | Optional | 
+| cl_regex | Command line regular expression. | Optional | 
+| ifn_regex | Image file name regular expression. | Optional | 
+| comment | Comment describing why the exclusions was created. | Optional | 
+| description | Exclusion description. | Optional | 
+| detection_json | JSON formatted detection template. | Optional | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOAExclusion.id | String | A unique identifier for the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.name | String | The name of the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.description | String | A description of the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
+| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
+| CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.IOAExclusion.groups.created_by | String | Indicate who created the group. | 
+| CrowdStrike.IOAExclusion.groups.created_timestamp | Date | The date when the group was created. | 
+| CrowdStrike.IOAExclusion.groups.modified_by | String | Indicate who last modified the group. | 
+| CrowdStrike.IOAExclusion.groups.modified_timestamp | Date | The date when the group was last modified. | 
+| CrowdStrike.IOAExclusion.applied_globally | Boolean | Whether the exclusion rule applies globally or only to specific entities. | 
+| CrowdStrike.IOAExclusion.last_modified | Date | The date when the exclusion rule was last modified. | 
+| CrowdStrike.IOAExclusion.modified_by | String | Indicate who last modified the rule. | 
+| CrowdStrike.IOAExclusion.created_on | Date | Indicate who created the rule. | 
+| CrowdStrike.IOAExclusion.created_by | String | The date when the exclusion rule was created. | 
+
+#### Command example
+```!cs-falcon-update-ioa-exclusion id=123456 description=demo-description```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOAExclusion": {
+            "applied_globally": false,
+            "cl_regex": ".*",
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:46:58.137122925Z",
+            "description": "demo-description",
+            "detection_json": "",
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "ifn_regex": "c:\\\\windows\\\\system32\\\\poqexec\\.exe",
+            "last_modified": "2023-03-06T13:57:49.086458198Z",
+            "modified_by": "api-client-id:123456",
+            "name": "demo",
+            "pattern_id": "101010",
+            "pattern_name": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon IOA exclusion
+>|Id|Name|Description|PatternId|IfnRegex|ClRegex|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | demo | demo-description | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:49.086458198Z | api-client-id:123456 | 2023-03-06T13:46:58.137122925Z | api-client-id:123456 |
+
+
+### cs-falcon-delete-ioa-exclusion
+
+***
+Delete the IOA exclusions by ID.
+
+#### Base Command
+
+`cs-falcon-delete-ioa-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of exclusion IDs to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cs-falcon-delete-ioa-exclusion ids=123456```
+
+#### Human Readable Output
+
+>'The IOA exclusions with IDs '123456' was successfully deleted.'
+
+
+### cs-falcon-search-ioa-exclusion
+
+***
+Get a list of IOA exclusions by specifying their IDs or a filter.
+
+#### Base Command
+
+`cs-falcon-search-ioa-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
+| name | The name by which the exclusions should be filtered. | Optional | 
+| ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name. | Optional | 
+| limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied. | Optional | 
+| offset | The offset of how many exclusions to skip. Default is 0. Applies only if the IDs argument is not supplied. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOAExclusion.id | String | A unique identifier for the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.name | String | The name of the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.description | String | A description of the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
+| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
+| CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
+| CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.IOAExclusion.groups.created_by | String | Indicate who created the group. | 
+| CrowdStrike.IOAExclusion.groups.created_timestamp | Date | The date when the group was created. | 
+| CrowdStrike.IOAExclusion.groups.modified_by | String | Indicate who last modified the group. | 
+| CrowdStrike.IOAExclusion.groups.modified_timestamp | Date | The date when the group was last modified. | 
+| CrowdStrike.IOAExclusion.applied_globally | Boolean | Whether the exclusion rule applies globally or only to specific entities. | 
+| CrowdStrike.IOAExclusion.last_modified | Date | The date when the exclusion rule was last modified. | 
+| CrowdStrike.IOAExclusion.modified_by | String | Indicate who last modified the rule. | 
+| CrowdStrike.IOAExclusion.created_on | Date | Indicate who created the rule. | 
+| CrowdStrike.IOAExclusion.created_by | String | The date when the exclusion rule was created. | 
+
+#### Command example
+```!cs-falcon-search-ioa-exclusion limit=1```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOAExclusion": {
+            "applied_globally": true,
+            "cl_regex": "regex",
+            "created_by": "user@test.com",
+            "created_on": "2023-02-06T16:42:19.29906839Z",
+            "description": "demo description",
+            "detection_json": "",
+            "groups": [],
+            "id": "123456",
+            "ifn_regex": ".*\\\\Windows\\\\System32\\\\choice\\.exe",
+            "last_modified": "2023-02-26T15:30:04.554767735Z",
+            "modified_by": "api-client-id:123456",
+            "name": "My IOA Exclusion",
+            "pattern_id": "101010",
+            "pattern_name": "P_name"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon IOA exclusions
+>|Id|Name|Description|PatternId|PatternName|IfnRegex|ClRegex|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | My IOA Exclusion | demo description | 101010 | P_name | .*\\Windows\\System32\\choice\.exe | choice\s+/m\s+crowdstrike_sample_detection |  | 2023-02-26T15:30:04.554767735Z | api-client-id:123456 | 2023-02-06T16:42:19.29906839Z | user@test.com |
+
+
+### cs-falcon-list-quarantined-file
+
+***
+Get quarantine file metadata by specified IDs or filter.
+
+#### Base Command
+
+`cs-falcon-list-quarantined-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of quarantined file IDs to retrieve. | Optional | 
+| filter | A custom filter by which the retrieve quarantined file should be filtered. | Optional | 
+| sha256 | A comma-separated list of SHA256 hash of the files to retrieve. | Optional | 
+| filename | A comma-separated list of the name of the files to retrieve. | Optional | 
+| state | Filter the retrieved files by state. | Optional | 
+| hostname | A comma-separated list of the hostnames of the files to retrieve. | Optional | 
+| username | A comma-separated list of the usernames of the files to retrieve. | Optional | 
+| limit | Maximum number of IDs to return. Max 5000. Default 50. | Optional | 
+| offset | Starting index of the overall result set from which to return IDs. Default 0. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.QuarantinedFile.id | String | A unique identifier for the quarantined file. | 
+| CrowdStrike.QuarantinedFile.aid | String | The agent identifier of the agent that quarantined the file. | 
+| CrowdStrike.QuarantinedFile.cid | String | The unique identifier for the customer that who the agent. | 
+| CrowdStrike.QuarantinedFile.sha256 | String | The SHA256 hash value of the quarantined file. | 
+| CrowdStrike.QuarantinedFile.paths.path | String | The full path of the quarantined file. | 
+| CrowdStrike.QuarantinedFile.paths.filename | String | The name of the quarantined file. | 
+| CrowdStrike.QuarantinedFile.paths.state | String | The current state of the quarantined file path \(e.g., "purged"\). | 
+| CrowdStrike.QuarantinedFile.state | String | The current state of the quarantined file \(e.g., "unrelease_pending"\). | 
+| CrowdStrike.QuarantinedFile.detect_ids | String | The detection identifiers associated with the quarantined file. | 
+| CrowdStrike.QuarantinedFile.hostname | String | The hostname of the agent that quarantined the file. | 
+| CrowdStrike.QuarantinedFile.username | String | The username associated with the quarantined file. | 
+| CrowdStrike.QuarantinedFile.date_updated | Date | The date the quarantined file was last updated. | 
+| CrowdStrike.QuarantinedFile.date_created | Date | The date the quarantined file was created. | 
+
+#### Command example
+```!cs-falcon-list-quarantined-file limit=1```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "QuarantinedFile": {
+            "aid": "a123456",
+            "cid": "c123456",
+            "date_created": "2022-12-13T14:23:49Z",
+            "date_updated": "2023-03-06T13:47:30Z",
+            "detect_ids": [
+                "ldt:a123456:456789"
+            ],
+            "hostname": "INSTANCE-1",
+            "id": "a123456_sha123456",
+            "paths": [
+                {
+                    "filename": "nc.exe",
+                    "path": "\\Device\\HarddiskVolume3\\Users\\admin\\Downloads\\hamuzim\\test.exe",
+                    "state": "quarantined"
+                }
+            ],
+            "sha256": "sha123456",
+            "state": "deleted",
+            "username": "admin"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon Quarantined File
+>|Id|Aid|Cid|Sha256|Paths|State|DetectIds|Hostname|Username|DateUpdated|DateCreated|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| a123456_sha123456 | a123456 | c123456 | sha123456 | **-**	***path***: \Device\HarddiskVolume3\Users\admin\Downloads\hamuzim\netcat-1.11\nc.exe<br/>	***filename***: nc.exe<br/>	***state***: quarantined | deleted | ***values***: ldt:a123456:456789 | INSTANCE-1 | admin | 2023-03-06T13:47:30Z | 2022-12-13T14:23:49Z |
+
+
+### cs-falcon-apply-quarantine-file-action
+
+***
+Apply action to quarantined file by file IDs or filter.
+
+#### Base Command
+
+`cs-falcon-apply-quarantine-file-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of quarantined file IDs to update. | Optional | 
+| action | Action to perform against the quarantined file. Possible values are: delete, release, unrelease. | Required | 
+| comment | Comment to appear along with the action taken. | Required | 
+| filter | Update files based on a custom filter. | Optional | 
+| sha256 | A comma-separated list of quarantined files SHA256 to update. | Optional | 
+| filename | A comma-separated list of quarantined file names to update. | Optional | 
+| state | Update files based on the state. | Optional | 
+| hostname | A comma-separated list of quarantined file hostnames to update. | Optional | 
+| username | A comma-separated list of quarantined files username to update. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cs-falcon-apply-quarantine-file-action filename=nc.exe action=delete comment=demo-comment```
+#### Human Readable Output
+
+>The Quarantined File with IDs ['a123456_sha123456'] was successfully updated.

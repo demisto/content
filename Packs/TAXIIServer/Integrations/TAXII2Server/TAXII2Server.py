@@ -16,7 +16,7 @@ HTTP_200_OK = 200
 HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
 HTTP_404_NOT_FOUND = 404
-HTTP_406_NOT_ACCEPABLE = 406
+HTTP_406_NOT_ACCEPTABLE = 406
 HTTP_416_RANGE_NOT_SATISFIABLE = 416
 INTEGRATION_NAME: str = 'TAXII2 Server'
 API_ROOT = 'threatintel'
@@ -28,7 +28,6 @@ MEDIA_TYPE_TAXII_V21 = 'application/taxii+json;version=2.1'
 MEDIA_TYPE_STIX_V21 = 'application/stix+json;version=2.1'
 MEDIA_TYPE_TAXII_V20 = 'application/vnd.oasis.taxii+json; version=2.0'
 MEDIA_TYPE_STIX_V20 = 'application/vnd.oasis.stix+json; version=2.0'
-ACCEPT_TYPE_ALL = '*/*'
 TAXII_VER_2_0 = '2.0'
 TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
@@ -53,6 +52,8 @@ XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.Registry: 'windows-registry-key',
     FeedIndicatorType.File: 'file',
     FeedIndicatorType.URL: 'url',
+    FeedIndicatorType.Software: 'software',
+    FeedIndicatorType.AS: 'asn',
 }
 
 XSOAR_TYPES_TO_STIX_SDO = {
@@ -60,7 +61,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
     ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
-    ThreatIntel.ObjectsNames.INTRUSION_SET: 'instruction-set',
+    ThreatIntel.ObjectsNames.INTRUSION_SET: 'intrusion-set',
     ThreatIntel.ObjectsNames.REPORT: 'report',
     ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
     ThreatIntel.ObjectsNames.TOOL: 'tool',
@@ -89,7 +90,9 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'windows-registry-key': FeedIndicatorType.Registry,
     'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
                   FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
-                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry)
+                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry),
+    'software': FeedIndicatorType.Software,
+    'asn': FeedIndicatorType.AS,
 }
 
 HASH_TYPE_TO_STIX_HASH_TYPE = {
@@ -135,7 +138,7 @@ class TAXII2Server:
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
         self.version = version
-        if not (version == TAXII_VER_2_0 or version == TAXII_VER_2_1):
+        if version not in [TAXII_VER_2_0, TAXII_VER_2_1]:
             raise Exception(f'Wrong TAXII 2 Server version: {version}. '
                             f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
         self._collections_resource: list = []
@@ -392,14 +395,28 @@ def get_limited_extensions(limited_iocs, extensions):
     return limited_extensions
 
 
+def remove_spaces_from_header(header: str | list) -> str | list:
+    """ Remove spaces from a header or list of headers.
+
+    Args:
+        header (str | list): A single header or a list of headers to remove spaces from.
+
+    Returns:
+        str | list: The header or list of headers without spaces.
+    """
+    if isinstance(header, list):
+        return [value.replace(' ', '') for value in header]
+    return header.replace(' ', '')
+
+
 def taxii_validate_request_headers(f: Callable) -> Callable:
     @functools.wraps(f)
     def validate_request_headers(*args, **kwargs):
         """
         function for HTTP requests to validate authentication and Accept headers.
         """
-        accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21,
-                          MEDIA_TYPE_STIX_V20, ACCEPT_TYPE_ALL]
+        accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20,
+                          MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V21, MEDIA_TYPE_STIX_V21]
         credentials = request.authorization
 
         if SERVER.auth:
@@ -415,15 +432,23 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
                 return handle_response(HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
 
         request_headers = request.headers
-        if (accept_header := request_headers.get('Accept')) not in accept_headers:
-            return handle_response(HTTP_406_NOT_ACCEPABLE,
+
+        # v2.0 headers has a space while v2.1 does not,
+        # this caused confusion with platforms sometimes sending a header with or without space.
+        # to avoid issues the Accept header is stripped from the spaces before validation.
+        accept_header = request_headers.get('Accept')
+
+        if (not accept_header) or (remove_spaces_from_header(accept_header) not in remove_spaces_from_header(accept_headers)):
+            return handle_response(HTTP_406_NOT_ACCEPTABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
 
-        if SERVER.version == TAXII_VER_2_1 and accept_header in {MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20}:
-            return handle_response(HTTP_406_NOT_ACCEPABLE, {
+        possible_v20_headers = [MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20] + list(remove_spaces_from_header([MEDIA_TYPE_TAXII_V20,
+                                                                                                            MEDIA_TYPE_STIX_V20]))
+        if SERVER.version == TAXII_VER_2_1 and accept_header in possible_v20_headers:
+            return handle_response(HTTP_406_NOT_ACCEPTABLE, {
                 'title': 'Invalid TAXII Header',
                 'description': 'The media type (version=2.0) provided in the Accept header'
                                ' is not supported on TAXII v2.1.'
@@ -795,7 +820,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     if is_sdo:
         stix_object['name'] = xsoar_indicator.get('value')
     else:
-        stix_object['value'] = xsoar_indicator.get('value')
+        stix_object = build_sco_object(stix_object, xsoar_indicator)
 
     xsoar_indicator_to_return = dict()
 
@@ -819,6 +844,55 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     if is_sdo:
         stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
     return stix_object, extension_definition, extensions_dict
+
+
+def build_sco_object(stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Builds a correct JSON object for specific SCO types
+
+    Args:
+        stix_object (Dict[str, Any]): A JSON object of a STIX indicator
+        xsoar_indicator (Dict[str, Any]): A JSON object of an XSOAR indicator
+
+    Returns:
+        Dict[str, Any]: A JSON object of a STIX indicator
+    """
+
+    custom_fields = xsoar_indicator.get('CustomFields', {})
+
+    if stix_object['type'] == 'asn':
+        stix_object['number'] = xsoar_indicator.get('value', '')
+        stix_object['name'] = custom_fields.get('name', '')
+
+    elif stix_object['type'] == 'file':
+        value = xsoar_indicator.get('value')
+        stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
+        for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
+            try:
+                stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
+
+            except KeyError:
+                pass
+
+    elif stix_object['type'] == 'windows-registry-key':
+        stix_object['key'] = xsoar_indicator.get('value')
+        stix_object['values'] = []
+
+        for keyvalue in custom_fields['keyvalue']:
+            if keyvalue:
+                stix_object['values'].append(keyvalue)
+                stix_object['values'][-1]['data_type'] = stix_object['values'][-1]['type']
+                del stix_object['values'][-1]['type']
+            else:
+                pass
+
+    elif stix_object['type'] in ('mutex', 'software'):
+        stix_object['name'] = xsoar_indicator.get('value')
+
+    else:
+        stix_object['value'] = xsoar_indicator.get('value')
+
+    return stix_object
 
 
 def create_extension_definition(object_type, extensions_dict, xsoar_type,
@@ -1213,14 +1287,26 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
     :param extensions: A list of dictionaries representing extension properties to include in the generated STIX objects.
     :return: A list of dictionaries representing the relationships objects, including entityBs objects
     """
+    def get_stix_object_value(stix_ioc):
+        if stix_ioc.get('type') == "file":
+            for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
+                if hash_value := stix_ioc.get("hashes").get(hash_type):
+                    return hash_value
+
+        else:
+            return stix_ioc.get('value') or stix_ioc.get('name')
+
     relationships_list: list[dict[str, Any]] = []
-    iocs_value_to_id = {(stix_ioc.get('value') or stix_ioc.get('name')): stix_ioc.get('id') for stix_ioc in stix_iocs}
+    iocs_value_to_id = {get_stix_object_value(stix_ioc): stix_ioc.get('id') for stix_ioc in stix_iocs}
     search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data') or []
     demisto.debug(f"Found {len(search_relationships)} relationships for {len(iocs_value_to_id)} Stix IOC values.")
 
     relationships_list.extend(create_entity_b_stix_objects(search_relationships, iocs_value_to_id, extensions))
 
     for relationship in search_relationships:
+
+        if demisto.get(relationship, 'CustomFields.revoked'):
+            continue
 
         if not iocs_value_to_id.get(relationship.get('entityB')):
             demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"

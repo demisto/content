@@ -1,6 +1,0 @@
-[file:MS365DefenderCountIncidentCategories.yml]
-ignore=BA124
-
-[file:MS365DefenderUserListToTable.yml]
-ignore=BA124
-

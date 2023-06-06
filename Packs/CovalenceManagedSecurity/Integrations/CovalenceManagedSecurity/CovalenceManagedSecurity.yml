@@ -11,10 +11,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: When fetching incidents for the first time, this parameter specifies
-    in days how far the integration looks for incidents. For instance if set to "2",
-    it will pull all alerts in Covalence for the last 2 days and will create corresponding
-    incidents.
+- additionalinfo: When fetching incidents for the first time, this parameter specifies in days how far the integration looks for incidents. For instance if set to "2", it will pull all alerts in Covalence for the last 2 days and will create corresponding incidents.
   defaultvalue: '1'
   display: First run time range
   name: first_run_time_range
@@ -39,16 +36,14 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: Triggers by triaged alerts from endpoint, cloud, and network security
-  monitoring. Contains event details and easy-to-follow mitigation steps.
+description: Triggers by triaged alerts from endpoint, cloud, and network security monitoring. Contains event details and easy-to-follow mitigation steps.
 display: Covalence Managed Security
 name: Covalence Managed Security
 script:
   commands:
   - arguments:
     - default: false
-      description: if details=true, will return the complete response from Covalence
-        API
+      description: if details=true, will return the complete response from Covalence API
       isArray: false
       name: details
       required: false
@@ -168,7 +163,7 @@ script:
     - contextPath: FESPortal.Org.name
       description: Name
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: true
   longRunning: false
@@ -180,4 +175,3 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
-beta: false

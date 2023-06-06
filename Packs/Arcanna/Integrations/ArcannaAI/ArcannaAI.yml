@@ -24,22 +24,18 @@ configuration:
   type: 8
 - defaultvalue: '-1'
   display: Default Arcanna Job Id
-  hidden: false
   name: default_job_id
   required: false
   type: 0
 - additionalinfo: An array to map between closing reason and Arcanna labels
   defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
   display: A closing reason to Arcanna labels.
-  hidden: false
   name: feature_mapping
   required: false
   type: 12
-- additionalinfo: This field use to signal to Arcanna the status for closing an alert
-    or marking feedback for Arcanna
+- additionalinfo: This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
   defaultvalue: closeReason
   display: Alert closing reason
-  hidden: false
   name: closing_reason_field
   required: false
   type: 0
@@ -170,8 +166,7 @@ script:
     name: arcanna-set-default-job-id
     outputs:
     - contextPath: Arcanna.Default_Job_Id
-      description: An Arcanna  job id used as default(if not specified, default job_id
-        will be used).
+      description: An Arcanna  job id used as default(if not specified, default job_id will be used).
       type: String
   - arguments:
     - default: false
@@ -205,8 +200,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Cortex Indicator if any as a dict containing 3 keys (type, value,
-        source) as mandatory.
+      description: Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
       isArray: false
       name: indicators
       required: false
@@ -233,8 +227,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled
-      with XSOAR fields.
+    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR fields.
     execution: false
     name: arcanna-send-bulk-events
     outputs:
@@ -249,7 +242,7 @@ script:
     - contextPath: Arcanna.FeedbackField
       description: XSOAR field used to signal feedback/label for Arcanna.
       type: String
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: false
   longRunning: false

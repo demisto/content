@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FreshworksFreshservice Ticket",
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Problem Request",
+        "FreshworksFreshservice Release Request"
+    ],
+    "caseInsensitive": true,
+    "cliName": "freshworksfreshservicecategory",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_freshworksfreshservicecategory",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FreshworksFreshservice Category",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

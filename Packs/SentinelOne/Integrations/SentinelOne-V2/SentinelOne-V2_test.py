@@ -18,7 +18,8 @@ def demisto_mocker_2_1(mocker):
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'fetch_type': 'Threats'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'time': 1558541949000})
     mocker.patch.object(demisto, 'incidents')
 
@@ -28,7 +29,8 @@ def demisto_mocker_2_0(mocker):
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.0',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'fetch_type': 'Threats'})
     mocker.patch.object(demisto, 'getLastRun', return_value={'time': 1558541949000})
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'results')
@@ -234,19 +236,34 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
     assert outputs['status'] == 'Removed 1 entries from blocklist'
 
 
-def test_add_hash_to_blocklist(mocker, requests_mock):
+@pytest.mark.parametrize(
+    'block_site_ids, expected_status', [
+        ('site1,site2', 'Added to scoped blocklist'), (None, 'Added to global blocklist')
+    ]
+)
+def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids, expected_status):
     """
+    Given:
+       - Case A: A hash is added to the blocklist with sites
+       - Case B: A hash is added to the blocklist without sites
+
     When:
-        A hash is added to the blocklist
-    Return:
-        CommandResults with outputs set to a dict that has the hash and a response message
+       - running the sentinelone-add-hash-to-blocklist command
+
+    Then:
+       - Case A: make sure the sites are added to the request and output is valid
+       - Case B: make sure there are no site IDs added to the request and output is valid
+
     """
-    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+    blocked_sha_requests_mock = requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []}
+    )
 
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'block_site_ids': block_site_ids})
     mocker.patch.object(demisto, 'command', return_value='sentinelone-add-hash-to-blocklist')
     mocker.patch.object(demisto, 'args', return_value={
         'sha1': 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
@@ -256,11 +273,17 @@ def test_add_hash_to_blocklist(mocker, requests_mock):
 
     main()
 
+    site_ids_body_request = blocked_sha_requests_mock.last_request.json().get('filter').get('siteIds')
+    if block_site_ids:
+        assert site_ids_body_request
+    else:
+        assert not site_ids_body_request
+
     call = sentinelone_v2.return_results.call_args_list
     outputs = call[0].args[0].outputs
 
     assert outputs['hash'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
-    assert outputs['status'] == 'Added to scoped blocklist'
+    assert outputs['status'] == expected_status
 
 
 def test_remove_item_from_whitelist(mocker, requests_mock):
@@ -667,3 +690,76 @@ def test_get_mapping_fields_command():
     result = sentinelone_v2.get_mapping_fields_command()
     assert result.scheme_types_mappings[0].type_name == 'SentinelOne Incident'
     assert list(result.scheme_types_mappings[0].fields.keys()) == ['analystVerdict', 'incidentStatus']
+
+
+def test_get_dv_query_status(mocker, requests_mock):
+    """
+    Given: queryId
+    When: run get_status
+    Then: ensure the context output are as expected and contained the Query Status
+    """
+    requests_mock.get('https://usea1.sentinelone.net/web/api/v2.1/dv/query-status',
+                      json={
+                          'data': {
+                              'QueryID': '1234567890',
+                              'progressStatus': 100,
+                              'queryModeInfo': {
+                                  'lastActivatedAt': '2022-07-19T21:20:54+00:00',
+                                  'mode': 'scalyr'
+                              },
+                              'responseState': 'FINISHED',
+                              'warnings': None
+                          }
+                      })
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-dv-query-status')
+    mocker.patch.object(demisto, 'args', return_value={
+        'query_id': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, 'return_results')
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs.get('QueryID') == '1234567890'
+    assert command_results.outputs.get('responseState') == 'FINISHED'
+
+
+def test_get_agent_mac(mocker, requests_mock):
+    """
+        Given: agentId
+        When: run get_status
+        Then: ensures returned context details are as expected
+    """
+
+    requests_mock.get('https://usea1.sentinelone.net/web/api/v2.1/agents',
+                      json={
+                          'data': [{
+                              'computerName': 'computerName_test',
+                              'id': 'agentId_test',
+                              'networkInterfaces': [{
+                                  'int_name': 'int_name_test',
+                                  'inet': 'ip_test',
+                                  'physical': 'mac_test'
+                              }]
+                          }]
+                      })
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-agent-mac')
+    mocker.patch.object(demisto, 'args', return_value={
+        'agent_id': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, 'return_results')
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs[0].get('agent_id') == 'agentId_test'
+    assert command_results.outputs[0].get('ip') == 'ip_test'
+    assert command_results.outputs[0].get('mac') == 'mac_test'

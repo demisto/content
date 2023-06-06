@@ -13,7 +13,7 @@ stages:
   - prepare-testing-bucket
   - run-instances
   - upload-to-marketplace
-  - are-jobs-realy-done
+  - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 
@@ -47,7 +47,9 @@ variables:
   SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
   TEST_UPLOAD: "true"
-
+  NATIVE_CANDIDATE_IMAGE: "latest"
+  DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"  # change this when the demisto-sdk update-graph command is stable
+  DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
 
 include:
   - local: .gitlab/ci/global.yml
@@ -56,3 +58,4 @@ include:
   - local: .gitlab/ci/instance-test.yml
   - local: .gitlab/ci/sdk-nightly.yml
   - local: .gitlab/ci/miscellaneous.yml
+  - local: .gitlab/ci/test-native-candidate.yml

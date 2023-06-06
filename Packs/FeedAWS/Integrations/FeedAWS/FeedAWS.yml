@@ -129,7 +129,6 @@ configuration:
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -164,7 +163,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.51296
+  dockerimage: demisto/py3-tools:1.0.0.61931
   feed: true
   isfetch: false
   longRunning: false

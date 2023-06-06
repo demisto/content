@@ -944,5 +944,53 @@
         "result": "z"
       }
     ]
+  },
+  {
+    "algorithm": "dt",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "",
+    "mappings": {
+      "field1": {
+        "...='key1' in val": "key1 exists"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "field1": {
+            "key1": "value"
+          }
+        },
+        "result": "key1 exists"
+      }
+    ]
+  },
+  {
+    "algorithm": "dt",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "true",
+    "wildcards": "",
+    "mappings": {
+      "field1": {
+        "...=!('key2' in val)": "key2 doesn't exist"
+      }
+    },
+    "patterns": [
+      {
+        "value": {
+          "field1": {
+            "key1": "value"
+          }
+        },
+        "result": "key2 doesn't exist"
+      }
+    ]
   }
 ]

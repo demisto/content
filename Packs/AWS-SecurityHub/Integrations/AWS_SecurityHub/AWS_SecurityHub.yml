@@ -82,17 +82,29 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+- display: PrivateLink service URL.
+  name: endpoint_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- display: STS PrivateLink URL.
+  name: sts_endpoint_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
   section: Collect
-- defaultvalue: 15 days
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
   required: false
   type: 0
   section: Collect
+  defaultvalue: 15 days
 - display: Incident type
   name: incidentType
   required: false
@@ -104,13 +116,13 @@ configuration:
   type: 15
   section: Collect
   advanced: true
-  options:
-    - Informational
-    - Low
-    - Medium
-    - High
-    - Critical
   additionalinfo: "Severity level of fetched incidents. Could be Informational, Low, Medium, High and Critical. For example, if you set the severity level to Medium, only findings with severity level Medium, High or Critical will be fetched."
+  options:
+  - Informational
+  - Low
+  - Medium
+  - High
+  - Critical
 - display: Additional Incidents Filters
   name: additionalFilters
   required: false
@@ -137,34 +149,34 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming and Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
-  defaultvalue: None
-  display: Incident Mirroring Direction
+- display: Incident Mirroring Direction
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming and Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
   name: mirror_direction
+  type: 15
+  required: false
+  section: Collect
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
-  type: 15
-  section: Collect
+  defaultvalue: None
   hidden:
-    - marketplacev2
+  - marketplacev2
 - display: Resolve findings of closed incidents from XSOAR in AWS Security Hub
-  additionalinfo: After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved
-  defaultvalue: 'true'
+  additionalinfo: 'After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved'
   name: resolve_finding
-  required: false
   type: 8
-  section: Collect
-  hidden:
-    - marketplacev2
-- display: Finding Type
-  additionalinfo: 'You can set the type of the findings to be fetched: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch findings with the finding type that match TTPs.'
-  name: finding_type
-  type: 16
   required: false
+  section: Collect
+  defaultvalue: 'true'
+  hidden:
+  - marketplacev2
+- display: Finding Type
+  name: finding_type
+  additionalinfo: 'You can set the type of the findings to be fetched: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch findings with the finding type that match TTPs.'
+  required: false
+  type: 16
   section: Collect
   advanced: true
   options:
@@ -3398,8 +3410,7 @@ script:
     name: aws-securityhub-update-findings
   - name: get-remote-data
     deprecated: false
-    description: Get remote data from a remote incident. This method does not update
-      the current incident, and should be used for debugging purposes only.
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     execution: false
     arguments:
     - name: id
@@ -3417,7 +3428,7 @@ script:
       secret: false
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-  dockerimage: demisto/boto3py3:1.0.0.49601
+  dockerimage: demisto/boto3py3:1.0.0.52713
   feed: false
   isfetch: true
   ismappable: true
