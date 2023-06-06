@@ -2174,8 +2174,8 @@ def fetch_incidents(client: Client) -> list:
             if datetime.strptime(ticket[client.timestamp_field], DATE_FORMAT) < snow_time_as_date:
                 skipped_incidents += 1
                 demisto.debug(
-                    f"""ServiceNowV2 - -Skipping incident with sys_id={ticket.get('sys_id')} because its creation time is
-                    smaller than the last fetch.""")
+                    f"ServiceNowV2 - -Skipping incident with sys_id={ticket.get('sys_id')} and date="
+                    f"{ticket.get(client.timestamp_field)} because its creation time is smaller than the last fetch.")
                 continue
             parse_dict_ticket_fields(client, ticket)
         except Exception as e:

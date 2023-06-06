@@ -1481,8 +1481,8 @@ def fetch_incidents(client: Client, max_incidents: int,
         if last_fetch:
             if incident_created_time < last_fetch:
                 skip_incidents += 1
-                demisto.debug(
-                    f"ExpanseV2 - Skipping incident with id={i['id']} because its creation time is smaller than the last fetch.")
+                demisto.debug(f"ExpanseV2 - Skipping incident with id={issue.get('id')} and date={incident_created_time} "
+                              "because its creation time is smaller than the last fetch.")
                 continue
         incident_name = issue.get('headline') if 'headline' in issue else issue.get('id')
 
