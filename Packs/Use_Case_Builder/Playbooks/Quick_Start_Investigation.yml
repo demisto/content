@@ -922,7 +922,7 @@ tasks:
       id: 263feb0a-c3dd-49f8-8402-b9c678491cc4
       version: -1
       name: Delete and exclude selected indicators
-      script: 4d65d2f8-4d52-4097-887b-11aefcaab76c
+      scriptName: DeleteAndExcludeIndicators
       type: regular
       description: ""
       iscommand: false
