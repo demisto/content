@@ -163,7 +163,9 @@ def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], ex
 
     Then:
     - If the result contains one item, ensure that the outputs match the expected data.
-    - If the result contains two items, ensure that the first item's readable output provides a token for retrieving the next version and the second item's outputs match the expected data.
+    - If the result contains two items,
+        ensure that the first item's readable output provides a token for retrieving
+        the next version and the second item's outputs match the expected data.
     """
     client = MockClient()
     mocker.patch.object(client, "list_versions_by_function", return_value=test_data)
