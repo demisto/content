@@ -140,8 +140,11 @@ def get_query_results(query_to_run=None):
     priority = args.get('priority', None)
     use_query_cache = args.get('use_query_cache', None)
     use_legacy_sql = args.get('use_legacy_sql', None)
-    google_service_creds = demisto.params()['google_service_creds']
+    google_service_creds = demisto.params().get('credentials_google_service', {}).get(
+        'password') or demisto.params()['google_service_creds']
     job_id = args.get('job_id', None)
+    if not google_service_creds:
+        raise DemistoException('Google service account JSON must be provided.')
     write_disposition = args.get('write_disposition', None)
     query_results = query(query_to_run, project_id, location, allow_large_results, default_dataset,
                           destination_table, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,
