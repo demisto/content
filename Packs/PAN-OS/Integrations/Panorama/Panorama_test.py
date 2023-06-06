@@ -1,10 +1,10 @@
 import json
 import io
+from defusedxml import ElementTree
 import pytest
 import requests_mock
 
 import demistomock as demisto
-from lxml import etree
 from unittest.mock import patch, MagicMock
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
@@ -2492,7 +2492,7 @@ class TestDevices:
 
 def load_xml_root_from_test_file(xml_file: str):
     """Given an XML file, loads it and returns the root element XML object."""
-    return etree.parse(xml_file).getroot()
+    return ElementTree.parse(xml_file).getroot()
 
 
 MOCK_PANORAMA_SERIAL = "111222334455"
