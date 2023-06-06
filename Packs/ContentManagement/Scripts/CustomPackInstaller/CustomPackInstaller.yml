@@ -22,7 +22,6 @@ args:
 commonfields:
   id: CustomPackInstaller
   version: -1
-enabled: false
 name: CustomPackInstaller
 comment: Custom Packs Installer for the Content Management pack.
 outputs:

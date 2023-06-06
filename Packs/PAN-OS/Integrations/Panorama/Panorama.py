@@ -3559,7 +3559,7 @@ def panorama_list_rules_command(args: dict):
         xpath = XPATH_SECURITY_RULES
 
     filters = assign_params(
-        tags=argToList(args.get('tag')),
+        tags=argToList(args.get('tags')),
         action=args.get('action')
     )
     name = args.get('rulename')
