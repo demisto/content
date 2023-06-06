@@ -51,8 +51,7 @@ configuration:
   required: false
   type: 4
   hidden: true
-- displaypassword: 
-  additionalinfo: 
+- displaypassword: Refresh Token
   name:  credentials_refresh_token
   required: false
   hiddenusername: true
