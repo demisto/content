@@ -2659,13 +2659,19 @@ def conversation_history():
         }
 
 
-
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
-    messages = raw_response['messages']
+
+
+    if raw_response['ok'] == True:
+        messages = raw_response['messages']
+    else:
+        error = raw_response['error']
+        return_error(f'You received the following error: {error}')
 
 
     if type(messages) == dict:
         messages = [messages]
+
 
     if type(messages) == list:
         context = []
@@ -2835,6 +2841,104 @@ def conversation_replies():
         'HumanReadable': readable_output,
         'ReadableContentsFormat': formats['markdown']
     })
+
+
+def add_reaction():
+    """
+    This method adds a reaction (emoji) to a message.
+    """
+
+    channel_id = demisto.args()['channel_id']
+    timestamp = demisto.args()['timestamp']
+    name = demisto.args()['name']
+
+
+    body = {
+        "channel": channel_id,
+        "timestamp": timestamp,
+        "name": name
+    }
+
+    raw_response = send_slack_request_sync(CLIENT, 'reactions.add', http_verb="POST", body=body)
+    print(raw_response)
+
+
+def get_reactions():
+    """
+    This method returns a list of all reactions for a single item
+    (file, file comment, channel message, group message, or direct message)
+    """
+
+    channel_id = demisto.args().get('channel_id')
+    timestamp = demisto.args().get('timestamp')
+    full = demisto.args().get('full')
+    file = demisto.args().get('file')
+    file_comment = demisto.args().get('file_comment')
+
+    body = {
+        "channel": channel_id,
+        "timestamp": timestamp,
+        "full": full,
+        "file": file,
+        "file_comment": file_comment
+    }
+
+    raw_response = send_slack_request_sync(CLIENT, 'reactions.get', http_verb="GET", body=body)
+    print(raw_response)
+
+
+def list_reactions():
+    """
+    This method returns a list of all items
+    (file, file comment, channel message, group message, or direct message)
+    with reactions made by the user.
+    """
+
+    count = demisto.args().get('count')
+    cursor = demisto.args().get('cursor')
+    full = demisto.args().get('full')
+    limit = demisto.args().get('limit')
+    page = demisto.args().get('page')
+    team_id = demisto.args().get('team_id')
+    user = demisto.args().get('user')
+
+    body = {
+        "count": count,
+        "cursor": cursor,
+        "full": full,
+        "limit": limit,
+        "page": page,
+        "team_id": team_id,
+        "user":user
+    }
+
+    raw_response = send_slack_request_sync(CLIENT, 'reactions.list', http_verb="GET", body=body)
+    print(raw_response)
+
+
+def remove_reactions():
+    """
+    This method removes a reaction (emoji) from an item
+    (file, file comment, channel message, group message, or direct message).
+    One of file, file_comment, or the combination of channel and timestamp must be specified.
+    """
+
+    name = demisto.args()['name']
+    channel_id = demisto.args().get('channel_id')
+    file = demisto.args().get('file')
+    file_comment = demisto.args().get('file_comment')
+    timestamp = demisto.args().get('timestamp')
+
+    body = {
+        "name": name,
+        "channel": channel_id,
+        "file": file,
+        "file_comment": file_comment,
+        "timestamp": timestamp
+    }
+
+    raw_response = send_slack_request_sync(CLIENT, 'reactions.remove', http_verb="POST", body=body)
+    print(raw_response)
 
 
 def long_running_main():
@@ -3024,7 +3128,11 @@ def main() -> None:
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message,
         'slack-get-conversation-history': conversation_history,
-        'slack-get-conversation-replies': conversation_replies
+        'slack-get-conversation-replies': conversation_replies,
+        'slack-add-reactions': add_reaction,
+        'slack-get-reactions': get_reactions,
+        'slack-list-reactions': list_reactions,
+        'slack-remove-reactions': remove_reactions
     }
 
     command_name: str = demisto.command()
