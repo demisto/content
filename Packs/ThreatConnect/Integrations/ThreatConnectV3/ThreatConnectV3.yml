@@ -1751,23 +1751,16 @@ script:
       type: string
     - description: Add group tags metadata to the results.
       name: include_tags
-      deprecated: true
     - description: Add group security labels metadata to the results.
       name: include_security_labels
-      deprecated: true
     - description: Add group attributes metadata to the results.
       name: include_attributes
-      deprecated: true
     - description: Add group associated groups metadata to the results.
       name: include_associated_groups
-      deprecated: true
     - description: Add group associated indicators metadata to the results.
       name: include_associated_indicators
-      deprecated: true
     - description: Add all group metadata to the results.
       name: include_all_metaData
-      deprecated: true
-      type: bool
     description: Returns all groups.
     name: tc-list-groups
     outputs:
