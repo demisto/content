@@ -960,14 +960,6 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "integrations": "CVE Search v2",
-            "playbookID": "CVE Search v2 - Test"
-        },
-        {
-            "integrations": "CVE Search v2",
-            "playbookID": "cveReputation Test"
-        },
-        {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test",
             "fromversion": "5.0.0"
@@ -5443,7 +5435,8 @@
         },
         {
             "integrations": "CIRCL CVE Search",
-            "playbookID": "CIRCL CVE Search - Test"
+            "playbookID": "CIRCL CVE Search - Test",
+            "fromversion": "6.5.0"
         }
     ],
     "skipped_tests": {
@@ -5928,7 +5921,6 @@
         "Blocklist_de Feed",
         "BruteForceBlocker Feed",
         "CSVFeed",
-        "CVE Search v2",
         "CheckPhish",
         "Cloudflare Feed",
         "Cofense Feed",
