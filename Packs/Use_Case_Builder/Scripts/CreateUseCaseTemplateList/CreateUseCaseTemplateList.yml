@@ -1,12 +1,10 @@
 commonfields:
   id: CreateUseCaseTemplateList
   version: -1
-dockerimage: demisto/python3:3.10.11.57293
+comment: ''
+dockerimage: demisto/python3:3.10.11.61265
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: CreateUseCaseTemplateList
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -16,4 +14,4 @@ tags: []
 type: python
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests

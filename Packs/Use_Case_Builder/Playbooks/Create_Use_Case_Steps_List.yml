@@ -1,15 +1,7 @@
 id: Create Use Case Steps List
-version: 1
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: generator
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Create Use Case Steps List
 starttaskid: "0"
 tasks:
@@ -23,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -96,6 +89,7 @@ tasks:
       scriptName: CreateUseCaseStepsList
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -127,6 +121,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -157,8 +152,8 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Create Use Case Template List
 quiet: true
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests
+description: '""'

@@ -1,15 +1,7 @@
 id: Generate Use Case Builder Lists
-version: 1
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: generator
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Generate Use Case Builder Lists
 starttaskid: "0"
 tasks:
@@ -23,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -55,6 +48,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -83,6 +77,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -114,6 +109,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -145,6 +141,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -181,4 +178,5 @@ outputs: []
 quiet: true
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests
+description: '""'

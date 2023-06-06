@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 import markdown  # type: ignore
 from bs4 import BeautifulSoup
 
-
 ''' MAIN FUNCTION '''
 
 
@@ -45,4 +44,3 @@ def main():
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

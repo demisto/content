@@ -1,15 +1,7 @@
 id: Use Case Builder
-version: 9
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Use Case Builder 4-21
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Use Case Builder
 starttaskid: "0"
 tasks:
@@ -23,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -53,6 +46,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -69,14 +63,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Follow the prompts to start the use case definition process
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -96,8 +90,7 @@ tasks:
         options: []
         optionsarg: []
         fieldassociated: usecasename
-        placeholder: 'Name of Use Case. Example: NGFW Alert, WinEvent Alert, Linux
-          Alert'
+        placeholder: 'Name of Use Case. Example: NGFW Alert, WinEvent Alert, Linux Alert'
         tooltip: Create a unique name. Examples are Malicious IP Block, Expanse Alert
         readonly: false
       - id: "1"
@@ -112,8 +105,7 @@ tasks:
         optionsarg: []
         fieldassociated: usecasepurpose
         placeholder: Purpose and objectives of the Use Case
-        tooltip: Use case is defined by the process, logic, and tasks that are being
-          done as part of an Incident Response process for a specific incident type.
+        tooltip: Use case is defined by the process, logic, and tasks that are being done as part of an Incident Response process for a specific incident type.
         readonly: false
       - id: "2"
         label: ""
@@ -127,14 +119,12 @@ tasks:
         optionsarg: []
         fieldassociated: trigger
         placeholder: Trigger for the Use Case
-        tooltip: A alert from a security tool?  A Phishing Email? A SOC Analyst manually
-          creating an incident?
+        tooltip: A alert from a security tool?  A Phishing Email? A SOC Analyst manually creating an incident?
         readonly: false
       - id: "3"
         label: ""
         labelarg:
-          simple: What are the Incidents fields that are required as part of the incident
-            response process.
+          simple: What are the Incidents fields that are required as part of the incident response process.
         required: true
         gridcolumns: []
         defaultrows: []
@@ -143,14 +133,12 @@ tasks:
         optionsarg: []
         fieldassociated: incidentstructureandmapping
         placeholder: Required Incident Fields for the Use Case
-        tooltip: 'Incidents fields that are required as part of the incident response
-          process Example: Sender, account details, etc.'
+        tooltip: 'Incidents fields that are required as part of the incident response process Example: Sender, account details, etc.'
         readonly: false
       - id: "4"
         label: ""
         labelarg:
-          simple: What is the high level overview for handling the alert? (the incident
-            response process)
+          simple: What is the high level overview for handling the alert? (the incident response process)
         required: true
         gridcolumns: []
         defaultrows: []
@@ -159,8 +147,7 @@ tasks:
         optionsarg: []
         fieldassociated: incidentresponseprocess
         placeholder: Use Case Incident Response Process (supports markdown)
-        tooltip: 'Pro-tip: Use a format like  Step 1)... Step 2) along with bullet
-          points'
+        tooltip: 'Pro-tip: Use a format like  Step 1)... Step 2) along with bullet points'
         readonly: false
       - id: "5"
         label: ""
@@ -174,8 +161,7 @@ tasks:
         optionsarg: []
         fieldassociated: usecaseenrichmentactions
         placeholder: Use Case Enrichment Actions (supports markdown)
-        tooltip: 'Example: Enriching URLs and IP addresses from cloud threat intel
-          services, enriching event with raw data'
+        tooltip: 'Example: Enriching URLs and IP addresses from cloud threat intel services, enriching event with raw data'
         readonly: false
       - id: "6"
         label: ""
@@ -189,14 +175,12 @@ tasks:
         optionsarg: []
         fieldassociated: manualsteps
         placeholder: Use Case Manual Steps (supports markdown)
-        tooltip: 'Example: Blocking IP addresses or carrying out actions that cannot
-          be performed automatically'
+        tooltip: 'Example: Blocking IP addresses or carrying out actions that cannot be performed automatically'
         readonly: false
       - id: "7"
         label: ""
         labelarg:
-          simple: 'Are there any interactive steps with end-user required to complete
-            investigation? '
+          simple: 'Are there any interactive steps with end-user required to complete investigation? '
         required: true
         gridcolumns: []
         defaultrows: []
@@ -205,8 +189,7 @@ tasks:
         optionsarg: []
         fieldassociated: enduserinteractiveness
         placeholder: Use Case End User Interactive Steps (supports markdown)
-        tooltip: 'Example:  Asking a end user questions via email, asking management
-          approval via email'
+        tooltip: 'Example:  Asking a end user questions via email, asking management approval via email'
         readonly: false
       - id: "8"
         label: ""
@@ -220,14 +203,12 @@ tasks:
         optionsarg: []
         fieldassociated: deduplicationlogic
         placeholder: Use Case Deduplication Logic
-        tooltip: 'Example: Find active incidents with similar subject line and sender
-          – close as duplicate if found'
+        tooltip: 'Example: Find active incidents with similar subject line and sender – close as duplicate if found'
         readonly: false
       - id: "9"
         label: ""
         labelarg:
-          simple: List out any tools, data sources or integrations that you need to
-            connect too?
+          simple: List out any tools, data sources or integrations that you need to connect too?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -236,8 +217,7 @@ tasks:
         optionsarg: []
         fieldassociated: thirdpartyintegrations
         placeholder: Use Case Required Integrations
-        tooltip: Any third party tools. Examples are Service Now, Palo Alto Firewalls,
-          etc
+        tooltip: Any third party tools. Examples are Service Now, Palo Alto Firewalls, etc
         readonly: false
       - id: "10"
         label: ""
@@ -254,8 +234,7 @@ tasks:
         tooltip: Custom fields unique to your environment
         readonly: false
       title: Use Case Definition
-      description: This playbook will guide and assist you through the use case development
-        cycle
+      description: This playbook will guide and assist you through the use case development cycle
       sender: ""
       expired: false
       totalanswers: 0
@@ -474,6 +453,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "No":
       - "4"
@@ -492,13 +472,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -524,6 +504,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -594,6 +575,7 @@ tasks:
       scriptName: UseCaseAdoptionMetrics
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -661,6 +643,7 @@ tasks:
       version: -1
       name: Is the XSOAR Rest API enabled?
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -762,6 +745,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -831,6 +815,7 @@ tasks:
       name: Is this a Quick Start Use Case?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -947,6 +932,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -977,6 +963,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1005,6 +992,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -1044,7 +1032,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 06e4c9a7-3bb3-420f-83f7-1ea94546cc1d
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests
+description: '""'

@@ -20,16 +20,13 @@ comment: Converts Markdown to HTML.
 commonfields:
   id: UseCaseBuilderMarkdownToHTML
   version: -1
-dockerimage: demisto/bs4-py3:1.0.0.30051
+dockerimage: demisto/bs4-py3:1.0.0.61447
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: UseCaseBuilderMarkdownToHTML
 outputs:
 - contextPath: MarkdownToHTML.HTML
   description: The HTML converted text.
   type: String
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -41,4 +38,4 @@ tags:
 type: python
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests

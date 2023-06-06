@@ -15,8 +15,7 @@ def main(incident):
         err_msg = f'Encountered an error while running the script: [{e}]'
         return_error(err_msg, error=e)
 
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     incident = demisto.incidents()[0]
     main(incident)
-
-register_module_line('StopUseCaseDevelopmentTimer', 'end', __line__())

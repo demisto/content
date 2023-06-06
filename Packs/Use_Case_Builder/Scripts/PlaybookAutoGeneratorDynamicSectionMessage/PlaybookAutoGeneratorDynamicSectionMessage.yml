@@ -3,19 +3,11 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: ""
-    itemVersion: ""
-    packID: ""
-    packName: Use Case Builder 4-21
-    prevname: ""
-    toServerVersion: ""
-dockerimage: demisto/python3:3.10.11.54132
+comment: ''
+dockerimage: demisto/python3:3.10.11.61265
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: PlaybookAutoGeneratorDynamicSectionMessage
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -26,4 +18,4 @@ tags:
 type: python
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests

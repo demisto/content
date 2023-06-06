@@ -1,15 +1,7 @@
 id: Use Case Builder Playbook Reset
-version: 4
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Use Case Builder 4-21
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Use Case Builder Playbook Reset
 starttaskid: "0"
 tasks:
@@ -23,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -88,6 +81,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -121,4 +115,5 @@ outputs: []
 quiet: true
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests
+description: '""'

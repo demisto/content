@@ -1,15 +1,7 @@
 id: Quick Start Remediation
-version: 1
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: quick start
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Quick Start Remediation
 starttaskid: "0"
 tasks:
@@ -23,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -51,6 +44,7 @@ tasks:
       version: -1
       name: Select Remediation Steps
       type: collection
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -83,8 +77,8 @@ tasks:
         simple: Please select the remediation steps for incident ${incident.id}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -192,6 +186,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -216,18 +211,7 @@ tasks:
       id: fa16140b-76ed-440e-8f78-bc6fb1cd939d
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations
-        that are enabled. The direction of the traffic that will be blocked is determined
-        by the XSOAR user (and set by default to outgoing)\nNote the following:\n-
-        \ some of those integrations require specific parameters to run, which are
-        based on the playbook inputs. Also, certain integrations use FW rules or appended
-        network objects.\n- Note that the appended network objects should be specified
-        in blocking rules inside the system later on. \n\n\nSupported integrations
-        for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n*
-        Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n*
-        Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n*
-        Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n*
-        Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -300,10 +284,7 @@ tasks:
       id: 6f56f320-60f1-4732-853d-9556f39b3424
       version: -1
       name: Block File - Generic v2
-      description: "This playbook is used to block files from running on endpoints.
-        \nThis playbook supports the following integrations:\n- Palo Alto Networks
-        Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise
-        Response\n- Cylance Protect v2\n"
+      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
@@ -369,8 +350,7 @@ tasks:
       id: 914be54f-84df-4766-8851-01d00ed6fe2e
       version: -1
       name: Reset Password
-      description: Sets a new password for an Active Directory user. This command
-        requires a secure connection (SSL,TLS).
+      description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
       script: '|||ad-set-new-password'
       type: regular
       iscommand: true
@@ -406,6 +386,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -476,6 +457,7 @@ tasks:
       name: Block on Firewall
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -519,6 +501,7 @@ tasks:
       name: Block Account
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -561,6 +544,7 @@ tasks:
       id: 384b6b9f-f97a-4ba2-8165-5cdc3b41ac04
       version: -1
       name: Block File
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -606,6 +590,7 @@ tasks:
       version: -1
       name: Notify Teams
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -651,6 +636,7 @@ tasks:
       name: Block Domain
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -694,6 +680,7 @@ tasks:
       version: -1
       name: Reset Password
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -738,6 +725,7 @@ tasks:
       version: -1
       name: Quarantine Device
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -783,6 +771,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -814,6 +803,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -844,6 +834,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -874,6 +865,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -904,6 +896,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -934,6 +927,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -964,6 +958,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -997,7 +992,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 5c451e74-8770-4d37-8af8-4bcd61579dae
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests
+description: '""'

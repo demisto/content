@@ -9,11 +9,10 @@
     "categories": [
         "Utilities"
     ],
-    "tags": ["Use Case Builder"],
-    "useCases": ["Use Case Builder"],
+    "tags": [],
+    "useCases": [],
     "keywords": ["Use Case Builder"],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

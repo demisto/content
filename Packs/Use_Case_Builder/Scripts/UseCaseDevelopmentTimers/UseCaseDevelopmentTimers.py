@@ -1,30 +1,40 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 def stop_all_timers_except_backlog():
-    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasepreproductiontimer", "usecasebuilderdevelopmentdeadline", "usecaseproductiontimer"]
+    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasepreproductiontimer",
+                      "usecasebuilderdevelopmentdeadline", "usecaseproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("pauseTimer", {"timerField": timer})
 
+
 def stop_all_timers_except_production():
-    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasebacklogtimer", "usecasepreproductiontimer"]
+    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasebacklogtimer",
+                      "usecasepreproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("stopTimer", {"timerField": timer})
 
+
 def stop_all_timers_except_development():
-    timers_to_stop = ["usecasetestingtimer", "usecasepreproductiontimer", "usecasebacklogtimer", "usecaseproductiontimer"]
+    timers_to_stop = ["usecasetestingtimer", "usecasepreproductiontimer", "usecasebacklogtimer",
+                      "usecaseproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("pauseTimer", {"timerField": timer})
 
+
 def stop_all_timers_except_testing():
-    timers_to_stop = ["usecasedevelopmenttimer", "usecasepreproductiontimer", "usecasebacklogtimer", "usecaseproductiontimer"]
+    timers_to_stop = ["usecasedevelopmenttimer", "usecasepreproductiontimer", "usecasebacklogtimer",
+                      "usecaseproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("pauseTimer", {"timerField": timer})
+
 
 def stop_all_timers_except_preproduction():
     timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasebacklogtimer", "usecaseproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("pauseTimer", {"timerField": timer})
+
 
 def main(incident):
     stage = incident.get('CustomFields', {}).get('usecasedevelopmentstage')
@@ -34,7 +44,7 @@ def main(incident):
     try:
         if args.get('new') and stage == 'Production':  # checks if the stage was set to production
             demisto.executeCommand("stopTimer", {"timerField": "usecasebuilderdevelopmentdeadline"})
-            demisto.executeCommand("startTimer",{"timerField": "usecaseproductiontimer"})
+            demisto.executeCommand("startTimer", {"timerField": "usecaseproductiontimer"})
             stop_all_timers_except_production()
             demisto.results("The use case development stage has been set to Production!"
                             " timer has been stopped, total use case time in production started.")
@@ -63,7 +73,7 @@ def main(incident):
         err_msg = f'Encountered an error while running the script: [{e}]'
         return_error(err_msg, error=e)
 
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     incident = demisto.incidents()[0]
     main(incident)
-

@@ -1,15 +1,7 @@
 id: Setting up the Use Case Builder Content
-version: 15
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Use Case Builder 4-21
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Setting up the Use Case Builder Content
 starttaskid: "0"
 tasks:
@@ -23,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -172,6 +165,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -214,6 +208,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -282,4 +277,5 @@ outputs: []
 quiet: true
 fromversion: 6.10.0
 tests:
-  - Run all tests
+- Run all tests
+description: '""'
