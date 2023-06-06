@@ -28,7 +28,6 @@ filter
     indicatorsValuesRegistryValue = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryValue", json_extract_scalar("@element", "$.value"), null)), ","),
     indicatorsValuesCommandLine = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ","),
     indicatorsValuesExecutablePath = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ",")
-
     | alter
     xdm.source.cloud.project = id,
     xdm.event.outcome_reason = investigationStatus,
@@ -38,19 +37,14 @@ filter
     xdm.alert.severity = to_string(score),
     xdm.event.log_level = severity,
     xdm.alert.description = description,
-
     xdm.alert.original_alert_id = matchedRulesIds,
     xdm.alert.name = matchedRulesNames,
     xdm.source.user.identity_type = identityType,
     xdm.source.user.username = coalesce(entityValuesUserName, entityValueGuidsUserName, entityValueNamesUserName),
-
     xdm.source.host.device_id = entityIdsDeviceId,
     xdm.source.user.identifier = coalesce(entityIdsAccountIdentifier, entityIdsEmailIdentifier),
-
     xdm.source.host.hostname = coalesce(entityValueGuidsHostname, entityValueNamesHostName, indicatorsValuesHostname),
     xdm.source.user.upn = coalesce(entityValueGuidsUpn, entityValueNamesUpn),
-
-
     xdm.target.resource.id = relatedEntities,
     xdm.alert.subcategory = provenances,
     xdm.source.ipv4 = entityValueIps,
@@ -110,6 +104,7 @@ filter
     xdm.alert.name = threatName,
     xdm.source.ipv6 = arraymap(mDevice, if("@element" contains ":", "@element", null)),
     xdm.source.ipv4 = coalesce(arraymap(mDevice, if("@element" not contains ":", "@element", null)), arraymap(src, if("@element" contains ":", "@element", null)));
+
 filter
     event_type in ("observed_attach_techniques")
 | alter
@@ -147,6 +142,7 @@ filter
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
     xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",");
+
 filter
     event_type in ("audit")
 | alter
