@@ -13,7 +13,6 @@ configuration:
   type: 0
   section: Connect
 - display: API Token
-  hidden: false
   name: api_token
   required: true
   type: 4
@@ -42,14 +41,12 @@ configuration:
   advanced: true
 - defaultvalue: 3 days
   display: The initial time to fetch from
-  hidden: false
   name: fetch_time
   required: false
   type: 0
   section: Collect
 - defaultvalue: ALL
   display: Fetch only incidents with forensics
-  hidden: false
   name: has_forensics
   options:
   - 'True'

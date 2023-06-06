@@ -11,7 +11,6 @@ configuration:
 - additionalinfo: The Palo Alto Networks product name to fetch indicators for, such as "PAN-OS"
   defaultvalue: PAN-OS
   display: Fetch indicator product name
-  hidden: false
   name: fetch_product_name
   required: false
   type: 0
