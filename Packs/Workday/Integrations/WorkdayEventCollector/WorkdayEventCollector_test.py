@@ -27,7 +27,8 @@ class TestFetchActivity:
                              headers={
                                  'Accept': 'application/json',
                                  'Content-Type': 'application/json'
-                             })
+                             },
+                             max_fetch=25000)
 
     @staticmethod
     def create_response_by_limit(from_date, to_date, offset, user_activity_entry_count=False, limit=1):
@@ -104,7 +105,8 @@ class TestFetchActivity:
         """
         from WorkdayEventCollector import remove_duplicated_activity_logging
         loggings = self.create_response_with_duplicates(*args)
-        activity_loggings, last_fetched_loggings_ids = remove_duplicated_activity_logging(loggings, last_run, time_to_check)
+        activity_loggings, last_fetched_loggings_ids = remove_duplicated_activity_logging(loggings, last_run,
+                                                                                          time_to_check)
         assert len(last_fetched_loggings_ids) == len_of_last_loggings
         assert len(activity_loggings) == len_of_activity_loggings
 
@@ -206,3 +208,12 @@ class TestFetchActivity:
         assert new_last_run.get('last_fetch_time') == '2023-04-15T07:00:00Z'
         assert set(new_last_run.get('last_fetched_loggings_tuples')) == {('2', '2023-04-15T07:00:00Z'),
                                                                          ('3', '2023-04-15T07:00:00Z')}
+
+    @pytest.mark.parametrize("max_fetch, instance_returned", [(6000, 1), (15000, 2), (60000, 6)])
+    def test_instance_returned_request(self, mocker, max_fetch, instance_returned):
+        self.client.max_fetch = max_fetch
+        http_request = mocker.patch.object(Client, 'http_request')
+        self.client.get_activity_logging_request(from_date='2023-04-15T07:00:00Z',
+                                                 to_date='2023-04-15T08:00:00Z')
+        params_sent = http_request.call_args_list[0][1].get('params', {})
+        assert params_sent.get('instancesReturned') == instance_returned

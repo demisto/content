@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
+import math
 from typing import Tuple
 
 # Disable insecure warnings
@@ -33,12 +34,13 @@ class Client(BaseClient):
         :param proxy (bool): specifies if to use XSOAR proxy settings.
         """
 
-    def __init__(self, base_url, token_url, verify, proxy, headers, client_id, client_secret, refresh_token):
+    def __init__(self, base_url, token_url, verify, proxy, headers, client_id, client_secret, refresh_token, max_fetch):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
         self.token_url = token_url
+        self.max_fetch = max_fetch
 
     def get_access_token(self):
         """
@@ -88,10 +90,11 @@ class Client(BaseClient):
         Returns:
             activity loggings returned from Workday API.
         """
+        instance_returned = math.ceil(self.max_fetch / 10000)
         params = {"from": from_date,
                   "to": to_date,
                   "limit": limit,
-                  "instancesReturned": 1,
+                  "instancesReturned": instance_returned,
                   "offset": offset,
                   "returnUserActivityEntryCount": user_activity_entry_count}
         demisto.debug(f'params sent to Workday API are {str(params)}')
@@ -311,7 +314,8 @@ def main() -> None:  # pragma: no cover
             headers={
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            })
+            },
+            max_fetch=max_fetch)
 
         if command == 'test-module':
             return_results(test_module(client))

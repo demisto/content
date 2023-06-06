@@ -58,7 +58,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
+- additionalinfo: The maximum number of audit logs to retrieve for each event type. Large amount of events can cause preformance issues.
   defaultvalue: '1000'
   display: Max events per fetch
   hidden: false
