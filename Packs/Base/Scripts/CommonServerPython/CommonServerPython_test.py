@@ -4277,10 +4277,13 @@ def test_script_return_results_execution_metrics_command_results(mocker):
         CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
         CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
         {'MockContext': 1, "Type": 19},
-        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 1},
     ]
     return_results(mock_command_results)
-    assert demisto_results_mock.call_count == 1
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            assert args["Type"] != 19
+    assert demisto_results_mock.call_count == 2
 
 
 def test_integration_return_results_execution_metrics_command_results(mocker):
@@ -4303,6 +4306,16 @@ def test_integration_return_results_execution_metrics_command_results(mocker):
         {'MockContext': 1, "Type": 19},
     ]
     return_results(mock_command_results)
+    execution_metrics_entry_found = False
+    for call_args in demisto_results_mock.call_args_list:
+        if execution_metrics_entry_found:
+            break
+        for args in call_args.args:
+            if execution_metrics_entry_found:
+                break
+            execution_metrics_entry_found = args["Type"] != 19
+
+    assert execution_metrics_entry_found
     assert demisto_results_mock.call_count == 3
 
 
