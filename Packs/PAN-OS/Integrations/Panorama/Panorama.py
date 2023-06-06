@@ -6951,7 +6951,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
         'type': 'config',
         'xpath': xpath,
         'key': API_KEY,
-        'element': f'<profile-setting><profiles>{element}</profiles></profile-setting>'
+        'element': f'<profile-setting><profiles>{rule_profiles}</profiles></profile-setting>'
     }
 
     result = http_request(URL, 'POST', params=params)
