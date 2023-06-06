@@ -3458,90 +3458,23 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 
 ''' Security Rules Managing '''
 
-
-def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')) -> str | list | None:
+def unsafe_dict_get(dict_object, keys, default_return_value=None, return_type=None, recurse_lists=True):
     """
-    Takes a dictionary converted from XML and a key and recursively "digs" through all the nested dicts,
-    using the subkeys only if needed, until it finds a non-dict value.
-    If it hits a list it will return a list of recursive calls of the list's elements.
-
-    For example:
-
-    In this case since one of the subkeys are in the sub dict, it will use it:
-    >>> xml_dict = {
-    ...     'key': {
-    ...         'random': 'foo',
-    ...         'subkey1': 'value'
-    ...     }
-    ... }
-    >>> xml_get(xml_dict, 'key', subkeys=('subkey1', 'subkey2'))
-    'value'
-
-    When none of the subkeys are in the sub dict it will pick a random key that does not begin with "@":
-    >>> xml_dict = {
-    ...     'key': {
-    ...         '@xml_attr': 'foo',
-    ...         'random': 'value'
-    ...     }
-    ... }
-    >>> xml_get(xml_dict, 'key', subkeys=('subkey1', 'subkey2'))
-    'value'
-
-    When a list is found it will return a list of recursive calls of the list's elements:
-    >>> xml_dict = {
-    ...     'key': [
-    ...         {
-    ...             'random': 'foo',
-    ...             'subkey1': 'value1'
-    ...         },
-    ...         {
-    ...             '@xml_attr': 'foo',
-    ...             'random': 'value2'
-    ...         }
-    ...     ]
-    ... }
-    >>> xml_get(xml_dict, 'key', subkeys=('subkey1', 'subkey2'))
-    ['value1', 'value2']
+    Retrieves a value from a nested dictionary using a list of keys.
 
     Args:
-        xml_dict (dict | Any): _description_
-        key (Any): _description_
-        subkeys (tuple, optional): _description_. Defaults to ('member', '#text', '@name').
+        dict_object (dict): The dictionary object from which to retrieve the value.
+        keys (list): A list of keys representing the path to the desired value in the dictionary.
+        default_return_value (optional): The value to return if the desired value is not found. Default is None.
+        return_type (optional): The expected type of the value to be returned. If the retrieved value is not of this type,
+                                the default_return_value will be returned instead. Default is None.
+        recurse_lists (optional): Specifies whether to recursively search for the value in nested lists. If True and a list is
+                              encountered during traversal, the function will apply itself to each item in the list using
+                              the remaining keys. Default is True.
 
     Returns:
-        _type_ (str, list, None): _description_
-    """
+        The value retrieved from the dictionary or the default_return_value if the value is not found or the type does not match.
 
-    if not isinstance(xml_dict, dict):
-        return xml_dict             # type: ignore[return-value]
-
-    value = xml_dict.get(key)
-
-    if isinstance(value, dict):
-        return next(
-            (xml_get(value, sub, subkeys)
-             for sub in subkeys
-             if sub in value),
-            None
-        ) or next(
-            (xml_get(value, k)
-             for k in value.keys()
-             if not str(k).startswith('@')),
-            None
-        )
-    if isinstance(value, list):
-        return [
-            xml_get({0: item}, 0, subkeys)
-            for item in value
-        ]
-
-    return value
-
-
-def dict_get(dict_object, keys, default_return_value=None, return_type=None, recursive=True):
-    """
-    Get a value from a dictionary.
-    
     """
     return_value = dict_object
 
@@ -3549,9 +3482,15 @@ def dict_get(dict_object, keys, default_return_value=None, return_type=None, rec
         try:
             return_value = return_value[key]
         except (KeyError, TypeError, IndexError, AttributeError):
-            if recursive and isinstance(return_value, list):
-                return [dict_get(item, keys[i:], default_return_value, return_type, recursive)
-                        for item in return_value]
+            if recurse_lists and isinstance(return_value, list):
+                sub_list = [
+                    elem for item in return_value
+                    if (elem := unsafe_dict_get(
+                                    item, keys[i:], default_return_value, return_type, recurse_lists
+                                    )) != default_return_value
+                ] or default_return_value
+                
+                return sub_list
             break
         
     if return_type and not isinstance(return_value, return_type):
@@ -3562,8 +3501,8 @@ def dict_get(dict_object, keys, default_return_value=None, return_type=None, rec
 
 def prettify_rule(rule: dict):
 
-    def rule_get(*path: str, from_dict: dict = rule, return_type = (str, list)):
-        return dict_get(from_dict, keys = path+('member',),  return_type = return_type)
+    def rule_get(*path: str, default_return_value=None, from_dict: dict = rule, return_type = (str, list)):
+        return unsafe_dict_get(from_dict, keys = path+('member',), default_return_value=default_return_value, return_type = return_type)
     
     parse_pan_os_un_committed_data(rule, [])
 
@@ -3578,13 +3517,13 @@ def prettify_rule(rule: dict):
         'GroupTag': rule_get('group-tag'),
         'LogForwardingProfile': rule_get('log-setting'),
         'NegateSource': rule_get('negate-source'),
-        'SecurityProfileGroup': rule_get('profile-setting', 'group'),
+        'SecurityProfileGroup': rule_get('profile-setting', 'group', return_type=str),
         'SecurityProfile': {
-                key: rule_get(from_dict=profiles)
-                for key in profiles.keys()
+                key: rule_get(from_dict=value)
+                for key, value in profiles.items()
                 if not str(key).startswith('@')
             }
-            if (profiles := dict_safe_get(rule, ('profile-setting', 'profiles'), dict))
+            if (profiles := rule_get('profile-setting', 'profiles', return_type=dict))
             else None,
         'Target': {
             'devices': rule_get('target', 'devices', 'entry', '@name'),
@@ -3609,8 +3548,11 @@ def prettify_rule(rule: dict):
             'LogForwarding': rule_get("log-setting"),
             'Schedule': rule_get("schedule"),
             # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
-            'QoSMarking': next(key for key in qos.keys() if not key.startswith('@')) if isinstance(qos := dict_safe_get(rule, ('qos', 'marking')), dict) else qos,
-            'DisableServerResponseInspection': rule_get('option', 'disable-server-response-inspection')
+            'QoSMarking': next(
+                (key for key in rule_get('qos', 'marking', return_type=dict, default_return_value={}).keys()
+                if not key.startswith('@')),
+                None),
+            'DisableServerResponseInspection': rule_get('option', 'disable-server-response-inspection'),
         }
     }
 

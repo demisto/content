@@ -8,7 +8,7 @@
     "GroupTag": "moishy tags",
     "LogForwardingProfile": "Log forwarding for SA",
     "NegateSource": null,
-    "SecurityProfileGroup": "default",
+    "SecurityProfileGroup": null,
     "SecurityProfile": {
         "spyware": "default",
         "virus": "default"
