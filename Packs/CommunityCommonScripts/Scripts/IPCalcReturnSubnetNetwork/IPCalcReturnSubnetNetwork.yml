@@ -9,7 +9,6 @@ comment: An Automation Script to return subnet network ID
 commonfields:
   id: IPCalcReturnSubnetNetwork
   version: -1
-enabled: false
 name: IPCalcReturnSubnetNetwork
 outputs:
 - contextPath: IPCalc.IP.Network

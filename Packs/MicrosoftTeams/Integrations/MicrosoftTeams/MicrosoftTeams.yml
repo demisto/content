@@ -111,6 +111,12 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+- display: The header of an external form hyperlink.
+  name: external_form_url_header
+  required: false
+  type: 0
+  section: Connect
+  defaultvalue: Microsoft Teams Form
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -258,7 +264,6 @@ script:
       - 'true'
       - 'false'
       required: false
-      defaultValue: false
     description: Adds a member (user) to a private/shared channel.
     name: microsoft-teams-add-user-to-channel
   - arguments:
@@ -742,7 +747,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.58199
+  dockerimage: demisto/teams:1.0.0.58918
   feed: false
   isfetch: false
   longRunning: true

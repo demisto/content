@@ -52,11 +52,26 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
         json.dump(pack_dependencies, f, indent=4)
 
 
+def create_packs_json(content_dto: ContentDTO, packs_output: Path):
+    """Create packs.json file, to be used by contribution management project
+
+    Args:
+        content_dto (ContentDTO): Content Repository DTO
+        packs_output (Path): Output path for packs.json
+    """
+    packs = content_dto.packs
+    packs_json = {pack.object_id: json.loads(
+        pack.json(include={"name", "description", "author", "current_version"}, by_alias=True)) for pack in packs}
+    with open(packs_output, "w") as f:
+        json.dump(packs_json, f, indent=4)
+
+
 def main():
     parser = ArgumentParser()
     parser.add_argument("-mp", "--marketplace", type=MarketplaceVersions, help="marketplace version", default="xsoar")
     parser.add_argument("-ao", "--artifacts-output", help="Artifacts output directory", required=True)
-    parser.add_argument("-do", "--dependencies-output", help="Dependencies output directory", required=True)
+    parser.add_argument("-do", "--dependencies-output", help="Dependencies output file", required=True)
+    parser.add_argument("-po", "--packs-output", help="Packs json output file", required=True)
     parser.add_argument(
         "-bu", "--bucket-upload", help="Upload to bucket", type=lambda x: str2bool(x or False), default=False
     )
@@ -69,6 +84,9 @@ def main():
 
         logger.info("Creating pack dependencies mapping")
         create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output))
+
+        logger.info("Creating packs.json")
+        create_packs_json(content_dto, Path(args.packs_output))
 
         logger.info("Creating content artifacts zips")
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
