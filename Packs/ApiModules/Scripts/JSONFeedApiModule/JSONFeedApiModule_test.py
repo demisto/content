@@ -29,7 +29,7 @@ def test_json_feed_no_config():
 CONFIG_PARAMETERS = [
     (
         {
-            'AMAZON-_-CIDR': {
+            'AMAZON$$CIDR': {
                 'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
                 'extractor': "prefixes[?service=='AMAZON']",
                 'indicator': 'ip_prefix',
@@ -42,14 +42,14 @@ CONFIG_PARAMETERS = [
     ),
     (
         {
-            'AMAZON-_-CIDR': {
+            'AMAZON$$CIDR': {
                 'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
                 'extractor': "prefixes[?service=='AMAZON']",
                 'indicator': 'ip_prefix',
                 'indicator_type': FeedIndicatorType.CIDR,
                 'fields': ['region', 'service']
             },
-            'AMAZON-_-IPV6': {
+            'AMAZON$$IPV6': {
                 'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
                 'extractor': "ipv6_prefixes[?service=='AMAZON']",
                 'indicator': 'ipv6_prefix',
@@ -96,7 +96,7 @@ def test_json_feed_with_config_mapping():
         ip_ranges = json.load(ip_ranges_json)
 
     feed_name_to_config = {
-        'AMAZON-_-CIDR': {
+        'AMAZON$$CIDR': {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
             'extractor': "prefixes[?service=='AMAZON']",
             'indicator': 'ip_prefix',
@@ -379,7 +379,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
     last_run = mocker.patch.object(demisto, 'setLastRun')
 
     feed_name_to_config = {
-        'AMAZON-_-CIDR': {
+        'AMAZON$$CIDR': {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
             'extractor': "prefixes[?service=='AMAZON']",
             'indicator': 'ip_prefix',
@@ -422,7 +422,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
 
     Then
     - Ensure that the correct message displays in demisto.debug, and the last_run object
-      contains the new feed config name 'AMAZON-_-CIDR'
+      contains the new feed config name 'AMAZON$$CIDR'
     """
     with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
@@ -431,7 +431,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
     last_run = mocker.patch.object(demisto, 'setLastRun')
 
     feed_name_to_config = {
-        'AMAZON-_-CIDR': {
+        'AMAZON$$CIDR': {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
             'extractor': "prefixes[?service=='AMAZON']",
             'indicator': 'ip_prefix',
@@ -462,4 +462,4 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
         fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'], auto_detect=False)
         assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
                ' createIndicators will be executed with noUpdate=False.'
-        assert "AMAZON-_-CIDR" in last_run.call_args[0][0]
+        assert "AMAZON$$CIDR" in last_run.call_args[0][0]

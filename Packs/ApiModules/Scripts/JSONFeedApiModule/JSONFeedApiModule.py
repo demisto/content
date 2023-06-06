@@ -111,9 +111,7 @@ class Client:
         url = feed.get('url', self.url)
 
         if is_demisto_version_ge('6.5.0'):
-            prefix_feed_name = ''
-            if '$$' in feed_name:
-                prefix_feed_name = get_formatted_feed_name(feed_name)  # Support for AWS feed
+            prefix_feed_name = get_formatted_feed_name(feed_name)  # Support for AWS feed
 
             # Set the If-None-Match and If-Modified-Since headers
             # if we have etag or last_modified values in the context, with server version higher than 6.5.0.
@@ -201,8 +199,8 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
 
 
 def get_formatted_feed_name(feed_name: str):
-    """support for AWS Feed config name, example:
-        AMAZON$$CIDR
+    """support for AWS Feed config name, that contains $$ in the name.
+        example: AMAZON$$CIDR
     Args:
         feed_name (str): The feed config name
     """
