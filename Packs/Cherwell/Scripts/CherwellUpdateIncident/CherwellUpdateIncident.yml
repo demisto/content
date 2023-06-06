@@ -51,7 +51,6 @@ comment: This script is an example script of how to update an incident in Cherwe
 commonfields:
   id: CherwellUpdateIncident
   version: -1
-enabled: false
 name: CherwellUpdateIncident
 tags: [Cherwell]
 dependson:

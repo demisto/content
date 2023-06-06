@@ -1,5 +1,5 @@
 [file:Tidy.yml]
-ignore=DO102,DO104,DO107,IN145,BA124
+ignore=DO102,DO104,DO107,IN145,BA124,CJ105,RM110
 
 [file:README.md]
 ignore=RM104
