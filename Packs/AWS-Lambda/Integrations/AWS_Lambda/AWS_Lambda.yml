@@ -938,13 +938,13 @@ script:
       type: List
     - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
       description: The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character ( *).
-      type: List of strings
+      type: List
     - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
       description: The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character ( *).
-      type: List of strings
+      type: List
     - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
       description: The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header.
-      type: List of strings
+      type: List
     - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
       description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results.
       type: Number
