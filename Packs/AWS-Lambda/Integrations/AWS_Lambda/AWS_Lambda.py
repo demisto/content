@@ -10,6 +10,22 @@ urllib3.disable_warnings()
 
 
 def config_aws_session(args: dict[str, str], aws_client: AWSClient):
+    """
+    Configures an AWS session for the Lambda service,
+    Used in all the commands.
+
+    Args:
+        args (dict): A dictionary containing the configuration parameters for the session.
+                     - 'region' (str): The AWS region.
+                     - 'roleArn' (str): The ARN of the IAM role.
+                     - 'roleSessionName' (str): The name of the role session.
+                     - 'roleSessionDuration' (str): The duration of the role session.
+
+        aws_client (AWSClient): The AWS client used to configure the session.
+
+    Returns:
+        AWS session (boto3 client): The configured AWS session.
+    """
     return aws_client.aws_session(
         service='lambda',
         region=args.get('region'),
@@ -91,7 +107,7 @@ def get_function(args, aws_client):
     return_outputs(human_readable, ec)
 
 
-def list_functions(args, aws_client):
+def list_functions(aws_client):
 
     obj = vars(aws_client._client_config)
     data = []
@@ -227,7 +243,7 @@ def get_account_settings(args, aws_client):
     return_outputs(human_readable, ec)
 
 
-def get_policy_command(args: dict, aws_client) -> CommandResults:
+def get_policy_command(args: dict[str, str], aws_client) -> CommandResults:
     """
     Retrieves the policy for a Lambda function from AWS and parses it into a dictionary.
 
@@ -271,8 +287,23 @@ def get_policy_command(args: dict, aws_client) -> CommandResults:
     )
 
 
-def list_versions_by_function_command(args: dict, aws_client) -> list[CommandResults]:
-    def parse_versions(version: dict[str, Any]) -> dict[str, str | None]:
+def list_versions_by_function_command(args: dict[str, str], aws_client) -> list[CommandResults]:
+    """
+    Lists the versions of a Lambda function and returns the results as a list of CommandResults objects.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+                     - 'functionName' (str): The name of the Lambda function.
+                     - 'Marker' (str, optional): The marker for pagination.
+                     - 'MaxItems' (str, optional): The maximum number of items to return.
+
+        aws_client: The AWS client used to list the versions.
+
+    Returns:
+        list[CommandResults]: A list of CommandResults objects, containing the parsed versions as outputs,
+                              a readable output in Markdown format, and relevant metadata.
+    """
+    def parse_version(version: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Name": version.get('FunctionName'),
             "Runtime": version.get('Runtime'),
@@ -281,19 +312,20 @@ def list_versions_by_function_command(args: dict, aws_client) -> list[CommandRes
             "Last Modified": version.get("LastModified"),
             "State": version.get('State'),
         }
+
     headers = ["Function Name", "Role", "Runtime", "Last Modified", "State", "Description"]
 
     kwargs = {'FunctionName': args['functionName']}
     if marker := args.get('Marker'):
         kwargs.update({'Marker': marker})
 
-    if maxItems := args.get('MaxItems'):
-        kwargs.update({'MaxItems': maxItems})
+    if max_items := args.get('MaxItems'):
+        kwargs.update({'MaxItems': max_items})
 
     response: dict = aws_client.list_versions_by_function(**kwargs)
     response.pop("ResponseMetadata", None)
 
-    parsed_versions = [parse_versions(version) for version in response.get('Versions', [])]
+    parsed_versions = [parse_version(version) for version in response.get('Versions', [])]
     table_for_markdown = tableToMarkdown(name='Versions', t=parsed_versions, headers=headers)
 
     result: list[CommandResults] = []
@@ -311,7 +343,21 @@ def list_versions_by_function_command(args: dict, aws_client) -> list[CommandRes
     return result
 
 
-def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
+def get_function_url_config_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Retrieves the URL configuration of a Lambda function from AWS and returns the results as a CommandResults object.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+                     - 'functionName' (str): The name of the Lambda function.
+                     - 'qualifier' (str, optional): The qualifier of the function.
+
+        aws_client (boto3 client): The AWS client used to retrieve the URL configuration.
+
+    Returns:
+        CommandResults: An object containing the URL configuration as outputs, a readable output in Markdown format,
+                        and relevant metadata.
+    """
     def parse_url_config(data: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Url": data.get('FunctionUrl'),
@@ -328,6 +374,7 @@ def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
 
     response = aws_client.get_function_url_config(**kwargs)
     response.pop("ResponseMetadata", None)
+
     parsed_url_config = parse_url_config(response)
     table_for_markdown = tableToMarkdown(name='Function URL Config', t=parsed_url_config)
 
@@ -339,7 +386,21 @@ def get_function_url_config_command(args: dict, aws_client) -> CommandResults:
     )
 
 
-def get_function_configuration_command(args: dict, aws_client) -> CommandResults:
+def get_function_configuration_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Retrieves the configuration of a Lambda function from AWS and returns the results as a CommandResults object.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+                     - 'functionName' (str): The name of the Lambda function.
+                     - 'qualifier' (str, optional): The qualifier of the function.
+
+        aws_client (boto3 client): The AWS client used to retrieve the function configuration.
+
+    Returns:
+        CommandResults: An object containing the function configuration as outputs, a readable output in Markdown format,
+                        and relevant metadata.
+    """
     def parse_function_configuration(data: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Name": data.get('FunctionName'),
@@ -357,6 +418,7 @@ def get_function_configuration_command(args: dict, aws_client) -> CommandResults
 
     response = aws_client.get_function_configuration(**kwargs)
     response.pop("ResponseMetadata", None)
+
     parsed_function_configuration = parse_function_configuration(response)
     table_for_markdown = tableToMarkdown(name='Function Configuration', t=parsed_function_configuration)
 
@@ -368,8 +430,20 @@ def get_function_configuration_command(args: dict, aws_client) -> CommandResults
     )
 
 
-def delete_function_url_config_command(args: dict, aws_client) -> CommandResults:
+def delete_function_url_config_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Deletes the URL configuration for a Lambda function in AWS.
 
+    Args:
+        args (dict): A dictionary containing the command arguments.
+                     - 'functionName' (str): The name of the Lambda function.
+                     - 'qualifier' (str, optional): The qualifier of the function.
+
+        aws_client (boto3 client): The AWS client used to delete the function URL configuration.
+
+    Returns:
+        CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
+    """
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
         kwargs.update({'qualifier': qualifier})
@@ -381,8 +455,20 @@ def delete_function_url_config_command(args: dict, aws_client) -> CommandResults
     )
 
 
-def delete_function_command(args: dict, aws_client) -> CommandResults:
+def delete_function_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Deletes a Lambda function from AWS.
 
+    Args:
+        args (dict): A dictionary containing the command arguments.
+                     - 'functionName' (str): The name of the Lambda function.
+                     - 'qualifier' (str, optional): The qualifier of the function.
+
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
+    """
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
         kwargs.update({'qualifier': qualifier})
@@ -433,7 +519,7 @@ def main():
             case 'aws-lambda-get-function':
                 get_function(args, aws_client)
             case 'aws-lambda-list-functions':
-                list_functions(args, aws_client)
+                list_functions(aws_client)
             case 'aws-lambda-list-aliases':
                 list_aliases(args, aws_client)
             case 'aws-lambda-invoke':

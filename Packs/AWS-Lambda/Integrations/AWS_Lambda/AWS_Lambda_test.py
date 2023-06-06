@@ -1,15 +1,22 @@
-from typing import Any
 import pytest
+from typing import Any, Callable
 from AWS_Lambda import (
     get_policy_command,
     list_versions_by_function_command,
     get_function_url_config_command,
     get_function_configuration_command,
-    delete_function_command
+    delete_function_command,
+    delete_function_url_config_command
 )
 
 
 class MockClient:
+    """
+    A mock client class for AWS Lambda API.
+
+    This class provides mock implementations of the AWS Lambda API methods for testing purposes.
+    """
+
     def get_policy(self) -> None:
         return
 
@@ -23,6 +30,9 @@ class MockClient:
         return
 
     def delete_function(self) -> None:
+        return
+
+    def delete_function_url_config(self) -> None:
         return
 
 
@@ -56,6 +66,23 @@ class MockClient:
     ],
 )
 def test_get_policy_command(mocker, test_data: dict, excepted_data: dict):
+    """
+    Test case for the get_policy_command function.
+
+    Args:
+        mocker: The mocker object for mocking dependencies.
+        test_data (dict): Test data representing the policy response.
+        expected_data (dict): Expected policy data to be compared with the command result.
+
+    Given:
+    - A mock policy response.
+
+    When:
+    - Calling the get_policy_command function.
+
+    Then:
+    - Ensure that the outputs of the command result match the expected data.
+    """
     client = MockClient()
     mocker.patch.object(client, "get_policy", return_value=test_data)
 
@@ -117,6 +144,24 @@ def test_get_policy_command(mocker, test_data: dict, excepted_data: dict):
     ],
 )
 def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
+    """
+    Test case for the list_versions_by_function_command function.
+
+    Args:
+        mocker: The mocker object for mocking dependencies.
+        test_data (dict): Test data representing the versions response.
+        expected_data (dict): Expected versions data to be compared with the command result.
+
+    Given:
+    - A mock versions response.
+
+    When:
+    - Calling list_versions_by_function_command function.
+
+    Then:
+    - If the result contains one item, ensure that the outputs match the expected data.
+    - If the result contains two items, ensure that the first item's readable output provides a token for retrieving the next version and the second item's outputs match the expected data.
+    """
     client = MockClient()
     mocker.patch.object(client, "list_versions_by_function", return_value=test_data)
 
@@ -167,6 +212,23 @@ def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], ex
     ],
 )
 def test_get_function_url_config_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
+    """
+    Test case for the get_function_url_config_command function.
+
+    Args:
+        mocker: The mocker object for mocking dependencies.
+        test_data (dict): Test data representing the function URL configuration response.
+        expected_data (dict): Expected function URL configuration data to be compared with the command result.
+
+    Given:
+    - A mock function URL configuration response.
+
+    When:
+    - Calling get_function_url_config_command function.
+
+    Then:
+    - Ensure that the function URL configuration is correctly retrieved and matches the expected data.
+    """
     client = MockClient()
     mocker.patch.object(client, "get_function_url_config", return_value=test_data)
 
@@ -227,6 +289,23 @@ def test_get_function_url_config_command(mocker, test_data: dict[str, Any], exce
     ],
 )
 def test_get_function_configuration_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
+    """
+    Test case for the get_function_configuration_command function.
+
+    Args:
+        mocker: The mocker object for mocking dependencies.
+        test_data (dict): Test data representing the function configuration response.
+        expected_data (dict): Expected function configuration data to be compared with the command result.
+
+    Given:
+    - A mock function configuration response.
+
+    When:
+    - Calling get_function_configuration_command function.
+
+    Then:
+    - Ensure that the function configuration is correctly retrieved and matches the expected data.
+    """
     client = MockClient()
     mocker.patch.object(client, "get_function_configuration", return_value=test_data)
 
@@ -236,22 +315,38 @@ def test_get_function_configuration_command(mocker, test_data: dict[str, Any], e
     assert res.outputs == excepted_data
 
 
-def test_delete_function_command_happy_path_with_qualifier(mocker):
+@pytest.mark.parametrize(
+    'func_command, func_client',
+    [
+        (delete_function_command, "delete_function"),
+        (delete_function_url_config_command, "delete_function_url_config")
+    ]
+)
+def test_delete_function_and_url_config_commands(mocker, func_command: Callable, func_client: str):
     """
+    Test two cases for the scenario of deleting a function and url config with a qualifier.
+
+    Args:
+        mocker: The mocker object for mocking dependencies.
+        func_command (Callable): The delete function command to be tested.
+        func_client (str): The name of the function client.
+
     Given:
-    - Function name with a qualifier.
+    - A function name with a qualifier.
 
     When:
-    - Calling delete_function_command function.
+    - The delete_function_command function is called.
+    - The delete_function_url_config_command function is called.
 
     Then:
-    - Ensure the function is successfully deleted.
+    - Ensure that the function is successfully deleted.
+    - Ensure that the function url config is successfully deleted.
     """
     client = MockClient()
-    mocker.patch.object(client, "delete_function", return_value={'ResponseMetadata': {'HTTPStatusCode': 204}})
+    mocker.patch.object(client, func_client, return_value={})
 
     args = {'functionName': 'test-function', 'qualifier': 'test-qualifier'}
 
-    result = delete_function_command(args, client)
+    result = func_command(args, client)
 
     assert result.readable_output == 'Deleted test-function Successfully'
