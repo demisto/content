@@ -1,7 +1,5 @@
 id: Cortex ASM - GCP Enrichment
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex ASM - GCP Enrichment
 description: Given the IP address this playbook enriches GCP and Firewall information.
 starttaskid: "0"
@@ -45,24 +43,15 @@ tasks:
       version: -1
       name: GCP - Enrichment
       description: Given the IP address this playbook enriches GCP and Firewall information.
-      playbookName: GCP - Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: GCP - Enrichment
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      GcpIP:
-        complex:
-          root: inputs.RemoteIP
     separatecontext: true
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -77,6 +66,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      GcpIP:
+        complex:
+          root: inputs.RemoteIP
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   "2":
     id: "2"
     taskid: ee4812d0-34d9-41e9-8ddc-58390e5371eb
@@ -302,13 +300,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
-      - "9"
+      - "31"
     scriptarguments:
       gridfield:
         simple: asmserviceowner
@@ -401,10 +399,10 @@ tasks:
       name: Get current time
       description: |
         Retrieves the current date and time.
-      scriptName: GetTime
       type: regular
       iscommand: false
       brand: ""
+      script: GetTime
     nexttasks:
       '#none#':
       - "10"
@@ -435,10 +433,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "9"
@@ -544,10 +542,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "9"
@@ -642,10 +640,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "9"
@@ -734,10 +732,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "21"
@@ -783,10 +781,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "22"
@@ -832,10 +830,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "23"
@@ -881,10 +879,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "24"
@@ -930,10 +928,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "26"
@@ -979,10 +977,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "27"
@@ -1038,10 +1036,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "9"
@@ -1121,10 +1119,110 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GoogleCloudCompute.Instances.serviceAccounts
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if a service account associated with the Cloud Compute Instance was discovered and set on the alert.
+      id: ad12af87-5f1c-440c-8d67-bf70e31c1997
+      iscommand: false
+      name: Is service account field set?
+      type: condition
+      version: -1
+    taskid: ad12af87-5f1c-440c-8d67-bf70e31c1997
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1330
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        simple: n/a
+      val2:
+        complex:
+          accessor: serviceAccounts
+          root: GoogleCloudCompute.Instances
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: email
+            operator: getField
+      val3:
+        simple: GCP
+      val4:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: b32d8842-84e1-4b2e-8e63-27e248241567
+      iscommand: false
+      name: Add service account to unranked service owner list
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: b32d8842-84e1-4b2e-8e63-27e248241567
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1695
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
       "29_9_#default#": 0.16,
+      "31_9_#default#": 0.2,
       "3_9_#default#": 0.13,
       "4_9_#default#": 0.25,
       "5_9_#default#": 0.1
@@ -1151,3 +1249,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
