@@ -6927,8 +6927,11 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
     result = http_request(URL, 'GET', params=params)
 
     # Get all profile types already existing, so we don't override them when updating
-    profile_types_result =\
-        result.get('response', {}).get('result', {}).get('entry', {}).get('profile-setting', {}).get('profiles', {})
+    profile_types_result = dict_safe_get(result, ['response', 'result', 'entry', 'profile-setting', 'profiles'],
+                                         default_return_value={})
+
+    # keep the context aligned with both committed and un-committed objects
+    parse_pan_os_un_committed_data(profile_types_result, ['@admin', '@dirtyId', '@time'])
 
     # remove from the types the given profile type, since we update it anyway
     profile_types = {'data-filtering', 'file-blocking', 'spyware', 'url-filtering',
@@ -6940,7 +6943,8 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
     # Keeping the existing profile types
     for p_type in profile_types:
         if p_type in profile_types_result:
-            element += f"<{p_type}><member>{profile_types_result[p_type]['member']['#text']}</member></{p_type}>"
+            member = profile_types_result.get(p_type, {}).get('member')
+            element += f"<{p_type}><member>{member}</member></{p_type}>"
 
     params = {
         'action': 'set',
