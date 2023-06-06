@@ -3458,12 +3458,13 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 
 ''' Security Rules Managing '''
 
-def unsafe_dict_get(dict_object: Any, possible_keys: list, default_return_value: Any = None, return_type: type = None, recurse_lists: bool = True) -> Any:
+def dict_recursive_get(dict_object: Any, keys: list = [], possible_keys: list = [], default_return_value: Any = None, return_type: type = None, recurse_lists: bool = True) -> Any:
     """Retrieves a value from a nested dictionary using a list of keys.
 
     Args:
         dict_object (Any): The dictionary object from which to retrieve the value.
-        possible_keys (list): A list of keys representing the possible path to the desired value in the dictionary.
+        keys (list): A list of keys representing the possible path to the desired value in the dictionary.
+        possible_keys (list): A list of keys representing the possible keys to the desired value in the dictionary if the desired value was not found from "keys".
                               The keys will be used until a value that is not a dict or a list is found, even if not all the keys were used.
         default_return_value (Any, optional): The value to return if the desired value is not found.. Defaults to None.
         return_type (type, optional): The expected type of the value to be returned. If the retrieved value is not of this type,
@@ -3478,20 +3479,27 @@ def unsafe_dict_get(dict_object: Any, possible_keys: list, default_return_value:
 
     return_value = dict_object
 
-    for i, key in enumerate(possible_keys):
+    for i, key in enumerate(keys+possible_keys):
         try:
             return_value = return_value[key]
         except (KeyError, TypeError, IndexError, AttributeError):
             if recurse_lists and isinstance(return_value, list):
+                
+                new_keys, new_possible_keys = keys[i:], possible_keys[max(i-len(keys), 0):]
+                
                 sub_list = [
                     elem for item in return_value
-                    if (elem := unsafe_dict_get(
-                                    item, possible_keys[i:], default_return_value, return_type, recurse_lists
+                    if (elem := dict_recursive_get(
+                                    item, new_keys, new_possible_keys, default_return_value, return_type, recurse_lists
                                     )) != default_return_value
                 ] or default_return_value
                 
                 return sub_list
-            break
+            
+            
+            if i < len(keys):
+                return_value = default_return_value
+                break
         
     if return_type and not isinstance(return_value, return_type):
         return_value = default_return_value
@@ -3501,11 +3509,9 @@ def unsafe_dict_get(dict_object: Any, possible_keys: list, default_return_value:
 
 def prettify_rule(rule: dict):
 
-    def rule_get(*path: str, default_return_value=None, from_dict: dict = rule, return_type = (str, list)):
-        return unsafe_dict_get(from_dict, keys = path+('member',), default_return_value=default_return_value, return_type = return_type)
+    def rule_get(*path: str, possibles: list = [], from_dict: dict = rule, default_return_value=None, return_type = (str, list)):
+        return dict_recursive_get(from_dict, keys=list(path), possible_keys=possibles+['member', '#text'], default_return_value=default_return_value, return_type=return_type)
     
-    parse_pan_os_un_committed_data(rule, [])
-
     pretty_rule: Dict[str, Any] = {
 
         'DeviceGroup': DEVICE_GROUP,
@@ -3523,7 +3529,7 @@ def prettify_rule(rule: dict):
                 for key, value in profiles.items()
                 if not str(key).startswith('@')
             }
-            if (profiles := rule_get('profile-setting', 'profiles', return_type=dict))
+            if (profiles := rule_get('profile-setting', 'profiles', return_type=dict, default_return_value={}))
             else None,
         'Target': {
             'devices': rule_get('target', 'devices', 'entry', '@name'),
@@ -3547,7 +3553,6 @@ def prettify_rule(rule: dict):
             'LogAtSessionStart': rule_get("log-start"),
             'LogForwarding': rule_get("log-setting"),
             'Schedule': rule_get("schedule"),
-            # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
             'QoSMarking': next(
                 (key for key in rule_get('qos', 'marking', return_type=dict, default_return_value={}).keys()
                 if not key.startswith('@')),
