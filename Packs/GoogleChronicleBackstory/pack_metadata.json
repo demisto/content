@@ -223,7 +223,7 @@
         "EWSMailSender": {
             "mandatory": false,
             "display_name": "EWS Mail Sender"
-        }
+        },
         "MicrosoftGraphListener": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail Single User"
