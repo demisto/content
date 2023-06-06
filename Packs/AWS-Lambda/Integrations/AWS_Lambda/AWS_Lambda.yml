@@ -71,7 +71,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- display: STS PrivateLink URL.
+- display: STS PrivateLink URL
   name: sts_endpoint_url
   required: false
   type: 0
