@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Azure Storage
+  id: Azure Storage Dev
   version: -1
 configuration:
 - defaultvalue: 55f9764e-300a-474a-a2bb-549cece85439
@@ -91,8 +91,8 @@ configuration:
   type: 9
   section: Connect
 description: Deploy and manage storage accounts and blob services.
-display: Azure Storage Management
-name: Azure Storage
+display: Azure Storage Management Dev
+name: Azure Storage Dev
 script:
   commands:
   - deprecated: false
@@ -1127,6 +1127,45 @@ script:
     description: Run this command to delete a specific blob container.
     execution: false
     name: azure-storage-blob-container-delete
+  - description: Gets all subscriptions for a tenant.
+    name: azure-sql-subscriptions-list
+    outputs:
+    - contextPath: AzureStorage.Subscription.value.id
+      description: 'The unique identifier of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.authorizationSource
+      description: 'The source of authorization for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.managedByTenants
+      description: 'The tenants that have access to manage the Azure storage subscription.'
+      type: Unknown
+    - contextPath: AzureStorage.Subscription.value.subscriptionId
+      description: 'The ID of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.tenantId
+      description: 'The ID of the tenant associated with the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.displayName
+      description: 'The display name of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.state
+      description: 'The current state of the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.subscriptionPolicies.locationPlacementId
+      description: 'The ID of the location placement policy for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.subscriptionPolicies.quotaId
+      description: 'The ID of the quota policy for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.value.subscriptionPolicies.spendingLimit
+      description: 'The spending limit policy for the Azure storage subscription.'
+      type: String
+    - contextPath: AzureStorage.Subscription.count.type
+      description: 'The type of the Azure storage subscription count.'
+      type: String
+    - contextPath: AzureStorage.Subscription.count.value
+      description: 'The value of the Azure storage subscription count.'
+      type: Number
   - description: Generate the login url used for Authorization code flow.
     execution: false
     name: azure-storage-generate-login-url

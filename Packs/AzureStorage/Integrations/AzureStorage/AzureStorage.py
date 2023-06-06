@@ -61,7 +61,8 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='GET',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}?api-version={API_VERSION}'  # noqa: E501
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+storageAccounts/{account_name}?api-version={API_VERSION}'
         )
 
     @logger
@@ -80,7 +81,8 @@ class ASClient:
         """
         return self.ms_client.http_request(
             method='GET',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}'  # noqa: E501
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/\
+providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}'
         )
 
     @logger
@@ -183,7 +185,8 @@ class ASClient:
         return self.ms_client.http_request(
             method='PUT',
 
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}?api-version={API_VERSION}',  # noqa: E501
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+storageAccounts/{account_name}?api-version={API_VERSION}',
             json_data=json_data_args,
             resp_type='response'
         )
@@ -262,7 +265,8 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='PUT',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}',  # noqa: E501
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+storageAccounts/{account_name}/blobServices/default?api-version={API_VERSION}',
             json_data={'properties': properties}
         )
 
@@ -294,7 +298,8 @@ class ASClient:
 
         return self.ms_client.http_request(
             method=method,
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',  # noqa: E501
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',
             json_data={'properties': properties}
         )
 
@@ -314,7 +319,8 @@ class ASClient:
         container_name = args.get('container_name', '')
         # url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
         #       f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}'  # noqa: E501
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+storageAccounts/{account_name}/blobServices/default/containers/{container_name}'
 
         params = {
             'api-version': API_VERSION,
@@ -338,10 +344,15 @@ class ASClient:
 
         return self.ms_client.http_request(
             method='DELETE',
-            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',  # noqa: E501
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
+storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',
             resp_type='response'
         )
 
+    def sql_subscriptions_list_request(self):
+        return self.ms_client.http_request(
+            method='GET',
+            full_url=f'https://management.azure.com/subscriptions?api-version={API_VERSION}')
 
 # Storage Account Commands
 
@@ -731,6 +742,30 @@ def storage_blob_containers_delete(client: ASClient, params: Dict, args: Dict) -
 Status code: {res.status_code} \nPlease verify that the container and account name are correct.')
 
 
+def sql_subscriptions_list(client: ASClient) -> CommandResults:
+    """
+        Gets a list of subscriptions.
+    Args:
+        client: The microsoft client.
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+    res = client.sql_subscriptions_list_request()
+    subscriptions = res.get('value', '[res]')
+
+    return CommandResults(
+        outputs_prefix='AzureStorage.Subscription',
+        outputs_key_field='id',
+        outputs=subscriptions,
+        readable_output=tableToMarkdown(
+            'Azure Storage Subscriptions list',
+            subscriptions,
+            ['subscriptionId', 'tenantId', 'displayName', 'state'],
+        ),
+        raw_response=res
+    )
+
+
 # Authentication Functions
 
 
@@ -829,6 +864,8 @@ def main() -> None:
             return_results(storage_blob_containers_list(client, params, args))
         elif command == 'azure-storage-blob-container-delete':
             return_results(storage_blob_containers_delete(client, params, args))
+        elif command == 'azure-sql-subscriptions-list':
+            return_results(sql_subscriptions_list(client))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
