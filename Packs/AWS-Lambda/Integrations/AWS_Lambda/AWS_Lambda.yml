@@ -1169,7 +1169,7 @@ script:
     name: aws-lambda-delete-function-url-config
   - arguments:
     - default: false
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region. If not specified, the default region will be used.
       isArray: false
       auto: PREDEFINED
       name: region
