@@ -1216,7 +1216,7 @@ def test_apply_security_profiles_command_when_one_already_exists(mocker):
             'pre_post': 'rule-test'
         }
     )
-    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'},'spyware': {'member': 'strict'},
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'},
                                                          'vulnerability': {'member': 'test-do-not-delete'}})
     mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
     request_mock = mocker.patch('Panorama.http_request')
