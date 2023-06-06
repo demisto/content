@@ -6984,7 +6984,7 @@ def return_results(results):
         else:
             demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
 
-    elif is_integration or (isinstance(results, dict) and results.get('Type') != EntryType.EXECUTION_METRICS):
+    elif not is_integration and isinstance(results, dict) and results.get('Type') == EntryType.EXECUTION_METRICS:
         demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
     else:
         demisto.results(results)
