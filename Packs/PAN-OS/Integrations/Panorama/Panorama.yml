@@ -9620,7 +9620,7 @@ script:
       isArray: false
       name: comment
       required: false
-    description: Creates a new tag in panorama.
+    description: Creates a new tag in Panorama.
     name: pan-os-create-tag
   - arguments:
     - description: The existing name for the tag to be edited.
@@ -9647,14 +9647,14 @@ script:
       isArray: false
       name: comment
       required: false
-    description: Edits a tag in panorama.
+    description: Edits a tag in Panorama.
     name: pan-os-edit-tag
   - arguments:
     - description: The name of the tag to delete.
       isArray: false
       name: name
       required: true
-    description: Deletes a tag from panorama.
+    description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
   dockerimage: demisto/pan-os-python:1.0.0.61510
   feed: false

@@ -8676,7 +8676,7 @@ There is no context output for this command.
 ### pan-os-list-tag
 
 ***
-Returns a list of tags from panorama.
+Returns a list of tags from Panorama.
 
 #### Base Command
 
@@ -8736,7 +8736,7 @@ Returns a list of tags from panorama.
 ### pan-os-create-tag
 
 ***
-Creates a new tag in panorama.
+Creates a new tag in Panorama.
 
 #### Base Command
 
@@ -8765,7 +8765,7 @@ There is no context output for this command.
 ### pan-os-edit-tag
 
 ***
-Edits a tag in panorama.
+Edits a tag in Panorama.
 
 #### Base Command
 
@@ -8795,7 +8795,7 @@ There is no context output for this command.
 ### pan-os-delete-tag
 
 ***
-Deletes a tag from panorama.
+Deletes a tag from Panorama.
 
 #### Base Command
 
