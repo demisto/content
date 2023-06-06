@@ -1,5 +1,5 @@
 Use the Cisco Adaptive Security Appliance Software integration to manage interfaces, rules, and network objects.
-This integration was integrated and tested with version xx of Cisco ASA
+This integration was integrated and tested with version 9.16(3)23 of Cisco ASA
 
 ## Configure Cisco ASA on Cortex XSOAR
 
