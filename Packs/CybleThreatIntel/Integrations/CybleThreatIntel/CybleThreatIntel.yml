@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CybleThreatInteldev
+  id: CybleThreatIntel
   version: -1
 configuration:
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
@@ -104,7 +104,6 @@ configuration:
   type: 8
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
