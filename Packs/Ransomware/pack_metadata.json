@@ -18,10 +18,6 @@
     ],
     "keywords": [],
     "dependencies": {
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "rasterize": {
             "mandatory": true,
             "display_name": "Rasterize"

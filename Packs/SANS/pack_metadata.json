@@ -26,10 +26,6 @@
             "mandatory": false,
             "display_name": "Active Directory Query"
         },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "GmailSingleUser": {
             "mandatory": false,
             "display_name": "Gmail Single User (Beta)"
