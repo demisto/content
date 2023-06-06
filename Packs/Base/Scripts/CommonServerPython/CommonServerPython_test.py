@@ -4260,6 +4260,52 @@ def test_get_x_content_info_headers(mocker):
     assert headers['X-Content-Name'] == test_brand
 
 
+def test_script_return_results_execution_metrix_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrix entry
+      - The command currently running is a script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time (without the execution metrix entry)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 19},
+    ]
+    return_results(mock_command_results)
+    assert demisto_results_mock.call_count == 1
+
+
+def test_integration_return_results_execution_metrix_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrix entry
+      - The command currently running is an integration command
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 3 times (with the execution metrix entry included)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'integration'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 19},
+    ]
+    return_results(mock_command_results)
+    assert demisto_results_mock.call_count == 3
+
+
 def test_return_results_multiple_command_results(mocker):
     """
     Given:
