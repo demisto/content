@@ -37,6 +37,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Limit | The maximum number of times to run IOC scans to find recoverable snapshot. | 1 | Required |
 | RequestedHashType | The type of the hash values of the matched files to be blocked, if enabled. |  | Optional |
 | ScanName | Name of the scan. Default value is "PAXSOAR-1.1.0". |  | Optional |
+| MaxFileSize | Maximum size of the file in bytes that will be included in the scan. The maximum allowed size is 15000000 bytes. | 5000000 | Optional |
 
 ## Playbook Outputs
 ---
