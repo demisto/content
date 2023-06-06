@@ -4260,15 +4260,15 @@ def test_get_x_content_info_headers(mocker):
     assert headers['X-Content-Name'] == test_brand
 
 
-def test_script_return_results_execution_metrix_command_results(mocker):
+def test_script_return_results_execution_metrics_command_results(mocker):
     """
     Given:
-      - List of CommandResult and dicts that contains an execution metrix entry
+      - List of CommandResult and dicts that contains an execution metrics entry
       - The command currently running is a script
     When:
       - Calling return_results()
     Then:
-      - demisto.results() is called 1 time (without the execution metrix entry)
+      - demisto.results() is called 1 time (without the execution metrics entry)
     """
     from CommonServerPython import CommandResults, return_results
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
@@ -4283,15 +4283,15 @@ def test_script_return_results_execution_metrix_command_results(mocker):
     assert demisto_results_mock.call_count == 1
 
 
-def test_integration_return_results_execution_metrix_command_results(mocker):
+def test_integration_return_results_execution_metrics_command_results(mocker):
     """
     Given:
-      - List of CommandResult and dicts that contains an execution metrix entry
+      - List of CommandResult and dicts that contains an execution metrics entry
       - The command currently running is an integration command
     When:
       - Calling return_results()
     Then:
-      - demisto.results() is called 3 times (with the execution metrix entry included)
+      - demisto.results() is called 3 times (with the execution metrics entry included)
     """
     from CommonServerPython import CommandResults, return_results
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'integration'}]}})
