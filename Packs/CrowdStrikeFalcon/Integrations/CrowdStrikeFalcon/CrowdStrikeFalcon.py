@@ -4767,7 +4767,7 @@ def get_ODS_scan_ids(args: dict) -> list[str] | None:
     return raw_response.get('resources')
 
 
-@polling_function('cs-falcon-ods-query-scan', poll_message='Scan underway...', polling_arg_name='wait_for_results')
+@polling_function('cs-falcon-ods-query-scan', poll_message='Scan underway...', polling_arg_name='wait_for_result')
 def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
     # call the query api if no ids given
     ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
@@ -4788,7 +4788,7 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
             readable_output=human_readable,
         )
 
-    scan_in_progress = any(dict_safe_get(scan, 'status', return_type=str) in ('pending', 'running')
+    scan_in_progress = any(dict_safe_get(scan, ('status',), return_type=str) in ('pending', 'running')
                            for scan in command_results.outputs)  # type: ignore[attr-defined]
 
     return PollResult(response=command_results,
@@ -5096,18 +5096,18 @@ def ods_create_scan(args: dict, is_scheduled: bool) -> CommandResults:
 
     response = ODS_create_scan_request(args, is_scheduled)
 
-    resources = response.get('resources', [])
+    resource = dict_safe_get(response, ('resources', 0), return_type=dict)
 
-    if not resources:
+    if not resource:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
-    human_readable = tableToMarkdown(f'{"Scheduled "*is_scheduled}Scan Created', [resources[0].get("id")], headers=['Scan ID'])
+    human_readable = tableToMarkdown(f'{"Scheduled "*is_scheduled}Scan Created', [resource.get("id")], headers=['Scan ID'])
 
     command_results = CommandResults(
         raw_response=response,
         outputs_prefix='CrowdStrike.ODSScan',
         outputs_key_field='id',
-        outputs=resources,
+        outputs=resource,
         readable_output=human_readable,
     )
 
@@ -5117,7 +5117,7 @@ def ods_create_scan(args: dict, is_scheduled: bool) -> CommandResults:
 def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
     result = ods_create_scan(args, is_scheduled=False)
 
-    id = dict_safe_get(result.outputs, (0, 'id'), return_type=str)
+    id = result.outputs.get('id') if isinstance(result.outputs, dict) else None
 
     if not id:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
