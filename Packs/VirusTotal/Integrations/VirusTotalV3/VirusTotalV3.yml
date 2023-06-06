@@ -1643,3 +1643,4 @@ script:
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
+- File Enrichment - Generic v2 - Test
