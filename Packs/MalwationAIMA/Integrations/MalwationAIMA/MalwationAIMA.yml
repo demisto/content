@@ -24,7 +24,6 @@ configuration:
   type: 8
 - additionalinfo: It is additional for MALWATION Content Analysis Platform.
   display: CAP API Key
-  hidden: false
   name: cap_apikey
   required: false
   type: 4

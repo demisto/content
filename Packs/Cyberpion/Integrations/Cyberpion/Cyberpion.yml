@@ -95,12 +95,10 @@ configuration:
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8

@@ -15,7 +15,6 @@ comment: This script is an example script of how to unlink a task from an incide
 commonfields:
   id: CherwellIncidentUnlinkTask
   version: -1
-enabled: false
 name: CherwellIncidentUnlinkTask
 script: '-'
 system: false
