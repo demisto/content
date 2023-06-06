@@ -298,9 +298,8 @@ class ASClient:
             json_data={'properties': properties}
         )
 
-    def storage_blob_containers_list_request(self, subscription_id: str,
-                                             resource_group_name: str,
-                                             args: Dict) -> Dict:
+    def storage_blob_containers_list_request(self, subscription_id: str | None,
+                                             resource_group_name: str | None, args: Dict) -> Dict:
         """
                 Send the get blob container/s request to the API.
             Args:
@@ -333,15 +332,13 @@ class ASClient:
             params=params,
         )
 
-    def storage_blob_containers_delete_request(self, args):
+    def storage_blob_containers_delete_request(self, subscription_id: str | None,
+                                               resource_group_name: str | None,
+                                               account_name: str | None, container_name: str | None) -> requests.Response:
 
         return self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/'
-                       f'{args["account_name"]}/blobServices/default/containers/{args["container_name"]}',
-            params={
-                'api-version': API_VERSION,
-            },
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}?api-version={API_VERSION}',  # noqa: E501
             resp_type='response'
         )
 
@@ -716,10 +713,22 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
     )
 
 
-def storage_blob_containers_delete(client, args):
+def storage_blob_containers_delete(client: ASClient, params: Dict, args: Dict) -> str:
+    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
+    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    account_name = args.get("account_name", '')
+    container_name = args.get("container_name", '')
 
-    client.storage_blob_containers_delete_request(args)
-    return 'The request to delete the blob container was sent successfully.'
+    res = client.storage_blob_containers_delete_request(subscription_id=subscription_id,
+                                                        resource_group_name=resource_group_name,
+                                                        account_name=account_name,
+                                                        container_name=container_name)
+    if res.status_code == 200:
+        return 'The request to delete the blob container was sent successfully.'
+    else:
+        return (
+            f'Failed to delete the blob container.\
+Status code: {res.status_code} \nPlease verify that the container and account name are correct.')
 
 
 # Authentication Functions
@@ -819,7 +828,7 @@ def main() -> None:
         elif command == 'azure-storage-blob-containers-list':
             return_results(storage_blob_containers_list(client, params, args))
         elif command == 'azure-storage-blob-container-delete':
-            return_results(storage_blob_containers_delete(client, args))
+            return_results(storage_blob_containers_delete(client, params, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
