@@ -112,15 +112,15 @@ class Client:
 
         if is_demisto_version_ge('6.5.0'):
             prefix_feed_name = ''
-            if '-_-' in feed_name:
-                prefix_feed_name = feed_name.split('-_-')[0]  # Support for AWS feed
+            if '$$' in feed_name:
+                prefix_feed_name = get_formatted_feed_name(feed_name)  # Support for AWS feed
+
             # Set the If-None-Match and If-Modified-Since headers
             # if we have etag or last_modified values in the context, with server version higher than 6.5.0.
             last_run = demisto.getLastRun()
             etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
-            last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')
+            last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')  # noqa: E501
 
-            demisto.debug(f'JSON: The last run before fetch: {last_run}')
             if etag:
                 self.headers['If-None-Match'] = etag
 
@@ -200,6 +200,20 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
     return False
 
 
+def get_formatted_feed_name(feed_name: str):
+    """support for AWS Feed config name, example:
+        AMAZON$$CIDR
+    Args:
+        feed_name (str): The feed config name
+    """
+    prefix_feed_name = ''
+    if '$$' in feed_name:
+        prefix_feed_name = feed_name.split('$$')[0]
+        return prefix_feed_name
+
+    return feed_name
+
+
 def test_module(client: Client, limit) -> str:
     for feed_name, feed in client.feed_name_to_config.items():
         custom_build_iterator = feed.get('custom_build_iterator')
@@ -245,9 +259,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         mapping_function = feed_config.get('mapping_function', indicator_mapping)
         handle_indicator_function = feed_config.get('handle_indicator_function', handle_indicator)
         create_relationships_function = feed_config.get('create_relations_function')
-
-        if '-_-' in service_name:
-            service_name = service_name.split('-_-')[0]  # Support for AWS feed
+        service_name = get_formatted_feed_name(service_name)
 
         for item in items:
             if isinstance(item, str):

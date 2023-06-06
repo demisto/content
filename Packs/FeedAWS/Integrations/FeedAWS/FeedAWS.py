@@ -25,6 +25,40 @@ AVAILABLE_FEEDS = ['AMAZON',
                    'WORKSPACES_GATEWAYS',
                    ]
 
+AVAILABLE_REGIONS = ['af-south-1',
+                     'ap-east-1',
+                     'ap-east-2',
+                     'ap-northeast-1',
+                     'ap-northeast-2',
+                     'ap-northeast-3',
+                     'ap-south-1',
+                     'ap-south-2',
+                     'ap-southeast-1',
+                     'ap-southeast-2',
+                     'ap-southeast-3',
+                     'ap-southeast-4',
+                     'ca-central-1',
+                     'cn-north-1',
+                     'cn-northwest-1',
+                     'eu-central-1',
+                     'eu-central-2',
+                     'eu-north-1',
+                     'eu-south-1',
+                     'eu-south-2',
+                     'eu-west-1',
+                     'eu-west-2',
+                     'eu-west-3',
+                     'me-south-1',
+                     'me-central-1',
+                     'sa-east-1',
+                     'us-east-1',
+                     'us-east-2',
+                     'us-gov-east-1',
+                     'us-gov-west-1',
+                     'us-west-1',
+                     'us-west-2',
+                     'GLOBAL']
+
 
 def get_feed_config(services: list, regions: list):
     """
@@ -38,7 +72,7 @@ def get_feed_config(services: list, regions: list):
     """
 
     region_path = ''
-    if regions:
+    if regions and 'All' not in regions:
         region_path = f" && contains({regions}, region)"
 
     if 'All' in services or not services:
@@ -47,7 +81,7 @@ def get_feed_config(services: list, regions: list):
     feed_name_to_config = {}
 
     for feed in services:
-        feed_name_to_config[f'{feed}-_-CIDR'] = {
+        feed_name_to_config[f'{feed}$$CIDR'] = {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
             'extractor': f"prefixes[?service=='{feed}'{region_path}]",
             'indicator': 'ip_prefix',
@@ -59,7 +93,7 @@ def get_feed_config(services: list, regions: list):
             }
         }
 
-        feed_name_to_config[f'{feed}-_-IPv6'] = {
+        feed_name_to_config[f'{feed}$$IPv6'] = {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
             'extractor': f"ipv6_prefixes[?service=='{feed}'{region_path}]",
             'indicator': 'ipv6_prefix',
@@ -80,7 +114,7 @@ from JSONFeedApiModule import *  # noqa: E402
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
     params['feed_name_to_config'] = get_feed_config(params.get('services', ['All']),
-                                                    argToList(params.get('regions', [])))
+                                                    argToList(params.get('regions', ['All'])))
     feed_main(params, 'AWS Feed', 'aws')
 
 
