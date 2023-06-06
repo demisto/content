@@ -1,17 +1,15 @@
 id: 3CXDesktopApp Supply Chain Attack
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: 3CXDesktopApp Supply Chain Attack
 description: "### 3CXDesktopApp Supply Chain Attack\n\n#### Executive Summary \nOn March 29, 2023, CrowdStrike [released a blog](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/) discussing a supply chain attack involving a software-based phone application called [3CXDesktopApp](https://www.3cx.com/). \n\nAs of March 30, the 3CXDesktopApp installer hosted on the developer’s website will install the application with two malicious libraries included. The malicious libraries will ultimately run shellcode to load a backdoor on the system that allows actors to install additional malware on the victim machine.\n\nBetween March 9-30, 2023, we observed activity at 127 Cortex XDR customers that involved the 3CXDesktopApp process attempting to run shellcode, which was blocked by the XDR Agent’s In-process Shellcode Protection Module. Due to blocking the shellcode, we were unable to obtain the secondary payload used in this attack, so we cannot determine its capabilities or any post-exploitation activities carried out by the threat actor.\n\n#### Affected Products \nAccording to 3CX’s announcement, the supply chain attack involved 3CX’s Electron Windows App shipped in Update 7, version numbers 18.12.407 & 18.12.416 and Electron Mac App version numbers 18.11.1213, 18.12.402, 18.12.407 & 18.12.416.\n\n#### Playbook Flow\n\n**This playbook should be triggered manually or can be configured as a job.** \nPlease create a new incident and choose the 3CXDesktopApp Supply Chain Attack playbook and Rapid Breach Response incident type.\n\n**The playbook includes the following tasks:**\n\n**Hunting:**\n- Cortex XDR\n    - XQL hunting queries\n- Advanced SIEM queries\n    - Splunk\n    - QRadar\n    - Elasticsearch\n    - Azure Log Analytics\n- Indicators hunting\n\n**References:**\n\n[Threat Brief: 3CXDesktopApp Supply Chain Attack](https://unit42.paloaltonetworks.com/3cxdesktopapp-supply-chain-attack/)\n\n[CrowdStrike Falcon Platform Detects and Prevents Active Intrusion Campaign Targeting 3CXDesktopApp Customers](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bd42e131-7786-4323-8b35-24d1dad54c7d
+    taskid: 54eea8b6-4777-44a7-8d66-055519c95670
     type: start
     task:
-      id: bd42e131-7786-4323-8b35-24d1dad54c7d
+      id: 54eea8b6-4777-44a7-8d66-055519c95670
       version: -1
       name: ""
       iscommand: false
@@ -28,8 +26,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 20
+          "x": 2312.5,
+          "y": 50
         }
       }
     note: false
@@ -41,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7a739880-3046-4242-8d50-c13a52fcb7f0
+    taskid: 5e7c7de2-272f-4fb8-8afd-ac1768d22b37
     type: title
     task:
-      id: 7a739880-3046-4242-8d50-c13a52fcb7f0
+      id: 5e7c7de2-272f-4fb8-8afd-ac1768d22b37
       version: -1
       name: Collect Indicators
       type: title
@@ -61,8 +59,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1080,
-          "y": 180
+          "x": 695,
+          "y": 195
         }
       }
     note: false
@@ -74,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 81273ba7-088d-4dd2-8154-c24327adede2
+    taskid: f2ab5164-963b-4da0-8a23-27dcff31da94
     type: regular
     task:
-      id: 81273ba7-088d-4dd2-8154-c24327adede2
+      id: f2ab5164-963b-4da0-8a23-27dcff31da94
       version: -1
       name: Collect IoCs from Huntress
       description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
@@ -104,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1080,
-          "y": 320
+          "x": 50,
+          "y": 340
         }
       }
     note: false
@@ -117,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: bc4425c7-f5a6-4889-8bda-7077c5288dff
+    taskid: b4f341ac-7271-45a6-8da1-3d295d35ff06
     type: title
     task:
-      id: bc4425c7-f5a6-4889-8bda-7077c5288dff
+      id: b4f341ac-7271-45a6-8da1-3d295d35ff06
       version: -1
       name: Download Sigma Rules
       type: title
@@ -136,8 +134,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -420,
-          "y": 180
+          "x": 1770,
+          "y": 195
         }
       }
     note: false
@@ -149,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 60e876d5-4598-4419-8215-e2e071d57ce1
+    taskid: 2031aa6e-7c13-4806-8237-4a0753a28b6a
     type: regular
     task:
-      id: 60e876d5-4598-4419-8215-e2e071d57ce1
+      id: 2031aa6e-7c13-4806-8237-4a0753a28b6a
       version: -1
       name: Download Yara rules
       description: |-
@@ -185,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 320
+          "x": 2200,
+          "y": 340
         }
       }
     note: false
@@ -198,10 +196,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 66bb994c-44c0-475f-8179-9a6ab13ab92b
+    taskid: 8fa1cc0b-a771-49d8-86d0-9880c710109a
     type: regular
     task:
-      id: 66bb994c-44c0-475f-8179-9a6ab13ab92b
+      id: 8fa1cc0b-a771-49d8-86d0-9880c710109a
       version: -1
       name: Collect IoCs from CrowdStrike
       description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
@@ -228,8 +226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 320
+          "x": 480,
+          "y": 340
         }
       }
     note: false
@@ -241,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: bb87ed11-5429-4ed4-8740-9e4df5833f65
+    taskid: ac03da06-0027-4ac1-82d4-30ed7288c88c
     type: regular
     task:
-      id: bb87ed11-5429-4ed4-8740-9e4df5833f65
+      id: ac03da06-0027-4ac1-82d4-30ed7288c88c
       version: -1
       name: Potential Compromised 3CXDesktopApp ICO C2 File Download
       description: |-
@@ -277,8 +275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -210,
-          "y": 320
+          "x": 1770,
+          "y": 340
         }
       }
     note: false
@@ -290,10 +288,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 58e56f5b-9cba-4f3d-8c10-bfbe7b87e083
+    taskid: 9c1e0c4d-ee82-471d-8b32-6f63ac3f3ef0
     type: title
     task:
-      id: 58e56f5b-9cba-4f3d-8c10-bfbe7b87e083
+      id: 9c1e0c4d-ee82-471d-8b32-6f63ac3f3ef0
       version: -1
       name: Extract Indicators
       type: title
@@ -308,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 490
+          "x": 1882.5,
+          "y": 515
         }
       }
     note: false
@@ -321,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 36a7d5d6-3cc6-434b-8c55-7a0668248cd7
+    taskid: baf21477-0084-4d2e-8ec5-249668842d4e
     type: regular
     task:
-      id: 36a7d5d6-3cc6-434b-8c55-7a0668248cd7
+      id: baf21477-0084-4d2e-8ec5-249668842d4e
       version: -1
       name: Extract indicators from collected data
       description: commands.local.cmd.extract.indicators
@@ -368,8 +366,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 620
+          "x": 1882.5,
+          "y": 660
         }
       }
     note: false
@@ -381,10 +379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: cab58a1f-5075-4bc7-82a1-a8def34ce9c0
+    taskid: 51b4282c-3e04-4626-80d8-8d4f3f76c111
     type: title
     task:
-      id: cab58a1f-5075-4bc7-82a1-a8def34ce9c0
+      id: 51b4282c-3e04-4626-80d8-8d4f3f76c111
       version: -1
       name: Tag and Link Indicators
       type: title
@@ -401,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 780
+          "x": 1882.5,
+          "y": 835
         }
       }
     note: false
@@ -414,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 97144d02-d95b-4606-8180-97d944df3cbf
+    taskid: 0a193a29-8cb4-4474-8dde-8c01365b0913
     type: regular
     task:
-      id: 97144d02-d95b-4606-8180-97d944df3cbf
+      id: 0a193a29-8cb4-4474-8dde-8c01365b0913
       version: -1
       name: Link indicators to incident
       description: commands.local.cmd.associate.indicators
@@ -466,8 +464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1110
+          "x": 1482.5,
+          "y": 1155
         }
       }
     note: false
@@ -479,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 1d4b0b5d-716b-4c83-884b-ed0a3211041b
+    taskid: 95ee9c25-6b0c-4274-8982-fcc41c2f6dfd
     type: regular
     task:
-      id: 1d4b0b5d-716b-4c83-884b-ed0a3211041b
+      id: 95ee9c25-6b0c-4274-8982-fcc41c2f6dfd
       version: -1
       name: Tag File indicators
       description: commands.local.cmd.new.indicator
@@ -519,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 940
+          "x": 1237.5,
+          "y": 980
         }
       }
     note: false
@@ -532,10 +530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 501e8edb-63c7-4ef3-87a1-ae78d4b8e1c4
+    taskid: 007f0d95-a0ba-4038-84b8-2fcfc644cb59
     type: regular
     task:
-      id: 501e8edb-63c7-4ef3-87a1-ae78d4b8e1c4
+      id: 007f0d95-a0ba-4038-84b8-2fcfc644cb59
       version: -1
       name: Tag Domain indicators
       description: commands.local.cmd.new.indicator
@@ -572,8 +570,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 940
+          "x": 1667.5,
+          "y": 980
         }
       }
     note: false
@@ -585,10 +583,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 03ed06e2-1b38-4eb2-8982-ebecbcc43efa
+    taskid: 359ad968-b47b-4b76-845b-5d911001bdd9
     type: regular
     task:
-      id: 03ed06e2-1b38-4eb2-8982-ebecbcc43efa
+      id: 359ad968-b47b-4b76-845b-5d911001bdd9
       version: -1
       name: Tag URL indicators
       description: commands.local.cmd.new.indicator
@@ -625,8 +623,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 940
+          "x": 2097.5,
+          "y": 980
         }
       }
     note: false
@@ -638,10 +636,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 5021f922-3bd8-4e2d-820c-b9b7ee4f2c1f
+    taskid: 645c8e08-842f-4bb5-8546-812522a56a25
     type: title
     task:
-      id: 5021f922-3bd8-4e2d-820c-b9b7ee4f2c1f
+      id: 645c8e08-842f-4bb5-8546-812522a56a25
       version: -1
       name: Set Rapid Breach Response Layout
       type: title
@@ -656,8 +654,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1270
+          "x": 1482.5,
+          "y": 1330
         }
       }
     note: false
@@ -669,10 +667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 8df4e3f1-453e-4e21-85a5-4b02c8c8c88b
+    taskid: f7390ace-d32f-4157-8646-ac111b98b7d6
     type: playbook
     task:
-      id: 8df4e3f1-453e-4e21-85a5-4b02c8c8c88b
+      id: f7390ace-d32f-4157-8646-ac111b98b7d6
       version: -1
       name: Rapid Breach Response - Set Incident Info
       description: This playbook is responsible for setting up the Rapid Breach Response Incident Info tab in the layout.
@@ -732,8 +730,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1400
+          "x": 1482.5,
+          "y": 1475
         }
       }
     note: false
@@ -745,10 +743,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 1747b717-c5b2-4b2e-893c-5d1cdd839f16
+    taskid: 456b96b8-a950-461b-842f-56d9749f1853
     type: title
     task:
-      id: 1747b717-c5b2-4b2e-893c-5d1cdd839f16
+      id: 456b96b8-a950-461b-842f-56d9749f1853
       version: -1
       name: Threat Hunting
       type: title
@@ -765,8 +763,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1570
+          "x": 1482.5,
+          "y": 1650
         }
       }
     note: false
@@ -778,10 +776,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 0797cd0f-b85e-4f89-8228-4fd412575173
+    taskid: 181b800c-d0a3-4e9c-831a-32f5b0ab8567
     type: title
     task:
-      id: 0797cd0f-b85e-4f89-8228-4fd412575173
+      id: 181b800c-d0a3-4e9c-831a-32f5b0ab8567
       version: -1
       name: SIEM Advanced Hunting
       type: title
@@ -799,8 +797,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 1770
+          "x": 900,
+          "y": 1795
         }
       }
     note: false
@@ -812,10 +810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 4bffb960-6ecb-4602-8b6b-4462a6ffac6e
+    taskid: 0a076dd9-b990-4ed0-86df-b8b93b731dee
     type: condition
     task:
-      id: 4bffb960-6ecb-4602-8b6b-4462a6ffac6e
+      id: 0a076dd9-b990-4ed0-86df-b8b93b731dee
       version: -1
       name: Is Splunk Enabled?
       description: Check if Splunk instance is enabled.
@@ -858,8 +856,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 1930
+          "x": 122.5,
+          "y": 1940
         }
       }
     note: false
@@ -871,10 +869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 06090e45-e8ab-4722-8e22-c034b5e695a8
+    taskid: 73d098bf-ecdc-4486-837d-2c2ef77cd9ce
     type: condition
     task:
-      id: 06090e45-e8ab-4722-8e22-c034b5e695a8
+      id: 73d098bf-ecdc-4486-837d-2c2ef77cd9ce
       version: -1
       name: Is QRadar Enabled?
       description: Check if Splunk instance is enabled.
@@ -885,7 +883,7 @@ tasks:
       '#default#':
       - "105"
       "Yes":
-      - "93"
+      - "119"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -917,8 +915,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1700,
-          "y": 1930
+          "x": 572.5,
+          "y": 1940
         }
       }
     note: false
@@ -930,10 +928,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 5a344921-23d9-42f6-8f15-104b0b6ea2d8
+    taskid: 071dd18b-656c-4688-83a1-f0f1d824e1e1
     type: condition
     task:
-      id: 5a344921-23d9-42f6-8f15-104b0b6ea2d8
+      id: 071dd18b-656c-4688-83a1-f0f1d824e1e1
       version: -1
       name: Is Elasticsearch Enabled?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -979,8 +977,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2760,
-          "y": 1930
+          "x": 1022.5,
+          "y": 1940
         }
       }
     note: false
@@ -992,10 +990,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 05efd393-b744-4350-8604-33a4ffd13cce
+    taskid: a8575da1-d063-4add-87fa-b401ed9a677c
     type: condition
     task:
-      id: 05efd393-b744-4350-8604-33a4ffd13cce
+      id: a8575da1-d063-4add-87fa-b401ed9a677c
       version: -1
       name: Is Azure Log Analytics Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -1040,8 +1038,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 1930
+          "x": 1472.5,
+          "y": 1940
         }
       }
     note: false
@@ -1053,10 +1051,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 552701ee-0498-4669-865d-bcccdf602eb9
+    taskid: 08954328-ad79-45f9-8c40-4272e9aa0014
     type: regular
     task:
-      id: 552701ee-0498-4669-865d-bcccdf602eb9
+      id: 08954328-ad79-45f9-8c40-4272e9aa0014
       version: -1
       name: Potential Suspicious Child Process Of 3CXDesktopApp
       description: '[Detects potential suspicious child processes of ''3CXDesktopApp.exe''. Which could be related to the 3CXDesktopApp supply chain compromise](https://tdm.socprime.com/tdm/info/G04XEhJwTxGq/#intelligence_view)'
@@ -1075,8 +1073,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 2310
+          "x": 1585,
+          "y": 2290
         }
       }
     note: false
@@ -1088,10 +1086,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: daaca42f-7c53-4e08-8c0e-10d5af8b069a
+    taskid: b80090c2-ebf0-46e8-8646-b3ce9893ae84
     type: regular
     task:
-      id: daaca42f-7c53-4e08-8c0e-10d5af8b069a
+      id: b80090c2-ebf0-46e8-8646-b3ce9893ae84
       version: -1
       name: Potential 3CX 3CXDesktopApp Compromise Beaconing Activity
       description: '[Detects potential beaconing activity to domains related to 3CX 3CXDesktopApp compromise](https://tdm.socprime.com/tdm/info/DHiiboeVo3yr#intelligence_view)'
@@ -1116,52 +1114,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 2140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "86":
-    id: "86"
-    taskid: cd874c56-f8c2-435d-80f2-d7680801e950
-    type: playbook
-    task:
-      id: cd874c56-f8c2-435d-80f2-d7680801e950
-      version: -1
-      name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the context.
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "94"
-    scriptarguments:
-      interval:
-        simple: "1"
-      query_expression:
-        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND "ParentImage" ILIKE '%3CXDesktopApp.exe' AND ("Image" ILIKE '%reg.exe' OR "Image" ILIKE '%cmd.exe' OR "Image" ILIKE '%cscript.exe' OR "Image" ILIKE '%mshta.exe' OR "Image" ILIKE '%powershell.exe' OR "Image" ILIKE '%pwsh.exe' OR "Image" ILIKE '%regsvr32.exe' OR "Image" ILIKE '%rundll32.exe' OR "Image" ILIKE '%wscript.exe')
-      timeout:
-        simple: "600"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1700,
-          "y": 2310
+          "x": 235,
+          "y": 2115
         }
       }
     note: false
@@ -1173,10 +1127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 37778a85-d027-4fb7-834c-dc171f7d6fdd
+    taskid: 4df8d06d-153e-48b9-8151-bc244f378a4c
     type: title
     task:
-      id: 37778a85-d027-4fb7-834c-dc171f7d6fdd
+      id: 4df8d06d-153e-48b9-8151-bc244f378a4c
       version: -1
       name: Cortex XDR - XQL Hunting
       type: title
@@ -1191,8 +1145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1780
+          "x": 2025,
+          "y": 1955
         }
       }
     note: false
@@ -1204,10 +1158,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: fc63f40a-2fe3-4734-89f6-f0474080c7df
+    taskid: b1b7aa0d-6667-471b-8153-d791fb5368d6
     type: regular
     task:
-      id: fc63f40a-2fe3-4734-89f6-f0474080c7df
+      id: b1b7aa0d-6667-471b-8153-d791fb5368d6
       version: -1
       name: Detect execution of 3cx application "3CXDesktopApp.exe"
       description: '#### Detect execution of 3cx application "3CXDesktopApp.exe"'
@@ -1231,8 +1185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2140
+          "x": 2137.5,
+          "y": 2290
         }
       }
     note: false
@@ -1244,10 +1198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: a32241ca-d1be-4689-88e4-35fed08e8214
+    taskid: 1a360c0c-9bcb-4b47-83c0-5dc73167f53c
     type: condition
     task:
-      id: a32241ca-d1be-4689-88e4-35fed08e8214
+      id: 1a360c0c-9bcb-4b47-83c0-5dc73167f53c
       version: -1
       name: Is Cortex XDR XQL Query Engine Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -1294,8 +1248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1930
+          "x": 2025,
+          "y": 2115
         }
       }
     note: false
@@ -1307,10 +1261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 1b4a09c9-db99-42a7-8c5a-1b611124e9bc
+    taskid: e77b4fcb-57f2-4cc1-80cf-e3a01fb6ad70
     type: regular
     task:
-      id: 1b4a09c9-db99-42a7-8c5a-1b611124e9bc
+      id: e77b4fcb-57f2-4cc1-80cf-e3a01fb6ad70
       version: -1
       name: Detect network connections to known c2 domains
       description: '#### Detect network connections to known c2 domains'
@@ -1334,8 +1288,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2310
+          "x": 2137.5,
+          "y": 2465
         }
       }
     note: false
@@ -1347,10 +1301,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 83461a00-d95c-4b51-8d7e-541abe535041
+    taskid: fdb4417a-ac57-4c46-8782-4d322997fd61
     type: regular
     task:
-      id: 83461a00-d95c-4b51-8d7e-541abe535041
+      id: fdb4417a-ac57-4c46-8782-4d322997fd61
       version: -1
       name: Potential 3CX 3CXDesktopApp Compromise Beaconing Activity
       description: '[Detects potential beaconing activity to domains related to 3CX 3CXDesktopApp compromise](https://tdm.socprime.com/tdm/info/DHiiboeVo3yr#intelligence_view)'
@@ -1372,8 +1326,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 2140
+          "x": 1585,
+          "y": 2115
         }
       }
     note: false
@@ -1385,10 +1339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: a3e17397-2c27-4d51-8b66-368410038b7d
+    taskid: 06cc4c1e-1f44-409b-86a2-1885738dbff7
     type: regular
     task:
-      id: a3e17397-2c27-4d51-8b66-368410038b7d
+      id: 06cc4c1e-1f44-409b-86a2-1885738dbff7
       version: -1
       name: Potential Compromised 3CXDesktopApp Activity
       description: '[Detects execution of known compromised version of 3CXDesktopApp](https://tdm.socprime.com/tdm/info/ChBkV5ohpMgh/#intelligence_view)'
@@ -1407,96 +1361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "93":
-    id: "93"
-    taskid: a51a793e-8de1-4d83-8058-043bf015a535
-    type: playbook
-    task:
-      id: a51a793e-8de1-4d83-8058-043bf015a535
-      version: -1
-      name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the context.
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "86"
-    scriptarguments:
-      interval:
-        simple: "1"
-      query_expression:
-        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND (UTF8(payload) ILIKE '%akamaicontainer.com%' OR UTF8(payload) ILIKE '%akamaitechcloudservices.com%' OR UTF8(payload) ILIKE '%azuredeploystore.com%' OR UTF8(payload) ILIKE '%azureonlinecloud.com%' OR UTF8(payload) ILIKE '%azureonlinestorage.com%' OR UTF8(payload) ILIKE '%dunamistrd.com%' OR UTF8(payload) ILIKE '%glcloudservice.com%' OR UTF8(payload) ILIKE '%journalide.org%' OR UTF8(payload) ILIKE '%msedgepackageinfo.com%' OR UTF8(payload) ILIKE '%msstorageazure.com%' OR UTF8(payload) ILIKE '%msstorageboxes.com%' OR UTF8(payload) ILIKE '%officeaddons.com%' OR UTF8(payload) ILIKE '%officestoragebox.com%' OR UTF8(payload) ILIKE '%pbxcloudeservices.com%' OR UTF8(payload) ILIKE '%pbxphonenetwork.com%' OR UTF8(payload) ILIKE '%pbxsources.com%' OR UTF8(payload) ILIKE '%qwepoi123098.com%' OR UTF8(payload) ILIKE '%sbmsa.wiki%' OR UTF8(payload) ILIKE '%sourceslabs.com%' OR UTF8(payload) ILIKE '%visualstudiofactory.com%' OR UTF8(payload) ILIKE '%zacharryblogs.com%')
-      timeout:
-        simple: "600"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1700,
-          "y": 2140
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "94":
-    id: "94"
-    taskid: e33081de-a83a-4589-8fd9-eae76bab15b2
-    type: playbook
-    task:
-      id: e33081de-a83a-4589-8fd9-eae76bab15b2
-      version: -1
-      name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the context.
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "105"
-    scriptarguments:
-      interval:
-        simple: "1"
-      query_expression:
-        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND (((UTF8(payload) ILIKE '%3CXDesktopApp.exe%' OR "Image" ILIKE '%\3CXDesktopApp.exe' OR UTF8(payload) ILIKE '%3CX Desktop App%') AND (UTF8(payload) ILIKE '%18.12.407%' OR UTF8(payload) ILIKE '%18.12.416%')) OR (("File Hash" ILIKE '%SHA256=DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC%' OR "File Hash" ILIKE '%SHA256=FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405%' OR "File Hash" ILIKE '%SHA256=AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868%' OR "File Hash" ILIKE '%SHA256=59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983%' OR "File Hash" ILIKE '%SHA1=6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA%' OR "File Hash" ILIKE '%SHA1=8433A94AEDB6380AC8D4610AF643FB0E5220C5CB%' OR "File Hash" ILIKE '%SHA1=BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA%' OR "File Hash" ILIKE '%SHA1=BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E%') OR ("SHA256 Hash" = 'DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC' OR "SHA256 Hash" = 'FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405' OR "SHA256 Hash" = 'AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868' OR "SHA256 Hash" = '59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983') OR ("SHA1 Hash" = '6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA' OR "SHA1 Hash" = '8433A94AEDB6380AC8D4610AF643FB0E5220C5CB' OR "SHA1 Hash" = 'BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA' OR "SHA1 Hash" = 'BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E')))
-      timeout:
-        simple: "600"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1700,
-          "y": 2470
+          "x": 1585,
+          "y": 2465
         }
       }
     note: false
@@ -1508,10 +1374,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: fcb5499b-60e1-47b5-8633-0fe9350cc796
+    taskid: ebd4c32c-67c3-4d0a-8c1f-e5650f9ef8e2
     type: regular
     task:
-      id: fcb5499b-60e1-47b5-8633-0fe9350cc796
+      id: ebd4c32c-67c3-4d0a-8c1f-e5650f9ef8e2
       version: -1
       name: Potential Compromised 3CXDesktopApp Activity
       description: '[Detects execution of known compromised version of 3CXDesktopApp](https://tdm.socprime.com/tdm/info/ChBkV5ohpMgh/#intelligence_view)'
@@ -1536,8 +1402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 2470
+          "x": 235,
+          "y": 2465
         }
       }
     note: false
@@ -1549,10 +1415,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: b4a7f094-058a-4fd9-837c-9b42848b6c75
+    taskid: 3f5fd956-72e9-40d3-8a5e-7ae290f4e34c
     type: regular
     task:
-      id: b4a7f094-058a-4fd9-837c-9b42848b6c75
+      id: 3f5fd956-72e9-40d3-8a5e-7ae290f4e34c
       version: -1
       name: Potential Suspicious Child Process Of 3CXDesktopApp
       description: '[Detects potential suspicious child processes of ''3CXDesktopApp.exe''. Which could be related to the 3CXDesktopApp supply chain compromise](https://tdm.socprime.com/tdm/info/G04XEhJwTxGq/#intelligence_view)'
@@ -1577,8 +1443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 2310
+          "x": 235,
+          "y": 2290
         }
       }
     note: false
@@ -1590,10 +1456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: 2e422d24-1f89-482b-8a68-a09747677458
+    taskid: 6233df84-ab5a-42fe-888e-9a31beb7bc65
     type: regular
     task:
-      id: 2e422d24-1f89-482b-8a68-a09747677458
+      id: 6233df84-ab5a-42fe-888e-9a31beb7bc65
       version: -1
       name: Potential Suspicious Child Process Of 3CXDesktopApp
       description: '[Detects potential suspicious child processes of ''3CXDesktopApp.exe''. Which could be related to the 3CXDesktopApp supply chain compromise](https://tdm.socprime.com/tdm/info/G04XEhJwTxGq/#intelligence_view)'
@@ -1615,8 +1481,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2760,
-          "y": 2310
+          "x": 1135,
+          "y": 2290
         }
       }
     note: false
@@ -1628,10 +1494,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "99":
     id: "99"
-    taskid: a21cd45c-2f4d-4c02-800a-60a9f2173a76
+    taskid: 2534c5e2-3d08-43d9-8efa-6fdcf06140fa
     type: regular
     task:
-      id: a21cd45c-2f4d-4c02-800a-60a9f2173a76
+      id: 2534c5e2-3d08-43d9-8efa-6fdcf06140fa
       version: -1
       name: Potential Compromised 3CXDesktopApp Activity
       description: '[Detects execution of known compromised version of 3CXDesktopApp](https://tdm.socprime.com/tdm/info/ChBkV5ohpMgh/#intelligence_view)'
@@ -1653,8 +1519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2760,
-          "y": 2470
+          "x": 1135,
+          "y": 2465
         }
       }
     note: false
@@ -1666,10 +1532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: 5f84da3e-b4b6-41c1-8c50-5a5fce44316b
+    taskid: 72d9ef87-3089-490e-8bab-f1329ab5adc5
     type: regular
     task:
-      id: 5f84da3e-b4b6-41c1-8c50-5a5fce44316b
+      id: 72d9ef87-3089-490e-8bab-f1329ab5adc5
       version: -1
       name: Potential 3CX 3CXDesktopApp Compromise Beaconing Activity
       description: '[Detects potential beaconing activity to domains related to 3CX 3CXDesktopApp compromise](https://tdm.socprime.com/tdm/info/DHiiboeVo3yr#intelligence_view)'
@@ -1691,8 +1557,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2760,
-          "y": 2140
+          "x": 1135,
+          "y": 2115
         }
       }
     note: false
@@ -1704,10 +1570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "101":
     id: "101"
-    taskid: 1753fcd0-4575-47dd-8bb9-af1376dc7557
+    taskid: f8c04ad8-ac49-47c2-853f-ac224f05c2b5
     type: playbook
     task:
-      id: 1753fcd0-4575-47dd-8bb9-af1376dc7557
+      id: f8c04ad8-ac49-47c2-853f-ac224f05c2b5
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -1768,8 +1634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -130,
-          "y": 1930
+          "x": 2567.5,
+          "y": 2465
         }
       }
     note: false
@@ -1781,10 +1647,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "102":
     id: "102"
-    taskid: d32087eb-8dac-429e-82ee-cb2005791d06
+    taskid: 6515ac4d-a20f-4be6-8b0e-5e552e653abe
     type: condition
     task:
-      id: d32087eb-8dac-429e-82ee-cb2005791d06
+      id: 6515ac4d-a20f-4be6-8b0e-5e552e653abe
       version: -1
       name: Should block indicators automatically?
       description: Checks whether to block the indicators automatically.
@@ -1814,8 +1680,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2790
+          "x": 1237.5,
+          "y": 2785
         }
       }
     note: false
@@ -1827,10 +1693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "103":
     id: "103"
-    taskid: 0cfe09da-10fe-467e-872b-c95d2a9fc23a
+    taskid: 62b8d2e4-68aa-466e-838b-1fd44249c6eb
     type: playbook
     task:
-      id: 0cfe09da-10fe-467e-872b-c95d2a9fc23a
+      id: 62b8d2e4-68aa-466e-838b-1fd44249c6eb
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -1964,7 +1830,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
+          "x": 1452.5,
           "y": 2960
         }
       }
@@ -1977,10 +1843,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "104":
     id: "104"
-    taskid: 9934f4cd-ec95-4154-8227-ae73058d836e
+    taskid: 2665baf4-cfed-4cf4-8f8f-914e0b827693
     type: regular
     task:
-      id: 9934f4cd-ec95-4154-8227-ae73058d836e
+      id: 2665baf4-cfed-4cf4-8f8f-914e0b827693
       version: -1
       name: Handle indicators manually
       description: Manual task for indicators handling.
@@ -1995,7 +1861,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
+          "x": 1022.5,
           "y": 2960
         }
       }
@@ -2008,10 +1874,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "105":
     id: "105"
-    taskid: 3c43cf41-33ff-4992-8d11-1b5a1c98be1a
+    taskid: fcd20a1c-7cc2-454c-84a7-f1ee1954c1e9
     type: title
     task:
-      id: 3c43cf41-33ff-4992-8d11-1b5a1c98be1a
+      id: fcd20a1c-7cc2-454c-84a7-f1ee1954c1e9
       version: -1
       name: Remediation
       type: title
@@ -2026,8 +1892,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2650
+          "x": 1237.5,
+          "y": 2640
         }
       }
     note: false
@@ -2039,10 +1905,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "106":
     id: "106"
-    taskid: 3eaac537-0a17-4338-89e3-55e4ba3cc280
+    taskid: 528bb5d8-c5ef-420b-857b-0bf53f61817f
     type: title
     task:
-      id: 3eaac537-0a17-4338-89e3-55e4ba3cc280
+      id: 528bb5d8-c5ef-420b-857b-0bf53f61817f
       version: -1
       name: Indicators Hunting
       description: Whether to continue with the investigation or close it.
@@ -2057,8 +1923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -130,
-          "y": 1780
+          "x": 2567.5,
+          "y": 2305
         }
       }
     note: false
@@ -2070,10 +1936,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: fdc10066-8cf8-47d3-8877-eca077a896f8
+    taskid: 90aca9ac-55ee-4723-8565-02818f186993
     type: regular
     task:
-      id: fdc10066-8cf8-47d3-8877-eca077a896f8
+      id: 90aca9ac-55ee-4723-8565-02818f186993
       version: -1
       name: Investigate further
       description: Continue with the investigation manually.
@@ -2088,8 +1954,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 3770
+          "x": 1350,
+          "y": 3775
         }
       }
     note: false
@@ -2101,10 +1967,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: f35c3cc2-d68b-4477-8657-3897d6364533
+    taskid: 248b78ed-0c09-40ec-8a22-e978685e1aa3
     type: title
     task:
-      id: f35c3cc2-d68b-4477-8657-3897d6364533
+      id: 248b78ed-0c09-40ec-8a22-e978685e1aa3
       version: -1
       name: Done
       type: title
@@ -2116,8 +1982,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 4110
+          "x": 1237.5,
+          "y": 4125
         }
       }
     note: false
@@ -2129,10 +1995,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: adad6a9c-bbc8-417c-8be8-d5519008e2e2
+    taskid: f996283e-917e-48f9-8f23-13b773cdc5a4
     type: condition
     task:
-      id: adad6a9c-bbc8-417c-8be8-d5519008e2e2
+      id: f996283e-917e-48f9-8f23-13b773cdc5a4
       version: -1
       name: Should continue with the investigation?
       description: Whether to continue with the investigation or close it.
@@ -2149,8 +2015,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 3590
+          "x": 1237.5,
+          "y": 3600
         }
       }
     note: false
@@ -2162,10 +2028,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: c8be60db-d67c-4ec2-8d30-34175bda035f
+    taskid: ecbf15bb-6c7a-4534-87e1-62832d438793
     type: title
     task:
-      id: c8be60db-d67c-4ec2-8d30-34175bda035f
+      id: ecbf15bb-6c7a-4534-87e1-62832d438793
       version: -1
       name: Resolution
       type: title
@@ -2180,8 +2046,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 3440
+          "x": 1237.5,
+          "y": 3455
         }
       }
     note: false
@@ -2193,10 +2059,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: ce9479b5-d142-4d5a-86de-217bb200a038
+    taskid: 5bb7504a-524c-4393-88f2-ab3a68655b4c
     type: regular
     task:
-      id: ce9479b5-d142-4d5a-86de-217bb200a038
+      id: 5bb7504a-524c-4393-88f2-ab3a68655b4c
       version: -1
       name: Close investigation
       description: commands.local.cmd.close.inv
@@ -2212,7 +2078,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 1237.5,
           "y": 3950
         }
       }
@@ -2225,10 +2091,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: f41989a1-e79d-4f8e-8428-a9162bbff369
+    taskid: c8fa50bb-3a4f-42f9-8366-8973dc38f766
     type: title
     task:
-      id: f41989a1-e79d-4f8e-8428-a9162bbff369
+      id: c8fa50bb-3a4f-42f9-8366-8973dc38f766
       version: -1
       name: Mitigation
       type: title
@@ -2244,8 +2110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 3130
+          "x": 1237.5,
+          "y": 3135
         }
       }
     note: false
@@ -2257,10 +2123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 0b580eb5-3e06-48e8-82e1-3ed00400a8d9
+    taskid: 9287f669-6633-47fd-8d1b-c9bdd94be45a
     type: regular
     task:
-      id: 0b580eb5-3e06-48e8-82e1-3ed00400a8d9
+      id: 9287f669-6633-47fd-8d1b-c9bdd94be45a
       version: -1
       name: Deploy Yara rules
       description: |
@@ -2278,8 +2144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 3270
+          "x": 1022.5,
+          "y": 3280
         }
       }
     note: false
@@ -2291,10 +2157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: d33bf0f0-795c-47ba-8330-de34e144d120
+    taskid: f0db082e-fe8d-470b-831a-1cf5a3df7d86
     type: regular
     task:
-      id: d33bf0f0-795c-47ba-8330-de34e144d120
+      id: f0db082e-fe8d-470b-831a-1cf5a3df7d86
       version: -1
       name: Deploy Sigma rules
       description: "The Sigma rules file is ready to be used in the incident War Room, you can also find it by filtering for '**Sigma**' tag.\n\nFile names: \n\n1. proxy_malware_3cx_compromise_susp_ico_requests.yml\n2. proxy_malware_3cx_compromise_c2_beacon_activity.yml\n\n"
@@ -2309,8 +2175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 3270
+          "x": 1452.5,
+          "y": 3280
         }
       }
     note: false
@@ -2322,10 +2188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "116":
     id: "116"
-    taskid: e2696891-41c4-43fb-88b3-c8e923405463
+    taskid: 2d26ac10-f94b-438e-8a61-ae652c7f7952
     type: regular
     task:
-      id: e2696891-41c4-43fb-88b3-c8e923405463
+      id: 2d26ac10-f94b-438e-8a61-ae652c7f7952
       version: -1
       name: Collect IoCs from Unit42
       description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
@@ -2352,8 +2218,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 320
+          "x": 910,
+          "y": 340
         }
       }
     note: false
@@ -2365,10 +2231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: 86026b89-36f4-4b7d-8f14-b2ffd5074114
+    taskid: 9f51c2c0-00cb-4906-8d4d-b661cfb5134b
     type: regular
     task:
-      id: 86026b89-36f4-4b7d-8f14-b2ffd5074114
+      id: 9f51c2c0-00cb-4906-8d4d-b661cfb5134b
       version: -1
       name: Potential Compromised 3CXDesktopApp Beaconing Activity - Proxy
       description: |-
@@ -2401,8 +2267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -630,
-          "y": 320
+          "x": 1340,
+          "y": 340
         }
       }
     note: false
@@ -2414,10 +2280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "118":
     id: "118"
-    taskid: bdb5bf8c-d2cf-4e42-82b0-0db20c59cc92
+    taskid: 2cf72216-a2e1-4fc0-89ad-d02e76efb5d5
     type: title
     task:
-      id: bdb5bf8c-d2cf-4e42-82b0-0db20c59cc92
+      id: 2cf72216-a2e1-4fc0-89ad-d02e76efb5d5
       version: -1
       name: Download Yara Rules
       type: title
@@ -2432,8 +2298,119 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 180
+          "x": 2200,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 4c2202f7-e435-4cd0-87de-0d2086f12c00
+    type: regular
+    task:
+      id: 4c2202f7-e435-4cd0-87de-0d2086f12c00
+      version: -1
+      name: qradar-search-retrieve-events
+      description: Polling command to search for events of a specific offense.
+      script: '|||qradar-search-retrieve-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "120"
+    scriptarguments:
+      polling:
+        simple: "true"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND (UTF8(payload) ILIKE '%akamaicontainer.com%' OR UTF8(payload) ILIKE '%akamaitechcloudservices.com%' OR UTF8(payload) ILIKE '%azuredeploystore.com%' OR UTF8(payload) ILIKE '%azureonlinecloud.com%' OR UTF8(payload) ILIKE '%azureonlinestorage.com%' OR UTF8(payload) ILIKE '%dunamistrd.com%' OR UTF8(payload) ILIKE '%glcloudservice.com%' OR UTF8(payload) ILIKE '%journalide.org%' OR UTF8(payload) ILIKE '%msedgepackageinfo.com%' OR UTF8(payload) ILIKE '%msstorageazure.com%' OR UTF8(payload) ILIKE '%msstorageboxes.com%' OR UTF8(payload) ILIKE '%officeaddons.com%' OR UTF8(payload) ILIKE '%officestoragebox.com%' OR UTF8(payload) ILIKE '%pbxcloudeservices.com%' OR UTF8(payload) ILIKE '%pbxphonenetwork.com%' OR UTF8(payload) ILIKE '%pbxsources.com%' OR UTF8(payload) ILIKE '%qwepoi123098.com%' OR UTF8(payload) ILIKE '%sbmsa.wiki%' OR UTF8(payload) ILIKE '%sourceslabs.com%' OR UTF8(payload) ILIKE '%visualstudiofactory.com%' OR UTF8(payload) ILIKE '%zacharryblogs.com%')
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 2115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: c02870c2-188b-457a-8b5f-4a597c65a76f
+    type: regular
+    task:
+      id: c02870c2-188b-457a-8b5f-4a597c65a76f
+      version: -1
+      name: qradar-search-retrieve-events
+      description: Polling command to search for events of a specific offense.
+      script: '|||qradar-search-retrieve-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      polling:
+        simple: "true"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND "ParentImage" ILIKE '%3CXDesktopApp.exe' AND ("Image" ILIKE '%reg.exe' OR "Image" ILIKE '%cmd.exe' OR "Image" ILIKE '%cscript.exe' OR "Image" ILIKE '%mshta.exe' OR "Image" ILIKE '%powershell.exe' OR "Image" ILIKE '%pwsh.exe' OR "Image" ILIKE '%regsvr32.exe' OR "Image" ILIKE '%rundll32.exe' OR "Image" ILIKE '%wscript.exe')
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: e999733d-e0e3-4585-840b-27380e8f5434
+    type: regular
+    task:
+      id: e999733d-e0e3-4585-840b-27380e8f5434
+      version: -1
+      name: qradar-search-retrieve-events
+      description: Polling command to search for events of a specific offense.
+      script: '|||qradar-search-retrieve-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      polling:
+        simple: "true"
+      query_expression:
+        simple: SELECT UTF8(payload) FROM events WHERE LOGSOURCETYPENAME(devicetype)='Microsoft Windows Security Event Log' AND (((UTF8(payload) ILIKE '%3CXDesktopApp.exe%' OR "Image" ILIKE '%\3CXDesktopApp.exe' OR UTF8(payload) ILIKE '%3CX Desktop App%') AND (UTF8(payload) ILIKE '%18.12.407%' OR UTF8(payload) ILIKE '%18.12.416%')) OR (("File Hash" ILIKE '%SHA256=DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC%' OR "File Hash" ILIKE '%SHA256=FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405%' OR "File Hash" ILIKE '%SHA256=AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868%' OR "File Hash" ILIKE '%SHA256=59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983%' OR "File Hash" ILIKE '%SHA1=6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA%' OR "File Hash" ILIKE '%SHA1=8433A94AEDB6380AC8D4610AF643FB0E5220C5CB%' OR "File Hash" ILIKE '%SHA1=BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA%' OR "File Hash" ILIKE '%SHA1=BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E%') OR ("SHA256 Hash" = 'DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC' OR "SHA256 Hash" = 'FAD482DED2E25CE9E1DD3D3ECC3227AF714BDFBBDE04347DBC1B21D6A3670405' OR "SHA256 Hash" = 'AA124A4B4DF12B34E74EE7F6C683B2EBEC4CE9A8EDCF9BE345823B4FDCF5D868' OR "SHA256 Hash" = '59E1EDF4D82FAE4978E97512B0331B7EB21DD4B838B850BA46794D9C7A2C0983') OR ("SHA1 Hash" = '6285FFB5F98D35CD98E78D48B63A05AF6E4E4DEA' OR "SHA1 Hash" = '8433A94AEDB6380AC8D4610AF643FB0E5220C5CB' OR "SHA1 Hash" = 'BEA77D1E59CF18DCE22AD9A2FAD52948FD7A9EFA' OR "SHA1 Hash" = 'BFECB8CE89A312D2EF4AFC64A63847AE11C6F69E')))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 2465
         }
       }
     note: false
@@ -2449,7 +2426,6 @@ view: |-
       "79_105_#default#": 0.1,
       "79_84_Yes": 0.43,
       "80_105_#default#": 0.12,
-      "80_93_Yes": 0.6,
       "81_100_Yes": 0.38,
       "81_105_#default#": 0.1,
       "82_105_#default#": 0.18,
@@ -2459,10 +2435,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4155,
-        "width": 3770,
-        "x": -630,
-        "y": 20
+        "height": 4140,
+        "width": 2897.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
