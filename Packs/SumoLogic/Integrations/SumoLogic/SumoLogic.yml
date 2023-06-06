@@ -30,7 +30,7 @@ configuration:
   hidden: true
 - display: Access ID - can be created in Sumo Logic under "Settings"
   name: credentialsAccess
-  required: true
+  required: false
   type: 9
   displaypassword: Access key - can be created in Sumo Logic under "Settings"
   section: Connect
