@@ -6921,7 +6921,7 @@ def is_integration_command_execution():
         return True
 
 
-EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning a CommandResults with entry_type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
+EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning results with Type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
 
 
 def return_results(results):
@@ -6984,11 +6984,10 @@ def return_results(results):
         else:
             demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
 
+    elif is_integration or (isinstance(results, dict) and results.get('Type') != EntryType.EXECUTION_METRICS):
+        demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
     else:
-        if is_integration or results.get('Type') != EntryType.EXECUTION_METRICS:
-            demisto.results(results)
-        else:
-            demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
+        demisto.results(results)
 
 
 # deprecated
