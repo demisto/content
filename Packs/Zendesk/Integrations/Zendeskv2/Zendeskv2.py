@@ -17,7 +17,8 @@ ORGANIZATIONS_HEADERS = ['id', 'name', 'domain_names', 'tags', 'external_id', 'c
 TICKETS_HEADERS = ['id', 'subject', 'description', 'priority', 'status', 'assignee_id', 'created_at', 'updated_at', 'external_id']
 COMMENTS_HEADERS = ['id', 'body', 'created_at', 'public', 'attachments']
 ATTACHMENTS_HEADERS = ['id', 'file_name', 'content_url', 'size', 'content_type']
-GROUP_HEADERS = ['id', 'name', 'email', 'role', 'created_at']
+GROUP_USER_HEADERS = ['id', 'name', 'email', 'role', 'created_at']
+GROUP_HEADERS = ['id', 'name', 'is_public', 'created_at', 'updated_at']
 ARTICLES_HEADERS = ['body']
 ROLES = ['end-user', 'admin', 'agent']
 ROLE_TYPES = {
@@ -517,7 +518,7 @@ class ZendeskClient(BaseClient):
     # ---- group related functions ---- #
     @staticmethod
     def __command_results_zendesk_group_users(users: List[Dict]):  # pragma: no cover
-        readable_outputs = tableToMarkdown(name='Zendesk Group Users:', t=users, headers=GROUP_HEADERS,
+        readable_outputs = tableToMarkdown(name='Zendesk Group Users:', t=users, headers=GROUP_USER_HEADERS,
                                            headerTransform=camelize_string)
         return CommandResults(outputs_prefix="Zendesk.UserGroup",
                               outputs=users, readable_output=readable_outputs)
@@ -528,21 +529,13 @@ class ZendeskClient(BaseClient):
 
     @staticmethod
     def __command_results_zendesk_groups(groups):  # pragma: no cover
-        readable_outputs = tableToMarkdown(name='Zendesk groups:', t=groups, headers=ORGANIZATIONS_HEADERS,
+        readable_outputs = tableToMarkdown(name='Zendesk groups:', t=groups, headers=GROUP_HEADERS,
                                            headerTransform=camelize_string)
         return CommandResults(outputs_prefix="Zendesk.Group",
                               outputs=groups, readable_output=readable_outputs)
 
-    def _get_groups_by_user_id(self, user_id: str) -> Dict[str, Any]:
-        return self._http_request('GET', f'users/{user_id}/groups')
-
-    def list_groups(self, user_id: Optional[str]):
-        if user_id:
-            groups = [self._get_groups_by_user_id(user_id)]
-        else:
-            groups = list(
-                self._paged_request(url_suffix='groups', data_field_name='groups', **kwargs))
-
+    def list_groups(self, **kwargs):
+        groups = list(self._paged_request(url_suffix='groups', data_field_name='groups', **kwargs))
         return self.__command_results_zendesk_groups(groups)
 
     # ---- ticket related functions ---- #
@@ -569,7 +562,7 @@ class ZendeskClient(BaseClient):
     def __get_sort_params(sort: str, cursor_paging: bool = False):
         Validators.validate_ticket_sort(sort)
         if not cursor_paging:
-            # using the offest paged request
+            # using the offset paged request
             sort_list = sort.split('_')
             sort, order = '_'.join(sort_list[:-1]), sort_list[-1]
             return {
@@ -867,8 +860,8 @@ class ZendeskClient(BaseClient):
 
         raise exception from None
 
-    @staticmethod
-    def _ticket_to_incident(ticket: Dict, attachments):
+    # @staticmethod
+    def _ticket_to_incident(self, ticket: Dict):
         ticket |= {
             'severity': PRIORITY_MAP.get(ticket['priority']),
             'mirror_instance': INTEGRATION_INSTANCE,
@@ -881,7 +874,7 @@ class ZendeskClient(BaseClient):
             'rawJSON': json.dumps(ticket),
             'name': ticket['subject'],
             'occurred': ticket['created_at'],
-            'attachments': attachments
+            'attachments': ZendeskClient.get_attachment_entries(self, ticket=ticket)
         }
 
     @staticmethod
@@ -941,12 +934,30 @@ class ZendeskClient(BaseClient):
 
         return next_run
 
-    def get_ticket_file_attachments(self, ticket_id: str):
+    def get_attachments_ids(self, ticket):
+        """
+        Get all the attachment ids for a ticket
+        """
+        attachments_ids = []
+        ticket_id = ticket['id']
         comments_list = self._get_comments(ticket_id=ticket_id)
         for comment in comments_list:
-            print(comment)
-            attachment = comment.get('attachment', {})
-        return
+            attachments = comment.get('attachments', [])
+            for attachment in attachments:
+                attachment_id = attachment.get('id')
+                attachments_ids.append(attachment_id)
+
+        return attachments_ids
+
+    def get_attachment_entries(self, ticket):
+        attachments_ids = self.get_attachments_ids(ticket)
+        attachments = []
+        for attachment_id in attachments_ids:
+            attachment = self.zendesk_attachment_get(attachment_id)
+            attachment.pop(0)
+            attachments.append(attachment)
+            demisto.debug(f'The fetched attachments for ID {attachment_id} - {attachments}')
+        return attachments
 
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
         last_run = json.loads(lastRun or 'null') or demisto.getLastRun() or {}
@@ -966,8 +977,12 @@ class ZendeskClient(BaseClient):
         search_results_ids = list(map(lambda x: x['id'], search_results))
         filtered_search_results_ids = list(filter(lambda x: x not in fetched_tickets, search_results_ids))
         tickets = map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids)
-        attachments = self.get_ticket_file_attachments()
-        incidents = list(map(self._ticket_to_incident, tickets, attachments))
+        # attachment_ids = map(self.get_attachments_ids, tickets)
+        # attachments = self.get_attachment_entries(map(self.get_attachments_ids, tickets))
+        # print(attachments)
+        # sys.exit(0)
+        # attachments = self.get_ticket_file_attachments()
+        incidents = list(map(self._ticket_to_incident, tickets))
 
         demisto.incidents(incidents)
         fetched_tickets.extend(filtered_search_results_ids)
@@ -1155,6 +1170,9 @@ def main():  # pragma: no cover
             'zendesk-user-update': client.zendesk_user_update,
             'zendesk-user-delete': client.zendesk_user_delete,
             'zendesk-group-user-list': client.list_group_users,
+
+            # Group commands
+            'zendesk-group-list': client.list_groups,
 
             # organization commands
             'zendesk-organization-list': client.zendesk_organization_list,

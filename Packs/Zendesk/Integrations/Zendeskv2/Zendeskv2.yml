@@ -843,6 +843,46 @@ script:
     - contextPath: Zendesk.UserGroup.verified
       description: Whether any of the user's identities is verified.
       type: Boolean
+  - name: zendesk-group-list
+    description: |-
+      Get Zendesk groups. 
+      Allowed for: Admins, Agents.
+    arguments:
+    - name: limit
+      default: true
+      description: Maximum number of results to return. Default is 50.
+    - name: page_size
+      description: The page size (used for pagination).
+    - name: page_number
+      description: The page number (used for pagination).
+    outputs:
+      - contextPath: Zendesk.Group.created_at
+        description: 'The time the group was created.'
+        type: Date
+      - contextPath: Zendesk.Group.default
+        description: 'If the group is the default one for the account.'
+        type: Boolean
+      - contextPath: Zendesk.Group.deleted
+        description: 'Deleted groups get marked as such.'
+        type: Boolean
+      - contextPath: Zendesk.Group.description
+        description: 'The description of the group.'
+        type: String
+      - contextPath: Zendesk.Group.id
+        description: 'The group ID.'
+        type: Number
+      - contextPath: Zendesk.Group.is_public
+        description: If true, the group is public. If false, the group is private. You can't change a private group to a public group
+        type: Boolean
+      - contextPath: Zendesk.Group.name
+        description: 'The name of the group.'
+        type: String
+      - contextPath: Zendesk.Group.updated_at
+        description: 'The time of the last update of the group.'
+        type: Date
+      - contextPath: Zendesk.Group.url
+        description: 'The API url of the group.'
+        type: String
   - name: zendesk-ticket-list
     description: |-
       List Zendesk tickets. 

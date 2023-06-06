@@ -912,3 +912,65 @@ Allowed for: Admins, Agents and Light Agents.
 >|---|---|---|---|---|
 >| 1908275070333 | Admin | test@user.com | admin | 2022-03-27T08:42:06Z |
 
+### zendesk-group-list
+
+***
+Get Zendesk groups. 
+Allowed for: Admins, Agents.
+
+#### Base Command
+
+`zendesk-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page_size | The page size (used for pagination). | Optional | 
+| page_number | The page number (used for pagination). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zendesk.Group.created_at | Date | The time the group was created. | 
+| Zendesk.Group.default | Boolean | If the group is the default one for the account. | 
+| Zendesk.Group.deleted | Boolean | Deleted groups get marked as such. | 
+| Zendesk.Group.description | String | The description of the group. | 
+| Zendesk.Group.id | Number | The group ID. | 
+| Zendesk.Group.is_public | Boolean | If true, the group is public. If false, the group is private. You can't change a private group to a public group | 
+| Zendesk.Group.name | String | The name of the group. | 
+| Zendesk.Group.updated_at | Date | The time of the last update of the group. | 
+| Zendesk.Group.url | String | The API url of the group. | 
+
+#### Command example
+```!zendesk-group-list limit=1```
+#### Context Example
+```json
+{
+    "Zendesk": {
+        "Group": [
+            {
+                "created_at": "2023-06-06T07:44:20Z",
+                "default": false,
+                "deleted": false,
+                "description": "This is a group for testing",
+                "id": 11395818128925,
+                "is_public": true,
+                "name": "Test Group",
+                "updated_at": "2023-06-06T07:44:20Z",
+                "url": "https://some-url/api/v2/groups/11395818128925.json"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zendesk groups:
+>|Id| Name |IsPublic|CreatedAt|UpdatedAt|
+>|------|---|---|---|---|
+>| 11395818128925 | Test Group | true | 2023-06-06T07:44:20Z | 2023-06-06T07:44:20Z |
+
