@@ -3538,14 +3538,39 @@ def xml_get(xml_dict: dict | Any, key: Any, subkeys=('member', '#text', '@name')
     return value
 
 
+def dict_get(dict_object, keys, default_return_value=None, return_type=None, recursive=True):
+    """
+    Get a value from a dictionary.
+    
+    """
+    return_value = dict_object
+
+    for i, key in enumerate(keys):
+        try:
+            return_value = return_value[key]
+        except (KeyError, TypeError, IndexError, AttributeError):
+            if recursive and isinstance(return_value, list):
+                return [dict_get(item, keys[i:], default_return_value, return_type, recursive)
+                        for item in return_value]
+            break
+        
+    if return_type and not isinstance(return_value, return_type):
+        return_value = default_return_value
+
+    return return_value
+
+
 def prettify_rule(rule: dict):
 
-    rule_get = partial(xml_get, rule)
+    def rule_get(*path: str, from_dict: dict = rule, return_type = (str, list)):
+        return dict_get(from_dict, keys = path+('member',),  return_type = return_type)
+    
+    parse_pan_os_un_committed_data(rule, [])
 
     pretty_rule: Dict[str, Any] = {
 
         'DeviceGroup': DEVICE_GROUP,
-        'Location': rule.get('@loc'),
+        'Location': rule_get('@loc'),
         'NegateDestination': rule_get('negate-destination'),
         'Disabled': rule_get('disabled'),
         'ICMPUnreachable': rule_get('icmp-unreachable'),
@@ -3553,19 +3578,17 @@ def prettify_rule(rule: dict):
         'GroupTag': rule_get('group-tag'),
         'LogForwardingProfile': rule_get('log-setting'),
         'NegateSource': rule_get('negate-source'),
-        'SecurityProfileGroup': rule_get(
-            'profile-setting', subkeys=('group', 'member', '#text')),
+        'SecurityProfileGroup': rule_get('profile-setting', 'group'),
         'SecurityProfile': {
-            k: xml_get(pfs, k)
-            for k in pfs.keys()
-            if not str(k).startswith('@')
-        }
-        if isinstance(pfs := dict_safe_get(rule, ('profile-setting', 'profiles')), dict)
-        else None,
-
+                key: rule_get(from_dict=profiles)
+                for key in profiles.keys()
+                if not str(key).startswith('@')
+            }
+            if (profiles := dict_safe_get(rule, ('profile-setting', 'profiles'), dict))
+            else None,
         'Target': {
-            'devices': xml_get(target := dict_safe_get(rule, ['target'], {}, dict), 'devices'),
-            'negate': xml_get(target, 'negate'),
+            'devices': rule_get('target', 'devices', 'entry', '@name'),
+            'negate': rule_get('target', 'negate'),
         },
         'Name': rule_get('@name'),
         'Type': rule_get('rule-type'),
@@ -3586,8 +3609,8 @@ def prettify_rule(rule: dict):
             'LogForwarding': rule_get("log-setting"),
             'Schedule': rule_get("schedule"),
             # type: ignore[assignment, arg-type, attr-defined, union-attr] # pylint: disable=assignment
-            'QoSMarking': next(key for key in qos.keys() if not key.startswith("@")) if isinstance(qos := dict_safe_get(rule, ('qos', 'marking')), dict) else qos,
-            'DisableServerResponseInspection': xml_get(rule.get('option'), "disable-server-response-inspection")
+            'QoSMarking': next(key for key in qos.keys() if not key.startswith('@')) if isinstance(qos := dict_safe_get(rule, ('qos', 'marking')), dict) else qos,
+            'DisableServerResponseInspection': rule_get('option', 'disable-server-response-inspection')
         }
     }
 
