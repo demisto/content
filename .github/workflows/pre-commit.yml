@@ -17,6 +17,8 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.ref }}
+
     - name: Setup python
       uses: actions/setup-python@v4
       with:
@@ -34,7 +36,9 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
-      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure
+      run: |
+        npm install
+        poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
 
     - name: Commit and push changes
       if: contains( github.event.pull_request.labels.*.name, 'autofix-enable')
