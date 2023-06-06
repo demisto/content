@@ -319,8 +319,8 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
         container_name = args.get('container_name', '')
         # url = f'/resourceGroups/{self.resource_group_name}/providers/Microsoft.Storage/storageAccounts/' \
         #       f'{args["account_name"]}/blobServices/default/containers/{args.get("container_name", "")}'
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Storage/\
-storageAccounts/{account_name}/blobServices/default/containers/{container_name}'
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/\
+providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}'
 
         params = {
             'api-version': API_VERSION,
@@ -353,6 +353,13 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
         return self.ms_client.http_request(
             method='GET',
             full_url=f'https://management.azure.com/subscriptions?api-version={API_VERSION}')
+
+    def list_resource_groups_request(self, subscription_id: str | None,
+                                     filter_by_tag: str | None, limit: str | None) -> Dict:
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+        return self.ms_client.http_request('GET', full_url=full_url,
+                                           params={'$filter': filter_by_tag, '$top': limit,
+                                                   'api-version': API_VERSION})
 
 # Storage Account Commands
 
@@ -766,7 +773,58 @@ def sql_subscriptions_list(client: ASClient) -> CommandResults:
     )
 
 
-# Authentication Functions
+def sql_resource_group_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
+    """
+    List all resource groups in the subscription.
+    Args:
+        client (KeyVaultClient):  Azure Key Vault API client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    tag = args.get('tag')
+    limit = arg_to_number(args.get('limit', 50))
+    subscription_id_list = argToList(args.get('subscription_id', params.get('subscription_id')))
+    filter_by_tag = ''
+    if tag:
+        try:
+            tag = json.loads(tag)
+            tag_name = next(iter(tag))
+            tag_value = tag[tag_name]
+            filter_by_tag = f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
+        except Exception as e:
+            raise Exception("""Invalid tag format, please use the following format: '{"key_name":"value_name"}""", e)
+
+    all_responses = []
+    for subscription_id in subscription_id_list:
+        response = client.list_resource_groups_request(subscription_id=subscription_id,
+                                                       filter_by_tag=filter_by_tag, limit=limit)
+        import json
+
+        details = response
+
+        with open('convert.json', 'w') as convert_file:
+            convert_file.write(json.dumps(details))
+        if "error" in response:
+            raise Exception(response)
+        all_responses.extend(response.get('value', []))
+
+    readable_output = tableToMarkdown('Resource Groups List',
+                                      all_responses,
+                                      ['name', 'location', 'tags',
+                                       'properties.provisioningState'
+                                       ],
+                                      removeNull=True, headerTransform=string_to_table_header)
+    return CommandResults(
+        outputs_prefix='AzureStorage.ResourceGroup',
+        outputs_key_field='id',
+        outputs=all_responses,
+        raw_response=all_responses,
+        readable_output=readable_output,
+    )
+
+    # Authentication Functions
 
 
 def start_auth(client: ASClient) -> CommandResults:
@@ -866,6 +924,8 @@ def main() -> None:
             return_results(storage_blob_containers_delete(client, params, args))
         elif command == 'azure-sql-subscriptions-list':
             return_results(sql_subscriptions_list(client))
+        elif command == 'azure-sql-resource-group-list':
+            return_results(sql_resource_group_list(client, params, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
