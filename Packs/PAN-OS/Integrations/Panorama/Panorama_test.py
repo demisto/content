@@ -1216,8 +1216,7 @@ def test_apply_security_profiles_command_when_one_already_exists(mocker):
             'pre_post': 'rule-test'
         }
     )
-    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'},
-                                                         'vulnerability': {'member': 'test-do-not-delete'}})
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
     mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
     request_mock = mocker.patch('Panorama.http_request')
 
@@ -1229,11 +1228,8 @@ def test_apply_security_profiles_command_when_one_already_exists(mocker):
         'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
                  "/rule-test/security/rules/entry[@name='rule-test']",
         'key': 'thisisabogusAPIKEY!',
-        'element': '<profile-setting><profiles>'
-                   '<spyware><member>strict</member></spyware>'
-                   '<virus><member>Tap</member></virus>'
-                   '<vulnerability><member>test-do-not-delete</member></vulnerability>'
-                   '</profiles></profile-setting>'}
+        'element': '<profile-setting><profiles><spyware><member>strict</member></spyware>'
+                   '<virus><member>Tap</member></virus></profiles></profile-setting>'}
     assert res.call_args.args[0] == 'The profile strict has been applied to the rule rule-test'
 
 
