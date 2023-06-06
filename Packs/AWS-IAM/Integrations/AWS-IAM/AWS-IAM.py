@@ -1251,7 +1251,6 @@ def put_user_policy_command(args, aws_client):
     }
 
     response = client.put_user_policy(**kwargs)
-    print(response)
     try:
         if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
             human_readable = f"Policy {policy_name} was added to user {user_name}"
@@ -1261,10 +1260,6 @@ def put_user_policy_command(args, aws_client):
                                f"\nencountered the following exception: {str(e)}")
 
 
-
-
-
-
 def put_group_policy_command(args, aws_client):
     client = aws_client.aws_session(
         service=SERVICE
@@ -1272,22 +1267,26 @@ def put_group_policy_command(args, aws_client):
 
     policy_document = args.get('policyDocument')
     policy_name = args.get('policyName')
-    role_name = args.get('roleName')
+    group_name = args.get('groupName')
 
     kwargs = {
         'PolicyDocument': policy_document,
         'PolicyName': policy_name,
-        'RoleName': role_name
+        'GroupName': group_name
     }
 
-    response = client.put_role_policy(**kwargs)
+    response = client.put_group_policy(**kwargs)
+    print(response)
     try:
         if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to role {role_name}"
+            human_readable = f"Policy {policy_name} was added to group {group_name}"
             return_outputs(human_readable, {}, response)
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+        raise DemistoException(f"Couldn't add policy {policy_name} was added to group {group_name}"
                                f"\nencountered the following exception: {str(e)}")
+
+
+
 
 
 def tag_role_command(args, aws_client):
