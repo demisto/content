@@ -14,19 +14,10 @@ configuration:
   type: 0
   hidden: true
 - display: Client Secret
-  hidden: true
   name: client_secret
   required: false
   type: 4
-- display: Client ID
-  name: credentials_client
-  required: false
-  type: 9
-  displaypassword: Client Secret
-  section: Connect
-- additionalinfo: Allows running multiple clients (stream consumers) simultaneously,
-    as each integration instance needs a unique application ID. Must be a max. of
-    32 alphanumeric characters (a-z, A-Z, 0-9).
+- additionalinfo: Allows running multiple clients (stream consumers) simultaneously, as each integration instance needs a unique application ID. Must be a max. of 32 alphanumeric characters (a-z, A-Z, 0-9).
   defaultvalue: Demisto
   display: Application ID
   name: app_id
