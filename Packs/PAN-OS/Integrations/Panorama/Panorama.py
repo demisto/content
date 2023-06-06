@@ -6917,7 +6917,7 @@ def get_security_profiles_command(security_profile: str = None):
 
 @logger
 def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> Dict:
-    # first api call just for getting the current status
+    # get the rule state
     params = {
         'action': 'get',
         'type': 'config',
