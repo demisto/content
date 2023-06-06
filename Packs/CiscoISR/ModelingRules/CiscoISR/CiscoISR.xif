@@ -9,7 +9,7 @@ alter
         destinationIPipv4 = arrayindex(regextract(_raw_log ,"\s\-\>\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
         destinationIPipv6 = arrayindex(regextract(_raw_log ,"\s\-\>\s([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
         destinationPort = arrayindex(regextract(_raw_log ,"\s\-\>\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\((\d+)\)"),0),
-        protocol = arrayindex(regextract(_raw_log ,"\:\s[A-Za-z\%\-0-9]+\:\s\w+\s\d+\s\w+\s(\w+)\s"),0),
+        protocol = uppercase(arrayindex(regextract(_raw_log ,"\:\s[A-Za-z\%\-0-9]+\:\s\w+\s\d+\s\w+\s(\w+)\s"),0)),
         severity = arrayindex(regextract(_raw_log ,"%[\-\_\w]+[\-\_\w]*\-(\d+)\-"),0),
         user1 = arrayindex(regextract(_raw_log ,"user\s(\w+)\s"),0),
         user2 = arrayindex(regextract(_raw_log ,"User\:(\w+)\s"),0),
