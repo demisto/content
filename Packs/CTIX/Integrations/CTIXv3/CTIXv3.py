@@ -1972,12 +1972,8 @@ def cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     page = 1
     page_size = 15
     params = {"page": page, "page_size": page_size}
-    cve = args["cve"]
-    if isinstance(cve, str):
-        cve = cve.split(',')
-    extra_fields = args.get("extra_fields", [])
-    if isinstance(extra_fields, str):
-        extra_fields = extra_fields.split(',')
+    cve = argToList(args["cve"])
+    extra_fields = argToList(args.get("extra_fields", []))
     response = client.get_lookup_threat_data("vulnerability", [], cve, params)
     threat_data_list = response.get("data", {}).get("results", [])
     results = [data for data in threat_data_list]
@@ -2043,9 +2039,9 @@ def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, pa
 
     cve_standard_context = Common.CVE(name, cvss2, created, modified, description)
     data = {
-        "cpes": cpe_list if cpe_list else "None",
-        "cvss2": cvss2 if cvss2 else "None",
-        "cvss3": cvss3 if cvss3 else "None",
+        "cpes": cpe_list or "None",
+        "cvss2": cvss2 or "None",
+        "cvss3": cvss3 or "None",
         "dbot_reputation": dbot_reputation_score,
         "description": description,
         "last_modified": modified,
