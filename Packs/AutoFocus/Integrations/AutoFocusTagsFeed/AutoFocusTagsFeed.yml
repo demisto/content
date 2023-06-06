@@ -2,7 +2,6 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AutoFocusTagsFeed
   version: -1
-defaultEnabled: false
 configuration:
 - display: AutoFocus Endpoint URL
   name: url
@@ -10,7 +9,6 @@ configuration:
   type: 0
   required: true
 - displaypassword: API key
-  hidden: false
   hiddenusername: true
   name: api_key
   required: false
