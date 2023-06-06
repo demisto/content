@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.8'
       - name: Setup Poetry
-        run: pipx install poetry
+        run: pip install poetry
       - name: Install python dependencies
         run: |
           poetry install --with ci

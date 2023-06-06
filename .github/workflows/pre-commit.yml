@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Install poetry
-      run: pipx install poetry
+      run: pip install poetry
 
     - name: Checkout
       uses: actions/checkout@v3
