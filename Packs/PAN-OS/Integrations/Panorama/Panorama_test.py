@@ -6756,6 +6756,7 @@ def test_panorama_list_tags(mocker, include_shared):
     import requests
     Panorama.URL = 'https://1.1.1.1:443/'
     Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = ''
     tags_response_xml = """<response status="success" code="19"><result total-count="1" count="1">
         <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
             <entry name="tag1">
