@@ -29,11 +29,9 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016, EXCHANGE_2019)
 
-#remove!
-from exchangelib import Folder 
 Folder.FIELDS = [f for f in Folder.FIELDS if f.name != 'permission_set']
 
-# from future import utils as future_utils # removed for new docker, revert
+from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
 
@@ -53,7 +51,7 @@ TNS = None
 if exchangelib.__version__ == "1.12.0":
     MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
 else:
-    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS  # pylint: disable=E1101 #exchangelib change
+    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS  # pylint: disable=E1101
 
 # consts
 VERSIONS = {
@@ -639,9 +637,6 @@ def get_items_from_mailbox(account, item_ids):     # pragma: no cover
     result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
     if len(result) != len(item_ids):
         raise Exception("One or more items were not found/malformed. Check the input item ids")
-    # if exchangelib.__version__ != "1.12.0":  # Docker BC
-    #     for item in result:
-    #         item.folder = Folder(account=account)
     return result
 
 
@@ -667,7 +662,6 @@ def is_default_folder(folder_path, is_public):      # pragma: no cover
 
 def get_folder_by_path(account, path, is_public=False):     # pragma: no cover
     # handle exchange folder id
-    demisto.debug(f'args: {account=}, {path=}, {is_public=}')
     if len(path) == 120:
         folders_map = account.root._folders_map
         if path in folders_map:
@@ -1019,9 +1013,9 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
                 if len(result) >= MAX_FETCH:
                     break
         except ValueError as exc:
-            # future_utils.raise_from(ValueError(
-            #     'Got an error when pulling incidents. You might be using the wrong exchange version.'
-            # ), exc)
+            future_utils.raise_from(ValueError(
+                'Got an error when pulling incidents. You might be using the wrong exchange version.'
+            ), exc)
             raise exc
     demisto.debug('EWS V2 - Got total of {} from ews query. '.format(len(result)))
     return result
@@ -1098,14 +1092,6 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         return raw_dict
 
     raw_dict = parse_object_as_dict_with_serialized_items(item)
-    # for field, value in list(item.__dict__.items()): #ofri - this results in an empty object, any way to reimpliment?
-    #     if type(value) in [str, int, float, bool, Body, HTMLBody, None]:
-    #         try:
-    #             if isinstance(value, str):
-    #                 value.encode('utf-8')  # type: ignore
-    #             raw_dict[field] = value
-    #         except Exception:
-    #             pass
 
     if getattr(item, 'attachments', None):
         raw_dict['attachments'] = [parse_attachment_as_dict(item.id, x) for x in item.attachments]
@@ -1146,10 +1132,6 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
                        'has_attachments', 'importance', 'message_id', 'last_modified_time',
                        'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read', 'categories']
 
-        # # Docker BC
-        # if exchangelib.__version__ == "1.12.0":
-        #     if 'id' in raw_dict:
-        #         new_dict['item_id'] = raw_dict['id']
         fields_list.append('item_id')
 
         for field in fields_list:
@@ -2460,10 +2442,6 @@ def sub_main():     # pragma: no cover
                 demisto.results(log_message + " Please retry the instance configuration test.")
                 sys.exit(0)
             error_message_simple = log_message + " Please retry your request."
-
-        # # Other exception handling
-        # if isinstance(e, Exception):
-        #     e.message = str(e)
 
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
