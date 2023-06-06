@@ -408,7 +408,7 @@ Retrieves details about your account's limits and usage in an AWS Region.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -489,7 +489,7 @@ Returns the resource-based IAM policy for a function, version, or alias.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -562,7 +562,7 @@ Returns a list of versions, with the version-specific configuration of each.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -675,7 +675,7 @@ Returns details about a Lambda function URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -691,9 +691,9 @@ Returns details about a Lambda function URL.
 | AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that the function URL uses. Set to AWS_IAM if you want to restrict access to authenticated users only. Set to NONE if you want to bypass IAM authentication to create a public endpoint. | 
 | AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to the function URL. The default is false. | 
 | AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | List | The HTTP headers that origins can include in requests to the function URL. For example Date, Keep-Alive, X-Custom-Header. | 
-| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | List of strings | The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character \( \*\). | 
-| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | List of strings | The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character \( \*\). | 
-| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | List of strings | The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header. | 
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | List | The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character \( \*\). | 
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | List | The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character \( \*\). | 
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | List | The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header. | 
 | AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results. | 
 | AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
 | AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
@@ -740,7 +740,7 @@ Returns the version-specific settings of a Lambda function or version. The outpu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -854,7 +854,7 @@ Deletes a Lambda function URL. When you delete a function URL, you can’t recov
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -877,7 +877,7 @@ Deletes a Lambda function. To delete a specific function version, use the Qualif
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
