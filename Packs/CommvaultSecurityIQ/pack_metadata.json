@@ -4,8 +4,8 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Commvault Systems",
-    "url": "",
-    "email": "svc.Cv-securityIQ@commvault.com",
+    "url": "https://www.commvault.com/support",
+    "email": "support@commvault.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -14,15 +14,18 @@
         "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Commvault",
+        "Metallic",
+        "SIEM Connector",
+        "Threat Intelligence",
+        "Ransomware"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
     ],
-    "devEmail": [
-        "svc.Cv-securityIQ@commvault.com"
-    ],
     "githubUser": [
-        "svc.Cv-securityIQ@commvault.com"
+        "Cv-securityIQ"
     ]
 }
