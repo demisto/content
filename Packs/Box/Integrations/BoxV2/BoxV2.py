@@ -169,9 +169,8 @@ class Client(BaseClient):
             self.credentials_dict = json.loads(auth_params.get('cred_json', {}).get(
                 'password') or auth_params.get('credentials_json', '{}'))
         except ValueError as e:
-            raise DemistoException(
-                "Failed to parse the credentials JSON. Please  make sure  credentials JSON is provided"
-                "and verify the jason is valid. ", exception=e)
+            raise DemistoException("Failed to parse the credentials JSON. Please verify the JSON is "
+                                   "valid.", exception=e)
         self.credentials = self.credentials_dict.get('boxAppSettings')
         self.client_id = self.credentials.get('clientID')
         self.app_auth = self.credentials.get('appAuth')
