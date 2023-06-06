@@ -626,7 +626,7 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
     })
 
 
-def set_fields(fields: list) -> str:  # pragma: no cover
+def set_fields(fields: Optional[list]) -> str:  # pragma: no cover
     fields_str = ''
     if fields:
         if 'include_all_metadata' in fields:
@@ -805,10 +805,10 @@ def tc_get_indicator_types(client: Client, args: dict) -> None:  # pragma: no co
 
 
 def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pragma: no cover
-    owners = args.get('owner', '')
-    limit = args.get('limit', '500')
-    page = args.get('page', '0')
-    tag = args.get('tag')
+    owners: str = args.get('owner', '')
+    limit: str = args.get('limit', '500')
+    page: str = args.get('page', '0')
+    tag: str = args.get('tag') or ''
     fields_to_return = argToList(args.get('fields_to_return') or []).append(['tags'])
     indicators = tc_get_indicators(client, owners=owners, limit=limit, page=page, tag=tag,
                                    fields_to_return=fields_to_return)
@@ -827,7 +827,7 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
 
 
 def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
-    indicator = args.get('indicator')
+    indicator = args.get('indicator', '')
     fields_to_return = argToList(args.get('fields_to_return') or [])
     indicator_id = ''
     summary = ''
@@ -1198,7 +1198,7 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
 def tc_tag_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
     tags = args.get('tag')
     response = tc_update_indicator_command(client, args, mode='append', return_raw=True, tags=tags)
-    ec, human_readable = create_context([response], fields_to_return='tags')
+    ec, human_readable = create_context([response], fields_to_return=['tags'])
 
     return_results({
         'Type': entryTypes['note'],
@@ -1217,7 +1217,7 @@ def tc_delete_indicator_tag_command(client: Client, args: dict) -> None:  # prag
     indicator_id = args.get('indicator')
     response = tc_update_indicator_command(client, args, mode='delete', return_raw=True, tags=tag,
                                            indicator=indicator_id)
-    ec, human_readable = create_context([response], fields_to_return=True)
+    ec, human_readable = create_context([response], fields_to_return=['tags'])
 
     return_results({
         'Type': entryTypes['note'],
