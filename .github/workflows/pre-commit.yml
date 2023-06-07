@@ -36,7 +36,7 @@ jobs:
     - name: run pre-commit
       run: |
         npm install
-        poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
+        poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --sdk-ref 262dc414e2b794a99100030d3d01a7ac3aaa05ef
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
