@@ -49,3 +49,12 @@ filter
     xdm.source.ipv4 =  source_ipv4,
     xdm.source.ipv6 =  source_ipv6,
     xdm.target.user.groups  = arraycreate(coalesce(json_extract_scalar(description, "$.role"),""));
+filter
+    eventtype = "telephony"
+| alter
+        xdm.observer.name = HOST,
+        xdm.event.type = eventtype,
+        xdm.auth.mfa.method = type,
+        xdm.event.description = context,
+        xdm.event.id = telephony_id,
+        xdm.source.host.hostname = phone;
