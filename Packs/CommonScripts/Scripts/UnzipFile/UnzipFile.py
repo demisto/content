@@ -28,10 +28,7 @@ def get_zip_path(args):
             fn = demisto.get(entry, 'File')
 
             # We check the python version to prevent encoding issues. Effects Demisto 4.5+
-            if sys.version_info > (3, 0):
-                is_text = type(fn) is str
-            else:
-                is_text = type(fn) in [unicode, str]  # pylint: disable=E0602
+            is_text = type(fn) is str  # pylint: disable=E0602
 
             is_correct_file = args.get('fileName', '').lower() == fn.lower()
             is_zip = fn.lower().endswith('.zip')
