@@ -165,3 +165,86 @@ def test_main(mocker, owners, external_service, expected_out):
     results_mock = mocker.patch('GetProjectOwners.CommandResults')
     main()
     assert results_mock.call_args_list == [unittest.mock.call(readable_output=expected_out)]
+
+
+def test_main_integration_error(mocker):
+    """
+    Verify that if get_iam_policy raises a RuntimeError, it's handled in main (main does not raise)
+    """
+    arg_payload = {}
+    arg_payload["owners"] = [{
+        "email": "test-service-5@expanse-afr-sbx.iam.gserviceaccount.com",
+        "name": "n/a",
+        "source": "GCP",
+        "timestamp": "2023-05-30T00:00:00.000000Z",
+    }]
+    arg_payload["external_service"] = "Google"
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value=arg_payload
+    )
+    iam_policy_mock = mocker.patch("GetProjectOwners.get_iam_policy")
+    iam_policy_mock.side_effect = RuntimeError("Error retrieving IAM policy for GCP project expanse-afr-sbx")
+
+    mocker.patch("GetProjectOwners.return_results")
+    results_mock = mocker.patch('GetProjectOwners.CommandResults')
+    with does_not_raise():
+        main()
+    assert results_mock.call_args_list == [unittest.mock.call(readable_output="No additional project owners found")]
+
+
+def test_main_project_name_error(mocker):
+    """
+    Verify that if extract_project_name raises a ValueError, it's handled in main (main does not raise)
+    """
+    arg_payload = {}
+    arg_payload["owners"] = [{
+        "email": "project-number-compute@developer.gserviceaccount.com",
+        "name": "n/a",
+        "source": "GCP",
+        "timestamp": "2023-05-30T00:00:00.000000Z",
+    }]
+    arg_payload["external_service"] = "Google"
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value=arg_payload
+    )
+    project_mock = mocker.patch("GetProjectOwners.extract_project_name")
+    project_mock.side_effect = ValueError(
+        "Could not extract project name from service account project-number-compute@developer.gserviceaccount.com"
+    )
+
+    mocker.patch("GetProjectOwners.return_results")
+    results_mock = mocker.patch('GetProjectOwners.CommandResults')
+    with does_not_raise():
+        main()
+    assert results_mock.call_args_list == [unittest.mock.call(readable_output="No additional project owners found")]
+
+
+def test_main_get_project_owners_error(mocker):
+    """
+    Verify that if get_project_owners raises a ValueError, it's handled in main (main does not raise)
+    """
+    arg_payload = {}
+    arg_payload["owners"] = [{
+        "email": "test-service-5@expanse-afr-sbx.iam.gserviceaccount.com",
+        "name": "n/a",
+        "source": "GCP",
+        "timestamp": "2023-05-30T00:00:00.000000Z",
+    }]
+    arg_payload["external_service"] = "Google"
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value=arg_payload
+    )
+    project_mock = mocker.patch("GetProjectOwners.get_project_owners")
+    project_mock.side_effect = ValueError("Error getting project owners from IAM policy")
+
+    mocker.patch("GetProjectOwners.return_results")
+    results_mock = mocker.patch('GetProjectOwners.CommandResults')
+    with does_not_raise():
+        main()
+    assert results_mock.call_args_list == [unittest.mock.call(readable_output="No additional project owners found")]
