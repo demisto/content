@@ -1689,7 +1689,8 @@ def main() -> None:
 
         account_json = params.get('user_creds', {}).get('password') or params.get('user_service_account_json')
         user_id = params.get('user_creds', {}).get('identifier') or params.get('user_id', '')
-
+        params['user_id'] = user_id
+        
         if not account_json:
             raise DemistoException('Please fill out the User\'s Service Account JSON field.')
 
