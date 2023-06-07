@@ -12,7 +12,7 @@
         },
         "valuesFormat": "abbreviated"
     },
-    "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and assigneduser:-\"\" -status:closed",
+    "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and -owner:\"\" -status:closed",
     "modified": "2023-03-21T20:00:04.081795659Z",
     "name": "Assigned Active Xpanse Incidents",
     "dateRange": {
