@@ -1041,7 +1041,7 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
                     },
                     "id": "f7ce414a24634240ae0a7894823d8707",
                     "jid": "f7ce414a24634240ae0a7894823d8707@conference.xmpp.zoom.us",
-                    "name": "TestChannel3",
+                    "name": "Channel1",
                     "type": 3
                 },
                 {
@@ -1054,7 +1054,7 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
                     },
                     "id": "e82e99ac9b0c40b08449c76766cf398d",
                     "jid": "e82e99ac9b0c40b08449c76766cf398d@conference.xmpp.zoom.us",
-                    "name": "Admins_to_delete_2",
+                    "name": "Channel2",
                     "type": 3
                 },
                 {
@@ -1067,7 +1067,7 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
                     },
                     "id": "e7e2c5e1ba854056906af1c9dc36148f",
                     "jid": "e7e2c5e1ba854056906af1c9dc36148f@conference.xmpp.zoom.us",
-                    "name": "TestChannel1",
+                    "name": "Channel3",
                     "type": 3
                 },
                 {
@@ -1080,195 +1080,13 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
                     },
                     "id": "e6388c9667c245c3844009ae995664d5",
                     "jid": "e6388c9667c245c3844009ae995664d5@conference.xmpp.zoom.us",
-                    "name": "channel_test_new_1",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "e48ee1f1e275411a9ba35cf2195af085",
-                    "jid": "e48ee1f1e275411a9ba35cf2195af085@conference.xmpp.zoom.us",
-                    "name": "channel_test_88",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": false,
-                        "posting_permissions": 1
-                    },
-                    "id": "92b0268aaf8d4039948b17d783b08198",
-                    "jid": "92b0268aaf8d4039948b17d783b08198@conference.xmpp.zoom.us",
-                    "name": "TestGroupChannel1",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "88f2f20f4abd415cba2429538be58025",
-                    "jid": "88f2f20f4abd415cba2429538be58025@conference.xmpp.zoom.us",
-                    "name": "Channel-Updated",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "82d5343ad2eb43d1a776ee4256b65061",
-                    "jid": "82d5343ad2eb43d1a776ee4256b65061@conference.xmpp.zoom.us",
-                    "name": "'channel_test_6'",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "7828a1b283bd426199094e5ea0aa9353",
-                    "jid": "7828a1b283bd426199094e5ea0aa9353@conference.xmpp.zoom.us",
-                    "name": "Channel",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "76abb5f4f3b2472d98da35bf14f8774d",
-                    "jid": "76abb5f4f3b2472d98da35bf14f8774d@conference.xmpp.zoom.us",
-                    "name": "channel_test_7777",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "7047e64e5a194511a5ec0ce9473a54d7",
-                    "jid": "7047e64e5a194511a5ec0ce9473a54d7@conference.xmpp.zoom.us",
-                    "name": "'channel_test_5'",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "6934e0d6393440d9b480fc56c324f77a",
-                    "jid": "6934e0d6393440d9b480fc56c324f77a@conference.xmpp.zoom.us",
-                    "name": "'channel_test_4'",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "3be766db616d4cbaac9fec0c68351b86",
-                    "jid": "3be766db616d4cbaac9fec0c68351b86@conference.xmpp.zoom.us",
-                    "name": "jj_t",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "3bd1e31d385e4018b12aa68487dad2c4",
-                    "jid": "3bd1e31d385e4018b12aa68487dad2c4@conference.xmpp.zoom.us",
-                    "name": "'channel_test'",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 1,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "2e99a7e07de04f52bf2c448cd2b151fc",
-                    "jid": "2e99a7e07de04f52bf2c448cd2b151fc@conference.xmpp.zoom.us",
-                    "name": "BotChannel",
-                    "type": 5
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "152d757128f04b2694db648d5b231b78",
-                    "jid": "152d757128f04b2694db648d5b231b78@conference.xmpp.zoom.us",
-                    "name": "channel_test_9",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "0ebe71003eb24f5f8577e5a124f06428",
-                    "jid": "0ebe71003eb24f5f8577e5a124f06428@conference.xmpp.zoom.us",
-                    "name": "Admins_to_delete_2_updated",
-                    "type": 3
-                },
-                {
-                    "channel_settings": {
-                        "add_member_permissions": 1,
-                        "allow_to_add_external_users": 0,
-                        "mention_all_permissions": 1,
-                        "new_members_can_see_previous_messages_files": true,
-                        "posting_permissions": 1
-                    },
-                    "id": "08a49efcb9a047c3be95c047872562cf",
-                    "jid": "08a49efcb9a047c3be95c047872562cf@conference.xmpp.zoom.us",
-                    "name": "DemoChannel-Updated",
+                    "name": "Channel4",
                     "type": 3
                 }
             ],
             "next_page_token": "",
             "page_size": 20,
-            "total_records": 18
+            "total_records": 4
         },
         "ChannelsNextToken": ""
     }
@@ -1281,24 +1099,10 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
 >
 >|Channel ID|Channel JID|Channel name|Channel type|
 >|---|---|---|---|
->| f7ce414a24634240ae0a7894823d8707 | <f7ce414a24634240ae0a7894823d8707@conference.xmpp.zoom.us> | TestChannel3 | 3 |
->| e82e99ac9b0c40b08449c76766cf398d | <e82e99ac9b0c40b08449c76766cf398d@conference.xmpp.zoom.us> | Admins_to_delete_2 | 3 |
->| e7e2c5e1ba854056906af1c9dc36148f | <e7e2c5e1ba854056906af1c9dc36148f@conference.xmpp.zoom.us> | TestChannel1 | 3 |
->| e6388c9667c245c3844009ae995664d5 | <e6388c9667c245c3844009ae995664d5@conference.xmpp.zoom.us> | channel_test_new_1 | 3 |
->| e48ee1f1e275411a9ba35cf2195af085 | <e48ee1f1e275411a9ba35cf2195af085@conference.xmpp.zoom.us> | channel_test_88 | 3 |
->| 92b0268aaf8d4039948b17d783b08198 | <92b0268aaf8d4039948b17d783b08198@conference.xmpp.zoom.us> | TestGroupChannel1 | 3 |
->| 88f2f20f4abd415cba2429538be58025 | <88f2f20f4abd415cba2429538be58025@conference.xmpp.zoom.us> | Channel-Updated | 3 |
->| 82d5343ad2eb43d1a776ee4256b65061 | <82d5343ad2eb43d1a776ee4256b65061@conference.xmpp.zoom.us> | 'channel_test_6' | 3 |
->| 7828a1b283bd426199094e5ea0aa9353 | <7828a1b283bd426199094e5ea0aa9353@conference.xmpp.zoom.us> | Channel | 3 |
->| 76abb5f4f3b2472d98da35bf14f8774d | <76abb5f4f3b2472d98da35bf14f8774d@conference.xmpp.zoom.us> | channel_test_7777 | 3 |
->| 7047e64e5a194511a5ec0ce9473a54d7 | <7047e64e5a194511a5ec0ce9473a54d7@conference.xmpp.zoom.us> | 'channel_test_5' | 3 |
->| 6934e0d6393440d9b480fc56c324f77a | <6934e0d6393440d9b480fc56c324f77a@conference.xmpp.zoom.us> | 'channel_test_4' | 3 |
->| 3be766db616d4cbaac9fec0c68351b86 | <3be766db616d4cbaac9fec0c68351b86@conference.xmpp.zoom.us> | jj_t | 3 |
->| 3bd1e31d385e4018b12aa68487dad2c4 | <3bd1e31d385e4018b12aa68487dad2c4@conference.xmpp.zoom.us> | 'channel_test' | 3 |
->| 2e99a7e07de04f52bf2c448cd2b151fc | <2e99a7e07de04f52bf2c448cd2b151fc@conference.xmpp.zoom.us> | BotChannel | 5 |
->| 152d757128f04b2694db648d5b231b78 | <152d757128f04b2694db648d5b231b78@conference.xmpp.zoom.us> | channel_test_9 | 3 |
->| 0ebe71003eb24f5f8577e5a124f06428 | <0ebe71003eb24f5f8577e5a124f06428@conference.xmpp.zoom.us> | Admins_to_delete_2_updated | 3 |
->| 08a49efcb9a047c3be95c047872562cf | <08a49efcb9a047c3be95c047872562cf@conference.xmpp.zoom.us> | DemoChannel-Updated | 3 |
+>| f7ce414a24634240ae0a7894823d8707 | <f7ce414a24634240ae0a7894823d8707@conference.xmpp.zoom.us> | Channel1 | 3 |
+>| e82e99ac9b0c40b08449c76766cf398d | <e82e99ac9b0c40b08449c76766cf398d@conference.xmpp.zoom.us> | Channel2 | 3 |
+>| e7e2c5e1ba854056906af1c9dc36148f | <e7e2c5e1ba854056906af1c9dc36148f@conference.xmpp.zoom.us> | channel3 | 3 |
+>| e6388c9667c245c3844009ae995664d5 | <e6388c9667c245c3844009ae995664d5@conference.xmpp.zoom.us> | Channel4 | 3 |
 
 
 ### zoom-list-user-channels
@@ -2007,7 +1811,7 @@ Searches chat messages or shared files between a user and an individual contact 
                 {
                     "date_time": "2023-05-22T08:20:22Z",
                     "id": "4a59df4a-9668-46bd-bff2-3e1f3462ecc3",
-                    "message": "message",
+                    "message": "my message",
                     "send_member_id": "1vrdvnC1gHuxZtpVLR7Oz1_A1dcCrBf0PNoRhTIzcvJjtbxgPXQRLmDm-10C2Ggg",
                     "sender": "example@example.com",
                     "sender_display_name": "admin zoom",
@@ -2027,5 +1831,5 @@ Searches chat messages or shared files between a user and an individual contact 
 >|Date Time|From|Message Id|Message sender|Message text|Sender display name|To|User id|
 >|---|---|---|---|---|---|---|---|
 >| 2023-05-22T08:24:14Z | None | a62636c8-b6c1-4135-9352-88ac61eafc31 | <example@example.com> | message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
->| 2023-05-22T08:20:22Z | None | 4a59df4a-9668-46bd-bff2-3e1f3462ecc3 | <example@example.com> | message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
+>| 2023-05-22T08:20:22Z | None | 4a59df4a-9668-46bd-bff2-3e1f3462ecc3 | <example@example.com> | my message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 

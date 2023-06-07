@@ -383,7 +383,7 @@ def manual_list_channel_pagination(client: Client, next_page_token: str | None,
                                    limit: int, url_suffix: str):
     res = {}
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
-    while limit > 0 and next_page_token != '':
+    while limit > 0:
         response = client.zoom_list_channels(page_size=page_size,
                                              next_page_token=next_page_token,
                                              url_suffix=url_suffix)
@@ -398,7 +398,7 @@ def manual_list_user_channel_pagination(client: Client, user_id: str, next_page_
                                         limit: int, url_suffix: str):
     res = {}
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
-    while limit > 0 and next_page_token != '':
+    while limit > 0:
         response = client.zoom_list_user_channels(user_id=user_id,
                                                   page_size=page_size,
                                                   next_page_token=next_page_token,
@@ -736,13 +736,13 @@ def zoom_fetch_recording_command(client: Client, **args):
                     )
                     results.append(CommandResults(
                         readable_output=f"The {file_type_as_literal} file {filename} was successfully removed from the cloud."))
-                except DemistoException as e:
+                except DemistoException as exp:
                     results.append(CommandResults(
-                        readable_output=f"Failed to delete file {filename}. {e}"))
+                        readable_output=f"Failed to delete file {filename}. {exp}"))
 
-        except DemistoException as e:
+        except DemistoException as exp:
             raise DemistoException(
-                f'Unable to download recording for meeting {meeting_id}: {e}')
+                f'Unable to download recording for meeting {meeting_id}: {exp}')
 
     return results
 
