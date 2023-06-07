@@ -35,6 +35,59 @@ def config_aws_session(args: dict[str, str], aws_client: AWSClient):
     )
 
 
+def _parse_policy_response(data: dict[str, Any]) -> tuple[dict, list | None]:
+    """
+    Parses the response data representing a policy into a structured format.
+
+    Args:
+        data (dict): The response data containing the policy information.
+
+    Returns:
+        tuple[dict[str, Any], list[dict[str, str | None]]]: A tuple containing the parsed policy information.
+            The first element of the tuple is a dictionary representing the policy metadata with the following keys:
+                - "Id" (str): The ID of the policy.
+                - "Version" (str): The version of the policy.
+                - "RevisionId" (str): The revision ID of the policy.
+            The second element of the tuple is a list of dictionaries representing the policy statements.
+            Each dictionary in the list represents a statement with the following keys:
+                - "Sid" (str): The ID of the statement.
+                - "Effect" (str): The effect of the statement (e.g., "Allow" or "Deny").
+                - "Action" (str): The action associated with the statement.
+                - "Resource" (str): The resource associated with the statement.
+                - "Principal" (str | None): The principal associated with the statement, if applicable.
+    """
+    policy: dict[str, Any] = data.get('Policy', {})
+    statements: list[dict[str, str | None]] = policy.get('Statement', [])
+
+    if len(statements) == 1:
+        return {
+            "Sid": statements[0].get('Sid'),
+            "Effect": statements[0].get('Effect'),
+            "Action": statements[0].get('Action'),
+            "Resource": statements[0].get('Resource'),
+            "Principal": statements[0].get('Principal'),
+        }, None
+
+    else:
+        table_to_markdown = {
+            "Id": policy.get('Id'),
+            "Version": policy.get('Version'),
+            "RevisionId": data.get('RevisionId'),
+        }
+        statement_to_markdown = [
+            {
+                "Sid": statement.get('Sid'),
+                "Effect": statement.get('Effect'),
+                "Action": statement.get('Action'),
+                "Resource": statement.get('Resource'),
+                "Principal": statement.get('Principal'),
+            }
+            for statement in statements
+        ]
+
+        return table_to_markdown, statement_to_markdown
+
+
 def parse_tag_field(tags_str):
     tags = []
     regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
@@ -255,34 +308,7 @@ def get_policy_command(args: dict[str, str], aws_client) -> CommandResults:
         CommandResults: An object containing the parsed policy as outputs, a readable output in Markdown format,
                         and relevant metadata.
     """
-    def parse_response(data: dict[str, Any]) -> dict[str, str | None]:
-        policy: dict = data.get('Policy')
-        statements: dict = data.get('Statement', [])
-        if len(statements) == 1:
-            return {
-                "Sid": statements.get('Sid'),
-                "Effect": statements.get('Effect'),
-                "Action": statements.get('Action'),
-                "Resource": statements.get('Resource'),
-            }
-        else:
-            table_to_markdown = {
-                "Version": policy.get('Version'),
-                "Id": policy.get('Id'),
-                "Principal": policy.get('Principal'),
-                "RevisionId": data.get('RevisionId'),
-            }
-            statement_to_markdown = []
-            for statement in statements:
-                statement_to_markdown.append(
-                    {
-                        "Sid": statement.get('Sid'),
-                        "Effect": statement.get('Effect'),
-                        "Action": statement.get('Action'),
-                        "Resource": statement.get('Resource'),
-                    }
-                )
-            return (table_to_markdown, statement_to_markdown)
+
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
         kwargs.update({'qualifier': qualifier})
@@ -294,19 +320,23 @@ def get_policy_command(args: dict[str, str], aws_client) -> CommandResults:
     response["Policy"] = policy
     response.pop("ResponseMetadata", None)
 
-    parsed_data , parsed_statement = parse_response(response)
+    parsed_policy, parsed_statement = _parse_policy_response(response)
 
-    table_for_markdown = tableToMarkdown(name="Policy", t=parsed_data)
+    policy_table = tableToMarkdown(name="Policy", t=parsed_policy)
+
+    if parsed_statement:
+        statements_table = tableToMarkdown("Statements", t=parsed_statement)
+        policy_table = policy_table + statements_table
 
     return CommandResults(
         outputs=response,
-        readable_output=table_for_markdown,
+        readable_output=policy_table,
         outputs_prefix="AWS.Lambda",
         outputs_key_field='Sid'
     )
 
 
-def list_versions_by_function_command(args: dict[str, str], aws_client) -> list[CommandResults]:
+def list_versions_by_function_command(args: dict[str, str], aws_client) -> CommandResults:
     """
     Lists the versions of a Lambda function and returns the results as a list of CommandResults objects.
 
@@ -347,19 +377,16 @@ def list_versions_by_function_command(args: dict[str, str], aws_client) -> list[
     parsed_versions = [parse_version(version) for version in response.get('Versions', [])]
     table_for_markdown = tableToMarkdown(name='Versions', t=parsed_versions, headers=headers)
 
-    result: list[CommandResults] = []
     if next_marker := response.get('NextMarker'):
-        result.append(CommandResults(
-            readable_output=f"To get the next version run the command with the Marker argument with the value: {next_marker}")
-        )
+        table_for_markdown = table_for_markdown + \
+            f"\nTo get the next version run the command with the Marker argument with the value: {next_marker}"
 
-    result.append(CommandResults(
+    return CommandResults(
         outputs=response,
         readable_output=table_for_markdown,
         outputs_prefix="AWS.Lambda",
         outputs_key_field='FunctionName'
-    ))
-    return result
+    )
 
 
 def get_function_url_config_command(args: dict[str, str], aws_client) -> CommandResults:

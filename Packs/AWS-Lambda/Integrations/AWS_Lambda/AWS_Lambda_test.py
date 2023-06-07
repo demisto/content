@@ -1,6 +1,7 @@
 import pytest
 from typing import Any, Callable
 from AWS_Lambda import (
+    _parse_policy_response,
     get_policy_command,
     list_versions_by_function_command,
     get_function_url_config_command,
@@ -37,27 +38,104 @@ class MockClient:
 
 
 @pytest.mark.parametrize(
+    "data, expected_policy, expected_statement ",
+    [
+        (
+            {
+                "Policy": {
+                    "Statement": [
+                        {
+                            "Sid": "statement1",
+                            "Effect": "Allow",
+                            "Action": "action1",
+                            "Resource": "resource1",
+                            "Principal": "1",
+                        }
+                    ]
+                }
+            },
+            {
+                "Principal": "1",
+                "Sid": "statement1",
+                "Effect": "Allow",
+                "Action": "action1",
+                "Resource": "resource1",
+            },
+            None,
+        ),
+        (
+            {
+                "RevisionId": "1",
+                "Policy": {
+                    "Id": "policy1",
+                    "Version": "1",
+                    "Statement": [
+                        {
+                            "Sid": "statement1",
+                            "Effect": "Allow",
+                            "Action": "action1",
+                            "Resource": "resource1",
+                            "Principal": "0",
+                        },
+                        {
+                            "Sid": "statement2",
+                            "Effect": "Deny",
+                            "Action": "action2",
+                            "Resource": "resource2",
+                            "Principal": "1",
+                        },
+                    ]
+                }
+            },
+            {
+                "Id": "policy1",
+                "Version": "1",
+                "RevisionId": "1",
+            },
+            [
+                {
+                    "Sid": "statement1",
+                    "Effect": "Allow",
+                    "Action": "action1",
+                    "Resource": "resource1",
+                    "Principal": "0",
+                },
+                {
+                    "Sid": "statement2",
+                    "Effect": "Deny",
+                    "Action": "action2",
+                    "Resource": "resource2",
+                    "Principal": "1",
+                },
+            ],
+        ),
+    ],
+)
+def test_parse_policy_response(data, expected_policy, expected_statement):
+    parsed_policy, parsed_statement = _parse_policy_response(data)
+    assert parsed_policy == expected_policy
+    assert parsed_statement == expected_statement
+
+
+@pytest.mark.parametrize(
     "test_data, excepted_data",
     [
         (
             {
                 "Policy": '{"Version":"0000-00-00","Id":"dummy", \
                 "Statement":[ \
-                    {\
+                    { \
                         "Sid":"dummy","Effect":"Allow", \
                         "Principal":{"dummy":"dummy:dummy"}, \
                         "Action":"lambda:InvokeFunction", \
-                        "Resource":"dummy:country:00:function:dummy-function:0"} \
-                    { \
-                    "Sid":"dummy2","Effect":"Allow", \
-                    "Principal":{"dummy2":"dummy2:dummy2"}, \
-                    "Action":"lambda:InvokeFunction", \
-                    "Resource":"dummy2:country:00:function:dummy2-function:1"} \
-                    ] \
-                }',
+                        "Resource":"dummy:country:00:function:dummy-function:0"}, \
+                     { \
+                        "Sid":"dummy2","Effect":"Allow", \
+                        "Principal":{"dummy2":"dummy2:dummy2"}, \
+                        "Action":"lambda:InvokeFunction", \
+                        "Resource":"dummy2:country:00:function:dummy2-function:1"} ]}',
                 "RevisionId": "00000-00000-00000-00000-00000",
                 "ResponseMetadata": {"string": "string"},
-
             },
             {
                 "Policy": {
@@ -77,7 +155,7 @@ class MockClient:
                             "Principal": {"dummy2": "dummy2:dummy2"},
                             "Action": "lambda:InvokeFunction",
                             "Resource": "dummy2:country:00:function:dummy2-function:1",
-                        }
+                        },
                     ],
                 },
                 "RevisionId": "00000-00000-00000-00000-00000",
@@ -134,7 +212,7 @@ def test_get_policy_command(mocker, test_data: dict, excepted_data: dict):
                         "Role": "string",
                     },
                 ],
-            }
+            },
         ),
         (
             {
@@ -159,11 +237,13 @@ def test_get_policy_command(mocker, test_data: dict, excepted_data: dict):
                         "Role": "string",
                     },
                 ],
-            }
-        )
+            },
+        ),
     ],
 )
-def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
+def test_list_versions_by_function_command(
+    mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]
+):
     """
     Test case for the list_versions_by_function_command function.
 
@@ -190,13 +270,11 @@ def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], ex
     res = list_versions_by_function_command(
         args={"functionName": "test"}, aws_client=client
     )
-    if len(res) == 1:
-        assert res[0].outputs == excepted_data
-    elif len(res) == 2:
-        assert res[0].readable_output == (
+    if res.outputs.get("NextMarker"):
+        assert (
             "To get the next version run the command with the Marker argument with the value: test"
-        )
-        assert res[1].outputs == excepted_data
+        ) in res.readable_output
+    assert res.outputs == excepted_data
 
 
 @pytest.mark.parametrize(
@@ -231,11 +309,13 @@ def test_list_versions_by_function_command(mocker, test_data: dict[str, Any], ex
                 "CreationTime": "string",
                 "LastModifiedTime": "string",
                 "InvokeMode": "BUFFERED",
-            }
+            },
         )
     ],
 )
-def test_get_function_url_config_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
+def test_get_function_url_config_command(
+    mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]
+):
     """
     Test case for the get_function_url_config_command function.
 
@@ -308,11 +388,13 @@ def test_get_function_url_config_command(mocker, test_data: dict[str, Any], exce
                     "Mode": "Active",
                 },
                 "Version": "$LATEST",
-            }
+            },
         )
     ],
 )
-def test_get_function_configuration_command(mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]):
+def test_get_function_configuration_command(
+    mocker, test_data: dict[str, Any], excepted_data: dict[str, Any]
+):
     """
     Test case for the get_function_configuration_command function.
 
@@ -340,13 +422,15 @@ def test_get_function_configuration_command(mocker, test_data: dict[str, Any], e
 
 
 @pytest.mark.parametrize(
-    'func_command, func_client',
+    "func_command, func_client",
     [
         (delete_function_command, "delete_function"),
-        (delete_function_url_config_command, "delete_function_url_config")
-    ]
+        (delete_function_url_config_command, "delete_function_url_config"),
+    ],
 )
-def test_delete_function_and_url_config_commands(mocker, func_command: Callable, func_client: str):
+def test_delete_function_and_url_config_commands(
+    mocker, func_command: Callable, func_client: str
+):
     """
     Test two cases for the scenario of deleting a function and url config with a qualifier.
 
@@ -369,8 +453,8 @@ def test_delete_function_and_url_config_commands(mocker, func_command: Callable,
     client = MockClient()
     mocker.patch.object(client, func_client, return_value={})
 
-    args = {'functionName': 'test-function', 'qualifier': 'test-qualifier'}
+    args = {"functionName": "test-function", "qualifier": "test-qualifier"}
 
     result = func_command(args, client)
 
-    assert result.readable_output == 'Deleted test-function Successfully'
+    assert result.readable_output == "Deleted test-function Successfully"
