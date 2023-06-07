@@ -68,6 +68,7 @@ def _parse_policy_response(data: dict[str, Any]) -> tuple[dict, list | None]:
             "Principal": statements[0].get('Principal'),
         }, None
 
+
     else:
         table_to_markdown = {
             "Id": policy.get('Id'),
