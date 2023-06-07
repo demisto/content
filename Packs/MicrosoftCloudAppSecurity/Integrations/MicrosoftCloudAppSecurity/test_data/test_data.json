@@ -16,7 +16,7 @@
     ],
     "comment": "null",
     "contextId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
-    "description": "File policy 'block png files' was matched by 'image (2).png'",
+    "description": "File policy 'block png files' siteIcon was matched by 'image (2).png'",
     "file": [
       {
         "id": "d10230e2-52db-4ec8-815b-c5484524d078|501f6179-e6f9-457c-9892-1590dee07ede",
@@ -103,7 +103,7 @@
       }
     ],
     "title": "block png files",
-    "description": "File policy 'block png files' was matched by 'image (2).png'",
+    "description": "File policy 'block png files' __siteIcon__ was matched by 'image (2).png'",
     "stories": [
       0
     ],

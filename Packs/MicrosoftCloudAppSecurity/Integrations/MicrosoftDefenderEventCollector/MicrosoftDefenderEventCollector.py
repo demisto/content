@@ -61,7 +61,7 @@ class IntegrationHTTPRequest(BaseModel):
     method: Method
     url: AnyUrl
     verify: bool = True
-    headers: dict = dict()  # type: ignore[type-arg]
+    headers: dict = {}  # type: ignore[type-arg]
     auth: Optional[HTTPBasicAuth]
     data: Any = None
 
@@ -78,12 +78,12 @@ class Credentials(BaseModel):
     password: str
 
 
-def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
+def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
     """Automatic authorization.
     Supports {Authorization: Bearer __token__}
     or Basic Auth.
     """
-    creds = Credentials.parse_obj(auth_credendtials)
+    creds = Credentials.parse_obj(auth_credentials)
     if creds.password and creds.identifier:
         request.auth = HTTPBasicAuth(creds.identifier, creds.password)
     auth = {'Authorization': f'Bearer {creds.password}'}
@@ -139,10 +139,10 @@ class IntegrationEventsClient(ABC):
             raise DemistoException(msg) from exc
 
     def _skip_cert_verification(
-            self, skip_cert_verification: Callable = skip_cert_verification
+            self, skip_cert_verification_callable: Callable = skip_cert_verification
     ):
         if not self.request.verify:
-            skip_cert_verification()
+            skip_cert_verification_callable()
 
     def _set_proxy(self):
         if self.options.proxy:
@@ -186,7 +186,7 @@ class IntegrationGetEvents(ABC):
     @abstractmethod
     def _iter_events(self):
         """Create iterators with Yield"""
-        pass
+        raise NotImplementedError
 
 
 # END COPY OF SiemApiModule
@@ -229,7 +229,7 @@ class DefenderAuthenticator(BaseModel):
             demisto.error(f'Fail to authenticate with Microsoft services: {str(e)}')
 
             err_msg = 'Fail to authenticate with Microsoft services, see the error details in the log'
-            raise DemistoException(err_msg)
+            raise DemistoException(err_msg) from e
 
 
 class DefenderHTTPRequest(IntegrationHTTPRequest):
@@ -237,7 +237,7 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
     method: Method = Method.GET
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(
-        lambda base_url: base_url + '/api/v1/'
+        lambda base_url: f'{base_url}/api/v1/'
     )
 
 
@@ -379,7 +379,7 @@ def main(command: str, demisto_params: dict):
 
         after = demisto_params.get('after')
         if after and not isinstance(after, int):
-            timestamp = dateparser.parse(after)
+            timestamp = dateparser.parse(after)  # type: ignore
             after = int(timestamp.timestamp() * 1000)  # type: ignore
 
         options = IntegrationOptions.parse_obj(demisto_params)
@@ -398,7 +398,7 @@ def main(command: str, demisto_params: dict):
 
             if command == 'fetch-events':
                 # publishing events to XSIAM
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
                 demisto.setLastRun(DefenderGetEvents.get_last_run(events))
 
             elif command == 'microsoft-defender-cloud-apps-get-events':
@@ -413,7 +413,7 @@ def main(command: str, demisto_params: dict):
                 return_results(command_results)
                 if push_to_xsiam:
                     # publishing events to XSIAM
-                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
 
     # Log exceptions and return errors
     except Exception as e:
@@ -422,7 +422,7 @@ def main(command: str, demisto_params: dict):
 
 
 ''' ENTRY POINT '''
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     # Args is always stronger. Get getIntegrationContext even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    main(demisto.command(), demisto_params)
+    compound_demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    main(demisto.command(), compound_demisto_params)

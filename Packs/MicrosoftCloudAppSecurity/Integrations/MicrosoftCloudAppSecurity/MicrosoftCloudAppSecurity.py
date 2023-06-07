@@ -90,6 +90,8 @@ CLOSE_FALSE_POSITIVE_REASON_OPTIONS = {
 }
 
 INTEGRATION_NAME = 'MicrosoftCloudAppSecurity'
+# The API scope value was taken from: https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application
+DEFAULT_API_SCOPE = '05a65629-4c1b-48c1-a78b-804c4abdd4af'
 
 
 class LegacyClient(BaseClient):
@@ -100,9 +102,11 @@ class LegacyClient(BaseClient):
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str, auth_mode: str, tenant_id: str = None,
-                 enc_key: str = None, headers: Optional[dict] = {}):
-
-        if auth_mode == 'legacy':
+                 enc_key: str = None, headers=None):
+        if headers is None:
+            headers = {}
+        self.auth_mode = auth_mode
+        if self.auth_mode == 'legacy':
             self.ms_client = LegacyClient(
                 base_url=base_url,
                 verify=verify,
@@ -110,7 +114,7 @@ class Client:
                 proxy=proxy)
 
         else:
-            self.client_credentials = True if auth_mode == 'client credentials' else False
+            self.client_credentials = self.auth_mode == 'client credentials'
             if '@' in app_id:
                 app_id, refresh_token = app_id.split('@')
                 integration_context = get_integration_context()
@@ -122,18 +126,18 @@ class Client:
                 verify=verify,
                 proxy=proxy,
                 ok_codes=(200, 201, 202, 204),
-                scope='05a65629-4c1b-48c1-a78b-804c4abdd4af/.default',
+                scope=f'{DEFAULT_API_SCOPE}/.default',
                 self_deployed=True,  # We always set the self_deployed key as True because when not using a self
                 # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
                 # flow and most of the same arguments should be set, as we're !not! using OProxy.
 
                 auth_id=app_id,
-                grant_type=CLIENT_CREDENTIALS if auth_mode == 'client credentials' else DEVICE_CODE,
+                grant_type=CLIENT_CREDENTIALS if self.auth_mode == 'client credentials' else DEVICE_CODE,
 
                 # used for device code flow
-                resource='https://api.security.microsoft.com' if auth_mode == 'device code flow' else None,
+                resource='https://api.security.microsoft.com' if self.auth_mode == 'device code flow' else None,
                 token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token'
-                if auth_mode == 'device code flow' else None,
+                if self.auth_mode == 'device code flow' else None,
                 # used for client credentials flow
                 tenant_id=tenant_id,
                 enc_key=enc_key
@@ -141,74 +145,74 @@ class Client:
             self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     def list_alerts(self, url_suffix: str, request_data: dict):
-        data = self.ms_client.http_request(
+        return self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
         )
-        return data
 
-    def dismiss_bulk_alerts(self, request_data: dict):
-        data = self.ms_client.http_request(
+    def dismiss_bulk_alerts(self, request_data: dict):  # pragma: no cover
+        """
+        Deprecated: use close_false_positive_command instead.
+        """
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_false_positive/',
             json_data=request_data,
         )
-        return data
 
-    def resolve_bulk_alerts(self, request_data: dict):
-        data = self.ms_client.http_request(
+    def resolve_bulk_alerts(self, request_data: dict):  # pragma: no cover
+        """
+        Deprecated: use close_true_positive_command instead.
+        """
+        return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_true_positive/',
             json_data=request_data,
         )
-        return data
 
-    def close_benign(self, request_data: dict):
+    def close_benign(self, request_data: dict) -> Any:
         return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_benign/',
             json_data=request_data,
         )
 
-    def close_false_positive(self, request_data: dict):
+    def close_false_positive(self, request_data: dict) -> Any:
         return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_false_positive/',
             json_data=request_data,
         )
 
-    def close_true_positive(self, request_data: dict):
+    def close_true_positive(self, request_data: dict) -> Any:
         return self.ms_client.http_request(
             method='POST',
             url_suffix='/alerts/close_true_positive/',
             json_data=request_data,
         )
 
-    def list_activities(self, url_suffix: str, request_data: dict, timeout: int):
-        data = self.ms_client.http_request(
+    def list_activities(self, url_suffix: str, request_data: dict, timeout: int) -> Any:
+        return self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
-            timeout=timeout
+            timeout=timeout,
         )
-        return data
 
     def list_users_accounts(self, url_suffix: str, request_data: dict):
-        data = self.ms_client.http_request(
+        return self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
         )
-        return data
 
     def list_files(self, url_suffix: str, request_data: dict):
-        data = self.ms_client.http_request(
+        return self.ms_client.http_request(
             method='GET',
             url_suffix=url_suffix,
             json_data=request_data,
         )
-        return data
 
     def list_incidents(self, filters: dict, limit: Union[int, str]):
         return self.ms_client.http_request(
@@ -223,32 +227,38 @@ class Client:
 
 
 @logger
-def start_auth(client: Client) -> CommandResults:
+def start_auth(client: Client, args: dict) -> CommandResults:
     result = client.ms_client.start_auth('!microsoft-cas-auth-complete')  # type: ignore[attr-defined]
     return CommandResults(readable_output=result)
 
 
 @logger
-def complete_auth(client: Client) -> CommandResults:
+def complete_auth(client: Client,
+                  args: dict
+                  ) -> CommandResults:
     client.ms_client.get_access_token()  # type: ignore[attr-defined]
     return CommandResults(readable_output='✅ Authorization completed successfully.')
 
 
 @logger
-def reset_auth() -> CommandResults:
+def reset_auth(client: Client,
+               args: dict
+               ) -> CommandResults:
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
                                           '**!microsoft-cas-auth-start** and **!microsoft-cas-auth-complete**.')
 
 
 @logger
-def test_connection(client: Client) -> CommandResults:
+def connection_test(client: Client,
+                    args: dict
+                    ) -> CommandResults:
     client.ms_client.get_access_token()  # type: ignore[attr-defined]
     # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
 
-def args_to_filter(arguments: dict):
+def args_to_filter(arguments: dict):  # sourcery skip: extract-method, switch
     """
     Common filters of **all** related entities (Activities, Alerts, Files and Data Entities).
 
@@ -307,6 +317,7 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
             custom_filter: custom filters from the customer (other filters will not work).
             arguments: args to filter with.
             specific_id_to_search: filter by specific id (other filters will not work).
+            is_scan: is the filter a scan.
 
         Returns:
             The dict or the url to filter with.
@@ -359,7 +370,7 @@ def args_to_filter_close_alerts(alert_ids: Optional[List] = None,
     return request_data
 
 
-def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter: Any, comments: Any):
+def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter: Any, comments: Any):  # pragma: no cover
     """
     Deprecated by args_to_filter_close_alerts.
     """
@@ -379,22 +390,21 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
-def test_module(client: Client, auth_mode: str, is_fetch: Optional[Any], custom_filter: Optional[str]):
+def module_test(client: Client, is_fetch: Optional[Any], custom_filter: Optional[str]):
     try:
-        if auth_mode == "device code flow":
+        if client.auth_mode == "device code flow":
             raise DemistoException(
                 "To test the device code flow Please run !microsoft-cas-auth-start and "
                 "!microsoft-cas-auth-complete and check the connection using !microsoft-cas-auth-test")
-        else:
-            client.list_alerts(url_suffix='/alerts/', request_data={})
-            if is_fetch:
-                client.list_incidents(filters={}, limit=1)
-                if custom_filter:
-                    try:
-                        json.loads(custom_filter)
-                    except ValueError:
-                        raise DemistoException('Custom Filter Error: Your custom filter format is incorrect, '
-                                               'please try again.')
+        client.list_alerts(url_suffix='/alerts/', request_data={})
+        if is_fetch:
+            client.list_incidents(filters={}, limit=1)
+            if custom_filter:
+                try:
+                    json.loads(custom_filter)
+                except ValueError as e:
+                    raise DemistoException(
+                        'Custom Filter Error: Your custom filter format is incorrect, please try again.') from e
     except Exception as e:
         if 'No connection' in str(e):
             return 'Connection Error: The URL you entered is probably incorrect, please try again.'
@@ -417,11 +427,15 @@ def alerts_to_human_readable(alerts: List[dict]):
                                             alert.get('timestamp', 0) / 1000.0).isoformat())
         alerts_readable_outputs.append(readable_output)
     headers = ['alert_id', 'alert_date', 'title', 'description', 'status_value', 'severity_value', 'is_open']
-    human_readable = tableToMarkdown('Microsoft CAS Alerts', alerts_readable_outputs, headers, removeNull=True)
-    return human_readable
+    return tableToMarkdown(
+        'Microsoft CAS Alerts',
+        alerts_readable_outputs,
+        headers,
+        removeNull=True,
+    )
 
 
-def create_ip_command_results(activities: List[dict]):
+def create_ip_command_results(activities: List[dict]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     for activity in activities:
         ip_address = str(dict_safe_get(activity, ['device', 'clientIP']))
@@ -458,10 +472,7 @@ def arrange_alerts_descriptions(alerts: List[dict]):
 
 def set_alerts_is_open(alerts: List[dict]):
     for alert in alerts:
-        if alert.get('resolveTime'):
-            alert['is_open'] = False
-        else:
-            alert['is_open'] = True
+        alert['is_open'] = not alert.get('resolveTime')
     return alerts
 
 
@@ -535,19 +546,17 @@ def activity_to_human_readable(activity: dict):
                                     .isoformat(),
                                     app_name=activity.get('appName'), description=activity.get('description'))
     headers = ['activity_id', 'activity_date', 'app_name', 'description', 'severity']
-    human_readable = tableToMarkdown('Microsoft CAS Activity', readable_output, headers, removeNull=True)
-    return human_readable
+    return tableToMarkdown(
+        'Microsoft CAS Activity', readable_output, headers, removeNull=True
+    )
 
 
 def arrange_entities_data(activities: List[dict]):
     for activity in activities:
-        entities_data = []
         if 'entityData' in activity.keys():
             entity_data = activity['entityData']
             if entity_data:
-                for key, value in entity_data.items():
-                    if value:
-                        entities_data.append(value)
+                entities_data = [value for key, value in entity_data.items() if value]
                 activity['entityData'] = entities_data
 
     return activities
@@ -562,11 +571,11 @@ def list_activities_command(client: Client, args: dict):
     timeout = arg_to_number(arguments.get('timeout', 60)) or 60
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id, is_scan)
     has_next = True
-    list_activities = []
+    list_activities: list[Any] = []
     while has_next:
         activities_response_data = client.list_activities(url_suffix, request_data, timeout)
         list_activities.extend(
-            activities_response_data.get('data') if activities_response_data.get('data') else [activities_response_data]
+            activities_response_data.get('data') or [activities_response_data]
         )
         has_next = activities_response_data.get('hasNext', False)
         request_data['filters'] = activities_response_data.get('nextQueryFilters')
@@ -588,8 +597,9 @@ def files_to_human_readable(files: List[dict]):
 
     headers = ['owner_name', 'file_id', 'file_type', 'file_name', 'file_access_level', 'file_status',
                'app_name']
-    human_readable = tableToMarkdown('Microsoft CAS Files', files_readable_outputs, headers, removeNull=True)
-    return human_readable
+    return tableToMarkdown(
+        'Microsoft CAS Files', files_readable_outputs, headers, removeNull=True
+    )
 
 
 def arrange_files_type_access_level_and_status(files: List[dict]):
@@ -619,7 +629,7 @@ def list_files_command(client: Client, args: dict):
     arguments = assign_params(**args)
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, file_id)
     files_response_data = client.list_files(url_suffix, request_data)
-    list_files = files_response_data.get('data') if files_response_data.get('data') else [files_response_data]
+    list_files = files_response_data.get('data') or [files_response_data]
     files = arrange_files_type_access_level_and_status(list_files)
     human_readable = files_to_human_readable(files)
     return CommandResults(
@@ -639,9 +649,12 @@ def users_accounts_to_human_readable(users_accounts: List[dict]):
         users_accounts_readable_outputs.append(readable_output)
 
     headers = ['display_name', 'last_seen', 'is_admin', 'is_external', 'email', 'identifier']
-    human_readable = tableToMarkdown('Microsoft CAS Users And Accounts', users_accounts_readable_outputs, headers,
-                                     removeNull=True)
-    return human_readable
+    return tableToMarkdown(
+        'Microsoft CAS Users And Accounts',
+        users_accounts_readable_outputs,
+        headers,
+        removeNull=True,
+    )
 
 
 def list_users_accounts_command(client: Client, args: dict):
@@ -650,8 +663,7 @@ def list_users_accounts_command(client: Client, args: dict):
     arguments = assign_params(**args)
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments)
     users_accounts_response_data = client.list_users_accounts(url_suffix, request_data)
-    users_accounts = users_accounts_response_data.get('data') \
-        if users_accounts_response_data.get('data') else [users_accounts_response_data]
+    users_accounts = users_accounts_response_data.get('data') or [users_accounts_response_data]
     human_readable = users_accounts_to_human_readable(users_accounts)
     return CommandResults(
         readable_output=human_readable,
@@ -679,7 +691,7 @@ def arrange_alerts_by_incident_type(alerts: List[dict]):
     for alert in alerts:
         incident_types: Dict[str, Any] = {}
         for entity in alert['entities']:
-            if not entity['type'] in incident_types.keys():
+            if entity['type'] not in incident_types.keys():
                 incident_types[entity['type']] = []
             incident_types[entity['type']].append(entity)
         alert.update(incident_types)
@@ -704,8 +716,8 @@ def alerts_to_xsoar_incidents(alerts: List[dict]):
         )
         incident = {
             'name': alert['title'],
-            'occurred': timestamp_to_datetime_string(alert_timestamp, include_miliseconds=False) + 'Z',
-            'rawJSON': json.dumps(alert)
+            'occurred': f'{timestamp_to_datetime_string(alert_timestamp, include_miliseconds=False)}Z',
+            'rawJSON': json.dumps(alert),
         }
         incidents.append(incident)
         alert['timestamp'] = alert_occurred_time_utc
@@ -722,7 +734,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     if not last_run.get("time") and last_run.get("last_fetch"):
         demisto.debug(f"last fetch from old version is: {str(last_run.get('last_fetch'))}")
         last_fetch_time = datetime.fromtimestamp(last_run.get("last_fetch", 0) / 1000.0).isoformat()
-        last_run.update({"time": last_fetch_time})
+        last_run["time"] = last_fetch_time
 
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(
         last_run=last_run, first_fetch=first_fetch, look_back=look_back, date_format=DATE_FORMAT
@@ -771,18 +783,19 @@ def params_to_filter(severity: List[str], resolution_status: str):
         filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
 
     else:
-        severities = []
-        for severity_option in severity:
-            severities.append(SEVERITY_OPTIONS[severity_option])
+        severities = [
+            SEVERITY_OPTIONS[severity_option] for severity_option in severity
+        ]
         filters['severity'] = {'eq': severities}
 
     if len(resolution_status) == 1:
         filters['resolutionStatus'] = {'eq': RESOLUTION_STATUS_OPTIONS[resolution_status[0]]}
 
     else:
-        resolution_statuses = []
-        for resolution in resolution_status:
-            resolution_statuses.append(RESOLUTION_STATUS_OPTIONS[resolution])
+        resolution_statuses = [
+            RESOLUTION_STATUS_OPTIONS[resolution]
+            for resolution in resolution_status
+        ]
         filters['resolutionStatus'] = {'eq': resolution_statuses}
     return filters
 
@@ -904,26 +917,20 @@ def main():  # pragma: no cover
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params: dict = demisto.params()
-    app_id = params.get('app_id')
-    tenant_id = params.get('tenant_id')
-    auth_mode = params.get('auth_mode', 'legacy')
-    enc_key = params.get('client_id', {}).get('password')
-
-    verify = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-
-    token = params.get('creds_token', {}).get('password', '') or params.get('token', '')
-    base_url = f'{params.get("url")}/api/v1'
-    first_fetch = params.get('first_fetch')
-    max_results = params.get('max_fetch')
-    severity = params.get('severity')
-    resolution_status = params.get('resolution_status')
-    look_back = arg_to_number(params.get('look_back')) or 0
-
     command = demisto.command()
     args = demisto.args()
 
     try:
+        app_id = params.get('app_id')
+        tenant_id = params.get('tenant_id')
+        auth_mode = params.get('auth_mode', 'legacy')
+        enc_key = params.get('client_id', {}).get('password')
+
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+
+        token = params.get('creds_token', {}).get('password', '') or params.get('token', '')
+        base_url = f'{params.get("url")}/api/v1'
         client = Client(
             app_id=app_id,
             verify=verify,
@@ -938,10 +945,15 @@ def main():  # pragma: no cover
         LOG(f'Command being called is {command}')
 
         if command == 'test-module':
-            result = test_module(client, auth_mode, params.get('isFetch'), params.get('custom_filter'))
+            result = module_test(client, params.get('isFetch'), params.get('custom_filter'))
             return_results(result)
 
         elif command == 'fetch-incidents':
+            first_fetch = params.get('first_fetch')
+            max_results = params.get('max_fetch')
+            severity = params.get('severity')
+            look_back = arg_to_number(params.get('look_back')) or 0
+            resolution_status = params.get('resolution_status')
             if params.get('custom_filter'):
                 filters = json.loads(str(params.get('custom_filter')))
             else:
@@ -955,50 +967,27 @@ def main():  # pragma: no cover
                 look_back=look_back)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-
-        elif command == 'microsoft-cas-auth-start':
-            return_results(start_auth(client))
-
-        elif command == 'microsoft-cas-auth-complete':
-            return_results(complete_auth(client))
-
-        elif command == 'microsoft-cas-auth-reset':
-            return_results(reset_auth())
-
-        elif command == 'microsoft-cas-auth-test':
-            return_results(test_connection(client))
-
-        elif command == 'microsoft-cas-alerts-list':
-            return_results(list_alerts_command(client, args))
-
-        elif command == 'microsoft-cas-alert-dismiss-bulk':
-            # Deprecated.
-            return_results(bulk_dismiss_alert_command(client, args))
-
-        elif command == 'microsoft-cas-alert-resolve-bulk':
-            # Deprecated.
-            return_results(bulk_resolve_alert_command(client, args))
-
-        elif command == 'microsoft-cas-activities-list':
-            return_results(list_activities_command(client, args))
-
-        elif command == 'microsoft-cas-files-list':
-            return_results(list_files_command(client, args))
-
-        elif command == 'microsoft-cas-users-accounts-list':
-            return_results(list_users_accounts_command(client, args))
-
-        elif command == 'microsoft-cas-alert-close-benign':
-            return_results(close_benign_command(client, args))
-
-        elif command == 'microsoft-cas-alert-close-true-positive':
-            return_results(close_true_positive_command(client, args))
-
-        elif command == 'microsoft-cas-alert-close-false-positive':
-            return_results(close_false_positive_command(client, args))
-
         else:
-            raise NotImplementedError(f'command {command} is not implemented.')
+            commands = {
+                'microsoft-cas-auth-start': start_auth,
+                'microsoft-cas-auth-complete': complete_auth,
+                'microsoft-cas-auth-reset': reset_auth,
+                'microsoft-cas-auth-test': connection_test,
+                'microsoft-cas-alerts-list': list_alerts_command,
+                'microsoft-cas-alert-dismiss-bulk': bulk_dismiss_alert_command,  # Deprecated.
+                'microsoft-cas-alert-resolve-bulk': bulk_resolve_alert_command,  # Deprecated.
+                'microsoft-cas-activities-list': list_activities_command,
+                'microsoft-cas-files-list': list_files_command,
+                'microsoft-cas-users-accounts-list': list_users_accounts_command,
+                'microsoft-cas-alert-close-benign': close_benign_command,
+                'microsoft-cas-alert-close-true-positive': close_true_positive_command,
+                'microsoft-cas-alert-close-false-positive': close_false_positive_command,
+            }
+            command_callable = commands.get(command)
+            if command_callable:
+                return_results(command_callable(client, args))
+
+        raise NotImplementedError(f'command {command} is not implemented.')
 
     # Log exceptions
     except Exception as exc:
