@@ -8,7 +8,6 @@ sectionOrder:
 configuration:
 - defaultvalue: 'https://lolbas-project.github.io/api'
   display: Base URL
-  hidden: false
   name: base_url
   required: true
   type: 0

@@ -28,7 +28,6 @@ configuration:
   type: 13
 - defaultvalue: '200'
   display: Maximum number of incidents to fetch every time
-  hidden: false
   name: max_fetch
   required: true
   type: 0
@@ -47,8 +46,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: 'Integrate with Cohesity Helios services to fetch alerts and take remedial
-  action.'
+description: 'Integrate with Cohesity Helios services to fetch alerts and take remedial action.'
 display: CohesityHelios
 name: CohesityHelios
 script:
@@ -56,14 +54,12 @@ script:
   - arguments:
     - name: created_after
       default: false
-      description: Returns only alerts created after the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only alerts created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       required: false
     - name: created_before
       default: false
-      description: Returns only alerts created before the provided timestamp (ISO8601
-        format YYYY-MM-DDTHH:MM:SSZ).
+      description: Returns only alerts created before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       required: false
     - name: limit
@@ -141,8 +137,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Anomalous object name to be ignored. Can be retrieved by running
-        the command cohesity-helios-get-ransomware-alerts.
+      description: Anomalous object name to be ignored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts.
       isArray: false
       name: object_name
       required: true
@@ -152,8 +147,7 @@ script:
     name: cohesity-helios-ignore-anomalous-object
   - arguments:
     - default: false
-      description: Anomalous object name to be restored. Can be retrieved by running
-        the command cohesity-helios-get-ransomware-alerts.
+      description: Anomalous object name to be restored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts.
       isArray: false
       name: object_name
       required: true
