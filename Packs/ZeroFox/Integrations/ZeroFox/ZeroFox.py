@@ -3,7 +3,11 @@ import json
 import demistomock as demisto
 from Packs.Base.Scripts.CommonServerPython.CommonServerPython import (
     LOG, CommandResults, argToList, handle_proxy, parse_date_range,
-    return_error, return_outputs, return_results, tableToMarkdown)
+    return_error, return_outputs, return_results, tableToMarkdown,
+    GetModifiedRemoteDataArgs, GetModifiedRemoteDataResponse,
+    GetRemoteDataArgs, GetRemoteDataResponse,
+    SchemeTypeMapping, GetMappingFieldsResponse,
+)
 
 """ IMPORTS """
 from datetime import datetime, timedelta
@@ -27,6 +31,8 @@ BASE_URL: str = (
 )
 FETCH_TIME_DEFAULT = "3 days"
 FETCH_TIME: str = demisto.params().get("fetch_time", FETCH_TIME_DEFAULT).strip()
+
+CLOSED_ALERT_STATUS = ["Closed", "Deleted"]
 
 """ HELPER FUNCTIONS """
 
@@ -438,12 +444,12 @@ def transform_alert_human_readable_values(alert: Dict, title_keys: List[str] = [
 def transform_alerts_human_readable_values(
     alerts: Union[Dict, List], title_keys: List[str] = []
 ):
-    if type(alerts) == list:
+    if isinstance(alerts, list):
         return [
             transform_alert_human_readable_values(alert, title_keys=title_keys)
             for alert in alerts
         ]
-    elif type(alerts) == dict:
+    elif isinstance(alerts, dict):
         return transform_alert_human_readable_values(alerts, title_keys=title_keys)
 
 
@@ -964,8 +970,16 @@ def fetch_incidents():
         {"sort_direction": "asc", "limit": limit, "min_timestamp": last_update_time}
     )
     alerts: List = response_content.get("alerts", [])
+
+    mirror_direction = 'In'
+    integration_instance = demisto.integrationInstance()
+    last_mirrored_in = int(datetime.now().timestamp() * 1000)
     if alerts:
         for alert in alerts:
+            # Fields for mirroring alert
+            alert['mirror_direction'] = mirror_direction
+            alert['mirror_instance'] = integration_instance
+            alert['last_mirrored_in'] = last_mirrored_in
             incident = alert_to_incident(alert)
             incidents.append(incident)
         # max_update_time is the timestamp of the last alert in alerts (alerts is a sorted list)
@@ -990,7 +1004,6 @@ def submit_threat_command():
     alert_type: str = args.get("alert_type", "")
     violation: str = args.get("violation", "")
     entity_id: str = args.get("entity_id", "")
-    request_takedown: bool = args.get("request_takedown", False)
     url_suffix: str = "/threat_submit/"
     request_body: Dict = {
         "source": source,
@@ -1002,12 +1015,13 @@ def submit_threat_command():
     response_content: Dict = api_request(
         "POST", url_suffix, data=json.dumps(request_body), prefix="2.0"
     )
-    output = f'Successful submission of threat. ID: {response_content.get("alert_id")}.'
+    alert_id = response_content.get("alert_id")
+    output = f"Successful submission of threat. ID: {alert_id}."
     return return_results(
         CommandResults(
             readable_output=output,
             raw_response=response_content,
-            output={"ID": response_content.get("alert_id")},
+            output={"ID": alert_id},
             outputs_prefix="ZeroFox.Alert",
         )
     )
@@ -1071,12 +1085,9 @@ def compromised_email_command():
         "email": lambda r: r["email"],
         "Created at": lambda r: r["created_at"],
     }
-    outputs += _retrieve_endpoint_results(keys=keys, endpoint="email-addresses", request_body=request_body
-    )
-    outputs += _retrieve_endpoint_results(keys, endpoint="compromised-credentials", request_body=request_body
-    )
-    outputs += _retrieve_endpoint_results(keys, endpoint="botnet-compromised-credentials", request_body=request_body
-    )
+    outputs += _retrieve_endpoint_results(keys=keys, endpoint="email-addresses", request_body=request_body)
+    outputs += _retrieve_endpoint_results(keys, endpoint="compromised-credentials", request_body=request_body)
+    outputs += _retrieve_endpoint_results(keys, endpoint="botnet-compromised-credentials", request_body=request_body)
 
     if len(outputs) == 0:
         return return_results(
@@ -1200,12 +1211,55 @@ def search_exploit_command():
     )
 
 
+def get_modified_remote_data_command():
+    raw_args = demisto.args()
+    if not raw_args.get('lastUpdate'):
+        raw_args = {'lastUpdate': datetime.now() - timedelta(days=1)}
+    args = GetModifiedRemoteDataArgs(raw_args)
+    last_update = args.last_update
+
+    # Get alerts created before `last_update` and modified after `last_update`
+    list_alert_params = {
+        "last_modified_min_date": str(last_update),
+        "max_timestamp": str(last_update),
+    }
+    response_content = list_alerts(list_alert_params)
+    modified_alerts = response_content.get("alerts", [])
+    modified_alert_ids = [alert.get("id") for alert in modified_alerts]
+
+    return return_results(GetModifiedRemoteDataResponse(modified_alert_ids))
+
+
+def get_remote_data_command():
+    args = demisto.args()
+    remote_args = GetRemoteDataArgs(args)
+    alert_id = remote_args.remote_incident_id
+
+    response_content = get_alert(alert_id)
+    alert = response_content.get("alert", {})
+
+    entries = []
+    if alert.get("status") in CLOSED_ALERT_STATUS:
+        entries.append({"Contents": {"dbotIncidentClose": True}})
+
+    return return_results(GetRemoteDataResponse(mirrored_object=alert, entries=entries))
+
+
+def get_mapping_fields_command():
+    incident_type_scheme = SchemeTypeMapping(type_name='ZeroFox Mapping')
+    return GetMappingFieldsResponse(incident_type_scheme)
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():
     commands = {
         "test-module": test_module,
+        "fetch-incidents": fetch_incidents,
+        "get-modified-remote-data": get_modified_remote_data_command,
+        "get-remote-data": get_remote_data_command,
+        "get-mapping-fields": get_mapping_fields_command,
         "zerofox-get-alert": get_alert_command,
         "zerofox-alert-user-assignment": alert_user_assignment_command,
         "zerofox-close-alert": close_alert_command,
@@ -1218,7 +1272,6 @@ def main():
         "zerofox-list-entities": list_entities_command,
         "zerofox-get-entity-types": get_entity_types_command,
         "zerofox-get-policy-types": get_policy_types_command,
-        "fetch-incidents": fetch_incidents,
         "zerofox-modify-alert-notes": modify_alert_notes_command,
         "zerofox-submit-threat": submit_threat_command,
         "zerofox-search-compromised-domain": compromised_domain_command,
