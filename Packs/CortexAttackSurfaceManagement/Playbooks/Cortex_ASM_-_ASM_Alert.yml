@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -960
+          "y": -1330
         }
       }
     note: false
@@ -45,7 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -70,10 +70,10 @@ tasks:
       id: cf841205-1bc1-4490-89f8-027e330c91d2
       version: -1
       name: Triage and Qualifier Stage
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "138"
@@ -82,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -830
+          "y": -1200
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 0
+          "y": -370
         }
       }
     note: false
@@ -315,7 +315,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -220
+          "y": -590
         }
       }
     note: false
@@ -345,8 +345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1740,
-          "y": 2340
+          "x": -1890,
+          "y": 975
         }
       }
     note: false
@@ -382,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 5800
+          "x": -1890,
+          "y": 5840
         }
       }
     note: false
@@ -2044,7 +2044,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 130
+          "y": -240
         }
       }
     note: false
@@ -2096,7 +2096,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -380
+          "y": -750
         }
       }
     note: false
@@ -2954,7 +2954,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 455
+          "y": 85
         }
       }
     note: false
@@ -3061,7 +3061,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 590
+          "y": 220
         }
       }
     note: false
@@ -3104,7 +3104,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -540
+          "y": -910
         }
       }
     note: false
@@ -3147,7 +3147,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 295
+          "y": -75
         }
       }
     note: false
@@ -3174,7 +3174,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "144"
     scriptarguments:
       gridfield:
         simple: asmplaybookstage
@@ -3190,7 +3190,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 380
         }
       }
     note: false
@@ -3698,7 +3698,232 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -700
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: 647f21f4-9ace-4053-87de-bb6750288224
+    type: title
+    task:
+      id: 647f21f4-9ace-4053-87de-bb6750288224
+      version: -1
+      name: continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "142"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: bc868ae2-0037-4f9f-8efd-425d9aac0c4b
+    type: regular
+    task:
+      id: bc868ae2-0037-4f9f-8efd-425d9aac0c4b
+      version: -1
+      name: Close alert (accepted risk)
+      description: Close the current alert because service is no longer observed.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved - Risk Accepted' by Active Response Module
+      closeReason:
+        simple: Resolved - Risk Accepted
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 5840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: fec944af-ecb2-4e84-8904-6a1455797be3
+    type: condition
+    task:
+      id: fec944af-ecb2-4e84-8904-6a1455797be3
+      version: -1
+      name: Are there any matches from accepted risk lists?
+      description: Checks if the system ids, folders and projects are present in the accepted risk lists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "141"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS-EC2
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GCP-VM
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure-Compute-ID
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskDs
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GCP-Project-Number
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskProjects
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmcloud.Provider
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS
+                accessor: Project
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskProjects
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GCP-Folder-Number
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskOther
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmcloud.Provider
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure
+                accessor: Organization
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskOther
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
         }
       }
     note: false
@@ -3723,10 +3948,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7475,
-        "width": 3490,
-        "x": -1740,
-        "y": -960
+        "height": 7845,
+        "width": 3640,
+        "x": -1890,
+        "y": -1330
       }
     }
   }
@@ -3783,6 +4008,21 @@ inputs:
     Determine whether to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
 
     Set to "True" if you want to bypass.  Default is "False".
+  playbookInputQuery:
+- key: AcceptedRiskDs
+  value: {}
+  required: false
+  description: Comma separated list of instance/VM IDs that are considered accepted risk and that should be closed.
+  playbookInputQuery:
+- key: AcceptedRiskProjects
+  value: {}
+  required: false
+  description: Comma separated list of projects numbers that are considered accepted risk and that should be closed.  For example, the could be list of GCP projects and AWS accounts.
+  playbookInputQuery:
+- key: AcceptedRiskOther
+  value: {}
+  required: false
+  description: Comma separated list of other items that are considered accepted risk and that should be closed. For example, the could be list of folders numbers in GCP and subscription IDs in Azure.
   playbookInputQuery:
 outputs: []
 tests:
