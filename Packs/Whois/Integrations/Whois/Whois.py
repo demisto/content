@@ -7160,7 +7160,7 @@ ipwhois_exception_mapping: Dict[type, str] = {
     ipwhois.exceptions.WhoisRateLimitError: "quota_error",
 }
 
-def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
+def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
                   server_list=None, is_refer_server=False, is_recursive=True):
     previous = previous or []
     server_list = server_list or []
@@ -7174,12 +7174,6 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         # registration.
         "example.com": "whois.verisign-grs.com"
     }
-
-    if rfc3490:
-        if sys.version_info < (3, 0):
-            domain = encode(domain if type(domain) is str else decode(domain, "utf8"), "idna")
-        else:
-            domain = encode(domain, "idna").decode("ascii")
 
     if len(previous) == 0 and server == "":
         # Root query
@@ -8605,39 +8599,51 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
             else:
                 demisto.error(f"Rate limit error not suppressed, raising exception: {e}")
                 raise e
-            
 
     return append_metrics(execution_metrics=execution, results=results)
 
 
-
-def whois_command(reliability):
+def whois_command(reliability: DBotScoreReliability) -> List[CommandResults]:
     args = demisto.args()
     query = args.get('query')
     is_recursive = argToBoolean(args.get('recursive', 'false'))
     verbose = argToBoolean(args.get('verbose', 'false'))
     demisto.info(f'whois command is called with the query {query}')
+
+    execution_metrics = ExecutionMetrics()
+    results = []
     for query in argToList(query):
         domain = get_domain_from_query(query)
-        whois_result = get_whois(domain, is_recursive=is_recursive)
-        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-        context_res = {}
-        context_res.update(dbot_score)
-        context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
 
-        if verbose:
-            demisto.info('Verbose response')
-            whois_result['query'] = query
-            json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
-            context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+        try:
+            whois_result = get_whois(domain, is_recursive=is_recursive)
+            execution_metrics.success += 1
+            md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+            context_res = {}
+            context_res.update(dbot_score)
+            context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': str(whois_result),
-            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': context_res,
-        })
+            if verbose:
+                demisto.info('Verbose response')
+                whois_result['query'] = query
+                json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
+                context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+
+            result = CommandResults(
+                outputs=context_res,
+                entry_type=EntryType.NOTE,
+                content_format=EntryFormat.MARKDOWN,
+                readable_output=tableToMarkdown('Whois results for {}'.format(domain), md),
+                raw_response=str(whois_result)
+            )
+
+            results.append(result)
+
+        except Exception as e:
+            #TODO
+            pass
+
+    return append_metrics(execution_metrics=execution_metrics, results=results)
 
 
 def test_command():
@@ -8684,7 +8690,7 @@ def setup_proxy():
 
 
 def main():
-    demisto.log('command is {}'.format(str(demisto.command())))
+    demisto.debug('command is {}'.format(str(demisto.command())))
     command = demisto.command()
 
     reliability = demisto.params().get('integrationReliability')
@@ -8699,20 +8705,19 @@ def main():
         if command == 'ip':
             demisto_args = demisto.args()
             ip = demisto_args.get('ip')
-            ret_value = ip_command(ip, reliability)
-            if ret_value:
-                return_results(ret_value)
-            else:
-                return_error(f'Failed to lookup ip {ip}')
+            results = ip_command(ip, reliability)
+            
         else:
             org_socket = socket.socket
             setup_proxy()
             if command == 'test-module':
                 test_command()
             elif command == 'whois':
-                whois_command(reliability)
+                results = whois_command(reliability)
             elif command == 'domain':
                 domain_command(reliability)
+        
+        return_results(results)
     except Exception as e:
         LOG(e)
         return_error(str(e))
