@@ -719,6 +719,11 @@ script:
     description: Looks for registered exploits in ZeroFox's CTI feeds
   dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
