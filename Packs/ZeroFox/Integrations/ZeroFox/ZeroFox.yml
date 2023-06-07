@@ -668,6 +668,55 @@ script:
     - contextPath: ZeroFox.Alert.ID
       description: The ID of the alert created.
       type: Number
+  - name: zerofox-search-compromised-domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to search
+      type: keyValue
+    description: Looks for a given domain in Zerofox's CTI feeds
+  - name: zerofox-search-compromised-email
+    arguments:
+    - name: email
+      required: true
+      auto: PREDEFINED
+      description: email to search
+      type: keyValue
+    outputs:
+    - contextPath: ZeroFox.Alert
+      type: string
+    description: Looks for a given email in ZeroFox's CTI feeds
+  - name: zerofox-search-malicious-ip
+    arguments:
+    - name: ip
+      required: true
+      auto: PREDEFINED
+      description: ip to search
+      type: keyValue
+    outputs:
+    - contextPath: ZeroFox.Alert
+      type: string
+    description: Looks for malicious ips in ZeroFox's CTI feeds
+  - name: zerofox-search-malicious_hash
+    arguments:
+    - name: hash
+      required: true
+      auto: PREDEFINED
+      description: hash to search
+      type: keyValue
+    outputs:
+    - contextPath: ZeroFox.Alert
+    description: Looks for registered hashes in ZeroFox's CTI feeds
+  - name: zerofox-search-exploit
+    arguments:
+    - name: since
+      required: true
+      auto: PREDEFINED
+      description: Staring date for exploit search
+      type: keyValue
+    outputs:
+    - contextPath: ZeroFox.Alert
+    description: Looks for registered exploits in ZeroFox's CTI feeds
   dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   runonce: false
