@@ -357,13 +357,12 @@ def get_datetime_range(
     last_run_time_before_parse = last_run_time_datetime.strftime(date_format)  # type: ignore[union-attr]
     demisto.info(f'{last_run_time_before_parse=}')
 
-    if log_type_time_field_name == LastRunLogsTimeFields.AUDIT:
-        if now - last_run_time_datetime > timedelta(days=180):
-            # cannot retrieve audit logs that are older than 180 days.
-            last_run_time_datetime = dateparser.parse(  # type: ignore[assignment]
-                '180 days ago',
-                settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
-            )
+    if log_type_time_field_name == LastRunLogsTimeFields.AUDIT and now - last_run_time_datetime > timedelta(days=180):
+        # cannot retrieve audit logs that are older than 180 days.
+        last_run_time_datetime = dateparser.parse(  # type: ignore[assignment]
+            '180 days ago',
+            settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
+        )
 
     if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
@@ -656,8 +655,8 @@ def fetch_all_events(
 
     """
     last_run = demisto.getLastRun()
-    demisto.info(f'{last_run=}')
-    for logs_func, log_last_run_time in [
+
+    for logs_func, log_last_run_time_field in [
         (
             get_workbench_logs, LastRunLogsTimeFields.WORKBENCH
         ),
@@ -671,11 +670,12 @@ def fetch_all_events(
             get_audit_logs, LastRunLogsTimeFields.AUDIT
         )
     ]:
+        demisto.info(f'starting to fetch log {log_last_run_time_field=}')
         fetch_events_by_log_type(
             client=client,
             first_fetch=first_fetch,
             get_logs_func=logs_func,
-            log_last_run_time_field=log_last_run_time,
+            log_last_run_time_field=log_last_run_time_field,
             last_run=last_run,
             limit=limit,
             should_send_events=should_send_events
@@ -825,10 +825,12 @@ def main() -> None:
             return_results(test_module(client=client, first_fetch=first_fetch))
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
-            demisto.info(f'{last_run=}')
+            demisto.info(f'start last run: {last_run}')
             try:
                 fetch_all_events(client=client, first_fetch=first_fetch, limit=limit)
             except Exception:
+                # if only part of the logs were sent to xsiam,
+                # set the last run to recent last run to avoid duplications
                 demisto.info(f'updating last run during exception to: {last_run}')
                 demisto.setLastRun(last_run)
                 raise
