@@ -355,7 +355,7 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
             full_url=f'https://management.azure.com/subscriptions?api-version={API_VERSION}')
 
     def list_resource_groups_request(self, subscription_id: str | None,
-                                     filter_by_tag: str | None, limit: str | None) -> Dict:
+                                     filter_by_tag: str | None, limit: str | int | None) -> Dict:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
         return self.ms_client.http_request('GET', full_url=full_url,
                                            params={'$filter': filter_by_tag, '$top': limit,
@@ -800,12 +800,7 @@ def sql_resource_group_list(client: ASClient, params: Dict, args: Dict) -> Comma
     for subscription_id in subscription_id_list:
         response = client.list_resource_groups_request(subscription_id=subscription_id,
                                                        filter_by_tag=filter_by_tag, limit=limit)
-        import json
 
-        details = response
-
-        with open('convert.json', 'w') as convert_file:
-            convert_file.write(json.dumps(details))
         if "error" in response:
             raise Exception(response)
         all_responses.extend(response.get('value', []))
