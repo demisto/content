@@ -1127,34 +1127,34 @@ script:
   - description: Gets all subscriptions for a tenant.
     name: azure-sql-subscriptions-list
     outputs:
-    - contextPath: AzureStorage.Subscription.value.id
+    - contextPath: AzureStorage.Subscription.id
       description: 'The unique identifier of the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.authorizationSource
+    - contextPath: AzureStorage.Subscription.authorizationSource
       description: 'The source of authorization for the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.managedByTenants
+    - contextPath: AzureStorage.Subscription.managedByTenants
       description: 'The tenants that have access to manage the Azure storage subscription.'
       type: Unknown
-    - contextPath: AzureStorage.Subscription.value.subscriptionId
+    - contextPath: AzureStorage.Subscription.subscriptionId
       description: 'The ID of the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.tenantId
+    - contextPath: AzureStorage.Subscription.tenantId
       description: 'The ID of the tenant associated with the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.displayName
+    - contextPath: AzureStorage.Subscription.displayName
       description: 'The display name of the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.state
+    - contextPath: AzureStorage.Subscription.state
       description: 'The current state of the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.subscriptionPolicies.locationPlacementId
+    - contextPath: AzureStorage.Subscription.subscriptionPolicies.locationPlacementId
       description: 'The ID of the location placement policy for the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.subscriptionPolicies.quotaId
+    - contextPath: AzureStorage.Subscription.subscriptionPolicies.quotaId
       description: 'The ID of the quota policy for the Azure storage subscription.'
       type: String
-    - contextPath: AzureStorage.Subscription.value.subscriptionPolicies.spendingLimit
+    - contextPath: AzureStorage.Subscription.subscriptionPolicies.spendingLimit
       description: 'The spending limit policy for the Azure storage subscription.'
       type: String
     - contextPath: AzureStorage.Subscription.count.type
@@ -1181,40 +1181,40 @@ script:
         description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
         required: false
         outputs:
-        - contextPath: AzureStorage.ResourceGroup.value.id
+        - contextPath: AzureStorage.ResourceGroup.id
           description: 'The unique identifier of the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.name
+        - contextPath: AzureStorage.ResourceGroup.name
           description: 'The name of the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.type
+        - contextPath: AzureStorage.ResourceGroup.type
           description: 'The type of the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.location
+        - contextPath: AzureStorage.ResourceGroup.location
           description: 'The location of the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.properties.provisioningState
+        - contextPath: AzureStorage.ResourceGroup.properties.provisioningState
           description: 'The provisioning state of the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.tags.Owner
+        - contextPath: AzureStorage.ResourceGroup.tags.Owner
           description: 'The owner tag of the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.tags
+        - contextPath: AzureStorage.ResourceGroup.tags
           description: 'The tags associated with the Azure storage resource group.'
           type: Unknown
-        - contextPath: AzureStorage.ResourceGroup.value.tags.Name
+        - contextPath: AzureStorage.ResourceGroup.tags.Name
           description: 'The name tag of the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.managedBy
+        - contextPath: AzureStorage.ResourceGroup.managedBy
           description: 'The entity that manages the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.tags.aks-managed-cluster-name
+        - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-name
           description: 'The AKS managed cluster name tag associated with the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.tags.aks-managed-cluster-rg
+        - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-rg
           description: 'The AKS managed cluster resource group tag associated with the Azure storage resource group.'
           type: String
-        - contextPath: AzureStorage.ResourceGroup.value.tags.type
+        - contextPath: AzureStorage.ResourceGroup.tags.type
           description: 'The type tag associated with the Azure storage resource group.'
           type: String
   - description: Generate the login url used for Authorization code flow.
