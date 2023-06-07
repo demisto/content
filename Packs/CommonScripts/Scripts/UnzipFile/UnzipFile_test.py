@@ -46,21 +46,25 @@ def test_unzip_no_password(file_name):
 
 
 data_test_unzip_with_password = [
-    ('fix_unzip.png', 'demisto'),
+    ('fix_unzip.png', 'demisto', '7z'),
+    ('fix_unzip.png', 'demisto', 'zipfile')
 ]
 
 
-@pytest.mark.parametrize('file_name, password', data_test_unzip_with_password)
-def test_unzip_with_password(file_name, password):
+@pytest.mark.parametrize('file_name, password, zip_tool', data_test_unzip_with_password)
+def test_unzip_with_password(file_name, password, zip_tool):
     """
     Given
     - valid zip file - with password required
     - empty folder _dir
+    - the tool to extract files
     When
     - run extract on that zip file and export the internal files to _dir
     Then
     - ensure zip file content have be saved at _dir directory with the original filename
     - ensure that the saved file has expected content
+    - the extraction worked as expected with the password converted from str to bytes
+      when the extraction tool is `zipfile`
     """
     # Given
     # - valid zip file - no password required
@@ -76,7 +80,7 @@ def test_unzip_with_password(file_name, password):
     _dir = mkdtemp()
     # When
     # - run extract on that zip file and export the internal files to _dir
-    extract(zipped_file_object, _dir, password=password)
+    extract(zipped_file_object, _dir, password=password, zip_tool=zip_tool)
     # Then
     # - ensure zip file content have been saved at _dir directory with the original filename
     with open(_dir + '/' + file_name, 'rb') as f:

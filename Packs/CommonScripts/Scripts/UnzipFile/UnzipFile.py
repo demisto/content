@@ -105,7 +105,7 @@ def extract(file_info, dir_path, zip_tool='7z', password=None):
         if zip_tool == '7z':
             stdout = extract_using_7z(file_path, dir_path, password=password)
         elif zip_tool == 'zipfile':
-            extract_using_zipfile(file_path, dir_path, password=password)
+            extract_using_zipfile(file_path, dir_path, password=bytes(password, 'utf-8'))
         else:
             return_error(f'There is no zipTool named: {zip_tool}')
 
