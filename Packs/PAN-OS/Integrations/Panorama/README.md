@@ -3049,8 +3049,7 @@ Deprecated. Retrieves traffic log query data by job id.
 ### pan-os-list-rules
 
 ***
-Returns a list of predefined Security Rules.
-**Note**: When passing a query, all other arguments are overridden. Make sure the query includes all necessary filters.
+Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
 
 #### Base Command
 
@@ -3058,59 +3057,57 @@ Returns a list of predefined Security Rules.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                        | **Required** |
-| --- |----------------------------------------------------------------------------------------------------------------------------------------| --- |
-| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase.                                | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances).                                                                   | Optional | 
-| tag | A comma-separated list of tags by which to filter the rules.                                                                           | Optional | 
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance.                                           | Optional | 
-| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules.                                                       | Optional | 
-| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no.            | Optional | 
-| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop.            | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
+| tag | The tag to filter the rules. | Optional | 
+| tags | A comma-separated list of tags by which to filter the rules. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules. | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no. | Optional | 
+| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop. | Optional | 
 | query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.SecurityRule.Name | String | The rule name. | 
-| Panorama.SecurityRule.Action | String | The action for the rule. | 
-| Panorama.SecurityRule.Location | String | The rule location. | 
-| Panorama.SecurityRule.CustomUrlCategory | String | The rule category. | 
-| Panorama.SecurityRule.Application | String | The application for the rule. | 
-| Panorama.SecurityRule.Destination | String | The destination address. | 
-| Panorama.SecurityRule.From | String | The rule from zone. | 
-| Panorama.SecurityRule.Service | String | The service for the rule. | 
-| Panorama.SecurityRule.To | String | The rule to zone. | 
-| Panorama.SecurityRule.Source | String | The source address. | 
-| Panorama.SecurityRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). | 
-| Panorama.SecurityRules.Tags | String | The rule tags. | 
-| Panorama.SecurityRules.Disabled | string | Whether the rule is disabled. | 
-| Panorama.SecurityRule.SecurityProfileGroup | String | Represents the security profile group associated with the rule. | 
-| Panorama.SecurityRule.SecurityProfile.url-filtering | String | Represents the URL filtering security profile associated with the rule. | 
-| Panorama.SecurityRule.SecurityProfile.file-blocking | String | Represents the file blocking security profile associated with the rule. | 
-| Panorama.SecurityRule.SecurityProfile.virus | String | Represents the virus security profile associated with the rule. | 
-| Panorama.SecurityRule.SecurityProfile.spyware | String | Represents the spyware security profile associated with the rule. | 
-| Panorama.SecurityRule.SecurityProfile.vulnerability | String | Represents the vulnerability security profile associated with the rule. | 
-| Panorama.SecurityRule.SecurityProfile.wildfire-analysis | String | Represents the WildFire analysis security profile associated with the rule. | 
-| Panorama.SecurityRule.Target.devices | String | Represents the target devices associated with the rule. | 
-| Panorama.SecurityRule.Target.negate | String | Indicates whether the target is negated in the rule. | 
-| Panorama.SecurityRule.QoSMarking.ip-precedence | String | Represents the IP precedence value used for QoS marking in the rule. | 
-| Panorama.SecurityRule.Type | String | Represents the type of the rule \(e.g., pre-rule, post-rule, intra-zone, inter-zone\). | 
-| Panorama.SecurityRule.DestinationDevice | String | Represents the destination device associated with the rule. | 
-| Panorama.SecurityRule.NegateSource | String | Indicates whether the source is negated in the rule. | 
-| Panorama.SecurityRule.SourceDevice | String | Represents the source device associated with the rule. | 
-| Panorama.SecurityRule.LogStart | String | Indicates whether to log the start of the session for the rule. | 
-| Panorama.SecurityRule.LogForwardingProfile | String | Represents the log forwarding profile associated with the rule. | 
-| Panorama.SecurityRule.SourceUser | String | Represents the source user associated with the rule. | 
-| Panorama.SecurityRule.Schedule | String | Represents the schedule associated with the rule. | 
-| Panorama.SecurityRule.Description | String | Represents the description or summary of the rule. | 
-| Panorama.SecurityRule.GroupTag | String | Represents the group tag associated with the rule. | 
-| Panorama.SecurityRule.NegateDestination | String | Indicates whether the destination is negated in the rule. | 
-| Panorama.SecurityRule.ProfileSetting | String | Represents the profile settings associated with the rule. | 
+| Panorama.SecurityRule.Location | String | The location of the security rule. | 
+| Panorama.SecurityRule.NegateDestination | String | Indicates whether the destination is negated in the security rule. | 
+| Panorama.SecurityRule.Disabled | String | Indicates whether the security rule is disabled. | 
+| Panorama.SecurityRule.ICMPUnreachable | String | Specifies the behavior for ICMP unreachable messages. | 
+| Panorama.SecurityRule.Description | String | The description of the security rule. | 
+| Panorama.SecurityRule.GroupTag | String | The group tag of the security rule. | 
+| Panorama.SecurityRule.LogForwardingProfile | String | The log forwarding profile applied to the security rule. | 
+| Panorama.SecurityRule.NegateSource | String | Indicates whether the source is negated in the security rule. | 
+| Panorama.SecurityRule.SecurityProfileGroup | String | The security profile group assigned to the security rule. | 
+| Panorama.SecurityRule.SecurityProfile | Unkown | The security profile settings applied to the security rule. | 
+| Panorama.SecurityRule.Target.devices | String | The devices targeted by the security rule. | 
+| Panorama.SecurityRule.Target.negate | String | Indicates whether the target is negated in the security rule. | 
+| Panorama.SecurityRule.Name | String | The name of the security rule. | 
+| Panorama.SecurityRule.From | String | The source zone of the security rule. | 
+| Panorama.SecurityRule.DestinationDevice | String | The destination device of the security rule. | 
+| Panorama.SecurityRule.Action | String | The action taken by the security rule. | 
+| Panorama.SecurityRule.SourceDevice | String | The source device of the security rule. | 
+| Panorama.SecurityRule.Tags | String | The tags associated with the security rule. | 
+| Panorama.SecurityRule.SourceUser | String | The source user of the security rule. | 
+| Panorama.SecurityRule.Application | String | The application used in the security rule. | 
+| Panorama.SecurityRule.Service | String | The service used in the security rule. | 
+| Panorama.SecurityRule.To | String | The destination zone of the security rule. | 
+| Panorama.SecurityRule.Source | String | The source address of the security rule. | 
+| Panorama.SecurityRule.CustomUrlCategory | String | The custom URL category targeted by the security rule. | 
+| Panorama.SecurityRule.Destination | String | The destination address of the security rule. | 
+| Panorama.SecurityRule.Options.LogAtSessionStart | String | Indicates whether the session start is logged. | 
+| Panorama.SecurityRule.Options.LogForwarding | String | Indicates whether log forwarding is enabled for the security rule. | 
+| Panorama.SecurityRule.Options.Schedule | String | The schedule applied to the security rule. | 
+| Panorama.SecurityRule.Options.QoSMarking | String | The QoS marking applied to the security rule. | 
+| Panorama.SecurityRule.Options.DisableServerResponseInspection | String | Specifies whether to disable server response inspection for the security rule. | 
+| Panorama.SecurityRule.DeviceGroup | String | The device group of the security rule \(Panorama instances only\). | 
+| Panorama.SecurityRule.Type | String | Represents the type of the security rule \(e.g., pre-rule, post-rule, intra-zone, inter-zone\). | 
 
 #### Command Example
-```!pan-os-list-rules```
+```!pan-os-list-rules pre_post=“pre-rulebase”```
 
 #### Context Example
 ```json
@@ -3118,78 +3115,124 @@ Returns a list of predefined Security Rules.
     "Panorama": {
         "SecurityRule": [
             {
-                "DeviceGroup": "SA_FWs",
-                "Location": "SA_FWs",
-                "SecurityProfileGroup": null,
-                "SecurityProfile": null,
-                "Target": {"negate": "no", "devices": null},
-                "Name": "test-schedule",
-                "QoSMarking": {"follow-c2s-flow": null},
-                "Type": null,
-                "From": "any",
-                "DestinationDevice": "any",
-                "NegateSource": null,
-                "Action": "allow",
-                "SourceDevice": "any",
-                "Tags": null,
-                "LogStart": null,
-                "LogForwardingProfile": null,
-                "SourceUser": "any",
-                "Schedule": "test",
-                "Application": "any",
-                "Service": "application-default",
-                "To": "any",
-                "Description": null,
-                "GroupTag": null,
-                "Source": "any",
+                "DeviceGroup": "TestDevice",
+                "Location": "TestDevice",
                 "NegateDestination": null,
                 "Disabled": "no",
-                "ProfileSetting": null,
-                "CustomUrlCategory": "any",
                 "ICMPUnreachable": null,
-                "Destination": "any",
-                "Option": null,
+                "Description": null,
+                "GroupTag": null,
+                "LogForwardingProfile": null,
+                "NegateSource": null,
+                "SecurityProfileGroup": "TestGroup",
+                "SecurityProfile": null,
+                "Target": {
+                    "devices": "007051000185487",
+                    "negate": "no"
+                },
+                "Name": "block rule",
+                "Type": null,
+                "From": [
+                    "TestName",
+                    "TestName2"
+                ],
+                "DestinationDevice": "any",
+                "Action": "drop",
+                "SourceDevice": "any",
+                "Tags": [
+                    "TestTag1",
+                    "TestTag2",
+                    "TestTag3"
+                ],
+                "SourceUser": "any",
+                "Application": [
+                    "cortex-xdr",
+                    "jira",
+                    "zoom"
+                ],
+                "Service": "application-default",
+                "To": [
+                    "TestName",
+                    "TestName2"
+                ],
+                "Source": [
+                    "1.1.1.1",
+                    "8.8.4.4",
+                    "8.8.8.8"
+                ],
+                "CustomUrlCategory": [
+                    "abortion",
+                    "adult",
+                    "alcohol-and-tobacco",
+                    "hacking"
+                ],
+                "Destination": [
+                    "1.1.1.1",
+                    "8.8.8.8"
+                ],
+                "Options": {
+                    "LogAtSessionStart": null,
+                    "LogForwarding": null,
+                    "Schedule": null,
+                    "QoSMarking": null,
+                    "DisableServerResponseInspection": null
+                }
             },
             {
-                "DeviceGroup": "SA_FWs",
-                "Location": "SA_FWs",
-                "SecurityProfileGroup": "default",
+                "DeviceGroup": "TestDevice",
+                "Location": "TestDevice",
+                "NegateDestination": null,
+                "Disabled": null,
+                "ICMPUnreachable": "yes",
+                "Description": "bbbbbbbbbb",
+                "GroupTag": "TestGroupTag",
+                "LogForwardingProfile": "Log forwarding for SA",
+                "NegateSource": null,
+                "SecurityProfileGroup": null,
                 "SecurityProfile": {
                     "url-filtering": "default",
-                    "file-blocking": "basic file blocking",
-                    "virus": "threat-pcap",
-                    "spyware": "default",
-                    "vulnerability": "strict",
-                    "wildfire-analysis": "default",
+                    "spyware": "testing",
+                    "virus": "default"
                 },
-                "Target": {"devices": ["007051000185487", "007051000188986"], "negate": "no"},
+                "Target": {
+                    "devices": [
+                        "007051000185487",
+                        "007051000188986"
+                    ],
+                    "negate": "no"
+                },
                 "Name": "jl-test-1",
-                "QoSMarking": {"ip-precedence": "cs1"},
                 "Type": "intrazone",
                 "From": "internal",
                 "DestinationDevice": "bad nam",
-                "NegateSource": null,
                 "Action": "reset-server",
                 "SourceDevice": "good name",
-                "Tags": ["APIiiiiii", "test2shared"],
-                "LogStart": "yes",
-                "LogForwardingProfile": "Log forwarding for SA",
+                "Tags": [
+                    "APIiiiiii",
+                    "test2shared"
+                ],
                 "SourceUser": "me",
-                "Schedule": "test-schedule",
                 "Application": "8x8",
-                "Service": ["new group", "service-http", "service-https"],
+                "Service": [
+                    "new group",
+                    "service-http",
+                    "service-https"
+                ],
                 "To": "internal",
-                "Description": "bbbbbbbbbb",
-                "GroupTag": "moishy tags",
                 "Source": "1.1.1.1",
-                "NegateDestination": null,
-                "Disabled": null,
-                "ProfileSetting": "default",
-                "CustomUrlCategory": ["alcohol-and-tobacco", "auctions"],
-                "ICMPUnreachable": "yes",
+                "CustomUrlCategory": [
+                    "alcohol-and-tobacco",
+                    "auctions"
+                ],
                 "Destination": "my_shared_address_object_test",
-                "Option": {"disable-server-response-inspection": "yes"},
-            },
+                "Options": {
+                    "LogAtSessionStart": "yes",
+                    "LogForwarding": "Log forwarding for SA",
+                    "Schedule": "test-schedule",
+                    "QoSMarking": "ip-precedence",
+                    "DisableServerResponseInspection": "yes"
+                }
+            }
         ]
     }
 }
@@ -3198,10 +3241,11 @@ Returns a list of predefined Security Rules.
 #### Human Readable Output
 
 ### Security Rules:
-|Name|Location|Tags|Type|Source Zone|Source Address|Source User|Source Device|Destination Zone|Destination Address|Destination Device|Application|Service|Url Category|Action|Profile|Profile Group|Options|Target|
+|Name|Location|Tags|Type|Source Zone|Source Address|Source User|Source Device|Destination Zone|Destination Address|Destination Device|Application|Service|Url Category|Action|Profiles|Profile Group|Options|Target|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| test-schedule | SA_FWs |  |  | any | any | any | any | any | any | any | any | application-default | any | allow |  |  | ⬜ Log at Session Start,<br>Log Forwarding: None,<br>Schedule: test,<br>QoS Marking: follow-c2s-flow,<br>⬜ Disable Server Response Inspection | negate: no<br>devices: None |
-| jl-test-1 | SA_FWs | APIiiiiii,<br>test2shared | intrazone | internal | 1.1.1.1 | me | good name | internal | my_shared_address_object_test | bad nam | 8x8 | new group,<br>service-http,<br>service-https | alcohol-and-tobacco,<br>auctions | reset-server | url-filtering: default<br>file-blocking: basic file blocking<br>virus: threat-pcap<br>spyware: default<br>vulnerability: strict<br>wildfire-analysis: default | default | ✅ Log at Session Start,<br>Log Forwarding: Log forwarding for SA,<br>Schedule: test-schedule,<br>QoS Marking: ip-precedence,<br>✅ Disable Server Response Inspection | negate: no<br>devices: 007051000185487, 007051000188986 |
+| block rule | TestDevice | TestTag1,<br>TestTag2,<br>TestTag3 |  | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.4.4,<br>8.8.8.8 | any | any | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.8.8 | any | cortex-xdr,<br>jira,<br>zoom | application-default | abortion,<br>adult,<br>alcohol-and-tobacco,<br>hacking | drop |  | TestGroup | LogAtSessionStart: null<br>LogForwarding: null<br>Schedule: null<br>QoSMarking: null<br>DisableServerResponseInspection: null | devices: 007051000185487<br>negate: no |
+| jl-test-1 | TestDevice | APIiiiiii,<br>test2shared | intrazone | internal | 1.1.1.1 | me | good name | internal | my_shared_address_object_test | bad nam | 8x8 | new group,<br>service-http,<br>service-https | alcohol-and-tobacco,<br>auctions | reset-server | url-filtering: default<br>spyware: testing<br>virus: default |  | LogAtSessionStart: yes<br>LogForwarding: Log forwarding for SA<br>Schedule: test-schedule<br>QoSMarking: ip-precedence<br>DisableServerResponseInspection: yes | devices: 007051000185487,<br>007051000188986<br>negate: no |
+
 ### pan-os-query-logs
 ***
 The query logs in Panorama.
