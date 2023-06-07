@@ -116,7 +116,7 @@ ARGS_CASES = [('test-module', 'test_module', 'ok'),
 
 
 @pytest.mark.parametrize('function, client_function_to_mock, result_client', ARGS_CASES)
-def test_main_happy_path(mocker, function, client_function_to_mock, result_client):
+def test_main(mocker, function, client_function_to_mock, result_client):
     """
     Given:
     - Valid parameters and commands.
@@ -138,6 +138,5 @@ def test_main_happy_path(mocker, function, client_function_to_mock, result_clien
     })
     is_function_called = mocker.patch.object(demisto, 'command', return_value=function)
     mocker.patch.object(Client, client_function_to_mock, return_value=result_client)
-
     main()
     assert is_function_called.call_count
