@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 import unittest
-from GetProjectOwners import is_gcp_iam_account, extract_project_name, get_project_owners, main
+from GetProjectOwners import is_gcp_iam_account, extract_project_name, get_project_owners, get_iam_policy, main
 from contextlib import nullcontext as does_not_raise
 
 
@@ -45,12 +45,38 @@ def test_is_gcp_iam_account(service_account, expected_out):
 
 @pytest.mark.parametrize('service_account, expected_out, expected_raises', [
     ('service-account-name@project-id.iam.gserviceaccount.com', 'project-id', does_not_raise()),
-    ('project-number-compute@developer.gserviceaccount.com', None, pytest.raises(ValueError)),
-    ('person@example.com', None, pytest.raises(ValueError)),
+    (
+        'project-number-compute@developer.gserviceaccount.com',
+        None,
+        pytest.raises(
+            ValueError,
+            match="Could not extract project name from service account project-number-compute@developer.gserviceaccount.com"
+        )
+    ),
+    (
+        'person@example.com',
+        None,
+        pytest.raises(
+            ValueError,
+            match="Could not extract project name from service account person@example.com"
+        )
+    ),
 ])
 def test_extract_project_name(service_account, expected_out, expected_raises):
     with expected_raises:
         assert extract_project_name(service_account) == expected_out
+
+
+def test_get_iam_policy(mocker):
+    # integration enabled; no error thrown
+    demisto_execution_mock = mocker.patch.object(demisto, 'executeCommand', return_value=TEST_IAM_POLICY)
+    with does_not_raise():
+        assert TEST_IAM_POLICY == get_iam_policy('project-id')
+
+    # integration disabled and/or error thrown
+    demisto_execution_mock.side_effect = Exception('<Integration Error Msg>')
+    with pytest.raises(RuntimeError, match='Error retrieving IAM policy for GCP project project-id'):
+        get_iam_policy('project-id')
 
 
 @pytest.mark.parametrize('results, expected_out, expected_raises', [
@@ -88,7 +114,7 @@ def test_extract_project_name(service_account, expected_out, expected_raises):
     (
         [],
         None,
-        pytest.raises(ValueError)
+        pytest.raises(ValueError, match="Error getting project owners from IAM policy")
     ),
 
 ])
