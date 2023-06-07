@@ -738,13 +738,37 @@ def test_prettify_logs():
 
 
 prepare_security_rule_inputs = [
+    ('after', 'test_rule_name', ['user1'], '<source-user><member>user1</member></source-user>'),
+    ('after', 'test_rule_name', ['user1,user2'], '<source-user><member>user1,user2</member></source-user>'),
+]
+
+
+@pytest.mark.parametrize('where, dst, source_user, expected_result', prepare_security_rule_inputs)
+def test_prepare_security_rule_params(where, dst, source_user, expected_result):
+    """
+    Given:
+     - valid arguments for the prepare_security_rule_params function
+
+    When:
+     - running the prepare_security_rule_params utility function
+
+    Then:
+     - a valid security rule dictionary is returned.
+    """
+    from Panorama import prepare_security_rule_params
+    params = prepare_security_rule_params(api_action='set', action='drop', destination=['any'], source=['any'],
+                                          rulename='test', where=where, dst=dst, source_user=source_user)
+    assert expected_result in params.get('element', '')
+
+
+prepare_security_rule_fail_inputs = [
     ('top', 'test_rule_name'),
     ('bottom', 'test_rule_name'),
 ]
 
 
-@pytest.mark.parametrize('where, dst', prepare_security_rule_inputs)
-def test_prepare_security_rule_params(where, dst):
+@pytest.mark.parametrize('where, dst', prepare_security_rule_fail_inputs)
+def test_prepare_security_rule_params_fail(where, dst):
     """
     Given:
      - a non valid arguments for the prepare_security_rule_params function
