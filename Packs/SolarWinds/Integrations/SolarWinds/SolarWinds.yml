@@ -21,7 +21,6 @@ configuration:
 - additionalinfo: 'Note: "Type of incident to be fetched" and "Incident type" should be the same to fetch similar types of incidents.'
   defaultvalue: Alert
   display: Type of incident to be fetched
-  hidden: false
   name: fetch_type
   options:
   - Alert
@@ -33,7 +32,6 @@ configuration:
 - additionalinfo: The maximum limit is 1000.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -41,7 +39,6 @@ configuration:
 - additionalinfo: 'Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -50,7 +47,6 @@ configuration:
     Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.
     Note: Severity level is only available for alerts.
   display: Severity levels
-  hidden: false
   name: severities
   options:
   - Information
@@ -64,7 +60,6 @@ configuration:
   advanced: true
 - additionalinfo: Filter alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query command.
   display: Object Types
-  hidden: false
   name: object_types
   options:
   - Application
@@ -98,7 +93,6 @@ configuration:
   advanced: true
 - additionalinfo: Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use the query 'SELECT Name FROM Orion.EventTypes' in the swis-query command.
   display: Event Types
-  hidden: false
   name: event_types
   options:
   - Node Down
@@ -139,7 +133,6 @@ configuration:
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8

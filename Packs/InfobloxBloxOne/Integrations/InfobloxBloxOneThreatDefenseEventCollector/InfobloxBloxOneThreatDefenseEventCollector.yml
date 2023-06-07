@@ -19,7 +19,6 @@ configuration:
   defaultvalue: "1000"
   display: Max events per fetch
   section: Collect
-  hidden: false
   name: max_fetch
   required: false
   type: 0

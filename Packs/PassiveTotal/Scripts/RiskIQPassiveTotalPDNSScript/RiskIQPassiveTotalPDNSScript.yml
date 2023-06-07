@@ -9,7 +9,6 @@ comment: Enhancement script to enrich PDNS information for Domain and IP type of
 commonfields:
   id: RiskIQPassiveTotalPDNSScript
   version: -1
-enabled: false
 name: RiskIQPassiveTotalPDNSScript
 script: '-'
 subtype: python3
