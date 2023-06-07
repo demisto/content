@@ -13,7 +13,6 @@ configuration:
   type: 9
   additionalinfo: A pfx certificate encoded in Base64.
   displaypassword: Password - Used to generate the certificate
-  hiddenusername: false
   section: Connect
 - name: organization
   display: Organization
@@ -1024,7 +1023,7 @@ script:
       description: ATP policy admin display name.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.EnableATPForSPOTeamsODB
-      description: ATP policy enabled for SPOT teams.      
+      description: ATP policy enabled for SPOT teams.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.AllowSafeDocsOpen
       description: Whether the ATP policy allows safe docs to open.
@@ -1042,10 +1041,10 @@ script:
       description: When the ATP policy was created in UTC format.
       type: String
     - contextPath: O365Defender.SafeLinks.AtpPolicy.WhenChangedUTC
-      description: When the ATP policy was changed in UTC format.      
+      description: When the ATP policy was changed in UTC format.
       type: String
   - name: o365-defender-safelinks-atp-policy-set
-    description: Set the ATP policy.    
+    description: Set the ATP policy.
     deprecated: false
     arguments:
     - name: allow_safe_docs_open
@@ -1057,7 +1056,7 @@ script:
       - "true"
       - "false"
     - name: enable_atp_spo_teams_odb
-      description: Enable or disable O365 Defender for SharePoint, OneDrive, and Microsoft Teams 
+      description: Enable or disable O365 Defender for SharePoint, OneDrive, and Microsoft Teams
       required: false
       isArray: false
       auto: PREDEFINED
