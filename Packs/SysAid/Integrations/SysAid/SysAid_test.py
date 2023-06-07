@@ -557,7 +557,7 @@ def test_reduce_service_records_to_limit(service_records, limit, last_fetch, las
     """
     from SysAid import reduce_service_records_to_limit
     assert reduce_service_records_to_limit(service_records, limit, last_fetch, last_id_fetched) == \
-           (returned_last_fetch, returned_last_id_fetched, returned_service_records)
+        (returned_last_fetch, returned_last_id_fetched, returned_service_records)
 
 
 @pytest.mark.parametrize('service_records, limit, fetch_start_datetime, last_id_fetched, expected_last_fetch, '
