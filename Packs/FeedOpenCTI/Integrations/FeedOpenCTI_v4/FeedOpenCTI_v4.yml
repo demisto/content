@@ -4,7 +4,6 @@ commonfields:
   version: -1
 configuration:
 - display: Base URL
-  hidden: false
   name: base_url
   required: true
   type: 0
@@ -14,9 +13,7 @@ configuration:
   type: 9
   required: false
   hiddenusername: true
-- additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported
-    in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key,
-    and URL. Other types will not cause automatic indicator creation in XSOAR.'
+- additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Other types will not cause automatic indicator creation in XSOAR.'
   defaultvalue: ALL
   display: Indicator types to fetch
   name: indicator_types
@@ -35,7 +32,6 @@ configuration:
   type: 16
 - defaultvalue: '500'
   display: Max indicators per fetch
-  hidden: false
   name: max_indicator_to_fetch
   required: false
   type: 0
@@ -44,8 +40,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will get this
-    reputation. If none of the options is chosen, the indicator reputation will be set according to the indicator data.
+- additionalinfo: Indicators from this integration instance will get this reputation. If none of the options is chosen, the indicator reputation will be set according to the indicator data.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -68,8 +63,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed. If none of the options is chosen, the TLP color will be set according to the indicator data.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. If none of the options is chosen, the TLP color will be set according to the indicator data.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -104,9 +98,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -120,13 +112,11 @@ configuration:
   required: false
   type: 8
 - display: Score minimum value
-  hidden: false
   name: score_start
   required: false
   additionalinfo: 'Score minimum value to filter by. Values range is 1-100. '
   type: 0
 - display: Score maximum value
-  hidden: false
   name: score_end
   required: false
   additionalinfo: 'Score maximum value to filter by. Values range is 1-100. '
@@ -142,8 +132,7 @@ script:
     name: opencti-reset-fetch-indicators
   - arguments:
     - default: false
-      description: The maximum number of indicators to return per fetch. Default
-        value is 50. Maximum value is 500.
+      description: The maximum number of indicators to return per fetch. Default value is 50. Maximum value is 500.
       isArray: false
       name: limit
       required: false
@@ -151,9 +140,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: 'The indicator types to fetch. Out-of-the-box indicator types supported
-        in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key,
-        and URL. Other types will not cause automatic indicator creation in XSOAR.'
+      description: 'The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Other types will not cause automatic indicator creation in XSOAR.'
       isArray: true
       name: indicator_types
       predefined:

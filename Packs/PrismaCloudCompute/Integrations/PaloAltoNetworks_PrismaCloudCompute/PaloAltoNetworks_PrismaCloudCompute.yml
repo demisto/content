@@ -43,7 +43,6 @@ configuration:
   type: 9
   additionalinfo: Prisma Cloud Compute login credentials.
   displaypassword: ""
-  hiddenusername: false
   section: Connect
 - name: certificate
   display: Prisma Cloud Compute CA Certificate

@@ -6,7 +6,6 @@ deprecated: true
 display: OpenPhish (Deprecated)
 category: Data Enrichment & Threat Intelligence
 description: Deprecated. Use the OpenPhish v2 integration instead.
-defaultEnabled: false
 configuration:
 - display: Use system proxy settings
   name: proxy
@@ -55,7 +54,6 @@ script:
   - name: openphish-status
     arguments: []
     description: Show OpenPhish database status
-hidden: false
 tests:
 - No test
 fromversion: 5.0.0
