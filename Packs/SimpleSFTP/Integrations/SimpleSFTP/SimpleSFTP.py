@@ -64,15 +64,15 @@ def main():
             client = paramiko.Transport(HOST, PORT)
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
-            filePath = demisto.args()["filePath"]
-            sftp.get(filePath, "/tmp/" + filePath[filePath.rindex("/") + 1:])  # type: ignore
+            file_path = demisto.args()["file_path"]
+            sftp.get(file_path, "/tmp/" + file_path[file_path.rindex("/") + 1:])  # type: ignore
             sftp.close()  # type: ignore
-            with open("/tmp/" + filePath[filePath.rindex("/") + 1:], "r") as f:
+            with open("/tmp/" + file_path[file_path.rindex("/") + 1:], "r") as f:
                 data = f.read()
-                if demisto.args()["returnFile"] == "True":
+                if demisto.args()["return_file"] == "True":
                     demisto.results(
                         fileResult(
-                            filename=filePath[filePath.rindex("/") + 1:], data=data
+                            filename=file_path[file_path.rindex("/") + 1:], data=data
                         )
                     )
                 else:
@@ -95,8 +95,8 @@ def main():
             client = paramiko.Transport(HOST, PORT)
             client.connect(username=USERNAME, password=PASSWORD)
             sftp = paramiko.SFTPClient.from_transport(client)
-            filePath = get_file_path(args.get("file_entry_id"))
-            sftp.put(filePath["path"], args.get("path") + "/" + filePath["name"])  # type: ignore
+            file_path = get_file_path(args.get("file_entry_id"))
+            sftp.put(file_path["path"], args.get("path") + "/" + file_path["name"])  # type: ignore
             sftp.close()  # type: ignore
             demisto.results("File uploaded successfully")
         except Exception as ex:

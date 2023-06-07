@@ -34,12 +34,12 @@ script:
     name: sftp-listdir
   - arguments:
     - description: Please provide file path as seen by the sftp user upon login
-      name: filePath
+      name: file_path
       required: true
     - auto: PREDEFINED
       defaultValue: "False"
       description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
-      name: returnFile
+      name: return_file
       predefined:
       - "True"
       - "False"
