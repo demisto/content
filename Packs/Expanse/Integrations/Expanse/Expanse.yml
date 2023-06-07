@@ -31,18 +31,15 @@ configuration:
   type: 8
 - defaultvalue: '10'
   display: How many events to pull from Expander per run
-  hidden: false
   name: page_limit
   required: false
   type: 0
 - defaultvalue: '7'
   display: How many days to pull past events on first run
-  hidden: false
   name: first_run
   required: false
   type: 0
 - display: Minimum severity of Expanse Exposure to create an incident for
-  hidden: false
   name: minimum_severity
   required: false
   type: 15
