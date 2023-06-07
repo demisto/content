@@ -23,5 +23,15 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
-ePO
-resetInheritance
+epo
+resetinheritance
+
+[file:McafeeEpoModelingRules_1_3.yml]
+ignore=MR108
+
+[file:McAfeeEpo.yml]
+ignore=PR101
+
+[file:McafeeEpoModelingRules.yml]
+ignore=MR108
+
