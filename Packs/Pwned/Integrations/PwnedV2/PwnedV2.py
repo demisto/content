@@ -16,9 +16,6 @@ VENDOR = 'Have I Been Pwned? V2'
 MAX_RETRY_ALLOWED = demisto.params().get('max_retry_time', -1)
 API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure', False)
-
-
-
 BASE_URL = 'https://haveibeenpwned.com/api/v3'
 HEADERS = {
     'hibp-api-key': API_KEY,
