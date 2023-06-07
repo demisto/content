@@ -333,7 +333,7 @@ def test_tag_role_command(args, mocked_res, expected_hr, mocker):
 
 
 @pytest.mark.parametrize('args, mocked_res, expected_hr', [
-    ({"userName": "user_name", "tags": "Key:Value, Key1:Value1"}, {'ResponseMetadata': {'HTTPStatusCode': 200}}, 
+    ({"userName": "user_name", "tags": "Key:Value, Key1:Value1"}, {'ResponseMetadata': {'HTTPStatusCode': 200}},
      '### Added the following tags to user user_name\n|Key|Value|\n|---|---|\n| Key | Value |\n| Key1 | Value1 |\n')])
 def test_tag_user_command(args, mocked_res, expected_hr, mocker):
     """
