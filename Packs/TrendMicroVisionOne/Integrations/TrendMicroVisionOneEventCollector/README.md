@@ -77,12 +77,13 @@ Returns a list of logs.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of logs to retrieve. Default is 50. | Optional | 
-| from_time | From which time to retrieve the log(s) (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
+| **Argument Name**  | **Description** | **Required** |
+|--------------------| --- | --- |
+| limit              | The maximum number of logs to retrieve. Default is 50. | Optional | 
+| from_time          | From which time to retrieve the log(s) (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
+| to_time            | To which time to retrieve the log(s), a date in ISO8601 format, will default to current time if not provided. | Optional | 
 | should_push_events | Whether to push the fetched events to XSIAM or not. Possible values are: false, true. Default is false. | Optional | 
-| log_type | The log type to retrieve. Possible values are: all, audit_logs, oat_detection_logs, search_detection_logs, workbench_logs. Default is all. | Optional | 
+| log_type           | The log type to retrieve. Possible values are: all, audit_logs, oat_detection_logs, search_detection_logs, workbench_logs. Default is all. | Optional | 
 
 #### Context Output
 

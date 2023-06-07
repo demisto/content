@@ -65,9 +65,9 @@ script:
     - description: From which time to retrieve the log(s), a date in ISO8601 format.
       name: from_time
       required: true
-    - description: To which time to retrieve the log(s), a date in ISO8601 format.
+    - description: To which time to retrieve the log(s), a date in ISO8601 format, will default to current time if not provided.
       name: to_time
-      required: true
+      required: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to push the fetched events to XSIAM or not.

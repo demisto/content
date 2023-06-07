@@ -712,7 +712,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
     should_push_events = argToBoolean(args.get('should_push_events', False))
     log_type = args.get('log_type') or 'all'
     from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    to_time = args.get('to_time') or datetime.now().strftime(DATE_FORMAT)
 
     def parse_workbench_logs() -> List[Dict]:
         workbench_logs = client.get_workbench_logs(
