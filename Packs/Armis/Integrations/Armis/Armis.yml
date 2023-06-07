@@ -72,14 +72,12 @@ configuration:
   section: Connect
   advanced: true
 - display: Secret API Key
-  hidden: false
   name: secret
   required: true
   type: 4
   section: Connect
 - additionalinfo: Use this parameter to fetch incidents using a free AQL string rather than the simpler alert type, severity, etc.
   display: Fetch Alerts AQL
-  hidden: false
   name: free_fetch_string
   required: false
   type: 0
@@ -87,7 +85,6 @@ configuration:
   advanced: true
 - additionalinfo: Whether to use the system proxy.
   display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8

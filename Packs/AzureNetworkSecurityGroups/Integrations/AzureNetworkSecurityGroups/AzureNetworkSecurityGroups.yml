@@ -8,26 +8,22 @@ commonfields:
 configuration:
 - defaultvalue: d4736600-e3d5-4c97-8e65-57abd2b979fe
   display: Application ID
-  hidden: false
   name: app_id
   required: false
   type: 0
   section: Connect
 - display: Subscription ID
-  hidden: false
   name: subscription_id
   required: true
   type: 0
   section: Connect
 - display: Resource Group Name
-  hidden: false
   name: resource_group_name
   required: true
   type: 0
   section: Connect
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   options:
   - https://login.microsoftonline.com

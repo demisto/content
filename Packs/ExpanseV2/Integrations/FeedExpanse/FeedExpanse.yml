@@ -151,8 +151,6 @@ script:
   isfetch: false
   feed: true
   runonce: false
-  isremotesyncin: false
-  isremotesyncout: false
   script: '-'
   type: python
   subtype: python3

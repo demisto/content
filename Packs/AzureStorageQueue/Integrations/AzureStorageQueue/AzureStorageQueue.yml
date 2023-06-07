@@ -8,10 +8,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -33,13 +30,11 @@ configuration:
 - additionalinfo: Default is 10. Maximum is 32 (due to an API limit).
   defaultvalue: '10'
   display: Maximum incidents for one fetch.
-  hidden: false
   name: max_fetch
   required: false
   type: 0
 - additionalinfo: The name of the queue from which the messages will be retrieved.
   display: Queue name
-  hidden: false
   name: queue_name
   required: false
   type: 0
@@ -65,8 +60,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the results to return only queues with names that begin
-        with the specified prefix.
+      description: Filters the results to return only queues with names that begin with the specified prefix.
       isArray: false
       name: prefix
       required: false
@@ -88,8 +82,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The name of the Queue to create.  Rules for naming queues can
-        be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-queues-and-metadata'
+      description: 'The name of the Queue to create.  Rules for naming queues can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-queues-and-metadata'
       isArray: false
       name: queue_name
       required: true
@@ -125,8 +118,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicates whether the message should be encoded or not. Default
-        is 'False'.
+      description: Indicates whether the message should be encoded or not. Default is 'False'.
       isArray: false
       name: base64_encoding
       predefined:
@@ -166,9 +158,7 @@ script:
       description: Message expiration time.
       type: Date
     - contextPath: AzureStorageQueue.Queue.Message.PopReceipt
-      description: Message pop receipt value. This value changes each time the message
-        is retrieved or updated and used to ensure that message has not been dequeued
-        by another user before deleting or updating the message.
+      description: Message pop receipt value. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
       type: String
     - contextPath: AzureStorageQueue.Queue.Message.TimeNextVisible
       description: Message next visible time.
@@ -199,9 +189,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves messages from the front of the queue. Retrieved messages
-      will move to the end of the queue,and will be visible after 'TimeNextVisible'
-      param.
+    description: Retrieves messages from the front of the queue. Retrieved messages will move to the end of the queue,and will be visible after 'TimeNextVisible' param.
     execution: false
     name: azure-storage-queue-message-get
     outputs:
@@ -215,9 +203,7 @@ script:
       description: Message expiration time.
       type: Date
     - contextPath: AzureStorageQueue.Queue.Message.PopReceipt
-      description: Message pop receipt value. This value changes each time the message
-        is retrieved or updated and used to ensure that message has not been dequeued
-        by another user before deleting or updating the message.
+      description: Message pop receipt value. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
       type: String
     - contextPath: AzureStorageQueue.Queue.Message.TimeNextVisible
       description: Message next visible time.
@@ -246,8 +232,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves messages from the front of the queue. The command does
-      not alter the visibility of the message.
+    description: Retrieves messages from the front of the queue. The command does not alter the visibility of the message.
     execution: false
     name: azure-storage-queue-message-peek
     outputs:
@@ -300,9 +285,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message PopReceipt parameter. This value changes each time the
-        message is retrieved or updated and used to ensure that message has not been
-        dequeued by another user before deleting or updating the message.
+      description: Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
       isArray: false
       name: pop_receipt
       required: true
@@ -310,8 +293,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicates whether the message content should be encoded or not.
-        Default is 'False'.
+      description: Indicates whether the message content should be encoded or not. Default is 'False'.
       isArray: false
       name: base64_encoding
       predefined:
@@ -321,10 +303,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Specifies the new visibility timeout value of the message. The
-        new value must be larger than or equal to 0, and cannot be larger than 7 days.
-        The visibility timeout of a message cannot be set to a value later than the
-        expiry time. Default is 0.
+      description: Specifies the new visibility timeout value of the message. The new value must be larger than or equal to 0, and cannot be larger than 7 days. The visibility timeout of a message cannot be set to a value later than the expiry time. Default is 0.
       isArray: false
       name: visibility_time_out
       predefined:
@@ -343,9 +322,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message PopReceipt parameter. This value changes each time the
-        message is retrieved or updated and used to ensure that message has not been
-        dequeued by another user before deleting or updating the message.
+      description: Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
       isArray: false
       name: pop_receipt
       required: true
