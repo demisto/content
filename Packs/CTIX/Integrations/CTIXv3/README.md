@@ -378,7 +378,7 @@ Saved Search listing api with pagination
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page. | Optional | 
+| page | page. | Required | 
 | page_size | page size. | Optional | 
 
 

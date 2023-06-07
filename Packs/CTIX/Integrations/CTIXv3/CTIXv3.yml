@@ -308,6 +308,7 @@ script:
       description: page from where to start
     - name: page_size
       description: page size of the result
+      required: true
     outputs:
     - contextPath: CTIX.SavedSearch.id
       description: ID of the object
