@@ -94,8 +94,8 @@ def get_account_status_command(client: Client, params: Dict[str, Any]) -> Comman
     """
     try:
         response = client.get_account_status()
-        user_info = tableToMarkdown("User Info", response['user'])
-        credit_info = tableToMarkdown("Credit Info", response['user_credits'])
+        user_info = tableToMarkdown("User Info", response.get('user',''))
+        credit_info = tableToMarkdown("Credit Info", response.get('user_credits',''))
         readable_output = f"{user_info}\n{credit_info}"
 
         return CommandResults(
@@ -215,8 +215,8 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params)
-            return_results(result)
+            test_module_result = test_module(client, params)
+            return_results(test_module_result)
 
         elif command == 'fullhunt-get-account-status':
             # Get user account information and credit.
