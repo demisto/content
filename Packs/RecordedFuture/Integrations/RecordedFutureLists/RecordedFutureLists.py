@@ -1,8 +1,7 @@
-"""Recorded Future Playbook alerts Integration for Demisto."""
+"""Recorded Future Lists Integration for Demisto."""
 
 import platform
 import json
-import base64
 
 # flake8: noqa: F402,F405 lgtm
 import demistomock as demisto
@@ -13,7 +12,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '1.0.1'
+__version__ = '1.0.0'
 
 
 # === === === === === === === === === === === === === === ===
@@ -75,50 +74,44 @@ class Client(BaseClient):
 
         return response
 
-    def fetch_incidents(self) -> Dict[str, Any]:
-        """Fetch incidents."""
-        return self._call(
-            url_suffix=f'/v2/playbook_alert/fetch',
-            json_data={
-                'demisto_command': demisto.command(),
-                'demisto_args': demisto.args(),
-                'demisto_params': demisto.params(),
-                'demisto_last_run': demisto.getLastRun(),
-            },
-            timeout=120,
-        )
+    ####################################################
+    ################## List operations #################
+    ####################################################
 
-    #######################################################
-    ################## Playbook alerts ####################
-    #######################################################
-
-    def details_playbook_alerts(self) -> Dict[str, Any]:
+    def list_search(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
-        if alert_ids := parsed_args.get('alert_ids'):
-            parsed_args['alert_ids'] = alert_ids.split(",")
-        if sections := parsed_args.get('detail_sections'):
-            parsed_args["detail_sections"] = sections.split(",")
-        """Get details of a playbook alert"""
-        return self._call(
-            url_suffix='/v2/playbook_alert/lookup', demisto_args=parsed_args
-        )
+        if list_names := parsed_args.get('list_names'):
+            parsed_args['list_names'] = list_names.split(",")
+        if types := parsed_args.get('contains'):
+            parsed_args["contains"] = types.split(",")
+        """Search for lists in Recorded Future"""
+        return self._call(url_suffix='/v2/lists/search', demisto_args=parsed_args)
 
-    def update_playbook_alerts(self) -> Dict[str, Any]:
-        parsed_args = demisto.args()
-        if ids := parsed_args.get('alert_ids'):
-            parsed_args["alert_ids"] = ids.split(",")
-        return self._call(
-            url_suffix='/v2/playbook_alert/update', demisto_args=parsed_args
-        )
+    ####################################################
+    ################ Entity operations #################
+    ####################################################
 
-    def search_playbook_alerts(self) -> Dict[str, Any]:
+    def entity_add(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
-        if categories := parsed_args.get('category'):
-            parsed_args["category"] = categories.split(",")
-        if statuses := parsed_args.get('playbook_alert_status'):
-            parsed_args["playbook_alert_status"] = statuses.split(",")
+
+        list_id = parsed_args.pop("list_id")
+
+        if entity_ids := parsed_args.get('entity_ids'):
+            parsed_args["entity_ids"] = entity_ids.split(",")
+
+        if freetext_names := parsed_args.get('freetext_names'):
+            parsed_args["freetext_names"] = freetext_names.split(",")
+
+        if not (
+            (entity_ids and not freetext_names) or (not entity_ids and freetext_names)
+        ):  # XOR entity_ids and freetext_names
+            raise ValueError(
+                "Command expected 1 of parmeters: entity_ids or freetext_names, to be specified."
+                f" Got {len([x for x in [entity_ids, freetext_names] if x])} specified."
+            )
+
         return self._call(
-            url_suffix='/v2/playbook_alert/search', demisto_args=parsed_args
+            url_suffix=f'/v2/lists/{list_id}/entities/add', demisto_args=parsed_args
         )
 
 
@@ -154,55 +147,20 @@ class Actions:
 
         return command_results
 
-    def fetch_incidents(self) -> None:
-
-        response = self.client.fetch_incidents()
-
-        if isinstance(response, CommandResults):
-            # 404 case.
-            return
-
-        for _key, _val in response.items():
-            if _key == 'demisto_last_run':
-                demisto.setLastRun(_val)
-            if _key == 'incidents':
-                for incident in _val:
-                    attachments = list()
-                    incident_json = json.loads(incident.get("rawJSON", "{}"))
-                    if incident_json.get("panel_evidence_summary", {}).get(
-                        "screenshots"
-                    ):
-                        for screenshot_data in incident_json["panel_evidence_summary"][
-                            "screenshots"
-                        ]:
-                            file_name = f'{screenshot_data.get("image_id", "").replace("img:","")}.png'
-                            file_data = screenshot_data.get("base64", "")
-                            file = fileResult(file_name, base64.b64decode(file_data))
-                            attachment = {
-                                "description": screenshot_data.get('description'),
-                                "name": file.get("File"),
-                                "path": file.get("FileID"),
-                                "showMediaFile": True,
-                            }
-                            attachments.append(attachment)
-                        incident['attachment'] = attachments
-
-                demisto.incidents(_val)
-
         #######################################################
-        ################## Playbook alerts ####################
+        #################### List actions #####################
         #######################################################
 
-    def playbook_alert_details_command(self) -> List[CommandResults]:
-        response = self.client.details_playbook_alerts()
+    def list_search_command(self) -> List[CommandResults]:
+        response = self.client.list_search()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_update_command(self) -> List[CommandResults]:
-        response = self.client.update_playbook_alerts()
-        return self._process_result_actions(response=response)
+        #######################################################
+        ################### Entity actions ####################
+        #######################################################
 
-    def playbook_alert_search_command(self) -> List[CommandResults]:
-        response = self.client.search_playbook_alerts()
+    def entity_add_command(self) -> List[CommandResults]:
+        response = self.client.entity_add()
         return self._process_result_actions(response=response)
 
 
@@ -222,7 +180,7 @@ def main() -> None:
         headers = {
             'X-RFToken': demisto_params['token'].get('password'),
             'X-RF-User-Agent': (
-                f'RecordedFuturePlaybookAlerts.py/{__version__} ({platform.platform()}) '
+                f'RecordedFutureLists.py/{__version__} ({platform.platform()}) '
                 f'XSOAR/{__version__} '
                 f'RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()["version"]})'
             ),
@@ -256,21 +214,19 @@ def main() -> None:
                     )
                 raise DemistoException(f'Failed due to - {message}')
 
-        elif command == 'fetch-incidents':
-            actions.fetch_incidents()
-
         #######################################################
-        ################## Playbook alerts ####################
+        ################### List commands #####################
         #######################################################
 
-        elif command == 'recordedfuture-playbook-alerts-details':
-            return_results(actions.playbook_alert_details_command())
+        elif command == 'recordedfuture-lists-search':
+            return_results(actions.list_search_command())
 
-        elif command == 'recordedfuture-playbook-alerts-update':
-            return_results(actions.playbook_alert_update_command())
+        #######################################################
+        ################## Entity commands ####################
+        #######################################################
 
-        elif command == 'recordedfuture-playbook-alerts-search':
-            return_results(actions.playbook_alert_search_command())
+        elif command == 'recordedfuture-lists-add-entities':
+            return_results(actions.entity_add_command())
 
     except Exception as e:
         return_error(message=f'Failed to execute {demisto.command()} command: {str(e)}')
