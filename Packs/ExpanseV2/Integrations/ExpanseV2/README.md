@@ -34,10 +34,14 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
     | sync_tags | Mirror out Entries with tag\(s\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### expanse-get-issues
+
 ***
 Retrieve issues
 
@@ -45,6 +49,7 @@ Retrieve issues
 #### Base Command
 
 `expanse-get-issues`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -249,9 +254,11 @@ Retrieve issues
 
 
 #### Command Example
+
 ```!expanse-get-issues limit="1" provider="Amazon Web Services" sort="-created"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -594,12 +601,14 @@ Retrieve issues
 #### Human Readable Output
 
 >### Expanse Issues
+>
 >|Id|Headline|Issue Type|Category|Ip|Port Protocol|Port Number|Domain|Certificate|Priority|Progress Status|Activity Status|Providers|Assignee Username|Business Units|Created|Modified|Annotations|Assets|Help Text|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2b0ea80c-2277-34dd-9c55-005922ba640a | Insecure TLS at 52.6.192.223:443 | id: InsecureTLS<br/>name: Insecure TLS<br/>archived: null | Attack Surface Reduction | 52.6.192.223 | TCP | 443 |  | id: 81d4479a-4c66-3b05-a969-4b40ba07ba21<br/>md5Hash: gdRHmkxmGwWpaUtAuge6IQ==<br/>issuer: C=US,O=GeoTrust Inc.,CN=GeoTrust SSL CA - G3<br/>issuerAlternativeNames: <br/>issuerCountry: US<br/>issuerEmail: null<br/>issuerLocality: null<br/>issuerName: GeoTrust SSL CA - G3<br/>issuerOrg: GeoTrust Inc.<br/>formattedIssuerOrg: GeoTrust<br/>issuerOrgUnit: null<br/>issuerState: null<br/>publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv8cw0HvfztMNtUU6tK7TSo0Ij1k+MwL+cYSTEl7f5Lc/v0Db9Bg3YI7ALlw3VLnJ3oWxiwwCJMLbOBmVr7tSrPBU7dFUh0UIS6LulVYe16fKb1MBUmMq9WckGHF6+bnXrP/xb9X77RiqP0HhRbv7s/3m2ZruIHZ334mm1shnO65vyCvrOHXZQWl8SSk7fHBebRgEcqBM+w0VKV1Uy6U3b7AKWAsbibEHHCuGYFV+OaJxO7/18tJBNwJSX7lDnMOOxoCY2Jcafr/j5gb8O75OH2uxyg2bV7huwm7obYWP9Glw6b9KMdl55CsQHPNW3NW1AnCbAJFvDszl+Op96XNcHQIDAQAB<br/>publicKeyAlgorithm: RSA<br/>publicKeyRsaExponent: 65537<br/>signatureAlgorithm: SHA256withRSA<br/>subject: C=IN,ST=Maharashtra,L=Pune,O=Sears IT and Management Services India Pvt. Ltd.,OU=Management Services,CN=*.thespeedyou.com<br/>subjectAlternativeNames: *.thespeedyou.com thespeedyou.com<br/>subjectCountry: IN<br/>subjectEmail: null<br/>subjectLocality: Pune<br/>subjectName: *.thespeedyou.com<br/>subjectOrg: Sears IT and Management Services India Pvt. Ltd.<br/>subjectOrgUnit: Management Services<br/>subjectState: Maharashtra<br/>serialNumber: 34287766128589078095374161204025316200<br/>validNotBefore: 2015-01-19T00:00:00Z<br/>validNotAfter: 2017-01-18T23:59:59Z<br/>version: 3<br/>publicKeyBits: 2048<br/>pemSha256: w_LuhDoJupBuXxDW5gzATkB6TL0IsdQK09fuQsLGj-g=<br/>pemSha1: p0y_sHlFdp5rPOw8aWrH2Qc331Q=<br/>publicKeyModulus: bfc730d07bdfced30db5453ab4aed34a8d088f593e3302fe718493125edfe4b73fbf40dbf41837608ec02e5c3754b9c9de85b18b0c0224c2db381995afbb52acf054edd1548745084ba2ee95561ed7a7ca6f530152632af5672418717af9b9d7acfff16fd5fbed18aa3f41e145bbfbb3fde6d99aee207677df89a6d6c8673bae6fc82beb3875d941697c49293b7c705e6d180472a04cfb0d15295d54cba5376fb00a580b1b89b1071c2b8660557e39a2713bbff5f2d2413702525fb9439cc38ec68098d8971a7ebfe3e606fc3bbe4e1f6bb1ca0d9b57b86ec26ee86d858ff46970e9bf4a31d979e42b101cf356dcd5b502709b00916f0ecce5f8ea7de9735c1d<br/>publicKeySpki: 5yD3VMYLV6A4CelOIlekrA1ByPGO769aG16XHfMixnA= | Medium | InProgress | Active | {'id': 'AWS', 'name': 'Amazon Web Services'} | Unassigned | {'id': 'f738ace6-f451-4f31-898d-a12afa204b2a', 'name': 'PANW VanDelay Dev'} | 2020-09-23T01:44:37.415249Z | 2020-12-18T18:11:18.399257Z | tags:  | {'id': '724a1137-ee3f-381f-95f2-ea0441db22d0', 'assetKey': 'gdRHmkxmGwWpaUtAuge6IQ==', 'assetType': 'Certificate', 'displayName': '*.thespeedyou.com'} | This service should not be visible on the public Internet. |
 
 
 ### expanse-get-issue-updates
+
 ***
 Retrieve updates for an Xpanse issue.
 
@@ -607,6 +616,7 @@ Retrieve updates for an Xpanse issue.
 #### Base Command
 
 `expanse-get-issue-updates`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -631,9 +641,11 @@ Retrieve updates for an Xpanse issue.
 
 
 #### Command Example
+
 ```!expanse-get-issue-updates issue_id="2b0ea80c-2277-34dd-9c55-005922ba640a" update_types="Comment,ProgressStatus" created_after="2020-12-07T09:34:36.20917328Z" limit="2"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -668,13 +680,15 @@ Retrieve updates for an Xpanse issue.
 #### Human Readable Output
 
 >### Results
+>
 >|created|id|issueId|previousValue|updateType|user|value|
 >|---|---|---|---|---|---|---|
->| 2020-12-18T18:13:21.301817Z | b3825b75-97c5-488b-bc1e-e6347fa8ff23 | 2b0ea80c-2277-34dd-9c55-005922ba640a |  | Comment | username: demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment |
->| 2020-12-18T18:13:24.311442Z | 2577ff9b-43bf-4472-b2a5-c4eaec79a5ce | 2b0ea80c-2277-34dd-9c55-005922ba640a | InProgress | ProgressStatus | username: demo+api.external.vandelay+panw@expanseinc.com | InProgress |
+>| 2020-12-18T18:13:21.301817Z | b3825b75-97c5-488b-bc1e-e6347fa8ff23 | 2b0ea80c-2277-34dd-9c55-005922ba640a |  | Comment | username: <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment |
+>| 2020-12-18T18:13:24.311442Z | 2577ff9b-43bf-4472-b2a5-c4eaec79a5ce | 2b0ea80c-2277-34dd-9c55-005922ba640a | InProgress | ProgressStatus | username: <demo+api.external.vandelay+panw@expanseinc.com> | InProgress |
 
 
 ### expanse-get-issue-comments
+
 ***
 Retrieve issue comments (subset of updates)
 
@@ -682,6 +696,7 @@ Retrieve issue comments (subset of updates)
 #### Base Command
 
 `expanse-get-issue-comments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -704,9 +719,11 @@ Retrieve issue comments (subset of updates)
 
 
 #### Command Example
+
 ```!expanse-get-issue-comments issue_id="2b0ea80c-2277-34dd-9c55-005922ba640a" created_after="2020-12-07T09:34:36.20917328Z"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -809,21 +826,23 @@ Retrieve issue comments (subset of updates)
 #### Human Readable Output
 
 >### Expanse Issue Comments
+>
 >|User|Value|Created|
 >|---|---|---|
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-07T10:53:31.168649Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-07T11:03:05.724596Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-07T12:02:37.202021Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-07T12:17:31.781217Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-14T18:31:39.117534Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-18T18:03:30.331013Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-18T18:04:06.920178Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-18T18:08:11.503224Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-18T18:11:15.311531Z |
->| demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment | 2020-12-18T18:13:21.301817Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-07T10:53:31.168649Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-07T11:03:05.724596Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-07T12:02:37.202021Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-07T12:17:31.781217Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-14T18:31:39.117534Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-18T18:03:30.331013Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-18T18:04:06.920178Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-18T18:08:11.503224Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-18T18:11:15.311531Z |
+>| <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment | 2020-12-18T18:13:21.301817Z |
 
 
 ### expanse-update-issue
+
 ***
 Update a property of an Xpanse issue.
 
@@ -831,6 +850,7 @@ Update a property of an Xpanse issue.
 #### Base Command
 
 `expanse-update-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -854,9 +874,11 @@ Update a property of an Xpanse issue.
 
 
 #### Command Example
+
 ```!expanse-update-issue issue_id="2b0ea80c-2277-34dd-9c55-005922ba640a" update_type="Comment" value="XSOAR Test Playbook Comment"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -878,12 +900,14 @@ Update a property of an Xpanse issue.
 #### Human Readable Output
 
 >### Results
+>
 >|created|id|issueId|previousValue|updateType|user|value|
 >|---|---|---|---|---|---|---|
->| 2020-12-18T18:13:21.301817Z | b3825b75-97c5-488b-bc1e-e6347fa8ff23 | 2b0ea80c-2277-34dd-9c55-005922ba640a |  | Comment | username: demo+api.external.vandelay+panw@expanseinc.com | XSOAR Test Playbook Comment |
+>| 2020-12-18T18:13:21.301817Z | b3825b75-97c5-488b-bc1e-e6347fa8ff23 | 2b0ea80c-2277-34dd-9c55-005922ba640a |  | Comment | username: <demo+api.external.vandelay+panw@expanseinc.com> | XSOAR Test Playbook Comment |
 
 
 ### expanse-get-issue
+
 ***
 Retrieve Xpanse issue by issue ID.
 
@@ -891,6 +915,7 @@ Retrieve Xpanse issue by issue ID.
 #### Base Command
 
 `expanse-get-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1078,9 +1103,11 @@ Retrieve Xpanse issue by issue ID.
 
 
 #### Command Example
+
 ```!expanse-get-issue issue_id="2b0ea80c-2277-34dd-9c55-005922ba640a"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -1423,11 +1450,13 @@ Retrieve Xpanse issue by issue ID.
 #### Human Readable Output
 
 >### Expanse Issues
+>
 >|Id|Headline|Issue Type|Category|Ip|Port Protocol|Port Number|Domain|Certificate|Priority|Progress Status|Activity Status|Providers|Assignee Username|Business Units|Created|Modified|Annotations|Assets|Help Text|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2b0ea80c-2277-34dd-9c55-005922ba640a | Insecure TLS at 52.6.192.223:443 | id: InsecureTLS<br/>name: Insecure TLS<br/>archived: null | Attack Surface Reduction | 52.6.192.223 | TCP | 443 |  | id: 81d4479a-4c66-3b05-a969-4b40ba07ba21<br/>md5Hash: gdRHmkxmGwWpaUtAuge6IQ==<br/>issuer: C=US,O=GeoTrust Inc.,CN=GeoTrust SSL CA - G3<br/>issuerAlternativeNames: <br/>issuerCountry: US<br/>issuerEmail: null<br/>issuerLocality: null<br/>issuerName: GeoTrust SSL CA - G3<br/>issuerOrg: GeoTrust Inc.<br/>formattedIssuerOrg: GeoTrust<br/>issuerOrgUnit: null<br/>issuerState: null<br/>publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv8cw0HvfztMNtUU6tK7TSo0Ij1k+MwL+cYSTEl7f5Lc/v0Db9Bg3YI7ALlw3VLnJ3oWxiwwCJMLbOBmVr7tSrPBU7dFUh0UIS6LulVYe16fKb1MBUmMq9WckGHF6+bnXrP/xb9X77RiqP0HhRbv7s/3m2ZruIHZ334mm1shnO65vyCvrOHXZQWl8SSk7fHBebRgEcqBM+w0VKV1Uy6U3b7AKWAsbibEHHCuGYFV+OaJxO7/18tJBNwJSX7lDnMOOxoCY2Jcafr/j5gb8O75OH2uxyg2bV7huwm7obYWP9Glw6b9KMdl55CsQHPNW3NW1AnCbAJFvDszl+Op96XNcHQIDAQAB<br/>publicKeyAlgorithm: RSA<br/>publicKeyRsaExponent: 65537<br/>signatureAlgorithm: SHA256withRSA<br/>subject: C=IN,ST=Maharashtra,L=Pune,O=Sears IT and Management Services India Pvt. Ltd.,OU=Management Services,CN=*.thespeedyou.com<br/>subjectAlternativeNames: *.thespeedyou.com thespeedyou.com<br/>subjectCountry: IN<br/>subjectEmail: null<br/>subjectLocality: Pune<br/>subjectName: *.thespeedyou.com<br/>subjectOrg: Sears IT and Management Services India Pvt. Ltd.<br/>subjectOrgUnit: Management Services<br/>subjectState: Maharashtra<br/>serialNumber: 34287766128589078095374161204025316200<br/>validNotBefore: 2015-01-19T00:00:00Z<br/>validNotAfter: 2017-01-18T23:59:59Z<br/>version: 3<br/>publicKeyBits: 2048<br/>pemSha256: w_LuhDoJupBuXxDW5gzATkB6TL0IsdQK09fuQsLGj-g=<br/>pemSha1: p0y_sHlFdp5rPOw8aWrH2Qc331Q=<br/>publicKeyModulus: bfc730d07bdfced30db5453ab4aed34a8d088f593e3302fe718493125edfe4b73fbf40dbf41837608ec02e5c3754b9c9de85b18b0c0224c2db381995afbb52acf054edd1548745084ba2ee95561ed7a7ca6f530152632af5672418717af9b9d7acfff16fd5fbed18aa3f41e145bbfbb3fde6d99aee207677df89a6d6c8673bae6fc82beb3875d941697c49293b7c705e6d180472a04cfb0d15295d54cba5376fb00a580b1b89b1071c2b8660557e39a2713bbff5f2d2413702525fb9439cc38ec68098d8971a7ebfe3e606fc3bbe4e1f6bb1ca0d9b57b86ec26ee86d858ff46970e9bf4a31d979e42b101cf356dcd5b502709b00916f0ecce5f8ea7de9735c1d<br/>publicKeySpki: 5yD3VMYLV6A4CelOIlekrA1ByPGO769aG16XHfMixnA= | Medium | InProgress | Active | {'id': 'AWS', 'name': 'Amazon Web Services'} | Unassigned | {'id': 'f738ace6-f451-4f31-898d-a12afa204b2a', 'name': 'PANW VanDelay Dev'} | 2020-09-23T01:44:37.415249Z | 2020-12-18T18:13:24.311442Z | tags:  | {'id': '724a1137-ee3f-381f-95f2-ea0441db22d0', 'assetKey': 'gdRHmkxmGwWpaUtAuge6IQ==', 'assetType': 'Certificate', 'displayName': '*.thespeedyou.com'} | This service should not be visible on the public Internet. |
 
 ### expanse-get-service
+
 ***
 Retrieve Xpanse issue by service ID.
 
@@ -1435,6 +1464,7 @@ Retrieve Xpanse issue by service ID.
 #### Base Command
 
 `expanse-get-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1566,9 +1596,11 @@ Retrieve Xpanse issue by service ID.
 
 
 #### Command Example
+
 ```!expanse-get-service service_id="99ea2dce-248a-3adb-937b-b46841825581"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -1659,6 +1691,7 @@ Retrieve Xpanse issue by service ID.
 #### Human Readable Output
 
 >### Expanse Services
+>
 >|Id|Name|Ips|Domains|Port Number|Activity Status|Business Units|Certificates|Tls Versions|Classifications|First Observed|Last Observed|Annotations|Assets|Discovery Info|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 99ea2dce-248a-3adb-937b-b46841825581 | DNS Server at 198.51.100.230:53 | {'ip': '198.51.100.230', 'assetId': 'f58ccbb6-33df-3332-a2da-7e1f01d93af5', 'transportProtocol': 'UDP', 'geolocation': {'countryCode': 'AU', 'latitude': -37.82, 'longitude': 144.97, 'city': 'MELBOURNE', 'timeZone': None, 'regionCode': 'VIC'}, 'provider': {'id': 'OnPrem', 'name': 'On Prem'}, 'firstObserved': '2020-08-29T09:21:34Z', 'lastObserved': '2021-03-23T05:07:51Z'} |  | 53 | Active | {'id': 'a1f0f39b-f358-3c8c-947b-926887871b88', 'name': 'VanDelay Import-Export'} |  |  | {'id': 'DnsServer', 'name': 'DNS Server', 'details': [{'value': {'bindVersions': ['Forbidden']}, 'firstObserved': '2020-08-29T09:21:34Z', 'lastObserved': '2021-03-23T05:07:51Z'}], 'firstObserved': '2020-07-03T02:13:39Z', 'lastObserved': '2021-03-23T05:07:51Z'} | 2020-07-03T02:13:39Z | 2021-03-23T05:07:51Z | tags:  | {'id': 'f58ccbb6-33df-3332-a2da-7e1f01d93af5', 'assetKey': '2c156327-522e-33ef-aa15-fc8549b2446f', 'assetType': 'IpRange', 'displayName': '198.51.100.220-198.51.100.232', 'referenceReason': {'id': 'WithinOwnedIpRange', 'name': 'The IP Range this service is running on is attributed to your organization.'}} | type: DirectlyDiscovered<br/>details:  |
@@ -1666,6 +1699,7 @@ Retrieve Xpanse issue by service ID.
 
 
 ### expanse-get-services
+
 ***
 Retrieve services
 
@@ -1673,6 +1707,7 @@ Retrieve services
 #### Base Command
 
 `expanse-get-services`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1818,9 +1853,11 @@ Retrieve services
 
 
 #### Command Example
+
 ```!expanse-get-services limit="1" provider="Amazon Web Services"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -1970,11 +2007,13 @@ Retrieve services
 #### Human Readable Output
 
 >### Expanse Services
+>
 >|Id|Name|Ips|Domains|Port Number|Activity Status|Business Units|Certificates|Tls Versions|Classifications|First Observed|Last Observed|Annotations|Assets|Discovery Info|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| c561a0f4-b5a2-3ab8-864b-b57a48aa2d12 | HTTP Server at 203.0.113.102:443 | {'ip': '203.0.113.102', 'assetId': None, 'transportProtocol': 'TCP', 'geolocation': None, 'provider': {'id': 'AWS', 'name': 'Amazon Web Services'}, 'firstObserved': '2021-01-12T06:56:51Z', 'lastObserved': '2021-03-23T18:37:05Z'} |  | 443 | Active | {'id': '04b5140e-bbe2-3e9c-9318-a39a3b547ed5', 'name': 'VanDelay Industries'} | {'certificate': {'issuer': 'C=GB,ST=Greater Manchester,L=Salford,O=COMODO CA Limited,CN=COMODO RSA Organization Validation Secure Server CA', 'issuerAlternativeNames': '', 'issuerCountry': 'GB', 'issuerEmail': None, 'issuerLocality': 'Salford', 'issuerName': 'COMODO RSA Organization Validation Secure Server CA', 'issuerOrg': 'COMODO CA Limited', 'formattedIssuerOrg': 'COMODO', 'issuerOrgUnit': None, 'issuerState': 'Greater Manchester', 'publicKey': 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Wc7WbUjdzK8EyX85hYPq0kUdiaZYIdy92Qdic6Ng0EJwLDEvaWv6tjkmLofBu/XsbUwr8J3Qp9Glih8fudkBzHqUxjPHxiEnyPWIXJKZNoiEFKWuRhzvWwJYNYh842Jnam+sK2vC2PxusLuM0WAaRmGPdv3yGth309xesbc83hL7RlvKAbRMsQNu0JYjwYkXtBjl+pXIrxFuVOj73UxijJgte2yieP4nhKd6vIYLAWq7sIEN58xqzD0ovObRR7mKXuEwpt04aq0+E9acCBVdIGRmk7UZ9YfH6znXjPrNaM0NPJUEfUk+M92r1ZyjQstXfIz9NeQmkA9mYIse+aQtwIDAQAB', 'publicKeyAlgorithm': 'RSA', 'publicKeyRsaExponent': 65537, 'signatureAlgorithm': 'SHA256withRSA', 'subject': 'C=US,PostalCode=60179,ST=Illinois,L=Hoffman Estates,STREET=3333 Beverly Road,O=Sears Brands LLC,OU=Home Services,OU=PlatinumSSL Wildcard,CN=*.shs-core.com', 'subjectAlternativeNames': '*.shs-core.com', 'subjectCountry': 'US', 'subjectEmail': None, 'subjectLocality': 'Hoffman Estates', 'subjectName': '*.shs-core.com', 'subjectOrg': 'Sears Brands LLC', 'subjectOrgUnit': 'Home Services,PlatinumSSL Wildcard', 'subjectState': 'Illinois', 'serialNumber': '42792794729857115395309499847024762482', 'validNotBefore': '2016-11-10T00:00:00Z', 'validNotAfter': '2017-11-10T23:59:59Z', 'version': '3', 'publicKeyBits': 2048, 'publicKeyModulus': 'dd673b59b5237732bc1325fce6160fab4914762699608772f7641d89ce8d834109c0b0c4bda5afead8e498ba1f06efd7b1b530afc277429f4696287c7ee7640731ea5318cf1f18849f23d621724a64da22105296b91873bd6c0960d621f38d899da9beb0adaf0b63f1bac2ee3345806919863ddbf7c86b61df4f717ac6dcf3784bed196f2806d132c40dbb42588f06245ed06397ea5722bc45b953a3ef75318a3260b5edb289e3f89e129deaf2182c05aaeec204379f31ab30f4a2f39b451ee6297b84c29b74e1aab4f84f5a7020557481919a4ed467d61f1face75e33eb35a33434f25411f524f8cf76af56728d0b2d5df233f4d7909a403d99822c7be690b7', 'publicKeySpki': 'xmID8gn_JKlzrzuEoyaqLmdNlx5Xv3fFA6v_wpM6aSA=', 'sha1Fingerprint': '2594a1428dae54eeaf6140a7de97680121c89fff', 'sha256Fingerprint': '4dcf9d18c10c6f9f09b71bad3cf1079a31c5c2ebb2eced23373aac8b9f3dc72e', 'md5Fingerprint': '6aec4d4a43851a0e2e0b15464c031de8'}, 'assetId': 'ec73a0b3-a5e2-3a37-b718-06bff21546e6', 'firstObserved': '2021-01-12T06:56:51Z', 'lastObserved': '2021-03-23T18:37:05Z'} | {'tlsVersion': 'TLS 1.2', 'cipherSuite': 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'firstObserved': '2021-01-12T06:56:51Z', 'lastObserved': '2021-03-23T18:37:05Z'} | {'id': 'NginxWebServer', 'name': 'NginxWebServer', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'ServerSoftware', 'name': 'ServerSoftware', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'WildcardCertificate', 'name': 'WildcardCertificate', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'HttpServer', 'name': 'HttpServer', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'ExpiredWhenScannedCertificate', 'name': 'ExpiredWhenScannedCertificate', 'details': [], 'firstObserved': None, 'lastObserved': None} | 2020-11-09T19:15:45Z | 2021-03-23T18:37:05Z | tags:  | {'id': 'ec73a0b3-a5e2-3a37-b718-06bff21546e6', 'assetKey': 'ec73a0b3-a5e2-3a37-b718-06bff21546e6', 'assetType': 'Certificate', 'displayName': '*.shs-core.com', 'referenceReason': {'id': 'CertificateAdvertisedOnService', 'name': 'This certificate — which is attributed to your organization — was advertised by this service.'}} | type: DirectlyDiscovered<br/>details:  |
 
 ### expanse-list-pocs
+
 ***
 List available Point of Contacts from Xpanse.
 
@@ -1982,6 +2021,7 @@ List available Point of Contacts from Xpanse.
 #### Base Command
 
 `expanse-list-pocs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2004,9 +2044,11 @@ List available Point of Contacts from Xpanse.
 
 
 #### Command Example
+
 ```!expanse-list-pocs limit=1```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -2027,12 +2069,14 @@ List available Point of Contacts from Xpanse.
 #### Human Readable Output
 
 >### Results
+>
 >|created|email|firstName|id|lastName|modified|phone|role|
 >|---|---|---|---|---|---|---|---|
->| 2019-05-22T00:59:28.919496Z | analyst@expanseinc.com | Test | f491b7ef-a7b9-4644-af90-36dc0a6b2000 | User | 2019-05-22T00:59:28.919937Z | 4157066803 | analyst |
+>| 2019-05-22T00:59:28.919496Z | <analyst@expanseinc.com> | Test | f491b7ef-a7b9-4644-af90-36dc0a6b2000 | User | 2019-05-22T00:59:28.919937Z | 4157066803 | analyst |
 
 
 ### expanse-create-poc
+
 ***
 Create a new Point of Contact in Xpanse.
 
@@ -2040,6 +2084,7 @@ Create a new Point of Contact in Xpanse.
 #### Base Command
 
 `expanse-create-poc`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2066,15 +2111,18 @@ Create a new Point of Contact in Xpanse.
 
 
 #### Command Example
+
 ```!expanse-create-tag email="analyst@expanse.inc"```
 
 #### Human Readable Output
+
 ```json
 {}
 ```
 
 
 ### expanse-assign-pocs-to-asset
+
 ***
 Assign Point of Contacts to an Xpanse asset.
 
@@ -2082,13 +2130,14 @@ Assign Point of Contacts to an Xpanse asset.
 #### Base Command
 
 `expanse-assign-pocs-to-asset`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_type | Type of Xpanse asset to assign the poc to. Possible values are: IpRange, Certificate, Domain. | Required | 
-| asset_id | ID of the asset to assign the poc to. | Required | 
-| pocs | IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| **Argument Name** | **Description**                                                                                                                               | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| asset_type | Type of Xpanse asset to assign the poc to. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP.                 | Required | 
+| asset_id | ID of the asset to assign the poc to.                                                                                                         | Required | 
+| pocs | IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged.       | Optional | 
 | poc_emails | Email Addresses of the pocs to assign to the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
 
 
@@ -2099,6 +2148,7 @@ Assign Point of Contacts to an Xpanse asset.
 
 
 #### Command Example
+
 ```!expanse-assign-pocs-to-asset asset_type="IpRange" asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"```
 
 #### Human Readable Output
@@ -2106,6 +2156,7 @@ Assign Point of Contacts to an Xpanse asset.
 >Operation complete
 
 ### expanse-unassign-pocs-from-asset
+
 ***
 Unassign Point of Contacts from an Xpanse Asset.
 
@@ -2113,14 +2164,15 @@ Unassign Point of Contacts from an Xpanse Asset.
 #### Base Command
 
 `expanse-unassign-pocs-from-asset`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_type | Type of Xpanse asset to unassign the pocs from. Possible values are: IpRange, Certificate, Domain. | Required | 
-| asset_id | ID of the asset to unassign the pocs from. | Required | 
+| **Argument Name** | **Description**                                                                                                                             | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| asset_type | Type of Xpanse asset to unassign the pocs from. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP.          | Required | 
+| asset_id | ID of the asset to unassign the pocs from.                                                                                                  | Required | 
 | pocs | IDs of the pocs to unassign from the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
-| poc_emails | Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+| poc_emails | Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged.     | Optional | 
 
 
 #### Context Output
@@ -2130,6 +2182,7 @@ Unassign Point of Contacts from an Xpanse Asset.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -2137,6 +2190,7 @@ Unassign Point of Contacts from an Xpanse Asset.
 
 
 ### expanse-assign-pocs-to-iprange
+
 ***
 Assign Point of Contacts to an Xpanse IP range.
 
@@ -2144,6 +2198,7 @@ Assign Point of Contacts to an Xpanse IP range.
 #### Base Command
 
 `expanse-assign-pocs-to-iprange`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2160,6 +2215,7 @@ Assign Point of Contacts to an Xpanse IP range.
 
 
 #### Command Example
+
 ```!expanse-assign-pocs-to-iprange asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"```
 
 #### Human Readable Output
@@ -2167,6 +2223,7 @@ Assign Point of Contacts to an Xpanse IP range.
 >Operation complete
 
 ### expanse-unassign-pocs-from-iprange
+
 ***
 Unassign Point of Contacts from an Xpanse IP range.
 
@@ -2174,6 +2231,7 @@ Unassign Point of Contacts from an Xpanse IP range.
 #### Base Command
 
 `expanse-unassign-pocs-from-iprange`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2190,6 +2248,7 @@ Unassign Point of Contacts from an Xpanse IP range.
 
 
 #### Command Example
+
 ```!expanse-unassign-pocs-from-iprange asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"```
 
 #### Human Readable Output
@@ -2197,6 +2256,7 @@ Unassign Point of Contacts from an Xpanse IP range.
 >Operation complete
 
 ### expanse-assign-pocs-to-certificate
+
 ***
 Assign pocs to an Xpanse certificate.
 
@@ -2204,6 +2264,7 @@ Assign pocs to an Xpanse certificate.
 #### Base Command
 
 `expanse-assign-pocs-to-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2220,6 +2281,7 @@ Assign pocs to an Xpanse certificate.
 
 
 #### Command Example
+
 ```!expanse-assign-pocs-to-certificate asset_id="1834b291-7be6-3161-a5f5-78207a548596" poc_emails="analyst@expanseinc.com"```
 
 #### Human Readable Output
@@ -2227,6 +2289,7 @@ Assign pocs to an Xpanse certificate.
 >Operation complete
 
 ### expanse-unassign-pocs-from-certificate
+
 ***
 Unassign pocs from an Xpanse certificate.
 
@@ -2234,6 +2297,7 @@ Unassign pocs from an Xpanse certificate.
 #### Base Command
 
 `expanse-unassign-pocs-from-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2250,6 +2314,7 @@ Unassign pocs from an Xpanse certificate.
 
 
 #### Command Example
+
 ```!expanse-unassign-pocs-from-certificate asset_id="1834b291-7be6-3161-a5f5-78207a548596" poc_emails="analyst@expanseinc.com"```
 
 #### Human Readable Output
@@ -2257,6 +2322,7 @@ Unassign pocs from an Xpanse certificate.
 >Operation complete
 
 ### expanse-assign-pocs-to-domain
+
 ***
 Assign pocs to an Xpanse domain.
 
@@ -2264,6 +2330,7 @@ Assign pocs to an Xpanse domain.
 #### Base Command
 
 `expanse-assign-pocs-to-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2280,6 +2347,7 @@ Assign pocs to an Xpanse domain.
 
 
 #### Command Example
+
 ```!expanse-assign-pocs-to-domain asset_id="3e65e20d-51eb-364c-bfa9-c54746131098" poc_emails="analyst@expanseinc.com"```
 
 #### Human Readable Output
@@ -2287,6 +2355,7 @@ Assign pocs to an Xpanse domain.
 >Operation complete
 
 ### expanse-unassign-pocs-from-domain
+
 ***
 Unassign pocs from an Xpanse domain.
 
@@ -2294,6 +2363,7 @@ Unassign pocs from an Xpanse domain.
 #### Base Command
 
 `expanse-unassign-pocs-from-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2310,6 +2380,7 @@ Unassign pocs from an Xpanse domain.
 
 
 #### Command Example
+
 ```!expanse-unassign-pocs-from-domain asset_id="3e65e20d-51eb-364c-bfa9-c54746131098" poc_emails="analyst@expanseinc.com"```
 
 #### Human Readable Output
@@ -2318,6 +2389,7 @@ Unassign pocs from an Xpanse domain.
 
 
 ### expanse-list-businessunits
+
 ***
 List available business units from Xpanse.
 
@@ -2325,6 +2397,7 @@ List available business units from Xpanse.
 #### Base Command
 
 `expanse-list-businessunits`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2341,9 +2414,11 @@ List available business units from Xpanse.
 
 
 #### Command Example
+
 ```!expanse-list-businessunits limit="2"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -2364,6 +2439,7 @@ List available business units from Xpanse.
 #### Human Readable Output
 
 >### Results
+>
 >|id|name|
 >|---|---|
 >| c4de7fad-cde1-46cf-8725-a5999533db59 | PANW VanDelay Import-Export Dev |
@@ -2371,6 +2447,7 @@ List available business units from Xpanse.
 
 
 ### expanse-list-providers
+
 ***
 List available providers from Xpanse.
 
@@ -2378,6 +2455,7 @@ List available providers from Xpanse.
 #### Base Command
 
 `expanse-list-providers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2394,9 +2472,11 @@ List available providers from Xpanse.
 
 
 #### Command Example
+
 ```!expanse-list-providers limit="2"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -2417,6 +2497,7 @@ List available providers from Xpanse.
 #### Human Readable Output
 
 >### Results
+>
 >|id|name|
 >|---|---|
 >| AlibabaCloud | Alibaba Cloud |
@@ -2424,6 +2505,7 @@ List available providers from Xpanse.
 
 
 ### expanse-list-tags
+
 ***
 List available tags from Expanse.
 
@@ -2431,6 +2513,7 @@ List available tags from Expanse.
 #### Base Command
 
 `expanse-list-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2452,9 +2535,11 @@ List available tags from Expanse.
 
 
 #### Command Example
+
 ```!expanse-list-tags limit="2"```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -2485,6 +2570,7 @@ List available tags from Expanse.
 #### Human Readable Output
 
 >### Results
+>
 >|created|description|disabled|id|modified|name|tenantId|
 >|---|---|---|---|---|---|---|
 >| 2020-12-07T12:18:38.047826Z | XSOAR Test Tag | false | a96792e9-ac04-338e-bd7f-467e395c3739 | 2020-12-07T12:18:38.047826Z | xsoar-test-tag-new | f738ace6-f451-4f31-898d-a12afa204b2a |
@@ -2492,6 +2578,7 @@ List available tags from Expanse.
 
 
 ### expanse-assign-tags-to-asset
+
 ***
 Assign tags to an Xpanse asset.
 
@@ -2499,11 +2586,12 @@ Assign tags to an Xpanse asset.
 #### Base Command
 
 `expanse-assign-tags-to-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Xpanse asset to assign the tag to. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to assign the tag to. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP. | Required | 
 | asset_id | ID of the asset to assign the tags to. | Required | 
 | tags | IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged. | Optional | 
 | tag_names | Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged. | Optional | 
@@ -2516,9 +2604,11 @@ Assign tags to an Xpanse asset.
 
 
 #### Command Example
+
 ```!expanse-assign-tags-to-asset asset_type="IpRange" asset_id="0a8f44f9-05dc-42a3-a395-c83dad49fadf" tags="e00bc79d-d367-36f4-824c-042836fef5fc"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2528,6 +2618,7 @@ Assign tags to an Xpanse asset.
 >Operation complete
 
 ### expanse-unassign-tags-from-asset
+
 ***
 Unassign tags from an Xpanse Asset.
 
@@ -2535,11 +2626,12 @@ Unassign tags from an Xpanse Asset.
 #### Base Command
 
 `expanse-unassign-tags-from-asset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | Type of Xpanse asset to unassign the tags from. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_type | Type of Xpanse asset to unassign the tags from. Possible values are: IpRange, Certificate, Domain, Network, Device, ResponseiveIP. | Required | 
 | asset_id | ID of the asset to unassign the tags from. | Required | 
 | tags | IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged. | Optional | 
 | tag_names | Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged. | Optional | 
@@ -2552,9 +2644,11 @@ Unassign tags from an Xpanse Asset.
 
 
 #### Command Example
+
 ```!expanse-unassign-tags-from-asset asset_type="IpRange" asset_id="0a8f44f9-05dc-42a3-a395-c83dad49fadf" tags="e00bc79d-d367-36f4-824c-042836fef5fc"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2564,6 +2658,7 @@ Unassign tags from an Xpanse Asset.
 >Operation complete
 
 ### expanse-assign-tags-to-iprange
+
 ***
 Assign tags to an Xpanse IP range.
 
@@ -2571,6 +2666,7 @@ Assign tags to an Xpanse IP range.
 #### Base Command
 
 `expanse-assign-tags-to-iprange`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2587,9 +2683,11 @@ Assign tags to an Xpanse IP range.
 
 
 #### Command Example
+
 ```!expanse-assign-tags-to-iprange asset_id="0a8f44f9-05dc-42a3-a395-c83dad49fadf" tag_names="xsoar-test-pb-tag"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2599,6 +2697,7 @@ Assign tags to an Xpanse IP range.
 >Operation complete
 
 ### expanse-unassign-tags-from-iprange
+
 ***
 Unassign tags from an Xpanse IP range.
 
@@ -2606,6 +2705,7 @@ Unassign tags from an Xpanse IP range.
 #### Base Command
 
 `expanse-unassign-tags-from-iprange`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2622,9 +2722,11 @@ Unassign tags from an Xpanse IP range.
 
 
 #### Command Example
+
 ```!expanse-unassign-tags-from-iprange asset_id="0a8f44f9-05dc-42a3-a395-c83dad49fadf" tag_names="xsoar-test-pb-tag"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2634,6 +2736,7 @@ Unassign tags from an Xpanse IP range.
 >Operation complete
 
 ### expanse-assign-tags-to-certificate
+
 ***
 Assign tags to an Xpanse certificate.
 
@@ -2641,6 +2744,7 @@ Assign tags to an Xpanse certificate.
 #### Base Command
 
 `expanse-assign-tags-to-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2657,9 +2761,11 @@ Assign tags to an Xpanse certificate.
 
 
 #### Command Example
+
 ```!expanse-assign-tags-to-certificate asset_id="30a111ae-39e2-3b82-b459-249bac0c6065" tag_names="xsoar-test-pb-tag"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2669,6 +2775,7 @@ Assign tags to an Xpanse certificate.
 >Operation complete
 
 ### expanse-unassign-tags-from-certificate
+
 ***
 Unassign tags from an Xpanse certificate.
 
@@ -2676,6 +2783,7 @@ Unassign tags from an Xpanse certificate.
 #### Base Command
 
 `expanse-unassign-tags-from-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2692,9 +2800,11 @@ Unassign tags from an Xpanse certificate.
 
 
 #### Command Example
+
 ```!expanse-unassign-tags-from-certificate asset_id="30a111ae-39e2-3b82-b459-249bac0c6065" tag_names="xsoar-test-pb-tag"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2704,6 +2814,7 @@ Unassign tags from an Xpanse certificate.
 >Operation complete
 
 ### expanse-assign-tags-to-domain
+
 ***
 Assign tags to an Xpanse domain.
 
@@ -2711,6 +2822,7 @@ Assign tags to an Xpanse domain.
 #### Base Command
 
 `expanse-assign-tags-to-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2727,9 +2839,11 @@ Assign tags to an Xpanse domain.
 
 
 #### Command Example
+
 ```!expanse-assign-tags-to-domain asset_id="142194a1-f443-3878-8dcc-540f4061c5f5" tag_names="xsoar-test-pb-tag"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2739,6 +2853,7 @@ Assign tags to an Xpanse domain.
 >Operation complete
 
 ### expanse-unassign-tags-from-domain
+
 ***
 Unassign tags from an Xpanse domain.
 
@@ -2746,6 +2861,7 @@ Unassign tags from an Xpanse domain.
 #### Base Command
 
 `expanse-unassign-tags-from-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2762,9 +2878,11 @@ Unassign tags from an Xpanse domain.
 
 
 #### Command Example
+
 ```!expanse-unassign-tags-from-domain asset_id="142194a1-f443-3878-8dcc-540f4061c5f5" tag_names="xsoar-test-pb-tag"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2774,6 +2892,7 @@ Unassign tags from an Xpanse domain.
 >Operation complete
 
 ### expanse-create-tag
+
 ***
 Create a new tag in Xpanse.
 
@@ -2781,6 +2900,7 @@ Create a new tag in Xpanse.
 #### Base Command
 
 `expanse-create-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2803,9 +2923,11 @@ Create a new tag in Xpanse.
 
 
 #### Command Example
+
 ```!expanse-create-tag name="xsoar-test-tag-new" description="XSOAR Test Tag"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2815,6 +2937,7 @@ Create a new tag in Xpanse.
 >Tag already exists
 
 ### expanse-get-iprange
+
 ***
 Retrieve Xpanse IP ranges by asset id or search parameters.
 
@@ -2822,6 +2945,7 @@ Retrieve Xpanse IP ranges by asset id or search parameters.
 #### Base Command
 
 `expanse-get-iprange`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2896,9 +3020,11 @@ Retrieve Xpanse IP ranges by asset id or search parameters.
 
 
 #### Command Example
+
 ```!expanse-get-iprange limit="1" include="none" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -2935,12 +3061,14 @@ Retrieve Xpanse IP ranges by asset id or search parameters.
 #### Human Readable Output
 
 >### Expanse IP Range List
+>
 >|businessUnits|cidr|created|customChildRanges|id|ipVersion|modified|rangeIntroduced|rangeSize|rangeType|responsiveIpCount|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| {'id': 'c94c50ca-124f-4983-8da5-1756138e2252', 'name': 'PANW Acme Latex Supply Dev'} | 1.179.133.112/29 | 2020-09-22 |  | 0a8f44f9-05dc-42a3-a395-c83dad49fadf | 4 | 2020-12-18 | 2020-09-22 | 8 | parent | 0 |
 
 
 ### expanse-get-domain
+
 ***
 Retrieve Xpanse domains by domain name or search parameters.
 
@@ -2948,6 +3076,7 @@ Retrieve Xpanse domains by domain name or search parameters.
 #### Base Command
 
 `expanse-get-domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3156,9 +3285,11 @@ Retrieve Xpanse domains by domain name or search parameters.
 
 
 #### Command Example
+
 ```!expanse-get-domain limit="1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -3369,12 +3500,14 @@ Retrieve Xpanse domains by domain name or search parameters.
 #### Human Readable Output
 
 >### Expanse Domain List
+>
 >|annotations|businessUnits|dateAdded|details|dnsResolutionStatus|domain|firstObserved|hasLinkedCloudResources|id|isCollapsed|isPaidLevelDomain|lastObserved|lastSampledIp|lastSubdomainMetadata|providers|serviceStatus|sourceDomain|tenant|whois|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| contacts: <br/>tags: <br/>note:  | {'id': 'c4de7fad-cde1-46cf-8725-a5999533db59', 'name': 'PANW VanDelay Import-Export Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'},<br/>{'id': 'f738ace6-f451-4f31-898d-a12afa204b2a', 'name': 'PANW VanDelay Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'} | 2020-09-22T21:23:02.372Z |  | HAS_DNS_RESOLUTION | *.108.pets.com | 2020-09-22T06:10:31.787Z | false | 142194a1-f443-3878-8dcc-540f4061c5f5 | false | false | 2020-09-22T06:10:31.787Z | 72.52.10.14 |  | {'id': 'Akamai', 'name': 'Akamai Technologies'} | NO_ACTIVE_SERVICE,<br/>NO_ACTIVE_ON_PREM_SERVICE,<br/>NO_ACTIVE_CLOUD_SERVICE | pets.com | id: f738ace6-f451-4f31-898d-a12afa204b2a<br/>name: PANW VanDelay Dev<br/>tenantId: f738ace6-f451-4f31-898d-a12afa204b2a | {'domain': 'pets.com', 'registryDomainId': None, 'updatedDate': '2016-10-19T09:12:50Z', 'creationDate': '1994-11-21T05:00:00Z', 'registryExpiryDate': '2018-11-20T05:00:00Z', 'reseller': None, 'registrar': {'name': 'MarkMonitor Inc.', 'formattedName': None, 'whoisServer': 'whois.markmonitor.com', 'url': None, 'ianaId': None, 'registrationExpirationDate': None, 'abuseContactEmail': None, 'abuseContactPhone': None}, 'domainStatuses': ['clientDeleteProhibited clientTransferProhibited clientUpdateProhibited'], 'nameServers': ['NS1.MARKMONITOR.COM', 'NS2.MARKMONITOR.COM', 'NS3.MARKMONITOR.COM', 'NS4.MARKMONITOR.COM', 'NS5.MARKMONITOR.COM', 'NS6.MARKMONITOR.COM', 'NS7.MARKMONITOR.COM'], 'registrant': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': 'legal@petsmart.com', 'registryId': None}, 'admin': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': 'legal@petsmart.com', 'registryId': None}, 'tech': {'name': None, 'organization': None, 'street': None, 'city': None, 'province': None, 'postalCode': None, 'country': None, 'phoneNumber': None, 'phoneExtension': None, 'faxNumber': None, 'faxExtension': None, 'emailAddress': None, 'registryId': None}, 'dnssec': None} |
+>| contacts: <br/>tags: <br/>note:  | {'id': 'c4de7fad-cde1-46cf-8725-a5999533db59', 'name': 'PANW VanDelay Import-Export Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'},<br/>{'id': 'f738ace6-f451-4f31-898d-a12afa204b2a', 'name': 'PANW VanDelay Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'} | 2020-09-22T21:23:02.372Z |  | HAS_DNS_RESOLUTION | *.108.pets.com | 2020-09-22T06:10:31.787Z | false | 142194a1-f443-3878-8dcc-540f4061c5f5 | false | false | 2020-09-22T06:10:31.787Z | 72.52.10.14 |  | {'id': 'Akamai', 'name': 'Akamai Technologies'} | NO_ACTIVE_SERVICE,<br/>NO_ACTIVE_ON_PREM_SERVICE,<br/>NO_ACTIVE_CLOUD_SERVICE | pets.com | id: f738ace6-f451-4f31-898d-a12afa204b2a<br/>name: PANW VanDelay Dev<br/>tenantId: f738ace6-f451-4f31-898d-a12afa204b2a | {'domain': 'pets.com', 'registryDomainId': None, 'updatedDate': '2016-10-19T09:12:50Z', 'creationDate': '1994-11-21T05:00:00Z', 'registryExpiryDate': '2018-11-20T05:00:00Z', 'reseller': None, 'registrar': {'name': 'MarkMonitor Inc.', 'formattedName': None, 'whoisServer': 'whois.markmonitor.com', 'url': None, 'ianaId': None, 'registrationExpirationDate': None, 'abuseContactEmail': None, 'abuseContactPhone': None}, 'domainStatuses': ['clientDeleteProhibited clientTransferProhibited clientUpdateProhibited'], 'nameServers': ['NS1.MARKMONITOR.COM', 'NS2.MARKMONITOR.COM', 'NS3.MARKMONITOR.COM', 'NS4.MARKMONITOR.COM', 'NS5.MARKMONITOR.COM', 'NS6.MARKMONITOR.COM', 'NS7.MARKMONITOR.COM'], 'registrant': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': '<legal@petsmart.com>', 'registryId': None}, 'admin': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': '<legal@petsmart.com>', 'registryId': None}, 'tech': {'name': None, 'organization': None, 'street': None, 'city': None, 'province': None, 'postalCode': None, 'country': None, 'phoneNumber': None, 'phoneExtension': None, 'faxNumber': None, 'faxExtension': None, 'emailAddress': None, 'registryId': None}, 'dnssec': None} |
 
 
 ### expanse-get-associated-domains
+
 ***
 Returns all the Xpanse domains which have been seen with the specified certificate or IP address.
 
@@ -3382,6 +3515,7 @@ Returns all the Xpanse domains which have been seen with the specified certifica
 #### Base Command
 
 `expanse-get-associated-domains`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3407,9 +3541,11 @@ Returns all the Xpanse domains which have been seen with the specified certifica
 
 
 #### Command Example
+
 ```!expanse-get-associated-domains ip="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -3436,12 +3572,14 @@ Returns all the Xpanse domains which have been seen with the specified certifica
 #### Human Readable Output
 
 >### Expanse Domains matching Certificate Common Name: None
+>
 >|name|IP|certificate|
 >|---|---|---|
 >| test.developers.company.com | 1.1.1.1 |  |
 
 
 ### expanse-get-certificate
+
 ***
 Retrieve Xpanse certificates by MD5 hash or search parameters.
 
@@ -3449,6 +3587,7 @@ Retrieve Xpanse certificates by MD5 hash or search parameters.
 #### Base Command
 
 `expanse-get-certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3615,9 +3754,11 @@ This field includes the Common Name of the certificate.
 
 
 #### Command Example
+
 ```!expanse-get-certificate limit="1"```
 
 #### Context Example
+
 ```json
 {
     "Certificate": {
@@ -3739,12 +3880,14 @@ This field includes the Common Name of the certificate.
 #### Human Readable Output
 
 >### Expanse Certificate List
+>
 >|annotations|businessUnits|certificate|certificateAdvertisementStatus|commonName|dateAdded|details|firstObserved|hasLinkedCloudResources|id|lastObserved|properties|providers|serviceStatus|tenant|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| contacts: <br/>tags: <br/>note:  | {'id': 'c94c50ca-124f-4983-8da5-1756138e2252', 'name': 'PANW Acme Latex Supply Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'} | md5Hash: 1MZVcFeLBLab3jC-_z9t5Q==<br/>id: d4c65570-578b-34b6-9bde-30beff3f6de5<br/>issuer: C=CN,ST=GZ,L=GD,O=CHINA-ISI,OU=CHINA-ISI,CN=10.254.254.254<br/>issuerAlternativeNames: <br/>issuerCountry: CN<br/>issuerEmail: null<br/>issuerLocality: GD<br/>issuerName: 10.254.254.254<br/>issuerOrg: CHINA-ISI<br/>formattedIssuerOrg: null<br/>issuerOrgUnit: CHINA-ISI<br/>issuerState: GZ<br/>publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCgHPWslRc21vG0EqmNyHPiI3Mger5AEXJE1YUS2V4nnSEngE9f5GhjXsbmlytoKPQt7tyf3lm0+SVO8z7/wiuYiqhsDQr4Iwmb0t9pIjF+Fn/H6Du9MfIgYeodk4k+JBUzp38Qi1A84QGnUZDjxgQ35UtVNxX444NMvr17gf2hkQIDAQAB<br/>publicKeyAlgorithm: RSA<br/>publicKeyRsaExponent: 65537<br/>signatureAlgorithm: SHA256withRSA<br/>subject: C=CN,ST=GZ,L=GD,O=CHINA-ISI,OU=CHINA-ISI,CN=10.254.254.254<br/>subjectAlternativeNames: <br/>subjectCountry: CN<br/>subjectEmail: null<br/>subjectLocality: GD<br/>subjectName: 10.254.254.254<br/>subjectOrg: CHINA-ISI<br/>subjectOrgUnit: CHINA-ISI<br/>subjectState: GZ<br/>serialNumber: 12064359<br/>validNotBefore: 2013-11-18T00:39:31Z<br/>validNotAfter: 2112-06-12T00:39:31Z<br/>version: 3<br/>publicKeyBits: 1024<br/>pemSha256: y7D-d2yoCGlN_ZnPWfTPknjaSvT6tJtXtqqDBnIj_Zs=<br/>pemSha1: mGe0fWnNVjKzlkKugxEe1MzeoFo=<br/>publicKeyModulus: a01cf5ac951736d6f1b412a98dc873e22373207abe40117244d58512d95e279d2127804f5fe468635ec6e6972b6828f42deedc9fde59b4f9254ef33effc22b988aa86c0d0af823099bd2df6922317e167fc7e83bbd31f22061ea1d93893e241533a77f108b503ce101a75190e3c60437e54b553715f8e3834cbebd7b81fda191<br/>publicKeySpki: Yx3GXaDr00CS1YiWnaceyvTYNIsmYOGOT3G4I3SxCa0= | NO_CERTIFICATE_ADVERTISEMENT | 10.254.254.254 | 2020-09-22T21:23:06.866Z |  |  | false | 30a111ae-39e2-3b82-b459-249bac0c6065 |  | LONG_EXPIRATION,<br/>SELF_SIGNED,<br/>SHORT_KEY | {'id': 'Unknown', 'name': 'None'} | NO_ACTIVE_SERVICE,<br/>NO_ACTIVE_ON_PREM_SERVICE,<br/>NO_ACTIVE_CLOUD_SERVICE | id: f738ace6-f451-4f31-898d-a12afa204b2a<br/>name: PANW VanDelay Dev<br/>tenantId: f738ace6-f451-4f31-898d-a12afa204b2a |
 
 
 ### certificate
+
 ***
 Provides data enrichment for an X509 Certificate from Xpanse.
 
@@ -3752,6 +3895,7 @@ Provides data enrichment for an X509 Certificate from Xpanse.
 #### Base Command
 
 `certificate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3907,9 +4051,11 @@ This field includes the Common Name of the certificate.
 
 
 #### Command Example
+
 ```!certificate certificate="d4c65570578b04b69bde30beff3f6de5" set_expanse_fields="false"```
 
 #### Context Example
+
 ```json
 {
     "Certificate": {
@@ -4040,11 +4186,13 @@ This field includes the Common Name of the certificate.
 #### Human Readable Output
 
 >### Expanse Certificate List
+>
 >|annotations|businessUnits|certificate|certificateAdvertisementStatus|commonName|dateAdded|details|firstObserved|hasLinkedCloudResources|id|lastObserved|properties|providers|serviceStatus|tenant|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| contacts: <br/>tags: {'id': 'e00bc79d-d367-36f4-824c-042836fef5fc', 'name': 'xsoar-test-pb-tag'}<br/>note:  | {'id': 'c94c50ca-124f-4983-8da5-1756138e2252', 'name': 'PANW Acme Latex Supply Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'} | md5Hash: 1MZVcFeLBLab3jC-_z9t5Q==<br/>id: d4c65570-578b-34b6-9bde-30beff3f6de5<br/>issuer: C=CN,ST=GZ,L=GD,O=CHINA-ISI,OU=CHINA-ISI,CN=10.254.254.254<br/>issuerAlternativeNames: <br/>issuerCountry: CN<br/>issuerEmail: null<br/>issuerLocality: GD<br/>issuerName: 10.254.254.254<br/>issuerOrg: CHINA-ISI<br/>formattedIssuerOrg: null<br/>issuerOrgUnit: CHINA-ISI<br/>issuerState: GZ<br/>publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCgHPWslRc21vG0EqmNyHPiI3Mger5AEXJE1YUS2V4nnSEngE9f5GhjXsbmlytoKPQt7tyf3lm0+SVO8z7/wiuYiqhsDQr4Iwmb0t9pIjF+Fn/H6Du9MfIgYeodk4k+JBUzp38Qi1A84QGnUZDjxgQ35UtVNxX444NMvr17gf2hkQIDAQAB<br/>publicKeyAlgorithm: RSA<br/>publicKeyRsaExponent: 65537<br/>signatureAlgorithm: SHA256withRSA<br/>subject: C=CN,ST=GZ,L=GD,O=CHINA-ISI,OU=CHINA-ISI,CN=10.254.254.254<br/>subjectAlternativeNames: <br/>subjectCountry: CN<br/>subjectEmail: null<br/>subjectLocality: GD<br/>subjectName: 10.254.254.254<br/>subjectOrg: CHINA-ISI<br/>subjectOrgUnit: CHINA-ISI<br/>subjectState: GZ<br/>serialNumber: 12064359<br/>validNotBefore: 2013-11-18T00:39:31Z<br/>validNotAfter: 2112-06-12T00:39:31Z<br/>version: 3<br/>publicKeyBits: 1024<br/>pemSha256: y7D-d2yoCGlN_ZnPWfTPknjaSvT6tJtXtqqDBnIj_Zs=<br/>pemSha1: mGe0fWnNVjKzlkKugxEe1MzeoFo=<br/>publicKeyModulus: a01cf5ac951736d6f1b412a98dc873e22373207abe40117244d58512d95e279d2127804f5fe468635ec6e6972b6828f42deedc9fde59b4f9254ef33effc22b988aa86c0d0af823099bd2df6922317e167fc7e83bbd31f22061ea1d93893e241533a77f108b503ce101a75190e3c60437e54b553715f8e3834cbebd7b81fda191<br/>publicKeySpki: Yx3GXaDr00CS1YiWnaceyvTYNIsmYOGOT3G4I3SxCa0= | NO_CERTIFICATE_ADVERTISEMENT | 10.254.254.254 | 2020-09-22T21:23:06.866Z | recentIps: <br/>cloudResources: <br/>base64Encoded:  |  | false | 30a111ae-39e2-3b82-b459-249bac0c6065 |  | LONG_EXPIRATION,<br/>SELF_SIGNED,<br/>SHORT_KEY | {'id': 'Unknown', 'name': 'None'} | NO_ACTIVE_SERVICE,<br/>NO_ACTIVE_ON_PREM_SERVICE,<br/>NO_ACTIVE_CLOUD_SERVICE | id: f738ace6-f451-4f31-898d-a12afa204b2a<br/>name: PANW VanDelay Dev<br/>tenantId: f738ace6-f451-4f31-898d-a12afa204b2a |
 
 ### expanse-get-cloud-resources
+
 ***
 Retrieve Cloud Resource assets from Xpanse.
 
@@ -4052,6 +4200,7 @@ Retrieve Cloud Resource assets from Xpanse.
 #### Base Command
 
 `expanse-get-cloud-resources`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4105,9 +4254,11 @@ Retrieve Cloud Resource assets from Xpanse.
 | DBotScore.Score | Number | The actual score. | 
 
 #### Command Example
+
 ```!expanse-get-cloud-resources limit=1```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -4174,11 +4325,13 @@ Retrieve Cloud Resource assets from Xpanse.
 #### Human Readable Output
 
 >### Expanse Cloud Resource List
+>
 >|Asset Type|Cloud Provider|Domain|ID|IP|Instance ID|Region|Source|
 >|---|---|---|---|---|---|---|---|
 >| NETWORK_LB | Google |  | 0220f936-3fd3-33e4-9e00-fd6a54e9bb7a | 1.179.133.116 | 2656988220364570480 | us-central1 | Prisma Cloud: Prisma Demo |
 
 ### expanse-get-cloud-resource
+
 ***
 Retrieve a specified cloud resource from Xpanse.
 
@@ -4186,6 +4339,7 @@ Retrieve a specified cloud resource from Xpanse.
 #### Base Command
 
 `expanse-get-cloud-resource`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4230,6 +4384,7 @@ Retrieve a specified cloud resource from Xpanse.
 
 
 #### Command Example
+
 ``` 
 {
     "DBotScore": {
@@ -4294,11 +4449,13 @@ Retrieve a specified cloud resource from Xpanse.
 ```
 
 #### Human Readable Output
+>
 >|Asset Type|Cloud Provider|Domain|ID|IP|Instance ID|Region|Source|
 >|---|---|---|---|---|---|---|---|
 >| NETWORK_LB | Google |  | 0220f936-3fd3-33e4-9e00-fd6a54e9bb7a | 1.179.133.116 | 2656988220364570480 | us-central1 | Prisma Cloud: Prisma Demo |
 
 ### expanse-get-risky-flows
+
 ***
 (Deprecated) Retrieve risky flows detected by Xpanse Behavior.
 
@@ -4306,6 +4463,7 @@ Retrieve a specified cloud resource from Xpanse.
 #### Base Command
 
 `expanse-get-risky-flows`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4349,9 +4507,11 @@ Retrieve a specified cloud resource from Xpanse.
 
 
 #### Command Example
+
 ```!expanse-get-risky-flows limit=1```
 
 #### Context Example
+
 ```json
 {
     "Expanse": {
@@ -4398,12 +4558,14 @@ Retrieve a specified cloud resource from Xpanse.
 #### Human Readable Output
 
 >### Results
+>
 >|acked|businessUnit|created|externalAddress|externalCountryCode|externalCountryCodes|externalPort|flowDirection|id|internalAddress|internalCountryCode|internalCountryCodes|internalDomains|internalExposureTypes|internalPort|internalTags|observationTimestamp|protocol|riskRule|tenantBusinessUnitId|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | id: a823144b-ef1a-4c34-8c02-d080cb4fc4e8<br/>name: Company Test | 2020-12-18T03:50:10.490005Z | 1.1.1.1 | DE | DE | 443 | OUTBOUND | 898b267f-e0cf-35d4-bfe3-4089fbe10c55 | 1.1.1.1 | DE | DE |  |  | 42630 | ipRange:  | 2020-12-17T20:13:28.192Z | TCP | id: 392d03de-ea20-4637-bf17-d419aaaeec19<br/>name: Connections to Tor<br/>description: Connections to Tor<br/>additionalDataFields: [] | a823144b-ef1a-4c34-8c02-d080cb4fc4e8 |
 
 
 ### expanse-list-risk-rules
+
 ***
 (Deprecated) List risk rules from Xpanse Behavior
 
@@ -4411,6 +4573,7 @@ Retrieve a specified cloud resource from Xpanse.
 #### Base Command
 
 `expanse-list-risk-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4432,9 +4595,11 @@ Retrieve a specified cloud resource from Xpanse.
 
 
 #### Command Example
+
 ```!expanse-list-risk-rules limit=3```
 
 #### Context Example
+
 ```json
 {
   "Expanse.RiskRule(val.id == obj.id)": [
@@ -4484,6 +4649,7 @@ Retrieve a specified cloud resource from Xpanse.
 #### Human Readable Output
 
 >### Results
+>
 >|abbreviatedName|businessUnits|dataFields|description|direction|id|name|
 >|---|---|---|---|---|---|---|
 >| Connections to Kaspersky | {'id': 'a823144b-ef1a-4c34-8c02-d080cb4fc4e8'} | [] | Connections to Kaspersky | OUTBOUND | 81b9f50f-2eab-4101-b8c8-c902842887c5 | Connections to Kaspersky |
@@ -4492,6 +4658,7 @@ Retrieve a specified cloud resource from Xpanse.
 
 
 ### domain
+
 ***
 Provides data enrichment for domains.
 
@@ -4499,6 +4666,7 @@ Provides data enrichment for domains.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4695,9 +4863,11 @@ Provides data enrichment for domains.
 
 
 #### Command Example
+
 ```!domain domain="*.108.pets.com"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -4916,12 +5086,14 @@ Provides data enrichment for domains.
 #### Human Readable Output
 
 >### Expanse Domain List
+>
 >|annotations|businessUnits|dateAdded|details|dnsResolutionStatus|domain|firstObserved|hasLinkedCloudResources|id|isCollapsed|isPaidLevelDomain|lastObserved|lastSampledIp|lastSubdomainMetadata|providers|serviceStatus|sourceDomain|tenant|whois|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| contacts: <br/>tags: {'id': 'e00bc79d-d367-36f4-824c-042836fef5fc', 'name': 'xsoar-test-pb-tag'}<br/>note:  | {'id': 'c4de7fad-cde1-46cf-8725-a5999533db59', 'name': 'PANW VanDelay Import-Export Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'},<br/>{'id': 'f738ace6-f451-4f31-898d-a12afa204b2a', 'name': 'PANW VanDelay Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'} | 2020-09-22T21:23:02.372Z | recentIps: <br/>cloudResources:  | HAS_DNS_RESOLUTION | *.108.pets.com | 2020-09-22T06:10:31.787Z | false | 142194a1-f443-3878-8dcc-540f4061c5f5 | false | false | 2020-09-22T06:10:31.787Z | 72.52.10.14 |  | {'id': 'Akamai', 'name': 'Akamai Technologies'} | NO_ACTIVE_SERVICE,<br/>NO_ACTIVE_ON_PREM_SERVICE,<br/>NO_ACTIVE_CLOUD_SERVICE | pets.com | id: f738ace6-f451-4f31-898d-a12afa204b2a<br/>name: PANW VanDelay Dev<br/>tenantId: f738ace6-f451-4f31-898d-a12afa204b2a | {'domain': 'pets.com', 'registryDomainId': None, 'updatedDate': '2016-10-19T09:12:50Z', 'creationDate': '1994-11-21T05:00:00Z', 'registryExpiryDate': '2018-11-20T05:00:00Z', 'reseller': None, 'registrar': {'name': 'MarkMonitor Inc.', 'formattedName': None, 'whoisServer': 'whois.markmonitor.com', 'url': None, 'ianaId': None, 'registrationExpirationDate': None, 'abuseContactEmail': None, 'abuseContactPhone': None}, 'domainStatuses': ['clientDeleteProhibited clientTransferProhibited clientUpdateProhibited'], 'nameServers': ['NS1.MARKMONITOR.COM', 'NS2.MARKMONITOR.COM', 'NS3.MARKMONITOR.COM', 'NS4.MARKMONITOR.COM', 'NS5.MARKMONITOR.COM', 'NS6.MARKMONITOR.COM', 'NS7.MARKMONITOR.COM'], 'registrant': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': 'legal@petsmart.com', 'registryId': None}, 'admin': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': 'legal@petsmart.com', 'registryId': None}, 'tech': {'name': None, 'organization': None, 'street': None, 'city': None, 'province': None, 'postalCode': None, 'country': None, 'phoneNumber': None, 'phoneExtension': None, 'faxNumber': None, 'faxExtension': None, 'emailAddress': None, 'registryId': None}, 'dnssec': None} |
+>| contacts: <br/>tags: {'id': 'e00bc79d-d367-36f4-824c-042836fef5fc', 'name': 'xsoar-test-pb-tag'}<br/>note:  | {'id': 'c4de7fad-cde1-46cf-8725-a5999533db59', 'name': 'PANW VanDelay Import-Export Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'},<br/>{'id': 'f738ace6-f451-4f31-898d-a12afa204b2a', 'name': 'PANW VanDelay Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'} | 2020-09-22T21:23:02.372Z | recentIps: <br/>cloudResources:  | HAS_DNS_RESOLUTION | *.108.pets.com | 2020-09-22T06:10:31.787Z | false | 142194a1-f443-3878-8dcc-540f4061c5f5 | false | false | 2020-09-22T06:10:31.787Z | 72.52.10.14 |  | {'id': 'Akamai', 'name': 'Akamai Technologies'} | NO_ACTIVE_SERVICE,<br/>NO_ACTIVE_ON_PREM_SERVICE,<br/>NO_ACTIVE_CLOUD_SERVICE | pets.com | id: f738ace6-f451-4f31-898d-a12afa204b2a<br/>name: PANW VanDelay Dev<br/>tenantId: f738ace6-f451-4f31-898d-a12afa204b2a | {'domain': 'pets.com', 'registryDomainId': None, 'updatedDate': '2016-10-19T09:12:50Z', 'creationDate': '1994-11-21T05:00:00Z', 'registryExpiryDate': '2018-11-20T05:00:00Z', 'reseller': None, 'registrar': {'name': 'MarkMonitor Inc.', 'formattedName': None, 'whoisServer': 'whois.markmonitor.com', 'url': None, 'ianaId': None, 'registrationExpirationDate': None, 'abuseContactEmail': None, 'abuseContactPhone': None}, 'domainStatuses': ['clientDeleteProhibited clientTransferProhibited clientUpdateProhibited'], 'nameServers': ['NS1.MARKMONITOR.COM', 'NS2.MARKMONITOR.COM', 'NS3.MARKMONITOR.COM', 'NS4.MARKMONITOR.COM', 'NS5.MARKMONITOR.COM', 'NS6.MARKMONITOR.COM', 'NS7.MARKMONITOR.COM'], 'registrant': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': '<legal@petsmart.com>', 'registryId': None}, 'admin': {'name': 'Admin Contact', 'organization': 'PetSmart Home Office, Inc.', 'street': '19601 N 27th Ave,', 'city': 'Phoenix', 'province': 'AZ', 'postalCode': '85027', 'country': 'UNITED STATES', 'phoneNumber': '16235806100', 'phoneExtension': '', 'faxNumber': '16235806109', 'faxExtension': '', 'emailAddress': '<legal@petsmart.com>', 'registryId': None}, 'tech': {'name': None, 'organization': None, 'street': None, 'city': None, 'province': None, 'postalCode': None, 'country': None, 'phoneNumber': None, 'phoneExtension': None, 'faxNumber': None, 'faxExtension': None, 'emailAddress': None, 'registryId': None}, 'dnssec': None} |
 
 
 ### ip
+
 ***
 Provides data enrichment for IPs.
 
@@ -4929,6 +5101,7 @@ Provides data enrichment for IPs.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4972,9 +5145,11 @@ Provides data enrichment for IPs.
 
 
 #### Command Example
+
 ```!ip ip="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -5020,12 +5195,14 @@ Provides data enrichment for IPs.
 #### Human Readable Output
 
 >### Expanse IP List
+>
 >|assetKey|assetType|businessUnits|commonName|domain|ip|lastObserved|provider|tenant|type|
 >|---|---|---|---|---|---|---|---|---|---|
 >| test.developers.company.com | DOMAIN | {'id': 'a823144b-ef1a-4c34-8c02-d080cb4fc4e', 'name': 'Company Test', 'tenantId': 'a823144b-ef1a-4c34-8c02-d080cb4fc4e'} |  | test.developers.company.com | 1.1.1.1 | 2020-12-16T07:10:36.961Z | id: AWS<br/>name: Amazon Web Services | id: a823144b-ef1a-4c34-8c02-d080cb4fc4e<br/>name: Company Test<br/>tenantId: a823144b-ef1a-4c34-8c02-d080cb4fc4e | DOMAIN_RESOLUTION |
 
 
 ### cidr
+
 ***
 Provides data enrichment for CIDR blocks using Xpanse IP Range.
 
@@ -5033,6 +5210,7 @@ Provides data enrichment for CIDR blocks using Xpanse IP Range.
 #### Base Command
 
 `cidr`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5100,9 +5278,11 @@ Provides data enrichment for CIDR blocks using Xpanse IP Range.
 
 
 #### Command Example
+
 ```!cidr cidr="1.179.133.112/29"```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -5338,20 +5518,25 @@ Provides data enrichment for CIDR blocks using Xpanse IP Range.
 #### Human Readable Output
 
 >### Expanse IP Range List
+>
 >|annotations|attributionReasons|businessUnits|cidr|created|customChildRanges|id|ipVersion|locationInformation|modified|rangeIntroduced|rangeSize|rangeType|relatedRegistrationInformation|responsiveIpCount|severityCounts|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| tags: {'id': 'e00bc79d-d367-36f4-824c-042836fef5fc', 'created': '2020-12-07', 'modified': '2020-12-07', 'name': 'xsoar-test-pb-tag'}<br/>additionalNotes: <br/>pointsOfContact:  | {'reason': 'This parent range is attributed via IP network registration records for 1.179.133.116–1.179.133.119'},<br/>{'reason': 'This parent range is attributed via IP network registration records for 1.179.133.112–1.179.133.115'} | {'id': 'c94c50ca-124f-4983-8da5-1756138e2252', 'name': 'PANW Acme Latex Supply Dev'} | 1.179.133.112/29 | 2020-09-22 |  | 0a8f44f9-05dc-42a3-a395-c83dad49fadf | 4 |  | 2020-12-18 | 2020-09-22 | 8 | parent | {'handle': '1.179.133.112 - 1.179.133.115', 'startAddress': '1.179.133.112', 'endAddress': '1.179.133.115', 'ipVersion': '4', 'country': 'th', 'name': 'saim-synthetic-latex', 'parentHandle': '', 'whoisServer': 'whois.apnic.net', 'updatedDate': '2020-09-22', 'remarks': 'saim synthetic latex,Nong Khaem Province', 'registryEntities': [{'id': '125d112c-1169-3025-89e7-4c8c5a16db0b', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['administrative']}, {'id': '13cb65ca-9572-394b-b385-b2bd15aceb95', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['technical']}, {'id': '3c5ef28b-64d7-3d1f-b343-a31078292b04', 'handle': 'IRT-TOT-TH', 'address': 'TOT Public Company Limited\n89/2 Moo 3 Chaengwattana Rd, Laksi,Bangkok 10210 THAILAND          ', 'email': 'apipolg@tot.co.th, abuse@totisp.net', 'events': [{'action': 'last changed', 'actor': 'null', 'date': '2017-06-21T07:19:22Z', 'links': []}], 'firstRegistered': None, 'formattedName': 'IRT-TOT-TH', 'lastChanged': '2017-06-21', 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [], 'roles': ['abuse']}]},<br/>{'handle': '1.179.133.116 - 1.179.133.119', 'startAddress': '1.179.133.116', 'endAddress': '1.179.133.119', 'ipVersion': '4', 'country': 'th', 'name': 'siam-synthetic-latex', 'parentHandle': '', 'whoisServer': 'whois.apnic.net', 'updatedDate': '2020-09-22', 'remarks': 'siam synthetic latex,Nong Khaem Province', 'registryEntities': [{'id': '125d112c-1169-3025-89e7-4c8c5a16db0b', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['administrative']}, {'id': '13cb65ca-9572-394b-b385-b2bd15aceb95', 'handle': '', 'address': '', 'email': '', 'events': [], 'firstRegistered': None, 'formattedName': '', 'lastChanged': None, 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [''], 'roles': ['technical']}, {'id': '3c5ef28b-64d7-3d1f-b343-a31078292b04', 'handle': 'IRT-TOT-TH', 'address': 'TOT Public Company Limited\n89/2 Moo 3 Chaengwattana Rd, Laksi,Bangkok 10210 THAILAND          ', 'email': 'apipolg@tot.co.th, abuse@totisp.net', 'events': [{'action': 'last changed', 'actor': 'null', 'date': '2017-06-21T07:19:22Z', 'links': []}], 'firstRegistered': None, 'formattedName': 'IRT-TOT-TH', 'lastChanged': '2017-06-21', 'org': '', 'phone': '', 'remarks': '', 'statuses': '', 'relatedEntityHandles': [], 'roles': ['abuse']}]} | 0 | {'type': 'CRITICAL', 'count': 0},<br/>{'type': 'ROUTINE', 'count': 0},<br/>{'type': 'UNCATEGORIZED', 'count': 0},<br/>{'type': 'WARNING', 'count': 0} |
 
 
 ### expanse-get-domains-for-certificate
+
 ***
 Returns all domains which have been seen with the specified certificate.
 
 ##### Required Permissions
+
 **none**
+
 ##### Base Command
 
 `expanse-get-domains-for-certificate`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5368,6 +5553,7 @@ Returns all domains which have been seen with the specified certificate.
 | Expanse.IPDomains.DomainList | number | An array of domain objects. This is truncated at 50 |
 
 ##### Command Example
+
 ```!expanse-get-domains-for-certificate common_name="*.us.expanse.co"```
 
 ##### Context Example
@@ -5434,7 +5620,9 @@ Returns all domains which have been seen with the specified certificate.
 <!-- disable-secrets-detection-start -->
 
 ##### Human Readable Output
+
 ### Expanse Domains matching Certificate Common Name: *.us.expanse.co
+
 | FlatDomainList | SearchTerm | TotalDomainCount |
 |---|---|---|
 | california.us.expanse.co, dc.us.expanse.co | *.us.expanse.co | 2 |

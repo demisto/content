@@ -264,7 +264,6 @@ script:
       - 'true'
       - 'false'
       required: false
-      defaultValue: false
     description: Adds a member (user) to a private/shared channel.
     name: microsoft-teams-add-user-to-channel
   - arguments:

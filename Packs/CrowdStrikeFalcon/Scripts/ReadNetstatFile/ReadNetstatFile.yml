@@ -2,7 +2,6 @@ comment: Load and return the processes file (generated from the cs-falcon-rtr-li
 commonfields:
   id: ReadNetstatFile
   version: -1
-enabled: false
 name: ReadNetstatFile
 script: '-'
 system: false
