@@ -118,7 +118,7 @@ tasks:
       id: 0a1ed7f5-fc19-4362-87c5-686806c40cbd
       version: -1
       name: Xpanse - Alert Self-Enrichment
-      description: Enrichment on the alert itself using Cortex Xpanse APIs
+      description: Enrichment on the alert itself using Cortex Xpanse APIs.
       playbookName: Xpanse - Alert Self-Enrichment
       type: playbook
       iscommand: false
