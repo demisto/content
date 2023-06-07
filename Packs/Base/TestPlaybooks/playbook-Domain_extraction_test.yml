@@ -671,4 +671,4 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Indicators reputation-.json Test
-fromversion: "6.0.0"
+fromversion: "6.5.0"
