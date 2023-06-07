@@ -10,12 +10,20 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 0
+  hidden: true
 - display: Client Secret
   name: client_secret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: Client ID
+  name: credentials_client
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
 - additionalinfo: Allows running multiple clients (stream consumers) simultaneously, as each integration instance needs a unique application ID. Must be a max. of 32 alphanumeric characters (a-z, A-Z, 0-9).
   defaultvalue: Demisto
   display: Application ID
@@ -82,7 +90,7 @@ script:
     description: Returns a list of sample events fetched from the stream.
     execution: false
     name: crowdstrike-falcon-streaming-get-sample-events
-  dockerimage: demisto/py3-tools:0.0.1.30715
+  dockerimage: demisto/py3-tools:1.0.0.61931
   feed: false
   isfetch: false
   longRunning: true
