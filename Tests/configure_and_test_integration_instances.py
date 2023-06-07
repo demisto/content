@@ -99,7 +99,7 @@ class Server:
 
 class CloudServer(Server):
 
-    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name, build_number):
+    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name, build_number=''):
         super().__init__()
         self.name = name
         self.api_key = api_key
@@ -134,7 +134,7 @@ class CloudServer(Server):
 
 class XSOARServer(Server):
 
-    def __init__(self, internal_ip, port, user_name, password, build_number):
+    def __init__(self, internal_ip, port, user_name, password, build_number=''):
         super().__init__()
         self.__ssh_client = None
         self.__client = None
