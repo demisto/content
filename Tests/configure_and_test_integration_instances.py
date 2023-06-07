@@ -94,17 +94,19 @@ class Server:
         self.user_name = None
         self.password = None
         self.name = ''
+        self.build_number = 'unknown'
 
 
 class CloudServer(Server):
 
-    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
+    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name, build_number):
         super().__init__()
         self.name = name
         self.api_key = api_key
         self.server_numeric_version = server_numeric_version
         self.base_url = base_url
         self.xdr_auth_id = xdr_auth_id
+        self.build_number = build_number
         self.__client = None
         # we use client without demisto username
         os.environ.pop('DEMISTO_USERNAME', None)
@@ -124,12 +126,15 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
+        custom_user_agent = f"demisto-py/dev (Build:{self.build_number})"
+        self.__client.api_client.user_agent = custom_user_agent
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         return self.__client
 
 
 class XSOARServer(Server):
 
-    def __init__(self, internal_ip, port, user_name, password):
+    def __init__(self, internal_ip, port, user_name, password, build_number):
         super().__init__()
         self.__ssh_client = None
         self.__client = None
@@ -137,6 +142,7 @@ class XSOARServer(Server):
         self.ssh_tunnel_port = port
         self.user_name = user_name
         self.password = password
+        self.build_number = build_number
 
     def __str__(self):
         return self.internal_ip
@@ -153,6 +159,9 @@ class XSOARServer(Server):
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
+        custom_user_agent = f"demisto-py/dev (Build:{self.build_number})"
+        self.__client.api_client.user_agent = custom_user_agent
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
