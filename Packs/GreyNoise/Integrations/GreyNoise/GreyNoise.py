@@ -913,7 +913,7 @@ def timeline_command(client: Client, args: dict) -> Any:
             removeNull=True
         )
 
-        timeline_link = f"https://viz.greynoise.io/{ip}?view=timeline"
+        timeline_link = f"https://viz.greynoise.io/ip/{ip}?view=timeline"
         human_readable += f"\n*To view the detailed timeline result please click [here]({timeline_link}).*"
 
     else:
