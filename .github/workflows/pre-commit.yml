@@ -17,11 +17,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: workaround for detached HEAD
-      if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        git checkout ${GITHUB_HEAD_REF#refs/heads/} || git checkout -b ${GITHUB_HEAD_REF#refs/heads/} && git pull
-
     - name: Setup python
       uses: actions/setup-python@v4
       with:
