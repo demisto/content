@@ -1,8 +1,8 @@
 {
     "name": "VirusTotal",
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
-    "support": "partner",
-    "currentVersion": "2.6.2",
+    "support": "xsoar",
+    "currentVersion": "2.6.1",
     "author": "VirusTotal",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
