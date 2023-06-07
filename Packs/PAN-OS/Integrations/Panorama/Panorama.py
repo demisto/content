@@ -3524,7 +3524,7 @@ def prettify_rule(rule: dict):
         'SecurityProfileGroup': rule_get('profile-setting', 'group', return_type=str),
         'SecurityProfile': {
             key: rule_get(from_dict=value)
-            for key, value in profiles.items()
+            for key, value in profiles.items()  # pylint: disable=E0601  # disables "Using variable 'profiles' before assignment"
             if not str(key).startswith('@')
         }
         if (profiles := rule_get('profile-setting', 'profiles', return_type=dict, default_return_value={}))
