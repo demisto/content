@@ -17,7 +17,6 @@ configuration:
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
@@ -146,8 +145,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the folder should inherit permissions from its parent
-        (default: true)'
+      description: 'Whether the folder should inherit permissions from its parent (default: true)'
       isArray: false
       name: inheritpermissions
       predefined:
@@ -157,8 +155,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the folder should inherit the secret policy. Defaults to
-        true unless creating a root folder.
+      description: Whether the folder should inherit the secret policy. Defaults to true unless creating a root folder.
       isArray: false
       name: inheritsecretpolicy
       predefined:
@@ -238,8 +235,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return the total number of secrets matching the filters.
-        False by default
+      description: Whether to return the total number of secrets matching the filters. False by default
       isArray: false
       name: filter_donotcalculatetotal
       predefined:
@@ -248,15 +244,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Only include Secrets with this DoubleLock ID assigned in the search
-        results
+      description: Only include Secrets with this DoubleLock ID assigned in the search results
       isArray: false
       name: filter_doublelockid
       required: false
       secret: false
     - default: false
-      description: Names of Secret Template fields to return. Only exposed fields
-        can be returned.
+      description: Names of Secret Template fields to return. Only exposed fields can be returned.
       isArray: false
       name: filter_extendedfields
       required: false
@@ -281,8 +275,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to include active secrets in results (when excluded equals
-        true)
+      description: Whether to include active secrets in results (when excluded equals true)
       isArray: false
       name: filter_includeactive
       predefined:
@@ -322,8 +315,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to only include secrets whose template has Remote Password
-        Changing enabled
+      description: Whether to only include secrets whose template has Remote Password Changing enabled
       isArray: false
       name: filter_onlyrpcenabled
       predefined:
@@ -333,8 +325,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: When true only Secrets where you are not the owner and the Secret
-        was shared explicitly with your user id will be returned.
+      description: When true only Secrets where you are not the owner and the Secret was shared explicitly with your user id will be returned.
       isArray: false
       name: filter_onlysharedwithme
       predefined:
@@ -350,8 +341,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify whether to filter by List, View, Edit, or Owner permission.
-        Default is List. (List = 1, View = 2, Edit = 3, Owner = 4
+      description: Specify whether to filter by List, View, Edit, or Owner permission. Default is List. (List = 1, View = 2, Edit = 3, Owner = 4
       isArray: false
       name: filter_permissionrequired
       predefined:
@@ -363,8 +353,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify whether to search AllSecrets, Recent, or Favorites (All
-        = 1, Recent = 2,Favorites = 3
+      description: Specify whether to search AllSecrets, Recent, or Favorites (All = 1, Recent = 2,Favorites = 3
       isArray: false
       name: filter_scope
       predefined:
@@ -523,9 +512,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the secret’s password is automatically changed when a secret
-        is checked in. This is a security feature that prevents a use of the password
-        retrieved from check-out after the secret is checked in.
+      description: Whether the secret’s password is automatically changed when a secret is checked in. This is a security feature that prevents a use of the password retrieved from check-out after the secret is checked in.
       isArray: false
       name: checkoutchangepasswordenabled
       predefined:
@@ -535,9 +522,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the user must check-out the secret to view it. Checking
-        out gives the user exclusive access to the secret for a specified period or
-        until the secret is checked in.
+      description: Whether the user must check-out the secret to view it. Checking out gives the user exclusive access to the secret for a specified period or until the secret is checked in.
       isArray: false
       name: checkoutenabled
       predefined:
@@ -572,17 +557,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Secret folder ID. If the secret is contained in a folder, the id
-        of the containing folder. Use -1 for secrets that are in the root folder.
+      description: Secret folder ID. If the secret is contained in a folder, the id of the containing folder. Use -1 for secrets that are in the root folder.
       isArray: false
       name: folderid
       required: false
       secret: false
     - default: false
-      description: When an SSH secret is proxied, you can choose to connect as another
-        user and then do an su to the current secret’s user. This is a common practice
-        for connecting with a lower privileged account and then switching to the root
-        user.
+      description: When an SSH secret is proxied, you can choose to connect as another user and then do an su to the current secret’s user. This is a common practice for connecting with a lower privileged account and then switching to the root user.
       isArray: false
       name: launcherconnectassecretid
       required: false
@@ -594,8 +575,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The id of the password change script to use on applicable web password
-        secrets.
+      description: The id of the password change script to use on applicable web password secrets.
       isArray: false
       name: passwordtypewebscriptld
       required: false
@@ -611,8 +591,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The id of the secret policy that controls the security and other
-        settings of the secret.
+      description: The id of the secret policy that controls the security and other settings of the secret.
       isArray: false
       name: secretpolicyid
       required: false
@@ -635,8 +614,7 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: ' The id of the distributed engine site that is used by this secret
-        for operations such as password changing.'
+      description: ' The id of the distributed engine site that is used by this secret for operations such as password changing.'
       isArray: false
       name: siteid
       required: true
@@ -690,8 +668,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The id of the mapping entity that associates this secret to a specific
-        access request workflow.
+      description: The id of the mapping entity that associates this secret to a specific access request workflow.
       isArray: false
       name: accessRequestWorkflowMapId
       required: false
@@ -761,8 +738,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user's email address. Used by the system to send reports, access
-        requests, and other notifications.
+      description: The user's email address. Used by the system to send reports, access requests, and other notifications.
       isArray: false
       name: emailaddress
       required: false
@@ -770,8 +746,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether the user account is enabled. Disabled users are unable
-        to log in and do not consume a user license.
+      description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
       isArray: false
       name: enabled
       predefined:
@@ -791,9 +766,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether this is an application account. Application accounts are
-        used for automation, cannot log in using the UI, and do not consume a user
-        license.
+      description: Whether this is an application account. Application accounts are used for automation, cannot log in using the UI, and do not consume a user license.
       isArray: false
       name: isapplicationaccount
       predefined:
@@ -822,9 +795,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: When a user account uses RADIUS two-factor authentication, this
-        property is the user name of the RADIUS account used to authenticate this
-        user.
+      description: When a user account uses RADIUS two-factor authentication, this property is the user name of the RADIUS account used to authenticate this user.
       isArray: false
       name: radiususername
       required: false
@@ -922,8 +893,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The d of the date format to use when displaying dates to this user.
-        These options are defined in Admin > Configuration.
+      description: The d of the date format to use when displaying dates to this user. These options are defined in Admin > Configuration.
       isArray: false
       name: dateoptionid
       required: false
@@ -945,16 +915,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user's email address. Used by the system to send reports, access
-        requests, and other notifications.
+      description: The user's email address. Used by the system to send reports, access requests, and other notifications.
       isArray: false
       name: emailaddress
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the user account is enabled. Disabled users are unable
-        to log in and do not consume a user license.
+      description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
       isArray: false
       name: enabled
       predefined:
@@ -980,9 +948,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether this is an application account. Application accounts are
-        used for automation, cannot log in using the UI, and do not consume a user
-        license.
+      description: Whether this is an application account. Application accounts are used for automation, cannot log in using the UI, and do not consume a user license.
       isArray: false
       name: isapplicationaccount
       predefined:
@@ -992,8 +958,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the user is managed by the groups specified in GroupOwners
-        or is managed by all users with the ‘Administer Users’ role permission.
+      description: Whether the user is managed by the groups specified in GroupOwners or is managed by all users with the ‘Administer Users’ role permission.
       isArray: false
       name: isgroupownerupdate
       predefined:
@@ -1012,8 +977,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Number of login failures to allow before the account is locked
-        out. Set to 0 for unlimited login attempts.
+      description: Number of login failures to allow before the account is locked out. Set to 0 for unlimited login attempts.
       isArray: false
       name: loginfailures
       required: false
@@ -1045,16 +1009,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: When a user account uses RADIUS two-factor authentication, this
-        property is the user name of the RADIUS account used to authenticate this
-        user.
+      description: When a user account uses RADIUS two-factor authentication, this property is the user name of the RADIUS account used to authenticate this user.
       isArray: false
       name: radiususername
       required: false
       secret: false
     - default: false
-      description: The id of the time format to use when displaying times to this
-        user. These options are defined in Admin > Configuration.
+      description: The id of the time format to use when displaying times to this user. These options are defined in Admin > Configuration.
       isArray: false
       name: timeoptionid
       required: false
@@ -1071,8 +1032,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: etermines the type of Unix authentication to use. Must be Password
-        (0), PublicKey (1), PasswordOrPublicKey (2), or PasswordAndPublicKey (3).
+      description: etermines the type of Unix authentication to use. Must be Password (0), PublicKey (1), PasswordOrPublicKey (2), or PasswordAndPublicKey (3).
       isArray: false
       name: unixauthenticationmethodtype
       predefined:

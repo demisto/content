@@ -10,13 +10,11 @@ configuration:
   type: 4
 - additionalinfo: Can be overwriten in commands execution.
   display: Default project
-  hidden: false
   name: default_project
   required: true
   type: 0
 - additionalinfo: Can be overwriten in commands execution.
   display: Default zone
-  hidden: false
   name: default_zone
   required: true
   type: 0
