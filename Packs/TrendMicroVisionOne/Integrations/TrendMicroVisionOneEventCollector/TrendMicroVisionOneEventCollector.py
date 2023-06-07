@@ -466,10 +466,10 @@ def get_workbench_logs(
         log_type=LogTypes.WORKBENCH,
         date_format=date_format,
         increase_latest_log=True
-    )
+    ) or end_time
 
     demisto.info(f'{workbench_logs=}, {latest_workbench_log_time=}')
-    return workbench_logs, latest_workbench_log_time or end_time
+    return workbench_logs, latest_workbench_log_time
 
 
 def get_observed_attack_techniques_logs(
@@ -520,10 +520,10 @@ def get_observed_attack_techniques_logs(
         log_type=LogTypes.OBSERVED_ATTACK_TECHNIQUES,
         date_format=date_format,
         increase_latest_log=True
-    )
+    ) or end_time
 
     demisto.info(f'{observed_attack_techniques_logs=}, {latest_observed_attack_technique_log_time=}')
-    return observed_attack_techniques_logs, latest_observed_attack_technique_log_time or end_time
+    return observed_attack_techniques_logs, latest_observed_attack_technique_log_time
 
 
 def get_search_detection_logs(
@@ -559,10 +559,10 @@ def get_search_detection_logs(
         log_type=LogTypes.SEARCH_DETECTIONS,
         date_format=date_format,
         increase_latest_log=True
-    )
+    ) or end_time
 
     demisto.info(f'{search_detection_logs=}, {latest_search_detection_log_time=}')
-    return search_detection_logs, latest_search_detection_log_time or end_time
+    return search_detection_logs, latest_search_detection_log_time
 
 
 def get_audit_logs(
@@ -599,10 +599,10 @@ def get_audit_logs(
         logs=audit_logs,
         log_type=LogTypes.AUDIT,
         date_format=date_format,
-    )
+    ) or end_time
 
     demisto.info(f'{audit_logs=}, {latest_audit_log_time=}')
-    return audit_logs, latest_audit_log_time or end_time
+    return audit_logs, latest_audit_log_time
 
 
 ''' COMMAND FUNCTIONS '''
