@@ -858,7 +858,6 @@ class TestFetchIncidents:
                                 return_value=[{'id': 10}, {'id': 20}])
             mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
             mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
-            # mocker.patch('ZendeskClient.get_attachment_entries', return_value=[])
             demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
             demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
             zendesk_client.fetch_incidents({}, {})
