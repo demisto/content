@@ -164,7 +164,7 @@ def test_create_user_request_body(test_case):
         Given:
         - test case that point to the relevant test case in the json test data which include:
           args, and expected body.
-        - Case 1: Args with first_name, managed_users_groups, and time_zone fields.
+        - Case 1: Args with first_name, role_id, managed_users_groups, and time_zone fields.
 
         When:
         - Running create_user_request_body.
@@ -172,7 +172,8 @@ def test_create_user_request_body(test_case):
         Then:
         - Ensure that the body was created correctly.
         - Case 1: Should create a body with all the given fields, first_name should be at the root,
-        managed_users_groups should be a list of ID dicts, and time_zone should be a list of one dict with name, value, and tags.
+        role_id should be translated to the correspondence number, managed_users_groups should be a list of ID dicts,
+        and time_zone should be a list of one dict with name, value, and tags.
     """
     test_data = load_json("./test_data/test_create_user_request_body.json").get(test_case, {})
     args = test_data.get('args')

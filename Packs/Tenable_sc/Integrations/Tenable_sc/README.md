@@ -220,7 +220,8 @@ Requires security manager role. Get the status of a specific scan in Tenable.sc.
 | TenableSC.ScanResults.Status | string | Scan status. | 
 | TenableSC.ScanResults.Name | string | Scan Name. | 
 | TenableSC.ScanResults.Description | Unknown | Scan description. | 
-| TenableSC.ScanResults.ID | Unknown | Scan results ID. | 
+| TenableSC.ScanResults.ID | string | Scan results ID. | 
+| TenableSC.ScanResults.Error | string | Will appear only in case of error in the scan, include the cause for the failure. | 
 
 #### Human Readable Output
 
@@ -543,7 +544,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-Scan successfully deleted
+Scan {scan_id} was deleted successfully.
 
 ### tenable-sc-list-assets
 
@@ -676,7 +677,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-Asset successfully deleted
+Asset {asset_id} was deleted successfully.
 
 ### tenable-sc-list-alerts
 
@@ -1042,7 +1043,7 @@ Creates a new user. This command can be executed with both roles (admin or secur
 | auth_type | The authentication type. Tenable (TNS). Lightweight Directory Access Protocol (LDAP). Security Assertion Markup Language (SAML). LDAP server or SAML authentication needs to be configured in order to select LDAP or SAML. Possible values are: Ldap, legacy, linked, saml, tns. Default is tns. | Required | 
 | password | The user's password. Must be at least 3 characters. | Required | 
 | time_zone | The user timezone, possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
-| role_id | The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts. Possible values are: 0, 1, 2, 3, 4, 5, 6, 7. | Required | 
+| role_id | The user's role. Only an Administrator can create Administrator accounts. | Required | 
 | must_change_password | Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
 | managed_users_groups | Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
 | managed_objects_groups | Comma-separated list of the session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
@@ -1136,7 +1137,7 @@ Update user details of the given user_id.
 | country | The country the user is living in. | Optional | 
 | locked | Whether the user should be locked. Possible values are: true, false. Default is false. | Optional | 
 | time_zone | The user timezone. Possible values can be found here: <https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html>. | Optional | 
-| role_id | The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts. Possible values are: 0, 1, 2, 3, 4, 5, 6, 7. | Optional | 
+| role_id | The user's role. Only an Administrator can create Administrator accounts. | Optional | 
 | must_change_password | Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
 | managed_users_groups | Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
 | managed_objects_groups | Comma-separated list of session user's role that  can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
@@ -1230,7 +1231,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-User {user_id} is deleted.
+User {user_id} was deleted successfully.
 
 ### tenable-sc-list-plugin-family
 

@@ -292,10 +292,13 @@ script:
       type: string
     - contextPath: TenableSC.ScanResults.Description
       description: Scan description.
-      type: Unknown
+      type: string
     - contextPath: TenableSC.ScanResults.ID
       description: Scan results ID.
-      type: Unknown
+      type: string
+    - contextPath: TenableSC.ScanResults.Error
+      description: Will appear only in case of error in the scan, include the cause for the failure.
+      type: string
   - arguments:
     - default: false
       description: Scan results ID.
@@ -1393,21 +1396,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts."
+      description: The user's role. Only an Administrator can create Administrator accounts.
       isArray: false
       name: role_id
       required: true
       secret: false
       auto: PREDEFINED
       predefined:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      - '6'
-      - '7'
+      - "Administrator"
+      - "Security Manager"
+      - "Security Analyst"
+      - "Vulnerability Analyst"
+      - "Executive"
+      - "Credential Manager"
+      - "Auditor"
     - default: false
       description: Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False.
       isArray: false
@@ -1675,21 +1677,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The user's role. Should be a number between 1 to 7. Role description: 1- Administrator, 2- Security Manager, 3-Security Analyst, 4-Vulnerability Analyst, 5-Executive, 6-Credential Manager, 7-Auditor. Only an Administrator can create Administrator accounts."
+      description: The user's role. Only an Administrator can create Administrator accounts.
       isArray: false
       name: role_id
       required: false
       secret: false
       auto: PREDEFINED
       predefined:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      - '6'
-      - '7'
+      - "Administrator"
+      - "Security Manager"
+      - "Security Analyst"
+      - "Vulnerability Analyst"
+      - "Executive"
+      - "Credential Manager"
+      - "Auditor"
     - default: false
       description: Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False.
       name: must_change_password

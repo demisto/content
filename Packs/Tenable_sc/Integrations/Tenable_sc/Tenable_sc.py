@@ -26,6 +26,15 @@ ACTION_TYPE_TO_VALUE = {
 FIELDS_TO_INCLUDE = 'id,name,description,type,ownerGroup,owner,tags,modifiedTime'
 API_KEY = "API_KEY"
 USERNAME_AND_PASSWORD = "USERNAME_AND_PASSWORD"
+ROLE_ID_DICT = {
+    "Administrator": "1",
+    "Security Manager": "2",
+    "Security Analyst": "3",
+    "Vulnerability Analyst": "4",
+    "Executive": "5",
+    "Credential Manager": "6",
+    "Auditor": "7"
+}
 
 
 class Client(BaseClient, object):
@@ -910,7 +919,6 @@ def create_user_request_body(args: Dict[str, Any]):
         "address": "address",
         "country": "country",
         "authType": "auth_type",
-        "roleID": "role_id",
         "emailNotice": "email_notice",
         "phone": "phone",
         "locked": "locked",
@@ -921,6 +929,9 @@ def create_user_request_body(args: Dict[str, Any]):
         "responsibleAssetID": "responsible_asset_id"
     }
     body = {key: args.get(value) for key, value in user_query_mapping_dict.items() if args.get(value)}
+
+    if role_id := args.get("role_id", ""):
+        body["roleID"] = ROLE_ID_DICT.get(role_id, "")
 
     if args.get('managed_users_groups'):
         body["managedUsersGroups"] = [{"id": managed_users_group} for
@@ -1339,7 +1350,7 @@ def delete_asset_command(client: Client, args: Dict[str, Any]):
 
     return CommandResults(
         raw_response=res,
-        readable_output='Asset successfully deleted'
+        readable_output=f"Asset {asset_id} was deleted successfully."
     )
 
 
@@ -1641,13 +1652,14 @@ def get_scan_status_command(client: Client, args: Dict[str, Any]):
     """
     scans_results, res = get_scan_status(client, args)
 
-    headers = ['ID', 'Name', 'Status', 'Description']
+    headers = ['ID', 'Name', 'Status', 'Description', 'Error']
 
     mapped_scans_results = [{
         'ID': scan_result['id'],
         'Name': scan_result['name'],
         'Status': scan_result['status'],
-        'Description': scan_result['description']
+        'Description': scan_result['description'],
+        'Error': scan_result['errorDetails'] if scan_result['status'] == 'Error' else ""
     } for scan_result in scans_results]
 
     return CommandResults(
@@ -1957,7 +1969,7 @@ def delete_scan_command(client: Client, args: Dict[str, Any]):
 
     return CommandResults(
         raw_response=res,
-        readable_output='Scan successfully deleted'
+        readable_output=f"Scan {scan_id} was deleted successfully."
     )
 
 
@@ -2518,7 +2530,7 @@ def delete_user_command(client: Client, args: Dict[str, Any]):
 
     return CommandResults(
         raw_response=res,
-        readable_output=f"User {user_id} is deleted."
+        readable_output=f"User {user_id} was deleted successfully."
     )
 
 
