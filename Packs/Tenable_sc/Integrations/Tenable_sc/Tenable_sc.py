@@ -1549,17 +1549,14 @@ def validate_create_scan_inputs(args: Dict[str, Any]):
         raise DemistoException('Error: Dependent schedule must include a dependent scan ID')
 
 
-def launch_scan_command(client: Client, args: Dict[str, Any]):
+def process_launch_scan_response(res: Dict[str, Any]):
     """
-    Launches a scan by a given scan ID.
+    Process the launch scan response.
     Args:
-        client (Client): The tenable.sc client object.
-        args (Dict): demisto.args() object.
+        res (Dict): the launch scan response.
     Returns:
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
-    res = launch_scan(client, args)
-
     scan_result = res['response']['scanResult']
 
     headers = [
@@ -1587,11 +1584,11 @@ def launch_scan_command(client: Client, args: Dict[str, Any]):
     )
 
 
-@polling_function(name='tenable-sc-launch-scan-report',
+@polling_function(name='tenable-sc-launch-scan',
                   requires_polling_arg=False,
                   poll_message="Scan in progress.",
                   timeout=arg_to_number(demisto.args().get("timeout_in_seconds", '10800')))
-def launch_scan_report_command(args: Dict[str, Any], client: Client):
+def launch_scan_command(args: Dict[str, Any], client: Client):
     """
     Polling command. Launch a scan by a given scan ID, following the scan status and retrieve the scan report.
     Args:
@@ -1603,6 +1600,8 @@ def launch_scan_report_command(args: Dict[str, Any], client: Client):
     first_execution = not args.get("scan_results_id")
     if first_execution:
         res = launch_scan(client, args)
+        if not argToBoolean(args.get("polling", "false")):
+            return PollResult(process_launch_scan_response(res))
         scan_results_id = res.get("response", {}).get("scanResult", {}).get("id")
         args["scan_results_id"] = scan_results_id
         demisto.info(f"Running poll command for results id: {scan_results_id}")
@@ -2834,7 +2833,6 @@ def main():  # pragma: no cover
         'tenable-sc-create-asset': create_asset_command,
         'tenable-sc-delete-asset': delete_asset_command,
         'tenable-sc-create-scan': create_scan_command,
-        'tenable-sc-launch-scan': launch_scan_command,
         'tenable-sc-get-scan-status': get_scan_status_command,
         'tenable-sc-get-scan-report': get_scan_report_command,
         'tenable-sc-delete-scan': delete_scan_command,
@@ -2863,8 +2861,8 @@ def main():  # pragma: no cover
             if command == 'fetch-incidents':
                 first_fetch = params.get('fetch_time').strip()
                 fetch_incidents(client, first_fetch)
-            elif command == 'tenable-sc-launch-scan-report':
-                return_results(launch_scan_report_command(args, client))
+            elif command == 'tenable-sc-launch-scan':
+                return_results(launch_scan_command(args, client))
             else:
                 return_results(command_dict[command](client, args))
     except Exception as e:

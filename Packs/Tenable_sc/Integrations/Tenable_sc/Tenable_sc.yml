@@ -115,26 +115,91 @@ script:
       name: diagnostic_password
       required: false
       secret: false
+    - description: Relevant only when polling is true. Default is 3 hours. The timeout in seconds until polling ends.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      defaultValue: 10800
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Default is false. When set to true, will keep polling results until scan is done and return the formatted scan results.
+      isArray: false
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
-    description: Requires security manager role. Launch an existing scan from Tenable.sc.
+    description: Requires security manager role. Launch an existing scan from Tenable.sc. Set polling to true to follow the scan and receive results when scan is over.
     execution: false
+    polling: true
     name: tenable-sc-launch-scan
     outputs:
     - contextPath: TenableSC.ScanResults.Name
       description: Scan name.
       type: string
+    - contextPath: TenableSC.ScanResults.Status
+      description: Scan status.
+      type: string
     - contextPath: TenableSC.ScanResults.ID
       description: Scan Results ID.
       type: string
     - contextPath: TenableSC.ScanResults.OwnerID
-      description: Scan owner ID.
+      description: Relevant only when polling is false. Scan owner ID.
       type: string
     - contextPath: TenableSC.ScanResults.JobID
-      description: Job ID.
+      description: Relevant only when polling is false. Job ID.
       type: string
-    - contextPath: TenableSC.ScanResults.Status
-      description: Scan status.
+    - contextPath: TenableSC.ScanResults.ScannedIPs
+      description: Relevant only when polling is true. Scan number of scanned IPs.
+      type: number
+    - contextPath: TenableSC.ScanResults.StartTime
+      description: Relevant only when polling is true. Scan start time.
+      type: date
+    - contextPath: TenableSC.ScanResults.EndTime
+      description: Relevant only when polling is true. Scan end time.
+      type: date
+    - contextPath: TenableSC.ScanResults.Checks
+      description: Relevant only when polling is true. Scan completed checks.
+      type: number
+    - contextPath: TenableSC.ScanResults.RepositoryName
+      description: Relevant only when polling is true. Scan repository name.
       type: string
+    - contextPath: TenableSC.ScanResults.Description
+      description: Relevant only when polling is true. Scan description.
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.ID
+      description: Relevant only when polling is true. Scan vulnerability ID.
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.Name
+      description: Relevant only when polling is true. Scan vulnerability Name.
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Family
+      description: Relevant only when polling is true. Scan vulnerability family.
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Severity
+      description: Relevant only when polling is true. Scan vulnerability severity.
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Total
+      description: Relevant only when polling is true. Scan vulnerability total hosts.
+      type: number
+    - contextPath: TenableSC.ScanResults.Policy
+      description: Relevant only when polling is true. Scan policy.
+      type: string
+    - contextPath: TenableSC.ScanResults.Group
+      description: Relevant only when polling is true. Scan owner group name.
+      type: string
+    - contextPath: TenableSC.ScanResults.Owner
+      description: Relevant only when polling is true. Scan owner user name.
+      type: string
+    - contextPath: TenableSC.ScanResults.Duration
+      description: Relevant only when polling is true. Scan duration in minutes.
+      type: number
+    - contextPath: TenableSC.ScanResults.ImportTime
+      description: Relevant only when polling is true. Scan import time.
+      type: date 
   - arguments:
     - default: false
       description: Vulnerability ID from the scan-report command.
@@ -3037,100 +3102,6 @@ script:
     - contextPath: TenableSC.Scan.Zone.Name
       description: Scan zone name.
       type: String
-  - arguments:
-    - default: false
-      description: The ID of the scan from which to get the report. Can be retrieved from the list-scans command.
-      isArray: false
-      name: scan_id
-      required: true
-      secret: false
-    - default: false
-      description: Valid IP/Hostname of a specific target to scan. Must be provided with diagnostic_password.
-      isArray: false
-      name: diagnostic_target
-      required: false
-      secret: false
-    - default: false
-      description: Valid password of the diagnostic_target. Must be provided with diagnostic_target.
-      isArray: false
-      name: diagnostic_password
-      required: false
-      secret: false
-    - default: false
-      description: Deprecated. Scan results ID.
-      isArray: false
-      name: scan_results_id
-      required: false
-      secret: false
-      deprecated: true
-    - description: Default is 3 hours. The timeout in seconds until polling ends.
-      isArray: false
-      name: timeout_in_seconds
-      required: false
-      defaultValue: 10800
-    deprecated: false
-    polling: true
-    description:  Requires security manager role. Polling command. Launch a scan by given scan ID. Follow its status and return a report when the scan is over.
-    execution: false
-    name: tenable-sc-launch-scan-report
-    outputs:
-    - contextPath: TenableSC.ScanResults.ID
-      description: Scan results ID.
-      type: number
-    - contextPath: TenableSC.ScanResults.Name
-      description: Scan name.
-      type: string
-    - contextPath: TenableSC.ScanResults.Status
-      description: Scan status.
-      type: string
-    - contextPath: TenableSC.ScanResults.ScannedIPs
-      description: Scan number of scanned IPs.
-      type: number
-    - contextPath: TenableSC.ScanResults.StartTime
-      description: Scan start time.
-      type: date
-    - contextPath: TenableSC.ScanResults.EndTime
-      description: Scan end time.
-      type: date
-    - contextPath: TenableSC.ScanResults.Checks
-      description: Scan completed checks.
-      type: number
-    - contextPath: TenableSC.ScanResults.RepositoryName
-      description: Scan repository name.
-      type: string
-    - contextPath: TenableSC.ScanResults.Description
-      description: Scan description.
-      type: string
-    - contextPath: TenableSC.ScanResults.Vulnerability.ID
-      description: Scan vulnerability ID.
-      type: number
-    - contextPath: TenableSC.ScanResults.Vulnerability.Name
-      description: Scan vulnerability Name.
-      type: string
-    - contextPath: TenableSC.ScanResults.Vulnerability.Family
-      description: Scan vulnerability family.
-      type: string
-    - contextPath: TenableSC.ScanResults.Vulnerability.Severity
-      description: Scan vulnerability severity.
-      type: string
-    - contextPath: TenableSC.ScanResults.Vulnerability.Total
-      description: Scan vulnerability total hosts.
-      type: number
-    - contextPath: TenableSC.ScanResults.Policy
-      description: Scan policy.
-      type: string
-    - contextPath: TenableSC.ScanResults.Group
-      description: Scan owner group name.
-      type: string
-    - contextPath: TenableSC.ScanResults.Owner
-      description: Scan owner user name.
-      type: string
-    - contextPath: TenableSC.ScanResults.Duration
-      description: Scan duration in minutes.
-      type: number
-    - contextPath: TenableSC.ScanResults.ImportTime
-      description: Scan import time.
-      type: date 
   isfetch: true
   runonce: false
   script: '-'
