@@ -209,139 +209,139 @@ Retrieve AV Scanner data from TitaniumCloud.
                             "results": [
                                 {
                                     "result": "[TROJAN] Trojan/Win32.Toxic.R150440",
-                                    "scanner": "ahnlab"
+                                    "scanner": "scanner1"
                                 },
                                 {
                                     "result": "detected",
-                                    "scanner": "antivir"
+                                    "scanner": "scanner2"
                                 },
                                 {
                                     "result": "Win32:Malware-gen",
-                                    "scanner": "avast"
+                                    "scanner": "scanner3"
                                 },
                                 {
                                     "result": "DeepScan:Generic.Ransom.WCryG.5BC9065C",
-                                    "scanner": "bitdefender"
+                                    "scanner": "scanner4"
                                 },
                                 {
                                     "result": "trojan",
-                                    "scanner": "carbonblack"
+                                    "scanner": "scanner5"
                                 },
                                 {
                                     "result": "PUA.Win.Packer.UpxProtector-1",
-                                    "scanner": "clamav"
+                                    "scanner": "scanner6"
                                 },
                                 {
                                     "result": "win/malicious_confidence_100",
-                                    "scanner": "crowdstrike"
+                                    "scanner": "scanner7"
                                 },
                                 {
                                     "result": "malware.confidence_100",
-                                    "scanner": "crowdstrike_online"
+                                    "scanner": "scanner8"
                                 },
                                 {
                                     "result": "Trojan.Encoder.1155",
-                                    "scanner": "drweb"
+                                    "scanner": "scanner9"
                                 },
                                 {
                                     "result": "malicious (moderate confidence)",
-                                    "scanner": "endgame"
+                                    "scanner": "scanner10"
                                 },
                                 {
                                     "result": "Detected",
-                                    "scanner": "ffri"
+                                    "scanner": "scanner11"
                                 },
                                 {
                                     "result": "W32/ToxKrypt.A!tr",
-                                    "scanner": "fortinet"
+                                    "scanner": "scanner12"
                                 },
                                 {
                                     "result": "DeepScan:Generic.Ransom.WCryG.5BC9065C",
-                                    "scanner": "gdata"
+                                    "scanner": "scanner13"
                                 },
                                 {
                                     "result": "Trojan.Win32.Filecoder",
-                                    "scanner": "ikarus"
+                                    "scanner": "scanner15"
                                 },
                                 {
                                     "result": "Trojan (0055e3ef1)",
-                                    "scanner": "k7computing"
+                                    "scanner": "scanner16"
                                 },
                                 {
                                     "result": "Generic.Malware/Suspicious",
-                                    "scanner": "malwarebytes"
+                                    "scanner": "scanner17"
                                 },
                                 {
                                     "result": "Ransom-Tox!11B48E409D96 (trojan)",
-                                    "scanner": "mcafee"
+                                    "scanner": "scanner18"
                                 },
                                 {
                                     "result": "Ransom-Tox!11B48E409D96 (trojan)",
-                                    "scanner": "mcafee_beta"
+                                    "scanner": "scanner19"
                                 },
                                 {
                                     "result": "Artemis!3133C2231FCE (trojan)",
-                                    "scanner": "mcafee_online"
+                                    "scanner": "scanner20"
                                 },
                                 {
                                     "result": "Ransom:Win32/Tocrypt.B",
-                                    "scanner": "microsoft"
+                                    "scanner": "scanner21"
                                 },
                                 {
                                     "result": "Ransom:Win32/Tocrypt.B",
-                                    "scanner": "microsoft_online"
+                                    "scanner": "scanner22"
                                 },
                                 {
                                     "result": "Trj/Genetic.gen",
-                                    "scanner": "panda"
+                                    "scanner": "scanner23"
                                 },
                                 {
                                     "result": "Trj/Genetic.gen",
-                                    "scanner": "panda_online"
+                                    "scanner": "scanner24"
                                 },
                                 {
                                     "result": "",
-                                    "scanner": "quickheal"
+                                    "scanner": "scanner25"
                                 },
                                 {
                                     "result": "Ransom.Tocrypt!8.53B6",
-                                    "scanner": "rising"
+                                    "scanner": "scanner26"
                                 },
                                 {
                                     "result": "Malware.Undefined!8.C",
-                                    "scanner": "rising_online"
+                                    "scanner": "scanner27"
                                 },
                                 {
                                     "result": "DFI - Suspicious PE",
-                                    "scanner": "sentinelone_online"
+                                    "scanner": "scanner28"
                                 },
                                 {
                                     "result": "",
-                                    "scanner": "sonicwall"
+                                    "scanner": "scanner29"
                                 },
                                 {
                                     "result": "Mal/Generic-R",
-                                    "scanner": "sophos_susi"
+                                    "scanner": "scanner30"
                                 },
                                 {
                                     "result": "Trojan.Gen.2",
-                                    "scanner": "symantec"
+                                    "scanner": "scanner31"
                                 },
                                 {
                                     "result": "Trojan.Gen.2",
-                                    "scanner": "symantec_beta"
+                                    "scanner": "scanner32"
                                 },
                                 {
                                     "result": "TROJ_CRYPTOX.T",
-                                    "scanner": "trendmicro"
+                                    "scanner": "scanner33"
                                 },
                                 {
                                     "result": "TROJ_CRYPTOX.T",
-                                    "scanner": "trendmicro_consumer"
+                                    "scanner": "scanner34"
                                 },
                                 {
                                     "result": "SScope.Malware-Cryptor.Toxic",
-                                    "scanner": "vba32"
+                                    "scanner": "scanner35"
                                 }
                             ],
                             "scanned_on": "2023-06-06T16:15:00",
@@ -349,190 +349,190 @@ Retrieve AV Scanner data from TitaniumCloud.
                             "scanner_match": 32,
                             "scanners": [
                                 {
-                                    "name": "ahnlab",
-                                    "timestamp": "2023-06-06T12:15:00",
-                                    "version": "ahnscan-console.zip"
-                                },
-                                {
-                                    "name": "antivir",
-                                    "timestamp": "2023-06-06T14:55:00",
-                                    "version": "vdf_fusebundle.zip"
-                                },
-                                {
-                                    "name": "avast",
-                                    "timestamp": "2023-06-06T15:26:00",
-                                    "version": "avast_stream.zip"
-                                },
-                                {
-                                    "name": "bitdefender",
-                                    "timestamp": "2023-06-06T15:44:00",
-                                    "version": "bitdefender_pack.rar"
-                                },
-                                {
-                                    "name": "carbonblack",
-                                    "timestamp": "2023-06-06T16:03:00",
-                                    "version": "carbonblack.exe"
-                                },
-                                {
-                                    "name": "clamav",
-                                    "timestamp": "2023-06-06T09:09:00",
-                                    "version": "daily.cvd"
-                                },
-                                {
-                                    "name": "crowdstrike",
-                                    "timestamp": "2023-06-06T16:04:00",
-                                    "version": "crowdstrike_v1.exe"
-                                },
-                                {
-                                    "name": "crowdstrike_online",
-                                    "timestamp": "2023-06-06T16:04:00",
-                                    "version": "crowdstrike_scan_result_lookup.exe"
-                                },
-                                {
-                                    "name": "drweb",
-                                    "timestamp": "2023-06-06T15:06:00",
-                                    "version": "drweb-500-wcl.zip"
-                                },
-                                {
-                                    "name": "endgame",
-                                    "timestamp": "2023-06-06T16:04:00",
-                                    "version": "endgame.exe"
-                                },
-                                {
-                                    "name": "ffri",
-                                    "timestamp": "2023-06-06T16:04:00",
-                                    "version": "ffri.exe"
-                                },
-                                {
-                                    "name": "fireeye_online",
-                                    "timestamp": "2023-06-06T15:06:00",
-                                    "version": "fireeye_pack.rar"
-                                },
-                                {
-                                    "name": "fortinet",
-                                    "timestamp": "2023-06-06T15:28:00",
-                                    "version": "vir_high"
-                                },
-                                {
-                                    "name": "gdata",
-                                    "timestamp": "2023-06-06T15:25:00",
-                                    "version": "gdata_pack.rar"
-                                },
-                                {
-                                    "name": "ikarus",
-                                    "timestamp": "2023-06-06T14:31:00",
-                                    "version": "t3sigs.vdb"
-                                },
-                                {
-                                    "name": "k7computing",
-                                    "timestamp": "2023-06-06T15:44:00",
-                                    "version": "K7Cmdline.zip"
-                                },
-                                {
-                                    "name": "malwarebytes",
-                                    "timestamp": "2023-06-06T16:05:00",
-                                    "version": "mbbr.exe"
-                                },
-                                {
-                                    "name": "mcafee",
-                                    "timestamp": "2023-06-06T15:46:00",
-                                    "version": "avvdat-10733.zip"
-                                },
-                                {
-                                    "name": "mcafee_beta",
-                                    "timestamp": "2023-06-06T01:34:00",
-                                    "version": "avvwin_netware_betadat.zip"
-                                },
-                                {
-                                    "name": "mcafee_online",
-                                    "timestamp": "2023-06-06T15:46:00",
-                                    "version": "avvdat-10733.zip"
-                                },
-                                {
-                                    "name": "mcafeegwedition_online",
-                                    "timestamp": "2023-06-06T10:11:00",
-                                    "version": "mfegw-cmd-scanner-windows.zip"
-                                },
-                                {
-                                    "name": "microsoft",
-                                    "timestamp": "2023-06-06T12:28:00",
-                                    "version": "mpam-fe.exe"
-                                },
-                                {
-                                    "name": "microsoft_online",
-                                    "timestamp": "2023-06-06T12:28:00",
-                                    "version": "mpam-fe.exe"
-                                },
-                                {
-                                    "name": "panda",
-                                    "timestamp": "2023-06-06T15:00:00",
-                                    "version": "panda_pack.rar"
-                                },
-                                {
-                                    "name": "panda_online",
-                                    "timestamp": "2023-06-06T15:00:00",
-                                    "version": "panda_pack.rar"
-                                },
-                                {
-                                    "name": "quickheal",
-                                    "timestamp": "2023-06-05T23:53:00",
-                                    "version": "qhadvdef.zip"
-                                },
-                                {
-                                    "name": "rising",
-                                    "timestamp": "2023-06-06T11:13:00",
-                                    "version": "rame.zip"
-                                },
-                                {
-                                    "name": "rising_online",
-                                    "timestamp": "2023-06-06T11:13:00",
-                                    "version": "rame.zip"
-                                },
-                                {
-                                    "name": "sentinelone_online",
-                                    "timestamp": "2023-06-06T16:08:00",
-                                    "version": "not-available"
-                                },
-                                {
-                                    "name": "sonicwall",
-                                    "timestamp": "2023-06-06T16:08:00",
-                                    "version": "sonicwall.exe"
-                                },
-                                {
-                                    "name": "sophos_susi",
-                                    "timestamp": "2023-06-06T12:00:00",
-                                    "version": "vdl-dataseta.zip"
-                                },
-                                {
-                                    "name": "symantec",
-                                    "timestamp": "2023-06-06T11:53:00",
-                                    "version": "streamset.zip"
-                                },
-                                {
-                                    "name": "symantec_beta",
-                                    "timestamp": "2023-06-06T14:29:00",
-                                    "version": "symrapidreleasedefscore15-v5i32.exe"
-                                },
-                                {
-                                    "name": "symantec_online",
-                                    "timestamp": "2023-06-06T11:53:00",
-                                    "version": "streamset.zip"
-                                },
-                                {
-                                    "name": "trendmicro",
-                                    "timestamp": "2023-06-06T15:43:00",
-                                    "version": "icrc$tbl.zip"
-                                },
-                                {
-                                    "name": "trendmicro_consumer",
-                                    "timestamp": "2023-06-06T15:43:00",
-                                    "version": "hcoth1849195.zip"
-                                },
-                                {
-                                    "name": "vba32",
-                                    "timestamp": "2023-06-06T11:01:00",
-                                    "version": "vba32w-latest.7z"
-                                }
+        "name": "scanner1",
+        "timestamp": "2023-06-06T12:15:00",
+        "version": "scanner_version1"
+    },
+    {
+        "name": "scanner2",
+        "timestamp": "2023-06-06T14:55:00",
+        "version": "scanner_version2"
+    },
+    {
+        "name": "scanner3",
+        "timestamp": "2023-06-06T15:26:00",
+        "version": "scanner_version3"
+    },
+    {
+        "name": "scanner4",
+        "timestamp": "2023-06-06T15:44:00",
+        "version": "scanner_version4"
+    },
+    {
+        "name": "scanner5",
+        "timestamp": "2023-06-06T16:03:00",
+        "version": "scanner_version5"
+    },
+    {
+        "name": "scanner6",
+        "timestamp": "2023-06-06T09:09:00",
+        "version": "scanner_version6"
+    },
+    {
+        "name": "scanner7",
+        "timestamp": "2023-06-06T16:04:00",
+        "version": "scanner_version7"
+    },
+    {
+        "name": "scanner8",
+        "timestamp": "2023-06-06T16:04:00",
+        "version": "scanner_version8"
+    },
+    {
+        "name": "scanner9",
+        "timestamp": "2023-06-06T15:06:00",
+        "version": "scanner_version9"
+    },
+    {
+        "name": "scanner10",
+        "timestamp": "2023-06-06T16:04:00",
+        "version": "scanner_version10"
+    },
+    {
+        "name": "scanner11",
+        "timestamp": "2023-06-06T16:04:00",
+        "version": "scanner_version11"
+    },
+    {
+        "name": "scanner12",
+        "timestamp": "2023-06-06T15:06:00",
+        "version": "scanner_version12"
+    },
+    {
+        "name": "scanner13",
+        "timestamp": "2023-06-06T15:28:00",
+        "version": "scanner_version13"
+    },
+    {
+        "name": "scanner14",
+        "timestamp": "2023-06-06T15:25:00",
+        "version": "scanner_version14"
+    },
+    {
+        "name": "scanner15",
+        "timestamp": "2023-06-06T14:31:00",
+        "version": "scanner_version15"
+    },
+    {
+        "name": "scanner16",
+        "timestamp": "2023-06-06T15:44:00",
+        "version": "scanner_version16"
+    },
+    {
+        "name": "scanner17",
+        "timestamp": "2023-06-06T16:05:00",
+        "version": "scanner_version17"
+    },
+    {
+        "name": "scanner18",
+        "timestamp": "2023-06-06T15:46:00",
+        "version": "scanner_version18"
+    },
+    {
+        "name": "scanner19",
+        "timestamp": "2023-06-06T01:34:00",
+        "version": "scanner_version19"
+    },
+    {
+        "name": "scanner20",
+        "timestamp": "2023-06-06T15:46:00",
+        "version": "scanner_version20"
+    },
+    {
+        "name": "scanner21",
+        "timestamp": "2023-06-06T10:11:00",
+        "version": "scanner_version21"
+    },
+    {
+        "name": "scanner22",
+        "timestamp": "2023-06-06T12:28:00",
+        "version": "scanner_version22"
+    },
+    {
+        "name": "scanner23",
+        "timestamp": "2023-06-06T12:28:00",
+        "version": "scanner_version23"
+    },
+    {
+        "name": "scanner24",
+        "timestamp": "2023-06-06T15:00:00",
+        "version": "scanner_version24"
+    },
+    {
+        "name": "scanner25",
+        "timestamp": "2023-06-06T15:00:00",
+        "version": "scanner_version25"
+    },
+    {
+        "name": "scanner26",
+        "timestamp": "2023-06-05T23:53:00",
+        "version": "scanner_version26"
+    },
+    {
+        "name": "scanner27",
+        "timestamp": "2023-06-06T11:13:00",
+        "version": "scanner_version27"
+    },
+    {
+        "name": "scanner28",
+        "timestamp": "2023-06-06T11:13:00",
+        "version": "scanner_version28"
+    },
+    {
+        "name": "scanner29",
+        "timestamp": "2023-06-06T16:08:00",
+        "version": "scanner_version29"
+    },
+    {
+        "name": "scanner30",
+        "timestamp": "2023-06-06T16:08:00",
+        "version": "scanner_version30"
+    },
+    {
+        "name": "scanner31",
+        "timestamp": "2023-06-06T12:00:00",
+        "version": "scanner_version31"
+    },
+    {
+        "name": "scanner32",
+        "timestamp": "2023-06-06T11:53:00",
+        "version": "scanner_version32"
+    },
+    {
+        "name": "scanner33",
+        "timestamp": "2023-06-06T14:29:00",
+        "version": "scanner_version33"
+    },
+    {
+        "name": "scanner34",
+        "timestamp": "2023-06-06T11:53:00",
+        "version": "scanner_version34"
+    },
+    {
+        "name": "scanner35",
+        "timestamp": "2023-06-06T15:43:00",
+        "version": "scanner_version35"
+    },
+    {
+        "name": "scanner36",
+        "timestamp": "2023-06-06T15:43:00",
+        "version": "scanner_version36"
+    },
+    {
+        "name": "scanner37",
+        "timestamp": "2023-06-06T11:01:00",
+        "version": "scanner_version37"
+    }
                             ]
                         }
                     ]
@@ -564,40 +564,40 @@ Retrieve AV Scanner data from TitaniumCloud.
 >### Latest scan results
 >|result|scanner|
 >|---|---|
->| [TROJAN] Trojan/Win32.Toxic.R150440 | ahnlab |
->| detected | antivir |
->| Win32:Malware-gen | avast |
->| DeepScan:Generic.Ransom.WCryG.5BC9065C | bitdefender |
->| trojan | carbonblack |
->| PUA.Win.Packer.UpxProtector-1 | clamav |
->| win/malicious_confidence_100 | crowdstrike |
->| malware.confidence_100 | crowdstrike_online |
->| Trojan.Encoder.1155 | drweb |
->| malicious (moderate confidence) | endgame |
->| Detected | ffri |
->| W32/ToxKrypt.A!tr | fortinet |
->| DeepScan:Generic.Ransom.WCryG.5BC9065C | gdata |
->| Trojan.Win32.Filecoder | ikarus |
->| Trojan (0055e3ef1) | k7computing |
->| Generic.Malware/Suspicious | malwarebytes |
->| Ransom-Tox!11B48E409D96 (trojan) | mcafee |
->| Ransom-Tox!11B48E409D96 (trojan) | mcafee_beta |
->| Artemis!3133C2231FCE (trojan) | mcafee_online |
->| Ransom:Win32/Tocrypt.B | microsoft |
->| Ransom:Win32/Tocrypt.B | microsoft_online |
->| Trj/Genetic.gen | panda |
->| Trj/Genetic.gen | panda_online |
->|  | quickheal |
->| Ransom.Tocrypt!8.53B6 | rising |
->| Malware.Undefined!8.C | rising_online |
->| DFI - Suspicious PE | sentinelone_online |
->|  | sonicwall |
->| Mal/Generic-R | sophos_susi |
->| Trojan.Gen.2 | symantec |
->| Trojan.Gen.2 | symantec_beta |
->| TROJ_CRYPTOX.T | trendmicro |
->| TROJ_CRYPTOX.T | trendmicro_consumer |
->| SScope.Malware-Cryptor.Toxic | vba32 |
+>| [TROJAN] Trojan/Win32.Toxic.R150440 | scanner1 |
+>| detected | scanner2 |
+>| Win32:Malware-gen | scanner3 |
+>| DeepScan:Generic.Ransom.WCryG.5BC9065C | scanner4 |
+>| trojan | scanner5 |
+>| PUA.Win.Packer.UpxProtector-1 | scanner6 |
+>| win/malicious_confidence_100 | scanner7 |
+>| malware.confidence_100 | scanner8 |
+>| Trojan.Encoder.1155 | scanner9 |
+>| malicious (moderate confidence) | scanner10 |
+>| Detected | scanner11 |
+>| W32/ToxKrypt.A!tr | scanner12 |
+>| DeepScan:Generic.Ransom.WCryG.5BC9065C | scanner13 |
+>| Trojan.Win32.Filecoder | scanner14 |
+>| Trojan (0055e3ef1) | scanner15 |
+>| Generic.Malware/Suspicious | scanner16 |
+>| Ransom-Tox!11B48E409D96 (trojan) | scanner17 |
+>| Ransom-Tox!11B48E409D96 (trojan) | scanner18 |
+>| Artemis!3133C2231FCE (trojan) | scanner19 |
+>| Ransom:Win32/Tocrypt.B | scanner20 |
+>| Ransom:Win32/Tocrypt.B | scanner21 |
+>| Trj/Genetic.gen | scanner22 |
+>| Trj/Genetic.gen | scanner23 |
+>|  | scanner24 |
+>| Ransom.Tocrypt!8.53B6 | scanner25 |
+>| Malware.Undefined!8.C | scanner26 |
+>| DFI - Suspicious PE | scanner27 |
+>|  | scanner28 |
+>| Mal/Generic-R | scanner29 |
+>| Trojan.Gen.2 | scanner30 |
+>| Trojan.Gen.2 | scanner31 |
+>| TROJ_CRYPTOX.T | scanner32 |
+>| TROJ_CRYPTOX.T | scanner33 |
+>| SScope.Malware-Cryptor.Toxic | scanner34 |
 
 
 ### reversinglabs-titaniumcloud-file-analysis
