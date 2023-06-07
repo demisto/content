@@ -18,11 +18,11 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
     | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | False |
     |First fetch time| Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed| True
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. To ensure that fetch incidents works:
+    * Select the Fetches incidents radio button.
+    * Under Incident type, select Cyble Vision Alert V2.
 
-5. In addition:
-    * Make sure that under "Incident type" you&#39;ve selected the incident type you want to work with and it is the same one you&#39;ve selected once you created the new field. In our example: "Cyble Vision Alert V2".
-    * The option "Fetch Incidents" is checked.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 

@@ -15,7 +15,11 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
     | Use system proxy settings |  | False |
     | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. To ensure that fetch incidents works:
+    * Select the Fetches incidents radio button.
+    * Under Incident type, select Cyble Vision Alert V2.
+   
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
