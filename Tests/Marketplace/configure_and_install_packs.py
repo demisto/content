@@ -125,8 +125,22 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
 
     # extract pack_ids from the content_packs_to_install.txt
     pack_ids = Build.fetch_pack_ids_to_install(options.pack_ids_to_install)
+
+    # get packs that their minServerVersion is higher than the server version
+    packs_with_higher_server_version = get_packs_with_higher_min_version(
+        packs_names=cloud_machine,
+        server_numeric_version=server_numeric_version
+    )
+    logging.info(f'packs with minServerVersion that is higher than server version {packs_with_higher_server_version}')
+
+    # remove all the packs that that their minServerVersion is higher than the server version.
+    pack_ids_with_valid_min_server_version = pack_ids - packs_with_higher_server_version
+    logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
+
+
     # Acquire the server's host and install new uploaded content packs
-    install_packs_from_content_packs_to_install_path(servers=[server], pack_ids=pack_ids, hostname=server.name,
+    install_packs_from_content_packs_to_install_path(servers=[server], pack_ids=pack_ids_with_valid_min_server_version,
+                                                     hostname=server.name,
                                                      marketplace_tag_name=XSIAM_MP)
     logging.success(f'Finished installing all content packs in {cloud_machine}')
 
