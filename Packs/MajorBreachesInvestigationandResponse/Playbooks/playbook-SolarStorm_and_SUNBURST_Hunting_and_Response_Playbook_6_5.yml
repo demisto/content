@@ -2976,14 +2976,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: b241779f-9dab-43e4-8e71-cd2a4ed9007b
+    taskid: 57729b69-717e-4470-87f1-09ce908e6338
     type: playbook
     task:
-      id: b241779f-9dab-43e4-8e71-cd2a4ed9007b
+      id: 57729b69-717e-4470-87f1-09ce908e6338
       version: -1
       name: Block Indicators - Generic v3
       description: |+
-        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
         - Block URL - Generic v2
         - Block Account - Generic v2
@@ -3011,109 +3011,31 @@ tasks:
         simple: Demisto Remediation - Malicious URLs
       IP:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
+          root: PANWHunting
+          accessor: DetectedExternalIPs
           transformers:
-          - operator: uniq
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: '(item: IP.Address)'
+      InputEnrichment:
+        simple: "False"
       LogForwarding:
         complex:
           root: inputs.LogForwarding
       MD5:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
+          root: File
+          accessor: MD5
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
+          root: File
+          accessor: SHA256
       URL:
         complex:
           root: DBotScore
@@ -3164,9 +3086,6 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      device-group:
-        complex:
-          root: inputs.DeviceGroup
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -3267,7 +3186,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 6035,
-        "width": 5610,
+        "width": 5060,
         "x": -1090,
         "y": -990
       }
