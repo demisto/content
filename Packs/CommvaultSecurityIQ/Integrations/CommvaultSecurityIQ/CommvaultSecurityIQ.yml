@@ -73,18 +73,42 @@ script:
     description: Disables data aging on CS
     execution: false
     name: disable-data-aging
+    outputs:
+    - contextPath: CommvaultSecurityIQ.Response
+      description: Status returned after calling disable data aging API
+      type: string
   - deprecated: false
     description: Generate Token
     execution: false
-    name: generate_token
+    name: generate-token
+    outputs:
+    - contextPath: CommvaultSecurityIQ.Response
+      description: Status indicating whether successfully generated access token or not 
+      type: string
   - deprecated: false
     description: Disable SAML provider
     execution: false
     name: disable-saml-provider
+    outputs:
+    - contextPath: CommvaultSecurityIQ.Response
+      description: Status indicating whether successfully disabled SAML provider or not
+      type: string
   - deprecated: false
     description: Copy the list of affected files list to war room
     execution: false
     name: copy-files-list-to-war-room
+  - deprecated: false
+    description: Disables user
+    execution: false
+    name: disable-user
+    arguments:
+    - name: user_email
+      required: true
+      type: textArea
+    outputs:
+    - contextPath: CommvaultSecurityIQ.Response
+      description: Response indicating whether successfully disabled user or not.
+      type: string
   dockerimage: devtesting/commvault:1.0.0.1685633254
   feed: false
   isfetch: true
