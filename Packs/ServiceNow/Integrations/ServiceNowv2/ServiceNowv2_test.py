@@ -1359,7 +1359,7 @@ def test_get_remote_data_closing_incident_with_different_closing_state(mocker):
         -  arguments: id and LastUpdate(set to lower then the modification time).
         -  ServiceNow ticket in closed state
         -  close_incident parameter is set to closed
-        - server_close_custom_state parameter differs from the ticket's closing state
+        -  server_close_custom_state parameter differs from the ticket's closing state
     When
         - running get_remote_data_command.
     Then
