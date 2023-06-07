@@ -4,16 +4,20 @@ from CommonServerPython import *
 
 import re
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 ''' GLOBALS/PARAMS '''
 
 VENDOR = 'Have I Been Pwned? V2'
 MAX_RETRY_ALLOWED = demisto.params().get('max_retry_time', -1)
-API_KEY = demisto.params().get('api_key')
+API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure', False)
+
+
 
 BASE_URL = 'https://haveibeenpwned.com/api/v3'
 HEADERS = {
@@ -42,6 +46,8 @@ RETRIES_END_TIME = datetime.min
 
 
 def http_request(method, url_suffix, params=None, data=None):
+    if not API_KEY:
+        raise DemistoException('API key must be provided.')
     while True:
         res = requests.request(
             method,
@@ -64,7 +70,7 @@ def http_request(method, url_suffix, params=None, data=None):
             wait_amount = wait_regex.group()
         else:
             demisto.error('failed extracting wait time will use default (5). Res body: {}'.format(res.text))
-            wait_amount = 5
+            wait_amount = '5'
         if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
             return_error('Max retry time has exceeded.')
         time.sleep(int(wait_amount))

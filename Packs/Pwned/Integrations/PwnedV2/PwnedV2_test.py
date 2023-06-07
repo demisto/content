@@ -88,7 +88,7 @@ domain_req = [
 
 args1 = {
     'username': "jondon",
-    'domain': "adobe.com"
+    'domain': "adobe.com",
 }
 
 
@@ -108,7 +108,9 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     - create the context
     validate the expected_result and the created context
     """
-    mocker.patch.object(demisto, 'params', return_value={'integrationReliability': 'A - Completely reliable'})
+    PwnedV2.API_KEY = 'test'
+    mocker.patch.object(demisto, 'params', return_value={
+                        'integrationReliability': 'A - Completely reliable'})
     mocker.patch('PwnedV2.http_request', return_value=response)
     md_list, ec_list, api_email_res_list = command(args)
     for hr, outputs, raw in zip(md_list, ec_list, api_email_res_list):
@@ -119,9 +121,11 @@ def test_rate_limited(mocker, requests_mock):
     # mock all requests with retry and provide a huge timeout
     requests_mock.get(ANY, status_code=429,
                       text='{ "statusCode": 429, "message": "Rate limit is exceeded. Try again in 20 seconds." }')
+    mocker.patch.object(demisto, 'params', return_value={'credentials_api_key': {'password': 'test'}})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     return_error_mock.side_effect = ValueError(RETURN_ERROR_TARGET)
     PwnedV2.MAX_RETRY_ALLOWED = 10
+    PwnedV2.API_KEY = 'test'
     PwnedV2.set_retry_end_time()
     with pytest.raises(ValueError, match=RETURN_ERROR_TARGET):
         PwnedV2.pwned_email(['test@test.com'])
