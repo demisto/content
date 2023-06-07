@@ -1,4 +1,4 @@
-category:  Messaging and Conferencing
+category: Messaging and Conferencing
 deprecated: true
 sectionOrder:
 - Connect
@@ -120,7 +120,6 @@ configuration:
   section: Connect
   advanced: true
 - display: Comma separated list of tags To filter the messages sent from demisto.
-  hidden: false
   name: filtered_tags
   required: false
   type: 0

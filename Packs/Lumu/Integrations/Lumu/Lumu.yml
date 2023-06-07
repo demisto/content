@@ -8,14 +8,12 @@ description: SecOps operations - Reflect and manage the Lumu Incidents either fr
 configuration:
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch every time
-  hidden: false
   name: max_fetch
   required: false
   type: 0
 - additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0

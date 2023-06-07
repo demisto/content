@@ -7985,7 +7985,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: false
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       isArray: false
       name: sync
@@ -8173,7 +8172,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: false
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       isArray: false
       name: sync
