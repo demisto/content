@@ -1,14 +1,14 @@
 def create_client():
     import os
-    from RecordedFuturePlaybookAlerts import Client, __version__
+    from RecordedFutureLists import Client, __version__
 
     base_url = 'https://api.recordedfuture.com/gw/xsoar/'
     verify_ssl = True
     token = os.environ.get('RF_TOKEN')
     headers = {
         'X-RFToken': token,
-        'X-RF-User-Agent': f"RecordedFuturePlaybookAlerts.py/{__version__} (Linux-5.13.0-1031-aws-x86_64-with) "
-        "XSOAR/2.4 RFClient/2.4 (Cortex_XSOAR_6.5.0)",
+        'X-RF-User-Agent': f"RecordedFutureLists.py/{__version__} (Linux-5.13.0-1031-aws-x86_64-with) "
+        f"XSOAR/{__version__} RFClient/{__version__} (Cortex_XSOAR_6.5.0)",
     }
 
     return Client(base_url=base_url, verify=verify_ssl, headers=headers, proxy=False)
@@ -120,7 +120,7 @@ class TestRFClient:
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
 
-        mock_return_error = mocker.patch('RecordedFuturePlaybookAlerts.return_error')
+        mock_return_error = mocker.patch('RecordedFutureLists.return_error')
 
         client = create_client()
 
@@ -171,7 +171,7 @@ class TestRFClient:
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
 
-        mocker.patch('RecordedFuturePlaybookAlerts.return_error')
+        mocker.patch('RecordedFutureLists.return_error')
 
         client = create_client()
 
@@ -210,7 +210,7 @@ class TestRFClient:
         assert result.raw_response == dict()
         assert result.readable_output == 'No results found.'
 
-    def test_fetch_incidents(self, mocker):
+    def test_list_search(self, mocker):
         import os
         import demistomock as demisto
 
@@ -219,48 +219,7 @@ class TestRFClient:
 
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
-        mock_params = {'param1': 'param1 value'}
-
-        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
-        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
-        mocker.patch.object(demisto, 'params', return_value=mock_params)
-
-        mock_last_run_dict = {"lastRun": "2022-08-31T12:12:20+00:00"}
-        mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run_dict)
-
-        client = create_client()
-
-        mock_call_response = {'response': {'data': 'mock response'}}
-        mock_call = mocker.patch.object(
-            client, '_call', return_value=mock_call_response
-        )
-
-        response = client.fetch_incidents()
-
-        mock_call.assert_called_once_with(
-            json_data={
-                'demisto_command': mock_command_name,
-                'demisto_args': mock_command_args,
-                'demisto_last_run': mock_last_run_dict,
-                'demisto_params': mock_params,
-            },
-            timeout=120,
-            url_suffix='/v2/playbook_alert/fetch',
-        )
-
-        assert response == mock_call_response
-
-    def test_playbook_alert_search(self, mocker):
-        import os
-        import demistomock as demisto
-
-        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
-        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
-
-        # Mock demisto command and args.
-        mock_command_name = 'command_name'
-        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+        mock_command_args = {'list_name': 'arg1_value', 'entity_types': 'arg2_value'}
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -272,120 +231,71 @@ class TestRFClient:
             client, '_call', return_value=mock_call_response
         )
 
-        response = client.search_playbook_alerts()
+        response = client.list_search()
 
         mock_call.assert_called_once_with(
-            demisto_args=mock_command_args, url_suffix='/v2/playbook_alert/search'
+            demisto_args=mock_command_args, url_suffix='/v2/lists/search'
         )
 
         assert response == mock_call_response
 
-    def test_playbook_alert_details_multi_input(self, mocker):
+    def test_entity_add_freetext(self, mocker):
         import os
         import demistomock as demisto
 
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
         os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
 
-        mock_command_name = 'command_name'
-        mock_alert_ids = "input1,mock_value"
-        mock_detail_sections = "input1,mock_value"
+        mocked_list_id = "mockvalue"
+        mocked_entity_type = "mock"
+        mocked_entity_ids = ""
+        mocked_freetext_names = "mockedmalwarename"
         mock_command_args = {
-            'alert_ids': mock_alert_ids,
-            'detail_sections': mock_detail_sections,
+            'list_id': mocked_list_id,
+            'entity_types': mocked_entity_type,
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
         }
-        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
 
         client = create_client()
 
-        mock_call_response = {"resonse": {"data": "mock respose"}}
+        mock_call_response = {'response': {'data': 'mock response'}}
         mock_call = mocker.patch.object(
             client, '_call', return_value=mock_call_response
         )
 
-        response = client.details_playbook_alerts()
-
+        response = client.entity_add()
         mock_call.assert_called_once_with(
-            demisto_args=mock_args_processed, url_suffix='/v2/playbook_alert/lookup'
+            demisto_args=mock_command_args,
+            url_suffix=f'/v2/lists/{mocked_list_id}/entities/add',
         )
 
         assert response == mock_call_response
 
-    def test_playbook_alert_update_multi_input(self, mocker):
+    def test_entity_add_ids(self, mocker):
         import os
         import demistomock as demisto
 
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
         os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
 
-        mock_command_name = 'command_name'
-        mock_alert_ids = "input1,input2"
-
-        mock_command_args = {'alert_ids': mock_alert_ids}
-        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
-
-        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
-        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
-
-        client = create_client()
-
-        mock_call_response = {"resonse": {"data": "mock respose"}}
-        mock_call = mocker.patch.object(
-            client, '_call', return_value=mock_call_response
-        )
-
-        response = client.update_playbook_alerts()
-
-        mock_call.assert_called_once_with(
-            demisto_args=mock_args_processed, url_suffix='/v2/playbook_alert/update'
-        )
-
-        assert response == mock_call_response
-
-    def test_playbook_alert_search_multi_input(self, mocker):
-        import os
-        import demistomock as demisto
-
-        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
-
-        mock_command_name = 'command_name'
-        mock_alert_ids = "ajdaojw,1woodaw"
-        mock_detail_sections = "sdadwa,adinhw0ijd"
+        mocked_list_id = "mockvalue"
+        mocked_entity_type = "mock"
+        mocked_entity_ids = "mockedmalwarename"
+        mocked_freetext_names = ""
         mock_command_args = {
-            'category': mock_alert_ids,
-            'playbook_alert_status': mock_detail_sections,
+            'list_id': mocked_list_id,
+            'entity_type': mocked_entity_type,
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
         }
-        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
-
-        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
-        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
-
-        client = create_client()
-
-        mock_call_response = {"resonse": {"data": "mock respose"}}
-        mock_call = mocker.patch.object(
-            client, '_call', return_value=mock_call_response
-        )
-
-        response = client.search_playbook_alerts()
-
-        mock_call.assert_called_once_with(
-            demisto_args=mock_args_processed, url_suffix='/v2/playbook_alert/search'
-        )
-
-        assert response == mock_call_response
-
-    def test_playbook_alert_details(self, mocker):
-        import os
-        import demistomock as demisto
-
-        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
-        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
-
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -397,24 +307,33 @@ class TestRFClient:
             client, '_call', return_value=mock_call_response
         )
 
-        response = client.details_playbook_alerts()
-
+        response = client.entity_add()
         mock_call.assert_called_once_with(
-            demisto_args=mock_command_args, url_suffix='/v2/playbook_alert/lookup'
+            demisto_args=mock_command_args,
+            url_suffix=f'/v2/lists/{mocked_list_id}/entities/add',
         )
 
         assert response == mock_call_response
 
-    def test_playbook_alert_update(self, mocker):
+    def test_entity_add_invalid_both(self, mocker):
         import os
         import demistomock as demisto
 
         # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
         os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
 
+        mocked_list_id = "mockvalue"
+        mocked_entity_type = "mock"
+        mocked_entity_ids = "mockedmalwarename"
+        mocked_freetext_names = "mockedmalwarename"
+        mock_command_args = {
+            'list_id': mocked_list_id,
+            'entity_type': mocked_entity_type,
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
+        }
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -422,29 +341,60 @@ class TestRFClient:
         client = create_client()
 
         mock_call_response = {'response': {'data': 'mock response'}}
-        mock_call = mocker.patch.object(
-            client, '_call', return_value=mock_call_response
-        )
+        mocker.patch.object(client, '_call', return_value=mock_call_response)
+        raised = False
+        try:
+            client.entity_add()
+        except ValueError:
+            raised = True
+        assert raised
 
-        response = client.update_playbook_alerts()
+    def test_entity_add_invalid_none(self, mocker):
+        import os
+        import demistomock as demisto
 
-        mock_call.assert_called_once_with(
-            demisto_args=mock_command_args, url_suffix='/v2/playbook_alert/update'
-        )
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
 
-        assert response == mock_call_response
+        mocked_list_id = "mockvalue"
+        mocked_entity_type = "mock"
+        mocked_entity_ids = ""
+        mocked_freetext_names = ""
+        mock_command_args = {
+            'list_id': mocked_list_id,
+            'entity_types': mocked_entity_type,
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
+        }
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mocker.patch.object(client, '_call', return_value=mock_call_response)
+
+        raised = False
+        try:
+            client.entity_add()
+        except ValueError:
+            raised = True
+        assert raised
 
 
 class TestActions:
     def test_init(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
+        from RecordedFutureLists import Actions
 
         mock_client = mocker.Mock()
         actions = Actions(mock_client)
         assert actions.client == mock_client
 
     def test_process_result_actions_404(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
+        from RecordedFutureLists import Actions
         from CommonServerPython import CommandResults
 
         mock_client = mocker.Mock()
@@ -457,7 +407,7 @@ class TestActions:
         assert result_actions == [response]
 
     def test_process_result_actions_response_is_not_dict(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
+        from RecordedFutureLists import Actions
 
         mock_client = mocker.Mock()
         actions = Actions(mock_client)
@@ -470,7 +420,7 @@ class TestActions:
     def test_process_result_actions_no_or_empty_result_actions_in_response(
         self, mocker
     ):
-        from RecordedFuturePlaybookAlerts import Actions
+        from RecordedFutureLists import Actions
 
         mock_client = mocker.Mock()
         actions = Actions(mock_client)
@@ -494,7 +444,7 @@ class TestActions:
         assert result_actions is None
 
     def test_process_result_actions_command_results_only(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions, CommandResults
+        from RecordedFutureLists import Actions, CommandResults
 
         mock_client = mocker.Mock()
         actions = Actions(mock_client)
@@ -527,195 +477,69 @@ class TestActions:
         assert r_a.readable_output == 'mock_readable_output'
         assert r_a.outputs_key_field == 'mock_outputs_key_field'
 
-    def test_fetch_incidents_with_attachment(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
-        import demistomock as demisto
-        import json
-        import CommonServerPython as csp
-
-        client = create_client()
-        screenshot_dict = {
-            "panel_evidence_summary": {
-                "screenshots": [
-                    {
-                        "image_id": "an_id",
-                        "base64": 'YWJhc2U2NHN0cmluZw==',
-                        "description": "vivid description of image",
-                    }
-                ]
-            }
-        }
-        mock_incidents_value = {
-            'name': 'incident_name',
-            "rawJSON": json.dumps(screenshot_dict),
-        }
-
-        mock_demisto_last_run_value = 'mock_demisto_last_run'
-
-        mock_client_fetch_incidents_response = {
-            'incidents': [mock_incidents_value],
-            'demisto_last_run': mock_demisto_last_run_value,
-        }
-
-        mock_client_fetch_incidents = mocker.patch.object(
-            client, 'fetch_incidents', return_value=mock_client_fetch_incidents_response
-        )
-
-        mock_demisto_incidents = mocker.patch.object(demisto, 'incidents')
-        mock_demisto_set_last_run = mocker.patch.object(demisto, 'setLastRun')
-        mock_file_result = mocker.patch.object(
-            csp,
-            'fileResult',
-            return_value={"File": "mockfilepath", "FileID": "mock_file_id"},
-        )
-
-        mock_incidents_value.update(
-            {
-                "attachment": {
-                    "description": "vivid description of image",
-                    "showMediaFile": True,
-                }.update(mock_file_result)
-            }
-        )
-        actions = Actions(client)
-
-        actions.fetch_incidents()
-
-        mock_client_fetch_incidents.assert_called_once_with()
-
-        mock_demisto_incidents.assert_called_once_with([mock_incidents_value])
-
-        mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
-
-    def test_fetch_incidents_with_incidents_present(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
-        import demistomock as demisto
-
-        client = create_client()
-
-        mock_incidents_value = [
-            {'mock_incident_key1': 'mock_incident_value1'},
-            {'mock_incident_key2': 'mock_incident_value2'},
-        ]
-
-        mock_demisto_last_run_value = 'mock_demisto_last_run'
-
-        mock_alerts_update_data_value = 'mock_alerts_update_data_value'
-
-        mock_client_fetch_incidents_response = {
-            'incidents': mock_incidents_value,
-            'demisto_last_run': mock_demisto_last_run_value,
-            'data': 'mock',
-            'alerts_update_data': mock_alerts_update_data_value,
-        }
-        mock_client_fetch_incidents = mocker.patch.object(
-            client, 'fetch_incidents', return_value=mock_client_fetch_incidents_response
-        )
-
-        mock_demisto_incidents = mocker.patch.object(demisto, 'incidents')
-        mock_demisto_set_last_run = mocker.patch.object(demisto, 'setLastRun')
-
-        actions = Actions(client)
-
-        actions.fetch_incidents()
-
-        mock_client_fetch_incidents.assert_called_once_with()
-
-        mock_demisto_incidents.assert_called_once_with(mock_incidents_value)
-        mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
-
-    def test_playbook_alert_details_command_with_result_actions(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
+    def test_list_search_command_without_result_actions(self, mocker):
+        from RecordedFutureLists import Actions
 
         client = create_client()
 
         mock_response = 'mock_response'
 
-        mock_client_playbook_alert_details = mocker.patch.object(
-            client, 'details_playbook_alerts', return_value=mock_response
+        mock_client_lists_list_search = mocker.patch.object(
+            client, 'list_search', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = (
-            'mock_process_result_actions_return_value'
-        )
+        mock_process_result_actions_return_value = None
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
             return_value=mock_process_result_actions_return_value,
         )
 
-        result = actions.playbook_alert_details_command()
+        actions.list_search_command()
 
-        mock_client_playbook_alert_details.assert_called_once_with()
+        mock_client_lists_list_search.assert_called_once_with()
 
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
-        # As there are some result actions - return those result actions.
+    def test_list_search_command_with_result_actions(self, mocker):
+        from RecordedFutureLists import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_lists_list_search = mocker.patch.object(
+            client, 'list_search', return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mocked_process_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value,
+        )
+
+        result = actions.list_search_command()
+
+        mock_client_lists_list_search.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
         assert result == mock_process_result_actions_return_value
 
-    def test_playbook_alert_details_command_without_result_actions(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
+    def test_entity_add_command_with_result_action(self, mocker):
+        from RecordedFutureLists import Actions
 
         client = create_client()
 
         mock_response = 'mock_response'
 
-        mock_client_playbook_alert_details = mocker.patch.object(
-            client, 'details_playbook_alerts', return_value=mock_response
-        )
-
-        actions = Actions(client)
-
-        mock_process_result_actions_return_value = None
-        mock_process_result_actions = mocker.patch.object(
-            actions,
-            '_process_result_actions',
-            return_value=mock_process_result_actions_return_value,
-        )
-
-        actions.playbook_alert_details_command()
-
-        mock_client_playbook_alert_details.assert_called_once_with()
-
-        mock_process_result_actions.assert_called_once_with(response=mock_response)
-
-    def test_playbook_alert_search_command_without_result_actions(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
-
-        client = create_client()
-
-        mock_response = 'mock_response'
-
-        mock_client_playbook_alert_search = mocker.patch.object(
-            client, 'search_playbook_alerts', return_value=mock_response
-        )
-
-        actions = Actions(client)
-
-        mock_process_result_actions_return_value = None
-        mock_process_result_actions = mocker.patch.object(
-            actions,
-            '_process_result_actions',
-            return_value=mock_process_result_actions_return_value,
-        )
-
-        actions.playbook_alert_search_command()
-
-        mock_client_playbook_alert_search.assert_called_once_with()
-
-        mock_process_result_actions.assert_called_once_with(response=mock_response)
-
-    def test_playbook_alert_update_command(self, mocker):
-        from RecordedFuturePlaybookAlerts import Actions
-
-        client = create_client()
-
-        mock_response = 'mock_response'
-
-        mock_client_alert_set_status = mocker.patch.object(
-            client, 'update_playbook_alerts', return_value=mock_response
+        mock_client_entity_add = mocker.patch.object(
+            client, 'entity_add', return_value=mock_response
         )
 
         actions = Actions(client)
@@ -729,16 +553,16 @@ class TestActions:
             return_value=mock_process_result_actions_return_value,
         )
 
-        result = actions.playbook_alert_update_command()
+        result = actions.entity_add_command()
 
-        mock_client_alert_set_status.assert_called_once_with()
+        mock_client_entity_add.assert_called_once_with()
 
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
         assert result == mock_process_result_actions_return_value
 
     def test_test_module(self, mocker):
-        import RecordedFuturePlaybookAlerts
+        import RecordedFutureLists
         import demistomock as demisto
         import platform
 
@@ -750,15 +574,13 @@ class TestActions:
             demisto, "params", return_value={"token": {"password": "mocktoken"}}
         )
         mocker.patch.object(platform, "platform", return_value="mock_platform")
-        mocker.patch.object(RecordedFuturePlaybookAlerts.Client, "whoami")
-        mocked_return_res = mocker.patch.object(
-            RecordedFuturePlaybookAlerts, "return_results"
-        )
-        RecordedFuturePlaybookAlerts.main()
+        mocker.patch.object(RecordedFutureLists.Client, "whoami")
+        mocked_return_res = mocker.patch.object(RecordedFutureLists, "return_results")
+        RecordedFutureLists.main()
         mocked_return_res.assert_called_with('ok')
 
     def test_test_module_with_boom(self, mocker):
-        import RecordedFuturePlaybookAlerts
+        import RecordedFutureLists
         import demistomock as demisto
         import platform
 
@@ -770,12 +592,10 @@ class TestActions:
             demisto, "params", return_value={"token": {"password": "mocktoken"}}
         )
         mocker.patch.object(platform, "platform", return_value="mock_platform")
-        mock_whoami = mocker.patch.object(RecordedFuturePlaybookAlerts.Client, "whoami")
+        mock_whoami = mocker.patch.object(RecordedFutureLists.Client, "whoami")
         mock_whoami.side_effect = Exception("Side effect triggered")
-        mocked_return_err = mocker.patch.object(
-            RecordedFuturePlaybookAlerts, "return_error"
-        )
-        RecordedFuturePlaybookAlerts.main()
+        mocked_return_err = mocker.patch.object(RecordedFutureLists, "return_error")
+        RecordedFutureLists.main()
         mocked_return_err.assert_called_with(
             message=(
                 f'Failed to execute {demisto.command()} command: Failed due to - '
