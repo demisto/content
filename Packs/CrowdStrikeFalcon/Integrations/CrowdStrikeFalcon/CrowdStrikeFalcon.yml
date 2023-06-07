@@ -3641,6 +3641,16 @@ script:
     - description: Maximum number of resources to return.
       name: limit
       required: false
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      required: false
+      defaultValue: '30'
+      hidden: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      required: false
+      defaultValue: '600'
+      hidden: true
     description: Retrieve ODS scan details.
     name: cs-falcon-ods-query-scan
     polling: true
@@ -4024,14 +4034,6 @@ script:
       description: the date and time when the detection event was last updated.
       type: Date
   - arguments:
-    - description: If to poll for results.
-      auto: PREDEFINED
-      name: wait_for_result
-      defaultValue: 'true'
-      predefined:
-      - 'true'
-      - 'false'
-      hidden: true
     - description: List of hosts to be scanned. "hosts" OR "host_groups" must be set.
       isArray: true
       name: hosts
@@ -4109,6 +4111,14 @@ script:
       - every other week
       - every 4 weeks
       - monthly
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      required: false
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      required: false
+      defaultValue: '600'
     description: Create an ODS scheduled scan or an ODS scan.
     name: cs-falcon-ods-create-scan
     polling: true

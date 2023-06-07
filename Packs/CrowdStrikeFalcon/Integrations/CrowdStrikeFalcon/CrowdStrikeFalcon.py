@@ -4767,7 +4767,12 @@ def get_ODS_scan_ids(args: dict) -> list[str] | None:
     return raw_response.get('resources')
 
 
-@polling_function('cs-falcon-ods-query-scan', poll_message='Scan underway...', polling_arg_name='wait_for_result')
+@polling_function(
+    'cs-falcon-ods-query-scan',
+    polling_arg_name='wait_for_result',
+    interval=arg_to_number(dict_safe_get(demisto.args(), ['interval_in_seconds'], 0, int)),
+    timeout=arg_to_number(dict_safe_get(demisto.args(), ['timeout_in_seconds'], 0, int)),
+)
 def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
     # call the query api if no ids given
     ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
@@ -5115,14 +5120,22 @@ def ods_create_scan(args: dict, is_scheduled: bool) -> CommandResults:
 
 
 def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
+
     result = ods_create_scan(args, is_scheduled=False)
 
-    id = result.outputs.get('id') if isinstance(result.outputs, dict) else None
+    scan_id = result.outputs.get('id') if isinstance(result.outputs, dict) else None
 
-    if not id:
+    if not scan_id:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
-    return cs_falcon_ODS_query_scans_command({'ids': id, 'wait_for_result': 'true'})
+    query_scan_args = {
+        'ids': scan_id,
+        'wait_for_result': True,
+        'interval_in_seconds': args.get('interval_in_seconds'),
+        'timeout_in_seconds': args.get('timeout_in_seconds'),
+    }
+
+    return cs_falcon_ODS_query_scans_command(query_scan_args)
 
 
 def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
