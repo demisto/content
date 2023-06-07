@@ -1690,3 +1690,217 @@ Lists all managed policies that are attached to the specified IAM user.
 #### Command Example
 ``` !aws-iam-get-user-login-profile userName=testUser```
 
+### aws-iam-put-role-policy
+
+***
+Adds or updates an inline policy document that is embedded in the specified IAM role.
+
+#### Base Command
+
+`aws-iam-put-role-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | The policy document. You must provide policies in JSON format in IAM. | Required | 
+| policyName | The name of the policy document. | Required | 
+| roleName | The name of the role to associate the policy with. | Required | 
+
+#### Human Readable Output
+
+### Policy {policy_name} was added to role {role_name}
+
+#### Context Output
+
+There is no context output for this command.
+### aws-iam-put-user-policy
+
+***
+Adds or updates an inline policy document that is embedded in the specified IAM user.
+
+#### Base Command
+
+`aws-iam-put-user-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | The policy document. You must provide policies in JSON format in IAM. | Required | 
+| policyName | The name of the policy document. | Required | 
+| userName | The name of the user to associate the policy with. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Policy {policy_name} was added to role {user_name}
+
+### aws-iam-put-group-policy
+
+***
+Adds or updates an inline policy document that is embedded in the specified IAM group.
+
+#### Base Command
+
+`aws-iam-put-group-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | The policy document. You must provide policies in JSON format in IAM. | Required | 
+| policyName | The name of the policy document. | Required | 
+| groupName | The name of the group to associate the policy with. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Policy {policy_name} was added to role {group_name}
+
+### aws-iam-tag-role
+
+***
+Adds one or more tags to an IAM role. The role can be a regular role or a service-linked role. If a tag with the same key name already exists, then that tag is overwritten with the new value.
+
+#### Base Command
+
+`aws-iam-tag-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the IAM role to which you want to add tags. | Required | 
+| tags | comma-separated list of Key:Value tags objects. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Added the following tags to role {role_name}
+|Key|Value|
+|---|---|
+| Key | Value |
+
+### aws-iam-tag-user
+
+***
+Adds one or more tags to an IAM user. If a tag with the same key name already exists, then that tag is overwritten with the new value.
+
+#### Base Command
+
+`aws-iam-tag-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the IAM user to which you want to add tags. | Required | 
+| tags | comma-separated list of Key:Value tags objects. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Added the following tags to user {user_name}
+|Key|Value|
+|---|---|
+| Key | Value |
+
+### aws-iam-untag-user
+
+***
+Removes the specified tags from the user.
+
+#### Base Command
+
+`aws-iam-untag-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the IAM role to which you want to untag. | Required | 
+| tagKeys | comma-separated list of tags keys. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Untagged the following tags from user {user_name}
+|Removed keys|
+|---|
+| Key1 |
+
+### aws-iam-untag-role
+
+***
+Removes the specified tags from the role.
+
+#### Base Command
+
+`aws-iam-untag-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the IAM role to which you want to untag. | Required | 
+| tagKeys | comma-separated list of tags keys. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+### Untagged the following tags from role {role_name}
+|Removed keys|
+|---|
+| Key1 |
+
+### aws-iam-get-access-key-last-used
+
+***
+Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and Region that were specified in the last request made with that key.
+
+#### Base Command
+
+`aws-iam-get-access-key-last-used`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| accessKeyId | The identifier of an access key. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.AccessKey.ID | string | The access key ID. | 
+| AWS.IAM.AccessKey.UserName | string | The username owning the given access key. | 
+| AWS.IAM.AccessKey.LastUsedServiceName | string | The name of the service last used the given access key. | 
+| AWS.IAM.AccessKey.LastUsedRegion | string | The name of the region where the given access key was last used in. | 
+| AWS.IAM.AccessKey.LastUsedDate | string | The date when the given access key was last used at. | 
+
+#### Human Readable Output
+
+### Found the following information about access key access_Key_Id
+|ID|UserName|LastUsedDate|LastUsedServiceName|LastUsedRegion|
+|---|---|---|---|---|
+| access_Key_Id | user_name | 2023-06-06T14:32:00 | test | Here |
+    

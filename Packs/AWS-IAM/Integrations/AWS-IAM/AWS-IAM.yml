@@ -2304,8 +2304,6 @@ script:
     - contextPath: AWS.IAM.Users.LoginProfile.PasswordResetRequired
       description: Specifies whether the user is required to set a new password on next sign-in.
       type: Boolean
-
-
   - arguments:
     - default: false
       description: The policy document. You must provide policies in JSON format in IAM.
@@ -2329,8 +2327,6 @@ script:
     description: Adds or updates an inline policy document that is embedded in the specified IAM role.
     execution: false
     name: aws-iam-put-role-policy
-    outputs:
-  
   - arguments:
     - default: false
       description: The policy document. You must provide policies in JSON format in IAM.
@@ -2354,8 +2350,6 @@ script:
     description: Adds or updates an inline policy document that is embedded in the specified IAM user.
     execution: false
     name: aws-iam-put-user-policy
-    outputs:
-    
   - arguments:
     - default: false
       description: The policy document. You must provide policies in JSON format in IAM.
@@ -2379,8 +2373,6 @@ script:
     description: Adds or updates an inline policy document that is embedded in the specified IAM group.
     execution: false
     name: aws-iam-put-group-policy
-    outputs:
-    
   - arguments:
     - default: false
       description: The name of the IAM role to which you want to add tags.
@@ -2389,7 +2381,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: comma-separated list of tags objects.
+      description: comma-separated list of Key:Value tags objects.
       isArray: true
       name: tags
       required: true
@@ -2398,8 +2390,6 @@ script:
     description: Adds one or more tags to an IAM role. The role can be a regular role or a service-linked role. If a tag with the same key name already exists, then that tag is overwritten with the new value.
     execution: false
     name: aws-iam-tag-role
-    outputs:
-    
   - arguments:
     - default: false
       description: The name of the IAM user to which you want to add tags.
@@ -2408,7 +2398,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: comma-separated list of tags objects.
+      description: comma-separated list of Key:Value tags objects.
       isArray: true
       name: tags
       required: true
@@ -2417,17 +2407,15 @@ script:
     description: Adds one or more tags to an IAM user. If a tag with the same key name already exists, then that tag is overwritten with the new value.
     execution: false
     name: aws-iam-tag-user
-    outputs:
-
   - arguments:
     - default: false
-      description: The name of the IAM user to which you want to add tags.
+      description: The name of the IAM role to which you want to untag.
       isArray: false
       name: userName
       required: true
       secret: false
     - default: false
-      description: comma-separated list of tags objects.
+      description: comma-separated list of tags keys.
       isArray: true
       name: tagKeys
       required: true
@@ -2436,17 +2424,15 @@ script:
     description: Removes the specified tags from the user.
     execution: false
     name: aws-iam-untag-user
-    outputs:
-
   - arguments:
     - default: false
-      description: The name of the IAM user to which you want to add tags.
+      description: The name of the IAM role to which you want to untag.
       isArray: false
-      name: userName
+      name: roleName
       required: true
       secret: false
     - default: false
-      description: comma-separated list of tags objects.
+      description: comma-separated list of tags keys.
       isArray: true
       name: tagKeys
       required: true
@@ -2455,9 +2441,6 @@ script:
     description: Removes the specified tags from the role.
     execution: false
     name: aws-iam-untag-role
-    outputs:
-  
-
   - arguments:
     - default: false
       description: The identifier of an access key.
@@ -2470,7 +2453,21 @@ script:
     execution: false
     name: aws-iam-get-access-key-last-used
     outputs:
-
+    - contextPath: AWS.IAM.AccessKey.ID
+      description: The access key ID.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.UserName
+      description: The username owning the given access key.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.LastUsedServiceName
+      description: The name of the service last used the given access key.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.LastUsedRegion
+      description: The name of the region where the given access key was last used in.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.LastUsedDate
+      description: The date when the given access key was last used at.
+      type: string
   dockerimage: demisto/boto3py3:1.0.0.62350
   feed: false
   isfetch: false

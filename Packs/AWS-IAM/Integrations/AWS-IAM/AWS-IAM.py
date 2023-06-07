@@ -1036,10 +1036,7 @@ def get_policy(args, aws_client):   # pragma: no cover
 
 def list_user_policies(args, aws_client):
     client = aws_client.aws_session(
-        service=SERVICE,
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
+        service=SERVICE
     )
     user_name = args.get('userName', "")
     marker = args.get('marker', None)
@@ -1079,10 +1076,7 @@ def list_user_policies(args, aws_client):
 
 def list_attached_user_policies(args, aws_client):
     client = aws_client.aws_session(
-        service=SERVICE,
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
+        service=SERVICE
     )
 
     user_name = args.get('userName')
@@ -1125,10 +1119,7 @@ def list_attached_user_policies(args, aws_client):
 
 def list_attached_group_policies(args, aws_client):
     client = aws_client.aws_session(
-        service=SERVICE,
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
+        service=SERVICE
     )
 
     group_name = args.get('groupName')
@@ -1171,10 +1162,7 @@ def list_attached_group_policies(args, aws_client):
 
 def get_user_login_profile(args, aws_client):
     client = aws_client.aws_session(
-        service=SERVICE,
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
+        service=SERVICE
     )
     user_name = args.get('userName')
     kwargs = {
@@ -1211,6 +1199,14 @@ def get_user_login_profile(args, aws_client):
 
 
 def put_role_policy_command(args, aws_client):
+    """
+    Add or change a policy entry for a given role.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
@@ -1225,17 +1221,27 @@ def put_role_policy_command(args, aws_client):
         'RoleName': role_name
     }
 
-    response = client.put_role_policy(**kwargs)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to role {role_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.put_role_policy(**kwargs)
+        human_readable = tableToMarkdown(f"Policy {policy_name} was added to role {role_name}", {})
+        return CommandResults(
+            raw_response=response,
+            readable_output=human_readable
+        )
     except Exception as e:
         raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
 def put_user_policy_command(args, aws_client):
+    """
+    Add or change a policy entry for a given user.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
@@ -1250,17 +1256,27 @@ def put_user_policy_command(args, aws_client):
         'UserName': user_name
     }
 
-    response = client.put_user_policy(**kwargs)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to user {user_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.put_user_policy(**kwargs)
+        human_readable = tableToMarkdown(f"Policy {policy_name} was added to user {user_name}", {})
+        return CommandResults(
+            raw_response=response,
+            readable_output=human_readable
+        )
     except Exception as e:
         raise DemistoException(f"Couldn't add policy {policy_name} was added to user {user_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
 def put_group_policy_command(args, aws_client):
+    """
+    Add or change a policy entry for a given group.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
@@ -1275,142 +1291,214 @@ def put_group_policy_command(args, aws_client):
         'GroupName': group_name
     }
 
-    response = client.put_group_policy(**kwargs)
-    print(response)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to group {group_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.put_group_policy(**kwargs)
+        human_readable = tableToMarkdown(f"Policy {policy_name} was added to group {group_name}", {})
+        return CommandResults(
+            raw_response=response,
+            readable_output=human_readable
+        )
     except Exception as e:
         raise DemistoException(f"Couldn't add policy {policy_name} was added to group {group_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
-
-
-
 def tag_role_command(args, aws_client):
+    """
+    Add the given tags to the given role.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
 
-    policy_document = args.get('policyDocument')
-    policy_name = args.get('policyName')
+    tags = create_tag_dicts_list(argToList(args.get('tags')))
     role_name = args.get('roleName')
 
     kwargs = {
-        'PolicyDocument': policy_document,
-        'PolicyName': policy_name,
-        'RoleName': role_name
+        'RoleName': role_name,
+        'Tags': tags
     }
 
-    response = client.put_role_policy(**kwargs)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to role {role_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.tag_role(**kwargs)
+        human_readable = tableToMarkdown(f"Added the following tags to role {role_name}", tags)
+        return CommandResults(
+            raw_response=response,
+            readable_output=human_readable
+        )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+        raise DemistoException(f"Couldn't add the following tags {tags} to role {role_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
 def tag_user_command(args, aws_client):
+    """
+    Add the given tags to the given user.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
 
-    policy_document = args.get('policyDocument')
-    policy_name = args.get('policyName')
-    role_name = args.get('roleName')
+    tags = create_tag_dicts_list(argToList(args.get('tags')))
+    user_name = args.get('userName')
 
     kwargs = {
-        'PolicyDocument': policy_document,
-        'PolicyName': policy_name,
-        'RoleName': role_name
+        'UserName': user_name,
+        'Tags': tags
     }
 
-    response = client.put_role_policy(**kwargs)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to role {role_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.tag_user(**kwargs)
+        human_readable = tableToMarkdown(f"Added the following tags to user {user_name}", tags)
+        return CommandResults(
+            raw_response=response,
+            readable_output=human_readable
+        )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+        raise DemistoException(f"Couldn't add the following tags {tags} to role {user_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
 def untag_user_command(args, aws_client):
+    """
+    Remove the given tags from the given user.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
 
-    policy_document = args.get('policyDocument')
-    policy_name = args.get('policyName')
-    role_name = args.get('roleName')
+    tags = argToList(args.get('tagKeys'))
+    user_name = args.get('userName')
 
     kwargs = {
-        'PolicyDocument': policy_document,
-        'PolicyName': policy_name,
-        'RoleName': role_name
+        'UserName': user_name,
+        'TagKeys': tags
     }
 
-    response = client.put_role_policy(**kwargs)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to role {role_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.untag_user(**kwargs)
+        human_readable = tableToMarkdown(f"Untagged the following tags from user {user_name}", tags, headers=["Removed keys"])
+        return CommandResults(
+            raw_response=response,
+            readable_output=human_readable
+        )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+        raise DemistoException(f"Couldn't untag the following tags {', '.join(tags)} from user {user_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
 def untag_role_command(args, aws_client):
+    """
+    Remove the given tags from the given role.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
 
-    policy_document = args.get('policyDocument')
-    policy_name = args.get('policyName')
+    tags = argToList(args.get('tagKeys'))
     role_name = args.get('roleName')
 
     kwargs = {
-        'PolicyDocument': policy_document,
-        'PolicyName': policy_name,
-        'RoleName': role_name
+        'RoleName': role_name,
+        'TagKeys': tags
     }
 
-    response = client.put_role_policy(**kwargs)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to role {role_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.untag_role(**kwargs)
+        human_readable = tableToMarkdown(f"Untagged the following tags from role {role_name}", tags, headers=["Removed keys"])
+        return CommandResults(
+            raw_response=response,
+            readable_output=human_readable
+        )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+        raise DemistoException(f"Couldn't untag the following tags {', '.join(tags)} from role {role_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
+def create_tag_dicts_list(tags):
+    """
+    Transform the given tags list to a list of dicts.
+    Args:
+        tags (list): The tags list where each entry is in the form of Key:value
+    Returns:
+        list: The transformed list.
+    """
+    try:
+        dict_tags = []
+        for tag in tags:
+            temp = tag.split(':')
+            dict_tags.append({"Key": temp[0], "Value": temp[1]})
+        return dict_tags
+    except Exception as e:
+        demisto.debug(f"encountered the following error in create_tag_dicts_list: {str(e)}")
+        raise DemistoException("Please make sure the tags argument is in the form of Key1:Value1,Key2:Value2.")
+
+
 def get_access_key_last_used_command(args, aws_client):
+    """
+    Retrieve information about the last used occasion of the given access key.
+    Args:
+        aws_client (AWSClient): The AWSClient client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, the ec, and the human readable section.
+    """
     client = aws_client.aws_session(
         service=SERVICE
     )
 
-    policy_document = args.get('policyDocument')
-    policy_name = args.get('policyName')
-    role_name = args.get('roleName')
+    access_key_id = args.get('accessKeyId')
 
     kwargs = {
-        'PolicyDocument': policy_document,
-        'PolicyName': policy_name,
-        'RoleName': role_name
+        'AccessKeyId': access_key_id
     }
 
-    response = client.put_role_policy(**kwargs)
     try:
-        if response.get('ResponseMetadata', {}).get('HTTPStatusCode', 400) == 200:
-            human_readable = f"Policy {policy_name} was added to role {role_name}"
-            return_outputs(human_readable, {}, response)
+        response = client.get_access_key_last_used(**kwargs)
+        access_key_last_used = response.get("AccessKeyLastUsed", {})
+        last_used = ""
+        if last_used := access_key_last_used.get("LastUsedDate", ""):
+            last_used = datetime.strftime(last_used, '%Y-%m-%dT%H:%M:%S')
+            response["AccessKeyLastUsed"]["LastUsedDate"] = last_used
+        data = {
+            "ID": access_key_id,
+            "UserName": response.get("UserName", ""),
+            "LastUsedServiceName": access_key_last_used.get("ServiceName", ""),
+            "LastUsedRegion": access_key_last_used.get("Region", ""),
+            "LastUsedDate": last_used
+        }
+        headers = ["ID", "UserName", "LastUsedDate", "LastUsedServiceName", "LastUsedRegion"]
+        human_readable = tableToMarkdown(f"Found the following information about access key {access_key_id}", data,
+                                         headers, removeNull=True)
+        return CommandResults(
+            outputs=createContext(data, removeNull=True),
+            outputs_prefix='AWS.IAM.AccessKey',
+            raw_response=response,
+            outputs_key_field='ID',
+            readable_output=human_readable
+        )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+        raise DemistoException(f"Couldn't get information about access key {access_key_id}"
                                f"\nencountered the following exception: {str(e)}")
 
 
@@ -1548,21 +1636,21 @@ def main():     # pragma: no cover
         elif command == 'aws-iam-get-user-login-profile':
             get_user_login_profile(args, aws_client)
         elif command == 'aws-iam-put-role-policy':
-            put_role_policy_command(args, aws_client)
+            return_results(put_role_policy_command(args, aws_client))
         elif command == 'aws-iam-put-user-policy':
-            put_user_policy_command(args, aws_client)
+            return_results(put_user_policy_command(args, aws_client))
         elif command == 'aws-iam-put-group-policy':
-            put_group_policy_command(args, aws_client)
+            return_results(put_group_policy_command(args, aws_client))
         elif command == 'aws-iam-tag-role':
-            tag_role_command(args, aws_client)
+            return_results(tag_role_command(args, aws_client))
         elif command == 'aws-iam-tag-user':
-            tag_user_command(args, aws_client)
+            return_results(tag_user_command(args, aws_client))
         elif command == 'aws-iam-untag-user':
-            untag_user_command(args, aws_client)
+            return_results(untag_user_command(args, aws_client))
         elif command == 'aws-iam-untag-role':
-            untag_role_command(args, aws_client)
+            return_results(untag_role_command(args, aws_client))
         elif command == 'aws-iam-get-access-key-last-used':
-            get_access_key_last_used_command(args, aws_client)
+            return_results(get_access_key_last_used_command(args, aws_client))
 
     except Exception as e:
         LOG(str(e))
