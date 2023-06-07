@@ -133,7 +133,7 @@ tasks:
       id: 495843d2-8753-4b91-8c33-7c924187ec54
       version: -1
       name: Search external service information
-      description: Get a list of all your external services filtered by the remote IP of the alert
+      description: Get a list of all your external services filtered by the remote IP of the alert.
       script: Cortex Xpanse|||asm-list-external-service
       type: regular
       iscommand: true
