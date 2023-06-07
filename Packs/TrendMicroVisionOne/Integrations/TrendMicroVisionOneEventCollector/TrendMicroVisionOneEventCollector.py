@@ -27,7 +27,7 @@ class LastRunLogsTimeFields:
 
 
 class LogTypes:
-    OBSERVED_ATTACK_TECHNIQUES = 'observed_attach_techniques'
+    OBSERVED_ATTACK_TECHNIQUES = 'observed_attack_techniques'
     WORKBENCH = 'workbench'
     SEARCH_DETECTIONS = 'search_detections'
     AUDIT = 'audit'

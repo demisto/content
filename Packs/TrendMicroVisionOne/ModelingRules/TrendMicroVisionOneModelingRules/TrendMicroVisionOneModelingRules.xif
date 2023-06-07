@@ -106,7 +106,7 @@ filter
     xdm.source.ipv4 = coalesce(arraymap(mDevice, if("@element" not contains ":", "@element", null)), arraymap(src, if("@element" contains ":", "@element", null)));
 
 filter
-    event_type in ("observed_attach_techniques")
+    event_type in ("observed_attack_techniques")
 | alter
     xdm.event.original_event_type = source,
     xdm.session_context_id = uuid,
