@@ -111,7 +111,7 @@ configuration:
   required: true
   type: 0
   section: Collect
-  additionalinfo: Ensure that you are actually logged in to this email, otherwise authentication and configuration may not work.
+  additionalinfo: Make sure you are logged in to this email during configuration and authentication, otherwise it will not work.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   required: true
