@@ -1088,7 +1088,7 @@ script:
     description: Checks the reputation of an app in Zimperium.
     execution: false
     name: file
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false
