@@ -558,9 +558,17 @@ def domain_report_output(domain, response_json):
 
     markdown = f"{markdown}\n {reputation_sources}"
 
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
     indicator = Common.Domain(
         domain=domain,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
