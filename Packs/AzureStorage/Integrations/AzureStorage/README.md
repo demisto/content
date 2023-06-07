@@ -848,3 +848,452 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+### azure-sql-subscriptions-list
+
+***
+Gets all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-sql-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureStorage.Subscription.id | String | The unique identifier of the Azure storage subscription. | 
+| AzureStorage.Subscription.authorizationSource | String | The source of authorization for the Azure storage subscription. | 
+| AzureStorage.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionId | String | The ID of the Azure storage subscription. | 
+| AzureStorage.Subscription.tenantId | String | The ID of the tenant associated with the Azure storage subscription. | 
+| AzureStorage.Subscription.displayName | String | The display name of the Azure storage subscription. | 
+| AzureStorage.Subscription.state | String | The current state of the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure storage subscription. | 
+| AzureStorage.Subscription.count.type | String | The type of the Azure storage subscription count. | 
+| AzureStorage.Subscription.count.value | Number | The value of the Azure storage subscription count. | 
+
+#### Command example
+```!azure-sql-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureStorage": {
+        "Subscription": [
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Access to Azure Active Directory",
+                "id": "/subscriptions/057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                },
+                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+            },
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Pay-As-You-Go",
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                },
+                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Storage Subscriptions list
+>|subscriptionId|tenantId|displayName|state|
+>|---|---|---|---|
+>| 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Access to Azure Active Directory | Enabled |
+>| 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Pay-As-You-Go | Enabled |
+
+### azure-sql-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-sql-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | A comma separated list of the subscription ID's, optional. Note: This field will override instance param 'Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!azure-sql-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureStorage": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto",
+                "location": "centralus",
+                "name": "demisto",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demisto"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/compute-integration",
+                "location": "eastus",
+                "name": "compute-integration",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/NetworkWatcherRG",
+                "location": "westeurope",
+                "name": "NetworkWatcherRG",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/echoteamsbot",
+                "location": "centralus",
+                "name": "echoteamsbot",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/testingteamsbot",
+                "location": "centralus",
+                "name": "testingteamsbot",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/socbot",
+                "location": "eastasia",
+                "name": "socbot",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg-backups",
+                "location": "westus",
+                "name": "us-east-rg-backups",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg",
+                "location": "eastus",
+                "name": "us-east-rg",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/xcloud",
+                "location": "westeurope",
+                "name": "xcloud",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MSDE",
+                "location": "westeurope",
+                "name": "MSDE",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WEU",
+                "location": "westeurope",
+                "name": "DefaultResourceGroup-WEU",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-test_group",
+                "location": "centralus",
+                "name": "aks-integration-test_group",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-tes_group",
+                "location": "centralus",
+                "name": "aks-integration-tes_group",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/XDR_Event_Hub_API_Automation",
+                "location": "centralus",
+                "name": "XDR_Event_Hub_API_Automation",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-CUS",
+                "location": "centralus",
+                "name": "DefaultResourceGroup-CUS",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration",
+                "location": "eastus",
+                "name": "sql-integration",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/ferrum-collector",
+                "location": "eastus",
+                "name": "ferrum-collector",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Name": "ferrum collector"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-EUS",
+                "location": "eastus",
+                "name": "DefaultResourceGroup-EUS",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/intune-xdr-eventhub",
+                "location": "eastus",
+                "name": "intune-xdr-eventhub",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Name": "intune-xdr-eventhub"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WUS",
+                "location": "westus",
+                "name": "DefaultResourceGroup-WUS",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration",
+                "location": "westus",
+                "name": "aks-integration",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/LogAnalyticsDefaultResources",
+                "location": "westus",
+                "name": "LogAnalyticsDefaultResources",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MC_aks-integration_aks-integration_westus",
+                "location": "westus",
+                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
+                "name": "MC_aks-integration_aks-integration_westus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "aks-managed-cluster-name": "aks-integration",
+                    "aks-managed-cluster-rg": "aks-integration",
+                    "type": "aks-slb-managed-outbound-ip"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Elastic_Search",
+                "location": "westus2",
+                "name": "Elastic_Search",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG",
+                "location": "westus2",
+                "name": "Purview-RG",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/managed-rg-demistodevpurview",
+                "location": "westus2",
+                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG/providers/Microsoft.Purview/accounts/demistodevpurview",
+                "name": "managed-rg-demistodevpurview",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Name": "demistodevpurview"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-es",
+                "location": "germanywestcentral",
+                "name": "demisto-es",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Azure_Firewall",
+                "location": "eastus",
+                "name": "Azure_Firewall",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/SecAndCompRG",
+                "location": "eastus",
+                "name": "SecAndCompRG",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2",
+                "location": "centralus",
+                "name": "demisto-sentinel2",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resource Groups List
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell-storage-eastus | eastus |  |
+>| demisto | centralus | Owner: Demisto |
+>| compute-integration | eastus |  |
+>| NetworkWatcherRG | westeurope |  |
+>| echoteamsbot | centralus |  |
+>| testingteamsbot | centralus |  |
+>| socbot | eastasia |  |
+>| us-east-rg-backups | westus |  |
+>| us-east-rg | eastus |  |
+>| xcloud | westeurope |  |
+>| MSDE | westeurope |  |
+>| DefaultResourceGroup-WEU | westeurope |  |
+>| aks-integration-test_group | centralus |  |
+>| aks-integration-tes_group | centralus |  |
+>| XDR_Event_Hub_API_Automation | centralus |  |
+>| DefaultResourceGroup-CUS | centralus |  |
+>| sql-integration | eastus |  |
+>| ferrum-collector | eastus | Name: ferrum collector |
+>| DefaultResourceGroup-EUS | eastus |  |
+>| intune-xdr-eventhub | eastus | Name: intune-xdr-eventhub |
+>| DefaultResourceGroup-WUS | westus |  |
+>| aks-integration | westus |  |
+>| LogAnalyticsDefaultResources | westus |  |
+>| MC_aks-integration_aks-integration_westus | westus | aks-managed-cluster-name: aks-integration<br/>aks-managed-cluster-rg: aks-integration<br/>type: aks-slb-managed-outbound-ip |
+>| Elastic_Search | westus2 |  |
+>| Purview-RG | westus2 |  |
+>| managed-rg-demistodevpurview | westus2 | Name: demistodevpurview |
+>| demisto-es | germanywestcentral |  |
+>| Azure_Firewall | eastus |  |
+>| SecAndCompRG | eastus |  |
+>| demisto-sentinel2 | centralus |  |
+
