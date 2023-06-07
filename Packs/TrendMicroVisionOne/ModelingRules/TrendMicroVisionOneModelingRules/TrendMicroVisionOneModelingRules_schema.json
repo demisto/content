@@ -217,7 +217,7 @@
          "is_array":false
       },
       "processPid":{
-         "type":"string",
+         "type":"int",
          "is_array":false
       },
       "processSigner":{
@@ -281,7 +281,7 @@
          "is_array":false
       },
       "severity":{
-         "type":"string",
+         "type":"int",
          "is_array":false
       },
       "description":{

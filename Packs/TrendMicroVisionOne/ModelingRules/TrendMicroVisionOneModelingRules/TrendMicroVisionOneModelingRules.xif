@@ -34,7 +34,7 @@ filter
     xdm.network.http.url = workbenchLink,
     xdm.source.application.name = alertProvider,
     xdm.event.original_event_type = model,
-    xdm.alert.severity = to_string(score),
+    xdm.alert.severity = score,
     xdm.event.log_level = severity,
     xdm.alert.description = description,
     xdm.alert.original_alert_id = matchedRulesIds,
@@ -123,7 +123,7 @@ filter
     xdm.source.process.executable.sha256 = json_extract_scalar(detail, "$.processFileHashSha256"),
     xdm.source.process.executable.md5 = json_extract_scalar(detail, "$.processFileHashMd5"),
     xdm.source.process.executable.size = to_number(json_extract_scalar(detail, "$.processFileSize")),
-    xdm.source.process.executable.file_type = json_extract_scalar(detail, "$.processTrueType"),
+    xdm.source.process.executable.file_type = to_number(json_extract_scalar(detail, "$.processTrueType")),
     xdm.target.file.path = json_extract_scalar(detail, "$.objectFilePath"),
     xdm.target.module.sha256 = json_extract_scalar(detail, "$.objectFileHashSha256"),
     xdm.target.module.md5 = json_extract_scalar(detail, "$.objectFileHashMd5"),
@@ -148,7 +148,7 @@ filter
     event_type in ("audit")
 | alter
     xdm.source.user.username = loggedUser,
-    xdm.source.user.groups = split(loggedRole, ","),
+    xdm.source.user.groups = split(loggedRole, "!"),
     xdm.source.zone = accessType,
     xdm.event.type = category,
     xdm.event.operation_sub_type = activity,
