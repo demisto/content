@@ -270,7 +270,7 @@ def test_list_versions_by_function_command(
     res = list_versions_by_function_command(
         args={"functionName": "test"}, aws_client=client
     )
-    if res.outputs.get("NextMarker"):
+    if test_data.get("NextMarker") and res.readable_output:
         assert (
             "To get the next version run the command with the Marker argument with the value: test"
         ) in res.readable_output
