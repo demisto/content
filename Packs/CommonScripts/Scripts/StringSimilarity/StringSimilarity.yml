@@ -21,7 +21,7 @@ args:
     x >1
   defaultValue: "0.1"
 outputs:
-- contextPath: similarityScore
+- contextPath: SimilarityScore
   description: Similarity score - a value between 1.0 if the sequences are identical,
     and 0.0 if they have nothing in common.
 scripttarget: 0

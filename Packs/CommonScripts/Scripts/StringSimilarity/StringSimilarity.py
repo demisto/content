@@ -10,16 +10,13 @@ def main():
 
     similarity_ratio = difflib.SequenceMatcher(None, first_string, second_string).ratio()
     if similarity_ratio >= similiarity_threshold:
-        results = {"string_A": first_string, "string_B": second_string, "similarityScore": similarity_ratio}
+        commandResults = CommandResults("StringSimilarity","SimilarityScore", {
+            "StringA": first_string,
+            "StringB": second_string,
+            "SimilarityScore": similarity_ratio
+        })
 
-        json_results = {
-            "EntryContext": {"StringSimilarity": results},
-            "Type": entryTypes['note'],
-            "ContentsFormat": formats['json'],
-            "Contents": results
-        }
-
-        return_results(json_results)
+        return_results(commandResults)
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
