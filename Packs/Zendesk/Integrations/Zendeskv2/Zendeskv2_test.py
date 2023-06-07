@@ -854,7 +854,11 @@ class TestFetchIncidents:
             ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
             ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
             mocker.patch.object(demisto, 'getLastRun', return_value=None)
-            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 10}, {'id': 20}])
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results',
+                                return_value=[{'id': 10}, {'id': 20}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
+            # mocker.patch('ZendeskClient.get_attachment_entries', return_value=[])
             demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
             demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
             zendesk_client.fetch_incidents({}, {})
@@ -871,6 +875,8 @@ class TestFetchIncidents:
             ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
             mocker.patch.object(demisto, 'getLastRun', return_value=None)
             mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 10}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
             demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
             demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
             zendesk_client.fetch_incidents({'max_fetch': 1}, {})
@@ -890,6 +896,8 @@ class TestFetchIncidents:
             ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
             mocker.patch.object(demisto, 'getLastRun', return_value=None)
             mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
             demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
             demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
             zendesk_client.fetch_incidents(
@@ -916,6 +924,8 @@ class TestFetchIncidents:
             ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
             mocker.patch.object(demisto, 'getLastRun', return_value=None)
             mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
             demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
             demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
             zendesk_client.fetch_incidents({'max_fetch': 1}, json.dumps({
@@ -933,6 +943,8 @@ class TestFetchIncidents:
             ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
             mocker.patch.object(demisto, 'getLastRun', return_value=None)
             mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
             demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
             demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
             zendesk_client.fetch_incidents({}, json.dumps({
@@ -946,3 +958,30 @@ class TestFetchIncidents:
             assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 'fetched_tickets': [10, 20], 'fetch_time': '2023-01-15T11:59:00Z'}
+
+        @freeze_time('2023-01-15T12:00:00Z')
+        def test_usual_fetch_with_attachment(self, mocker, zendesk_client, requests_mock):
+            ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
+            ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(demisto, 'getLastRun', return_value=None)
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
+            mocker.patch.object(zendesk_client, 'get_attachments_ids', return_value=[1234])
+            mocker.patch.object(zendesk_client, 'zendesk_attachment_get',
+                                return_value=['<CommandResults object at 0x7f35d0cd7400>',
+                                              {'Contents': '', 'ContentsFormat': 'text', 'Type': 9,
+                                               'File': 'TestFile.json',
+                                               'FileID': 'f57c064c-26e8-4042-b3e8-6cea0348c932'}])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries',
+                                return_value=[{'path': '77fe1c6d-3096-4f1c-80c7-4e7c8573d580',
+                                               'name': 'TestFile.json'}])
+            demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
+            zendesk_client.fetch_incidents({}, json.dumps({
+                "fetched_tickets": [10],
+                "fetch_time": "2023-01-12T12:00:00Z"
+            })
+            )
+            assert ticket_mock_10.call_count == 0
+            assert ticket_mock_20.called_once
+            assert demisto_incidents_mock.called_once()
+            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
+            assert demisto_incidents_mock.call_args[0][0][0]['attachment'] == [{'path': 'f57c064c-26e8-4042-b3e8-6cea0348c932', 'name': 'TestFile.json'}]

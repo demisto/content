@@ -860,7 +860,6 @@ class ZendeskClient(BaseClient):
 
         raise exception from None
 
-    # @staticmethod
     def _ticket_to_incident(self, ticket: Dict):
         ticket |= {
             'severity': PRIORITY_MAP.get(ticket['priority']),
@@ -874,7 +873,7 @@ class ZendeskClient(BaseClient):
             'rawJSON': json.dumps(ticket),
             'name': ticket['subject'],
             'occurred': ticket['created_at'],
-            'attachments': ZendeskClient.get_attachment_entries(self, ticket=ticket)
+            'attachment': ZendeskClient.get_attachment_entries(self, ticket=ticket)
         }
 
     @staticmethod
@@ -952,12 +951,22 @@ class ZendeskClient(BaseClient):
     def get_attachment_entries(self, ticket):
         attachments_ids = self.get_attachments_ids(ticket)
         attachments = []
+        file_names = []
         for attachment_id in attachments_ids:
             attachment = self.zendesk_attachment_get(attachment_id)
             attachment.pop(0)
-            attachments.append(attachment)
+            attachments.extend(attachment)
             demisto.debug(f'The fetched attachments for ID {attachment_id} - {attachments}')
-        return attachments
+
+            if isinstance(attachments, list):
+                for file_result in attachments:
+                    if file_result['Type'] == entryTypes['error']:
+                        raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                    file_names.append({
+                        'path': file_result.get('FileID', ''),
+                        'name': file_result.get('File', '')
+                    })
+        return file_names
 
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
         last_run = json.loads(lastRun or 'null') or demisto.getLastRun() or {}
@@ -977,11 +986,6 @@ class ZendeskClient(BaseClient):
         search_results_ids = list(map(lambda x: x['id'], search_results))
         filtered_search_results_ids = list(filter(lambda x: x not in fetched_tickets, search_results_ids))
         tickets = map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids)
-        # attachment_ids = map(self.get_attachments_ids, tickets)
-        # attachments = self.get_attachment_entries(map(self.get_attachments_ids, tickets))
-        # print(attachments)
-        # sys.exit(0)
-        # attachments = self.get_ticket_file_attachments()
         incidents = list(map(self._ticket_to_incident, tickets))
 
         demisto.incidents(incidents)
