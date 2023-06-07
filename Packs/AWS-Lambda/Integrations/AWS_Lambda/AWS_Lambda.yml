@@ -674,7 +674,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
     description: Returns the resource-based IAM policy for a function, version, or alias.
@@ -748,7 +748,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
     - default: false
@@ -912,7 +912,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
     - default: false
@@ -1001,7 +1001,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
     - default: false
@@ -1159,7 +1159,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
     - default: false
@@ -1211,7 +1211,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
       required: true
       name: functionName
     - default: false
