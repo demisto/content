@@ -255,29 +255,48 @@ def get_policy_command(args: dict[str, str], aws_client) -> CommandResults:
         CommandResults: An object containing the parsed policy as outputs, a readable output in Markdown format,
                         and relevant metadata.
     """
-    def parse_policy(data: dict[str, Any]) -> dict[str, str | None]:
-
-        statement: dict = policy.get('Statement', {})[0]
-        return {
-            "Version": policy.get('Version'),
-            "Id": policy.get('Id'),
-            "Sid": statement.get('Sid'),
-            "Effect": statement.get('Effect'),
-            "Action": statement.get('Action'),
-            "Resource": statement.get('Resource'),
-            "RevisionId": data.get('RevisionId')
-        }
-
+    def parse_response(data: dict[str, Any]) -> dict[str, str | None]:
+        policy: dict = data.get('Policy')
+        statements: dict = data.get('Statement', [])
+        if len(statements) == 1:
+            return {
+                "Sid": statements.get('Sid'),
+                "Effect": statements.get('Effect'),
+                "Action": statements.get('Action'),
+                "Resource": statements.get('Resource'),
+            }
+        else:
+            table_to_markdown = {
+                "Version": policy.get('Version'),
+                "Id": policy.get('Id'),
+                "Principal": policy.get('Principal'),
+                "RevisionId": data.get('RevisionId'),
+            }
+            statement_to_markdown = []
+            for statement in statements:
+                statement_to_markdown.append(
+                    {
+                        "Sid": statement.get('Sid'),
+                        "Effect": statement.get('Effect'),
+                        "Action": statement.get('Action'),
+                        "Resource": statement.get('Resource'),
+                    }
+                )
+            return (table_to_markdown, statement_to_markdown)
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
         kwargs.update({'qualifier': qualifier})
 
     response = aws_client.get_policy(**kwargs)
+
     policy = json.loads(response["Policy"])
+
     response["Policy"] = policy
     response.pop("ResponseMetadata", None)
-    parsed_policy = parse_policy(response)
-    table_for_markdown = tableToMarkdown(name="Policy", t=parsed_policy)
+
+    parsed_data , parsed_statement = parse_response(response)
+
+    table_for_markdown = tableToMarkdown(name="Policy", t=parsed_data)
 
     return CommandResults(
         outputs=response,

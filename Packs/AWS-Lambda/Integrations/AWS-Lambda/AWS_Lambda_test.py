@@ -42,9 +42,19 @@ class MockClient:
         (
             {
                 "Policy": '{"Version":"0000-00-00","Id":"dummy", \
-                "Statement":[{"Sid":"dummy","Effect":"Allow", \
-                "Principal":{"dummy":"dummy:dummy"}, \
-                "Action":"lambda:InvokeFunction","Resource":"dummy:country:00:function:dummy-function:0"}]}',
+                "Statement":[ \
+                    {\
+                        "Sid":"dummy","Effect":"Allow", \
+                        "Principal":{"dummy":"dummy:dummy"}, \
+                        "Action":"lambda:InvokeFunction", \
+                        "Resource":"dummy:country:00:function:dummy-function:0"} \
+                    { \
+                    "Sid":"dummy2","Effect":"Allow", \
+                    "Principal":{"dummy2":"dummy2:dummy2"}, \
+                    "Action":"lambda:InvokeFunction", \
+                    "Resource":"dummy2:country:00:function:dummy2-function:1"} \
+                    ] \
+                }',
                 "RevisionId": "00000-00000-00000-00000-00000",
                 "ResponseMetadata": {"string": "string"},
 
@@ -60,6 +70,13 @@ class MockClient:
                             "Principal": {"dummy": "dummy:dummy"},
                             "Action": "lambda:InvokeFunction",
                             "Resource": "dummy:country:00:function:dummy-function:0",
+                        },
+                        {
+                            "Sid": "dummy2",
+                            "Effect": "Allow",
+                            "Principal": {"dummy2": "dummy2:dummy2"},
+                            "Action": "lambda:InvokeFunction",
+                            "Resource": "dummy2:country:00:function:dummy2-function:1",
                         }
                     ],
                 },
