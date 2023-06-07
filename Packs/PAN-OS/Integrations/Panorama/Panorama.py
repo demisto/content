@@ -1,5 +1,4 @@
 from collections import defaultdict
-from functools import partial
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
 import enum
@@ -782,7 +781,6 @@ def panorama_test(fetch_params):
         raise e
     except Exception as exception_text:
         demisto.debug(f"Failed to create topology; topology commands will not work. {exception_text}")
-        pass
 
     return_results('ok')
 
@@ -3458,6 +3456,7 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 
 ''' Security Rules Managing '''
 
+
 def dict_recursive_get(dict_object: Any, keys: list = [], possible_keys: list = [], default_return_value: Any = None, return_type: type = None, recurse_lists: bool = True) -> Any:
     """Retrieves a value from a nested dictionary using a list of keys.
 
@@ -3479,28 +3478,27 @@ def dict_recursive_get(dict_object: Any, keys: list = [], possible_keys: list = 
 
     return_value = dict_object
 
-    for i, key in enumerate(keys+possible_keys):
+    for i, key in enumerate(keys + possible_keys):
         try:
             return_value = return_value[key]
         except (KeyError, TypeError, IndexError, AttributeError):
             if recurse_lists and isinstance(return_value, list):
-                
-                new_keys, new_possible_keys = keys[i:], possible_keys[max(i-len(keys), 0):]
-                
+
+                new_keys, new_possible_keys = keys[i:], possible_keys[max(i - len(keys), 0):]
+
                 sub_list = [
                     elem for item in return_value
                     if (elem := dict_recursive_get(
-                                    item, new_keys, new_possible_keys, default_return_value, return_type, recurse_lists
-                                    )) != default_return_value
+                        item, new_keys, new_possible_keys, default_return_value, return_type, recurse_lists
+                    )) != default_return_value
                 ] or default_return_value
-                
+
                 return sub_list
-            
-            
+
             if i < len(keys):
                 return_value = default_return_value
                 break
-        
+
     if return_type and not isinstance(return_value, return_type):
         return_value = default_return_value
 
@@ -3509,9 +3507,9 @@ def dict_recursive_get(dict_object: Any, keys: list = [], possible_keys: list = 
 
 def prettify_rule(rule: dict):
 
-    def rule_get(*path: str, possibles: list = [], from_dict: dict = rule, default_return_value=None, return_type = (str, list)):
-        return dict_recursive_get(from_dict, keys=list(path), possible_keys=possibles+['member', '#text'], default_return_value=default_return_value, return_type=return_type)
-    
+    def rule_get(*path: str, possibles: list = [], from_dict: dict = rule, default_return_value=None, return_type=(str, list)):
+        return dict_recursive_get(from_dict, keys=list(path), possible_keys=possibles + ['member', '#text'], default_return_value=default_return_value, return_type=return_type)
+
     pretty_rule: Dict[str, Any] = {
 
         'DeviceGroup': DEVICE_GROUP,
@@ -3525,12 +3523,12 @@ def prettify_rule(rule: dict):
         'NegateSource': rule_get('negate-source'),
         'SecurityProfileGroup': rule_get('profile-setting', 'group', return_type=str),
         'SecurityProfile': {
-                key: rule_get(from_dict=value)
-                for key, value in profiles.items()
-                if not str(key).startswith('@')
-            }
-            if (profiles := rule_get('profile-setting', 'profiles', return_type=dict, default_return_value={}))
-            else None,
+            key: rule_get(from_dict=value)
+            for key, value in profiles.items()
+            if not str(key).startswith('@')
+        }
+        if (profiles := rule_get('profile-setting', 'profiles', return_type=dict, default_return_value={}))
+        else None,
         'Target': {
             'devices': rule_get('target', 'devices', 'entry', '@name'),
             'negate': rule_get('target', 'negate'),
@@ -3555,7 +3553,7 @@ def prettify_rule(rule: dict):
             'Schedule': rule_get("schedule"),
             'QoSMarking': next(
                 (key for key in rule_get('qos', 'marking', return_type=dict, default_return_value={}).keys()
-                if not key.startswith('@')),
+                 if not key.startswith('@')),
                 None),
             'DisableServerResponseInspection': rule_get('option', 'disable-server-response-inspection'),
         }
@@ -3673,12 +3671,12 @@ def panorama_list_rules_command(args: dict):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
                                          ['Name', 'Location', 'Tags', 'Type',
-                                          'Source Zone', 'Source Address', 'Source User',
-                                          'Source Device', 'Destination Zone',
-                                          'Destination Address', 'Destination Device',
-                                          'Application', 'Service', 'Url Category',
-                                          'Action', 'Profiles', 'Profile Group', 'Options',
-                                          'Target'],
+                                          'From', 'Source', 'SourceUser',
+                                          'SourceDevice', 'To', 'Destination',
+                                          'DestinationDevice', 'Application',
+                                          'Service', 'CustomUrlCategory', 'Action',
+                                          'SecurityProfile', 'SecurityProfileGroup',
+                                          'Options', 'Target'],
                                          headerTransform=to_human_readable.get,
                                          removeNull=True),
         'EntryContext': {
@@ -8886,7 +8884,6 @@ class Topology:
             except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
                 demisto.debug(f"Failed to connected to {hostname}, {e}")
                 # If a device fails to respond, don't add it to the topology.
-                pass
 
         topology.username = username
         topology.password = password
