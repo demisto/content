@@ -1394,6 +1394,9 @@ script:
     - description: List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided.
       isArray: true
       name: host_groups
+    - description:  List of tags to apply to the indicator.
+      isArray: true
+      name: tags
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
