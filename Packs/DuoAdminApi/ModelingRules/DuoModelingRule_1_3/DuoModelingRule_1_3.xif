@@ -12,7 +12,7 @@ filter
 | alter
         xdm.source.host.hostname = json_extract_scalar(access_device, "$.hostname"),
         xdm.source.ipv4 = source_ipv4,
-        xdm.source.ipv6 = source_ipv6,
+        xdm.source.ipv6 = if(source_ipv4 = null, source_ipv6, null),
         xdm.source.location.city = json_extract_scalar(access_device, "$.location.city"),
         xdm.source.location.country = json_extract_scalar(access_device, "$.location.country"),
         xdm.source.location.region = json_extract_scalar(access_device, "$.location.state"),
@@ -47,7 +47,7 @@ filter
     xdm.target.user.upn = json_extract_scalar(description, "$.email"),
     xdm.auth.auth_method = json_extract_scalar(description, "$.factor"),
     xdm.source.ipv4 =  source_ipv4,
-    xdm.source.ipv6 =  source_ipv6,
+    xdm.source.ipv6 = if(source_ipv4 = null, source_ipv6, null),
     xdm.target.user.groups  = arraycreate(coalesce(json_extract_scalar(description, "$.role"),""));
 filter
     eventtype = "telephony"
