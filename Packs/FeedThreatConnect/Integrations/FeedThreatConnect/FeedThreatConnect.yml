@@ -40,11 +40,7 @@ configuration:
   required: false
   type: 0
   additionalinfo: A comma-separated list of owners to fetch indicators from.
-- additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. The determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, so only indicators that are
-    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds
-    are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
   hidden: true
@@ -60,10 +56,10 @@ configuration:
   type: 18
   required: false
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   defaultvalue: 'Bad'
   additionalinfo: Indicators from this integration instance will be marked with this reputation
   name: feedReputation
@@ -110,14 +106,12 @@ configuration:
   - Address
   additionalinfo: Fetch specific ThreatConnect indicator types. Default value is "All".
   defaultvalue: All
-  hidden: false
 - display: Group types
   name: group_type
   required: false
   type: 16
   additionalinfo: Fetch specific ThreatConnect group types. Default value is "All".
   defaultvalue: All
-  hidden: false
   options:
   - All
   - Attack Pattern
@@ -133,32 +127,27 @@ configuration:
   type: 8
   defaultvalue: 'true'
   additionalinfo: Fetch active only indicators when true. Default is "True".
-  hidden: false
 - display: Create Relationships
   name: createRelationships
   required: false
   type: 8
   additionalinfo: Fetch related indicators. Default is "False".
   defaultvalue: 'false'
-  hidden: false
 - additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
   display: Indicator Query
   name: indicator_query
   required: false
   type: 12
-  hidden: false
 - display: Confidence Threshold
   required: false
   type: 0
   additionalinfo: |
     Minimal confidence value to fetch indicators by (an integer between 0 to 100). Note: this parameter is not relevant for groups.
   name: confidence
-  hidden: false
   defaultvalue: 0
 - additionalinfo: |
     Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000). Note: this parameter is not relevant for groups.
   display: Threat Assess Score Threshold
-  hidden: false
   name: threat_assess_score
   required: false
   type: 0

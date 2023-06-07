@@ -15,6 +15,7 @@ This playbook does not use any integrations.
 ### Scripts
 
 * GridFieldSetup
+* Set
 * GetTime
 
 ### Commands
