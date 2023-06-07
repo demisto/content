@@ -7,6 +7,7 @@ import sys
 from codecs import encode, decode
 import socks
 import errno
+import ipwhois
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
 
@@ -7130,6 +7131,32 @@ dble_ext_str = "chirurgiens-dentistes.fr,in-addr.arpa,uk.net,za.org,mod.uk,org.z
                "chambagri.fr,gb.net,in.ua,notaires.fr,se.com,british-library.uk "
 dble_ext = dble_ext_str.split(",")
 
+# ipwhois exceptions to execution metrics attributes mapping
+# https://ipwhois.readthedocs.io/en/latest/ipwhois.html
+ipwhois_exception_mapping: Dict[type, str] = {
+
+    # General Errors
+    ipwhois.exceptions.WhoisLookupError: "general_error",
+    ipwhois.exceptions.ASNLookupError: "general_error",
+    ipwhois.exceptions.ASNOriginLookupError: "general_error",
+    ipwhois.exceptions.ASNRegistryError: "general_error",
+    ipwhois.exceptions.ASNParseError: "general_error",
+    ipwhois.exceptions.ASNRegistryError: "general_error",
+    ipwhois.exceptions.BaseIpwhoisException: "general_error",
+    urllib.error.HTTPError: "general_error",
+
+    # Service Errors
+    ipwhois.exceptions.BlacklistError: "service_error",
+    ipwhois.exceptions.HTTPLookupError: "connection_error",
+
+    # Connection Errors
+    ipwhois.exceptions.NetError: "connection_error",
+    
+    # Rate Limit Errors
+    ipwhois.exceptions.HTTPRateLimitError: "quota_error",
+    ipwhois.exceptions.IPDefinedError: "quota_error",
+    ipwhois.exceptions.WhoisRateLimitError: "quota_error",
+}
 
 def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
                   server_list=None, is_refer_server=False, is_recursive=True):
@@ -8462,15 +8489,14 @@ def get_whois_ip(ip,
                  rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
                  rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT):
     from urllib.request import build_opener, ProxyHandler
-    from ipwhois import IPWhois
     proxy_opener = None
     if demisto.params().get('proxy'):
         proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
         handler = ProxyHandler(proxies)
         proxy_opener = build_opener(handler)
-        ip_obj = IPWhois(ip, proxy_opener=proxy_opener)
+        ip_obj = ipwhois.IPWhois(ip, proxy_opener=proxy_opener)
     else:
-        ip_obj = IPWhois(ip)
+        ip_obj = ipwhois.IPWhois(ip)
 
     try:
         return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
