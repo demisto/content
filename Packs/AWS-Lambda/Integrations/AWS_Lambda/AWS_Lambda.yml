@@ -202,10 +202,10 @@ script:
       description: Environment variable key-value pairs.
       type: string
     - contextPath: AWS.Lambda.Functions.Configuration.Environment.Error.ErrorCode
-      description: The error code for environment variables that could not be applied. 
+      description: The error code for environment variables that could not be applied.
       type: string
     - contextPath: AWS.Lambda.Functions.Configuration.Environment.Error.Message
-      description: The error message for environment variables that could not be applied. 
+      description: The error message for environment variables that could not be applied.
       type: string
     - contextPath: AWS.Lambda.Functions.Configuration.KMSKeyArn
       description: The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK.
@@ -337,10 +337,10 @@ script:
       description: Environment variable key-value pairs.
       type: string
     - contextPath: AWS.Lambda.Functions.Environment.Error.ErrorCode
-      description: The error code for environment variables that could not be applied. 
+      description: The error code for environment variables that could not be applied.
       type: string
     - contextPath: AWS.Lambda.Functions.Environment.Error.Message
-      description: The error message for environment variables that could not be applied. 
+      description: The error message for environment variables that could not be applied.
       type: string
     - contextPath: AWS.Lambda.Functions.KMSKeyArn
       description: The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK.
@@ -1219,7 +1219,7 @@ script:
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
-  dockerimage: demisto/boto3py3:1.0.0.62527
+  dockerimage: demisto/boto3py3:1.0.0.62551
   isfetch: false
   runonce: false
   subtype: python3
