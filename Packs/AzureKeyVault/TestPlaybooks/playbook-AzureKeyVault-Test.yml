@@ -1,6 +1,5 @@
 id: playbook-AzureKeyVault-Test
-version: 33
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: playbook-AzureKeyVault-Test
 starttaskid: "0"
 tasks:
@@ -1521,4 +1520,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.0.1
+description: Testing Azure Key Vault integration

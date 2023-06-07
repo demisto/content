@@ -63,19 +63,19 @@ configuration:
   name: isFetchCredentials
   required: false
   type: 8
-  section: Connect
+  section: Collect
 - display: Key Vault names - comma seperated list of Key Vaults to fetch secrets from.
   hidden: false
   name: key_vaults
   required: false
   type: 0
-  section: Connect
+  section: Collect
 - display: Secret names - comma seperated list of secrets to fetch.
   hidden: false
   name: secrets
   required: false
   type: 0
-  section: Connect
+  section: Collect
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
@@ -318,12 +318,13 @@ script:
       required: false
       secret: false
     - name: subscription_id
-      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: "A comma separated list of the resource group names. Note: This field will override instance param ‘resource_group_name'."
+      description: "A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'."
+
       type: String
       isArray: true
       required: false
@@ -391,12 +392,12 @@ script:
       required: true
       secret: false
     - name: subscription_id
-      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: "A comma separated list of the resource group names. Note: This field will override instance param ‘resource_group_name'."
+      description: "A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
       isArray: true
       required: false
@@ -412,12 +413,12 @@ script:
       required: true
       secret: false
     - name: subscription_id
-      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: "The name of the resource group. Note: This field will override instance param ‘resource_group_name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
       isArray: false
       required: false
@@ -491,7 +492,7 @@ script:
       required: false
       secret: false
     - name: subscription_id
-      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
       type: String
       isArray: false
       required: false
@@ -660,12 +661,12 @@ script:
       required: false
       secret: false
     - name: subscription_id
-      description: "The subscription ID. Note: This field will override instance param ‘subscription_id'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: "A comma separated list of the resource group names. Note: This field will override instance param ‘resource_group_name'."
+      description: "A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
       isArray: true
       required: false
@@ -1139,8 +1140,7 @@ script:
     description: List all resource groups for a subscription.
     arguments:
     - name: subscription_id
-      description: "A comma separated list of the The subscription ID's. Note: Integration default subscription_id will be used unless argument provide."
-      required: false
+      description: "A comma-separated list of subscription IDs. Note: This argument will override the instance parameter ‘Subscription ID'."
       isArray: true
     - name: limit
       description: Limit on the number of resource groups to return. Default value is 50.
