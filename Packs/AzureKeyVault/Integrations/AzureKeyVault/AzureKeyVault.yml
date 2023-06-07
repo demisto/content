@@ -324,7 +324,6 @@ script:
       required: false
     - name: resource_group_name
       description: "A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'."
-
       type: String
       isArray: true
       required: false
