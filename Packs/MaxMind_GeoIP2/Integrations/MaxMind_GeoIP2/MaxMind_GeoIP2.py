@@ -4,9 +4,10 @@ from CommonServerUserPython import *
 import requests
 from collections import defaultdict
 from requests.auth import HTTPBasicAuth
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
 BASE_URL = demisto.params().get('url')
