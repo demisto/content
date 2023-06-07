@@ -84,7 +84,7 @@ filter
     xdm.alert.severity = cat,
     xdm.source.agent.version = arraystring(json_extract_array(component,  "$."), ","),
     xdm.source.process.name = coalesce(deviceProcessName, processName),
-    xdm.source.host.mac_addresses = coalesce(deviceMacAddress, endpointMacAddress, interestedMacAddress),
+    xdm.source.host.mac_addresses = coalesce(split(deviceMacAddress, "!"), split(endpointMacAddress, "!"), split(interestedMacAddress), "!"),
     xdm.target.host.hostname = dhost,
     xdm.source.user.domain = domainName,
     xdm.source.host.hostname = coalesce(endpointHostName, hostName),
