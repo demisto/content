@@ -1,9 +1,9 @@
 [MODEL: dataset = macos_ventura_raw]
 alter
-    get_hostname = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s\d{2}:\d{2}:\d{2}\s([^\s]+)"), ""),
-    get_process =  arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s\d{2}:\d{2}:\d{2}\s[^\s]+\s([^\[]+)"), ""),
-    get_pid = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s\d{2}:\d{2}:\d{2}\s[^\s]+\s[^\[]+\[([^\]]+)"), ""),
-    get_description = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s\d{2}:\d{2}:\d{2}\s[^\s]+\s[^\[]+\[[^\]]+\]:(.*)"), ""),
+    get_hostname = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s([^\s]+)"), ""),
+    get_process =  arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s[^\s]+\s([^\[]+)"), ""),
+    get_pid = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s[^\s]+\s[^\[]+\[([^\]]+)"), ""),
+    get_description = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s[^\s]+\s[^\[]+\[[^\]]+\]:(.*)"), ""),
     get_des_pid = arraystring(regextract(_raw_log, "pid[\s|=]+(\d+)"), ""),
     get_des_uid = arraystring(regextract(_raw_log, "uid[\s|=]+(\d+)"), ""),
     get_des_path = arraystring(regextract(_raw_log, "path[\s|=]+([^,]+)"), ""),
