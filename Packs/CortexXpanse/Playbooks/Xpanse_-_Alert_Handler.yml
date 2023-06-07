@@ -1,7 +1,7 @@
 id: Xpanse - Alert Handler
 version: -1
 name: Xpanse - Alert Handler
-description: Default Alert Handling for Xpanse Alerts
+description: Default alert handling for Cortex Xpanse alerts.
 starttaskid: "0"
 tasks:
   "0":

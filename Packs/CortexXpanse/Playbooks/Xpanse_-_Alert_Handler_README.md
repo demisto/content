@@ -1,4 +1,4 @@
-This playbook is the default handler for Xpanse Alerts which focuses primarily on enrichment.
+This playbook is the default handler for Cortex Xpanse alerts that focuses primarily on enrichment.
 
 ## Dependencies
 

@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* NMAP - Single Port Scan
+NMAP - Single Port Scan
 
 ### Integrations
 
@@ -14,7 +14,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GridFieldSetup
+GridFieldSetup
 
 ### Commands
 

@@ -6,11 +6,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* Cortex Xpanse
+Cortex Xpanse
 
 ### Scripts
 
-* GridFieldSetup
+GridFieldSetup
 
 ### Commands
 
@@ -25,7 +25,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name**                        | **Description**                                                                                                                                                                                                                                                                      | **Default Value** | **Required** |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  | --- |
 | Provider                        | The externally detected provider for the alert.                                                                                                                                                                                                                                      | ${incident.xpanseprovider} | Required |
-| IP                              | The External IP address associated with the alert.                                                                                                                                                                                                                                   | ${incident.xpanseip} | Required |
+| IP                              | The external IP address associated with the alert.                                                                                                                                                                                                                                   | ${incident.xpanseip} | Required |
 
 ## Playbook Outputs
 
