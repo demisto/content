@@ -1,4 +1,4 @@
-category: Utilities
+category: Vulnerability Management
 commonfields:
   id: QualysV2
   version: -1
@@ -8,6 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: "When using asset-tag commands, the official documentation recommends that the SERVER URL parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`. For more details see the integration documentation."
 - display: Username
   name: credentials
   required: true
@@ -2669,7 +2670,7 @@ script:
     description: Delete an existing asset tag.
     name: qualys-asset-tag-delete
 
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.11.61265
   runonce: false
   script: ''
   subtype: python3

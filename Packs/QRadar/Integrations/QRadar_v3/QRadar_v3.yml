@@ -41,7 +41,6 @@ configuration:
   section: Collect
 - defaultvalue: Fetch With All Events
   display: Fetch mode
-  hidden: false
   name: fetch_mode
   options:
   - Fetch Without Events
@@ -87,7 +86,6 @@ configuration:
   required: true
   additionalinfo: 'IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.'
   type: 15
-  hidden: false
   options:
   - IPs
   - IPs And Assets
@@ -106,7 +104,7 @@ configuration:
   defaultvalue: 'No Mirroring'
   display: Mirroring Options
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: mirror_options
   required: false
   type: 15
@@ -123,7 +121,7 @@ configuration:
   required: false
   type: 8
   hidden:
-    - marketplacev2
+  - marketplacev2
   section: Collect
   advanced: true
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
@@ -135,7 +133,7 @@ configuration:
   section: Collect
   advanced: true
   hidden:
-    - marketplacev2
+  - marketplacev2
 - display: Advanced Parameters
   name: adv_params
   type: 12
@@ -2646,7 +2644,6 @@ script:
     deprecated: false
     description: Get Source IPs
     execution: false
-    hidden: false
     name: qradar-ips-source-get
     outputs:
     - contextPath: QRadar.SourceIP.ID
@@ -2707,7 +2704,6 @@ script:
     deprecated: false
     description: Get Source IPs
     execution: false
-    hidden: false
     name: qradar-ips-local-destination-get
     outputs:
     - contextPath: QRadar.LocalDestinationIP.ID
@@ -2930,7 +2926,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   isremotesyncin: true

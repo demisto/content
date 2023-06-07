@@ -376,7 +376,7 @@
         "byFrom": "days",
         "byTo": "",
         "field": "",
-        "fromValue": 180,
+        "fromValue": 30,
         "toValue": null
     },
     "toDate": "0001-01-01T00:00:00Z",

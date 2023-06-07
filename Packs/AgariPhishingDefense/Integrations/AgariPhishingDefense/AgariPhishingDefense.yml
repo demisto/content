@@ -15,29 +15,22 @@ configuration:
   type: 4
 - additionalinfo: API Client Secret created in the User management UI.
   display: Secret Key
-  hidden: false
   name: apisecret
   required: true
   type: 4
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch every time
-  hidden: false
   name: max_fetch
   required: true
   type: 0
-- additionalinfo: The time range to consider for the initial data fetch. (<number>
-    <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
+- additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
   defaultvalue: 3 days
   display: First fetch time interval
-  hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Apply the filter to fetch policy events having actions such as "deliver",
-    "mark-spam", "move", "inbox", "delete", "none". Fetches all types of actions by
-    default.
+- additionalinfo: Apply the filter to fetch policy events having actions such as "deliver", "mark-spam", "move", "inbox", "delete", "none". Fetches all types of actions by default.
   display: Policy action taken
-  hidden: false
   name: fetch_policy_actions
   options:
   - deliver
@@ -48,22 +41,17 @@ configuration:
   - none
   required: false
   type: 15
-- additionalinfo: Exclude alerts while fetching policy events of type 'Message Alert'
-    or 'System Alert'.
+- additionalinfo: Exclude alerts while fetching policy events of type 'Message Alert' or 'System Alert'.
   defaultvalue: System Alert
   display: Exclude alerts
-  hidden: false
   name: exclude_alert_type
   options:
   - System Alert
   - Message Alert
   required: false
   type: 15
-- additionalinfo: "Syntax: field.operator(operand) {and/or field.operator(operand)}\
-    \ \n\nExample: created_at.after(2020-11-11T09:16:44Z) or id.eq(537557694)"
-  display: Fetches policy events as per the filter to limit the amount of data. Can
-    be applied to specific fields.
-  hidden: false
+- additionalinfo: "Syntax: field.operator(operand) {and/or field.operator(operand)} \n\nExample: created_at.after(2020-11-11T09:16:44Z) or id.eq(537557694)"
+  display: Fetches policy events as per the filter to limit the amount of data. Can be applied to specific fields.
   name: policy_filter
   required: false
   type: 12
@@ -77,17 +65,14 @@ configuration:
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
-description: Agari Phishing Defense stops phishing, BEC, and other identity deception
-  attacks that trick employees into harming your business.
+description: Agari Phishing Defense stops phishing, BEC, and other identity deception attacks that trick employees into harming your business.
 display: Agari Phishing Defense
 name: Agari Phishing Defense
 script:
@@ -116,9 +101,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The latest date time (UTC) a search should target (ISO 8601 format).\n\
-        Formats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample:\
-        \ 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
+      description: "The latest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
       isArray: false
       name: end_date
       required: false
@@ -131,29 +114,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-delimited string that specifies the field ordering to
-        be applied to the response. Example: created_at DESC, id ASC.'
+      description: 'A comma-delimited string that specifies the field ordering to be applied to the response. Example: created_at DESC, id ASC.'
       isArray: true
       name: sort
       required: false
       secret: false
     - default: false
-      description: A comma-delimited list of optional fields to add to the default
-        payload. Additional fields would add data in the entry context.
+      description: A comma-delimited list of optional fields to add to the default payload. Additional fields would add data in the entry context.
       isArray: true
       name: add_fields
       required: false
       secret: false
     - default: false
-      description: A comma-delimited list of fields to remove from the default payload.
-        Limited fields would return limited data in entry context.
+      description: A comma-delimited list of fields to remove from the default payload. Limited fields would return limited data in entry context.
       isArray: true
       name: rem_fields
       required: false
       secret: false
     - default: false
-      description: A comma-delimited list of fields to include in the payload. Limited
-        fields would return limited data in entry context.
+      description: A comma-delimited list of fields to include in the payload. Limited fields would return limited data in entry context.
       isArray: true
       name: fields
       required: false
@@ -178,8 +157,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Filter by policy action: ''deliver'', ''mark-spam'', ''move'',
-        ''inbox'', ''delete'' and ''none''.'
+      description: 'Filter by policy action: ''deliver'', ''mark-spam'', ''move'', ''inbox'', ''delete'' and ''none''.'
       isArray: false
       name: policy_action
       predefined:
@@ -225,38 +203,31 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: "The earliest date time (UTC) a search should target (ISO 8601\
-        \ format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\n\
-        Example: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
+      description: "The earliest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: "The latest date time (UTC) a search should target (ISO 8601 format).\n\
-        Formats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample:\
-        \ 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
+      description: "The latest date time (UTC) a search should target (ISO 8601 format).\nFormats accepted: YYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days\nN hours\nExample: 2020-05-01 \n2020-05-01T00:00:00\n2 days\n5 hours."
       isArray: false
       name: end_date
       required: false
       secret: false
     - default: false
-      description: A comma-delimited list of optional fields to add to the default
-        payload. Additional fields would add data in the entry context.
+      description: A comma-delimited list of optional fields to add to the default payload. Additional fields would add data in the entry context.
       isArray: true
       name: add_fields
       required: false
       secret: false
     - default: false
-      description: A comma-delimited list of fields to remove from the default payload.
-        Limited fields would return limited data in entry context.
+      description: A comma-delimited list of fields to remove from the default payload. Limited fields would return limited data in entry context.
       isArray: true
       name: rem_fields
       required: false
       secret: false
     - default: false
-      description: A comma-delimited list of fields to include in the payload. Limited
-        fields would return limited data in entry context.
+      description: A comma-delimited list of fields to include in the payload. Limited fields would return limited data in entry context.
       isArray: true
       name: fields
       required: false
@@ -276,8 +247,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-delimited string that specifies the field ordering to be
-        applied to the response.
+      description: A comma-delimited string that specifies the field ordering to be applied to the response.
       isArray: true
       name: sort
       required: false
@@ -422,16 +392,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The primary identifier to remediate a message (UUID). To retrieve
-        the ID execute the apd-list-message-data command.
+      description: The primary identifier to remediate a message (UUID). To retrieve the ID execute the apd-list-message-data command.
       isArray: false
       name: id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An operation to remediate a message. Remediation operation is either
-        'delete' or 'move'.
+      description: An operation to remediate a message. Remediation operation is either 'delete' or 'move'.
       isArray: false
       name: operation
       predefined:
@@ -443,7 +411,7 @@ script:
     description: Remediate suspected message.
     execution: false
     name: apd-remediate-message
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.58677
   feed: false
   isfetch: true
   longRunning: false

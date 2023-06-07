@@ -159,6 +159,20 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     if str(result.reason) == 'Not Found':
         raise NotFoundError('Not Found.')
 
+    # invalid argument
+    if result.status_code == 421:
+        try:
+            error_message = json.loads(xml2json(result.text))
+            error_message = error_message.get('error', {}).get('error-message')
+        except Exception:
+            raise Exception(f'Failed to parse response to json. response: {result.text}')
+
+        demisto.results({
+            'Type': entryTypes["error"],
+            'Contents': error_message,
+            'ContentsFormat': formats['text']
+        })
+
     if result.status_code < 200 or result.status_code >= 300:
         if str(result.status_code) in ERROR_DICT:
             if result.status_code == 418 and FILE_TYPE_SUPPRESS_ERROR:

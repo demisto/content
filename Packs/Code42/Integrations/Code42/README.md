@@ -635,6 +635,30 @@ List all users who have been explicitly added to a given watchlist.
 | Code42.WatchlistUsers.Username | string | The username on the watchlist. | 
 | Code42.WatchlistUsers.AddedTime | datetime | The datetime the user was added to the watchlist. | 
 
+### code42-get-user-risk-profile
+
+***
+Get the risk profile details for a given user.
+
+#### Base Command
+
+`code42-user-get-risk-profile`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The user to get risk profile for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Code42.UserRiskProfiles.Username | string | The username. | 
+| Code42.UserRiskProfiles.StartDate | date | The startDate value of the UserRiskProfile. | 
+| Code42.UserRiskProfiles.EndDate | date | The startDate value of the UserRiskProfile. | 
+| Code42.UserRiskProfiles.Notes | string | The notes value of the UserRiskProfile. | 
+
 ### code42-user-update-risk-profile
 
 ***

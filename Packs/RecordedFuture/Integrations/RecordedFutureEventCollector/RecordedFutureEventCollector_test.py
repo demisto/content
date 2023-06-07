@@ -64,28 +64,26 @@ def test_get_events():
 def test_fetch_events(mocker):
     from RecordedFutureEventCollector import Client, fetch_events, demisto
     client = Client(BASE_URL)
-    mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_efect=mock_set_last_run)
 
     with requests_mock.Mocker() as m:
         first_mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/first_fetch.json'))
 
-        mock_events = fetch_events(client, limit=2, last_run=arg_to_datetime('3 days').strftime(DATE_FORMAT))
+        mock_events, next_last_run = fetch_events(client, limit=2, last_run=arg_to_datetime('3 days').strftime(DATE_FORMAT))
 
     assert len(mock_events) == 2
-    assert mock_last_run.call_args[0][0] == {'last_run_ids': ['333333'], 'last_run_time': '2023-02-20T05:04:19'}
+    assert next_last_run == {'last_run_ids': ['333333'], 'last_run_time': '2023-02-20T05:04:19'}
     assert first_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-18T00:00:00.000000Z,]'
 
-    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run.call_args[0][0])
-    last_run_time = mock_last_run.call_args[0][0].get('last_run_time')
-    mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_efect=mock_set_last_run)
+    mocker.patch.object(demisto, 'getLastRun', return_value=next_last_run)
+    last_run_time = next_last_run.get('last_run_time')
 
     with requests_mock.Mocker() as m:
         second_mock_request = m.get(f'{BASE_URL}/alert/search', json=util_load_json('test_data/second_fetch.json'))
 
-        mock_events = fetch_events(client, limit=2, last_run=last_run_time)
+        mock_events, next_last_run = fetch_events(client, limit=2, last_run=last_run_time)
 
     assert len(mock_events) == 1
-    assert mock_last_run.call_args[0][0] == {'last_run_ids': ['555555'], 'last_run_time': '2023-02-20T05:04:24'}
+    assert next_last_run == {'last_run_ids': ['555555'], 'last_run_time': '2023-02-20T05:04:24'}
     assert second_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-20T05:04:19,]'
 
 

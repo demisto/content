@@ -9,7 +9,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Generic Feed"
+    ],
     "created": "2020-03-09T16:04:45Z",
     "useCases": [],
     "keywords": [

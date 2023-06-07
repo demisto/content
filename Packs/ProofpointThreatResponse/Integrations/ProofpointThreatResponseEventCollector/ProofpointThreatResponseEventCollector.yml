@@ -64,7 +64,6 @@ configuration:
   advanced: true
 - additionalinfo: You can find this value by navigating to Sources > JSON event source > POST URL.
   display: POST URL of the JSON alert source.
-  hidden: false
   name: post_url_id
   required: false
   type: 0
@@ -164,7 +163,7 @@ script:
   subtype: python3
   type: python
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.9.44472
+  dockerimage: demisto/python3:3.10.11.56082
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0

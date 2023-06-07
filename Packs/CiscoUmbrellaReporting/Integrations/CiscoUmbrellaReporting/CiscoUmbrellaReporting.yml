@@ -6,7 +6,6 @@ configuration:
 - additionalinfo: Cisco Umbrella Reporting API base URL.
   defaultvalue: https://reports.api.umbrella.com
   display: API URL
-  hidden: false
   name: api_url
   required: true
   type: 0
@@ -328,8 +327,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: Specify the type of traffic. By default, all supported traffic
-        types are included.
+      description: Specify the type of traffic. By default, all supported traffic types are included.
       isArray: false
       name: traffic_type
       predefined:
@@ -2073,7 +2071,7 @@ script:
     - contextPath: UmbrellaReporting.SignatureListSummary.signatures.id
       description: Signature ID.
       type: Number
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

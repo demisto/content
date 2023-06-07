@@ -1,0 +1,324 @@
+id: Close Related XSOAR and Incydr Incidents
+version: -1
+fromversion: "6.8.0"
+name: Close Related XSOAR and Incydr Incidents
+description: Checks for open XSOAR incidents associated with Incydr alerts and passes them to the Check Incydr Status and Close XSOAR Incident playbook.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f0041a7a-fb13-4309-8293-b782ac570ff6
+    type: start
+    task:
+      id: f0041a7a-fb13-4309-8293-b782ac570ff6
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 10a6bdba-bb1b-4378-8313-d501655b7986
+    type: regular
+    task:
+      id: 10a6bdba-bb1b-4378-8313-d501655b7986
+      version: -1
+      name: Get Active XSOAR Incidents for Incydr Alerts
+      description: |-
+        Searches Demisto incidents.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: Incidents=.Contents.data.[]={"xsoar_id":val.id, "incydr_id":val.CustomFields.code42alertid}
+      ignore-outputs:
+        simple: "true"
+      query:
+        simple: sourceBrand:Code42 and status:Active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7bca4d43-d432-4d70-84ae-dd5d8d86cfcc
+    type: regular
+    task:
+      id: 7bca4d43-d432-4d70-84ae-dd5d8d86cfcc
+      version: -1
+      name: Close Job Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      closeNotes:
+        simple: Closed any XSOAR incidents related to closed Incydr alerts.
+      closeReason:
+        simple: Done
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 38dde4f8-d072-4a6a-8535-d6820c8e03b2
+    type: title
+    task:
+      id: 38dde4f8-d072-4a6a-8535-d6820c8e03b2
+      version: -1
+      name: Playbook Complete
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 852b2165-853a-4222-8973-3f2289457d4d
+    type: condition
+    task:
+      id: 852b2165-853a-4222-8973-3f2289457d4d
+      version: -1
+      name: Are There Open XSOAR Incidents for Incydr Alerts?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Incidents
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0f12c7ab-5e51-433b-8944-61a554fc681e
+    type: regular
+    task:
+      id: 0f12c7ab-5e51-433b-8944-61a554fc681e
+      version: -1
+      name: Set "No Open Incidents" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: No open XSOAR incidents for Incydr alerts.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 40cecf13-c86e-4b20-8781-96b7c1303591
+    type: regular
+    task:
+      id: 40cecf13-c86e-4b20-8781-96b7c1303591
+      version: -1
+      name: Write Log to Incident War Room
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${Log}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5b81bfbb-0a60-4336-881a-9ca18246c1bf
+    type: playbook
+    task:
+      id: 5b81bfbb-0a60-4336-881a-9ca18246c1bf
+      version: -1
+      name: Check Incydr Status and Close XSOAR Incident
+      description: Loops through open Palo Alto XSOAR incidents for Code42 Incydr alerts and closes XSOAR incidents that were created from dismissed Incydr alerts.
+      playbookName: Check Incydr Status and Close XSOAR Incident
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      incydr_id:
+        simple: ${Incidents.incydr_id}
+      xsoar_id:
+        simple: ${Incidents.xsoar_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 840,
+        "x": -180,
+        "y": 0
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

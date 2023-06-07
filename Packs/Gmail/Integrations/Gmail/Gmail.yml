@@ -231,7 +231,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -254,7 +254,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -936,7 +936,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to delete.
+      description: The ID of the email to delete. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -1066,7 +1066,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -1168,7 +1168,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -1758,6 +1758,27 @@ script:
       name: templateParams
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Text
+      description: Whether message response body type is text or HTML.
+      isArray: false
+      name: bodyType
+      predefined:
+      - HTML
+      - Text
+      required: false
+      secret: false
+    - default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      name: renderBody
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Sends mail using Gmail.
     execution: false
@@ -1907,6 +1928,23 @@ script:
         'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'
       isArray: false
       name: templateParams
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Text
+      description: Whether message response body type is text or HTML.
+      isArray: false
+      name: bodyType
+      predefined:
+      - HTML
+      - Text
+      required: false
+      secret: false
+    - default: false
+      description: Indicates whether to render the email body
+      isArray: false
+      name: renderBody
       required: false
       secret: false
     deprecated: false
@@ -2278,7 +2316,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.49153
+  dockerimage: demisto/google-api-py3:1.0.0.61016
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -24,7 +24,6 @@ configuration:
   type: 15
 - defaultvalue: '1'
   display: Database refresh interval (number of hours to wait between each loading)
-  hidden: false
   name: fetchIntervalHours
   required: false
   type: 0
@@ -36,8 +35,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: PhishTank is a free community site where anyone can submit, verify, track,
-  and share phishing data.
+description: PhishTank is a free community site where anyone can submit, verify, track, and share phishing data.
 display: PhishTank v2
 name: PhishTank V2
 script:
@@ -80,16 +78,14 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
   - deprecated: false
-    description: Reloads the PhishTank downloadable database. PhishTank database is
-      an up to date phishing detection file (updated hourly) .
+    description: Reloads the PhishTank downloadable database. PhishTank database is an up to date phishing detection file (updated hourly) .
     execution: false
     name: phishtank-reload
   - deprecated: false
-    description: Shows the status (timestamp) of the last time that PhishTank database
-      was loaded.
+    description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
     execution: false
     name: phishtank-status
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false
@@ -98,7 +94,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultEnabled: false
 tests:
 - PhishTank Testing
 fromversion: 5.0.0

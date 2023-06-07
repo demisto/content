@@ -2447,6 +2447,13 @@ script:
       name: confidence
       required: false
       secret: false
+    - default: false
+      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence
+        entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
+      isArray: false
+      name: source_confidence_weight
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: private
@@ -2581,7 +2588,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set source_confidence_ weight to 100.
+      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence
+        entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
       isArray: false
       name: source_confidence_weight
       required: false
@@ -7291,7 +7299,7 @@ script:
     execution: false
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
-  dockerimage: demisto/py3-tools:1.0.0.54695
+  dockerimage: demisto/py3-tools:1.0.0.61931
   feed: false
   isfetch: false
   longRunning: false

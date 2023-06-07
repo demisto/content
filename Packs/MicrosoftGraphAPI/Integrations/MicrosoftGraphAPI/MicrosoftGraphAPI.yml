@@ -47,10 +47,7 @@ configuration:
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   section: Connect
   advanced: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -68,7 +65,6 @@ configuration:
 - additionalinfo: Azure AD endpoint associated with a national cloud.
   defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   required: false
   type: 15
@@ -84,7 +80,6 @@ configuration:
   type: 12
   additionalinfo: A space-separated list of scopes that you want to consent to.
   defaultvalue: User.Read
-  hidden: false
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
@@ -182,7 +177,7 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
-  dockerimage: demisto/crypto:1.0.0.54987
+  dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false
   longRunning: false
