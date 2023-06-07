@@ -25,7 +25,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated. Use GitLab v2 in GitLab Pack instead.
-display: GitLab (Deprecated) 
+display: GitLab (Deprecated)
 name: GitLab
 script:
   commands:
@@ -1017,7 +1017,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: false
       description: 'Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false".'
       isArray: false
       name: create_file_from_content

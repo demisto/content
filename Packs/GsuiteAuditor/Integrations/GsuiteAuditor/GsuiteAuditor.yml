@@ -4,7 +4,6 @@ commonfields:
   version: -1
 configuration:
 - display: Admin email
-  hidden: false
   displaypassword: User's Service Account JSON
   name: credentials
   required: false
@@ -17,17 +16,14 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: G Suite Auditor is an integration that receives Audit logs from G Suite's
-  different applications - admin, drive, calender, and more.
+description: G Suite Auditor is an integration that receives Audit logs from G Suite's different applications - admin, drive, calender, and more.
 display: G Suite Auditor
 name: GSuiteAuditor
 script:
   commands:
   - arguments:
     - default: false
-      description: Profile ID or the user email for which the data should be filtered.
-        Can be 'all' for all information, or 'userKey' for a user's unique Google
-        Workspace profile ID or their primary email address.
+      description: Profile ID or the user email for which the data should be filtered. Can be 'all' for all information, or 'userKey' for a user's unique Google Workspace profile ID or their primary email address.
       isArray: false
       name: user_key
       required: false
@@ -62,8 +58,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the event being queried. For a list of event names
-        for each application, see the integration documentation.
+      description: The name of the event being queried. For a list of event names for each application, see the integration documentation.
       isArray: false
       name: event_name
       required: false
@@ -78,18 +73,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of the organizational unit to report on. Activity records will
-        be shown only for users who belong to the specified organizational unit.
+      description: ID of the organizational unit to report on. Activity records will be shown only for users who belong to the specified organizational unit.
       isArray: false
       name: org_unit_id
       required: false
       secret: false
     - default: false
-      description: "Comma-separated group IDs on which user activities are filtered.\
-        \ \nThe response will contain activities for only those users who are a part\
-        \ of \nat least one of the group IDs mentioned here. For example: \"id:abc123,id:xyz456\"\
-        .\nTo retrieve a group ID, use the 'gsuite-get-group' command in the 'G Suite\
-        \ Admin' Pack."
+      description: "Comma-separated group IDs on which user activities are filtered. \nThe response will contain activities for only those users who are a part of \nat least one of the group IDs mentioned here. For example: \"id:abc123,id:xyz456\".\nTo retrieve a group ID, use the 'gsuite-get-group' command in the 'G Suite Admin' Pack."
       isArray: false
       name: group_id
       required: false
@@ -101,15 +91,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Sets the beginning of the time range shown in the report. For example
-        - 2010-10-28T10:26:35.000Z.
+      description: Sets the beginning of the time range shown in the report. For example - 2010-10-28T10:26:35.000Z.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: Sets the end of the time range shown in the report. For example
-        - 2010-10-28T10:26:35.000Z.
+      description: Sets the end of the time range shown in the report. For example - 2010-10-28T10:26:35.000Z.
       isArray: false
       name: end_time
       required: false
@@ -128,15 +116,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email address of the G Suite domain admin. The request is preformed
-        based on this user's permissions.
+      description: Email address of the G Suite domain admin. The request is preformed based on this user's permissions.
       isArray: false
       name: admin_email
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of activities for a specific customer's account
-      and application.
+    description: Retrieves a list of activities for a specific customer's account and application.
     execution: false
     name: gsuite-activity-search
     outputs:
@@ -156,8 +142,7 @@ script:
       description: The type of actor.
       type: String
     - contextPath: GSuite.ActivitySearch.items.actor.key
-      description: Can be the consumer_key of the requestor for OAuth 2LO API requests
-        or an identifier for robot accounts.
+      description: Can be the consumer_key of the requestor for OAuth 2LO API requests or an identifier for robot accounts.
       type: String
     - contextPath: GSuite.ActivitySearch.items.events.type
       description: Type of event.
