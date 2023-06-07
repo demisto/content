@@ -68,7 +68,6 @@ test_module_data = [
     ),
 ]
 
-
 ip_reputation_command_data = [
     ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected),  # NOSONAR
     (
@@ -450,6 +449,136 @@ context_command_response_data = [
         200,  # NOSONAR
         {"address": "71.6.135.131", "seen": False},
     ),  # NOSONAR
-    ({"ip": "123"}, "negative", "Invalid IP address: '123'", 200, "Invalid IP address: '123'"),  # NOSONAR  # NOSONAR
+    ({"ip": "123"}, "negative", "Invalid IP address: '123'", 200, "Invalid IP address: '123'"),  # NOSONAR
     ({"ip": "abc"}, "negative", "forbidden", 200, "Invalid IP address: 'abc'"),  # NOSONAR
+]
+
+valid_similar_response = {
+    "ip": {
+        "actor": "unknown",
+        "asn": "AS4134",
+        "city": "Beijing",
+        "classification": "malicious",
+        "country": "China",
+        "country_code": "CN",
+        "first_seen": "2023-05-29",
+        "ip": "121.239.23.85",
+        "last_seen": "2023-05-30",
+        "organization": "CHINANET-BACKBONE"
+    },
+    "similar_ips": [
+        {
+            "actor": "unknown",
+            "asn": "AS1221",
+            "city": "Melbourne",
+            "classification": "unknown",
+            "country": "Australia",
+            "country_code": "AU",
+            "features": [
+                "ports",
+                "spoofable_bool"
+            ],
+            "first_seen": "2023-05-22",
+            "ip": "1.145.159.157",
+            "last_seen": "2023-05-23",
+            "organization": "Telstra Corporation Ltd",
+            "score": 1
+        }
+    ],
+    "total": 32368
+}
+
+valid_similar_response_expected = copy.deepcopy(valid_similar_response)
+
+similar_command_response_data = [
+    ({"ip": "71.6.135.131"}, "positive", valid_similar_response, 200, valid_similar_response_expected),  # NOSONAR
+    ({"ip": "45.95.147.229"}, "positive", {
+        "ip": {
+            "actor": "unknown",
+            "asn": "AS49870",
+            "city": "Amsterdam",
+            "classification": "malicious",
+            "country": "Netherlands",
+            "country_code": "NL",
+            "first_seen": "2023-05-11",
+            "ip": "45.95.147.229",
+            "last_seen": "2023-05-30",
+            "organization": "Alsycon B.V."
+        },
+        "similar_ips": [],
+        "total": 0
+    }, 200, valid_similar_response_expected),  # NOSONAR
+    ({"ip": "192.168.1.1"}, "negative", "Non-Routable IP address: '192.168.1.1'", 404, "Non-Routable IP address: "
+                                                                                       "'192.168.1.1'"),  # NOSONAR
+    ({"ip": "abc"}, "negative", "forbidden", 404, "Invalid IP address: 'abc'"),  # NOSONAR
+]
+
+valid_timeline_response = {
+    "activity": [
+        {
+            "asn": "AS49870",
+            "category": "hosting",
+            "city": "Amsterdam",
+            "classification": "unknown",
+            "country": "Netherlands",
+            "country_code": "NL",
+            "destinations": [
+                    {
+                        "country": "Albania",
+                        "country_code": "AL"
+                    }
+            ],
+            "organization": "Alsycon B.V.",
+            "protocols": [
+                {
+                    "app_protocol": "TELNET",
+                    "port": 23,
+                    "transport_protocol": "TCP"
+                }
+            ],
+            "rdns": "tittle.life",
+            "region": "North Holland",
+            "spoofable": "true",
+            "tags": [
+                    {
+                        "category": "tool",
+                        "description": "IP addresses with this tag have been observed using the ZMap Internet scanner.",
+                        "intention": "unknown",
+                        "name": "ZMap Client"
+                    }
+            ],
+            "timestamp": "2023-05-29T00:00:00Z",
+            "tor": "false",
+            "vpn": "false",
+            "vpn_service": ""
+        }
+    ],
+    "ip": "45.95.147.229",
+    "metadata": {
+        "end_time": "2023-05-30T18:43:30.604457229Z",
+        "ip": "45.95.147.229",
+        "limit": 50,
+        "next_cursor": "",
+        "start_time": "2023-05-29T00:00:00Z"
+    }
+}
+
+valid_timeline_response_expected = copy.deepcopy(valid_timeline_response)
+
+timeline_command_response_data = [
+    ({"ip": "45.95.147.229"}, "positive", valid_timeline_response, 200, valid_timeline_response_expected),  # NOSONAR
+    ({"ip": "61.30.129.190"}, "positive", {
+        "activity": [],
+        "ip": "61.30.129.190",
+        "metadata": {
+            "end_time": "2023-05-30T18:46:34.662311004Z",
+            "ip": "61.30.129.190",
+            "limit": 50,
+            "next_cursor": "",
+            "start_time": "2023-05-29T00:00:00Z"
+        }
+    }, 200, valid_timeline_response_expected),  # NOSONAR
+    ({"ip": "192.168.1.1"}, "negative", "Non-Routable IP address: '192.168.1.1'", 404, "Non-Routable IP address: "
+                                                                                       "'192.168.1.1'"),  # NOSONAR
+    ({"ip": "abc"}, "negative", "forbidden", 404, "Invalid IP address: 'abc'"),  # NOSONAR
 ]

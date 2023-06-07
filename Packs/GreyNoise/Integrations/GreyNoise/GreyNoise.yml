@@ -432,6 +432,18 @@ script:
     - contextPath: GreyNoise.Stats.stats.countries.count
       description: Country count.
       type: number
+    - contextPath: GreyNoise.Stats.stats.source_countries.country
+      description: Country name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.source_countries.count
+      description: Country count.
+      type: number
+    - contextPath: GreyNoise.Stats.stats.destination_countries.country
+      description: Country name.
+      type: string
+    - contextPath: GreyNoise.Stats.stats.destination_countries.count
+      description: Country count.
+      type: number
     - contextPath: GreyNoise.Stats.stats.tags.tag
       description: Tag name.
       type: string
@@ -606,7 +618,72 @@ script:
     - contextPath: GreyNoise.IP.bot
       description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
-  dockerimage: demisto/greynoise:1.0.0.30638
+  - name: greynoise-similarity
+    deprecated: false
+    description: >-
+      Search for similar internet scanner IPs found in the GreyNoise Noise
+      (internet scanner) dataset.
+    execution: false
+    arguments:
+      - name: ip
+        default: true
+        description: IP address to find similar IPs to
+        isArray: false
+        required: true
+        secret: false
+      - name: minimum_score
+        default: false
+        description: >-
+          The minimum similarity score to match to.  Value between 80 and 100.
+          Default value is 90.
+        isArray: false
+        required: false
+        secret: false
+        defaultValue: '90'
+      - name: maximum_results
+        default: false
+        description: The maximum number of results to return. Default value is 50.
+        isArray: false
+        required: false
+        secret: false
+        defaultValue: '50'
+    outputs:
+      - contextPath: GreyNoise.Similar.ip_address
+        description: Similar IP address.
+        type: string
+  - name: greynoise-timeline
+    deprecated: false
+    description: >-
+      Retrieve daily scanner timeline information for an Internet Scanner.
+    execution: false
+    arguments:
+      - name: ip
+        default: true
+        description: IP address to find similar IPs to
+        isArray: false
+        required: true
+        secret: false
+      - name: days
+        default: false
+        description: >-
+          The number of days to retrieve daily summaries for.  Value between 1 and 90.
+          Default value is 30.
+        isArray: false
+        required: false
+        secret: false
+        defaultValue: '30'
+      - name: maximum_results
+        default: false
+        description: The maximum number of results to return. Default value is 50.
+        isArray: false
+        required: false
+        secret: false
+        defaultValue: '50'
+    outputs:
+      - contextPath: GreyNoise.Timeline.ip_address
+        description: Timeline IP address.
+        type: string
+  dockerimage: demisto/greynoise:1.0.0.61972
   feed: false
   isfetch: false
   longRunning: false
