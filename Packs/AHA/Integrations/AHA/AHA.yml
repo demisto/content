@@ -43,7 +43,7 @@ script:
     arguments:
     - name: from_date
       description: Show features created after this date.
-      required: false
+      required: true
       isArray: false
       defaultValue: "2020-01-01"
     - name: feature_name

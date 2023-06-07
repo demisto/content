@@ -31,7 +31,7 @@ Lists all features from service, unless a specific feature is specified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_date | Show features created after this date. Default is 2020-01-01. | Optional | 
+| from_date | Show features created after this date. Default is 2020-01-01. | Required | 
 | feature_name | The name of a specific feature to retrieve. | Optional | 
 | fields | A comma-separated list of fields to include in the Aha! service response. Default is name,reference_num,id,created_at. | Optional | 
 | page | The specific results page to retrieve. Default is 1. | Optional | 
