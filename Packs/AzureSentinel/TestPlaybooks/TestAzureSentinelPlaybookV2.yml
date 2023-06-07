@@ -1,6 +1,5 @@
 id: TestAzureSentinelPlaybookV2
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: TestAzureSentinelPlaybookV2
 starttaskid: "0"
 tasks:
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,6 +32,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: be32b798-afad-4311-89a1-9d7012f3ef3f
@@ -55,7 +55,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -70,6 +69,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 6fe1645b-184d-49d7-8358-5f2136e944ab
@@ -89,7 +89,6 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -104,6 +103,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 144438f5-1106-47e7-87ce-b6bf927c887a
@@ -151,7 +151,6 @@ tasks:
           right:
             value:
               simple: Active
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -166,6 +165,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: e0a08af1-d37d-48df-8fed-8ad152edda5c
@@ -187,7 +187,6 @@ tasks:
       top:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -202,6 +201,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: b0c31194-af91-4475-822d-67525e6a2163
@@ -252,7 +252,6 @@ tasks:
             value:
               simple: AzureSentinel.Incident.IncidentNumber
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -267,6 +266,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 704fa016-b8b6-4794-89be-8c138cef98d6
@@ -288,7 +288,6 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -303,6 +302,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: c32f82d1-300e-4b73-8b53-288115384338
@@ -345,7 +345,6 @@ tasks:
           right:
             value:
               simple: Active
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -360,6 +359,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: cd563999-f757-436b-8c10-63c05be3d25a
@@ -381,7 +381,6 @@ tasks:
       top:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -396,6 +395,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: fa3441e3-0a32-4e11-84f5-2991a095e7bc
@@ -419,7 +419,6 @@ tasks:
             value:
               simple: AzureSentinel.IncidentComment
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -434,6 +433,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: 6df59365-189a-45ab-8488-468d49987636
@@ -455,7 +455,6 @@ tasks:
       message:
         simple: ${inputs.test_comment}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -470,6 +469,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: d6678bcf-9689-4788-86e5-0917afa349ba
@@ -507,7 +507,6 @@ tasks:
             value:
               simple: ${inputs.test_comment}
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -522,6 +521,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
     taskid: 005bbdef-c3ec-4432-8146-7a5ed085307c
@@ -545,7 +545,6 @@ tasks:
       top:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -560,6 +559,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 48e0f468-1c51-446c-8947-b85210b65ce4
@@ -600,7 +600,6 @@ tasks:
             value:
               simple: AzureSentinel.Incident.ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -615,6 +614,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: aa8c82b5-cfaf-4adc-8ff3-7cf2be3ca5ce
@@ -626,8 +626,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -642,6 +642,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: 50a2d44d-5c56-4627-809d-2fdf8fd1295b
@@ -668,7 +669,6 @@ tasks:
       filename:
         simple: csv_file
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -683,6 +683,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
     taskid: 620d6106-cdde-4ce5-84f3-8754e1dd9309
@@ -709,7 +710,6 @@ tasks:
       watchlist_display_name:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -724,6 +724,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
     taskid: 20c2278f-2b65-49f8-89fa-8704ca33c7b7
@@ -750,7 +751,6 @@ tasks:
           right:
             value:
               simple: ${inputs.watchlist_alias}
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -765,6 +765,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 23d63f9c-6d89-422b-86f0-f798a56e4a0e
@@ -785,7 +786,6 @@ tasks:
       watchlist_alias:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -800,6 +800,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 2d984851-3886-4ccd-88c1-786995a378e9
@@ -826,7 +827,6 @@ tasks:
           right:
             value:
               simple: ${inputs.watchlist_alias}
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -841,6 +841,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
     taskid: 88dd5955-ee1e-4d8a-8158-ef209cdc165d
@@ -865,7 +866,6 @@ tasks:
       watchlist_item_id:
         simple: 4fe24647-7aad-4dc8-9530-4e110ea858c1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -880,6 +880,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
     taskid: 4acfe8f1-78cf-46c7-8846-4ffde00f6a85
@@ -900,7 +901,6 @@ tasks:
       watchlist_alias:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -915,6 +915,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
     taskid: e153893f-29df-4dd9-8537-40c6c9fe7ba4
@@ -946,7 +947,6 @@ tasks:
             value:
               simple: AzureSentinel.WatchlistItem
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -961,6 +961,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 6e6246ef-1442-4afb-81d2-8b5a9f98b437
@@ -983,7 +984,6 @@ tasks:
       watchlist_item_id:
         simple: ${AzureSentinel.WatchlistItem.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -998,6 +998,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
     taskid: 34877cb6-0a6d-4e30-81e7-bf1d58b00db1
@@ -1018,7 +1019,6 @@ tasks:
       watchlist_alias:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1033,6 +1033,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "30":
     id: "30"
     taskid: f439a5c7-7d64-4d9a-8cb7-80733f485b18
@@ -1053,7 +1054,6 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1068,6 +1068,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "31":
     id: "31"
     taskid: 7278aad9-93c9-41f8-89a3-2870505f4a4e
@@ -1088,7 +1089,6 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1103,6 +1103,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "32":
     id: "32"
     taskid: 989705c7-a926-48fd-8c2f-db383bbcc0ea
@@ -1126,7 +1127,6 @@ tasks:
             value:
               simple: AzureSentinel.IncidentEntity
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1141,6 +1141,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "33":
     id: "33"
     taskid: c770dec2-8317-4b44-8c50-151b919ab4d1
@@ -1167,7 +1168,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1182,6 +1182,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "34":
     id: "34"
     taskid: a2aebb00-0bb3-49e1-8606-80f5b0d35bcf
@@ -1204,7 +1205,6 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1219,6 +1219,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "35":
     id: "35"
     taskid: 0c9e9a89-bcf8-473d-8415-45f27ae7930f
@@ -1239,7 +1240,6 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1254,6 +1254,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "36":
     id: "36"
     taskid: ac5057b6-7d4a-43e5-813f-bc8e236eb0e0
@@ -1292,7 +1293,6 @@ tasks:
             value:
               simple: AzureSentinel.ThreatIndicator.Type
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1307,6 +1307,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "37":
     id: "37"
     taskid: 6741c86d-8541-4d71-83c9-6937fa2bde07
@@ -1315,8 +1316,7 @@ tasks:
       id: 6741c86d-8541-4d71-83c9-6937fa2bde07
       version: -1
       name: azure-sentinel-threat-indicator-query
-      description: query_threat_indicators_command returns a list of threat indicators
-        with specific entities
+      description: query_threat_indicators_command returns a list of threat indicators with specific entities
       script: Azure Sentinel|||azure-sentinel-threat-indicator-query
       type: regular
       iscommand: true
@@ -1330,7 +1330,6 @@ tasks:
       min_confidence:
         simple: "80"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1345,6 +1344,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "38":
     id: "38"
     taskid: 72f9e5c8-fb18-4b61-844b-a200f9ef9eea
@@ -1383,7 +1383,6 @@ tasks:
             value:
               simple: AzureSentinel.ThreatIndicator.Type
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1398,6 +1397,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "39":
     id: "39"
     taskid: 9620ab54-26de-4dd5-8524-a9e5ed866210
@@ -1425,7 +1425,6 @@ tasks:
       value:
         simple: test.test
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1440,6 +1439,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "40":
     id: "40"
     taskid: 4a9ea0d0-9917-4160-8276-beda88673e69
@@ -1466,7 +1466,6 @@ tasks:
           right:
             value:
               simple: test
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1481,6 +1480,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "42":
     id: "42"
     taskid: 6f3e6b44-b47f-4d5a-8c13-d758ce179c57
@@ -1508,7 +1508,6 @@ tasks:
       value:
         simple: test.test
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1523,6 +1522,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "43":
     id: "43"
     taskid: 015995cf-7c85-4ed1-8b17-76c4cdffd84d
@@ -1550,7 +1550,6 @@ tasks:
       value:
         simple: test.test
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1565,6 +1564,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "44":
     id: "44"
     taskid: bd56b497-64fa-4e42-86f7-980a6d374bb8
@@ -1589,7 +1589,6 @@ tasks:
       tags:
         simple: newTag
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1604,6 +1603,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "45":
     id: "45"
     taskid: dd754425-6b65-488f-89c2-9d602295fe6c
@@ -1630,7 +1630,6 @@ tasks:
           right:
             value:
               simple: newTag
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1645,6 +1644,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "46":
     id: "46"
     taskid: 1896df9c-186e-4ffa-8276-1ba2b8f0a40c
@@ -1669,7 +1669,6 @@ tasks:
       tags:
         simple: ReplaceTheTag
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1684,6 +1683,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "47":
     id: "47"
     taskid: 4e898a98-aae2-47be-86f5-a96821719c9c
@@ -1710,7 +1710,6 @@ tasks:
           right:
             value:
               simple: ReplaceTheTag
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1725,6 +1724,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
     taskid: ec4c084d-db9a-41d4-8c11-bfde8cd931c8
@@ -1753,7 +1753,6 @@ tasks:
       value:
         simple: domain.dot
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1768,6 +1767,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "49":
     id: "49"
     taskid: cdb1a381-33ed-4ed0-80c0-d35d5c8fd394
@@ -1794,7 +1794,6 @@ tasks:
           right:
             value:
               simple: NewDisplayName
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1809,6 +1808,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 62a2852a-7a97-42ed-861a-e4ffb24482f8
@@ -1975,18 +1975,20 @@ inputs:
     simple: DO_NOT_TOUCH-FOR_TEST_PLAYBOOK
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: watchlist_alias
   value:
     simple: TEST_PLAYBOOK_ALIAS
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: test_comment
   value:
     simple: test_comment
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 sourceplaybookid: TestAzureSentinelPlaybook
+fromversion: 5.0.0
+description: Testing Azure Sentinel integration

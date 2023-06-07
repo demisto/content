@@ -1839,7 +1839,7 @@ def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, An
     for subscription_id in subscription_id_list:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter={filter_by_tag}&$top={limit}&api-version=2021-04-01'   # noqa: E501
         response = client.http_request('GET', full_url=full_url)
-        data_from_response.extend(iter(response.get('value', [])))
+        data_from_response.extend(response.get('value', []))
 
     readable_output = tableToMarkdown(
         'Azure Sentinel Resource Groups',
