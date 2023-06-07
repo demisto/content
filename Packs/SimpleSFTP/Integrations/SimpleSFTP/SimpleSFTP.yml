@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: custom-Simple-SFTP
+  id: Simple SFTP
   version: -1
 configuration:
 - display: Host
@@ -22,8 +22,8 @@ configuration:
   required: false
   type: 0
 description: Simple SFTP Integration to copy files from SFTP Server using paramiko.
-display: custom-Simple-SFTP
-name: custom-Simple-SFTP
+display: Simple SFTP
+name: Simple SFTP
 script:
   commands:
   - arguments:
