@@ -69,9 +69,9 @@ Returns the configuration information of the Lambda function and a presigned URL
 | AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds | string | A list of VPC security groups IDs. | 
 | AWS.Lambda.Functions.Configuration.VpcConfig.VpcId | string | The ID of the VPC. | 
 | AWS.Lambda.Functions.Configuration.DeadLetterConfig.TargetArn | string | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. | 
-| AWS.Lambda.Functions.Configuration.Environment.Variables | string | Environment variable key-value pairs | 
-| AWS.Lambda.Functions.Configuration.Environment.Error.ErrorCode | string | Error messages for environment variables that could not be applied. The error code. | 
-| AWS.Lambda.Functions.Configuration.Environment. | string | Error messages for environment variables that could not be applied. The error message. | 
+| AWS.Lambda.Functions.Configuration.Environment.Variables | string | Environment variable key-value pairs. | 
+| AWS.Lambda.Functions.Configuration.Environment.Error.ErrorCode | string | The error code for environment variables that could not be applied. | 
+| AWS.Lambda.Functions.Configuration.Environment.Error.Message | string | The error message for environment variables that could not be applied. |
 | AWS.Lambda.Functions.Configuration.KMSKeyArn | string | The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK. | 
 | AWS.Lambda.Functions.Configuration.TracingConfig.Mode | string | The function's AWS X-Ray tracing configuration. The tracing mode. | 
 | AWS.Lambda.Functions.Configuration.MasterArn | string | The ARN of the master function. | 
