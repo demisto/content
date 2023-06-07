@@ -983,4 +983,5 @@ class TestFetchIncidents:
             assert ticket_mock_20.called_once
             assert demisto_incidents_mock.called_once()
             assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
-            assert demisto_incidents_mock.call_args[0][0][0]['attachment'] == [{'path': 'f57c064c-26e8-4042-b3e8-6cea0348c932', 'name': 'TestFile.json'}]
+            assert demisto_incidents_mock.call_args[0][0][0]['attachment'] == [{
+                'path': 'f57c064c-26e8-4042-b3e8-6cea0348c932', 'name': 'TestFile.json'}]
