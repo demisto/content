@@ -144,7 +144,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   runonce: false
   subtype: python3

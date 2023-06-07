@@ -1,0 +1,9 @@
+[file:MicrosoftExchangeServerModeling_1_3.yml]
+ignore=MR108
+
+[file:MicrosoftExchangeServerModeling.yml]
+ignore=MR108
+
+[file:MicrosoftExchangeServerParsingRules.yml]
+ignore=PR101
+
