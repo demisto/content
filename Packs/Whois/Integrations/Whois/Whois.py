@@ -8523,7 +8523,20 @@ def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips, reliability) -> List[CommandResults]:
+def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResults]:
+
+    """
+    Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
+    Sets API execution metrics functionality (if supported) and adds them to the list of CommandResults.
+
+    Args:
+        - `ips` (``str``): Comma-separated list of IPs to perform the RDAP lookup for.
+        - `reliability` (``DBotScoreReliability``): RDAP lookup source reliability.
+
+    Returns:
+        - `List[CommandResults]` with the command results and API execution metrics (if supported).
+    """
+
     rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
                                       'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
     rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
