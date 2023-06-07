@@ -8,6 +8,7 @@ from codecs import encode, decode
 import socks
 import errno
 import ipwhois
+from typing import Tuple, Dict, List, Optional
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
 
@@ -7144,6 +7145,7 @@ ipwhois_exception_mapping: Dict[type, str] = {
     ipwhois.exceptions.ASNRegistryError: "general_error",
     ipwhois.exceptions.BaseIpwhoisException: "general_error",
     urllib.error.HTTPError: "general_error",
+    ValueError: "general_error",
 
     # Service Errors
     ipwhois.exceptions.BlacklistError: "service_error",
@@ -8484,11 +8486,27 @@ def domain_command(reliability):
         })
 
 
-def get_whois_ip(ip,
+def get_whois_ip(ip: str,
                  retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
-                 rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
-                 rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT):
+                 rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT
+                 ) -> Optional[Dict[str, None]]:
+    
+    """
+    Performs an Registration Data Access Protocol (RDAP) lookup for an IP.
+
+    See https://ipwhois.readthedocs.io/en/latest/RDAP.html
+
+    Arguments:
+        - `ip` (``str``): The IP to perform the lookup for.
+        - `retry_count` (``int``): The number of times to retry the lookup in case of rate limiting error.
+        - `rate_limit_timeout` (``int``): How long in seconds to wait before retrying the lookup in case of rate limiting error.
+
+    Returns:
+        - `Dict[str, None]` with the result of the lookup.
+    """
+
     from urllib.request import build_opener, ProxyHandler
+
     proxy_opener = None
     if demisto.params().get('proxy'):
         proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
@@ -8498,21 +8516,14 @@ def get_whois_ip(ip,
     else:
         ip_obj = ipwhois.IPWhois(ip)
 
-    try:
-        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
-    except urllib.error.HTTPError as e:
-        if rate_limit_errors_suppressed:
-            demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
-            return
-        demisto.error(f'HTTPError when trying to lookup rdap info. Error: {e}')
-        raise e
+    return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
 
 
 def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips, reliability):
+def ip_command(ips, reliability) -> List[CommandResults]:
     rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
                                       'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
     rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
@@ -8520,43 +8531,71 @@ def ip_command(ips, reliability):
     rate_limit_errors_suppressed: bool = bool(get_param_or_arg(
         'rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
 
+    execution = ExecutionMetrics()
+
     results = []
     for ip in argToList(ips):
-        response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
-                                rate_limit_errors_suppressed=rate_limit_errors_suppressed)
 
-        dbot_score = Common.DBotScore(
-            indicator=ip,
-            indicator_type=DBotScoreType.IP,
-            integration_name='Whois',
-            score=Common.DBotScore.NONE,
-            reliability=reliability
-        )
-        related_feed = Common.FeedRelatedIndicators(
-            value=response.get('network', {}).get('cidr'),
-            indicator_type='CIDR'
-        )
-        network_data = response.get('network', {})
-        ip_output = Common.IP(
-            ip=ip,
-            asn=response.get('asn'),
-            geo_country=network_data.get('country'),
-            organization_name=network_data.get('name'),
-            dbot_score=dbot_score,
-            feed_related_indicators=[related_feed]
-        )
-        readable_data = prepare_readable_ip_data(response)
-        result = CommandResults(
-            outputs_prefix='Whois.IP',
-            outputs_key_field='query',
-            outputs=response,
-            readable_output=tableToMarkdown('Whois results:', readable_data),
-            raw_response=response,
-            indicator=ip_output
-        )
+        try:
+            response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds)
 
-        results.append(result)
-    return results
+            if response:
+                execution.success += 1
+
+                dbot_score = Common.DBotScore(
+                    indicator=ip,
+                    indicator_type=DBotScoreType.IP,
+                    integration_name='Whois',
+                    score=Common.DBotScore.NONE,
+                    reliability=reliability
+                )
+                related_feed = Common.FeedRelatedIndicators(
+                    value=response.get('network', {}).get('cidr'),
+                    indicator_type='CIDR'
+                )
+                network_data = response.get('network', {})
+                ip_output = Common.IP(
+                    ip=ip,
+                    asn=response.get('asn'),
+                    geo_country=network_data.get('country'),
+                    organization_name=network_data.get('name'),
+                    dbot_score=dbot_score,
+                    feed_related_indicators=[related_feed]
+                )
+                readable_data = prepare_readable_ip_data(response)
+                result = CommandResults(
+                    outputs_prefix='Whois.IP',
+                    outputs_key_field='query',
+                    outputs=response,
+                    readable_output=tableToMarkdown('Whois results:', readable_data),
+                    raw_response=response,
+                    indicator=ip_output
+                )
+            else:
+                execution.general_error += 1
+                result = CommandResults(readable_output=f"No results returned for IP {ip}")
+
+            results.append(result)
+
+        except Exception as e:
+            demisto.debug(f"Exception caught performing RDAP lookup for IP {ip}: {e}")
+
+            # Find and increment execution metrics according to known ipwhois exceptions
+            for exception_type, metric_attribute in ipwhois_exception_mapping.items():
+                if isinstance(e, exception_type):
+                    execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
+                    break
+
+            if rate_limit_errors_suppressed:
+                results.append(CommandResults(readable_output=f"Error performing RDAP lookup for IP {ip}: {e}"))
+
+            else:
+                demisto.error(f"Rate limit error not suppressed, raising exception: {e}")
+                raise e
+            
+
+    return append_metrics(execution_metrics=execution, results=results)
+
 
 
 def whois_command(reliability):
@@ -8632,7 +8671,7 @@ def setup_proxy():
 
 
 def main():
-    LOG('command is {}'.format(str(demisto.command())))
+    demisto.log('command is {}'.format(str(demisto.command())))
     command = demisto.command()
 
     reliability = demisto.params().get('integrationReliability')
@@ -8642,8 +8681,7 @@ def main():
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")    
     try:
         if command == 'ip':
             demisto_args = demisto.args()
