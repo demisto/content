@@ -181,7 +181,7 @@ def test_module(client: Client) -> str:
 
 def get_command(client: Client,
                 aha_type: AHA_TYPE,
-                from_date: str,
+                from_date: str = '',
                 aha_object_name: str = '',
                 fields: str = '',
                 page: str = '1',
