@@ -25,3 +25,12 @@ ignore=BA124
 [file:GenerateTimeZone.yml]
 ignore=BA124
 
+[file:Salesforce_1_3.yml]
+ignore=MR108
+
+[file:SalesforceParsingRules.yml]
+ignore=PR101
+
+[file:SalesforceModelingRule.yml]
+ignore=MR108
+
