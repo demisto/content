@@ -14,7 +14,7 @@ More information can be found [here](https://www.cisco.com/c/en/us/td/docs/route
 
 ### Syslog Time Parsing Support
 Support for syslog timestamp parsing is available with UTC timezone only. You will need to add the year and milliseconds to the product default datetime format.
-* [service timestamps command doc](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/command/cf_command_ref/R_through_setup.html#wp4972384860))
+* [Service timestamps command doc](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/command/cf_command_ref/R_through_setup.html#wp4972384860)
 * [Clock Timezone command doc](https://www.cisco.com/c/en/us/td/docs/routers/xr12000/software/xr12k_r3-9/system_management/command/reference/yr39xr12k_chapter4.html#wp748744425)
 
 1. Enter Global Configuration Mode by either typing **configure terminal** or **conf t**.
