@@ -419,3 +419,25 @@ def test_udso_add_command(mocker):
     assert result.readable_output == expected_output
     assert result.raw_response == {'success': True}
 
+
+def test_prodagent_isolate_command(mocker):
+    """
+    Given:
+    - The entity_id argument is provided.
+
+    When:
+    - Calling the prodagent_isolate_command function.
+
+    Then:
+    - Ensure the function returns a CommandResults object with the expected outputs.
+    """
+    from TrendMicroApex import prodagent_isolate_command
+    args = {'entity_id': '12345'}
+
+    mocker.patch.object(client, 'prodagent_isolate', return_value={'result_content': [{'agentGuid': '12345'}]})
+
+    result = prodagent_isolate_command(client, args)
+
+    assert result.outputs_prefix == 'TrendMicroApex.ProductAgent'
+    assert result.outputs == [{'agentGuid': '12345'}]
+    assert result.readable_output == '### Apex One ProductAgent Isolate\n|agentGuid|\n|---|\n| 12345 |\n'
