@@ -17,13 +17,11 @@ configuration:
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
 - additionalinfo: Information is available at EndaceProbe -> Management Summary page
   display: EndaceProbe System Hostname
-  hidden: false
   name: hostname
   required: true
   type: 0

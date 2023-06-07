@@ -9,7 +9,6 @@ comment: An automation script to return subnet addresses
 commonfields:
   id: IPCalcReturnSubnetAddresses
   version: -1
-enabled: false
 name: IPCalcReturnSubnetAddresses
 outputs:
 - contextPath: IPCalc.IP.Address

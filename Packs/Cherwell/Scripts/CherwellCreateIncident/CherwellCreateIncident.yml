@@ -41,7 +41,6 @@ comment: This script is an example script of how to create an incident in Cherwe
 commonfields:
   id: CherwellCreateIncident
   version: -1
-enabled: false
 name: CherwellCreateIncident
 outputs:
 - contextPath: Cherwell.BusinessObjects.PublicId
