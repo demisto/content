@@ -580,7 +580,8 @@ class XSOARBuild(Build):
         self.servers = [XSOARServer(internal_ip,
                                     port,
                                     self.username,
-                                    self.password) for internal_ip, port in self.server_to_port_mapping.items()]
+                                    self.password,
+                                    self.ci_build_number) for internal_ip, port in self.server_to_port_mapping.items()]
 
     @property
     def proxy(self) -> MITMProxy:
@@ -771,7 +772,7 @@ class CloudBuild(Build):
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
-                                    self.cloud_machine)]
+                                    self.cloud_machine, self.ci_build_number)]
         self.marketplace_tag_name: str = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
         self.marketplace_buckets = options.marketplace_buckets
