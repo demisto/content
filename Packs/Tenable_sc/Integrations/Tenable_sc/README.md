@@ -74,7 +74,7 @@ Requires security manager role. Get a list of Tenable.sc existing scans.
 ### tenable-sc-launch-scan
 
 ***
-Requires security manager role. Launch an existing scan from Tenable.sc.
+Requires security manager role. Launch an existing scan from Tenable.sc. Set polling to true to follow the scan and receive results when scan is over.
 
 #### Base Command
 
@@ -87,24 +87,50 @@ Requires security manager role. Launch an existing scan from Tenable.sc.
 | scan_id | Scan ID, can be retrieved from list-scans command. | Required | 
 | diagnostic_target | Valid IP/Hostname of a specific target to scan. Must be provided with diagnosticPassword. | Optional | 
 | diagnostic_password | Non empty string password. | Optional | 
+| timeout_in_seconds | Relevant only when polling is true. Default is 3 hours. The timeout in seconds until polling ends. Default is 10800. | Optional | 
+| polling | Default is false. When set to true, will keep polling results until scan is done and return the formatted scan results. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TenableSC.ScanResults.Name | string | Scan name. | 
-| TenableSC.ScanResults.ID | string | Scan Results ID. | 
-| TenableSC.ScanResults.OwnerID | string | Scan owner ID. | 
-| TenableSC.ScanResults.JobID | string | Job ID. | 
 | TenableSC.ScanResults.Status | string | Scan status. | 
+| TenableSC.ScanResults.ID | string | Scan Results ID. | 
+| TenableSC.ScanResults.OwnerID | string | Relevant only when polling is false. Scan owner ID. | 
+| TenableSC.ScanResults.JobID | string | Relevant only when polling is false. Job ID. | 
+| TenableSC.ScanResults.ScannedIPs | number | Relevant only when polling is true. Scan number of scanned IPs. | 
+| TenableSC.ScanResults.StartTime | date | Relevant only when polling is true. Scan start time. | 
+| TenableSC.ScanResults.EndTime | date | Relevant only when polling is true. Scan end time. | 
+| TenableSC.ScanResults.Checks | number | Relevant only when polling is true. Scan completed checks. | 
+| TenableSC.ScanResults.RepositoryName | string | Relevant only when polling is true. Scan repository name. | 
+| TenableSC.ScanResults.Description | string | Relevant only when polling is true. Scan description. | 
+| TenableSC.ScanResults.Vulnerability.ID | number | Relevant only when polling is true. Scan vulnerability ID. | 
+| TenableSC.ScanResults.Vulnerability.Name | string | Relevant only when polling is true. Scan vulnerability Name. | 
+| TenableSC.ScanResults.Vulnerability.Family | string | Relevant only when polling is true. Scan vulnerability family. | 
+| TenableSC.ScanResults.Vulnerability.Severity | string | Relevant only when polling is true. Scan vulnerability severity. | 
+| TenableSC.ScanResults.Vulnerability.Total | number | Relevant only when polling is true. Scan vulnerability total hosts. | 
+| TenableSC.ScanResults.Policy | string | Relevant only when polling is true. Scan policy. | 
+| TenableSC.ScanResults.Group | string | Relevant only when polling is true. Scan owner group name. | 
+| TenableSC.ScanResults.Owner | string | Relevant only when polling is true. Scan owner user name. | 
+| TenableSC.ScanResults.Duration | number | Relevant only when polling is true. Scan duration in minutes. | 
+| TenableSC.ScanResults.ImportTime | date | Relevant only when polling is true. Scan import time. | 
 
 #### Human Readable Output
 
+When polling is set to false:
 ### Tenable.sc Scan
 
 |Name|ID|OwnerID|JobID|Status|
 |---|---|---|---|---|
 | test_scan_2023 | 169 | 38 | 118864 | Queued |
+
+When polling is set to true:
+### Tenable.sc Scan 130 Report
+
+|ID|Name|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 130 | test_scan_2023 | Test scan 2023 | Network Scan | Full Access | hayun_test_sec_man | 156 | 2023-05-16T12:18:10Z | 2023-05-16T17:20:00Z | 301.8333333333333 | 22649640 | 2023-05-16T17:20:02Z | Local | Completed | regular | 156 |
 
 ### tenable-sc-get-vulnerability
 
@@ -1670,57 +1696,6 @@ Creates a remediation scan. Requires security manager role. This command is a pr
 |Scan ID|Scan Name|Scan Type|Dhcp Tracking status|Created Time|Modified Time|Max Scan Time|Policy id |Policy context|Schedule type|Group|Owner|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 69 | my_Test_scan | policy | false | 2023-05-24T10:12:27Z | 1684923147 | 3600 | 1000044 | scan | now | Full Access | yuv |
-
-### tenable-sc-launch-scan-report
-
-***
-Requires security manager role. Polling command. Launch a scan by given scan ID. Follow its status and return a report when the scan is over.
-
-#### Base Command
-
-`tenable-sc-launch-scan-report`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| scan_id | The ID of the scan from which to get the report. Can be retrieved from the list-scans command. | Required | 
-| diagnostic_target | Valid IP/Hostname of a specific target to scan. Must be provided with diagnostic_password. | Optional | 
-| diagnostic_password | Valid password of the diagnostic_target. Must be provided with diagnostic_target. | Optional | 
-| scan_results_id | Deprecated. Scan results ID. | Optional | 
-| timeout_in_seconds | Default is 3 hours. The timeout in seconds until polling ends. Default is 10800. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| TenableSC.ScanResults.ID | number | Scan results ID. | 
-| TenableSC.ScanResults.Name | string | Scan name. | 
-| TenableSC.ScanResults.Status | string | Scan status. | 
-| TenableSC.ScanResults.ScannedIPs | number | Scan number of scanned IPs. | 
-| TenableSC.ScanResults.StartTime | date | Scan start time. | 
-| TenableSC.ScanResults.EndTime | date | Scan end time. | 
-| TenableSC.ScanResults.Checks | number | Scan completed checks. | 
-| TenableSC.ScanResults.RepositoryName | string | Scan repository name. | 
-| TenableSC.ScanResults.Description | string | Scan description. | 
-| TenableSC.ScanResults.Vulnerability.ID | number | Scan vulnerability ID. | 
-| TenableSC.ScanResults.Vulnerability.Name | string | Scan vulnerability Name. | 
-| TenableSC.ScanResults.Vulnerability.Family | string | Scan vulnerability family. | 
-| TenableSC.ScanResults.Vulnerability.Severity | string | Scan vulnerability severity. | 
-| TenableSC.ScanResults.Vulnerability.Total | number | Scan vulnerability total hosts. | 
-| TenableSC.ScanResults.Policy | string | Scan policy. | 
-| TenableSC.ScanResults.Group | string | Scan owner group name. | 
-| TenableSC.ScanResults.Owner | string | Scan owner user name. | 
-| TenableSC.ScanResults.Duration | number | Scan duration in minutes. | 
-| TenableSC.ScanResults.ImportTime | date | Scan import time. | 
-
-#### Human Readable Output
-
-### Tenable.sc Scan 130 Report
-
-|ID|Name|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 130 | test_scan_2023 | Test scan 2023 | Network Scan | Full Access | hayun_test_sec_man | 156 | 2023-05-16T12:18:10Z | 2023-05-16T17:20:00Z | 301.8333333333333 | 22649640 | 2023-05-16T17:20:02Z | Local | Completed | regular | 156 |
 
 ### Vulnerabilities
 
