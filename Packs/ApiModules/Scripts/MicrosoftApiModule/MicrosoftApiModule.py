@@ -566,7 +566,7 @@ def get_azure_cloud_or_default(azure_cloud_name: str) -> AzureCloud:
 
 def url_trim_end_slash(url):
     """
-        Will trim the end "/" from a url.
+        Will trim the end "/" from a URL.
 
         Example:
         "https://google.com/", "/"   => "https://google.com"
