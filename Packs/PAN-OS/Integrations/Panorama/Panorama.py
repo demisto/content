@@ -13361,9 +13361,9 @@ def pan_os_edit_tag_command(args: dict) -> CommandResults:
 
     try:
         tag_to_edit = tag_to_edit_from_list[0]
-    except Exception as e:
-        raise Exception(f"Can't find the tag with name '{tag_name}' in tags list.\n"
-                        f"Please run the pan-os-list-tag command and verify that the tag '{tag_name}' exists.")
+    except IndexError as e:
+        raise DemistoException(f"Can't find the tag with name '{tag_name}' in tags list.\n"
+                               f"Please run the pan-os-list-tag command and verify that the tag '{tag_name}' exists.")
 
     parse_pan_os_un_committed_data(tag_to_edit, ['@admin', '@dirtyId', '@time'])
 
