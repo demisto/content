@@ -3,7 +3,8 @@ filter
     event_type in ("workbench")
 | alter
     Entities = json_extract_array(impactScope, "$.entities"),
-    Indicators = json_extract_array(indicators, "$.")
+    Indicators = json_extract_array(indicators, "$."),
+    Rules = json_extract_array(matchedRules, "$.")
     | alter
     matchedRulesIds = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.id")), ","),
     matchedRulesNames = arraystring(arraymap(json_extract_array(matchedRules, "$."), json_extract_scalar("@element", "$.name")), ","),
@@ -27,7 +28,9 @@ filter
     indicatorsValuesRegistryKey = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryKeyHandle", json_extract_scalar("@element", "$.value"), null)), ","),
     indicatorsValuesRegistryValue = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryValue", json_extract_scalar("@element", "$.value"), null)), ","),
     indicatorsValuesCommandLine = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ","),
-    indicatorsValuesExecutablePath = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ",")
+    indicatorsValuesExecutablePath = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ","),
+    originalThreatName = arraystring(arraymap(Rules, json_extract_scalar(arrayindex(json_extract_array("@element", "$.matchedFilters"), 0), "$.name")), ",")
+
     | alter
     xdm.source.cloud.project = id,
     xdm.event.outcome_reason = investigationStatus,
@@ -53,7 +56,9 @@ filter
     xdm.target.registry.key = indicatorsValuesRegistryKey,
     xdm.target.registry.value = indicatorsValuesRegistryValue,
     xdm.source.process.command_line = indicatorsValuesCommandLine,
-    xdm.source.process.executable.path = indicatorsValuesExecutablePath;
+    xdm.source.process.executable.path = indicatorsValuesExecutablePath,
+    xdm.event.description = matchedRules,
+    xdm.alert.original_threat_name = originalThreatName;
 
 filter
     event_type in ("search_detections")
