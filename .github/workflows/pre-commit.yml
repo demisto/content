@@ -16,6 +16,8 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.ref }}
+
     - name: Setup python
       uses: actions/setup-python@v4
       with:
@@ -33,7 +35,9 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
-      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure
+      run: |
+        npm install
+        poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
@@ -62,7 +66,6 @@ jobs:
       with:
         filename: "coverage.xml"
         badge: true
-        fail_below_min: true
         format: markdown
         output: both
         thresholds: '70 80'

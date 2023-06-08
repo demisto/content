@@ -39,7 +39,6 @@ configuration:
 - additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
   defaultvalue: '50'
   display: Maximum incidents for one fetch.
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -213,7 +212,7 @@ script:
       description: The findings ID.
       type: String
     - contextPath: CheckPointDome9.Findings.severity
-      description: The severity of the findings. 
+      description: The severity of the findings.
       type: String
     - contextPath: CheckPointDome9.Findings.region
       description: The findings region.
@@ -236,11 +235,11 @@ script:
       isArray: false
       name: description
       required: true
-    - description: Comma-separated list of IP addresses. 
+    - description: Comma-separated list of IP addresses.
       isArray: true
       name: ip
       required: false
-    - description: Comma-separated list of comments for the IP addresses. One comment per IP address. 
+    - description: Comma-separated list of comments for the IP addresses. One comment per IP address.
       isArray: true
       name: comment
       required: false
@@ -455,7 +454,7 @@ script:
       description: Remediation ID.
       type: String
     - contextPath: CheckPointDome9.ComplianceRemediation.ruleLogicHash
-      description: Hash for the rule logic. 
+      description: Hash for the rule logic.
       type: String
     - contextPath: CheckPointDome9.ComplianceRemediation.ruleName
       description: Rule name.
@@ -1613,7 +1612,7 @@ script:
     - contextPath: CheckPointDome9.FindingsBundle.region
       description: The CloudTrail account ID.
       type: String
-  dockerimage: demisto/python3:3.10.11.59070
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

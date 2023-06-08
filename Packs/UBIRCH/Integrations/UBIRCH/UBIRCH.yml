@@ -28,7 +28,6 @@ configuration:
   type: 0
 - defaultvalue: prod
   display: Stage
-  hidden: false
   name: stage
   options:
   - prod
@@ -36,9 +35,7 @@ configuration:
   - demo
   required: true
   type: 15
-description: The UBIRCH solution can be seen as an external data certification provider,
-  as a data notary service, giving data receivers the capability to verify data they
-  have received with regard to its authenticity and integrity and correctness of sequence.
+description: The UBIRCH solution can be seen as an external data certification provider, as a data notary service, giving data receivers the capability to verify data they have received with regard to its authenticity and integrity and correctness of sequence.
 display: UBIRCH
 name: UBIRCH
 script:

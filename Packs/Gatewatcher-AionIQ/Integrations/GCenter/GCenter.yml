@@ -26,8 +26,7 @@ configuration:
   name: check_cert
   type: 8
   required: false
-description: This integration allows, via about twenty commands, to interact with
-  the GCenter appliance via its API.
+description: This integration allows, via about twenty commands, to interact with the GCenter appliance via its API.
 display: GCenter
 name: GCenter
 script:
@@ -82,8 +81,7 @@ script:
       description: The State Of The Alert
       type: String
     - contextPath: GCenter.Alert.List.matched_event
-      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation
-        Between Alerts)
+      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
       type: String
     - contextPath: GCenter.Alert.List.domain_name
       description: For Dga Alerts Only
@@ -344,8 +342,7 @@ script:
       description: The File Magic
       type: String
     - contextPath: GCenter.Alert.List.malware.total_found
-      description: The Malcore Number Of Engines That Found The File Suspicious /
-        The Total Number Of Engines
+      description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
       type: String
     - contextPath: GCenter.Alert.List.sigflow.alert.action
       description: Action
@@ -427,8 +424,7 @@ script:
       description: The State Of The Alert
       type: String
     - contextPath: GCenter.Alert.Single.matched_event
-      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation
-        Between Alerts)
+      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
       type: String
     - contextPath: GCenter.Alert.Single.domain_name
       description: For Dga Alerts Only
@@ -689,8 +685,7 @@ script:
       description: The File Magic
       type: String
     - contextPath: GCenter.Alert.Single.malware.total_found
-      description: The Malcore Number Of Engines That Found The File Suspicious /
-        The Total Number Of Engines
+      description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
       type: String
     - contextPath: GCenter.Alert.Single.sigflow.alert.action
       description: Action
@@ -836,11 +831,9 @@ script:
     - name: start
       required: true
       description: Will be ignored if they start with this name
-      defaultValue: false
     - name: end
       required: true
       description: Will be ignored if they end with this name
-      defaultValue: false
     outputs:
     - contextPath: GCenter.Ignore.AssetName.id
       description: Id
@@ -855,12 +848,10 @@ script:
       description: Ignored Name For The Assets (Hostnames). Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.AssetName.is_startswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They Start With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.AssetName.is_endswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They End With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They End With This Name ?
       type: Boolean
   - name: gw-add-ignore-kuser-ip
     description: Ignore kuser IP
@@ -890,11 +881,9 @@ script:
     - name: start
       required: true
       description: Will be ignored if they start with this name
-      defaultValue: false
     - name: end
       required: true
       description: Will be ignored if they end with this name
-      defaultValue: false
     outputs:
     - contextPath: GCenter.Ignore.KuserName.id
       description: Id
@@ -909,12 +898,10 @@ script:
       description: Ignored Name For The Kerberos Users. Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.KuserName.is_startswith_pattern
-      description: Should The Kerberos Users Be Ignored If They Start With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.KuserName.is_endswith_pattern
-      description: Should The Kerberos Users Be Ignored If They End With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They End With This Name ?
       type: Boolean
   - name: gw-add-ignore-mac-address
     description: Ignore mac address
@@ -925,7 +912,6 @@ script:
     - name: start
       required: true
       description: Will be ignored if they start with this name
-      defaultValue: false
     outputs:
     - contextPath: GCenter.Ignore.MacAddress.id
       description: Id
@@ -940,8 +926,7 @@ script:
       description: Address
       type: String
     - contextPath: GCenter.Ignore.MacAddress.is_startswith_pattern
-      description: Should The Mac Addresses Be Ignored If They Start With This Address
-        Value ?
+      description: Should The Mac Addresses Be Ignored If They Start With This Address Value ?
       type: Boolean
   - name: gw-del-ignore-asset-name
     description: Delete an ignore asset ID
@@ -1086,7 +1071,6 @@ script:
     - name: deep
       required: false
       description: Deep scan
-      defaultValue: false
     - name: timeout
       required: false
       description: Deep scan timeout
@@ -1280,12 +1264,10 @@ script:
       description: Ignored Name For The Assets (Hostnames). Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.AssetName.List.is_startswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They Start With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.AssetName.List.is_endswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They End With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They End With This Name ?
       type: Boolean
   - deprecated: false
     description: Get all the ignored kuser IP
@@ -1322,12 +1304,10 @@ script:
       description: Ignored Name For The Kerberos Users. Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.KuserName.List.is_startswith_pattern
-      description: Should The Kerberos Users Be Ignored If They Start With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.KuserName.List.is_endswith_pattern
-      description: Should The Kerberos Users Be Ignored If They End With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They End With This Name ?
       type: Boolean
   - deprecated: false
     description: Get all the ignored mac addresses
@@ -1347,13 +1327,11 @@ script:
       description: Address
       type: String
     - contextPath: GCenter.Ignore.MacAddress.List.is_startswith_pattern
-      description: Should The Mac Addresses Be Ignored If They Start With This Address
-        Value ?
+      description: Should The Mac Addresses Be Ignored If They Start With This Address Value ?
       type: Boolean
   - arguments:
     - default: false
-      description: 'Set the lower timerange in minute based on the now keyword when
-        uuid is not given
+      description: 'Set the lower timerange in minute based on the now keyword when uuid is not given
 
         Default value to 60 minutes'
       isArray: false
@@ -1361,8 +1339,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Set the number of aggregate value that can be returned when uuid
-        is not given
+      description: 'Set the number of aggregate value that can be returned when uuid is not given
 
         Get all the values by default'
       isArray: false
@@ -1401,7 +1378,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook

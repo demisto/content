@@ -112,7 +112,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc",
+                        "i": "rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
                                 "endCol": 2,
@@ -259,8 +259,8 @@
                         "y": 0
                     },
                     {
-                        "h": 3,
-                        "i": "rsdogskmtv-93f6e7e0-b311-11eb-941c-e725acf1fbbc",
+                        "h": 2,
+                        "i": "rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-93f6e7e0-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -270,11 +270,11 @@
                         "type": "relatedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 6
+                        "y": 9
                     },
                     {
                         "h": 3,
-                        "i": "rsdogskmtv-b413e230-b311-11eb-941c-e725acf1fbbc",
+                        "i": "rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-b413e230-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -284,11 +284,11 @@
                         "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 3
+                        "y": 6
                     },
                     {
                         "h": 3,
-                        "i": "rsdogskmtv-bf817380-b311-11eb-941c-e725acf1fbbc",
+                        "i": "rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-bf817380-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -298,11 +298,11 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 6
                     },
                     {
-                        "h": 3,
-                        "i": "rsdogskmtv-c6078690-b311-11eb-941c-e725acf1fbbc",
+                        "h": 2,
+                        "i": "rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-c6078690-b311-11eb-941c-e725acf1fbbc",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -310,16 +310,16 @@
                         "name": "Comments",
                         "static": false,
                         "type": "comments",
-                        "w": 1,
-                        "x": 2,
-                        "y": 3
+                        "w": 3,
+                        "x": 0,
+                        "y": 11
                     },
                     {
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc",
+                        "i": "rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
                                 "endCol": 2,
@@ -328,7 +328,9 @@
                                 "id": "212099e0-b312-11eb-941c-e725acf1fbbc",
                                 "index": 0,
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc"
                             }
                         ],
                         "maxW": 3,
@@ -338,6 +340,166 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayName": "Command",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "command",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 600
+                            },
+                            {
+                                "displayName": "Description",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "description",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 650
+                            },
+                            {
+                                "displayName": "Usecase",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "usecase",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 500
+                            },
+                            {
+                                "displayName": "Category",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "category",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 80
+                            },
+                            {
+                                "displayName": "Privileges",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "privileges",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 80
+                            },
+                            {
+                                "displayName": "MitreID",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "mitreid",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 80
+                            },
+                            {
+                                "displayName": "OS",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "os",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 80
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "rsdogskmtv-f705de00-e991-11ed-8104-2b19c202a4c3",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "commands",
+                                "height": 106,
+                                "id": "04822b10-e992-11ed-8104-2b19c202a4c3",
+                                "index": 0,
+                                "listId": "rsdogskmtv-f705de00-e991-11ed-8104-2b19c202a4c3",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "rsdogskmtv-930b2ab0-e9ad-11ed-b7c8-43c4b0b3550f",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "paths",
+                                "height": 106,
+                                "id": "1e23b520-e99c-11ed-b7c8-43c4b0b3550f",
+                                "index": 0,
+                                "listId": "rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-7e70ff86-5ca3-4064-8dfd-0b2e1378636a-rsdogskmtv-50d46d83-a8ad-4cd8-8072-0ff9e32847e9-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-STIX Tool-rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "detections",
+                                "height": 106,
+                                "id": "a01ad340-e9ad-11ed-b7c8-43c4b0b3550f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Paths and detections",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 2,
                         "y": 0
                     }
                 ],
@@ -352,7 +514,7 @@
                         "displayType": "ROW",
                         "h": 9,
                         "hideName": false,
-                        "i": "zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
+                        "i": "STIX Tool-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
                         "items": [
                             {
                                 "endCol": 6,
@@ -380,7 +542,9 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null,
+                        "minW": 3
                     }
                 ],
                 "type": "custom"
@@ -576,7 +740,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Relationships",
                         "static": false,

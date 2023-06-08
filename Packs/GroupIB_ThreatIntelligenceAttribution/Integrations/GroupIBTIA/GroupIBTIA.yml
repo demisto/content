@@ -30,7 +30,6 @@ configuration:
   type: 8
 - additionalinfo: Type(s) of incidents to fetch from the third party API.
   display: Colletions to fetch
-  hidden: false
   name: incident_collections
   options:
   - compromised/account
@@ -47,14 +46,12 @@ configuration:
 - additionalinfo: Date to start fetching incidents from.
   defaultvalue: 3 days
   display: Incidents first fetch
-  hidden: false
   name: first_fetch
   required: false
   type: 0
 - additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
   defaultvalue: '3'
   display: Number of requests per collection
-  hidden: false
   name: max_fetch
   options:
   - '1'

@@ -3049,23 +3049,23 @@ Deprecated. Retrieves traffic log query data by job id.
 ### pan-os-list-rules
 ***
 Returns a list of predefined Security Rules.
-
+**Note**: When passing a query, all other arguments are overridden. Make sure the query includes all necessary filters.
 
 #### Base Command
 
 `pan-os-list-rules`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | A comma-separated list of tags by which to filter the rules. | Optional | 
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules. | Optional | 
-| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no. | Optional | 
-| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop. | Optional | 
-| query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. | Optional | 
+| **Argument Name** | **Description**                                                                                                                        | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------| --- |
+| pre_post | The rules location. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase.                                | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances).                                                                   | Optional | 
+| tag | A comma-separated list of tags by which to filter the rules.                                                                           | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance.                                           | Optional | 
+| rulename | The name of the rule to retrieve. If not mentioned, will retrieve all the rules.                                                       | Optional | 
+| disabled | Whether to retrieve the disabled rules or not. If not mentioned, will retrieve all the rules. Possible values are: yes, no.            | Optional | 
+| action | The action of the rules to retrieve. If not mentioned, will retrieve all the rules. Possible values are: allow, deny, drop.            | Optional | 
+| query | Free query to retrieve rules. If not mentioned, will retrieve all the rules. When passing a query, all other arguments are overridden. | Optional | 
 
 
 #### Context Output
@@ -8673,3 +8673,147 @@ There is no context output for this command.
 #### Human Readable Output
 
 >application-group test-3 was deleted successfully.
+### pan-os-list-tag
+
+***
+Returns a list of tags from Panorama.
+
+#### Base Command
+
+`pan-os-list-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| include_shared_tags | Whether to include shared tags in the list. Possible values are: Yes, No. Default is No. | Optional | 
+| device_group | The device group that the tags are part of. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Tag.name | String | The name of the tag. | 
+| Panorama.Tag.color | String | The color of the tag. | 
+| Panorama.Tag.comment | String | The comment in the tag. | 
+| Panorama.Tag.disable-override | String | Whether overriding the tag is disabled. | 
+
+#### Command example
+```!pan-os-list-tag include_shared_tags=No```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Tag": [
+            {
+                "name": "tag1",
+                "color": "color13"
+            },
+            {
+                "name": "tag2",
+                "color": "color39"
+            },
+            {
+                "name": "tag3",
+                "color": "color39",
+                "disable-override": "no",
+                "comments": "text text text"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags:
+>|Name|Color|Comment|
+>|---|---|---|
+>| tag1 | color13 |  |
+>| tag2 | color39 |  |
+>| tag3 | color39 | text text text |
+
+### pan-os-create-tag
+
+***
+Creates a new tag in Panorama.
+
+#### Base Command
+
+`pan-os-create-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the new tag to be created. | Required | 
+| device_group | The device group that the tag will be part of. | Optional | 
+| disable_override | Whether to disable overriding the tag. Possible values are: true, false. Default is false. | Optional | 
+| is_shared | Whether the tag should be generated in a shared location. Possible values are: true, false. Default is false. | Optional | 
+| comment | The comment for the tag. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-tag name="testtag" comment="some comment" is_shared=false```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was created successfully.
+
+### pan-os-edit-tag
+
+***
+Edits a tag in Panorama.
+
+#### Base Command
+
+`pan-os-edit-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The existing name for the tag to be edited. | Required | 
+| new_name | The new name for the tag to be replaced with. | Optional | 
+| device_group | The device group of the tag. | Optional | 
+| disable_override | Whether to disable overriding the tag. Possible values are: true, false. Default is false. | Optional | 
+| comment | The comment for the tag. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-edit-tag name="testtag" new_name="newtesttag" comment="some comment"```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was edited successfully.
+
+### pan-os-delete-tag
+
+***
+Deletes a tag from Panorama.
+
+#### Base Command
+
+`pan-os-delete-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the tag to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-delete-tag name="testtag"```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was deleted successfully.

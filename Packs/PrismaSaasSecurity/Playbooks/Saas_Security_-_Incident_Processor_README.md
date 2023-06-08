@@ -1,30 +1,35 @@
 This playbook notifies incidents owner and provides remediation options to Saas Security admin for resolving incidents. 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Send Action Taken Email to Tenant Admin
-* Send Action Taken Email to Assignee
+
+* Saas Security - Take Action on the Incident
 
 ### Integrations
-* EWS Mail Sender
+
+This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+
+* IsIntegrationAvailable
 
 ### Commands
+
 * send-mail
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| updated_at | This is the incident updated at timestamp. | ${incident.saassecurityincidentupdatedat} | Optional |
 | tenant_admin | This is the tenant admin email. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -59,5 +64,7 @@ This playbook does not use any scripts.
 | SaasSecurity.Incident.asset_owner_email | Email address of the asset owner. | unknown |
 
 ## Playbook Image
+
 ---
-![Saas Security - Incident Processor](https://raw.githubusercontent.com/demisto/content/6f87824ee719814f27e0f77068242924617de9a1/Packs/PrismaSaasSecurity/doc_files/Incident_Processor_Playbook.png)
+
+![Saas Security - Incident Processor](../doc_files/Saas_Security_-_Incident_Processor.png)
