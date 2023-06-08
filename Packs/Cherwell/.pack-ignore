@@ -5,20 +5,20 @@ ignore=IN126
 ignore=RM106
 
 [file:CherwellGetIncident.yml]
-ignore=BA124
+ignore=BA124,CJ105,RM109
 
 [file:CherwellIncidentUnlinkTask.yml]
-ignore=BA124
+ignore=BA124,CJ105,RM109
 
 [file:CherwellCreateIncident.yml]
-ignore=BA124
+ignore=BA124,CJ105,RM109
 
 [file:CherwellQueryIncidents.yml]
-ignore=BA124
+ignore=BA124,CJ105,RM109
 
 [file:CherwellUpdateIncident.yml]
-ignore=BA124
+ignore=BA124,CJ105,RM109
 
 [file:CherwellIncidentOwnTask.yml]
-ignore=BA124
+ignore=BA124,CJ105,RM109
 
