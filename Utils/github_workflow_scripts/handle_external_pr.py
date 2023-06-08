@@ -122,7 +122,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
         with Checkout(repo=Repo(os.getcwd(), search_parent_directories=True), branch_to_checkout=external_pr_branch):
             packs_support_levels = get_packs_support_levels(changed_pack_dirs)
 
-    print(f'packs_support_levels after checkout: {packs_support_levels}')
+        print(f'packs_support_levels after checkout: {packs_support_levels}')
 
     if packs_support_levels:
         return get_highest_support_label(packs_support_levels)
