@@ -1037,6 +1037,8 @@ Retrieves information about the specified role.
 | AWS.IAM.Roles.AssumeRolePolicyDocument | string | The policy that grants an entity permission to assume the role. | 
 | AWS.IAM.Roles.Description | string | A description of the role that you provide. | 
 | AWS.IAM.Roles.MaxSessionDuration | number | The maximum session duration \(in seconds\) for the specified role. | 
+| AWS.IAM.Roles.Tags.Key | string | The tag key. | 
+| AWS.IAM.Roles.Tags.Value | string | The tag value. | 
 
 
 #### Command Example
