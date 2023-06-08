@@ -7160,6 +7160,7 @@ ipwhois_exception_mapping: Dict[type, str] = {
     ipwhois.exceptions.WhoisRateLimitError: "quota_error",
 }
 
+
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
                   server_list=None, is_refer_server=False, is_recursive=True):
     previous = previous or []
@@ -7174,6 +7175,8 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
         # registration.
         "example.com": "whois.verisign-grs.com"
     }
+
+    execution_metrics = ExecutionMetrics()
 
     if len(previous) == 0 and server == "":
         # Root query
@@ -7200,10 +7203,15 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
     for i in range(0, 3):
         try:
             response = whois_request(request_domain, target_server, is_refer_server=is_refer_server)
-        except socket.error as err:
+
+        # Connection errors
+        # https://docs.python.org/3/library/socket.html#exceptions
+        except (socket.error, socket.herror, socket.gaierror) as err:
             if err.errno == errno.ECONNRESET:
+                execution_metrics.connection_error += 1
                 continue
-            else:
+            elif socket.timeout:
+                execution_metrics.timeout_error += 1
                 raise
         break
     # Executed only if the for loop ran to the full
@@ -7281,7 +7289,7 @@ def get_root_server(domain):
             else:
                 return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
                                outputs=context)
-                raise WhoisWarnningException('The domain - {} - is not supported by the Whois service'.format(domain))
+                raise WhoisWarningException('The domain - {} - is not supported by the Whois service'.format(domain))
         return host
 
     else:
@@ -7349,8 +7357,16 @@ class WhoisException(Exception):
     pass
 
 
-class WhoisWarnningException(Exception):
+class WhoisWarningException(Exception):
     pass
+
+
+# whois (domain) exception to execution metrics attributes mapping
+domainwhos_exception_mapping: Dict[type, str] = {
+    socket.timeout: "timeout_error",
+    WhoisException: "connection_error",
+    WhoisWarningException: "service_error"
+}
 
 
 def precompile_regexes(source, flags=0):
@@ -8467,7 +8483,7 @@ def domain_command(reliability):
     for domain in argToList(domains):
         try:
             whois_result = get_whois(domain, is_recursive=is_recursive)
-        except WhoisWarnningException:
+        except WhoisWarningException:
             continue
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
         dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
