@@ -1,6 +1,6 @@
 [file:Verodin.yml]
-ignore=IN126
-
+ignore=IN126,IN140,RM110
 
 [file:Verodin_image.png]
 ignore=IM111
+

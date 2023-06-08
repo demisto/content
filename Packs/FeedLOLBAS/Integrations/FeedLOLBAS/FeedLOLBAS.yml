@@ -8,7 +8,6 @@ sectionOrder:
 configuration:
 - defaultvalue: 'https://lolbas-project.github.io/api'
   display: Base URL
-  hidden: false
   name: base_url
   required: true
   type: 0
@@ -177,7 +176,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
 fromversion: 6.8.0
 tests:
 - FeedLOLBas_test
