@@ -2805,12 +2805,12 @@ List the available host groups.
                 "name": "d2Mon Aug 23 2021"
             },
             {
-                "created_by": "akrupnik@paloaltonetworks.com",
+                "created_by": "someone@email.com",
                 "created_timestamp": "2021-07-27T12:27:43.503021999Z",
                 "description": "dhfh",
                 "group_type": "staticByID",
                 "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "modified_by": "akrupnik@paloaltonetworks.com",
+                "modified_by": "someone@email.com",
                 "modified_timestamp": "2021-07-27T12:27:43.503021999Z",
                 "name": "ddfxgh"
             },
@@ -5359,7 +5359,7 @@ Retrieve ODS scan details.
                 "cloud_ml_level_detection": 4,
                 "cloud_ml_level_prevention": 4,
                 "cpu_priority": 5,
-                "created_by": "ssokolovich@paloaltonetworks.com",
+                "created_by": "someone@email.com",
                 "created_on": "2023-05-03T08:45:41.688556439Z",
                 "endpoint_notification": true,
                 "file_paths": [
@@ -5429,7 +5429,7 @@ Retrieve ODS scan details.
                 "cloud_ml_level_detection": 3,
                 "cloud_ml_level_prevention": 3,
                 "cpu_priority": 4,
-                "created_by": "maizen@paloaltonetworks.com",
+                "created_by": "someone@email.com",
                 "created_on": "2023-03-12T14:54:43.659773852Z",
                 "endpoint_notification": true,
                 "filecount": {},
@@ -5495,7 +5495,7 @@ Retrieve ODS scan details.
 >|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
 >|---|---|---|---|---|---|---|---|---|
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518464 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-03-15T15:57:37.59543591Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-03-13T14:47:44.674818897Z | maizen@paloaltonetworks.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-03-13T14:47:44.674818897Z | someone@email.com |
 
 ### cs-falcon-ods-query-scheduled-scan
 
@@ -5797,7 +5797,7 @@ Retrieve ODS malicious file details.
 ### cs-falcon-ods-create-scan
 
 ***
-Create an ODS scheduled scan or an ODS scan
+Create an ODS scan and wait for results.
 
 #### Base Command
 
@@ -5808,12 +5808,12 @@ Create an ODS scheduled scan or an ODS scan
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hosts | List of hosts to be scanned. "hosts" OR "host_groups" must be set. | Optional | 
-| host_groups | List of host groups to be scanned. Must be set if scan is scheduled. "hosts" OR "host_groups" must be set. | Optional | 
+| host_groups | List of host groups to be scanned. "hosts" OR "host_groups" must be set. | Optional | 
 | file_paths | List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
 | scan_inclusions | List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
 | scan_exclusions | List of excluded files or locations for this scan. | Optional | 
 | initiated_from | Scan origin. | Optional | 
-| cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. | Optional | 
+| cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
 | description | Scan description. | Optional | 
 | quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
 | pause_duration | Amount of time (in seconds) for scan pauses. Default is 2. | Optional | 
@@ -5822,18 +5822,16 @@ Create an ODS scheduled scan or an ODS scan
 | cloud_ml_level_detection | ML Detection level for the scan. | Optional | 
 | cloud_ml_level_prevention | ML Prevention level for the scan. | Optional | 
 | max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
-| is_scheduled | If to make it a scheduled scan. If set to true, schedule_start_timestamp, schedule_interval and host_groups must be defined. Default is False. | Optional | 
-| schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". Must be set if scan is scheduled. | Optional | 
-| schedule_interval | Set the schedule interval. Must be set if scan is scheduled. Possible values are: never, daily, weekly, every other week, every 4 weeks, monthly. | Optional | 
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.ODSScan.id | String | a unique identifier for the scan event. | 
-| CrowdStrike.ODSScan.cid | String | a unique identifier for the client that triggered the scan. | 
-| CrowdStrike.ODSScan.file_paths | String | The file or folder paths scanned. | 
-| CrowdStrike.ODSScan.profile_id | String | a unique identifier for the scan profile used in the scan. | 
+| CrowdStrike.ODSScan.id | String | A unique identifier for the scan event. | 
+| CrowdStrike.ODSScan.cid | String | A unique identifier for the client that triggered the scan. | 
+| CrowdStrike.ODSScan.profile_id | String | A unique identifier for the scan profile used in the scan. | 
 | CrowdStrike.ODSScan.description | String | the ID of the description of the scan. | 
 | CrowdStrike.ODSScan.scan_inclusions | String | The files or folders included in the scan. | 
 | CrowdStrike.ODSScan.initiated_from | String | The source of the scan initiation. | 
@@ -5841,12 +5839,19 @@ Create an ODS scheduled scan or an ODS scan
 | CrowdStrike.ODSScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
 | CrowdStrike.ODSScan.preemption_priority | Number | The preemption priority for the scan. | 
 | CrowdStrike.ODSScan.metadata.host_id | String | A unique identifier for the host that was scanned. | 
+| CrowdStrike.ODSScan.metadata.host_scan_id | String | A unique identifier for the scan that was performed on the host. | 
 | CrowdStrike.ODSScan.metadata.scan_host_metadata_id | String | A unique identifier for the metadata associated with the host scan. | 
-| CrowdStrike.ODSScan.metadata.filecount | Unknown | Placeholder key. | 
+| CrowdStrike.ODSScan.metadata.filecount.scanned | Number | The number of files that were scanned. | 
+| CrowdStrike.ODSScan.metadata.filecount.malicious | Number | The number of files that were identified as malicious. | 
+| CrowdStrike.ODSScan.metadata.filecount.quarantined | Number | The number of files that were quarantined. | 
+| CrowdStrike.ODSScan.metadata.filecount.skipped | Number | The number of files that were skipped during the scan. | 
+| CrowdStrike.ODSScan.metadata.filecount.traversed | Number | The number of files that were traversed during the scan. | 
+| CrowdStrike.ODSScan.metadata.status | String | The status of the scan on this host. \(e.q., "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.metadata.started_on | Date | The date and time that the scan started. | 
+| CrowdStrike.ODSScan.metadata.completed_on | Date | The date and time that the scan completed. | 
 | CrowdStrike.ODSScan.metadata.last_updated | Date | The date and time that the metadata was last updated. | 
-| CrowdStrike.ODSScan.status | String | The status of the scan. \(e.q., "scheduled", "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.status | String | The status of the scan. \(e.q., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
-| CrowdStrike.ODSScan.host_groups | String | The host groups targeted by the scan. | 
 | CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
 | CrowdStrike.ODSScan.pause_duration | Number | The number of minutes to pause between scanning each file in hours. | 
 | CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in hours. | 
@@ -5855,16 +5860,166 @@ Create an ODS scheduled scan or an ODS scan
 | CrowdStrike.ODSScan.sensor_ml_level_prevention | Number | The level of prevention sensitivity for the local sensor machine learning model. | 
 | CrowdStrike.ODSScan.cloud_ml_level_detection | Number | The level of detection sensitivity for the cloud machine learning model. | 
 | CrowdStrike.ODSScan.cloud_ml_level_prevention | Number | The level of prevention sensitivity for the cloud machine learning model. | 
-| CrowdStrike.ODSScan.policy_setting | Number | a list of policy setting IDs for the scan job \(these correspond to specific policy settings in the Falcon console\). | 
-| CrowdStrike.ODSScan.schedule.start_timestamp | Date | The timestamp when the first scan was created. | 
-| CrowdStrike.ODSScan.schedule.interval | Number | The interval between scans. | 
+| CrowdStrike.ODSScan.policy_setting | Number | A list of policy setting IDs for the scan job \(these correspond to specific policy settings in the Falcon console\). | 
+| CrowdStrike.ODSScan.scan_started_on | Date | The timestamp when the scan was started. | 
+| CrowdStrike.ODSScan.scan_completed_on | Date | The timestamp when the scan was completed. | 
 | CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. | 
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. | 
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
 
 #### Command example
 
-```!cs-falcon-ods-create-scan cpu_priority=Low scan_inclusions=* host_groups=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 is_scheduled=true pause_duration=3 quarantine=true schedule_start_timestamp=2023-05-06T06:49 schedule_interval="every other week"```
+```!cs-falcon-ods-create-scan cpu_priority=Low scan_inclusions=* hosts=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 pause_duration=3 quarantine=true"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "ODSScan": [
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 2,
+                "created_by": "someone@email.com",
+                "created_on": "2023-05-03T08:45:41.688556439Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\eicar_com.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "falcon_adhoc",
+                "last_updated": "2023-05-03T08:45:43.348230927Z",
+                "max_duration": 0,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:45:43.274953782Z",
+                        "filecount": {
+                            "malicious": 2,
+                            "quarantined": 2,
+                            "scanned": 6,
+                            "skipped": 1,
+                            "traversed": 20
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:45:43.61797613Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:45:43.069273028Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 3,
+                "policy_setting": [
+                    26439818675190,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:45:43.274953782Z",
+                "scan_inclusions": [
+                    "**\\Downloads\\**"
+                ],
+                "scan_started_on": "2023-05-03T08:45:43.069273028Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scans
+
+>|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
+>|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 6<br/>malicious: 2<br/>quarantined: 2<br/>skipped: 1<br/>traversed: 20 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:45:43.274953782Z | 2023-05-03T08:45:43.069273028Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+
+
+### cs-falcon-ods-create-scheduled-scan
+
+***
+Create an ODS scheduled scan.
+
+#### Base Command
+
+`cs-falcon-ods-create-scheduled-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_groups | List of host groups to be scanned. | Required | 
+| file_paths | List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_inclusions | List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_exclusions | List of excluded files or locations for this scan. | Optional | 
+| initiated_from | Scan origin. | Optional | 
+| cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
+| description | Scan description. | Optional | 
+| quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
+| pause_duration | Amount of time (in seconds) for scan pauses. Default is 2. | Optional | 
+| sensor_ml_level_detection | Sensor ML detection level. | Optional | 
+| sensor_ml_level_prevention | Sensor ML prevention level. | Optional | 
+| cloud_ml_level_detection | ML Detection level for the scan. | Optional | 
+| cloud_ml_level_prevention | ML Prevention level for the scan. | Optional | 
+| max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
+| schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". | Required | 
+| schedule_interval | Set the schedule interval. Possible values are: never, daily, weekly, every other week, every 4 weeks, monthly. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.ODSScheduledScan.id | String | Unique identifier for the scan. | 
+| CrowdStrike.ODSScheduledScan.cid | String | Identifier for the customer or organization that owns the scan. | 
+| CrowdStrike.ODSScheduledScan.description | String | The ID of the description of the scan. | 
+| CrowdStrike.ODSScheduledScan.file_paths | String | The file or folder paths scanned. | 
+| CrowdStrike.ODSScheduledScan.scan_exclusions | String | The file or folder exclusions from the scan. | 
+| CrowdStrike.ODSScheduledScan.initiated_from | String | The source of the scan initiation. | 
+| CrowdStrike.ODSScheduledScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
+| CrowdStrike.ODSScheduledScan.preemption_priority | Number | The preemption priority for the scan. | 
+| CrowdStrike.ODSScheduledScan.status | String | The status of the scan, whether it's "scheduled", "running", "completed", etc. | 
+| CrowdStrike.ODSScheduledScan.host_groups | String | The host groups targeted by the scan. | 
+| CrowdStrike.ODSScheduledScan.endpoint_notification | Boolean | Whether notifications of the scan were sent to endpoints. | 
+| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of scan in hours. | 
+| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of scan in hours. | 
+| CrowdStrike.ODSScheduledScan.max_file_size | Number | The maximum file size that the scan can handle in MB. | 
+| CrowdStrike.ODSScheduledScan.sensor_ml_level_detection | Number | The machine learning detection level for the sensor. | 
+| CrowdStrike.ODSScheduledScan.cloud_ml_level_detection | Number | The machine learning detection level for the cloud. | 
+| CrowdStrike.ODSScheduledScan.schedule.start_timestamp | Date | The timestamp when the first scan was created. | 
+| CrowdStrike.ODSScheduledScan.schedule.interval | Number | The interval between scans. | 
+| CrowdStrike.ODSScheduledScan.created_on | Date | The timestamp when the scan was created. | 
+| CrowdStrike.ODSScheduledScan.created_by | String | The user who created the scan. | 
+| CrowdStrike.ODSScheduledScan.last_updated | Date | The timestamp when the scan was last updated. | 
+| CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan has been deleted. | 
+| CrowdStrike.ODSScheduledScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
+| CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
+| CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
+| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
+
+#### Command example
+
+```!cs-falcon-ods-create-scheduled-scan cpu_priority=Low scan_inclusions=* host_groups=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 pause_duration=3 quarantine=true schedule_start_timestamp="in a weeek" schedule_interval="every other week"```
 
 #### Context Example
 
@@ -5899,38 +6054,6 @@ Create an ODS scheduled scan or an ODS scan
                 26439818674573,
                 26439818674574,
                 26439818675074,
-                26405458936702,
-                26405458936703,
-                26405458936707,
-                26439818675124,
-                26439818675125,
-                26439818675157,
-                26439818675158,
-                26439818675182,
-                26439818675183,
-                26439818675190,
-                26439818675191,
-                26439818675196,
-                26439818675197,
-                26439818675204,
-                26439818675205,
-                26405458936760,
-                26405458936761,
-                26405458936793,
-                26405458936794,
-                26405458936818,
-                26405458936819,
-                26405458936825,
-                26405458936826,
-                26405458936832,
-                26405458936833,
-                26405458936840,
-                26405458936841,
-                26456998543793,
-                26456998544045,
-                26456998543652,
-                26456998543653,
-                26456998543656,
                 26456998543654,
                 26456998543950,
                 26456998543963
