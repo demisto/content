@@ -748,6 +748,11 @@ def check_if_whois_installed():
 
 
 def main():
+
+    if demisto.demistoVersion().get("platform") == "x2":
+        return_results('This script does not support on XSIAM')
+        return
+
     who_is_enabled = check_if_whois_installed()
     try:
         msg_list = []  # type: List
