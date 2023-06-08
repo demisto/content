@@ -14,8 +14,6 @@ from dateutil.parser import parse
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
-# from gql import Client, gql
-# from gql.transport.requests import RequestsHTTPTransport
 ''' GLOBALS/PARAMS '''
 
 INTEGRATION_NAME = 'CrowdStrike Falcon'
@@ -1856,30 +1854,6 @@ def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
     """
     return http_request(method='GET',
                         url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{"?ids=" + "&ids=".join(exclusion_ids)}')
-
-
-def update_incident_fields(payload: str) -> dict:
-    """
-        Execute the update incident request for update status and comment.
-
-        Args:
-            payload (str): The request payload
-        Returns:
-            Dict: The response.
-    """
-    return http_request(url_suffix="/identity-protection/combined/graphql/v1", method='POST', data=payload)
-
-
-def resolve_identity_detection(body: str) -> dict:
-    """
-        Execute the resolve identity detection request.
-
-        Args:
-            body (dict): The request body
-        Returns:
-            Dict: The response.
-    """
-    return http_request(url_suffix="/alerts/entities/alerts/v2", method='PATCH', data=body)
 
 
 def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination: dict) -> dict:

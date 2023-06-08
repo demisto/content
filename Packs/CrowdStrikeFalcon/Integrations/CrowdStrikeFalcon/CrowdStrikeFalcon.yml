@@ -132,7 +132,6 @@ configuration:
   - Detections
   - Incidents
   - IDP Detection
-  - IDP Incident
   - Endpoint Incident
   - Endpoint Detection
   section: Collect
