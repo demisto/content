@@ -114,14 +114,12 @@ configuration:
   type: 19
   defaultvalue: '1'
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
@@ -1146,7 +1144,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: false
     deprecated: false
     description: Describes Amazon GuardDuty findings specified by finding IDs.
     execution: false
