@@ -765,54 +765,92 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 #### Context Example
 ```json
 {
-  "data": {
-    "id": "9",
-    "type": "attachment_payloads",
-    "links": {
-      "self": "https://triage.example.com/api/public/v2/attachment_payloads/9"
-    },
-    "attributes": {
-      "mime_type": "image/png; charset=binary",
-      "md5": "9f16385db56b9429fc210b19df070fe7",
-      "sha256": "7609ec052a3834f0ac822001837d7b25dea34bd38143a13ea6a187c1922aad28",
-      "risk_score": null,
-      "created_at": "2020-10-21T20:54:36.531Z",
-      "updated_at": "2020-10-21T20:54:36.531Z"
-    },
-    "relationships": {
-      "attachments": {
+  "Cofense": {
+    "AttachmentPayload": [
+      {
+        "attributes": {
+          "created_at": "2020-10-21T20:57:56.750Z",
+          "md5": "99a9eb2612d7e84c5402fde1114c53ee",
+          "mime_type": "application/xml; charset=us-ascii",
+          "risk_score": 0,
+          "sha256": "22b3e2a4f41a0a0b6c93cd0da7b28b84a2375b815f787624e81acaaf32a5d191",
+          "updated_at": "2022-03-08T20:20:32.561Z"
+        },
+        "id": "74",
         "links": {
-          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/attachments",
-          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/attachments"
-        }
+          "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74"
+        },
+        "relationships": {
+          "attachments": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/attachments",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/attachments"
+            }
+          },
+          "clusters": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/clusters",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/clusters"
+            }
+          },
+          "integration_submissions": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/integration_submissions",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/integration_submissions"
+            }
+          },
+          "reports": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/reports",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/74/relationships/reports"
+            }
+          }
+        },
+        "type": "attachment_payloads"
       },
-      "clusters": {
+      {
+        "attributes": {
+          "created_at": "2020-10-21T20:57:56.940Z",
+          "md5": "61da9c47fff9b04e59b951aa700c7980",
+          "mime_type": "image/png; charset=binary",
+          "sha256": "7757f5392a8971b280464ae0d760b04980b82a9a2a3105c2bd6c9293ff7f9b9a",
+          "updated_at": "2020-10-21T20:57:56.940Z"
+        },
+        "id": "78",
         "links": {
-          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/clusters",
-          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/clusters"
-        }
-      },
-      "integration_submissions": {
-        "links": {
-          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/integration_submissions",
-          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/integration_submissions"
-        }
-      },
-      "reports": {
-        "links": {
-          "self": "https://triage.example.com/api/public/v2/attachment_payloads/9/relationships/reports",
-          "related": "https://triage.example.com/api/public/v2/attachment_payloads/9/reports"
-        }
+          "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78"
+        },
+        "relationships": {
+          "attachments": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/attachments",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/attachments"
+            }
+          },
+          "clusters": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/clusters",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/clusters"
+            }
+          },
+          "integration_submissions": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/integration_submissions",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/integration_submissions"
+            }
+          },
+          "reports": {
+            "links": {
+              "related": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/reports",
+              "self": "https://reltest6.phishmecloud.com/api/public/v2/attachment_payloads/78/relationships/reports"
+            }
+          }
+        },
+        "type": "attachment_payloads"
       }
-    }
-  },
-  "links": {
-    "first": "https://triage.example.com/api/public/v2/attachment_payloads?page%5Bnumber%5D=1&page%5Bsize%5D=2",
-    "next": "https://triage.example.com/api/public/v2/attachment_payloads?page%5Bnumber%5D=2&page%5Bsize%5D=2",
-    "last": "https://triage.example.com/api/public/v2/attachment_payloads?page%5Bnumber%5D=103&page%5Bsize%5D=2"
+    ]
   }
 }
-
 ```
 
 #### Human Readable Output
