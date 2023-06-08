@@ -1585,7 +1585,7 @@ def process_launch_scan_response(res: Dict[str, Any]):
 
 
 @polling_function(name='tenable-sc-launch-scan',
-                  requires_polling_arg=False,
+                  requires_polling_arg=True,
                   poll_message="Scan in progress.",
                   timeout=arg_to_number(demisto.args().get("timeout_in_seconds", '10800')))
 def launch_scan_command(args: Dict[str, Any], client: Client):
