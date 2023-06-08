@@ -3052,22 +3052,6 @@ def test_override_print(mocker):
     int_logger.print_override("test", "this", file=buf)
     assert buf.getvalue() == 'test this\n'
 
-
-
-
-batch_params = [
-    # full batch case
-    ([1, 2, 3], 1, [[1], [2], [3]]),
-    # empty case
-    ([], 1, []),
-    # out of index case
-    ([1, 2, 3], 5, [[1, 2, 3]]),
-    # out of index in end with batches
-    ([1, 2, 3, 4, 5], 2, [[1, 2], [3, 4], [5]]),
-    ([1] * 100, 2, [[1, 1]] * 50)
-]
-
-
 @pytest.mark.parametrize('string_to_quote, expected', [
     ("a", "a"),
     ('a"b', 'a%22b'),
