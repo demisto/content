@@ -100,6 +100,7 @@ class Server:
     def get_custom_user_agent(self):
         return f"demisto-py/dev (Build:{self.build_number})"
 
+
 class CloudServer(Server):
 
     def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name, build_number=''):
