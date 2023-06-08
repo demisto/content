@@ -309,7 +309,7 @@ def format_incidents(alerts):
                 "severity": INCIDENT_SEVERITY.get(alert['severity'].lower()),
                 "alert_group_id": "{}".format(alert['alert_group_id']),
                 "event_id": "{}".format(alert['id']),
-                "data_message": "{}".format(alert['data_message']['metadata']),
+                "data_message": "{}".format(alert['data_message']),
                 "keyword": "{}".format(alert['metadata']['entity']['keyword']['tag_name']),
                 "created_at": "{}".format(alert['created_at'])
             }
@@ -348,9 +348,10 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
         validate_input(args, False)
 
         input_params['limit'] = arg_to_number(args.get('limit', 10))
-        input_params['start_date'] = args.get('start_date', 0)
+        input_params['start_date'] = args.get('start_date', '')
+        input_params['end_date'] = args.get('end_date', '')
 
-        if not args.get('end_date', 0):
+        if not args.get('end_date', ''):
             input_params['end_date'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
 
     else:
@@ -370,7 +371,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
         else:
             input_params['limit'] = max_results
 
-    input_params['end_date'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
+        input_params['end_date'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
 
     latest_created_time = input_params['start_date']
 
