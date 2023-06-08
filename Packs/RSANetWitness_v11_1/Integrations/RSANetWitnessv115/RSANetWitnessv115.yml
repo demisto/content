@@ -2338,7 +2338,7 @@ script:
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     execution: false
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: true
   longRunning: false
