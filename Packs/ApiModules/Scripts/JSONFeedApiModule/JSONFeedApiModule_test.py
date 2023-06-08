@@ -364,6 +364,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
     Given
     - Feed config from AWS feed, with last_run from the same feed, emulating the first
       fetch after updating the AWS Feed integration when there is no update to the feed.
+      (the last_run object contains an 'AMAZON' entry)
 
     When
     - Running fetch indicators command
@@ -371,6 +372,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
     Then
     - Ensure that the correct message displays in demisto.debug, and the last_run object
      remained the same, and continue to have the previous AWS feed config name 'AMAZON'.
+     (the last_run object contains an 'AMAZON' entry)
     """
     with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
