@@ -5054,7 +5054,6 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
         'description': args.get('description'),
         'quarantine': argToBoolean(args.get('quarantine')) if args.get('quarantine') is not None else None,
-        'endpoint_notification': True,
         'pause_duration': arg_to_number(args.get('pause_duration')),
         'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
         'sensor_ml_level_prevention': arg_to_number(args.get('sensor_ml_level_prevention')),
@@ -5063,19 +5062,17 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         'max_duration': arg_to_number(args.get('max_duration')),
     }
 
-    result |= {
-        'schedule': {
-            'ignored_by_channelfile': True,
+    if is_scheduled:
+        result['schedule'] = {
             'interval': SCHEDULE_INTERVAL_STR_TO_INT.get(args['schedule_interval'].lower()),
             'start_timestamp': (
                 dateparser.parse(args['schedule_start_timestamp'])
                 or return_error('Invalid start_timestamp.')
             ).strftime("%Y-%m-%dT%H:%M"),
-
         }
-    } if is_scheduled else {
-        'hosts': argToList(args.get('hosts')),
-    }
+
+    else:
+        result['hosts'] = argToList(args.get('hosts'))
 
     return result
 

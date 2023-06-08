@@ -8,6 +8,7 @@ from _pytest.python_api import raises
 import demistomock as demisto
 from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus
 from test_data import input_data
+from freezegun import freeze_time
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
@@ -5050,7 +5051,12 @@ def test_map_scan_host_resource_to_UI(mocker):
         'ID': "185a0ad5e159418e8927d956c1a793d8",
         'Scan ID': "fadde07ee8a44a07988e009b3152e339",
         'Host ID': "82395m302t8zea2u25978416be1973c5",
-        'Filecount': 'scanned: 1021\nmalicious: 104\nquarantined: 0\nskipped: 9328',
+        'Filecount': {
+            "scanned": 1021,
+            "malicious": 104,
+            "quarantined": 0,
+            "skipped": 9328
+        },
         'Status': "completed",
         'Severity': 70,
         'Started on': "2022-11-01T18:54:59.39861174Z",
@@ -5160,8 +5166,9 @@ def test_map_malicious_file_resource_to_UI(mocker):
 @pytest.mark.parametrize(
     'args, is_scheduled, expected_result',
     (
-        ({'is_scheduled': True, 'quarantine': 'false', 'schedule_interval': 'every other week'}, True, {'quarantine': False}),
-        ({'is_scheduled': False, 'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
+        ({'quarantine': 'false', 'schedule_interval': 'every other week',
+          'schedule_start_timestamp': 'tomorrow'}, True, {'quarantine': False}),
+        ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
     )
 )
 def test_make_create_scan_request_body(args, is_scheduled, expected_result):
@@ -5196,11 +5203,9 @@ def test_make_create_scan_request_body(args, is_scheduled, expected_result):
 @pytest.mark.parametrize(
     'args, is_error, expected_error_info',
     (
-        ({'is_scheduled': 'False'}, True, 'MUST set either hosts OR host_groups.'),
-        ({'hosts': 'john doe', 'is_scheduled': 'False'}, True, 'MUST set either file_paths OR scan_inclusions.'),
-        ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'true'}, True,
-         'MUST set schedule_start_timestamp AND schedule_interval AND host_groups for scheduled scans.'),
-        ({'hosts': 'john doe', 'file_paths': '*', 'is_scheduled': 'False'}, False, None),
+        ({}, True, 'MUST set either hosts OR host_groups.'),
+        ({'hosts': 'john doe'}, True, 'MUST set either file_paths OR scan_inclusions.'),
+        ({'hosts': 'john doe', 'file_paths': '*'}, False, None),
     )
 )
 def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
@@ -5216,7 +5221,6 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
     Then
         - Return a dict to send as the body for a create scan request.
     """
-
     from CrowdStrikeFalcon import ODS_verify_create_scan_command
 
     if is_error:
@@ -5228,14 +5232,15 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
 
 
 @pytest.mark.parametrize(
-    'body, is_scheduled',
+    'args, is_scheduled, body',
     (
-        ({'endpoint_notification': True, 'schedule': {
-            'ignored_by_channelfile': True, 'interval': None, 'start_timestamp': None}}, True),
-        ({'endpoint_notification': True}, False)
+        ({'quarantine': 'false', 'schedule_interval': 'every other week',
+          'schedule_start_timestamp': 'tomorrow'}, True, {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22'}}),
+        ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
     )
 )
-def test_ODS_create_scan_request(mocker, body, is_scheduled):
+@freeze_time("2020-09-26 17:22:13 UTC")
+def test_ODS_create_scan_request(mocker, args, is_scheduled, body):
     """
     Test ODS_create_scan_request.
 
@@ -5252,7 +5257,7 @@ def test_ODS_create_scan_request(mocker, body, is_scheduled):
     from CrowdStrikeFalcon import ODS_create_scan_request
 
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
-    ODS_create_scan_request({}, is_scheduled)
+    ODS_create_scan_request(args, is_scheduled)
     http_request.assert_called_with('POST', f'/ods/entities/{"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
 
 
@@ -5282,4 +5287,4 @@ def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_param
 
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_delete_scheduled_scans_request(ids, scans_filter)
-    http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}')
+    http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)

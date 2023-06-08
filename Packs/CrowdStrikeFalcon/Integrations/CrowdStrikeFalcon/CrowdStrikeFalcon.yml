@@ -374,7 +374,7 @@ script:
       - reopened
       - ignored
     - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
-      name: assigned_to_uuid
+      name: Assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
       name: comment
     - auto: PREDEFINED
@@ -404,8 +404,8 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -692,8 +692,8 @@ script:
       name: timeout
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -1355,7 +1355,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: 'Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity.'
-      name: action
+      name: Action
       predefined:
       - no_action
       - allow
@@ -1389,7 +1389,7 @@ script:
       name: description
     - auto: PREDEFINED
       description: Whether the indicator is applied globally. Either applied_globally or host_groups must be provided.
-      name: applied_globally
+      name: Applied_globally
       predefined:
       - 'true'
       - 'false'
@@ -1447,7 +1447,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: 'Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity.'
-      name: action
+      name: Action
       predefined:
       - no_action
       - allow
@@ -2109,7 +2109,7 @@ script:
     - description: The description of the host.
       name: description
     - description: The assignment rule.
-      name: assignment_rule
+      name: Assignment_rule
     description: Create a host group.
     name: cs-falcon-create-host-group
     outputs:
@@ -2190,7 +2190,7 @@ script:
     - description: The description of the host group.
       name: description
     - description: The assignment rule.
-      name: assignment_rule
+      name: Assignment_rule
     description: Updates a host group.
     name: cs-falcon-update-host-group
     outputs:
@@ -2409,8 +2409,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2441,8 +2441,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2458,8 +2458,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2472,8 +2472,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2491,8 +2491,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2502,8 +2502,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2526,8 +2526,8 @@ script:
       name: SHA256
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
+      defaultValue: false
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2613,7 +2613,7 @@ script:
       name: filter
       required: false
     - description: Unique agent identifier (AID) of a sensor.
-      name: aid
+      name: Aid
       isArray: true
       required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
@@ -3091,7 +3091,7 @@ script:
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: Applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
       required: false
     - description: The value by which the exclusions should be filtered.
@@ -3391,7 +3391,7 @@ script:
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: Applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
       required: false
     - description: The name by which the exclusions should be filtered.
@@ -3558,7 +3558,7 @@ script:
       isArray: true
     - auto: PREDEFINED
       description: Action to perform against the quarantined file.
-      name: action
+      name: Action
       required: true
       predefined:
       - delete
@@ -3656,13 +3656,13 @@ script:
     polling: true
     outputs:
     - contextPath: CrowdStrike.ODSScan.id
-      description: a unique identifier for the scan event.
+      description: A unique identifier for the scan event.
       type: String
     - contextPath: CrowdStrike.ODSScan.cid
-      description: a unique identifier for the client that triggered the scan.
+      description: A unique identifier for the client that triggered the scan.
       type: String
     - contextPath: CrowdStrike.ODSScan.profile_id
-      description: a unique identifier for the scan profile used in the scan.
+      description: A unique identifier for the scan profile used in the scan.
       type: String
     - contextPath: CrowdStrike.ODSScan.description
       description: the ID of the description of the scan.
@@ -3749,7 +3749,7 @@ script:
       description: The level of prevention sensitivity for the cloud machine learning model.
       type: Number
     - contextPath: CrowdStrike.ODSScan.policy_setting
-      description: a list of policy setting IDs for the scan job (these correspond to specific policy settings in the Falcon console).
+      description: A list of policy setting IDs for the scan job (these correspond to specific policy settings in the Falcon console).
       type: Number
     - contextPath: CrowdStrike.ODSScan.scan_started_on
       description: The timestamp when the scan was started.
@@ -3916,22 +3916,22 @@ script:
     name: cs-falcon-ods-query-scan-host
     outputs:
     - contextPath: CrowdStrike.ODSScanHost.id
-      description: a unique identifier for the scan event.
+      description: A unique identifier for the scan event.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.cid
-      description: a unique identifier for the client that triggered the scan.
+      description: A unique identifier for the client that triggered the scan.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.scan_id
-      description: a unique identifier for the scan.
+      description: A unique identifier for the scan.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.profile_id
-      description: a unique identifier for the scan profile used in the scan.
+      description: A unique identifier for the scan profile used in the scan.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.host_id
-      description: a unique identifier for the host that was scanned
+      description: A unique identifier for the host that was scanned
       type: String
     - contextPath: CrowdStrike.ODSScanHost.host_scan_id
-      description: a unique identifier for the scan that was performed on the host.
+      description: A unique identifier for the scan that was performed on the host.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.filecount.scanned
       description: the number of files that were scanned during the scan.
@@ -3949,7 +3949,7 @@ script:
       description: the status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed")
       type: String
     - contextPath: CrowdStrike.ODSScanHost.severity
-      description: a severity score assigned to the scan, ranging from 0 to 100
+      description: A severity score assigned to the scan, ranging from 0 to 100
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.started_on
       description: the date and time when the scan was started.
@@ -3998,19 +3998,19 @@ script:
     name: cs-falcon-ods-query-malicious-files
     outputs:
     - contextPath: CrowdStrike.ODSMaliciousFile.id
-      description: a unique identifier of the detection event.
+      description: A unique identifier of the detection event.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.cid
-      description: a unique identifier for the client that triggered the detection event.
+      description: A unique identifier for the client that triggered the detection event.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.scan_id
-      description: a unique identifier for the scan that triggered the detection event.
+      description: A unique identifier for the scan that triggered the detection event.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.host_id
-      description: a unique identifier for the scan that detected the file on the host.
+      description: A unique identifier for the scan that detected the file on the host.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.host_scan_id
-      description: a unique identifier for the scan that detected the file on the host.
+      description: A unique identifier for the scan that detected the file on the host.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.filepath
       description: the full path to the malicious file on the host system.
@@ -4019,16 +4019,16 @@ script:
       description: the name of the malicious file.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.hash
-      description: a SHA-256 hash of the malicious file, which can be used to identify it.
+      description: A SHA-256 hash of the malicious file, which can be used to identify it.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.pattern_id
       description: the identifier of the pattern used to detect the malicious file.
       type: Number
     - contextPath: CrowdStrike.ODSMaliciousFile.severity
-      description: a severity score assigned to the detection event, ranging from 0 to 100.
+      description: A severity score assigned to the detection event, ranging from 0 to 100.
       type: Number
     - contextPath: CrowdStrike.ODSMaliciousFile.quarantined
-      description: a Boolean value indicating whether the file has been quarantined.
+      description: A Boolean value indicating whether the file has been quarantined.
       type: Boolean
     - contextPath: CrowdStrike.ODSMaliciousFile.last_updated
       description: the date and time when the detection event was last updated.
@@ -4104,8 +4104,118 @@ script:
     description: Create an ODS scan and wait for results.
     name: cs-falcon-ods-create-scan
     polling: true
-    outputs: []
-
+    outputs:
+    - contextPath: CrowdStrike.ODSScan.id
+      description: A unique identifier for the scan event.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.cid
+      description: A unique identifier for the client that triggered the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.profile_id
+      description: A unique identifier for the scan profile used in the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.description
+      description: the ID of the description of the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.scan_inclusions
+      description: The files or folders included in the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.initiated_from
+      description: The source of the scan initiation.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.quarantine
+      description: If was set to quarantine.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScan.cpu_priority
+      description: The CPU priority for the scan (1-5).
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.preemption_priority
+      description: The preemption priority for the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.host_id
+      description: A unique identifier for the host that was scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.host_scan_id
+      description: A unique identifier for the scan that was performed on the host.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.scan_host_metadata_id
+      description: A unique identifier for the metadata associated with the host scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.scanned
+      description: The number of files that were scanned.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.malicious
+      description: The number of files that were identified as malicious.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.quarantined
+      description: The number of files that were quarantined.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.skipped
+      description: The number of files that were skipped during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.traversed
+      description: The number of files that were traversed during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.status
+      description: The status of the scan on this host. (e.q., "pending", "running", "completed", or "failed").
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.started_on
+      description: The date and time that the scan started.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.metadata.completed_on
+      description: The date and time that the scan completed.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.metadata.last_updated
+      description: The date and time that the metadata was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.status
+      description: The status of the scan. (e.q., "pending", "running", "completed", or "failed").
+      type: String
+    - contextPath: CrowdStrike.ODSScan.hosts
+      description: A list of the host IDs that were scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.endpoint_notification
+      description: A boolean value indicating whether endpoint notifications are enabled.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScan.pause_duration
+      description: The number of minutes to pause between scanning each file in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.max_duration
+      description: The maximum amount of time to allow for the scan job in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.max_file_size
+      description: The maximum file size (in MB) to scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.sensor_ml_level_detection
+      description: The level of detection sensitivity for the local sensor machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.sensor_ml_level_prevention
+      description: The level of prevention sensitivity for the local sensor machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_ml_level_detection
+      description: The level of detection sensitivity for the cloud machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_ml_level_prevention
+      description: The level of prevention sensitivity for the cloud machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.policy_setting
+      description: A list of policy setting IDs for the scan job (these correspond to specific policy settings in the Falcon console).
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.scan_started_on
+      description: The timestamp when the scan was started.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.scan_completed_on
+      description: The timestamp when the scan was completed.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.created_on
+      description: The timestamp when the scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.created_by
+      description: The ID of the user who created the scan job.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.last_updated
+      description: The timestamp when the scan job was last updated.
+      type: Date
   - arguments:
     - description: List of host groups to be scanned.
       isArray: true
@@ -4178,8 +4288,88 @@ script:
       - monthly
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
-    outputs: []
-
+    outputs:
+    - contextPath: CrowdStrike.ODSScheduledScan.id
+      description: Unique identifier for the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.cid
+      description: Identifier for the customer or organization that owns the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.description
+      description: The ID of the description of the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.file_paths
+      description: The file or folder paths scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.scan_exclusions
+      description: The file or folder exclusions from the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.initiated_from
+      description: The source of the scan initiation.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.cpu_priority
+      description: The CPU priority for the scan (1-5).
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.preemption_priority
+      description: The preemption priority for the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.status
+      description: The status of the scan, whether it's "scheduled", "running", "completed", etc.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.host_groups
+      description: The host groups targeted by the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.endpoint_notification
+      description: Whether notifications of the scan were sent to endpoints.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.pause_duration
+      description: The pause duration of scan in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.max_duration
+      description: The max duration of scan in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.max_file_size
+      description: The maximum file size that the scan can handle in MB.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.sensor_ml_level_detection
+      description: The machine learning detection level for the sensor.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_detection
+      description: The machine learning detection level for the cloud.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.schedule.start_timestamp
+      description: The timestamp when the first scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.schedule.interval
+      description: The interval between scans.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.created_on
+      description: The timestamp when the scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.created_by
+      description: The user who created the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.last_updated
+      description: The timestamp when the scan was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.deleted
+      description: Whether the scan has been deleted.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.quarantine
+      description: If was set to quarantine.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.metadata.host_id
+      description: Scan host IDs.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.metadata.last_updated
+      description: The date and time when the detection event was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention
+      description: The machine learning prevention level for the sensor.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention
+      description: The machine learning prevention level for the cloud.
+      type: Number
   - arguments:
     - description: Comma-separated list of scheduled scan IDs to delete.
       isArray: true
@@ -4191,7 +4381,7 @@ script:
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
     outputs: []
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
   isfetch: true
   ismappable: true
   isremotesyncin: true
