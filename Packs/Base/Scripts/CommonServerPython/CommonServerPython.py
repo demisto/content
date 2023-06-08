@@ -1591,7 +1591,8 @@ class IntegrationLogger(object):
                     js = js[:-1]
                 to_add.append(js)
                 if IS_PY3:
-                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                    from urllib import parse as urllib_parse
+                    to_add.append(urllib_parse.quote_plus(a))  # type: ignore[attr-defined]
                 else:
                     to_add.append(urllib.quote_plus(a))  # type: ignore[attr-defined]
 
