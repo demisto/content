@@ -1,0 +1,24 @@
+{
+  "trigger_id": "97afabe093f07ddf12a25da7c7498601",
+  "playbook_id": "Cloud Token Theft Response",
+  "suggestion_reason": "Recommended for Alerts involving cloud token theft",
+  "description": "This trigger is responsible for handling Cloud Token Theft alerts",
+  "trigger_name": "Cloud Token Theft",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "Suspicious usage of EC2 token"
+        },
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "Suspicious usage of VM Service Account token"
+        }
+      ]
+    }
+  }
+}
+
