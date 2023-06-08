@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import json
+import os
 
 from typing import List, Set
 
 import urllib3
 from blessings import Terminal
 from github import Github
+from git import Repo
 from github.Repository import Repository
 
 from utils import get_env_var, timestamped_print
@@ -29,6 +31,23 @@ XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
 COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
+
+
+class ChangeCWD:
+    """
+    Temporary changes the cwd to the given dir and then reverts it.
+    Use with 'with' statement as a context manager
+    """
+
+    def __init__(self, directory):
+        self.current = os.getcwd()
+        self.directory = directory
+
+    def __enter__(self):
+        os.chdir(self.directory)
+
+    def __exit__(self, *args):
+        os.chdir(self.current)
 
 
 def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
@@ -95,10 +114,11 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
 
     packs_support_levels = set()
 
-    for pack_dir in changed_pack_dirs:
-        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
-            packs_support_levels.add(pack_support_level)
+    with ChangeCWD(directory=Repo(os.getcwd(), search_parent_directories=True).working_dir):
+        for pack_dir in changed_pack_dirs:
+            if pack_support_level := get_pack_metadata(pack_dir).get('support'):
+                print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
+                packs_support_levels.add(pack_support_level)
 
     print(f'{packs_support_levels=}')
 
@@ -148,6 +168,7 @@ def main():
     repo_name = 'content'
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
+
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
 
