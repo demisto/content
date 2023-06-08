@@ -1591,7 +1591,8 @@ class IntegrationLogger(object):
                     js = js[:-1]
                 to_add.append(js)
                 if IS_PY3:
-                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                    from urllib import parse as urllib_parse
+                    to_add.append(urllib_parse.quote_plus(a))  # type: ignore[attr-defined]
                 else:
                     to_add.append(urllib.quote_plus(a))  # type: ignore[attr-defined]
 
@@ -7777,6 +7778,45 @@ def string_to_context_key(string):
         raise Exception('The key is not a string: {}'.format(string))
 
 
+def response_to_context(reponse_obj, user_predefiend_keys=None):
+    """
+    Recursively creates a data dictionary where all key starts with capital letters.
+    If a key include underscores,  removes underscores, capitalize every word.
+    Example: "one_two" to "OneTwo
+
+    :type reponse_obj: ``Any``
+    :param reponse_obj: The response object to update.
+    :type reponse_obj: ``dict``
+    :user_predefiend_keys: An optional argument, 
+    a dict with predefined keys where the key is the key in the response and value is the key we want to turn the key into.
+
+    :return: A response with all keys (if there're any) starts with a capital letter.
+    :rtype: ``Any``
+    """
+    predefined_keys = {"id": "ID", "uuid": "UUID"}
+    if user_predefiend_keys:
+        predefined_keys.update(user_predefiend_keys)
+    parsed_dict = {}
+    key = ""
+    if isinstance(reponse_obj, dict):
+        for key, value in reponse_obj.items():
+            if key in predefined_keys:
+                key = predefined_keys.get(key, "")  # type: ignore
+            else:
+                key = string_to_context_key(key)
+            if isinstance(value, dict):
+                parsed_dict[key] = response_to_context(value)
+            elif isinstance(value, list):
+                parsed_dict[key] = [response_to_context(list_item) for list_item in value]
+            else:
+                parsed_dict[key] = value
+        return parsed_dict
+    elif isinstance(reponse_obj, list):
+        return [response_to_context(list_item) for list_item in reponse_obj]
+    else:
+        return reponse_obj
+
+
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
@@ -9687,7 +9727,14 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
     :return: None
     """
     if is_demisto_version_ge('6.6.0'):
-        demisto.setLastMirrorRun(last_mirror_run)
+        try:
+            demisto.setLastMirrorRun(last_mirror_run)
+        except json.JSONDecodeError as e:
+            # see XSUP-24343
+            if not isinstance(last_mirror_run, dict):
+                raise TypeError("non-dictionary passed to set_last_mirror_run")
+            demisto.debug("encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
+            demisto.debug(e)
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 

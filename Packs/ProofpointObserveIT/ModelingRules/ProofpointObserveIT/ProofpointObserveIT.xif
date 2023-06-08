@@ -7,6 +7,7 @@ alter
         xdm.source.ipv4 = arrayindex(regextract(src, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
         xdm.source.ipv6 = arrayindex(regextract(src, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
         xdm.logon.logon_guid = duid,
+        xdm.alert.severity = if(cefSeverity = "6", "Low", cefSeverity = "8", "Medium", cefSeverity = "10", "High", cefSeverity = "12", "Critical", to_string(cefSeverity)),
         xdm.target.host.hostname = dhost,
         xdm.target.user.username = duser,
         xdm.source.host.hostname = shost,

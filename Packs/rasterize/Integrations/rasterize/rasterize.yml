@@ -1,4 +1,3 @@
-beta: false
 category: Utilities
 commonfields:
   id: Rasterize
@@ -455,7 +454,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file
       type: string
-  dockerimage: demisto/chromium:1.0.0.54994
+  dockerimage: demisto/chromium:1.0.0.56296
   feed: false
   isfetch: false
   longRunning: false

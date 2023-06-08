@@ -17,6 +17,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 APP_NAME = 'ms-azure-sentinel'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT_WITH_MILLISECONDS = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 API_VERSION = '2022-11-01'
 
@@ -509,7 +510,8 @@ def get_modified_remote_data_command(client: AzureSentinelClient, args: Dict[str
         GetModifiedRemoteDataResponse object, which contains a list of the modified incidents IDs.
     """
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update
+    last_update = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).strftime(  # type: ignore[union-attr]
+        DATE_FORMAT_WITH_MILLISECONDS)
     demisto.debug(f'Getting modified incidents from {last_update}')
 
     raw_incidents = []

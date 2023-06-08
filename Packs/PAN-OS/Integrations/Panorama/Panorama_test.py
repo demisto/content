@@ -12,8 +12,8 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
-import test_data.fetch_incidents_input as fetch_incidents_input
-import test_data.mock_rules as mock_rules
+from test_data import fetch_incidents_input
+from test_data import mock_rules
 from freezegun import freeze_time
 
 integration_firewall_params = {
@@ -159,6 +159,45 @@ def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results
 
     result = filter_rules_by_status(disabled, rules)
     assert result == expected_result
+
+
+def test_get_address(mocker):
+    """
+    Given:
+     - an address_name argument which does not exist
+
+    When:
+     - running the panorama_get_address function
+
+    Then:
+     - Ensure the return value is an empty dictionary
+    """
+    import Panorama
+    from Panorama import panorama_get_address
+    exception_msg = 'Object was not found, verify that the name is correct and that the instance was committed.'
+    mocker.patch.object(Panorama, "http_request", side_effect=Exception(exception_msg))
+    result = panorama_get_address("TEST")
+    assert result == {}
+
+
+def test_get_address_command(mocker):
+    """
+    Given:
+     - an address_name argument which does not exist
+
+    When:
+     - running the panorama_get_address_command function
+
+    Then:
+     - Ensure the return value is None, without any errors, and return_results contains the correct informative message.
+    """
+    import Panorama
+    from Panorama import panorama_get_address_command
+    mocker.patch.object(Panorama, "panorama_get_address", return_value={})
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    result = panorama_get_address_command({'name': 'TEST'})
+    assert not result
+    assert return_results_mock.call_args[0][0] == 'Address name TEST was not found'
 
 
 def test_prettify_addresses_arr():
@@ -1129,7 +1168,8 @@ def test_apply_security_profiles_command_main_flow(mocker):
             'device-group': 'new-device-group',
             'profile_type': 'data-filtering',
             'profile_name': 'test-profile',
-            'rule_name': 'rule-test'
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
@@ -1142,9 +1182,55 @@ def test_apply_security_profiles_command_main_flow(mocker):
     assert request_mock.call_args.kwargs['params'] == {
         'action': 'set', 'type': 'config',
         'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
-                 "/rule-test/security/rules/entry[@name='rule-test']/profile-setting/profiles/data-filtering",
-        'key': 'thisisabogusAPIKEY!', 'element': '<member>test-profile</member>'}
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!', 'element': '<profile-setting><profiles><data-filtering>'
+                                                 '<member>test-profile</member></data-filtering></profiles>'
+                                                 '</profile-setting>'}
     assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
+
+
+def test_apply_security_profiles_command_when_one_already_exists(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-apply-security-profile command arguments including device_group
+     - same profile as already exists in the rule
+
+    When -
+        running the pan-os-apply-security-profile command through the main flow
+
+    Then
+     - Ensure the request is what's already in the API (the 'element' parameter contains all profiles in the XML)
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'spyware',
+            'profile_name': 'strict',
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
+        }
+    )
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!',
+        'element': '<profile-setting><profiles><spyware><member>strict</member></spyware>'
+                   '<virus><member>Tap</member></virus></profiles></profile-setting>'}
+    assert res.call_args.args[0] == 'The profile strict has been applied to the rule rule-test'
 
 
 class TestPanoramaEditRuleCommand:
@@ -1779,8 +1865,8 @@ class TestPanoramaCommitCommand:
     def create_mock_responses(job_commit_status_count):
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
-                text='<response status="success" code="19"><result><msg>''<line>Commit job '
-                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                text='<response status="success" code="19"><result><msg><line>Commit job '
+                     'enqueued with jobid 123</line></msg><job>123</job></result></response>',
                 status_code=200,
             )
         ]
@@ -1826,7 +1912,7 @@ class TestPanoramaCommitCommand:
                                            id='only admin changes commit'),
                               pytest.param({'device-group': 'some_device', 'force_commit': 'true', 'polling': 'false'},
                                            {'cmd': '<commit><device-group><entry name="some_device"/>'
-                                                   '</device-group><force>''</force></commit>',
+                                                   '</device-group><force></force></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
                                            MockedResponse(text='<response status="success" code="19"><result><msg>'
@@ -1840,7 +1926,7 @@ class TestPanoramaCommitCommand:
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
                                                    '<partial><device-and-network>excluded</'
-                                                   'device-and-network></partial>''</commit>',
+                                                   'device-and-network></partial></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
                                            MockedResponse(text='<response status="success" code="19"><result><msg>'
@@ -1990,8 +2076,8 @@ class TestPanoramaPushToDeviceGroupCommand:
     def create_mock_responses(push_to_devices_job_status_count):
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
-                text='<response status="success" code="19"><result><msg>''<line>Push job '
-                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                text='<response status="success" code="19"><result><msg><line>Push job '
+                     'enqueued with jobid 123</line></msg><job>123</job></result></response>',
                 status_code=200,
             )
         ]
@@ -3370,7 +3456,7 @@ def test_panorama_apply_dns_command2(mocker):
     apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
 
     request_params = request_mock.call_args.kwargs['params']  # The body part of the request
-    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']" # noqa
+    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
 
 
 class TestHygieneFunctions:
@@ -6700,4 +6786,4 @@ def test_panorama_list_rules():
 
     assert rules['application']['member'][0] == 'dns'
     assert mock_request.last_request.qs['xpath'][0] == \
-           "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
+        "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
