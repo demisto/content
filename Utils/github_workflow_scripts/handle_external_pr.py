@@ -112,7 +112,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
     # print(f'packs_support_levels before checkout: {packs_support_levels}')
     #
     # if not packs_support_levels:
-    with Checkout(repo=Repo(os.getcwd()), branch_to_checkout=external_pr_branch):
+    with Checkout(repo=Repo(os.getcwd(), search_parent_directories=True), branch_to_checkout=external_pr_branch):
         packs_support_levels = get_packs_support_levels(changed_pack_dirs)
 
     print(f'packs_support_levels after checkout: {packs_support_levels}')
