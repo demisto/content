@@ -25,7 +25,7 @@ def main():
         query = "100"
         html = f"<div style={RED_HTML_STYLE}{int(query)}/100</div>"
 
-    return_results(CommandResults('RDPOverallScore', {
+    return_results(CommandResults('RDPOverallScore', 'RDPOverallScore', {
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],
         'Contents': html
