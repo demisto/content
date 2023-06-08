@@ -3643,25 +3643,16 @@ def panorama_list_rules_command(args: dict):
     pretty_rules = prettify_rules(rules, target)
 
     to_human_readable = {
-        'Location': 'Location',
         'SecurityProfileGroup': 'Profile Group',
         'SecurityProfile': 'Profiles',
-        'Target': 'Target',
-        'Name': 'Name',
-        'Type': 'Type',
         'From': 'Source Zone',
         'DestinationDevice': 'Destination Device',
-        'Action': 'Action',
         'SourceDevice': 'Source Device',
-        'Tags': 'Tags',
         'SourceUser': 'Source User',
-        'Application': 'Application',
-        'Service': 'Service',
         'To': 'Destination Zone',
         'Source': 'Source Address',
         'CustomUrlCategory': 'Url Category',
         'Destination': 'Destination Address',
-        'Options': 'Options',
     }
 
     return_results({
@@ -3677,7 +3668,7 @@ def panorama_list_rules_command(args: dict):
                                           'Service', 'CustomUrlCategory', 'Action',
                                           'SecurityProfile', 'SecurityProfileGroup',
                                           'Options', 'Target'],
-                                         headerTransform=to_human_readable.get,
+                                         headerTransform=lambda x: to_human_readable.get(x, x),
                                          removeNull=True),
         'EntryContext': {
             "Panorama.SecurityRule(val.Name == obj.Name)": pretty_rules
@@ -7028,7 +7019,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
     profile_types_result = dict_safe_get(result, ['response', 'result', 'entry', 'profile-setting', 'profiles'],
                                          default_return_value={})
 
-    # align the response for both committed and un-committed profiles 
+    # align the response for both committed and un-committed profiles
     parse_pan_os_un_committed_data(profile_types_result, ['@admin', '@dirtyId', '@time'])
 
     # remove from the types the given profile type, since we update it anyway
