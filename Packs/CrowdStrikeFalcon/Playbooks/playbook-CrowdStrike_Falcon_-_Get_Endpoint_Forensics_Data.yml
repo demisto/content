@@ -143,6 +143,7 @@ tasks:
       id: f1d5ee51-377a-499a-85bf-14bc1b816d5c
       version: -1
       name: Check if the device is online
+      description: Check if the device is online
       type: condition
       iscommand: false
       brand: ""
@@ -196,7 +197,8 @@ tasks:
     task:
       id: fc7c593b-2e96-40de-8d2e-1a29f22325d3
       version: -1
-      name: Check a device was provided
+      name: Check if device id was provided
+      description: Check if device id was provided
       type: condition
       iscommand: false
       brand: ""
@@ -281,6 +283,7 @@ tasks:
       id: 30e8ac38-3a63-43f7-8a36-eb9b807f2015
       version: -1
       name: Provide an Endpoint ID
+      description: Provide an Endpoint ID
       type: collection
       iscommand: false
       brand: ""
