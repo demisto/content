@@ -374,7 +374,7 @@ script:
       - reopened
       - ignored
     - description: 'A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive.'
-      name: Assigned_to_uuid
+      name: assigned_to_uuid
     - description: Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users.
       name: comment
     - auto: PREDEFINED
@@ -1355,7 +1355,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: 'Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity.'
-      name: Action
+      name: action
       predefined:
       - no_action
       - allow
@@ -1389,14 +1389,14 @@ script:
       name: description
     - auto: PREDEFINED
       description: Whether the indicator is applied globally. Either applied_globally or host_groups must be provided.
-      name: Applied_globally
+      name: applied_globally
       predefined:
       - 'true'
       - 'false'
     - description: List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided.
       isArray: true
       name: host_groups
-    - description:  List of tags to apply to the indicator.
+    - description: List of tags to apply to the indicator.
       isArray: true
       name: tags
     description: Uploads an indicator for CrowdStrike to monitor.
@@ -1450,7 +1450,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: 'Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity.'
-      name: Action
+      name: action
       predefined:
       - no_action
       - allow
@@ -2112,7 +2112,7 @@ script:
     - description: The description of the host.
       name: description
     - description: The assignment rule.
-      name: Assignment_rule
+      name: assignment_rule
     description: Create a host group.
     name: cs-falcon-create-host-group
     outputs:
@@ -2193,7 +2193,7 @@ script:
     - description: The description of the host group.
       name: description
     - description: The assignment rule.
-      name: Assignment_rule
+      name: assignment_rule
     description: Updates a host group.
     name: cs-falcon-update-host-group
     outputs:
@@ -2616,7 +2616,7 @@ script:
       name: filter
       required: false
     - description: Unique agent identifier (AID) of a sensor.
-      name: Aid
+      name: aid
       isArray: true
       required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
@@ -3561,7 +3561,7 @@ script:
       isArray: true
     - auto: PREDEFINED
       description: Action to perform against the quarantined file.
-      name: Action
+      name: action
       required: true
       predefined:
       - delete
