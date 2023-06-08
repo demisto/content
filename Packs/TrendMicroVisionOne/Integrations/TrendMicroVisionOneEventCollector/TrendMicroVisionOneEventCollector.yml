@@ -81,10 +81,10 @@ script:
       auto: PREDEFINED
       predefined:
       - 'all'
-      - 'audit_logs'
-      - 'oat_detection_logs'
-      - 'search_detection_logs'
-      - 'workbench_logs'
+      - 'audit'
+      - 'observed_attack_techniques'
+      - 'search_detections'
+      - 'workbench'
     outputs:
     - contextPath: TrendMicroVisionOne.Events
       description: Trend Micro Vision One events.

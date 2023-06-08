@@ -841,10 +841,10 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             parse_search_detection_logs() + parse_audit_logs()
     else:
         log_type_to_parse_func = {
-            'audit_logs': parse_audit_logs,
-            'oat_detection_logs': parse_observed_attack_techniques_logs,
-            'search_detection_logs': parse_search_detection_logs,
-            'workbench_logs': parse_workbench_logs
+            LogTypes.AUDIT: parse_audit_logs,
+            LogTypes.OBSERVED_ATTACK_TECHNIQUES: parse_observed_attack_techniques_logs,
+            LogTypes.SEARCH_DETECTIONS: parse_search_detection_logs,
+            LogTypes.WORKBENCH: parse_workbench_logs
         }
         events = log_type_to_parse_func[log_type]()
 

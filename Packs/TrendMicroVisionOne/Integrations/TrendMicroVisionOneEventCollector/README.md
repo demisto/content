@@ -81,7 +81,7 @@ Returns a list of logs.
 | from_time          | From which time to retrieve the log(s) (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days.        | Optional    | 
 | to_time            | To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided.                                       | Optional    | 
 | should_push_events | Whether to push the fetched events to Cortex XSIAM or not. Possible values are: false, true. Default is false.                              | Optional    | 
-| log_type           | The log type to retrieve. Possible values are: all, audit_logs, oat_detection_logs, search_detection_logs, workbench_logs. Default is all.  | Optional    | 
+| log_type           | The log type to retrieve. Possible values are: all, audit, observed_attack_techniques, search_detections, workbench. Default is all.  | Optional    | 
 
 #### Context Output
 
