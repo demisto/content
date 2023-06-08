@@ -68,7 +68,7 @@ To re-run this task -> Click on "Complete Task" -> clear the Secret value using 
 answers = {
     "01" : ["no","no errors","nothing","none"],
     "02" : ["ip address","ip","address"],
-    "03" : ["12","twelve"],
+    "03" : ["13","thirteen"],
     "04" : ["2017","two thousand seventeen","two-thousand-seventeen"],
     "05" : ["29","twenty nine","twenty-nine"],
     "06" : ["true","true positive"],
