@@ -374,7 +374,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
 
     latest_created_time = input_params['start_date']
 
-    final_input_structure = alert_input_structure(client, base_url, token, input_params)
+    final_input_structure = alert_input_structure(input_params)
 
     alerts = set_request(client, method, token, final_input_structure, url)
     incidents = []
@@ -471,8 +471,7 @@ def fetch_service_details(client, base_url, token):
     return lst
 
 
-def alert_input_structure(client, base_url, token, input_params):
-    lst = fetch_service_details(client, base_url, token)
+def alert_input_structure(input_params):
 
     input_params_alerts: Dict[str, Any] = {
         "orderBy": [
@@ -508,9 +507,6 @@ def alert_input_structure(client, base_url, token, input_params):
             "created_at": {
                 "gte": input_params['start_date'],
                 "lte": input_params['end_date'],
-            },
-            "service": {
-                "in": lst
             },
             "severity": {
                 "in": [
