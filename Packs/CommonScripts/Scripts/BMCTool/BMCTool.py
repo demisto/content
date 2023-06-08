@@ -87,7 +87,7 @@ class BMCContainer():
                     }
 
         if verbose or self.verb:
-            log_type[ltype]("lmsg")
+            log_type[ltype](lmsg)
 
         return True
 
@@ -171,7 +171,7 @@ class BMCContainer():
                     cf = t_len // (t_width * t_height)
                     funcdict = {
                         '4': self.b_parse_rgb32b,
-                        '3': self.b_parse_rgb24,
+                        '3': self.b_parse_rgb24b,
                         '2': self.b_parse_rgb565,
                     }
                     try:
@@ -286,12 +286,12 @@ class BMCContainer():
             cmd, rl, sz = self.b_unrle(data[:3])
             if cmd == -1:
                 if rl == 1:
-                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                 elif rl == 2:
-                    self.b_log("error", False, 3,
+                    self.b_log("error", False,
                                f"Unexpected decompression command encountered (0x{sz:02x}). Skipping tile.")
                 else:
-                    self.b_log("error", False, 3, "Unhandled case in decompression routine. Skipping tile.")
+                    self.b_log("error", False, "Unhandled case in decompression routine. Skipping tile.")
                 return b""
             data = data[sz:]
             if cmd in [0x00, 0xF0]:
@@ -313,8 +313,8 @@ class BMCContainer():
             elif cmd in [0x20, 0xC0, 0xF1, 0xF6]:
                 if cmd in [0xC0, 0xF6]:
                     if len(data) < bbp:
-                        self.b_log("error", False, 3,
-                                   "Unexpected end of compressed stream. Skipping tile. ({1}, {2})" % (cmd, rl))
+                        self.b_log("error", False,
+                                   f"Unexpected end of compressed stream. Skipping tile. ({cmd}, {rl})")
                         return b""
                     fgc = data[:bbp]
                     data = data[bbp:]
@@ -328,20 +328,20 @@ class BMCContainer():
                         rl -= 1
             elif cmd in [0xE0, 0xF8]:
                 if len(data) < 2 * bbp:
-                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[:2 * bbp] * rl
                 data = data[2 * bbp:]
             elif cmd in [0x60, 0xF3]:
                 if len(data) < bbp:
-                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[:bbp] * rl
                 data = data[bbp:]
             elif cmd in [0x40, 0xD0, 0xF2, 0xF7, 0xF9, 0xFA]:
                 if cmd in [0xD0, 0xF7]:
                     if len(data) < bbp:
-                        self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                        self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                         return b""
                     fgc = data[:bbp]
                     data = data[bbp:]
@@ -357,7 +357,7 @@ class BMCContainer():
                     else:
                         ml = rl // 8
                     if len(data) < ml:
-                        self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                        self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                         return b""
                     msk = data[:ml]
                     data = data[ml:]
@@ -382,7 +382,7 @@ class BMCContainer():
                     rl -= 1
             elif cmd in [0x80, 0xF4]:
                 if len(data) < bbp * rl:
-                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[:rl * bbp]
                 data = data[rl * bbp:]
@@ -391,7 +391,7 @@ class BMCContainer():
             elif cmd == 0xFE:
                 d_out += (self.COLOR_BLACK * bbp)
             else:
-                self.b_log("error", False, 3, f"Unhandled decompression command (0x{cmd:02x}). Skipping tile.")
+                self.b_log("error", False, f"Unhandled decompression command (0x{cmd:02x}). Skipping tile.")
                 return b""
             if cmd not in [0x00, 0xF0]:
                 bro = -1
