@@ -4921,7 +4921,7 @@ def map_scan_host_resource_to_UI(resource: dict) -> dict:
         'ID': resource.get('id'),
         'Scan ID': resource.get('scan_id'),
         'Host ID': resource.get('host_id'),
-        'Filecount': '\n'.join(f'{k}: {v}' for k, v in resource.get('filecount', {}).items()),
+        'Filecount': resource.get('filecount'),
         'Status': resource.get('status'),
         'Severity': resource.get('severity'),
         'Started on': resource.get('started_on'),
@@ -5146,13 +5146,22 @@ def ODS_delete_scheduled_scans_request(ids: list[str], scan_filter: str | None =
     ids_params = [f'ids={scan_id}' for scan_id in ids]
     filter_param = [f'filter={scan_filter.replace("+", "%2B")}'] if scan_filter else []
     url_params = '&'.join(ids_params + filter_param)
-    return http_request('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}')
+    return http_request('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)
 
 
 def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
 
     ids, scan_filter = argToList(args.get('ids')), args.get('filter')
     response = ODS_delete_scheduled_scans_request(ids, scan_filter)
+
+    if dict_safe_get(response, ['errors', 0, 'code']) == 500:
+        raise DemistoException(
+            'CS Falcon returned an error.\n'
+            'Code: 500\n'
+            f'Message: {dict_safe_get(response, ["errors", 0, "message"])}\n'
+            'Perhaps there are no scans to delete?'
+        )
+
     human_readable = tableToMarkdown('Deleted Scans:', response.get('resources', []), headers=['Scan ID'])
 
     command_results = CommandResults(
