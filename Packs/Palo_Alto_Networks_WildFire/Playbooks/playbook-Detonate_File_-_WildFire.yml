@@ -368,7 +368,7 @@ tasks:
     task:
       id: c9040900-138b-4e2d-89d5-a424d4cd7ff4
       version: -1
-      name: ASCII file types
+      name: Set ASCII file types
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -424,7 +424,7 @@ tasks:
     task:
       id: 04e9fcb8-1770-4f8e-80c3-34d5d9f2bdfc
       version: -1
-      name: Non ASCII file types
+      name: Set Non ASCII file types
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
