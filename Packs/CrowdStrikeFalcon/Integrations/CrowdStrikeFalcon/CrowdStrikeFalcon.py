@@ -4693,92 +4693,6 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
     )
 
 
-def update_identity_incident_status_command(args: dict) -> CommandResults:
-    """Update the status of an identity incident.
-
-    Args:
-        args: The demisto.args() dict object.
-
-    Returns:
-        The command result object.
-    """
-    id = args.get("incident_id")
-    reason = args.get("reason", "")
-    status = args.get("status")
-    ls = "\\r\\n"  # line separator
-    payload = f'{{"query":"mutation {{setIncidentState(input: {{{ls}' \
-              f'lifeCycleStage: {status},{ls}' \
-              f'incidentId:\\"{id}\\",{ls}' \
-              f'reason:\\"{reason}\\"}}) {{ incident {{ lifeCycleStage }} }} }}","variables":{{}} }}'
-    res = update_incident_fields(payload)
-    data = res.get("data", {})
-    data["id"] = id
-    return CommandResults(
-        outputs_prefix='CrowdStrike.IDPIncident',
-        outputs_key_field='ID',
-        outputs=createContext(response_to_context(data), removeNull=True),
-        readable_output=f"Incident {id} status was updated successfully",
-        raw_response=res,
-    )
-
-
-def add_identity_incident_comment_command(args: dict) -> CommandResults:
-    """Add a comment to an identity incident.
-
-    Args:
-        args: The demisto.args() dict object.
-
-    Returns:
-        The command result object.
-    """
-    id = args.get("incident_id")
-    comment = args.get("reason", "")
-    ls = "\\r\\n"  # line separator              
-    payload = f'{{"query":"mutation {{ addCommentToIncident(input: {{ {ls}' \
-              f'comment: \\"{comment}\\", {ls}' \
-              f'incidentId: \\"{id}\\"}}) {ls}' \
-              f'{{ incident {{ comments {{ author {{ displayName }} text }} }} }} }}","variables":{{}} }}'
-    res = update_incident_fields(payload)
-    data = res.get("data", {})
-    data["id"] = id
-    return CommandResults(
-        outputs_prefix='CrowdStrike.IDPIncident',
-        outputs_key_field='ID',
-        outputs=createContext(response_to_context(data), removeNull=True),
-        readable_output=f"Incident {id} comment was added successfully",
-        raw_response=res,
-    )
-
-
-def resolve_identity_detection_command(args: dict) -> CommandResults:
-    """Resolve an identity detection.
-
-    Args:
-        args: The demisto.args() dict object.
-
-    Returns:
-        The command result object.
-    """
-    ids = args.get("ids", "")
-    args_keys_ls = ["assign_to_user_id", "assign_to_name", "assign_to_uuid", "update_status", "append_comment", "add_tag",
-                    "remove_tag", "show_in_ui"]
-    action_parameters = [{"name": key, "value": args.get(key)} for key in args_keys_ls if args.get(key)]
-    body = {
-        "action_parameters": action_parameters,
-        "ids": [
-            ids
-        ]
-    }
-    res = resolve_identity_detection(json.dumps(body))
-    ids = ids.replace(",", ",\n")
-    header = f"The following detections were updated:\n {ids}\nWith the following values:\n"
-    hr = tableToMarkdown(header, args, args_keys_ls, removeNull=True,)
-    return CommandResults(
-        readable_output=hr,
-        raw_response=res
-    )
-
-
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4971,12 +4885,6 @@ def main():
             return_results(list_quarantined_file_command(args))
         elif command == 'cs-falcon-apply-quarantine-file-action':
             return_results(apply_quarantine_file_action_command(args))
-        elif command == 'cs-falcon-update-identity-incident-status':
-            return_results(update_identity_incident_status_command(args))
-        elif command == 'cs-falcon-add-identity-incident-comment':
-            return_results(add_identity_incident_comment_command(args))
-        elif command == 'cs-falcon-resolve-identity-detection':
-            return_results(resolve_identity_detection_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
