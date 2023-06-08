@@ -245,7 +245,7 @@ script:
     - contextPath: CybleEvents.AlertGroup
       description: Fetch all the alert groups
       type: String
-  dockerimage: demisto/python3:3.10.12.61265
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false
