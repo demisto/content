@@ -1468,7 +1468,7 @@ def main() -> None:
             'azure-key-vault-certificate-list': list_certificates_command,
             'azure-key-vault-certificate-policy-get': get_certificate_policy_command
         }
-        commands_without_args = {'azure-sql-subscriptions-list': list_subscriptions_command}
+        commands_without_args = {'azure-key-vault-subscriptions-list': list_subscriptions_command}
 
         commands_with_params = {'test-module': test_module}
 
@@ -1478,7 +1478,7 @@ def main() -> None:
             'azure-key-vault-get': get_key_vault_command,
             'azure-key-vault-list': list_key_vaults_command,
             'azure-key-vault-access-policy-update': update_access_policy_command,
-            'azure-sql-resource-group-list': list_resource_groups_command
+            'azure-key-vault-resource-group-list': list_resource_groups_command
         }
 
         if command in commands_without_args:

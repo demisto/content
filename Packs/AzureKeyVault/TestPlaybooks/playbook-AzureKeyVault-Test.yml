@@ -1301,9 +1301,9 @@ tasks:
     task:
       id: ed0d179a-bb26-4bdc-8ac3-0f431e55425b
       version: -1
-      name: azure-sql-subscriptions-list
+      name: azure-key-vault-subscriptions-list
       description: List all subscriptions for a tenant.
-      script: '|||azure-sql-subscriptions-list'
+      script: '|||azure-key-vault-subscriptions-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1406,9 +1406,9 @@ tasks:
     task:
       id: b9d0297c-0634-4ab2-8463-55dbbf4d6402
       version: -1
-      name: azure-sql-resource-group-list
+      name: azure-key-vault-resource-group-list
       description: List all resource groups for a subscription.
-      script: '|||azure-sql-resource-group-list'
+      script: '|||azure-key-vault-resource-group-list'
       type: regular
       iscommand: true
       brand: ""

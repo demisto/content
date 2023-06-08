@@ -1111,7 +1111,7 @@ script:
     - contextPath: AzureKeyVault.CertificatePolicy.attributes.updated
       description: Last updated time in UTC.
       type: Date
-  - name: azure-sql-subscriptions-list
+  - name: azure-key-vault-subscriptions-list
     description: List all subscriptions for a tenant.
     outputs:
     - contextPath: AzureKeyVault.Subscription.id
@@ -1135,7 +1135,7 @@ script:
     - contextPath: AzureKeyVault.Subscription.tenantId
       description: Tenant ID.
       type: String
-  - name: azure-sql-resource-group-list
+  - name: azure-key-vault-resource-group-list
     description: List all resource groups for a subscription.
     arguments:
     - name: subscription_id

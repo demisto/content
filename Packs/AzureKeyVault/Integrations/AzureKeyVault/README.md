@@ -1279,14 +1279,14 @@ Get the policy of the specified certificate.This operation requires the certific
 >|---|---|---|---|---|---|
 >| https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1/policy | exportable: true<br/>kty: RSA<br/>key_size: 2048<br/>reuse_key: false | contentType: application/x-pkcs12 | subject: CN=test<br/>sans: {"dns_names": []}<br/>ekus: 1.3.6.1.5.5.7.3.1,<br/>1.3.6.1.5.5.7.3.2<br/>key_usage: digitalSignature,<br/>keyEncipherment<br/>validity_months: 12<br/>basic_constraints: {"ca": false} | name: Self | enabled: true<br/>created: 2021-08-11T12:05:31<br/>updated: 2021-08-11T12:05:31 |
 
-### azure-sql-subscriptions-list
+### azure-key-vault-subscriptions-list
 
 ***
 List all subscriptions for a tenant.
 
 #### Base Command
 
-`azure-sql-subscriptions-list`
+`azure-key-vault-subscriptions-list`
 
 #### Input
 
@@ -1303,14 +1303,14 @@ There are no input arguments for this command.
 | AzureKeyVault.Subscription.authorizationSource | String | Authorization source. | 
 | AzureKeyVault.Subscription.managedByTenants | Unknown | Managed by tenants. | 
 | AzureKeyVault.Subscription.tenantId | String | Tenant ID. | 
-### azure-sql-resource-group-list
+### azure-key-vault-resource-group-list
 
 ***
 List all resource groups for a subscription.
 
 #### Base Command
 
-`azure-sql-resource-group-list`
+`azure-key-vault-resource-group-list`
 
 #### Input
 
