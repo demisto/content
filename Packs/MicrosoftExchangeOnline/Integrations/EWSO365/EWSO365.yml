@@ -122,7 +122,6 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-  hidden: false
   section: Connect
   advanced: true
 - additionalinfo: Use the "ID" parameter instead.

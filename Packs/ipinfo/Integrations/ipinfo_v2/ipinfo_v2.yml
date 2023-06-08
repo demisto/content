@@ -31,7 +31,6 @@ configuration:
 - name: base_url
   defaultvalue: https://ipinfo.io
   display: Base URL
-  hidden: false
   required: true
   type: 0
   section: Connect

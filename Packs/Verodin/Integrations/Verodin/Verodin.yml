@@ -125,8 +125,7 @@ script:
       description: Edge through
     - contextPath: Verodin.Topolody.Zone.Devices.Edges.From
       description: Edge from
-    description: Lists Security Zones, Nodes within those Zones, and their connectivity
-      to other Zones
+    description: Lists Security Zones, Nodes within those Zones, and their connectivity to other Zones
   - name: verodin-manage-sims-actions
     arguments: []
     outputs:
@@ -398,8 +397,7 @@ script:
       description: Job action label
     - contextPath: Verodin.Jobs.Actions.Value
       description: Job action value
-    description: Gets summary of sim_action results from the specified job, including
-      aggregate of individual Action passes and fails
+    description: Gets summary of sim_action results from the specified job, including aggregate of individual Action passes and fails
   - name: verodin-job-cancel
     arguments:
     - name: id
@@ -407,7 +405,6 @@ script:
       description: 'ID number of previously-run Job '
     description: Cancels the job specified by the Job ID
   isfetch: true
-hidden: false
 tests:
 - no test
 fromversion: 5.0.0
