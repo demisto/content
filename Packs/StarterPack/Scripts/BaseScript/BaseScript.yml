@@ -9,12 +9,11 @@ comment: '[Enter a description of the script, including what function it perform
 commonfields:
   id: BaseScript
   version: -1
-enabled: false
 name: BaseScript
 outputs:
-  - contextPath: BaseScript.Output
-    description: '[Enter a description of the data returned in this output.]'
-    type: String
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
 script: '-'
 system: false
 tags:

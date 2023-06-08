@@ -57,7 +57,7 @@ configuration:
   type: 18
   required: false
   defaultvalue: None
-  options: 
+  options:
   - None
   - Good
   - Suspicious
@@ -105,7 +105,6 @@ configuration:
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -137,7 +136,7 @@ script:
     - contextPath: CybleIntel.collection.names
       description: Available collection names for the feed service
     description: Get the data feed collection names for the taxii feed
-  dockerimage: demisto/taxii-server:1.0.0.58919
+  dockerimage: demisto/taxii-server:1.0.0.61738
   runonce: false
   subtype: python3
   feed: true

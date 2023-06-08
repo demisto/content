@@ -2438,11 +2438,12 @@ class Pack(object):
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
+                    content_item_type_and_id = f"{current_directory}_{metadata_output['id']}"
                     if self.is_replace_item_in_folder_collected_list(
                             content_item, content_items_id_to_version_map,
-                            metadata_output['id']):
+                            content_item_type_and_id):
                         latest_fromversion, latest_toversion = self.get_latest_versions(
-                            content_items_id_to_version_map, metadata_output['id'])
+                            content_items_id_to_version_map, content_item_type_and_id)
                         metadata_output['fromversion'] = latest_fromversion
                         metadata_output['toversion'] = latest_toversion
                         folder_collected_items = [metadata_output
@@ -2450,9 +2451,9 @@ class Pack(object):
                                                   else d
                                                   for d in folder_collected_items]
                     elif not content_items_id_to_version_map.get(
-                            metadata_output['id'], {}).get('added_to_metadata_list', ''):
+                            content_item_type_and_id, {}).get('added_to_metadata_list', ''):
                         folder_collected_items.append(metadata_output)
-                        content_items_id_to_version_map.get(metadata_output['id'], {})['added_to_metadata_list'] = True
+                        content_items_id_to_version_map.get(content_item_type_and_id, {})['added_to_metadata_list'] = True
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
