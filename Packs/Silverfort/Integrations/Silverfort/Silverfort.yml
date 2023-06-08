@@ -4,18 +4,15 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
-  hidden: false
   name: url
   required: true
   type: 0
 - additionalinfo: Generate your unique API token from the tower
   display: APIKEY
-  hidden: false
   name: apikey
   required: true
   type: 4
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8

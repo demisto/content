@@ -4,7 +4,6 @@ commonfields:
   version: -1
 configuration:
 - display: Base URL
-  hidden: false
   name: base_url
   required: true
   type: 0
@@ -54,9 +53,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: 'The indicator types to fetch. Out-of-the-box indicator types supported
-        in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key,
-        and URL.'
+      description: 'The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL.'
       isArray: true
       name: indicator_types
       predefined:
@@ -76,6 +73,12 @@ script:
       description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path.
       isArray: false
       name: last_run_id
+      required: false
+      secret: false
+    - default: false
+      description: The indicator's value to filter by, can be partial value.
+      isArray: false
+      name: search
       required: false
       secret: false
     deprecated: false
@@ -158,10 +161,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The indicator type to create. Out-of-the-box indicator types supported
-        in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1,
-        File-SHA256, Host, IP, IPV6, Registry Key,
-        and URL.'
+      description: 'The indicator type to create. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1, File-SHA256, Host, IP, IPV6, Registry Key, and URL.'
       isArray: false
       name: type
       predefined:
@@ -179,23 +179,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Organization ID. Use opencti-organization-list to find all organization
-        IDs in OpenCTI, or use opencti-organization-create to create a new organization
-        ID.
+      description: Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID.
       isArray: false
       name: created_by
       required: false
       secret: false
     - default: false
-      description: Indicator marking definition ID. Use opencti-marking-definition-list to find all marking definition
-        IDs in OpenCTI.
+      description: Indicator marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
       isArray: false
       name: marking_id
       required: false
       secret: false
     - default: false
-      description: Indicator label ID. Use opencti-label-list to find all label
-        IDs in OpenCTI, or use opencti-label-create to create a new label.
+      description: Indicator label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label.
       isArray: false
       name: label_id
       required: false
@@ -262,8 +258,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add a field to the indicator. Fields that can be added are marking definition and
-      label.
+    description: Add a field to the indicator. Fields that can be added are marking definition and label.
     execution: false
     name: opencti-indicator-field-add
   - arguments:
@@ -290,15 +285,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Remove indicator field value. Fields which values can be removed are marking
-      definition and label.
+    description: Remove indicator field value. Fields which values can be removed are marking definition and label.
     execution: false
     name: opencti-indicator-field-remove
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of organizations to return per fetch. Default
-        value is 50. Maximum value is 200.
+      description: The maximum number of organizations to return per fetch. Default value is 50. Maximum value is 200.
       isArray: false
       name: limit
       required: false
@@ -450,7 +443,7 @@ script:
     - contextPath: OpenCTI.MarkingDefinitions.markingsLastRun
       description: The last ID of the previous fetch to use for pagination.
       type: String
-  dockerimage: demisto/opencti-v4:1.0.0.43083
+  dockerimage: demisto/opencti-v4:1.0.0.61509
   isfetch: false
   longRunning: false
   longRunningPort: false
