@@ -3244,7 +3244,7 @@ script:
         - "false"
       required: false
       secret: false
-  dockerimage: demisto/googleapi-python3:1.0.0.61820
+  dockerimage: demisto/googleapi-python3:1.0.0.62140
   feed: false
   isfetch: true
   longRunning: false
