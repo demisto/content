@@ -5092,35 +5092,23 @@ def ODS_verify_create_scan_command(args: dict) -> None:
         raise DemistoException('MUST set either file_paths OR scan_inclusions.')
 
 
-def ods_create_scan(args: dict, is_scheduled: bool) -> CommandResults:
+def ods_create_scan(args: dict, is_scheduled: bool) -> dict:
 
     ODS_verify_create_scan_command(args)
 
     response = ODS_create_scan_request(args, is_scheduled)
-
-    resource = dict_safe_get(response, ('resources', 0), return_type=dict)
+    resource = dict_safe_get(response, ('resources', 0), return_type=dict, raise_return_type=False)
 
     if not resource:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
-    human_readable = tableToMarkdown(f'{"Scheduled "*is_scheduled}Scan Created', [resource.get("id")], headers=['Scan ID'])
-
-    command_results = CommandResults(
-        raw_response=response,
-        outputs_prefix='CrowdStrike.ODSScan',
-        outputs_key_field='id',
-        outputs=resource,
-        readable_output=human_readable,
-    )
-
-    return command_results
+    return resource
 
 
 def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
 
-    result = ods_create_scan(args, is_scheduled=False)
-
-    scan_id = result.outputs.get('id') if isinstance(result.outputs, dict) else None
+    resource = ods_create_scan(args, is_scheduled=False)
+    scan_id = resource.get('id')
 
     if not scan_id:
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
@@ -5136,7 +5124,20 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
 
 
 def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
-    return ods_create_scan(args, is_scheduled=True)
+
+    resource = ods_create_scan(args, is_scheduled=True)
+
+    human_readable = tableToMarkdown('Scheduled Scan Created', [resource.get("id")], headers=['Scan ID'])
+
+    command_results = CommandResults(
+        raw_response=resource,
+        outputs_prefix='CrowdStrike.ODSScan',
+        outputs_key_field='id',
+        outputs=resource,
+        readable_output=human_readable,
+    )
+
+    return command_results
 
 
 def ODS_delete_scheduled_scans_request(ids: list[str], scan_filter: str | None = None) -> dict:
