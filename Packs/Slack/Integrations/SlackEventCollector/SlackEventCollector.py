@@ -83,10 +83,11 @@ class Client(BaseClient):
         query_params['limit'] = 200  # recommended limit value by Slack
         try:
             events, cursor = self.handle_pagination_first_batch(query_params, last_run)
+            demisto.debug(f'First batch of events: {events}, cursor: {cursor}')
             while events:
                 for event in events:
                     if event.get('id') == last_run.get('last_id'):
-                        demisto.debug('Encountered an event that was already fetched - stopping.')
+                        demisto.debug(f'Encountered an event that was already fetched - stopping. event: {event}')
                         cursor = None
                         break
 
@@ -120,6 +121,7 @@ class Client(BaseClient):
             # we need to know where to stop in the next runs
             last_run['last_id'] = aggregated_logs[0].get('id')
 
+        demisto.debug(f'aggregated_logs: {aggregated_logs}')
         return aggregated_logs
 
 
@@ -148,8 +150,13 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
         (list) the events retrieved from the logs API call.
         (CommandResults) the CommandResults object holding the collected logs information.
     """
+    demisto.debug('####### demisto.debug: get_events_command function now running.')
     query_params = prepare_query_params(args)
+    demisto.debug(f'####### demisto.debug: Query params: {query_params}')
     raw_response, events, cursor = client.get_logs(query_params)
+    demisto.debug(f'####### demisto.debug: Raw response: {raw_response}')
+    demisto.debug(f'####### demisto.debug: Events: {events}')
+    demisto.debug(f'####### demisto.debug: Cursor: {cursor}')
     results = CommandResults(
         raw_response=raw_response,
         readable_output=tableToMarkdown(
@@ -174,8 +181,11 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[
         (list) the events retrieved from the logs API call.
         (dict) the updated lastRun object.
     """
+    demisto.debug('####### demisto.debug: fetch_events_command function now running.')
     query_params = prepare_query_params(params)
+    demisto.debug(f'####### demisto.debug: Query params: {query_params}')
     events = client.get_logs_with_pagination(query_params, last_run)
+    demisto.debug(f'####### demisto.debug: Events: {events}')
     return events, last_run
 
 
@@ -200,9 +210,11 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
+            demisto.debug('####### demisto.debug: test-module command now running.')
             return_results(test_module_command(client, params))
 
         elif command == 'slack-get-events':
+            demisto.debug('####### demisto.debug: slack-get-events command now running.')
             events, results = get_events_command(client, args)
             return_results(results)
 
@@ -214,8 +226,11 @@ def main() -> None:  # pragma: no cover
                 )
 
         elif command == 'fetch-events':
+            demisto.debug('####### demisto.debug: fetch-events command now running.')
             last_run = demisto.getLastRun()
+            demisto.debug(f'####### demisto.debug: last_run: {last_run}')
             events, last_run = fetch_events_command(client, params, last_run)
+            demisto.debug(f'####### demisto.debug: events: {events}, last_run: {last_run}')
 
             send_events_to_xsiam(
                 events,

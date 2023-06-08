@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Slack Event Collector
+  id: Slack Event Collector debug
   version: -1
 configuration:
 - defaultvalue: https://api.slack.com/audit/v1/
@@ -47,8 +47,8 @@ configuration:
   section: Connect
   advanced: true
 description: Slack logs event collector integration for XSIAM.
-display: Slack Event Collector
-name: Slack Event Collector
+display: Slack Event Collector debug
+name: Slack Event Collector debug
 script:
   commands:
   - arguments:
