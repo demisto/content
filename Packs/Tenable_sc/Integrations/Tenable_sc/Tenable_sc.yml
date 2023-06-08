@@ -131,6 +131,13 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: Deprecated. Scan results ID.
+      isArray: false
+      name: scan_results_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: Requires security manager role. Launch an existing scan from Tenable.sc. Set polling to true to follow the scan and receive results when scan is over.
     execution: false

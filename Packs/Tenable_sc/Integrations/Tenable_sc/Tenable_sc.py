@@ -1609,8 +1609,10 @@ def launch_scan_command(args: Dict[str, Any], client: Client):
         scan_results_id = args.get("scan_results_id")
         args["hide_polling_output"] = True
     scan_results, _ = get_scan_status(client, args)
-    is_scan_incomplete = scan_results[0].get("status") != "Completed"
-    if is_scan_incomplete:
+    scan_status = scan_results[0].get("status")
+    if scan_status == "Error":
+        raise DemistoException(f"Encountered the following error during the execution {scan_results[0].get('errorDetails')}")
+    elif scan_status != "Completed":
         return PollResult(continue_to_poll=True, response=scan_results, args_for_next_run=args)
     else:
         return PollResult(get_scan_report_command(client, args))
