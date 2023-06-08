@@ -4667,6 +4667,63 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
     )
 
 
+def list_identity_entities_command(args: dict) -> CommandResults:
+    """List identity entities
+    Args:
+        args: The demisto.args() dict object.
+    Returns:
+        The command result object.
+    """
+    filters_mapper_dict = {'sort_key': 'sortKey', 'sort_order': 'sortOrder', 'entity_id': 'entityIds', "enabled": "enabled",
+                           'primary_display_name': 'primaryDisplayNames', 'secondary_display_name': 'secondaryDisplayNames',
+                           'max_risk_score_severity': 'maxRiskScoreSeverity', "min_risk_score_severity": "minRiskScoreSeverity",
+                           'email': 'emailAddresses'}
+    mapped_filters_string = [f"types: [{args.get('type')}]"] + [f"{value}: {args.get(key)}" for key,
+                                                                value in filters_mapper_dict.items() if args.get(key)]
+    filters_string = ", ".join((mapped_filters_string))
+    identity_entities_ls = []
+    next_token = args.get("next_token", "")
+    limit = int(args.get("limit", "50"))
+    page = int(args.get("page", "0"))
+    page_size = int(args.get("page_size", "50"))
+    res_ls = []
+    has_next_page = True
+    if page:
+        filters_string += f", first: {page_size}"
+        while has_next_page and page:
+            res = send_list_entities_request(next_token, filters_string)
+            res_ls.append(res)
+            page -= 1
+            pageInfo = res.get("data", {}).get("entities", {}).get("pageInfo", {})
+            has_next_page = pageInfo.get("hasNextPage", False)
+            if has_next_page:
+                next_token = pageInfo.get("endCursor", "")
+        if not page:
+            identity_entities_ls = res.get("data", {}).get("nodes", [])
+    else:
+        while limit > 0:
+            first = min(1000, limit)
+            res = send_list_entities_request(next_token, f"{filters_string}, first: {first}")
+            res_ls.append(res)
+            pageInfo = res.get("data", {}).get("entities", {}).get("pageInfo", {})
+            has_next_page = pageInfo.get("hasNextPage", False)
+            identity_entities_ls.append(res.get("data", {}).get("nodes", []))
+            if has_next_page:
+                next_token = pageInfo.get("endCursor", "")
+            else:
+                break
+            limit -= 1000
+    if identity_entities_ls:
+        pass
+    # return CommandResults(
+    #     outputs_prefix='CrowdStrike.IDPIncident',
+    #     outputs_key_field='ID',
+    #     outputs=createContext(response_to_context(data), removeNull=True),
+    #     readable_output=f"Incident {id} comment was added successfully",
+    #     raw_response=res,
+    # )
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4859,6 +4916,8 @@ def main():
             return_results(list_quarantined_file_command(args))
         elif command == 'cs-falcon-apply-quarantine-file-action':
             return_results(apply_quarantine_file_action_command(args))
+        elif command == 'cs-falcon-list-identity-entities':
+            return_results(list_identity_entities_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

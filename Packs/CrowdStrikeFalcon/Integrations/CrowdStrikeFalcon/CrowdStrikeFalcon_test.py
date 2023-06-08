@@ -6,7 +6,7 @@ from urllib.parse import unquote
 from _pytest.python_api import raises
 
 import demistomock as demisto
-from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus
+from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus, handle_proxy
 from test_data import input_data
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
@@ -4644,3 +4644,37 @@ def test_apply_quarantine_file_action_command(requests_mock):
 
     assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
     assert mock_request.last_request.text == '{"ids": ["121212", "171717"], "comment": "Added a test comment."}'
+    
+    
+def test_gql_pack():
+    from gql import Client, gql
+    from gql.transport.requests import RequestsHTTPTransport
+    bearer = ""
+    request_params = {
+        'url': "https://dev77201.service-now.com/",
+        'verify': False,
+        'retries': 3,
+        'headers': {'Authorization': f'Bearer {bearer}',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"}
+    }
+    transport = RequestsHTTPTransport(**request_params)
+    handle_proxy()
+    params = {}
+    fetch_schema_from_transport = params.get('fetch_schema_from_transport', True)
+    if fetch_schema_from_transport is None:
+        fetch_schema_from_transport = True
+    client = Client(
+        transport=transport,
+        fetch_schema_from_transport=fetch_schema_from_transport,
+    )
+    gql("""
+        mutation {
+setIncidentState
+(
+input: {
+lifeCycleStage: NEW,
+incidentId:"INC-6",
+reason:"The reason goes here",
+}) { incident {            lifeCycleStage     } }    
+""")
