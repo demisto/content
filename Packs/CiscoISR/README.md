@@ -30,7 +30,9 @@ clock timezone UTC 0
 5. Save your changes by either typing 
 ```bash
 write memory
+```
 OR
+```bash
 copy running-config startup-config 
 ```
 And wait for system confirmation.
