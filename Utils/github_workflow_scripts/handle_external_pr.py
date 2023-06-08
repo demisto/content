@@ -114,11 +114,11 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
 
     packs_support_levels = set()
 
-    with ChangeCWD(directory=Repo(os.getcwd(), search_parent_directories=True).working_dir):
-        for pack_dir in changed_pack_dirs:
-            if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-                print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
-                packs_support_levels.add(pack_support_level)
+    # with ChangeCWD(directory=Repo(os.getcwd(), search_parent_directories=True).working_dir):
+    for pack_dir in changed_pack_dirs:
+        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
+            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
+            packs_support_levels.add(pack_support_level)
 
     print(f'{packs_support_levels=}')
 
