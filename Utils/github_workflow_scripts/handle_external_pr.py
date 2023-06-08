@@ -114,7 +114,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
     print(f'{changed_pack_dirs=}')
 
     packs_support_levels = get_packs_support_levels(changed_pack_dirs)
-    print(f'packs_support_levels before checkout: {packs_support_levels}')
+    print(f'{packs_support_levels=}')
 
     if not packs_support_levels:
         # if this is a new pack, it is not in the content repo, so we need to
