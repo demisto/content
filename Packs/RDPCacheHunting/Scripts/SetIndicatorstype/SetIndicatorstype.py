@@ -28,7 +28,6 @@ def parse_data(list_content):
 
             lists_data.append(list_widget_data)
 
-
     return {
         "Type": 17,
         "ContentsFormat": "pie",

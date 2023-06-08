@@ -16,7 +16,8 @@ def test_happy_path_score_zero(mocker):
     main()
     result = mocker.context.call_args[0]
     assert result['Contents'] == expected_html
-    
+
+
 def test_happy_path_score_50(mocker):
     """    
     Given:
@@ -31,7 +32,8 @@ def test_happy_path_score_50(mocker):
     main()
     result = mocker.context.call_args[0]
     assert result['Contents'] == expected_html
-    
+
+
 def test_happy_path_score_90(mocker):
     """    
     Given:
@@ -46,6 +48,7 @@ def test_happy_path_score_90(mocker):
     main()
     result = mocker.context.call_args[0]
     assert result['Contents'] == expected_html
+
 
 def test_happy_path_score_100(mocker):
     """    

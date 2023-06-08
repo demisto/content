@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import difflib
-#import Levenshtein
+# import Levenshtein
+
 
 def main():
     similiarity_threshold = float(demisto.getArg('similiarity_threshold'))
@@ -10,7 +11,7 @@ def main():
 
     similarity_ratio = difflib.SequenceMatcher(None, first_string, second_string).ratio()
     if similarity_ratio >= similiarity_threshold:
-        commandResults = CommandResults("StringSimilarity","SimilarityScore", {
+        commandResults = CommandResults("StringSimilarity", "SimilarityScore", {
             "StringA": first_string,
             "StringB": second_string,
             "SimilarityScore": similarity_ratio
