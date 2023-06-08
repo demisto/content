@@ -28,6 +28,7 @@ xdm.target.port=to_integer(0),
 logonType=json_extract_scalar(event_data ,"$.LogonType"),
 userType=json_extract_scalar(user,"$.type"),
 xdm.source.host.os_family=XDM_CONST.OS_FAMILY_WINDOWS,
+xdm.event.operation_sub_type=arrayindex(regextract(message,"(^.*?)\."),0),
 xdm.event.outcome=if(event_result="success",XDM_CONST.OUTCOME_SUCCESS, event_result="failure",XDM_CONST.OUTCOME_FAILED, event_result)
 |alter xdm.logon.type =if(logonType="2", XDM_CONST.LOGON_TYPE_INTERACTIVE,logonType="3",XDM_CONST.LOGON_TYPE_NETWORK, logonType="4", XDM_CONST.LOGON_TYPE_BATCH ,logonType="5",XDM_CONST.LOGON_TYPE_SERVICE , logonType ="6", XDM_CONST.LOGON_TYPE_PROXY , logonType="7", XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS , logonType="8", XDM_CONST.LOGON_TYPE_NETWORK_CLEARTEXT, logonType="9",XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS ,logonType="10",XDM_CONST.LOGON_TYPE_REMOTE_INTERACTIVE  ,logonType="11", XDM_CONST.LOGON_TYPE_CACHED_INTERACTIVE, logonType="12", XDM_CONST.LOGON_TYPE_CACHED_REMOTE_INTERACTIVE , logonType="13", XDM_CONST.LOGON_TYPE_CACHED_UNLOCK,logonType),
 xdm.source.user.user_type=if(userType contains "User",XDM_CONST.USER_TYPE_REGULAR, userType contains "Service", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT , userType contains "Computer",XDM_CONST.USER_TYPE_MACHINE_ACCOUNT ,userType);
