@@ -36,7 +36,7 @@ def options_handler():
                         required=False)
     parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
-    parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('--build_number', help='CI build number where the instances were created', required=True)
 
     options = parser.parse_args()
     return options

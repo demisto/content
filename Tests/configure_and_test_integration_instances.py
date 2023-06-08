@@ -126,9 +126,9 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         custom_user_agent = f"demisto-py/dev (Build:{self.build_number})"
         self.__client.api_client.user_agent = custom_user_agent
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         return self.__client
 
 
@@ -159,9 +159,9 @@ class XSOARServer(Server):
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         custom_user_agent = f"demisto-py/dev (Build:{self.build_number})"
         self.__client.api_client.user_agent = custom_user_agent
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
