@@ -797,7 +797,7 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 Get group's users. 
 Allowed for: Admins, Agents and Light Agents.
 
-*Note*: In case that the group_id does not exists. the command will return all users.
+*Note*: In case the group_id does not exist, the command will return all users.
 
 #### Base Command
 
@@ -850,7 +850,7 @@ Allowed for: Admins, Agents and Light Agents.
 | Zendesk.UserGroup.time_zone | String | The user's time zone. | 
 | Zendesk.UserGroup.two_factor_auth_enabled | Unknown | Whether two factor authentication is enabled. | 
 | Zendesk.UserGroup.updated_at | Date | The time the user was last updated. | 
-| Zendesk.UserGroup.url | String | The url that points to the user's API record. | 
+| Zendesk.UserGroup.url | String | The URL that points to the user's API record. | 
 | Zendesk.UserGroup.user_fields | Unknown | The user fields as shown in the Zendesk user interface. | 
 | Zendesk.UserGroup.verified | Boolean | Whether any of the user's identities is verified. | 
 
@@ -939,10 +939,10 @@ Allowed for: Admins, Agents.
 | Zendesk.Group.deleted | Boolean | Deleted groups get marked as such. | 
 | Zendesk.Group.description | String | The description of the group. | 
 | Zendesk.Group.id | Number | The group ID. | 
-| Zendesk.Group.is_public | Boolean | If true, the group is public. If false, the group is private. You can't change a private group to a public group | 
+| Zendesk.Group.is_public | Boolean | If true, the group is public. If false, the group is private. You can't change a private group to a public group. | 
 | Zendesk.Group.name | String | The name of the group. | 
 | Zendesk.Group.updated_at | Date | The time of the last update of the group. | 
-| Zendesk.Group.url | String | The API url of the group. | 
+| Zendesk.Group.url | String | The API URL of the group. | 
 
 #### Command example
 ```!zendesk-group-list limit=1```
