@@ -1,5 +1,5 @@
 {
-    "name": "Ja3er",
+    "name": "   ",
     "description": "Query for hashes of JA3 fingerprints",
     "support": "community",
     "currentVersion": "1.0.2",
@@ -10,7 +10,7 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": ["Plug & Enrich"],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
