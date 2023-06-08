@@ -4,7 +4,6 @@ from typing import Dict, List, Any
 import requests
 from datetime import datetime
 import copy
-import json
 
 APP_NAME = 'azure-key-vault'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -155,7 +154,7 @@ class KeyVaultClient:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
 
-        return self.http_request('DELETE', full_url=full_url)
+        return self.http_request('DELETE', full_url=full_url, ok_codes=[200, 204])
 
     def get_key_vault_request(self, subscription_id: str, resource_group_name: str,
                               vault_name: str) -> Dict[str, Any]:
@@ -220,7 +219,7 @@ class KeyVaultClient:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}/accessPolicies/{operation_kind}'
 
-        return self.http_request('PUT', full_url=full_url, data=data)
+        return self.http_request('PUT', full_url=full_url, data=data, ok_codes=(200,201))
 
     def get_key_request(self, vault_name: str, key_name: str, key_version: str) -> Dict[str, Any]:
         """
@@ -415,17 +414,11 @@ class KeyVaultClient:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
         filter_by_tag = ''
         if tag:
-            try:
-                tag = json.loads(tag)
-                tag_name = next(iter(tag))
-                tag_value = tag[tag_name]
-                filter_by_tag = f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
-            except Exception as e:
-                raise Exception("""Invalid tag format, please use the following format: '{"key_name":"value_name"}""", e)
+            filter_by_tag = arg_to_tag(tag)
 
         response = self.http_request('GET', full_url=full_url, resource=MANAGEMENT_RESOURCE,
                                      params={'$filter': filter_by_tag, '$top': limit,
-                                             'api-version': '2021-04-01'})
+                                             'api-version': '2021-04-01'}, ok_codes=[200])
         return self.get_entities_independent_of_pages(first_page=response, limit=limit, resource=MANAGEMENT_RESOURCE)
 
     ''' INTEGRATION HELPER METHODS  '''
@@ -623,8 +616,8 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
     ip_rules = argToList(args.get('ip_rules'))
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name', 'None')))
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_list = argToList(get_from_params_or_args(params, args, 'resource_group_name'))
 
     all_responses = []
     for single_resource_group in resource_group_list:
@@ -636,16 +629,14 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
                                                              default_action, bypass, vnet_subnet_id,
                                                              ignore_missing_vnet_service_endpoint, ip_rules)
 
-        if response.get('error'):
-            raise Exception(response)
-        all_responses.append(response)
+    all_responses.append(response)
 
     readable_output = tableToMarkdown(f'{vault_name} Information',
                                       all_responses,
                                       ['id', 'name', 'type', 'location'], removeNull=True,
                                       headerTransform=string_to_table_header)
 
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix='AzureKeyVault.KeyVault',
         outputs_key_field='id',
         outputs=all_responses,
@@ -653,7 +644,6 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
         readable_output=readable_output,
         ignore_auto_extract=True
     )
-    return command_results
 
 
 def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
@@ -671,16 +661,14 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
     vault_name = args['vault_name']
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name', 'None')))
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_list = argToList(get_from_params_or_args(params, args, 'resource_group_name'))
 
     message = ""
     for single_resource_group in resource_group_list:
         response = client.delete_key_vault_request(subscription_id=subscription_id,
                                                    resource_group_name=single_resource_group,
                                                    vault_name=vault_name)
-        if response.get('error'):
-            raise Exception(response)
 
         if response.get('status_code') == 200:
             message += f'Deleted Key Vault {vault_name} successfully.'
@@ -704,8 +692,8 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: 
     vault_name = args['vault_name']
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_name = args.get('resource_group_name', params.get('resource_group_name'))
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
     response = client.get_key_vault_request(subscription_id=subscription_id,
                                             resource_group_name=resource_group_name,
                                             vault_name=vault_name)
@@ -714,7 +702,7 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: 
                                       response,
                                       ['id', 'name', 'type', 'location'], removeNull=True,
                                       headerTransform=string_to_table_header)
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix='AzureKeyVault.KeyVault',
         outputs_key_field='id',
         outputs=response,
@@ -722,8 +710,6 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: 
         readable_output=readable_output,
         ignore_auto_extract=True
     )
-
-    return command_results
 
 
 def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
@@ -741,7 +727,7 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params
     offset = arg_to_number(args.get('offset', DEFAULT_OFFSET))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
-    subscription_id = args.get('subscription_id', params.get('subscription_id'))
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
     response = client.list_key_vaults_request(subscription_id=subscription_id,
                                               limit=limit, offset=offset)
 
@@ -781,16 +767,15 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     storage_accounts = argToList(args.get('storage', []))
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name')))
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_list = argToList(get_from_params_or_args(params, args, 'resource_group_name'))
 
     all_responses = []
     for single_resource_group in resource_group_list:
         response = client.update_access_policy_request(subscription_id, single_resource_group,
                                                        vault_name, operation_kind, object_id, keys,
                                                        secrets, certificates, storage_accounts)
-        if response.get('error'):
-            raise Exception(response)
+
         all_responses.append(response)
 
     readable_output = tableToMarkdown(f'{vault_name} Updated Access Policy',
@@ -1249,28 +1234,28 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    subscription_id_list = argToList(args.get('subscription_id', params.get('subscription_id', "None")))
+    # # subscription_id can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id_list = argToList(get_from_args_or_params(args, params, 'subscription_id'))
 
     all_responses = []
     for subscription_id in subscription_id_list:
         response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
-        if "error" in response:
-            raise Exception(response)
         all_responses.extend(response)
 
-    readable_output = tableToMarkdown('Resource Groups List',
-                                      all_responses,
-                                      ['name', 'location', 'tags',
-                                       'properties.provisioningState'
-                                       ],
-                                      removeNull=True, headerTransform=string_to_table_header)
-    return CommandResults(
-        outputs_prefix='AzureKeyVault.ResourceGroup',
-        outputs_key_field='id',
-        outputs=all_responses,
-        raw_response=all_responses,
-        readable_output=readable_output,
-    )
+        readable_output = tableToMarkdown('Resource Groups List',
+                                          all_responses,
+                                          ['name', 'location', 'tags',
+                                           'properties.provisioningState'
+                                           ],
+                                          removeNull=True, headerTransform=string_to_table_header)
+        return CommandResults(
+            outputs_prefix='AzureKeyVault.ResourceGroup',
+            outputs_key_field='id',
+            outputs=all_responses,
+            raw_response=all_responses,
+            readable_output=readable_output,
+        )
 
 
 def test_module(client: KeyVaultClient, params: Dict[str, any]) -> None:
