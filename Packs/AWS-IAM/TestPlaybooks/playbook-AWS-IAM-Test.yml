@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5095
+          "y": 5785
         }
       }
     note: false
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5445
+          "y": 6135
         }
       }
     note: false
@@ -125,7 +125,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5795
+          "y": 6475
         }
       }
     note: false
@@ -196,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4065
+          "y": 4755
         }
       }
     note: false
@@ -232,7 +232,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6345
+          "y": 7035
         }
       }
     note: false
@@ -294,7 +294,6 @@ tasks:
       brand: AWS - IAM
     nexttasks:
       '#none#':
-      - "30"
       - "96"
     scriptarguments:
       instanceProfileName:
@@ -305,7 +304,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3470
+          "y": 3520
         }
       }
     note: false
@@ -417,7 +416,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3325
+          "y": 3345
         }
       }
     note: false
@@ -525,7 +524,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3755
+          "y": 3865
         }
       }
     note: false
@@ -561,7 +560,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4570
+          "y": 5260
         }
       }
     note: false
@@ -1251,7 +1250,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4220
+          "y": 4910
         }
       }
     note: false
@@ -1291,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4220
+          "y": 4910
         }
       }
     note: false
@@ -1331,7 +1330,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 5960
         }
       }
     note: false
@@ -1371,7 +1370,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5270
+          "y": 5960
         }
       }
     note: false
@@ -1411,7 +1410,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5620
+          "y": 6310
         }
       }
     note: false
@@ -1451,7 +1450,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5620
+          "y": 6310
         }
       }
     note: false
@@ -1491,7 +1490,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5970
+          "y": 6660
         }
       }
     note: false
@@ -1531,7 +1530,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5970
+          "y": 6660
         }
       }
     note: false
@@ -1641,7 +1640,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4395
+          "y": 5085
         }
       }
     note: false
@@ -1749,7 +1748,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4745
+          "y": 5435
         }
       }
     note: false
@@ -1785,7 +1784,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4920
+          "y": 5610
         }
       }
     note: false
@@ -1812,7 +1811,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7220
+          "y": 7610
         }
       }
     note: false
@@ -1850,7 +1849,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6550
+          "y": 7220
         }
       }
     note: false
@@ -1888,7 +1887,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6790
+          "y": 7410
         }
       }
     note: false
@@ -1926,7 +1925,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6170
+          "y": 6860
         }
       }
     note: false
@@ -2005,7 +2004,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3610
+          "y": 3690
         }
       }
     note: false
@@ -2028,7 +2027,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "98"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2058,7 +2057,117 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3900
+          "y": 4030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 897e9aa4-d10a-4de2-8cc4-158f3ad4e566
+    type: regular
+    task:
+      id: 897e9aa4-d10a-4de2-8cc4-158f3ad4e566
+      version: -1
+      name: aws-iam-untag-role
+      description: Removes the specified tags from the role.
+      script: '|||aws-iam-untag-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+      tagKeys:
+        simple: Key1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 65f5cbc9-b75a-4211-8af1-984603e8f68e
+    type: regular
+    task:
+      id: 65f5cbc9-b75a-4211-8af1-984603e8f68e
+      version: -1
+      name: aws-iam-get-role
+      description: Retrieves information about the specified role.
+      script: AWS - IAM|||aws-iam-get-role
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      roleName:
+        simple: ${TestPBRoleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: c3acdebb-aa14-44fc-8b4c-a070116435eb
+    type: condition
+    task:
+      id: c3acdebb-aa14-44fc-8b4c-a070116435eb
+      version: -1
+      name: Verify untag role
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: AWS.IAM.Roles.Tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4560
         }
       }
     note: false
@@ -2073,7 +2182,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7375,
+        "height": 7765,
         "width": 1240,
         "x": 50,
         "y": -90
