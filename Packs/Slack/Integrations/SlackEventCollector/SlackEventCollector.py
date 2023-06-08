@@ -83,7 +83,6 @@ class Client(BaseClient):
         query_params['limit'] = 200  # recommended limit value by Slack
         try:
             events, cursor = self.handle_pagination_first_batch(query_params, last_run)
-            demisto.debug(f'First batch of events: {events}, cursor: {cursor}')
             while events:
                 for event in events:
                     if event.get('id') == last_run.get('last_id'):
@@ -121,7 +120,8 @@ class Client(BaseClient):
             # we need to know where to stop in the next runs
             last_run['last_id'] = aggregated_logs[0].get('id')
 
-        demisto.debug(f'aggregated_logs: {aggregated_logs}')
+        debug_aggregated_logs = [(event.get('id'), event.get('date_create')) for event in aggregated_logs]
+        demisto.debug(f'aggregated_logs: {debug_aggregated_logs}')
         return aggregated_logs
 
 
@@ -154,8 +154,8 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     query_params = prepare_query_params(args)
     demisto.debug(f'####### demisto.debug: Query params: {query_params}')
     raw_response, events, cursor = client.get_logs(query_params)
-    demisto.debug(f'####### demisto.debug: Raw response: {raw_response}')
-    demisto.debug(f'####### demisto.debug: Events: {events}')
+    debug_events = [(event.get('id'), event.get('date_create')) for event in events]
+    demisto.debug(f'####### demisto.debug: Events: {debug_events}')
     demisto.debug(f'####### demisto.debug: Cursor: {cursor}')
     results = CommandResults(
         raw_response=raw_response,
@@ -185,7 +185,8 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[
     query_params = prepare_query_params(params)
     demisto.debug(f'####### demisto.debug: Query params: {query_params}')
     events = client.get_logs_with_pagination(query_params, last_run)
-    demisto.debug(f'####### demisto.debug: Events: {events}')
+    debug_events = [(event.get('id'), event.get('date_create')) for event in events]
+    demisto.debug(f'####### demisto.debug: Events: {debug_events}')
     return events, last_run
 
 
@@ -230,7 +231,8 @@ def main() -> None:  # pragma: no cover
             last_run = demisto.getLastRun()
             demisto.debug(f'####### demisto.debug: last_run: {last_run}')
             events, last_run = fetch_events_command(client, params, last_run)
-            demisto.debug(f'####### demisto.debug: events: {events}, last_run: {last_run}')
+            debug_events = [(event.get('id'), event.get('date_create')) for event in events]
+            demisto.debug(f'####### demisto.debug: events: {debug_events}, last_run: {last_run}')
 
             send_events_to_xsiam(
                 events,
