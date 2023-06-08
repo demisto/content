@@ -206,7 +206,8 @@ def cyble_alert_group(client, method, token, url, args):
                                     'alert_group_id': "{}".format(alert_group['id']),
                                     'severity': "{}".format(alert_group['severity']),
                                     'status': "{}".format(alert_group['status']),
-                                    'total_alerts': "{}".format(alert_group['total_alerts'])})
+                                    'total_alerts': "{}".format(alert_group['total_alerts']),
+                                    'created_at': "{}".format(alert_group['created_at'])})
 
         markdown = tableToMarkdown('Alerts Group Details:', lst_alert_group, )
 
@@ -237,16 +238,6 @@ def cyble_fetch_iocs(client, method, token, args, url):
 
     """
 
-    input_params_alerts_iocs = {}
-    if args.get('ioc_type', ''):
-        input_params_alerts_iocs['iocType'] = args.get('ioc_type', '')
-
-    if args.get('start_date', ''):
-        input_params_alerts_iocs['startDate'] = args.get('start_date', '')
-
-    if args.get('end_date', ''):
-        input_params_alerts_iocs['endDate'] = args.get('end_date', '')
-
     input_params_alerts_iocs = {
         'ioc': args.get('ioc', ''),
         'page': args.get('from', ''),
@@ -255,6 +246,15 @@ def cyble_fetch_iocs(client, method, token, args, url):
         'order': args.get('order', ''),
         'tags': args.get('tags')
     }
+
+    if args.get('ioc_type', ''):
+        input_params_alerts_iocs['iocType'] = args.get('ioc_type', '')
+
+    if args.get('start_date'):
+        input_params_alerts_iocs['startDate'] = args.get('start_date')
+
+    if args.get('end_date'):
+        input_params_alerts_iocs['endDate'] = args.get('end_date')
 
     iocs = set_request(client, method, token, input_params_alerts_iocs, url)
 
@@ -349,7 +349,9 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
 
         input_params['limit'] = arg_to_number(args.get('limit', 10))
         input_params['start_date'] = args.get('start_date', 0)
-        input_params['end_date'] = args.get('end_date', 0)
+
+        if not args.get('end_date', 0):
+            input_params['end_date'] = datetime.now().astimezone().replace(microsecond=0).isoformat()
 
     else:
         initial_interval = demisto.params().get('first_fetch_timestamp', 1)
@@ -373,6 +375,7 @@ def cyble_events(client, method, token, url, args, base_url, last_run, skip=True
     latest_created_time = input_params['start_date']
 
     final_input_structure = alert_input_structure(client, base_url, token, input_params)
+
     alerts = set_request(client, method, token, final_input_structure, url)
     incidents = []
 

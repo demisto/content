@@ -3,7 +3,6 @@ commonfields:
   id: cybleeventsv2
   version: -1
 configuration:
-
 - additionalinfo: Server URL (e.g. <https://example.net>)
   defaultvalue: <https://example.net>
   display: URL
@@ -246,7 +245,7 @@ script:
     - contextPath: CybleEvents.AlertGroup
       description: Fetch all the alert groups
       type: String
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.61265
   feed: false
   isfetch: true
   longRunning: false
