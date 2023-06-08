@@ -1507,6 +1507,12 @@ script:
     - contextPath: AWS.IAM.Roles.MaxSessionDuration
       description: The maximum session duration (in seconds) for the specified role.
       type: number
+    - contextPath: AWS.IAM.Roles.Tags.Key
+      description: The tag key.
+      type: string
+    - contextPath: AWS.IAM.Roles.Tags.Value
+      description: The tag value.
+      type: string
   - arguments:
     - default: false
       description: The name of the role to delete.

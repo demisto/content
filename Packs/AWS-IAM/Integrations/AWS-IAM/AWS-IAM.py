@@ -679,9 +679,14 @@ def get_role(args, aws_client):  # pragma: no cover
     })
 
     raw = json.loads(json.dumps(response['Role'], cls=DatetimeEncoder))
-    ec = {'AWS.IAM.Roles': raw}
+    raw["Tags"] = raw.get("Tags", [])
     human_readable = tableToMarkdown('AWS IAM Roles', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs=createContext(raw),
+        outputs_prefix='AWS.IAM.Roles',
+        outputs_key_field='RoleName',
+        readable_output=human_readable
+    )
 
 
 def delete_role(args, aws_client):  # pragma: no cover
@@ -1229,7 +1234,7 @@ def put_role_policy_command(args, aws_client):
             readable_output=human_readable
         )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to role {role_name}"
+        raise DemistoException(f"Couldn't add policy {policy_name} to role {role_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
@@ -1264,7 +1269,7 @@ def put_user_policy_command(args, aws_client):
             readable_output=human_readable
         )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to user {user_name}"
+        raise DemistoException(f"Couldn't add policy {policy_name} to user {user_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
@@ -1299,7 +1304,7 @@ def put_group_policy_command(args, aws_client):
             readable_output=human_readable
         )
     except Exception as e:
-        raise DemistoException(f"Couldn't add policy {policy_name} was added to group {group_name}"
+        raise DemistoException(f"Couldn't add policy {policy_name} to group {group_name}"
                                f"\nencountered the following exception: {str(e)}")
 
 
@@ -1594,7 +1599,7 @@ def main():     # pragma: no cover
         elif command == 'aws-iam-get-instance-profile':
             get_instance_profile(args, aws_client)
         elif command == 'aws-iam-get-role':
-            get_role(args, aws_client)
+            return_results(get_role(args, aws_client))
         elif command == 'aws-iam-delete-role':
             delete_role(args, aws_client)
         elif command == 'aws-iam-create-role':
