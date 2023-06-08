@@ -954,7 +954,7 @@ class ZendeskClient(BaseClient):
         file_names = []
         for attachment_id in attachments_ids:
             attachment = self.zendesk_attachment_get(attachment_id)
-            attachment.pop(0)
+            attachment.pop(0)  # Removing the CommandResults Object
             attachments.extend(attachment)
             demisto.debug(f'The fetched attachments for ID {attachment_id} - {attachments}')
 
