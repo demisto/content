@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple, Callable
+from typing import Dict, Any, Tuple
 
 
 # Disable insecure warnings
@@ -608,78 +608,142 @@ def get_audit_logs(
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events_by_log_type(
+# def fetch_events_by_log_type(
+#     client: Client,
+#     first_fetch: str,
+#     get_logs_func: Callable,
+#     log_last_run_time_field: str,
+#     last_run: Dict,
+#     limit: int = DEFAULT_MAX_LIMIT,
+#     should_send_events: bool = True
+# ):
+#     """
+#     Get all the logs & sends the logs into XSIAM for each type separately
+#
+#     Args:
+#         client (Client): the client object
+#         first_fetch (str): the first fetch time
+#         get_logs_func (callable): a function that extracts logs and its latest log time
+#         log_last_run_time_field (str): the log last run time field
+#         last_run (dict): the last run object
+#         limit (int): the maximum number of logs to fetch from each type
+#         should_send_events (bool): whether to send the events to XSIAM
+#
+#     """
+#     logs, latest_log_time = get_logs_func(client, last_run.get(log_last_run_time_field), first_fetch, limit)
+#
+#     if should_send_events:
+#         send_events_to_xsiam(events=logs, vendor=VENDOR, product=PRODUCT)
+#         last_run.update({log_last_run_time_field: latest_log_time})
+#         demisto.info(f'updating last run to: {last_run} for {log_last_run_time_field}={latest_log_time}')
+#         demisto.setLastRun(last_run)
+#
+#
+# def fetch_all_events(
+#     client: Client,
+#     first_fetch: str,
+#     limit: int = DEFAULT_MAX_LIMIT,
+#     should_send_events: bool = True
+# ):
+#     """
+#     Fetch all the logs types.
+#
+#     client (Client): the client object
+#     first_fetch (str): the first fetch time
+#     limit (int): the maximum number of logs to fetch from each type
+#     should_send_events (bool): whether to send the events to XSIAM
+#
+#     """
+#     last_run = demisto.getLastRun()
+#
+#     for logs_func, log_last_run_time_field in [
+#         (
+#             get_workbench_logs, LastRunLogsTimeFields.WORKBENCH
+#         ),
+#         (
+#             get_observed_attack_techniques_logs, LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+#         ),
+#         (
+#             get_search_detection_logs, LastRunLogsTimeFields.SEARCH_DETECTIONS,
+#         ),
+#         (
+#             get_audit_logs, LastRunLogsTimeFields.AUDIT
+#         )
+#     ]:
+#         demisto.info(f'starting to fetch log {log_last_run_time_field=}')
+#         fetch_events_by_log_type(
+#             client=client,
+#             first_fetch=first_fetch,
+#             get_logs_func=logs_func,
+#             log_last_run_time_field=log_last_run_time_field,
+#             last_run=last_run,
+#             limit=limit,
+#             should_send_events=should_send_events
+#         )
+
+
+def fetch_events(
     client: Client,
     first_fetch: str,
-    get_logs_func: Callable,
-    log_last_run_time_field: str,
-    last_run: Dict,
-    limit: int = DEFAULT_MAX_LIMIT,
-    should_send_events: bool = True
-):
+    limit: int = DEFAULT_MAX_LIMIT
+) -> Tuple[List[Dict], Dict]:
     """
-    Get all the logs & sends the logs into XSIAM for each type separately
+    Get all the logs.
 
     Args:
         client (Client): the client object
         first_fetch (str): the first fetch time
-        get_logs_func (callable): a function that extracts logs and its latest log time
-        log_last_run_time_field (str): the log last run time field
-        last_run (dict): the last run object
         limit (int): the maximum number of logs to fetch from each type
-        should_send_events (bool): whether to send the events to XSIAM
 
-    """
-    logs, latest_log_time = get_logs_func(client, last_run.get(log_last_run_time_field), first_fetch, limit)
-
-    if should_send_events:
-        send_events_to_xsiam(events=logs, vendor=VENDOR, product=PRODUCT)
-        last_run.update({log_last_run_time_field: latest_log_time})
-        demisto.info(f'updating last run to: {last_run} for {log_last_run_time_field}={latest_log_time}')
-        demisto.setLastRun(last_run)
-
-
-def fetch_all_events(
-    client: Client,
-    first_fetch: str,
-    limit: int = DEFAULT_MAX_LIMIT,
-    should_send_events: bool = True
-):
-    """
-    Fetch all the logs types.
-
-    client (Client): the client object
-    first_fetch (str): the first fetch time
-    limit (int): the maximum number of logs to fetch from each type
-    should_send_events (bool): whether to send the events to XSIAM
-
+    Returns:
+        Tuple[List[Dict], Dict]: events & updated last run for all the log types.
     """
     last_run = demisto.getLastRun()
+    demisto.info(f'last run in the start of the fetch: {last_run}')
 
-    for logs_func, log_last_run_time_field in [
-        (
-            get_workbench_logs, LastRunLogsTimeFields.WORKBENCH
-        ),
-        (
-            get_observed_attack_techniques_logs, LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
-        ),
-        (
-            get_search_detection_logs, LastRunLogsTimeFields.SEARCH_DETECTIONS,
-        ),
-        (
-            get_audit_logs, LastRunLogsTimeFields.AUDIT
-        )
-    ]:
-        demisto.info(f'starting to fetch log {log_last_run_time_field=}')
-        fetch_events_by_log_type(
-            client=client,
-            first_fetch=first_fetch,
-            get_logs_func=logs_func,
-            log_last_run_time_field=log_last_run_time_field,
-            last_run=last_run,
-            limit=limit,
-            should_send_events=should_send_events
-        )
+    demisto.info(f'starting to fetch {LogTypes.WORKBENCH} logs')
+    workbench_logs, latest_workbench_log_time = get_workbench_logs(
+        client=client,
+        workbench_log_last_run_time=last_run.get(LastRunLogsTimeFields.WORKBENCH),
+        first_fetch=first_fetch,
+        limit=limit
+    )
+
+    demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
+    observed_attack_techniques_logs, latest_observed_attack_technique_log_time = get_observed_attack_techniques_logs(
+        client=client,
+        observed_attack_technique_log_last_run_time=last_run.get(LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES),
+        first_fetch=first_fetch,
+        limit=limit
+    )
+
+    demisto.info(f'starting to fetch {LogTypes.SEARCH_DETECTIONS} logs')
+    search_detection_logs, latest_search_detection_log_time = get_search_detection_logs(
+        client=client,
+        search_detection_log_last_run_time=last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS),
+        first_fetch=first_fetch,
+        limit=limit
+    )
+
+    demisto.info(f'starting to fetch {LogTypes.AUDIT} logs')
+    audit_logs, latest_audit_log_time = get_audit_logs(
+        client=client,
+        audit_log_last_run_time=last_run.get(LastRunLogsTimeFields.AUDIT),
+        first_fetch=first_fetch,
+        limit=limit
+    )
+
+    events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+
+    updated_last_run = {
+        LastRunLogsTimeFields.WORKBENCH: latest_workbench_log_time,
+        LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES: latest_observed_attack_technique_log_time,
+        LastRunLogsTimeFields.SEARCH_DETECTIONS: latest_search_detection_log_time,
+        LastRunLogsTimeFields.AUDIT: latest_audit_log_time
+    }
+    demisto.info(f'{updated_last_run=}')
+
+    return events, updated_last_run
 
 
 def test_module(client: Client, first_fetch: str) -> str:
@@ -693,7 +757,7 @@ def test_module(client: Client, first_fetch: str) -> str:
     Returns:
         str: 'ok' in case of success, exception in case of an error.
     """
-    fetch_all_events(client=client, first_fetch=first_fetch, limit=1, should_send_events=False)
+    fetch_events(client=client, first_fetch=first_fetch, limit=1)
     return 'ok'
 
 
@@ -824,16 +888,9 @@ def main() -> None:
         if demisto.command() == 'test-module':
             return_results(test_module(client=client, first_fetch=first_fetch))
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            demisto.info(f'start last run: {last_run}')
-            try:
-                fetch_all_events(client=client, first_fetch=first_fetch, limit=limit)
-            except Exception:
-                # if only part of the logs were sent to xsiam,
-                # set the last run to recent last run to avoid duplications
-                demisto.info(f'updating last run during exception to: {last_run}')
-                demisto.setLastRun(last_run)
-                raise
+            events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit)
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(updated_last_run)
         elif command == 'trend-micro-vision-one-get-events':
             return_results(get_events_command(client=client, args=demisto.args()))
         else:

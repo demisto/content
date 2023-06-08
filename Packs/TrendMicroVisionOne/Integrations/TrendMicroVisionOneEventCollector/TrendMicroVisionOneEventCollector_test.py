@@ -302,13 +302,8 @@ class TestFetchEvents:
         main()
 
         assert set_last_run_mocker.call_args.args[0] == expected_updated_last_run
-        assert send_events_to_xsiam_mocker.call_count == 4
-
-        actual_received_events = 0
-        for call_arg in send_events_to_xsiam_mocker.call_args_list:
-            actual_received_events += len(call_arg.kwargs['events'])
-
-        assert actual_received_events == num_of_expected_events
+        assert send_events_to_xsiam_mocker.call_count == 1
+        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == num_of_expected_events
 
 
 @pytest.mark.parametrize(
