@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.9'
       - name: Setup Poetry
-        run: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v8
       - uses: actions/cache@v2
         with:
           path: .venv
