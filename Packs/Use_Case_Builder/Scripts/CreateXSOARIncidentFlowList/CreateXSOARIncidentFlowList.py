@@ -34,7 +34,7 @@ white; color: gray;padding: 10px;margin-bottom: 10px;border-radius: 5px;box-shad
 10px;margin-bottom: 10px;border-radius: 5px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, \
 0.24);">Monitoring Alert</li> <li style="background-color: white; color: gray;padding: 10px;margin-bottom: \
 10px;border-radius: 5px;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);">Password Spray \
-Alert</li> </ul> </div> 
+Alert</li> </ul> </div> \
 
     <!-- Analysis Playbooks (Enrichment) --> <div style="flex: 1; min-width: 250px; max-width: 30%; margin: 20px; \
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);"> <h1 style="background-color: #1e90ff; \

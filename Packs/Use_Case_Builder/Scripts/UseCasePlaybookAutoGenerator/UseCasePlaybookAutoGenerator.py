@@ -20,9 +20,9 @@ class Playbook:
     # Adds headers for different playbook sections
     def addHeader(self, headerName):
         self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
-                                                       {"name": headerName, "isTitleTask": True, "type": "title"}, "nextTasks":
-                                                       {"#none#": [
-                                                           str(self.currentTaskId + 1)]}}  # Adds header as next
+            {"name": headerName, "isTitleTask": True, "type": "title"}, "nextTasks":
+                                                           {"#none#": [
+                                                               str(self.currentTaskId + 1)]}}  # Adds header as next
         # task in playbook
         self.currentTaskId += 1  # Adds 1 to current task ID
 
@@ -33,7 +33,7 @@ class Playbook:
 
         if taskType == "playbook":
             self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": taskType, "task":
-                                                           {"name": taskName, "type": taskType, "playbookId": automationName},
+                {"name": taskName, "type": taskType, "playbookId": automationName},
                                                            "nextTasks": {"#none#": [str(self.currentTaskId + 1)]},
                                                            "separateContext": True}  # Adds task to playbook
         elif taskType == 'command':
@@ -45,9 +45,10 @@ class Playbook:
 
         elif taskType == 'header':
             self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
-                                                           {"name": automationName, "isTitleTask": True, "type": "title"}, "nextTasks":
-                                                           {"#none#": [
-                                                               str(self.currentTaskId + 1)]}}  # Adds header as
+                {"name": automationName, "isTitleTask": True,
+                 "type": "title"}, "nextTasks":
+                                                               {"#none#": [
+                                                                   str(self.currentTaskId + 1)]}}  # Adds header as
             # next task in playbook
 
         self.currentTaskId += 1  # Adds 1 to current task ID
@@ -79,25 +80,26 @@ class Playbook:
     # Adds closing header to playbook
     def endPlaybook(self):
         self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
-                                                       {"name": "Finished", "isTitleTask": True, "type": "title"}, "nextTasks": {"#none#": []}}
+            {"name": "Finished", "isTitleTask": True, "type": "title"}, "nextTasks": {"#none#": []}}
 
     # Generates JSON to Post to API
     def createPlaybookJSON(self):
         playbookJSON = [{"name": self.useCaseName, "startTaskId": "0", "tasks": self.playbookTasks, "view":
-                         {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 380, "width": 385, "x": 50, "y": 50}}}}]
+            {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 380, "width": 385, "x": 50, "y": 50}}}}]
         return playbookJSON
 
     def addTimers(self):
         self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
-                                                       {"name": "Start SLA Timers", "isTitleTask": True, "type": "title"}, "nextTasks":
-                                                       {"#none#": [str(self.currentTaskId + 1)]},
+            {"name": "Start SLA Timers", "isTitleTask": True, "type": "title"}, "nextTasks":
+                                                           {"#none#": [str(self.currentTaskId + 1)]},
                                                        "timerTriggers": [{"action": "start",
                                                                           "fieldName": "containmentsla"},
                                                                          {"action": "start",
                                                                           "fieldName": "remediationsla"},
                                                                          {"action": "start", "fieldName": "triagesla"},
                                                                          {"action": "start",
-                                                                          "fieldName": "timetoassignment"}]}  # Adds timer header as next playbook task
+                                                                          "fieldName": "timetoassignment"}]}  # Adds
+        # timer header as next playbook task
         self.currentTaskId += 1  # Adds 1 to current task ID
 
 
