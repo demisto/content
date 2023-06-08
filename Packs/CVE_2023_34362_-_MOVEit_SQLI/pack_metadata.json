@@ -1,0 +1,35 @@
+{
+    "name": "CVE-2023-34362 - MOVEit Transfer SQL Injection",
+    "description": "This pack handles MOVEit Transfer SQL Injection CVE-2023-34362 vulnerability",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "zero-day",
+        "0-day",
+        "MOVEit",
+        "SQLI",
+        "SQL Injection",
+        "CVE-2023-34362",
+        "34362",
+        "SQL",
+        "Injection"
+    ],
+    "dependencies": {
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
