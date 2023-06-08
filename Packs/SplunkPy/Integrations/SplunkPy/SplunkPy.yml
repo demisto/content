@@ -65,7 +65,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. (Set only if the Splunk server is different than the Cortex XSOAR server.) Relevant only for fetching and mirroring notable events.
+- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. Relevant only for fetching and mirroring notable events. Most be specified when mirroring is enabled.
   name: timezone
   required: false
   type: 0
