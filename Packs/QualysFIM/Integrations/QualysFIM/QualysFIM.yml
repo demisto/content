@@ -56,7 +56,6 @@ configuration:
     Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
     https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
   display: Fetch Filter
-  hidden: false
   name: fetch_filter
   required: false
   type: 0

@@ -8,7 +8,6 @@ commonfields:
 configuration:
 - defaultvalue: https://management.azure.com
   display: Server URL
-  hidden: false
   name: server_url
   required: true
   type: 0
