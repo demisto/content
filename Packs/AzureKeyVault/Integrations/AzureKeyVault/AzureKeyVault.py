@@ -624,7 +624,7 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name')))
+    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name', 'None')))
 
     all_responses = []
     for single_resource_group in resource_group_list:
@@ -672,7 +672,7 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
     subscription_id = args.get('subscription_id', params.get('subscription_id'))
-    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name')))
+    resource_group_list = argToList(args.get('resource_group_name', params.get('resource_group_name', 'None')))
 
     message = ""
     for single_resource_group in resource_group_list:
@@ -1249,7 +1249,7 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    subscription_id_list = argToList(args.get('subscription_id', params.get('subscription_id')))
+    subscription_id_list = argToList(args.get('subscription_id', params.get('subscription_id', "None")))
 
     all_responses = []
     for subscription_id in subscription_id_list:
@@ -1496,16 +1496,16 @@ def main() -> None:
 
     except Exception as error:
         str_error = str(error)
-        massage = 'An error occurred:'
+        custom_message = 'An error occurred:'
         if 'InvalidSubscriptionId' in str_error:
-            massage = 'Invalid or missing subscription ID. Please verify your subscription ID.'
+            custom_message = 'Invalid or missing subscription ID. Please verify your subscription ID.'
         elif 'SubscriptionNotFound' in str_error:
-            massage = 'The given subscription ID could not be found.'
+            custom_message = 'The given subscription ID could not be found.'
         elif 'perform action' in str_error:
-            massage = """The client does not have Key Vault permissions to
+            custom_message = """The client does not have Key Vault permissions to
             the given resource group name or the resource group name does not exist, or was not provided."""
 
-        return_error(massage + "\n" + error.message)
+        return_error(custom_message + "\n" + error.message if hasattr(error, 'message') else str_error)
 
 
 from MicrosoftApiModule import *  # noqa: E402
