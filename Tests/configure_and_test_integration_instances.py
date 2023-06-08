@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import argparse
 import ast
@@ -96,7 +95,6 @@ class Server:
         self.name = ''
         self.build_number = 'unknown'
 
-
     def get_custom_user_agent(self):
         return f"demisto-py/dev (Build:{self.build_number})"
 
@@ -134,7 +132,6 @@ class CloudServer(Server):
         logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
-
 
 
 class XSOARServer(Server):
@@ -293,7 +290,7 @@ class Build(ABC):
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
                             marketplace_buckets=None):
-        pass
+        raise NotImplementedError
 
     def check_if_new_to_marketplace(self, diff: str) -> bool:
         """
@@ -408,9 +405,6 @@ class Build(ABC):
         #  END CHANGE ON LOCAL RUN  #
 
     def configure_server_instances(self, tests_for_iteration, all_new_integrations, modified_integrations):
-        """
-
-        """
         modified_module_instances = []
         new_module_instances = []
         testing_client = self.servers[0].client
@@ -1664,7 +1658,7 @@ def test_pack_zip(content_path, target, packs: list = None):
                 continue
             test = test.name
             with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
+                if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
