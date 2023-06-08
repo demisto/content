@@ -123,7 +123,6 @@ configuration:
 - additionalinfo: Select Chronicle alert type to create actionable incident. Available options are IOC Domain matches(Default), Assets with alerts, Detection alerts and User alerts.
   defaultvalue: IOC Domain matches
   display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).
-  hidden: false
   name: backstory_alert_type
   options:
   - IOC Domain matches
@@ -147,7 +146,6 @@ configuration:
   advanced: true
 - additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add multiple. Entered rules have precedence over the "Fetch all rules detections" checkbox.'
   display: Detections to fetch by Rule ID or Version ID
-  hidden: false
   name: fetch_detection_by_ids
   required: false
   type: 0
@@ -155,7 +153,6 @@ configuration:
   advanced: true
 - additionalinfo: Fetch detections for all versions of all the rules.
   display: Fetch all rules detections
-  hidden: false
   name: fetch_all_detections
   required: false
   type: 8
@@ -174,7 +171,6 @@ configuration:
 - additionalinfo: Select the time window to query Chronicle. While selecting the time window consider the time delay for an event to appear in Chronicle after generation. Available options are 15 (Default), 30, 45 and 60. This parameter is not applied when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless you're missing alerts.
   defaultvalue: '15'
   display: Time window (in minutes)
-  hidden: false
   name: time_window
   options:
   - '15'

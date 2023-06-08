@@ -21,7 +21,6 @@ configuration:
   type: 8
 - defaultvalue: '2000'
   display: Request Timeout
-  hidden: false
   name: timeout
   required: false
   type: 0
