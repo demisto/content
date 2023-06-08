@@ -1,7 +1,5 @@
-Palo Alto Networks Trend Micro Vision One Event Collector integration for XSIAM, collects the Workbench, Observed Attack Techniques, Search Detections and Aduit logs.
-
+Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
-
 ## Configure Trend Micro Vision One Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
@@ -11,8 +9,8 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Your server URL | The api endpoint to the trend micro vision one instance, see domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs | True |
-| Trend Micro Vision One API Key | The api key of Trend Micro Vision One API Key, refer to the help section or to the README.md on how to retrieve the api key. | False |
-| The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is being executed for a single log-type \(Workbench, Observed Attack Techniques, Search Detections and Aduit logs\) | False |
+| Trend Micro Vision One API Key | The Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key. | False |
+| The maximum number of events per fetch | The maximum number of events to fetch every time fetch is executed for a single log-type \(Workbench, Observed Attack Techniques, Search Detections and Audit logs\). | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Fetch events |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -35,9 +33,9 @@ This integration fetches the following logs/alerts from Trend Micro Vision One a
 You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in Trend Micro Vision One.
 
 1. Navigate to **Administration** > **User Accounts**.
-2. Click on the **Add Account** button.
+2. Click **Add Account**.
 3. Fill in the **Add Account** details assigning the role you created in the previous step and choosing **APIs only** as the access level.
-4. Complete the account creation process by following the steps in the email sent.
+4. Complete the account creation process by following the steps in the email you receive.
 5. This will generate an **Authentication token** that can then be used to configure the Cortex XSIAM integration.
 
 ***
@@ -47,18 +45,18 @@ Trend Vision One has built-in roles with fixed permissions that Master Administr
 The following table provides a brief description of each role. 
 
 
-| **Role**                          | **Description**                                                                                              |
-|-----------------------------------|-------------------------------------------------------------------------------------------------------------- 
-| Master Administrator              | Can access all apps and Trend Vision Onefeatures                                                             |
-| Operator (formerly Administrator) | Can configure system settings and connect products                                                           |
-| Auditor                           | Has "View" access to specific Trend Vision Oneapps and features                                              |
-| Senior Analyst                    | Can investigate XDR alerts, take response actions, approve Managed XDR requests, and manage detection models |
-| Analyst                           | Can investigate XDR alerts and take response actions                                                         |
+| **Role**                          | **Description**                                                                                               |
+|-----------------------------------|--------------------------------------------------------------------------------------------------------------- 
+| Master Administrator              | Can access all apps and Trend Vision One features.                                                            |
+| Operator (formerly Administrator) | Can configure system settings and connect products.                                                           |
+| Auditor                           | Has "View" access to specific Trend Vision One apps and features.                                             |
+| Senior Analyst                    | Can investigate XDR alerts, take response actions, approve managed XDR requests, and manage detection models. |
+| Analyst                           | Can investigate XDR alerts and take response actions.                                                         |
 
 
-### Api Limitations
-* You cannot retrieve audit logs that are older than 180 days, hence if setting a first fetch that is more than 180 days, for audit-logs it will be maximum 180 days.
-* For api rate limits please refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
+### API Limitations
+* You cannot retrieve audit logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for audit logs it will be a maximum of 180 days.
+* For API rate limits, refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
 
 
 ## Commands
@@ -77,13 +75,13 @@ Returns a list of logs.
 
 #### Input
 
-| **Argument Name**  | **Description** | **Required** |
-|--------------------| --- | --- |
-| limit              | The maximum number of logs to retrieve. Default is 50. | Optional | 
-| from_time          | From which time to retrieve the log(s) (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
-| to_time            | To which time to retrieve the log(s), a date in ISO8601 format, will default to current time if not provided. | Optional | 
-| should_push_events | Whether to push the fetched events to XSIAM or not. Possible values are: false, true. Default is false. | Optional | 
-| log_type           | The log type to retrieve. Possible values are: all, audit_logs, oat_detection_logs, search_detection_logs, workbench_logs. Default is all. | Optional | 
+| **Argument Name**  | **Description**                                                                                                                             | **Required** |
+|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| limit              | The maximum number of logs to retrieve. Default is 50.                                                                                      | Optional    | 
+| from_time          | From which time to retrieve the log(s) (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days.        | Optional    | 
+| to_time            | To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided.                                       | Optional    | 
+| should_push_events | Whether to push the fetched events to Cortex XSIAM or not. Possible values are: false, true. Default is false.                              | Optional    | 
+| log_type           | The log type to retrieve. Possible values are: all, audit_logs, oat_detection_logs, search_detection_logs, workbench_logs. Default is all.  | Optional    | 
 
 #### Context Output
 

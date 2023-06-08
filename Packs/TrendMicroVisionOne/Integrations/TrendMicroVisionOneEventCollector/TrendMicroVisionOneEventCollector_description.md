@@ -15,9 +15,9 @@ This integration fetches the following logs/alerts from Trend Micro Vision One a
 You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in Trend Micro Vision One.
 
 1. Navigate to **Administration** > **User Accounts**.
-2. Click on the **Add Account** button.
+2. Click **Add Account**.
 3. Fill in the **Add Account** details assigning the role you created in the previous step and choosing **APIs only** as the access level.
-4. Complete the account creation process by following the steps in the email sent.
+4. Complete the account creation process by following the steps in the email you receive.
 5. This will generate an **Authentication token** that can then be used to configure the Cortex XSIAM integration.
 
 ***
@@ -27,18 +27,18 @@ Trend Vision One has built-in roles with fixed permissions that Master Administr
 The following table provides a brief description of each role. 
 
 
-| **Role**                          | **Description**                                                                                              |
-|-----------------------------------|-------------------------------------------------------------------------------------------------------------- 
-| Master Administrator              | Can access all apps and Trend Vision Onefeatures                                                             |
-| Operator (formerly Administrator) | Can configure system settings and connect products                                                           |
-| Auditor                           | Has "View" access to specific Trend Vision Oneapps and features                                              |
-| Senior Analyst                    | Can investigate XDR alerts, take response actions, approve Managed XDR requests, and manage detection models |
-| Analyst                           | Can investigate XDR alerts and take response actions                                                         |
+| **Role**                          | **Description**                                                                                               |
+|-----------------------------------|--------------------------------------------------------------------------------------------------------------- 
+| Master Administrator              | Can access all apps and Trend Vision One features.                                                            |
+| Operator (formerly Administrator) | Can configure system settings and connect products.                                                           |
+| Auditor                           | Has "View" access to specific Trend Vision One apps and features.                                             |
+| Senior Analyst                    | Can investigate XDR alerts, take response actions, approve managed XDR requests, and manage detection models. |
+| Analyst                           | Can investigate XDR alerts and take response actions.                                                         |
 
 ***
-Please be sure to select the correct domain for **Your server URL** integration parameter, you can see the list [here](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) section [3] under "Obtain the domain name for your region."
+Be sure to select the correct domain for **Your server URL** integration parameter. You can see the list [here](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) section [3] under "Obtain the domain name for your region."
 
 ***
-### Api Limitations
-* You cannot retrieve audit logs that are older than 180 days, hence if setting a first fetch that is more than 180 days, for audit-logs it will be maximum 180 days.
-* For api rate limits please refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
+### API Limitations
+* You cannot retrieve audit logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for audit logs it will be a maximum of 180 days.
+* For API rate limits, refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)

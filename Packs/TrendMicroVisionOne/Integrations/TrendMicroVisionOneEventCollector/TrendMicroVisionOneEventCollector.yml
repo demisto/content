@@ -6,7 +6,7 @@ sectionOrder:
 - Connect
 - Collect
 configuration:
-- additionalinfo: 'The api endpoint to the trend micro vision one instance, see domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs'
+- additionalinfo: 'The API endpoint to the Trend Micro Vision One instance. See the domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs.'
   defaultvalue: https://api.xdr.trendmicro.com
   display: Your server URL
   name: url
@@ -17,11 +17,11 @@ configuration:
   name: credentials
   required: false
   type: 9
-  additionalinfo: The api key of Trend Micro Vision One API Key, refer to the help section or to the README.md on how to retrieve the api key.
+  additionalinfo: The API key of Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.
   hiddenusername: true
   section: Connect
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is being executed for a single log-type (Workbench, Observed Attack Techniques, Search Detections and Audit logs)
+  additionalinfo: The maximum number of events to fetch every time fetch is executed for a single log-type (Workbench, Observed Attack Techniques, Search Detections and Audit logs).
   defaultvalue: 1000
   name: max_fetch
   required: false
@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: Palo Alto Networks Trend Micro Vision One Event Collector integration for XSIAM, collects the Workbench, Observed Attack Techniques, Search Detections and Aduit logs.
+description: Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
 display: 'Trend Micro Vision One Event Collector'
 name: TrendMicroVisionOneEventCollector
 script:
@@ -62,15 +62,15 @@ script:
       defaultValue: '50'
       name: limit
       secret: false
-    - description: From which time to retrieve the log(s), a date in ISO8601 format.
+    - description: From which time to retrieve the log(s) in ISO8601 format.
       name: from_time
       required: true
-    - description: To which time to retrieve the log(s), a date in ISO8601 format, will default to current time if not provided.
+    - description: To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided.
       name: to_time
       required: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to push the fetched events to XSIAM or not.
+      description: Whether to push the fetched events to Cortex XSIAM or not.
       name: should_push_events
       predefined:
       - 'false'
