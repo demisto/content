@@ -3094,7 +3094,7 @@ script:
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: Applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
       required: false
     - description: The value by which the exclusions should be filtered.
@@ -3394,7 +3394,7 @@ script:
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: Applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
       required: false
     - description: The name by which the exclusions should be filtered.
