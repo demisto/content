@@ -29,7 +29,8 @@ filter
     indicatorsValuesRegistryValue = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectRegistryValue", json_extract_scalar("@element", "$.value"), null)), ","),
     indicatorsValuesCommandLine = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ","),
     indicatorsValuesExecutablePath = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ","),
-    originalThreatName = arraystring(arraymap(Rules, json_extract_scalar(arrayindex(json_extract_array("@element", "$.matchedFilters"), 0), "$.name")), ",")
+    originalThreatName = arraystring(arraymap(Rules, json_extract_scalar(arrayindex(json_extract_array("@element", "$.matchedFilters"), 0), "$.name")), ","),
+    mitreTechniques = arraymap(Rules, arraystring(json_extract_array(arrayindex(json_extract_array("@element", "$.matchedFilters"), 0), "$.mitreTechniqueIds"), ","))
 
     | alter
     xdm.source.cloud.project = id,
@@ -58,7 +59,8 @@ filter
     xdm.source.process.command_line = indicatorsValuesCommandLine,
     xdm.source.process.executable.path = indicatorsValuesExecutablePath,
     xdm.event.description = matchedRules,
-    xdm.alert.original_threat_name = originalThreatName;
+    xdm.alert.original_threat_name = originalThreatName,
+    xdm.alert.mitre_techniques = mitreTechniques;
 
 filter
     event_type in ("search_detections")
