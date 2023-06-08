@@ -25,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -430
+          "x": 740,
+          "y": -680
         }
       }
     note: false
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 340
+          "x": 520,
+          "y": 300
         }
       }
     note: false
@@ -95,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 340
+          "x": 960,
+          "y": 300
         }
       }
     note: false
@@ -123,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 510
+          "x": 740,
+          "y": 480
         }
       }
     note: false
@@ -143,7 +143,6 @@ tasks:
       id: f1d5ee51-377a-499a-85bf-14bc1b816d5c
       version: -1
       name: Check if the device is online
-      description:  Check if the device is online
       type: condition
       iscommand: false
       brand: ""
@@ -198,13 +197,12 @@ tasks:
       id: fc7c593b-2e96-40de-8d2e-1a29f22325d3
       version: -1
       name: Check a device was provided
-      description: Check a device was provided
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "9"
       "yes":
       - "8"
     separatecontext: false
@@ -220,8 +218,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -280
+          "x": 740,
+          "y": -550
         }
       }
     note: false
@@ -233,10 +231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8b0b2644-0185-4b5a-8e56-9ae2f54496d9
+    taskid: e6b26677-133f-4eb5-8b9a-33d85675a350
     type: regular
     task:
-      id: 8b0b2644-0185-4b5a-8e56-9ae2f54496d9
+      id: e6b26677-133f-4eb5-8b9a-33d85675a350
       version: -1
       name: Get Device Status
       description: Searches for a device that matches the query.
@@ -246,7 +244,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
       - "6"
     scriptarguments:
       ids:
@@ -254,13 +251,128 @@ tasks:
           root: inputs.DeviceId
           transformers:
           - operator: uniq
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Provide an Endpoint ID.Answers.0
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 740,
-          "y": -105
+          "y": -35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 30e8ac38-3a63-43f7-8a36-eb9b807f2015
+    type: collection
+    task:
+      id: 30e8ac38-3a63-43f7-8a36-eb9b807f2015
+      version: -1
+      name: Provide an Endpoint ID
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which endpoints would you like to enrich?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide an Endpoint ID
+      description: This incident contains no endpoint IDs. Please provide single or multiple endpoint IDs to proceed with endpoint enrichment.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7b1c7d74-71a4-46e3-871e-ea7a118a314d
+    type: regular
+    task:
+      id: 7b1c7d74-71a4-46e3-871e-ea7a118a314d
+      version: -1
+      name: Set the endpoint IDs to the incident field
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      agentsid:
+        complex:
+          root: Provide an Endpoint ID.Answers.0
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Provide an Endpoint ID.Answers.0
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -210
         }
       }
     note: false
@@ -275,10 +387,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1005,
-        "width": 1070,
-        "x": 450,
-        "y": -430
+        "height": 1225,
+        "width": 850,
+        "x": 490,
+        "y": -680
       }
     }
   }
