@@ -8673,3 +8673,147 @@ There is no context output for this command.
 #### Human Readable Output
 
 >application-group test-3 was deleted successfully.
+### pan-os-list-tag
+
+***
+Returns a list of tags from Panorama.
+
+#### Base Command
+
+`pan-os-list-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| include_shared_tags | Whether to include shared tags in the list. Possible values are: Yes, No. Default is No. | Optional | 
+| device_group | The device group that the tags are part of. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Tag.name | String | The name of the tag. | 
+| Panorama.Tag.color | String | The color of the tag. | 
+| Panorama.Tag.comment | String | The comment in the tag. | 
+| Panorama.Tag.disable-override | String | Whether overriding the tag is disabled. | 
+
+#### Command example
+```!pan-os-list-tag include_shared_tags=No```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Tag": [
+            {
+                "name": "tag1",
+                "color": "color13"
+            },
+            {
+                "name": "tag2",
+                "color": "color39"
+            },
+            {
+                "name": "tag3",
+                "color": "color39",
+                "disable-override": "no",
+                "comments": "text text text"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags:
+>|Name|Color|Comment|
+>|---|---|---|
+>| tag1 | color13 |  |
+>| tag2 | color39 |  |
+>| tag3 | color39 | text text text |
+
+### pan-os-create-tag
+
+***
+Creates a new tag in Panorama.
+
+#### Base Command
+
+`pan-os-create-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the new tag to be created. | Required | 
+| device_group | The device group that the tag will be part of. | Optional | 
+| disable_override | Whether to disable overriding the tag. Possible values are: true, false. Default is false. | Optional | 
+| is_shared | Whether the tag should be generated in a shared location. Possible values are: true, false. Default is false. | Optional | 
+| comment | The comment for the tag. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-tag name="testtag" comment="some comment" is_shared=false```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was created successfully.
+
+### pan-os-edit-tag
+
+***
+Edits a tag in Panorama.
+
+#### Base Command
+
+`pan-os-edit-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The existing name for the tag to be edited. | Required | 
+| new_name | The new name for the tag to be replaced with. | Optional | 
+| device_group | The device group of the tag. | Optional | 
+| disable_override | Whether to disable overriding the tag. Possible values are: true, false. Default is false. | Optional | 
+| comment | The comment for the tag. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-edit-tag name="testtag" new_name="newtesttag" comment="some comment"```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was edited successfully.
+
+### pan-os-delete-tag
+
+***
+Deletes a tag from Panorama.
+
+#### Base Command
+
+`pan-os-delete-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the tag to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-delete-tag name="testtag"```
+
+#### Human Readable Output
+
+>The tag with name "testtag" was deleted successfully.

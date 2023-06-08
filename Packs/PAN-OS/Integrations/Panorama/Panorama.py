@@ -6930,7 +6930,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
     profile_types_result = dict_safe_get(result, ['response', 'result', 'entry', 'profile-setting', 'profiles'],
                                          default_return_value={})
 
-    # align the response for both committed and un-committed profiles 
+    # align the response for both committed and un-committed profiles
     parse_pan_os_un_committed_data(profile_types_result, ['@admin', '@dirtyId', '@time'])
 
     # remove from the types the given profile type, since we update it anyway
@@ -13097,6 +13097,337 @@ def pan_os_delete_application_group_command(args):
     )
 
 
+def build_tag_xpath(is_shared: bool = False, name: str = None) -> str:
+    """Builds the tag request xpath.
+
+    Args:
+        is_shared (bool): Whether the device group is shared.
+        name (str): The tag name.
+
+    Returns:
+        str: The xpath to send the request with.
+    """
+    _xpath = f"{XPATH_RULEBASE}tag"
+    if is_shared:
+        _xpath = "/config/shared/tag"
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    return _xpath
+
+
+def build_tag_element(disable_override: bool, comment: str, new_name: str = None, color: Optional[str] = None) -> str:
+    """Build the request element in XML format
+
+    Args:
+        disable_override (bool): Whether to disable overriding the tag.
+        comment (str): The comment for the tag.
+        new_name (str): When editing - the new name for the tag.
+        color (str): The color of the tag.
+
+    Returns:
+        str: The element in XML format.
+    """
+    api_disable_override = 'yes' if disable_override else 'no'
+    element = f'<disable-override>{api_disable_override}</disable-override>' \
+              f'<comments>{comment}</comments>'
+    if color:
+        element += f'<color>{color}</color>'
+    if new_name:
+        element = f'<entry name="{new_name}">{element}</entry>'
+    return element
+
+
+def pan_os_list_tag(is_shared: bool = False) -> tuple[dict, list]:
+    """builds the params and sends the request to get the list of tags.
+
+    Args:
+        is_shared (bool): If True, then the list of tags are from the shared device group.
+
+    Returns:
+        dict: The raw response of the tags list from panorama.
+        list: The list of tags from response.
+    """
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'key': API_KEY,
+        'xpath': build_tag_xpath(is_shared=is_shared)
+    }
+
+    raw_response = http_request(URL, 'GET', params=params)
+    tags_list_result = extract_tags_list(raw_response)
+    add_location(tags_list_result, is_shared_tags=is_shared)
+    return raw_response, tags_list_result
+
+
+def prettify_tags(tags: list) -> list:
+    """Prettify the keys in the tags for the HR table.
+
+    Args:
+        tags (list): The tags list.
+
+    Return:
+        list: the result of the prettify list for the table.
+    """
+    result = []
+
+    for tag in tags:
+        tag['name'] = tag.pop('@name')  # remove the '@'
+        new_tag = {'Name': tag['name'], 'Location': tag['location']}
+
+        if 'color' in tag:
+            new_tag['Color'] = tag['color']
+
+        if 'comments' in tag:
+            new_tag['Comment'] = tag['comments']
+
+        result.append(new_tag)
+    return result
+
+
+def extract_tags_list(raw_response: dict) -> list:
+    """Extracts the tags list result from the API's raw response.
+
+    Args:
+        raw_response (dict): The raw response.
+
+    Returns:
+        list: The list of tags from the response.
+    """
+    tags_list_result = raw_response.get("response", {}).get("result", {}).get("tag", {})
+    tags_list_result = [] if tags_list_result is None else tags_list_result.get("entry", [])
+
+    if not isinstance(tags_list_result, list):
+        tags_list_result = [tags_list_result]
+    return tags_list_result
+
+
+def add_location(tags_list: list, is_shared_tags: bool = False) -> None:
+    """Adds the location property to the tags.
+
+    Args:
+        tags_list (list): The given tags list.
+        is_shared_tags (bool, optional): Whether the tags are from shared location.
+    """
+    for tag in tags_list:
+        tag.update({'location': DEVICE_GROUP if not is_shared_tags else 'shared'})
+
+
+def pan_os_list_tag_command(args: dict) -> CommandResults:
+    """Sends the request and returns the result of the command pan-os-list-tag.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response, outputs and readable outputs.
+    """
+    include_shared = argToBoolean(args.get('include_shared_tags', False))
+
+    raw_response, tags_list_result = pan_os_list_tag()
+
+    if include_shared:
+        _, shared_tags_list_result = pan_os_list_tag(include_shared)
+        tags_list_result.extend(shared_tags_list_result)
+
+    for tag in tags_list_result:
+        parse_pan_os_un_committed_data(tag, ['@admin', '@dirtyId', '@time'])
+
+    prettify_tags_list = prettify_tags(tags_list_result)
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=tags_list_result,
+        readable_output=tableToMarkdown(
+            f'Tags:',
+            prettify_tags_list,
+            ['Name', 'Color', 'Comment', 'Location']
+        ),
+        outputs_prefix='Panorama.Tag',
+        outputs_key_field='name'
+    )
+
+
+def pan_os_create_tag(
+    tag_name: str,
+    disable_override: bool,
+    is_shared: bool,
+    comment: str
+) -> dict:
+    """builds the params and sends the request to create the tag.
+
+    Args:
+        tag_name (str): The tag name.
+        disable_override (bool): Whether to disable overriding the tag.
+        is_shared (bool): Whether to create the tag in the shared device group.
+        comment (str): The tag comment.
+
+    Returns:
+        dict: The raw response from panorama's API.
+    """
+    params = {
+        'xpath': build_tag_xpath(name=tag_name, is_shared=is_shared),
+        'element': build_tag_element(disable_override, comment),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'GET', params=params)
+
+
+def pan_os_create_tag_command(args: dict) -> CommandResults:
+    """Creates a tag in Panorama.
+
+    Args:
+        args (dict): The commmand arguments to create the tag with.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    tag_name = args.get('name', '')
+    disable_override = argToBoolean(args.get('disable_override', False))
+    is_shared = argToBoolean(args.get('is_shared', False))
+    comment = args.get('comment', '')
+
+    raw_response = pan_os_create_tag(tag_name,
+                                     disable_override,
+                                     is_shared,
+                                     comment)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'The tag with name "{tag_name}" was created successfully.',
+    )
+
+
+def pan_os_edit_tag(
+    tag_name: str,
+    new_tag_name: str,
+    disable_override: bool,
+    comment: str,
+    color: Optional[str]
+) -> dict:
+    """builds the params and sends the request to edit the tag.
+
+    Args:
+        tag_name (str): The tag name to edit.
+        new_tag_name (str): The new tag name.
+        disable_override (bool): Whether to disable overriding the tag.
+        comment (str): The tag comment.
+
+    Returns:
+        dict: The raw response from panorama's API. 
+    """
+    params = {
+        'xpath': build_tag_xpath(name=tag_name),
+        'element': build_tag_element(disable_override, comment, new_name=new_tag_name, color=color),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    try:
+        response = http_request(URL, 'GET', params=params)
+    except Exception as e:
+        if 'Status code: 12' in str(e):
+            # try in shared group
+            params['xpath'] = build_tag_xpath(name=tag_name, is_shared=True)
+            response = http_request(URL, 'GET', params=params)
+        else:
+            raise
+
+    return response
+
+
+def pan_os_edit_tag_command(args: dict) -> CommandResults:
+    """Edits the given tag in Panorama.
+
+    Args:
+        args (dict): The command arguments to edit the tag.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    tag_name = args.get('name', '')
+    new_tag_name = args.get('new_name', tag_name)
+    disable_override = args.get('disable_override')
+    comment = args.get('comment', '')
+
+    # To not override tag properties that are not given in the arguments
+    # we need to list the tags and take these properties from there
+    _, tags_list = pan_os_list_tag()
+    tags_list.extend(pan_os_list_tag(is_shared=True)[1])
+    tag_to_edit_from_list = [tag for tag in tags_list if tag['@name'] == tag_name]
+
+    try:
+        tag_to_edit = tag_to_edit_from_list[0]
+    except IndexError as e:
+        raise DemistoException(f"Can't find the tag with name '{tag_name}' in tags list.\n"
+                               f"Please run the pan-os-list-tag command and verify that the tag '{tag_name}' exists.")
+
+    parse_pan_os_un_committed_data(tag_to_edit, ['@admin', '@dirtyId', '@time'])
+
+    disable_override = disable_override if disable_override else tag_to_edit.get("disable-override", "no")
+    disable_override = argToBoolean(disable_override)
+    comment = comment if comment else tag_to_edit.get("comments", "")
+    color = tag_to_edit.get("color", "")
+
+    raw_response = pan_os_edit_tag(tag_name, new_tag_name, disable_override, comment, color)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'The tag with name "{tag_name}" was edited successfully.',
+    )
+
+
+def pan_os_delete_tag(tag_name: str) -> dict:
+    """builds the params and sends the request to delete the tag.
+
+    Args:
+        tag_name (str): The tag name to delete.
+
+    Returns:
+        dict: The raw response from panorama's API.
+    """
+    params = {
+        'xpath': build_tag_xpath(name=tag_name),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    try:
+        response = http_request(URL, 'GET', params=params)
+    except Exception as e:
+        if 'Object not present' in str(e) or 'Status code: 12' in str(e):
+            # try in shared group
+            params['xpath'] = build_tag_xpath(name=tag_name, is_shared=True)
+            response = http_request(URL, 'GET', params=params)
+        else:
+            raise
+
+    return response
+
+
+def pan_os_delete_tag_command(args: dict) -> CommandResults:
+    """Deletes the tag from panorama
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    tag_name = args.get('name', '')
+
+    raw_response = pan_os_delete_tag(tag_name)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'The tag with name "{tag_name}" was deleted successfully.',
+    )
+
+
 """ Fetch Incidents """
 
 
@@ -14210,6 +14541,14 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_application_group_command(args))
         elif command == 'pan-os-list-templates':
             return_results(pan_os_list_templates_command(args))
+        elif command == 'pan-os-list-tag':
+            return_results(pan_os_list_tag_command(args))
+        elif command == 'pan-os-create-tag':
+            return_results(pan_os_create_tag_command(args))
+        elif command == 'pan-os-edit-tag':
+            return_results(pan_os_edit_tag_command(args))
+        elif command == 'pan-os-delete-tag':
+            return_results(pan_os_delete_tag_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
