@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: cybleevents v2
+  id: cybleeventsv2
   version: -1
 configuration:
 
@@ -47,7 +47,7 @@ configuration:
   type: 0
 description: Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
 display: CybleEvents v2
-name: cybleevents v2
+name: cybleeventsv2
 script:
   commands:
   - deprecated: false

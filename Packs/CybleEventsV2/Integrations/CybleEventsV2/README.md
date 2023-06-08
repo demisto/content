@@ -85,13 +85,13 @@ Fetch alerts based on the given parameters. The alerts would have multiple event
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5. | Optional |
-| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required |
-| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601). | Required |
+| **Argument Name** | **Description**                                                                                               | **Required** |
+|-------------------|---------------------------------------------------------------------------------------------------------------| --- |
+| limit             | Number of records to return (max 50). Using a smaller limit will get faster responses. Default is 5.          | Optional |
+| start_date        | Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).                                           | Required |
+| end_date          | Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).                                             | Required |
 | order_by          | Sorting order for alert fetch either Ascending or Descending. Possible values are: asc, desc. Default is asc. | Optional |
-| from              | Returns records for the timeline starting from given indice. Default is 0. | Optional |
+| from              | Returns records for the timeline starting from the given indice. Default is 0.                                | Optional |
 
 #### Context Output
 
