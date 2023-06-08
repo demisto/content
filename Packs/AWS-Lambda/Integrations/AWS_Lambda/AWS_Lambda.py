@@ -69,12 +69,12 @@ def _parse_policy_response(data: dict[str, Any]) -> tuple[dict, list | None]:
         }, None
 
     else:
-        table_to_markdown = {
+        policy_table = {
             "Id": policy.get('Id'),
             "Version": policy.get('Version'),
             "RevisionId": data.get('RevisionId'),
         }
-        statement_to_markdown = [
+        statements_table = [
             {
                 "Sid": statement.get('Sid'),
                 "Effect": statement.get('Effect'),
@@ -85,7 +85,7 @@ def _parse_policy_response(data: dict[str, Any]) -> tuple[dict, list | None]:
             for statement in statements
         ]
 
-        return table_to_markdown, statement_to_markdown
+        return policy_table, statements_table
 
 
 def parse_tag_field(tags_str):
@@ -115,13 +115,12 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def parse_resource_ids(resource_id):
+def parse_resource_ids(resource_id: str):
     id_list = resource_id.replace(" ", "")
-    resource_ids = id_list.split(",")
-    return resource_ids
+    return id_list.split(",")
 
 
-def create_entry(title, data, ec):
+def create_entry(title: str, data: dict, ec: dict):
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -135,7 +134,7 @@ def create_entry(title, data, ec):
 """MAIN FUNCTIONS"""
 
 
-def get_function(args, aws_client):
+def get_function(args: dict, aws_client):
 
     obj = vars(aws_client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
@@ -311,20 +310,18 @@ def get_policy_command(args: dict[str, str], aws_client) -> CommandResults:
 
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
-        kwargs.update({'qualifier': qualifier})
+        kwargs['qualifier'] = qualifier
 
     response = aws_client.get_policy(**kwargs)
 
-    policy = json.loads(response["Policy"])
-
-    response["Policy"] = policy
+    response["Policy"] = json.loads(response["Policy"])
     response.pop("ResponseMetadata", None)
 
     parsed_policy, parsed_statement = _parse_policy_response(response)
 
     policy_table = tableToMarkdown(name="Policy", t=parsed_policy)
 
-    if parsed_statement:
+    if parsed_statement:  # if policy contains a multiple statements, then print the statements in another table
         statements_table = tableToMarkdown("Statements", t=parsed_statement)
         policy_table = policy_table + statements_table
 
@@ -365,11 +362,9 @@ def list_versions_by_function_command(args: dict[str, str], aws_client) -> Comma
     headers = ["Function Name", "Role", "Runtime", "Last Modified", "State", "Description"]
 
     kwargs = {'FunctionName': args['functionName']}
-    if marker := args.get('Marker'):
-        kwargs.update({'Marker': marker})
-
-    if max_items := args.get('MaxItems'):
-        kwargs.update({'MaxItems': max_items})
+    for key in ('Marker', 'MaxItems'):
+        if (value := args.get(key)) is not None:
+            kwargs[key] = value
 
     response: dict = aws_client.list_versions_by_function(**kwargs)
     response.pop("ResponseMetadata", None)
@@ -378,8 +373,7 @@ def list_versions_by_function_command(args: dict[str, str], aws_client) -> Comma
     table_for_markdown = tableToMarkdown(name='Versions', t=parsed_versions, headers=headers)
 
     if next_marker := response.get('NextMarker'):
-        table_for_markdown = table_for_markdown + \
-            f"\nTo get the next version run the command with the Marker argument with the value: {next_marker}"
+        table_for_markdown += f"\nTo get the next version run the command with the Marker argument with the value: {next_marker}"
 
     return CommandResults(
         outputs=response,
@@ -416,17 +410,16 @@ def get_function_url_config_command(args: dict[str, str], aws_client) -> Command
 
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
-        kwargs.update({'qualifier': qualifier})
+        kwargs['qualifier'] = qualifier
 
     response = aws_client.get_function_url_config(**kwargs)
     response.pop("ResponseMetadata", None)
 
     parsed_url_config = parse_url_config(response)
-    table_for_markdown = tableToMarkdown(name='Function URL Config', t=parsed_url_config)
 
     return CommandResults(
         outputs=response,
-        readable_output=table_for_markdown,
+        readable_output=tableToMarkdown(name='Function URL Config', t=parsed_url_config),
         outputs_prefix="AWS.Lambda.FunctionURLConfig",
         outputs_key_field='FunctionArn'
     )
@@ -460,17 +453,16 @@ def get_function_configuration_command(args: dict[str, str], aws_client) -> Comm
 
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
-        kwargs.update({'qualifier': qualifier})
+        kwargs['qualifier'] = qualifier
 
     response = aws_client.get_function_configuration(**kwargs)
     response.pop("ResponseMetadata", None)
 
     parsed_function_configuration = parse_function_configuration(response)
-    table_for_markdown = tableToMarkdown(name='Function Configuration', t=parsed_function_configuration)
 
     return CommandResults(
         outputs=response,
-        readable_output=table_for_markdown,
+        readable_output=tableToMarkdown(name='Function Configuration', t=parsed_function_configuration),
         outputs_prefix="AWS.Lambda.FunctionConfig",
         outputs_key_field='FunctionName'
     )
@@ -492,7 +484,7 @@ def delete_function_url_config_command(args: dict[str, str], aws_client) -> Comm
     """
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
-        kwargs.update({'qualifier': qualifier})
+        kwargs['qualifier'] = qualifier
 
     aws_client.delete_function_url_config(**kwargs)  # raises on error
 
@@ -517,7 +509,7 @@ def delete_function_command(args: dict[str, str], aws_client) -> CommandResults:
     """
     kwargs = {'FunctionName': args['functionName']}
     if qualifier := args.get('qualifier'):
-        kwargs.update({'qualifier': qualifier})
+        kwargs['qualifier'] = qualifier
 
     aws_client.delete_function(**kwargs)  # raises on error
 
@@ -586,8 +578,10 @@ def main():
                 return_results(delete_function_url_config_command(args, aws_client))
             case 'aws-lambda-delete-function':
                 return_results(delete_function_command(args, aws_client))
-    except Exception as e:
+            case _:
+                raise NotImplementedError(f"Command {command} is not implemented")
 
+    except Exception as e:
         return_error(f'Error has occurred in the AWS Lambda Integration: {type(e)}\n {str(e)}')
 
 

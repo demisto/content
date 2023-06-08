@@ -1219,7 +1219,7 @@ script:
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
-  dockerimage: demisto/boto3py3:1.0.0.62606
+  dockerimage: demisto/boto3py3:1.0.0.62818
   isfetch: false
   runonce: false
   subtype: python3
