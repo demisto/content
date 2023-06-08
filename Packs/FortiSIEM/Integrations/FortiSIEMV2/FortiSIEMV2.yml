@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: FortiSIEMV2_debug
+  id: FortiSIEMV2
   version: -1
 configuration:
 - additionalinfo: 'For example: https://192.168.1.1'
@@ -67,7 +67,7 @@ configuration:
   type: 8
 description: Use FortiSIEM v2 to fetch and update incidents, search events and manage watchlists of FortiSIEM.
 display: FortiSIEM v2
-name: FortiSIEMV2_debug
+name: FortiSIEMV2
 script:
   commands:
   - arguments:
