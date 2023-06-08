@@ -67,6 +67,12 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
 
 
 def get_packs_support_levels(changed_pack_dirs: Set[str]):
+    """
+    Get the pack support levels from the pack metadata
+
+    Args:
+        changed_pack_dirs (set): paths to the packs that were changed
+    """
     packs_support_levels = set()
 
     for pack_dir in changed_pack_dirs:
@@ -107,13 +113,14 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
 
     print(f'{changed_pack_dirs=}')
 
-    # packs_support_levels = get_packs_support_levels(changed_pack_dirs)
-    #
-    # print(f'packs_support_levels before checkout: {packs_support_levels}')
-    #
-    # if not packs_support_levels:
-    with Checkout(repo=Repo(os.getcwd(), search_parent_directories=True), branch_to_checkout=external_pr_branch):
-        packs_support_levels = get_packs_support_levels(changed_pack_dirs)
+    packs_support_levels = get_packs_support_levels(changed_pack_dirs)
+    print(f'packs_support_levels before checkout: {packs_support_levels}')
+
+    if not packs_support_levels:
+        # if this is a new pack, it is not in the content repo, so we need to
+        # checkout the contributor branch to retrieve them
+        with Checkout(repo=Repo(os.getcwd(), search_parent_directories=True), branch_to_checkout=external_pr_branch):
+            packs_support_levels = get_packs_support_levels(changed_pack_dirs)
 
     print(f'packs_support_levels after checkout: {packs_support_levels}')
 
