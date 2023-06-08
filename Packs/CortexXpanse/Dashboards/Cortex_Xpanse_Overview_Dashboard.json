@@ -276,7 +276,7 @@
                 "prevName": "Unassigned Xpanse Incidents",
                 "dataType": "incidents",
                 "widgetType": "trend",
-                "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and assigneduser:\"\" -status:closed",
+                "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and owner:\"\" -status:closed",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -344,7 +344,7 @@
                 "prevName": "Assigned Active Xpanse Incidents",
                 "dataType": "incidents",
                 "widgetType": "trend",
-                "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and assigneduser:-\"\" -status:closed",
+                "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and -owner:\"\" -status:closed",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
