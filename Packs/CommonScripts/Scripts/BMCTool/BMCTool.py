@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # This tool was developed by "https://github.com/ANSSI-FR/bmc-tools" - Thank you for your hardwork!
 
-import sys
 from struct import pack, unpack
 
 
@@ -108,7 +107,8 @@ class BMCContainer():
         self.btype = self.BMC_CONTAINER
 
         if self.bdat[:len(self.BIN_FILE_HEADER)] == self.BIN_FILE_HEADER:
-            self.b_log(f"Subsequent header version: {unpack("<L", self.bdat[len(self.BIN_FILE_HEADER):len(self.BIN_FILE_HEADER) + 4])[0]}.")
+            unpacked_bytes = unpack("<L", self.bdat[len(self.BIN_FILE_HEADER):len(self.BIN_FILE_HEADER) + 4])[0]
+            self.b_log("info", True, f"Subsequent header version: {unpacked_bytes}.")
             self.bdat = self.bdat[len(self.BIN_FILE_HEADER) + 4:]
             self.btype = self.BIN_CONTAINER
 
@@ -163,37 +163,28 @@ class BMCContainer():
                     if len(t_bmp) > 0:
                         if len(t_bmp) != t_width * t_height * bl // (64 * 64):
                             self.b_log("error", False,
-                                       "Uncompressed tile data seems bogus (uncompressed %d bytes while expecting %d). Discarding tile." % (
-                                           len(t_bmp), t_width * t_height * bl // (64 * 64)))
+                                       f"Uncompressed tile data seems bogus (uncompressed {len(t_bmp)} bytes while expecting {t_width * t_height * bl // (64 * 64)}). Discarding tile.")
                             t_bmp = b""
                         else:
                             t_bmp = self.b_parse_rgb565(t_bmp)
                 else:
                     cf = t_len // (t_width * t_height)
-                    if cf == 4:
-                        t_bmp = self.b_parse_rgb32b(self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height])
-                        if t_height != 64:
-                            o_bmp = self.b_parse_rgb32b(
-                                self.bdat[len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64])
-                    elif cf == 3:
-                        t_bmp = self.b_parse_rgb24b(self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height])
-                        if t_height != 64:
-                            o_bmp = self.b_parse_rgb24b(
-                                self.bdat[len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64])
-                    elif cf == 2:
-                        t_bmp = self.b_parse_rgb565(self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height])
-                        if t_height != 64:
-                            o_bmp = self.b_parse_rgb565(
-                                self.bdat[len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64])
-                    elif cf == 1:
-                        self.pal = True
-                        t_bmp = self.PALETTE + self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height]
+                    funcdict = {
+                        '4': self.b_parse_rgb32b,
+                        '3': self.b_parse_rgb24,
+                        '2': self.b_parse_rgb565,
+                    }
+                    try:
+                        t_bmp = funcdict[str(cf)](self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height])
                         if t_height != 64:
                             o_bmp = self.PALETTE + self.bdat[
                                 len(t_hdr) + cf * t_width * t_height:len(t_hdr) + cf * 64 * 64]
-                    else:
-                        self.b_log("error", False, f"Unexpected bpp {8*cf} found during processing; aborting.")
-                        return False
+                    except KeyError:
+                        if cf == 1:
+                            self.pal = True
+                            t_bmp = self.PALETTE + self.bdat[len(t_hdr):len(t_hdr) + cf * t_width * t_height]
+                        else:
+                            self.b_log("error", False, f"Unexpected bpp {8*cf} found during processing; aborting.")
                     bl = cf * 64 * 64
             if len(t_bmp) > 0:
                 self.bmps.append(t_bmp)
@@ -295,12 +286,12 @@ class BMCContainer():
             cmd, rl, sz = self.b_unrle(data[:3])
             if cmd == -1:
                 if rl == 1:
-                    self.b_log(sys.stderr, False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
                 elif rl == 2:
-                    self.b_log(sys.stderr, False, 3,
-                               "Unexpected decompression command encountered (0x%02X). Skipping tile." % (sz))
+                    self.b_log("error", False, 3,
+                               f"Unexpected decompression command encountered (0x{sz:02x}). Skipping tile.")
                 else:
-                    self.b_log(sys.stderr, False, 3, "Unhandled case in decompression routine. Skipping tile.")
+                    self.b_log("error", False, 3, "Unhandled case in decompression routine. Skipping tile.")
                 return b""
             data = data[sz:]
             if cmd in [0x00, 0xF0]:
@@ -322,7 +313,7 @@ class BMCContainer():
             elif cmd in [0x20, 0xC0, 0xF1, 0xF6]:
                 if cmd in [0xC0, 0xF6]:
                     if len(data) < bbp:
-                        self.b_log(sys.stderr, False, 3,
+                        self.b_log("error", False, 3,
                                    "Unexpected end of compressed stream. Skipping tile. ({1}, {2})" % (cmd, rl))
                         return b""
                     fgc = data[:bbp]
@@ -337,20 +328,20 @@ class BMCContainer():
                         rl -= 1
             elif cmd in [0xE0, 0xF8]:
                 if len(data) < 2 * bbp:
-                    self.b_log(sys.stderr, False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[:2 * bbp] * rl
                 data = data[2 * bbp:]
             elif cmd in [0x60, 0xF3]:
                 if len(data) < bbp:
-                    self.b_log(sys.stderr, False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[:bbp] * rl
                 data = data[bbp:]
             elif cmd in [0x40, 0xD0, 0xF2, 0xF7, 0xF9, 0xFA]:
                 if cmd in [0xD0, 0xF7]:
                     if len(data) < bbp:
-                        self.b_log(sys.stderr, False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                        self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
                         return b""
                     fgc = data[:bbp]
                     data = data[bbp:]
@@ -366,7 +357,7 @@ class BMCContainer():
                     else:
                         ml = rl // 8
                     if len(data) < ml:
-                        self.b_log(sys.stderr, False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                        self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
                         return b""
                     msk = data[:ml]
                     data = data[ml:]
@@ -391,7 +382,7 @@ class BMCContainer():
                     rl -= 1
             elif cmd in [0x80, 0xF4]:
                 if len(data) < bbp * rl:
-                    self.b_log(sys.stderr, False, 3, "Unexpected end of compressed stream. Skipping tile.")
+                    self.b_log("error", False, 3, "Unexpected end of compressed stream. Skipping tile.")
                     return b""
                 d_out += data[:rl * bbp]
                 data = data[rl * bbp:]
@@ -400,7 +391,7 @@ class BMCContainer():
             elif cmd == 0xFE:
                 d_out += (self.COLOR_BLACK * bbp)
             else:
-                self.b_log(sys.stderr, False, 3, "Unhandled decompression command (0x%02X). Skipping tile." % (cmd))
+                self.b_log("error", False, 3, f"Unhandled decompression command (0x{cmd:02x}). Skipping tile.")
                 return b""
             if cmd not in [0x00, 0xF0]:
                 bro = -1
@@ -440,7 +431,6 @@ class BMCContainer():
             c_bmp += b''.join(map(collage_builder, range(h // 64)))
             self.b_write(f"{self.fname}_collage.bmp", self.b_export_bmp(w, h, c_bmp))
             self.b_log("info", False, "Successfully exported collage file.")
-        return True
 
     def b_export_bmp(self, width, height, data):
         if not self.pal:
@@ -456,13 +446,11 @@ class BMCContainer():
     def b_write(self, fname, data):
         collage = fileResult(fname, data)
         return_results(collage)
-        return True
 
     def b_flush(self):
         self.bdat = ""
         self.bmps = []
         self.o_bmps = []
-        return True
 
 
 def main(args):
