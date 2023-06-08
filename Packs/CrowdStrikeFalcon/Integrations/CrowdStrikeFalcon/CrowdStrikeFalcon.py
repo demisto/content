@@ -4770,8 +4770,8 @@ def get_ODS_scan_ids(args: dict) -> list[str] | None:
 @polling_function(
     'cs-falcon-ods-query-scan',
     polling_arg_name='wait_for_result',
-    interval=arg_to_number(dict_safe_get(demisto.args(), ['interval_in_seconds'], 0, int)),
-    timeout=arg_to_number(dict_safe_get(demisto.args(), ['timeout_in_seconds'], 0, int)),
+    interval=arg_to_number(dict_safe_get(demisto.args(), ['interval_in_seconds'], 0, (int, str))),
+    timeout=arg_to_number(dict_safe_get(demisto.args(), ['timeout_in_seconds'], 0, (int, str))),
 )
 def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
     # call the query api if no ids given
