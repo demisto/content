@@ -9,9 +9,8 @@ from blessings import Terminal
 from github import Github
 from git import Repo
 from github.Repository import Repository
-from Utils.github_workflow_scripts.utils import Checkout
 
-from utils import get_env_var, timestamped_print
+from utils import get_env_var, timestamped_print, Checkout
 from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

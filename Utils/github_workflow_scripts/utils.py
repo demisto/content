@@ -109,8 +109,10 @@ class Checkout:  # pragma: no cover
     def __enter__(self):
         """Checks out the given branch"""
         self.repo.git.checkout(self._branch_to_checkout)
+        print(f'Checked out to branch {self._branch_to_checkout}')
         return self
 
     def __exit__(self, *args):
         """Checks out the previous branch"""
         self.repo.git.checkout(self._original_branch)
+        print(f'Checked out to original branch {self._original_branch}')
