@@ -7,7 +7,7 @@ import pytest
 import pytz
 from typing import Tuple
 from urllib.parse import parse_qs, urlparse
-from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsTimeFields, UrlSuffixes
+from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsTimeFields, UrlSuffixes, LogTypes
 
 
 BASE_URL = 'https://api.xdr.trendmicro.com'
@@ -431,13 +431,17 @@ def test_module_main_flow(mocker):
             ]
         ),
         (
-            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'audit_logs'},
+            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': LogTypes.AUDIT},
             [
                 {'Id': 1, 'Time': '2023-01-01T15:20:24Z', 'Type': 'Audit'}
             ]
         ),
         (
-            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'oat_detection_logs'},
+            {
+                'from_time': '2023-01-01T15:00:45Z',
+                'to_time': '2023-01-01T15:20:45Z',
+                'log_type': LogTypes.OBSERVED_ATTACK_TECHNIQUES
+            },
             [
                 {'Id': 1, 'Time': '2023-01-01T15:18:14Z', 'Type': 'Observed Attack Technique'},
             ]
@@ -446,14 +450,14 @@ def test_module_main_flow(mocker):
             {
                 'from_time': '2023-01-01T15:00:45Z',
                 'to_time': '2023-01-01T15:20:45Z',
-                'log_type': 'search_detection_logs'
+                'log_type': LogTypes.SEARCH_DETECTIONS
             },
             [
                 {'Id': 1, 'Time': '2023-01-01T15:15:44Z', 'Type': 'Search Detection'},
             ]
         ),
         (
-            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'workbench_logs'},
+            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': LogTypes.WORKBENCH},
             [
                 {'Id': 1, 'Time': '2023-01-01T15:19:44Z', 'Type': 'Workbench'},
             ]
