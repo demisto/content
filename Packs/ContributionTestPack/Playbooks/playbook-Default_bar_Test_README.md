@@ -19,8 +19,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* closeInvestigation
 * extractIndicators
+* closeInvestigation
 
 ## Playbook Inputs
 
