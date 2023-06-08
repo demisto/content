@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Xpanse - NMap - Detect Service
-description: Playbook that looks at what ASM sub-type the alert is and uses NMap to do a validation scan.
+description: Playbook that uses NMap to do a validation scan.
 starttaskid: "0"
 tasks:
   "0":
@@ -224,10 +224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: be37a80a-8a6d-4f85-8708-56c436a611f9
+    taskid: d03b7e17-6b42-44f2-8d1b-1b905b810798
     type: regular
     task:
-      id: be37a80a-8a6d-4f85-8708-56c436a611f9
+      id: d03b7e17-6b42-44f2-8d1b-1b905b810798
       version: -1
       name: Set service validation grid field
       description: |-
@@ -244,7 +244,7 @@ tasks:
       gridfield:
         simple: xpanseservicevalidation
       keys:
-        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
+        simple: scannum,scandone,scanresult,timestamp,scanstate
       val1:
         complex:
           root: inputs.ScanNumber
@@ -309,12 +309,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 195295ff-7950-46ca-83ee-42c916fdbf99
+    taskid: c2707e61-23a4-42db-8fdb-b91914d9240c
     type: regular
     task:
-      id: 195295ff-7950-46ca-83ee-42c916fdbf99
+      id: c2707e61-23a4-42db-8fdb-b91914d9240c
       version: -1
-      name: Set Xpanse Service Validation
+      name: Set Xpanse service validation
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -358,16 +358,16 @@ inputs:
 - key: RemoteIP
   value:
     complex:
-      root: incident
-      accessor: xpanseip
+      root: alert
+      accessor: remoteip
   required: false
   description: Remote IP address in the alert.
   playbookInputQuery:
 - key: RemotePort
   value:
     complex:
-      root: incident
-      accessor: xpanseport
+      root: alert
+      accessor: remoteport
   required: false
   description: Remote port number in the alert.
   playbookInputQuery:

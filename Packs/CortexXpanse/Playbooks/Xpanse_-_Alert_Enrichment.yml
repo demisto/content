@@ -36,16 +36,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3ec24317-ddca-44b6-86b2-07abd0adacfe
+    taskid: f00a4dad-8b94-4120-8b38-66b279d5b2c0
     type: condition
     task:
-      id: 3ec24317-ddca-44b6-86b2-07abd0adacfe
+      id: f00a4dad-8b94-4120-8b38-66b279d5b2c0
       version: -1
       name: What is the provider?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -62,7 +62,8 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.Provider
+              complex:
+                root: inputs.Provider
             iscontext: true
           right:
             value:
@@ -70,14 +71,16 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.IP
+              complex:
+                root: inputs.IP
             iscontext: true
     - label: GCP
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.Provider
+              complex:
+                root: inputs.Provider
             iscontext: true
           right:
             value:
@@ -85,14 +88,16 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.IP
+              complex:
+                root: inputs.IP
             iscontext: true
     - label: Azure
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.Provider
+              complex:
+                root: inputs.Provider
             iscontext: true
           right:
             value:
@@ -100,7 +105,8 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.IP
+              complex:
+                root: inputs.IP
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -178,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: dfce3664-281f-44a6-8320-09f2d003900c
+    taskid: bb9c5569-7c11-44d6-82bc-2cdc01fdb8c1
     type: playbook
     task:
-      id: dfce3664-281f-44a6-8320-09f2d003900c
+      id: bb9c5569-7c11-44d6-82bc-2cdc01fdb8c1
       version: -1
       name: GCP - Enrichment
       description: Given the IP address this playbook enriches GCP and Firewall information.
@@ -194,7 +200,8 @@ tasks:
       - "2"
     scriptarguments:
       GcpIP:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -212,16 +219,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 425b3ea8-7515-489a-8620-2804501babf0
+    taskid: f4efa98a-0b7f-4ef3-8fdc-95e71d706276
     type: playbook
     task:
-      id: 425b3ea8-7515-489a-8620-2804501babf0
+      id: f4efa98a-0b7f-4ef3-8fdc-95e71d706276
       version: -1
       name: AWS - Enrichment
       description: Given the IP address this playbook enriches EC2 and IAM information.
@@ -253,16 +260,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 388b5bc3-5160-4506-888d-816b5b57a7d1
+    taskid: 626873bd-fe9f-4fba-87fc-64553e320d32
     type: playbook
     task:
-      id: 388b5bc3-5160-4506-888d-816b5b57a7d1
+      id: 626873bd-fe9f-4fba-87fc-64553e320d32
       version: -1
       name: Azure - Enrichment
       description: Given an IP address, this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
@@ -294,7 +301,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -328,7 +335,6 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs: []
-quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
