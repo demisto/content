@@ -544,9 +544,9 @@ Returns the resource-based IAM policy for a function, version, or alias.
 #### Human Readable Output
 
 >### Policy
->|Action|Effect|Id|Resource|RevisionId|Sid|Version|
+>|Action|Effect|Id|Resource|RevisionId|Sid|Version|Principal|
 >|---|---|---|---|---|---|---|
->| lambda | Allow | default | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 1111-1111-111-111-11111 | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 2015-10-17 |
+>| lambda | Allow | default | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 1111-1111-111-111-11111 | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 2015-10-17 | apidummy.dummy.com |
 
 
 ### aws-lambda-list-versions-by-function
