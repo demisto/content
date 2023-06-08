@@ -3053,6 +3053,31 @@ def test_override_print(mocker):
     assert buf.getvalue() == 'test this\n'
 
 
+
+
+batch_params = [
+    # full batch case
+    ([1, 2, 3], 1, [[1], [2], [3]]),
+    # empty case
+    ([], 1, []),
+    # out of index case
+    ([1, 2, 3], 5, [[1, 2, 3]]),
+    # out of index in end with batches
+    ([1, 2, 3, 4, 5], 2, [[1, 2], [3, 4], [5]]),
+    ([1] * 100, 2, [[1, 1]] * 50)
+]
+
+
+@pytest.mark.parametrize('string_to_quote, expected', [
+    ("a", "a"),
+    ('a"b', 'a%22b'),
+    ("a'b", "a%27b"),
+    ("a b", "a+b"),
+])
+def test_urllib_parse_quote_plus(string_to_quote, expected):
+    assert IntegrationLogger._urllib_parse_quote_plus(string_to_quote) == expected
+
+
 def test_http_client_debug(mocker):
     if not IS_PY3:
         pytest.skip("test not supported in py2")

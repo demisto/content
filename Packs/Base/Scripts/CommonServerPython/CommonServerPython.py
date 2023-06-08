@@ -1573,6 +1573,18 @@ class IntegrationLogger(object):
             demisto.info(text)
         return text
 
+    @staticmethod
+    def _urllib_parse_quote_plus(string_to_quote):
+        '''
+            Replace special characters in string using the %xx escape,
+            and replace spaces with plus signs.
+        '''
+        if IS_PY3:
+            from urllib import parse as urllib_parse
+            return urllib_parse.quote_plus(string_to_quote)  # type: ignore[attr-defined]
+        else:
+            return urllib.quote_plus(string_to_quote)  # type: ignore[attr-defined]
+
     def add_replace_strs(self, *args):
         '''
             Add strings which will be replaced when logging.
@@ -1590,11 +1602,7 @@ class IntegrationLogger(object):
                 if js.endswith('"'):
                     js = js[:-1]
                 to_add.append(js)
-                if IS_PY3:
-                    from urllib import parse as urllib_parse
-                    to_add.append(urllib_parse.quote_plus(a))  # type: ignore[attr-defined]
-                else:
-                    to_add.append(urllib.quote_plus(a))  # type: ignore[attr-defined]
+                to_add.append(IntegrationLogger._urllib_parse_quote_plus(a))
 
         self.replace_strs.extend(to_add)
 
