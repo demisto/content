@@ -17,7 +17,6 @@ configuration:
   required: false
   type: 8
 - display: Feed Name
-  hidden: false
   name: collections_to_fetch
   options:
   - ALL
@@ -40,8 +39,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
@@ -84,15 +82,12 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   defaultvalue: GREEN
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -105,23 +100,17 @@ configuration:
   type: 15
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
-- additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. As the determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, and only indicators that are
-    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
-    are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: 'true'
   required: false
   type: 8
   hidden: true
-description: Retrieve indicators provided by collections via SOCRadar Threat Intelligence
-  Feeds.
+description: Retrieve indicators provided by collections via SOCRadar Threat Intelligence Feeds.
 display: SOCRadar Threat Feed
 name: FeedSOCRadarThreatFeed
 script:
@@ -136,8 +125,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: Names of the collections that intended to be retrieved indicators
-        from.
+      description: Names of the collections that intended to be retrieved indicators from.
       isArray: false
       name: collections_to_fetch
       predefined:
@@ -171,8 +159,7 @@ script:
       description: Name of the maintainer that the indicator found from.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].First Seen Date
-      description: The date that the indicator was in SOCRadar collections for the
-        first time.
+      description: The date that the indicator was in SOCRadar collections for the first time.
       type: Date
     - contextPath: SOCRadarThreatFeed.Indicators[0].Last Seen Date
       description: The latest date that the indicator was seen in SOCRadar collections.
@@ -187,47 +174,37 @@ script:
       description: ASN field Geographical location information of the IP type indicator.
       type: Number
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnCode
-      description: ASN code field Geographical location information of the IP type
-        indicator.
+      description: ASN code field Geographical location information of the IP type indicator.
       type: Number
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnName
-      description: ASN name field Geographical location information of the IP type
-        indicator.
+      description: ASN name field Geographical location information of the IP type indicator.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Cidr
       description: CIDR field Geographical location information of the IP type indicator.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CityName
-      description: City name field Geographical location information of the IP type
-        indicator.
+      description: City name field Geographical location information of the IP type indicator.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryCode
-      description: Country code field Geographical location information of the IP
-        type indicator.
+      description: Country code field Geographical location information of the IP type indicator.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryName
-      description: Country name field Geographical location information of the IP
-        type indicator.
+      description: Country name field Geographical location information of the IP type indicator.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Latitude
-      description: Latitude field Geographical location information of the IP type
-        indicator.
+      description: Latitude field Geographical location information of the IP type indicator.
       type: Number
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Longitude
-      description: Longitude field Geographical location information of the IP type
-        indicator.
+      description: Longitude field Geographical location information of the IP type indicator.
       type: Number
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.RegionName
-      description: Region name field Geographical location information of the IP type
-        indicator.
+      description: Region name field Geographical location information of the IP type indicator.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Timezone
-      description: Timezone field Geographical location information of the IP type
-        indicator.
+      description: Timezone field Geographical location information of the IP type indicator.
       type: String
     - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.ZipCode
-      description: Zip code field Geographical location information of the IP type
-        indicator.
+      description: Zip code field Geographical location information of the IP type indicator.
       type: String
   - deprecated: false
     description: Resets the indicator fetch history.

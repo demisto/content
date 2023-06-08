@@ -92,7 +92,6 @@ comment: |-
 commonfields:
   id: GetIncidentsByQuery
   version: -1
-enabled: false
 name: GetIncidentsByQuery
 outputs:
 - contextPath: GetIncidentsByQuery.Filename

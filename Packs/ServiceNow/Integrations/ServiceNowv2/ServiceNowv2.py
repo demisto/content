@@ -2471,9 +2471,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
     if close_incident != 'None':
-        server_close_custom_state = params.get('server_close_custom_state')
-
-        if server_close_custom_state or (ticket.get('closed_at') and close_incident == 'closed') \
+        server_close_custom_state = params.get('server_close_custom_state', '')
+        ticket_state = ticket.get('state', '')
+        # The first condition is for closing the incident if the ticket's state is in the
+        # `Mirrored XSOAR Ticket custom close state code` parameter, which is configured by the user in the
+        # integration configuration.
+        if (ticket_state and ticket_state in server_close_custom_state) \
+            or (ticket.get('closed_at') and close_incident == 'closed') \
                 or (ticket.get('resolved_at') and close_incident == 'resolved'):
             demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
             entries.append({
@@ -2481,7 +2485,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Contents': {
                     'dbotIncidentClose': True,
                     'closeNotes': ticket.get("close_notes"),
-                    'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
+                    'closeReason': converts_state_close_reason(ticket_state, server_close_custom_state)
                 },
                 'ContentsFormat': EntryFormat.JSON
             })

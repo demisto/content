@@ -21,7 +21,6 @@ configuration:
   advanced: true
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
-  hidden: false
   name: proxy
   required: false
   type: 8
@@ -61,7 +60,6 @@ configuration:
 - display: Suppress Rate Limit errors
   additionalinfo: "Whether Rate Limit errors should be supressed or not."
   defaultvalue: "false"
-  hidden: false
   name: rate_limit_errors_suppressed
   required: false
   type: 8
@@ -85,7 +83,6 @@ script:
     - name: verbose
       description: Whether to add the raw response as a dictionary to the context. Default value is False.
       required: false
-      defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -614,7 +611,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultEnabled: false
 tests:
 - whois_test
 fromversion: 5.0.0
