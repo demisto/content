@@ -404,7 +404,6 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
@@ -692,7 +691,6 @@ script:
       name: timeout
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
@@ -1396,6 +1394,9 @@ script:
     - description: List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided.
       isArray: true
       name: host_groups
+    - description:  List of tags to apply to the indicator.
+      isArray: true
+      name: tags
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -2409,7 +2410,6 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
@@ -2441,7 +2441,6 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
@@ -2458,7 +2457,6 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
@@ -2472,7 +2470,6 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
@@ -2491,7 +2488,6 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
@@ -2502,7 +2498,6 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
@@ -2526,7 +2521,6 @@ script:
       name: SHA256
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      defaultValue: false
       required: false
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
@@ -3084,10 +3078,10 @@ script:
       description: Indicate who created the rule.
       type: String
   - arguments:
-      - description: A comma-separated list of exclusion IDs to delete.
-        name: ids
-        required: true
-        isArray: true
+    - description: A comma-separated list of exclusion IDs to delete.
+      name: ids
+      required: true
+      isArray: true
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
@@ -3384,10 +3378,10 @@ script:
       description: Indicate who created the rule.
       type: String
   - arguments:
-      - description: A comma-separated list of exclusion IDs to delete.
-        name: ids
-        required: true
-        isArray: true
+    - description: A comma-separated list of exclusion IDs to delete.
+      name: ids
+      required: true
+      isArray: true
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
