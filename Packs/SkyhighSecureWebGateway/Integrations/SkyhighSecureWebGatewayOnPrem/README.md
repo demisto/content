@@ -34,7 +34,8 @@ Get all available lists
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter to be applied on the titles. | Optional | 
+| name | Filter to be applied on list name. | Optional |
+| type | Filter to be applied on list type. | Optional | 
 
 #### Context Output
 
@@ -45,28 +46,16 @@ Get all available lists
 | SWG.Lists.Type | Unknown | List Type | 
 
 #### Command example
-```!swg-get-available-lists filter=blocklist```
+```!swg-get-available-lists name=blocklist```
 #### Context Example
 ```json
 {
     "SWG": {
-        "Lists": [
-            {
-                "ID": "com.scur.type.regex.386",
-                "Title": "blocklist",
-                "Type": "regex"
-            },
-            {
-                "ID": "5145",
-                "Title": "Category Blocklist",
-                "Type": "category"
-            },
-            {
-                "ID": "5146",
-                "Title": "Upload Media Type Blocklist",
-                "Type": "mediatype"
-            }
-        ]
+        "Lists": {
+            "ID": "com.scur.type.regex.386",
+            "Title": "blocklist",
+            "Type": "regex"
+        }
     }
 }
 ```
@@ -326,3 +315,100 @@ Overwrites the complete XML config of a list.
 >|Title|ID|Description|Type|
 >|---|---|---|---|
 >| blocklist | com.scur.type.regex.386 | blocklist | regex |
+
+
+### swg-create-list
+
+***
+Create a new list
+
+#### Base Command
+
+`swg-create-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name for the list to be created. | Required | 
+| type | Type for the list to be created. Possible values are: category, ip, iprange, mediatype, number, regex, string. Default is string. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SWG.List.ID | Unknown | List ID | 
+| SWG.List.Title | Unknown | List Title | 
+| SWG.List.Type | Unknown | List Type | 
+| SWG.List.Description | Unknown | List Description | 
+
+#### Command example
+```!swg-create-list name="blocklist" type=regex```
+#### Context Example
+```json
+{
+    "SWG": {
+        "List": {
+            "Description": "",
+            "ID": "com.scur.type.regex.460",
+            "Title": "blocklist",
+            "Type": "regex"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created List Properties
+>|Title|ID|Description|Type|
+>|---|---|---|---|
+>| blocklist | com.scur.type.regex.460 |  | regex |
+
+
+### swg-delete-list
+
+***
+Delete a list
+
+#### Base Command
+
+`swg-delete-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_id | List ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SWG.List.ID | Unknown | List ID | 
+| SWG.List.Title | Unknown | List Title | 
+| SWG.List.Type | Unknown | List Type | 
+| SWG.List.Description | Unknown | List Description | 
+
+#### Command example
+```!swg-delete-list list_id=com.scur.type.regex.460```
+#### Context Example
+```json
+{
+    "SWG": {
+        "List": {
+            "Description": "",
+            "ID": "com.scur.type.regex.386",
+            "Title": "blocklist",
+            "Type": "regex"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Deleted List Properties
+>|Title|ID|Description|Type|
+>|---|---|---|---|
+>| blocklist | com.scur.type.regex.460 |  | regex |

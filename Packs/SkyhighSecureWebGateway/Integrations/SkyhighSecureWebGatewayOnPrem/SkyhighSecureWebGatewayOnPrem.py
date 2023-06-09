@@ -6,7 +6,6 @@ from CommonServerUserPython import *  # noqa
 
 import urllib
 import urllib3
-from xml.etree import ElementTree
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -27,7 +26,7 @@ class Client(BaseClient):
         self.connect()
         return self
 
-    def __exit__(self, _type, *args):
+    def __exit__(self, _type: Any, *args: Any):
         self.close()
 
     def connect(self):
@@ -44,18 +43,26 @@ class Client(BaseClient):
         """
         self._http_request(method="POST", url_suffix="/logout", resp_type="text")
 
-    def get_lists(self) -> str:
+    def get_lists(self, list_name: str | None = None, list_type: str | None = None) -> str:
         """Gets all available lists using the '/list' API endpoint
 
         """
-        return self._http_request(method="GET", url_suffix="/list", resp_type="text")
+        url_suffix = "/list"
+        list_filter = []
+        if list_name:
+            list_filter.append(f"name={list_name}")
+        if list_type:
+            list_filter.append(f"type={list_type}")
+        if list_filter:
+            url_suffix += f"?{'&'.join(list_filter)}"
+        return self._http_request(method="GET", url_suffix=url_suffix, resp_type="text")
 
-    def get_list(self, list_id):
+    def get_list(self, list_id: str):
         return self._http_request(
             method="GET", url_suffix=f"/list/{list_id}", resp_type="text"
         )
 
-    def get_list_entry(self, list_id, entry_pos):
+    def get_list_entry(self, list_id: str, entry_pos: str):
         return self._http_request(
             method="GET",
             url_suffix=f"/list/{list_id}/entry/{entry_pos}",
@@ -66,12 +73,12 @@ class Client(BaseClient):
     def commit(self):
         return self._http_request(method="POST", url_suffix="/commit", resp_type="text")
 
-    def put_list(self, list_id, config):
+    def put_list(self, list_id: str, config: bytes):
         return self._http_request(
             method="PUT", url_suffix=f"/list/{list_id}", data=config, resp_type="text"
         )
 
-    def insert_entry(self, list_id, entry_pos, data):
+    def insert_entry(self, list_id: str, entry_pos: str, data: str):
         return self._http_request(
             method="POST",
             url_suffix=f"/list/{list_id}/entry/{entry_pos}/insert",
@@ -79,15 +86,27 @@ class Client(BaseClient):
             resp_type="text",
         )
 
-    def delete_entry(self, list_id, entry_pos):
+    def delete_entry(self, list_id: str, entry_pos: str):
         return self._http_request(
             method="DELETE",
             url_suffix=f"/list/{list_id}/entry/{entry_pos}",
             resp_type="text",
         )
 
+    def create_list(self, data: str):
+        return self._http_request(
+            method="POST",
+            url_suffix="/list",
+            resp_type="text",
+            data=data
+        )
 
-""" HELPER FUNCTIONS """
+    def delete_list(self, list_id: str):
+        return self._http_request(
+            method="Delete",
+            url_suffix=f"/list/{list_id}",
+            resp_type="text"
+        )
 
 
 """ COMMAND FUNCTIONS """
@@ -107,8 +126,8 @@ def test_module(client: Client, args: Dict[str, Any]) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
-    return "ok"
+    client.get_lists()
+    return 'ok'
 
 
 def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -118,27 +137,29 @@ def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Args:
         client (Client): API client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['filter']`` is used for pattern matching.
+            ``args['name']`` is used to filter lists by name.
+            ``args['type']`` is used to filter lists by type.
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains available lists.
     """
+    list_name = args.get("name")
+    list_type = args.get("type")
     res = []
-    result = client.get_lists()
-    data = ElementTree.fromstring(result)
-    title = data.find("title").text
-    for entry in data.iter("entry"):
-        if (
-            not args.get("filter")
-            or args.get("filter", "").lower() in entry.find("title").text.lower()
-        ):
-            res.append(
-                {
-                    "Title": entry.find("title").text,
-                    "ID": entry.find("id").text,
-                    "Type": entry.find("listType").text,
-                }
-            )
+    result = client.get_lists(list_name, list_type)
+    data = json.loads(xml2json(result))
+    title = demisto.get(data, "feed.title")
+    entries = demisto.get(data, "feed.entry", [])
+    if isinstance(entries, dict):
+        entries = [entries]
+    for entry in entries:
+        res.append(
+            {
+                "Title": entry.get("title", ""),
+                "ID": entry.get("id", ""),
+                "Type": entry.get("listType", ""),
+            }
+        )
 
     return CommandResults(
         readable_output=tableToMarkdown(title, res, headers=["Title", "ID", "Type"]),
@@ -163,33 +184,35 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | s
                         that contains the list details and content.
     """
     resEntries = []
-    list_id = args.get("list_id")
-    if not list_id:
-        return "Missing mandatory arguments `list_id`."
+    list_id: str = args["list_id"]
     result = client.get_list(list_id)
 
-    data = ElementTree.fromstring(result)
-    config = ElementTree.tostring(data.find("content")[0], encoding="unicode")
-    title = data.find("title").text
+    data = json.loads(xml2json(result))
+    config = json2xml(demisto.get(data, "entry.content", data)).decode("utf-8")
+    title = demisto.get(data, "entry.title")
     res = {
         "ID": list_id,
         "Title": title,
-        "Type": data.find("listType").text,
-        "Description": data.find("content")[0].find("description").text,
+        "Type": demisto.get(data, "entry.listType", ""),
+        "Description": demisto.get(data, "entry.content.list.description"),
     }
 
-    i = 0
-
-    for entry in data.iter("listEntry"):
+    entries = demisto.get(data, "entry.content.list.content.listEntry", [])
+    if isinstance(entries, dict):
+        entries = [entries]
+    for pos, entry in enumerate(entries):
+        description = entry.get("description")
+        if not description:
+            description = ""
         resEntries.append(
             {
                 "ListID": list_id,
-                "Position": i,
-                "Name": entry.find("entry").text,
-                "Description": entry.find("description").text,
+                "Position": pos,
+                "Name": entry.get("entry", ""),
+                "Description": description,
             }
         )
-        i += 1
+
     hr = tableToMarkdown(
         "List Properties", res, headers=["Title", "ID", "Description", "Type"]
     )
@@ -220,26 +243,24 @@ def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    list_id = args.get("list_id")
-    entry_pos = args.get("entry_pos")
-
-    if not list_id or not entry_pos:
-        return "Missing mandatory arguments `list_id` or `entry_pos`."
+    list_id: str = args["list_id"]
+    entry_pos: str = args["entry_pos"]
 
     result = client.get_list_entry(list_id, entry_pos)
-    if result == "List entry not found":
-        return "List entry not found."
 
-    data = ElementTree.fromstring(result)
-    title = data.find("title").text
+    data = json.loads(xml2json(result))
+    title = demisto.get(data, "entry.title")
 
-    for entry in data.iter("listEntry"):
-        res = {
-            "ListID": list_id,
-            "Position": int(entry_pos),
-            "Name": entry.find("entry").text,
-            "Description": entry.find("description").text,
-        }
+    entry = demisto.get(data, "entry.content.listEntry", {})
+    description = entry.get("description")
+    if not description:
+        description = ""
+    res = {
+        "ListID": list_id,
+        "Position": int(entry_pos),
+        "Name": entry.get("entry", ""),
+        "Description": description,
+    }
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -266,31 +287,29 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
                         that contains the list details and content.
     """
-    list_id = args.get("list_id")
-    config = args.get("config")
-    if not list_id or not config:
-        return "Missing mandatory arguments `list_id` or `config`."
+    list_id: str = args["list_id"]
+    conf: str = args["config"]
 
-    try:
-        result = client.put_list(list_id, config.encode("utf-8"))
-        client.commit()
-    except Exception as e:
-        return f"Faild to insert entry: {e}"
+    result = client.put_list(list_id, conf.encode("utf-8"))
+    client.commit()
 
-    data = ElementTree.fromstring(result)
-    config = ElementTree.tostring(data.find("content")[0], encoding="unicode")
-    title = f'Modified {data.find("title").text}'
+    data = json.loads(xml2json(result))
+    config = json2xml(demisto.get(data, "entry.content", data)).decode("utf-8")
+    title = demisto.get(data, "entry.title", "")
+    description = demisto.get(data, "entry.content.list.description")
+    if not description:
+        description = ""
 
     res = {
         "ID": list_id,
-        "Title": data.find("title").text,
-        "Type": data.find("listType").text,
-        "Description": data.find("content")[0].find("description").text,
+        "Title": title,
+        "Type": demisto.get(data, "entry.listType", ""),
+        "Description": description,
     }
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            title, res, headers=["Title", "ID", "Description", "Type"]
+            f'Modified {title}', res, headers=["Title", "ID", "Description", "Type"]
         ),
         outputs_prefix="SWG.List",
         outputs_key_field=["ID"],
@@ -313,31 +332,29 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
                         that contains the inserted list entry.
     """
-    list_id = args.get("list_id")
-    entry_pos = args.get("entry_pos")
-    name = args.get("name")
-    description = args.get("description", "")
-    if not list_id or not entry_pos or not name:
-        return "Missing mandatory arguments `name`, `list_id` or `entry_pos`."
+    list_id: str = args["list_id"]
+    entry_pos: str = args["entry_pos"]
+    name: str = args["name"]
+    description: str = args.get("description", "")
 
     entry = f"<listEntry><entry>{name}</entry><description>{description}</description></listEntry>"
 
-    try:
-        result = client.insert_entry(list_id, entry_pos, entry)
-        client.commit()
-    except Exception as e:
-        return f"Faild to insert entry: {e}"
+    result = client.insert_entry(list_id, entry_pos, entry)
+    client.commit()
 
-    data = ElementTree.fromstring(result)
-    title = f'Added {data.find("title").text}'
+    data = json.loads(xml2json(result))
+    title = f'Added {demisto.get(data, "entry.title")}'
 
-    for entry in data.iter("listEntry"):
-        res = {
-            "ListID": list_id,
-            "Position": entry_pos,
-            "Name": entry.find("entry").text,
-            "Description": entry.find("description").text,
-        }
+    entry = demisto.get(data, "entry.content.listEntry", {})
+    description = entry.get("description")
+    if not description:
+        description = ""
+    res = {
+        "ListID": list_id,
+        "Position": entry_pos,
+        "Name": entry.get("entry", ""),
+        "Description": description,
+    }
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -363,32 +380,123 @@ def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    list_id = args.get("list_id")
-    entry_pos = args.get("entry_pos")
-    if not list_id or not entry_pos:
-        return "Missing mandatory arguments `list_id` or `entry_pos`."
+    list_id: str = args["list_id"]
+    entry_pos: str = args["entry_pos"]
 
-    try:
-        result = client.delete_entry(list_id, entry_pos)
-        client.commit()
-    except Exception as e:
-        return f"Faild to insert entry: {e}"
+    result = client.delete_entry(list_id, entry_pos)
+    client.commit()
 
-    data = ElementTree.fromstring(result)
-    title = f'Deleted {data.find("title").text}'
+    data = json.loads(xml2json(result))
+    title = f'Deleted {demisto.get(data, "entry.title")}'
 
-    for entry in data.iter("listEntry"):
-        res = {
-            "ListID": list_id,
-            "Position": entry_pos,
-            "Name": entry.find("entry").text,
-            "Description": entry.find("description").text,
-        }
+    entry = demisto.get(data, "entry.content.listEntry", {})
+    description = entry.get("description")
+    if not description:
+        description = ""
+    res = {
+        "ListID": list_id,
+        "Position": entry_pos,
+        "Name": entry.get("entry", ""),
+        "Description": description,
+    }
 
     return CommandResults(
         readable_output=tableToMarkdown(
             title, res, headers=["ListID", "Position", "Name", "Description"]
         ),
+        outputs_prefix="SWG.ListEntries",
+        outputs_key_field=["ListID", "Position"],
+        outputs=res,
+        raw_response=result
+    )
+
+
+def create_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+    """
+    create list command: Create an empty list
+
+    Args:
+        client (Client): API client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['name']`` the list name to be added.
+            ``args['type']`` the list type to be added.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
+    """
+    list_name = args.get("name")
+    list_type = args.get("type")
+
+    list_data = f'<list name="{list_name}" typeId="com.scur.type.{list_type}" classifier="Other" systemList="false" ' \
+                + 'structuralList="false" defaultRights="2"><description /><content /></list>'
+
+    result = client.create_list(list_data)
+    client.commit()
+
+    data = json.loads(xml2json(result))
+    config = json2xml(demisto.get(data, "entry.content", data)).decode("utf-8")
+
+    title = demisto.get(data, "entry.title")
+    description = demisto.get(data, "entry.content.list.description")
+    if not description:
+        description = ""
+    res = {
+        "ID": demisto.get(data, "entry.id"),
+        "Title": title,
+        "Type": demisto.get(data, "entry.listType"),
+        "Description": description,
+    }
+    hr = tableToMarkdown(
+        "Created List Properties", res, headers=["Title", "ID", "Description", "Type"]
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="SWG.List",
+        outputs_key_field=["ID"],
+        outputs=res,
+        raw_response=config
+    )
+
+
+def delete_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | str:
+    """
+    create list command: Create an empty list
+
+    Args:
+        client (Client): API client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['list_id']`` the list id to be deleted.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
+    """
+    list_id: str = args["list_id"]
+
+    result = client.delete_list(list_id)
+    client.commit()
+
+    data = json.loads(xml2json(result))
+
+    title = demisto.get(data, "entry.title")
+    description = demisto.get(data, "entry.content.list.description")
+    if not description:
+        description = ""
+    res = {
+        "ID": demisto.get(data, "entry.id"),
+        "Title": title,
+        "Type": demisto.get(data, "entry.listType"),
+        "Description": description,
+    }
+    hr = tableToMarkdown(
+        "Deleted List Properties", res, headers=["Title", "ID", "Description", "Type"]
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="SWG.List",
+        outputs_key_field=["ID"],
+        outputs=res,
         raw_response=result
     )
 
@@ -409,26 +517,35 @@ def main() -> None:
     proxy = demisto.params().get("proxy", False)
     headers = {"Content-Type": "application/mwg+xml"}
 
-    demisto.debug(f"Command being called is {demisto.command()}")
+    command = demisto.command()
 
-    with Client(
-        username=user,
-        password=password,
-        base_url=base_url,
-        verify=verify_certificate,
-        headers=headers,
-        proxy=proxy,
-    ) as client:
-        commands = {
-            "test-module": test_module,
-            "swg-get-available-lists": get_lists_command,
-            "swg-get-list": get_list_command,
-            "swg-get-list-entry": get_list_entry_command,
-            "swg-modify-list": modify_list_command,
-            "swg-insert-entry": insert_entry_command,
-            "swg-delete-entry": delete_entry_command,
-        }
-        return_results(commands[demisto.command()](client, demisto.args()))
+    demisto.debug(f"Command being called is {command}")
+
+    try:
+        with Client(
+            username=user,
+            password=password,
+            base_url=base_url,
+            verify=verify_certificate,
+            headers=headers,
+            proxy=proxy,
+        ) as client:
+            commands = {
+                "test-module": test_module,
+                "swg-get-available-lists": get_lists_command,
+                "swg-get-list": get_list_command,
+                "swg-get-list-entry": get_list_entry_command,
+                "swg-modify-list": modify_list_command,
+                "swg-insert-entry": insert_entry_command,
+                "swg-delete-entry": delete_entry_command,
+                "swg-create-list": create_list_command,
+                "swg-delete-list": delete_list_command,
+            }
+            if command not in commands:
+                raise NotImplementedError(f'Command {command} was not implemented.')
+            return_results(commands[command](client, demisto.args()))
+    except Exception as e:
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 """ ENTRY POINT """

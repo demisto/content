@@ -1,21 +1,11 @@
 {
-    "HumanReadable": "### Lists\n|Title|ID|Type|\n|---|---|---|\n| blocklist | com.scur.type.regex.386 | regex |\n| Category Blocklist | 5145 | category |\n| Upload Media Type Blocklist | 5146 | mediatype |\n",
+    "HumanReadable": "### Lists\n|Title|ID|Type|\n|---|---|---|\n| blocklist | com.scur.type.regex.386 | regex |\n",
     "EntryContext": {
         "SWG.Lists(val.ID && val.ID == obj.ID)": [
             {
                 "ID": "com.scur.type.regex.386",
                 "Title": "blocklist",
                 "Type": "regex"
-            },
-            {
-                "ID": "5145",
-                "Title": "Category Blocklist",
-                "Type": "category"
-            },
-            {
-                "ID": "5146",
-                "Title": "Upload Media Type Blocklist",
-                "Type": "mediatype"
             }
         ]
     }

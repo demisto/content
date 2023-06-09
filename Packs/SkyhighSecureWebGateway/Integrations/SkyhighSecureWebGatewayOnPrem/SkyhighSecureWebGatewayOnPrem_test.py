@@ -1,14 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
 
 import json
 import io
@@ -27,28 +16,40 @@ def util_load_file(path):
         return f.read()
 
 
-def test_get_lists(mocker):
-    """Tests get available lists command function.
+def test_get_lists_command(mocker):
+    """
+    Given
+    - valid arguments for get lists command
 
-    Checks the output of the command function with the expected output.
+    When
+    - running get_lists_command in XSOAR
+
+    Then
+    - the expected human readable and entry context are returned
     """
     from SkyhighSecureWebGatewayOnPrem import get_lists_command
 
-    args = {"filter": "blocklist"}
+    args = {"name": "blocklist"}
     raw_response = util_load_file("test_data/get_lists/raw_response.xml")
     expected_results = json.loads(util_load_file("test_data/get_lists/parsed_result.json"))
 
     mocker.patch.object(client, 'get_lists', return_value=raw_response)
     command_result = get_lists_command(client, args)
 
-    assert expected_results["EntryContext"] == command_result.to_context()['EntryContext']
-    assert expected_results['HumanReadable'] == command_result.to_context()['HumanReadable']
+    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')
 
 
 def test_get_list(mocker):
-    """Tests get list command function.
+    """
+    Given
+    - valid arguments for get list command
 
-    Checks the output of the command function with the expected output.
+    When
+    - running get_list_command in XSOAR
+
+    Then
+    - the expected human readable and entry context are returned
     """
     from SkyhighSecureWebGatewayOnPrem import get_list_command
 
@@ -59,14 +60,20 @@ def test_get_list(mocker):
     mocker.patch.object(client, 'get_list', return_value=raw_response)
     command_result = get_list_command(client, args)
 
-    assert expected_results["EntryContext"] == command_result.to_context()['EntryContext']
-    assert expected_results['HumanReadable'] == command_result.to_context()['HumanReadable']
+    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')
 
 
 def test_get_list_entry(mocker):
-    """Tests get list entry command function.
+    """
+    Given
+    - valid arguments for get list entry command
 
-    Checks the output of the command function with the expected output.
+    When
+    - running get_list_entry_command in XSOAR
+
+    Then
+    - the expected human readable and entry context are returned
     """
     from SkyhighSecureWebGatewayOnPrem import get_list_entry_command
 
@@ -77,14 +84,20 @@ def test_get_list_entry(mocker):
     mocker.patch.object(client, 'get_list_entry', return_value=raw_response)
     command_result = get_list_entry_command(client, args)
 
-    assert expected_results["EntryContext"] == command_result.to_context()['EntryContext']
-    assert expected_results['HumanReadable'] == command_result.to_context()['HumanReadable']
+    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')
 
 
 def test_insert_entry(mocker):
-    """Tests insert list entry command function.
+    """
+    Given
+    - valid arguments for insert entry command
 
-    Checks the output of the command function with the expected output.
+    When
+    - running insert_entry_command in XSOAR
+
+    Then
+    - the expected human readable and entry context are returned
     """
     from SkyhighSecureWebGatewayOnPrem import insert_entry_command
 
@@ -101,14 +114,20 @@ def test_insert_entry(mocker):
     mocker.patch.object(client, 'commit', return_value=True)
     command_result = insert_entry_command(client, args)
 
-    assert expected_results["EntryContext"] == command_result.to_context()['EntryContext']
-    assert expected_results['HumanReadable'] == command_result.to_context()['HumanReadable']
+    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')
 
 
 def test_delete_entry(mocker):
-    """Tests delete list entry command function.
+    """
+    Given
+    - valid arguments for delete entry command
 
-    Checks the output of the command function with the expected output.
+    When
+    - running delete_entry_command in XSOAR
+
+    Then
+    - the expected human readable is returned
     """
     from SkyhighSecureWebGatewayOnPrem import delete_entry_command
 
@@ -120,21 +139,25 @@ def test_delete_entry(mocker):
     mocker.patch.object(client, 'commit', return_value=True)
     command_result = delete_entry_command(client, args)
 
-    assert expected_results['HumanReadable'] == command_result.to_context()['HumanReadable']
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')
 
 
 def test_modify_list(mocker):
-    """Tests modify list command function.
+    """
+    Given
+    - valid arguments for modify list command
 
-    Checks the output of the command function with the expected output.
+    When
+    - running modify_list_command in XSOAR
+
+    Then
+    - the expected human readable and entry context are returned
     """
     from SkyhighSecureWebGatewayOnPrem import modify_list_command
 
     args = {
         "list_id": "com.scur.type.regex.386",
-        "config": '<list version="1.0.3.46" mwg-version="11.2.9-44482" name="blocklist" id="com.scur.type.regex.386" typeId='
-                  + '"com.scur.type.regex" classifier="Other" systemList="false" structuralList="false" defaultRights="2">'
-                  + '<description>blocklist</description><content><listEntry><entry>http*://evil.corp/*</entry>'
+        "config": '<list><description>blocklist</description><content><listEntry><entry>http*://evil.corp/*</entry>'
                   + '<description>ticket #1: This is an evil domain</description></listEntry></content></list>'
     }
     raw_response = util_load_file("test_data/modify_list/raw_response.xml")
@@ -144,5 +167,55 @@ def test_modify_list(mocker):
     mocker.patch.object(client, 'commit', return_value=True)
     command_result = modify_list_command(client, args)
 
-    assert expected_results["EntryContext"] == command_result.to_context()['EntryContext']
-    assert expected_results['HumanReadable'] == command_result.to_context()['HumanReadable']
+    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')
+
+
+def test_create_list(mocker):
+    """
+    Given
+    - valid arguments for create list command
+
+    When
+    - running create_list_command in XSOAR
+
+    Then
+    - the expected human readable and entry context are returned
+    """
+    from SkyhighSecureWebGatewayOnPrem import create_list_command
+
+    args = {"name": "blocklist", "type": "regex"}
+    raw_response = util_load_file("test_data/create_list/raw_response.xml")
+    expected_results = json.loads(util_load_file("test_data/create_list/parsed_result.json"))
+
+    mocker.patch.object(client, 'create_list', return_value=raw_response)
+    mocker.patch.object(client, 'commit', return_value=True)
+    command_result = create_list_command(client, args)
+
+    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')
+
+
+def test_delete_list(mocker):
+    """
+    Given
+    - valid arguments for delete list command
+
+    When
+    - running delete_list_command in XSOAR
+
+    Then
+    - the expected human readable and entry context are returned
+    """
+    from SkyhighSecureWebGatewayOnPrem import delete_list_command
+
+    args = {"list_id": "com.scur.type.regex.460"}
+    raw_response = util_load_file("test_data/delete_list/raw_response.xml")
+    expected_results = json.loads(util_load_file("test_data/delete_list/parsed_result.json"))
+
+    mocker.patch.object(client, 'delete_list', return_value=raw_response)
+    mocker.patch.object(client, 'commit', return_value=True)
+    command_result = delete_list_command(client, args)
+
+    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
+    assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')

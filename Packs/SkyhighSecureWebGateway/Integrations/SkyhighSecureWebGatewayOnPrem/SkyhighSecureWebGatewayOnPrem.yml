@@ -25,9 +25,20 @@ name: Skyhigh Secure Web Gateway (On Prem)
 script:
   commands:
   - arguments:
-    - description: Filter to be applied on the titles.
-      name: filter
+    - description: Filter to be applied on list name.
+      name: name
       default: true
+    - auto: PREDEFINED
+      predefined:
+      - category
+      - ip
+      - iprange
+      - mediatype
+      - number
+      - regex
+      - string
+      description: Filter to be applied on list type.
+      name: type
     description: Get all available lists
     execution: false
     name: swg-get-available-lists
@@ -163,12 +174,67 @@ script:
     - contextPath: SWG.List.Description
       description: List Description
       type: Unknown
+  - arguments:
+    - description: Name for the list to be created.
+      name: name
+      default: true
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - category
+      - ip
+      - iprange
+      - mediatype
+      - number
+      - regex
+      - string
+      defaultValue: string
+      description: Type for the list to be created.
+      name: type
+      required: true
+    description: Create a new list
+    execution: false
+    name: swg-create-list
+    outputs:
+    - contextPath: SWG.List.ID
+      description: List ID
+      type: Unknown
+    - contextPath: SWG.List.Title
+      description: List Title
+      type: Unknown
+    - contextPath: SWG.List.Type
+      description: List Type
+      type: Unknown
+    - contextPath: SWG.List.Description
+      description: List Description
+      type: Unknown
+  - arguments:
+    - description: List ID
+      name: list_id
+      default: true
+      required: true
+    description: Delete a list
+    execution: false
+    name: swg-delete-list
+    outputs:
+    - contextPath: SWG.List.ID
+      description: List ID
+      type: Unknown
+    - contextPath: SWG.List.Title
+      description: List Title
+      type: Unknown
+    - contextPath: SWG.List.Type
+      description: List Type
+      type: Unknown
+    - contextPath: SWG.List.Description
+      description: List Description
+      type: Unknown
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

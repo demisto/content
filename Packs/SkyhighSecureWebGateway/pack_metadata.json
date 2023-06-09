@@ -1,7 +1,7 @@
 {
     "name": "Skyhigh Secure Web Gateway",
     "description": "Manages the block and allow lists within Skyhigh Secure Web Gateway",
-    "support": "community",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "ckaadic",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
