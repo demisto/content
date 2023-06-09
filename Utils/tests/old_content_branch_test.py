@@ -74,7 +74,7 @@ def test_handle_yml__should_delete():
     with open(YML_SHOULD_DELETE, 'r') as yml_file:
 
         yml_content = ryaml.load(yml_file)
-    assert should_keep_yml_file(yml_content, TEST_VERSION) is True
+    assert should_keep_yml_file(yml_content, TEST_VERSION) is False
 
 
 def test_edit_playbooks_directory(tmp_path):
