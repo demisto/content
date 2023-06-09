@@ -52,8 +52,8 @@ The application must have *user_impersonation* permission and must allow public 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Subscription ID |  | True |
-    | Resource Group Name |  | True |
+    | Default Subscription ID |  | False |
+    | Default Resource Group Name |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
@@ -150,6 +150,8 @@ Run this command to get the all or specific account storage details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | The name of the storage account, optional. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -314,6 +316,8 @@ account storage.
 | network_ruleset_default_action | Specifies the default action of allow or deny when no other rules match. | Optional | 
 | network_ruleset_ipRules | Sets the IP ACL rules. | Optional | 
 | virtual_network_rules | Sets the virtual network rules. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -450,6 +454,8 @@ Run this command to get the blob service properties of a specific account storag
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | The name of the storage account. | Required | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -532,6 +538,8 @@ the blob service in a specific account storage
 | restore_policy_enabled | Blob restore is enabled if set to true. Possible values are: true, false. | Optional | 
 | restore_policy_min_restore_time | The minimum date and time that the restore can be started. | Optional | 
 | restore_policy_days | how long this blob can be restored. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -601,7 +609,9 @@ Run this command to create a blob container.
 | container_name | The name of the container. | Required | 
 | default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional | 
 | deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional | 
-| public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional | 
+| public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional| 
 
 
 #### Context Output
@@ -661,7 +671,8 @@ blob container.
 | default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional | 
 | deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional | 
 | public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional | 
-
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 #### Context Output
 
@@ -722,6 +733,8 @@ Run this command to get the all or specific blob container details.
 | container_name | The name of the container. | Optional | 
 | include_deleted | Specifies whether include the properties for soft deleted blob containers. Possible values are: true, false. | Optional | 
 | maxpagesize | Specified maximum number of containers that can be included in the list. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -808,6 +821,8 @@ Run this command to delete a specific blob container.
 | --- | --- | --- |
 | account_name | The name of the storage account. | Required | 
 | container_name | The name of the container. | Required | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
