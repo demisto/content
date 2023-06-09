@@ -848,14 +848,14 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
-### azure-sql-subscriptions-list
+### azure-storage-subscriptions-list
 
 ***
 Gets all subscriptions for a tenant.
 
 #### Base Command
 
-`azure-sql-subscriptions-list`
+`azure-storage-subscriptions-list`
 
 #### Input
 
@@ -879,7 +879,7 @@ There are no input arguments for this command.
 | AzureStorage.Subscription.count.value | Number | The value of the Azure storage subscription count. | 
 
 #### Command example
-```!azure-sql-subscriptions-list```
+```!azure-storage-subscriptions-list```
 #### Context Example
 ```json
 {
@@ -926,14 +926,14 @@ There are no input arguments for this command.
 >| 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Access to Azure Active Directory | Enabled |
 >| 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Pay-As-You-Go | Enabled |
 
-### azure-sql-resource-group-list
+### azure-storage-resource-group-list
 
 ***
 Gets all resource groups for a subscription.
 
 #### Base Command
 
-`azure-sql-resource-group-list`
+`azure-storage-resource-group-list`
 
 #### Input
 
@@ -947,7 +947,7 @@ Gets all resource groups for a subscription.
 
 There is no context output for this command.
 #### Command example
-```!azure-sql-resource-group-list```
+```!azure-storage-resource-group-list```
 #### Context Example
 ```json
 {
@@ -1102,9 +1102,9 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration",
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/storage-integration",
                 "location": "eastus",
-                "name": "sql-integration",
+                "name": "storage-integration",
                 "properties": {
                     "provisioningState": "Succeeded"
                 },
@@ -1281,7 +1281,7 @@ There is no context output for this command.
 >| aks-integration-tes_group | centralus |  |
 >| XDR_Event_Hub_API_Automation | centralus |  |
 >| DefaultResourceGroup-CUS | centralus |  |
->| sql-integration | eastus |  |
+>| storage-integration | eastus |  |
 >| ferrum-collector | eastus | Name: ferrum collector |
 >| DefaultResourceGroup-EUS | eastus |  |
 >| intune-xdr-eventhub | eastus | Name: intune-xdr-eventhub |

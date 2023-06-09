@@ -1,6 +1,5 @@
 id: Azure Storage - Test
-version: 11
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Azure Storage - Test
 description: Azure Storage Test Playbook
 starttaskid: "0"
@@ -636,9 +635,9 @@ tasks:
     task:
       id: 04f6429d-513f-4137-88f9-57d9a235752e
       version: -1
-      name: azure-sql-subscriptions-list
+      name: azure-storage-subscriptions-list
       description: List all subscriptions for a tenant.
-      script: '|||azure-sql-subscriptions-list'
+      script: '|||azure-storage-subscriptions-list'
       type: regular
       iscommand: true
       brand: ""
@@ -710,9 +709,9 @@ tasks:
     task:
       id: 3bbf8bb4-21d4-4875-89cb-adb3d58a1c48
       version: -1
-      name: azure-sql-resource-group-list
+      name: azure-storage-resource-group-list
       description: List all resource groups for a subscription.
-      script: '|||azure-sql-resource-group-list'
+      script: '|||azure-storage-resource-group-list'
       type: regular
       iscommand: true
       brand: ""
@@ -792,3 +791,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

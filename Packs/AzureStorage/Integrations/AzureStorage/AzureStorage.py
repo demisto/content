@@ -349,7 +349,7 @@ storageAccounts/{account_name}/blobServices/default/containers/{container_name}?
             resp_type='response'
         )
 
-    def sql_subscriptions_list_request(self):
+    def storage_subscriptions_list_request(self):
         return self.ms_client.http_request(
             method='GET',
             full_url=f'https://management.azure.com/subscriptions?api-version={API_VERSION}')
@@ -375,8 +375,10 @@ def storage_account_list(client: ASClient, params: Dict, args: Dict) -> CommandR
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
     account_name = args.get('account_name', '')
     response = client.storage_account_list_request(account_name=account_name,
                                                    resource_group_name=resource_group_name,
@@ -427,8 +429,10 @@ def storage_account_create_update(client: ASClient, params: Dict, args: Dict) ->
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
 
     response = client.storage_account_create_update_request(subscription_id=subscription_id,
                                                             resource_group_name=resource_group_name,
@@ -482,8 +486,10 @@ def storage_blob_service_properties_get(client: ASClient, params: Dict, args: Di
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
     account_name = args.get('account_name')
     response = client.storage_blob_service_properties_get_request(account_name=account_name,
                                                                   resource_group_name=resource_group_name,
@@ -535,8 +541,10 @@ def storage_blob_service_properties_set(client: ASClient, params: Dict, args: Di
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
 
     response = client.storage_blob_service_properties_set_request(subscription_id=subscription_id,
                                                                   resource_group_name=resource_group_name,
@@ -591,8 +599,10 @@ def storage_blob_containers_create(client: ASClient, params: Dict, args: Dict):
         Returns:
             CommandResults: The command results in MD table and context data.
     """
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
 
     response = client.storage_blob_containers_create_update_request(subscription_id=subscription_id,
                                                                     resource_group_name=resource_group_name,
@@ -638,8 +648,10 @@ def storage_blob_containers_update(client: ASClient, params: Dict, args: Dict) -
         Returns:
             CommandResults: The command results in MD table and context data.
     """
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
 
     response = client.storage_blob_containers_create_update_request(subscription_id=subscription_id,
                                                                     resource_group_name=resource_group_name,
@@ -686,9 +698,10 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
         Returns:
             CommandResults: The command results in MD table and context data.
     """
-
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
 
     response = client.storage_blob_containers_list_request(subscription_id=subscription_id,
                                                            resource_group_name=resource_group_name,
@@ -732,8 +745,10 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
 
 
 def storage_blob_containers_delete(client: ASClient, params: Dict, args: Dict) -> str:
-    subscription_id = args.get("subscription_id") or params.get('subscription_id', '')
-    resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', '')
+    # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
+    # if both are passed as arguments, the command arguments will be used.
+    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
     account_name = args.get("account_name", '')
     container_name = args.get("container_name", '')
 
@@ -749,7 +764,7 @@ def storage_blob_containers_delete(client: ASClient, params: Dict, args: Dict) -
 Status code: {res.status_code} \nPlease verify that the container and account name are correct.')
 
 
-def sql_subscriptions_list(client: ASClient) -> CommandResults:
+def storage_subscriptions_list(client: ASClient) -> CommandResults:
     """
         Gets a list of subscriptions.
     Args:
@@ -757,7 +772,7 @@ def sql_subscriptions_list(client: ASClient) -> CommandResults:
     Returns:
         CommandResults: The command results in MD table and context data.
     """
-    res = client.sql_subscriptions_list_request()
+    res = client.storage_subscriptions_list_request()
     subscriptions = res.get('value', '[res]')
 
     return CommandResults(
@@ -773,7 +788,7 @@ def sql_subscriptions_list(client: ASClient) -> CommandResults:
     )
 
 
-def sql_resource_group_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
+def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> CommandResults:
     """
     List all resource groups in the subscription.
     Args:
@@ -785,7 +800,10 @@ def sql_resource_group_list(client: ASClient, params: Dict, args: Dict) -> Comma
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', 50))
-    subscription_id_list = argToList(args.get('subscription_id', params.get('subscription_id')))
+    # subscription_id can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
+    subscription_id_list = argToList(get_from_params_or_args(params, args, 'subscription_id'))
+
     filter_by_tag = ''
     if tag:
         try:
@@ -917,10 +935,10 @@ def main() -> None:
             return_results(storage_blob_containers_list(client, params, args))
         elif command == 'azure-storage-blob-container-delete':
             return_results(storage_blob_containers_delete(client, params, args))
-        elif command == 'azure-sql-subscriptions-list':
-            return_results(sql_subscriptions_list(client))
-        elif command == 'azure-sql-resource-group-list':
-            return_results(sql_resource_group_list(client, params, args))
+        elif command == 'azure-storage-subscriptions-list':
+            return_results(storage_subscriptions_list(client))
+        elif command == 'azure-storage-resource-group-list':
+            return_results(storage_resource_group_list(client, params, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
