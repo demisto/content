@@ -1,0 +1,22 @@
+args:
+- name: note
+  type: textArea
+commonfields:
+  id: B-ClosedQradarAndXsoar
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.62631
+enabled: true
+name: B-ClosedQradarAndXsoar
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,21 @@
+{
+    "name": "Barikat-ClosedQradarAndXsoar",
+    "description": "This button opens note dialog popup. Analyst can add same note to the IBM Qradar and Palo Alto  Xsoar at the same time. Furthermore also able to close incident on IBM Qradar and Palo Alto Xsoar",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Halim ONUR",
+    "url": "",
+    "email": "",
+    "created": "2023-06-09T13:41:54Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "halimonur38"
+    ]
+}
