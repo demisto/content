@@ -1827,13 +1827,7 @@ def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, An
     # extracting the tag name and value from the tag argument that is received from the user as a string
     filter_by_tag = ''
     if tag:
-        try:
-            tag = json.loads(tag)
-            tag_name = next(iter(tag))
-            tag_value = tag[tag_name]
-            filter_by_tag = f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
-        except Exception as e:
-            raise ValueError(('Invalid tag format, please use the following format: `{"key_name":"value_name"}`', e))
+        filter_by_tag = arg_to_tag(tag)
 
     data_from_response = []
     for subscription_id in subscription_id_list:
