@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: EDL
   version: -1
@@ -61,6 +58,7 @@ configuration:
   name: longRunningPort
   type: 0
   section: Connect
+  required: false
 - additionalinfo: For use with HTTPS - the certificate that the service should use.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -140,7 +138,7 @@ configuration:
   section: Collect
   advanced: true
 - additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
-  defaultvalue: 8
+  defaultvalue: '8'
   display: 'Maximum CIDR network prefix bits size'
   name: maximum_cidr_size
   required: false
@@ -244,6 +242,10 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL
@@ -251,17 +253,11 @@ script:
   commands:
   - name: edl-update
     arguments:
-    - default: false
-      description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
-      isArray: false
+    - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: PAN-OS (text)
       description: The format of the exported list.
-      isArray: false
       name: format
       predefined:
       - PAN-OS (text)
@@ -270,25 +266,14 @@ script:
       - McAfee Web Gateway
       - Symantec ProxySG
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of items in the list.
-      isArray: false
+    - description: Maximum number of items in the list.
       name: edl_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The starting entry index from which to export the indicators.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: string
       description: For use with McAfee Web Gateway format - set the indicator list type.
-      isArray: false
       name: mwg_type
       predefined:
       - string
@@ -299,104 +284,63 @@ script:
       - mediatype
       - number
       - regex
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
-      isArray: false
       name: url_port_stripping
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: If selected, strips the protocol from URLs (http/https).
-      isArray: false
       name: url_protocol_stripping
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
-      isArray: false
       name: drop_invalids
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Don't Collapse
       description: For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR).
-      isArray: false
       name: collapse_ips
       predefined:
       - Don't Collapse
       - To CIDRS
       - To Ranges
-      required: false
-      secret: false
-    - default: false
-      defaultValue: bc_category
+    - defaultValue: bc_category
       description: For use with Symantec ProxySG format - set the default category for the output.
-      isArray: false
       name: category_default
-      required: false
-      secret: false
-    - default: false
-      description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, lists all existing categories.
-      isArray: false
+    - description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, lists all existing categories.
       name: category_attribute
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: If selected, CSV format appears in a textual webpage instead of initiating a file download.
-      isArray: false
       name: csv_text
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: If selected, add to an empty list the comment "# Empty list".
-      isArray: false
       name: add_comment_if_empty
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
     deprecated: true
     description: Updates values stored in the EDL (only available On-Demand).
-    execution: false
   - name: export-indicators-list-update
     arguments:
-    - default: false
-      description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
-      isArray: false
+    - description: The query to run to update the indicators list. To view expected results, run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: PAN-OS (text)
       description: The format of the exported list.
-      isArray: false
       name: format
       predefined:
       - PAN-OS (text)
@@ -405,25 +349,14 @@ script:
       - McAfee Web Gateway
       - Symantec ProxySG
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of items in the list.
-      isArray: false
+    - description: Maximum number of items in the list.
       name: edl_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The starting entry index from which to export the indicators.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: string
       description: For use with McAfee Web Gateway format - set the indicator list type.
-      isArray: false
       name: mwg_type
       predefined:
       - string
@@ -434,98 +367,60 @@ script:
       - mediatype
       - number
       - regex
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
-      isArray: false
       name: url_port_stripping
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: If selected, strips the protocol from URLs (http/https).
-      isArray: false
       name: url_protocol_stripping
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
-      isArray: false
       name: drop_invalids
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Don't Collapse
       description: For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR).
-      isArray: false
       name: collapse_ips
       predefined:
       - Don't Collapse
       - To CIDRS
       - To Ranges
-      required: false
-      secret: false
-    - default: false
-      defaultValue: bc_category
+    - defaultValue: bc_category
       description: For use with Symantec ProxySG format - set the default category for the output.
-      isArray: false
       name: category_default
-      required: false
-      secret: false
-    - default: false
-      description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, lists all existing categories.
-      isArray: false
+    - description: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, lists all existing categories.
       name: category_attribute
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: If selected, CSV format appears in a textual webpage instead of initiating a file download.
-      isArray: false
       name: csv_text
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: If selected, add to an empty list the comment "# Empty list".
-      isArray: false
       name: add_comment_if_empty
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
-    deprecated: false
     description: Updates values stored in the List (only available On-Demand).
-    execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.62466
-  feed: false
-  isfetch: false
+  dockerimage: demisto/flask-nginx:1.0.0.62970
   longRunning: true
   longRunningPort: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
