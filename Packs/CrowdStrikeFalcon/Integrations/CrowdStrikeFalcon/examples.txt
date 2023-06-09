@@ -20,5 +20,4 @@ cs-falcon-ods-query-scan
 cs-falcon-ods-query-scheduled-scan
 cs-falcon-ods-query-scan-host
 cs-falcon-ods-query-malicious-files
-cs-falcon-ods-create-scan cpu_priority=Low scan_inclusions=* host_groups=7471ba0636b34cbb8c65fae7979a6a9b is_scheduled=true pause_duration=3 quarantine=true schedule_start_timestamp=2023-05-06T06:49 schedule_interval="every other week"
 cs-falcon-ods-delete-scheduled-scan ids=9acf0c069d3d4a5b82badb170966e77c
