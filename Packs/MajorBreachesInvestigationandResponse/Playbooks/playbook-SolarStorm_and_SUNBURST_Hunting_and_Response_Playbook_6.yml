@@ -974,95 +974,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "51":
-    id: "51"
-    taskid: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
-    type: playbook
-    task:
-      id: 5de14f19-0ba4-453f-8d0d-8c463aedb20a
-      version: -1
-      name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-
-      playbookName: Block Indicators - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "83"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: PANWHunting
-          accessor: DetectedExternalIPs
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IP.Address
-                iscontext: true
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-      StaticAddressGroup: {}
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-      URLBlacklistMiner: {}
-      URLListName:
-        simple: Demisto Remediation - URL EDL
-      Username: {}
-      categories: {}
-      device-group:
-        complex:
-          root: inputs.DeviceGroup
-      type: {}
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2510,
-          "y": 2310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
     taskid: f5255969-e3b5-4dbb-808d-28d7093ac2be
@@ -1476,7 +1389,7 @@ tasks:
       '#default#':
       - "56"
       "yes":
-      - "51"
+      - "114"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2322,7 +2235,7 @@ tasks:
       '#default#':
       - "86"
       "yes":
-      - "87"
+      - "115"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2378,107 +2291,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "87":
-    id: "87"
-    taskid: 486960ff-baab-4c17-8bff-d6193d4a5264
-    type: playbook
-    task:
-      id: 486960ff-baab-4c17-8bff-d6193d4a5264
-      version: -1
-      name: Block IP - Generic v2
-      description: |-
-        This playbook blocks malicious IPs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Check Point Firewall
-        * Palo Alto Networks Minemeld
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-        * FortiGate
-      playbookName: Block IP - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: Expanse.Issue
-          accessor: ip
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      StaticAddressGroup: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2250,
-          "y": 3220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "89":
-    id: "89"
-    taskid: 5ed59e1a-0df7-41bc-84f2-fd5813f3d845
-    type: regular
-    task:
-      id: 5ed59e1a-0df7-41bc-84f2-fd5813f3d845
-      version: -1
-      name: 'Add SolarStorm C2 indicators '
-      description: commands.local.cmd.extract.indicators
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      entryID: {}
-      filePath: {}
-      investigationID: {}
-      text:
-        complex:
-          root: Expanse.RiskyFlow
-          accessor: externalAddress
-          transformers:
-          - operator: uniq
-    reputationcalc: 2
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4140,
-          "y": 1660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "90":
     id: "90"
     taskid: 9b7aec71-0f58-4d7c-8d61-b85d8f52f681
