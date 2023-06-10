@@ -1965,7 +1965,7 @@ tasks:
       - "35"
     scriptarguments:
       query:
-        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name = 'CVE-2021-44228'
+        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1978,7 +1978,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2000,7 +2000,7 @@ tasks:
       - "35"
     scriptarguments:
       query:
-        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
+        simple: network from vpc.flow_record where bytes > 0 AND destination.resource IN ( resource where finding.type IN ( 'Host Vulnerability' ) AND finding.source IN ( 'Prisma Cloud' ) AND finding.name IN ('CVE-2022-22963', 'CVE-2022-22965') ) AND source.publicnetwork IN ('Internet IPs', 'Suspicious IPs')
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2013,7 +2013,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false

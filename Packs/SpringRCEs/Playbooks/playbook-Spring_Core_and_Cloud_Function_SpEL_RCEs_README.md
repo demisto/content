@@ -49,11 +49,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Panorama Query Logs
-* Rapid Breach Response - Set Incident Info
-* Block IP - Generic v3
-* Search Endpoint by CVE - Generic
 * CVE Enrichment - Generic v2
+* Block IP - Generic v3
+* Panorama Query Logs
+* Search Endpoint by CVE - Generic
+* Rapid Breach Response - Set Incident Info
 
 ### Integrations
 
@@ -61,17 +61,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchIncidentsV2
-* IsIntegrationAvailable
 * http
+* IsIntegrationAvailable
+* SearchIncidentsV2
 
 ### Commands
 
+* xdr-xql-generic-query
+* createNewIndicator
 * prisma-cloud-config-search
 * closeInvestigation
 * redlock-get-rql-response
-* createNewIndicator
-* xdr-xql-generic-query
 
 ## Playbook Inputs
 
