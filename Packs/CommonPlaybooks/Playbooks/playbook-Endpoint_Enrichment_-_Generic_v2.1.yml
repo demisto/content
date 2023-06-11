@@ -8,7 +8,7 @@ name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
   Supported integrations:
-  - Active Directory Query v2
+  - Active  Directory Query v2
   - McAfee ePolicy Orchestrator
   - Carbon Black Enterprise Response v2
   - Cylance Protect v2
