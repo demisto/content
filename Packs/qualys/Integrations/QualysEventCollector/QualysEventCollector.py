@@ -147,10 +147,7 @@ def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
     Returns:
         (Dict): Dict representing the data returned by Qualys service.
     """
-    try:
-        return json.loads(xml2json(response))
-    except Exception:
-        return {}
+    return json.loads(xml2json(response))
 
 
 def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
@@ -194,7 +191,7 @@ def remove_last_events(events, time_to_remove, time_field):
     new_events = []
     for event in events:
         if event.get(time_field) == time_to_remove:
-            demisto.debug(f'Removed event with time: {time_to_remove}, log: {event}')
+            demisto.debug(f'Removed activity log event with time: {time_to_remove}, log: {event}')
         else:
             new_events.append(event)
     return new_events
@@ -277,13 +274,16 @@ def get_activity_logs_events(client, last_run, max_fetch) -> tuple[Optional[list
     demisto.debug(f'Starting to fetch activity logs events: {last_run=}')
 
     activity_logs = client.get_user_activity_logs(since_datetime=last_run, max_fetch=max_fetch)
-    activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV, END_RESPONSE_LOGS_CSV))
+    activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV,
+                                                         END_RESPONSE_LOGS_CSV)) or []
+    demisto.debug(f'Got activity logs events from server: {len(activity_logs_events)=}.')
+
     next_run = activity_logs_events[0].get('Date') if activity_logs_events else last_run
     activity_logs_events = remove_last_events(activity_logs_events, next_run, 'Date')
     add_fields_to_events(activity_logs_events, ['Date'], 'activity_log')
 
     next_run_dict = {'activity_logs': next_run}
-    demisto.debug(f'Done to fetch activity logs events: {next_run_dict=}')
+    demisto.debug(f'Done to fetch activity logs events: {next_run_dict=}, sending {len(activity_logs_events)} events.')
     return activity_logs_events, next_run_dict
 
 
@@ -303,6 +303,7 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
     next_run = host_list_events[0].get('LAST_VM_SCANNED_DATE') if host_list_events else last_run
 
     edited_host_detections = get_detections_from_hosts(host_list_events)
+    demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} events.')
 
     edited_host_detections = remove_events_before_last_scan(edited_host_detections, last_run)
 
@@ -312,7 +313,7 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
         'host_list_detection': next_run,
         'host_last_fetch': datetime.now().strftime(DATE_FORMAT)
     }
-    demisto.debug(f'Done to fetch host list events: {next_run_dict=}')
+    demisto.debug(f'Done to fetch host list events: {next_run_dict=}, sending {len(edited_host_detections)} events.')
 
     return edited_host_detections, next_run_dict
 
