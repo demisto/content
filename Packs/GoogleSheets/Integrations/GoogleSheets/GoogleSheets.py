@@ -38,7 +38,7 @@ def prepare_result(response: dict, args: dict, readable_comment: str) -> Command
             The command result ready for the server
     """
     markdown = f'### Successfully {readable_comment}\n'
-    outputs = None
+
     if argToBoolean(args.get('echo_spreadsheet')):
         human_readable = {
             'spreadsheet Id': response.get('spreadsheetId'),
@@ -52,7 +52,8 @@ def prepare_result(response: dict, args: dict, readable_comment: str) -> Command
         sheets = response.get('updatedSpreadsheet', {}).get('sheets')  # this is an array of sheet dicts
 
         markdown += tableToMarkdown('Content', create_list_id_title(sheets), headers=['SheetId', 'Sheet title'])
-        outputs = response
+
+    outputs = response
 
     results = CommandResults(
         readable_output=markdown,
