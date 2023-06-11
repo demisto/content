@@ -4637,7 +4637,7 @@ class Common(object):
                 domain_context['Certificates'] = self.create_context_table(self.certificates)
 
             if self.rank:
-                domain_context['rank'] = self.create_context_table(self.rank)
+                domain_context['Rank'] = self.create_context_table(self.rank)
 
             return ret_value
 
