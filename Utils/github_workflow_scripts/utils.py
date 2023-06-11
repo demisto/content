@@ -86,33 +86,44 @@ def get_env_var(env_var_name: str, default_val: Optional[str] = None) -> str:
     return env_var_val
 
 
-class Checkout:  # pragma: no cover
+class Checkout:
     """Checks out a given branch.
     When the context manager exits, the context manager checks out the
     previously current branch.
     """
 
-    def __init__(self, repo: Repo, branch_to_checkout: str):
+    def __init__(self, repo: Repo, branch_to_checkout: str, fork_owner: Optional[str] = None):
         """Initializes instance attributes.
         Arguments:
             repo: git repo object
             branch_to_checkout: The branch or commit hash to check out.
+            fork_owner (str): The owner of the forked repository.
+                Leave it as None if the branch is in the same repository.
         """
         self.repo = repo
-        self.repo.remote().fetch(branch_to_checkout)
-        self._branch_to_checkout = branch_to_checkout
-        try:
-            self._original_branch = self.repo.active_branch.name
-        except TypeError:
-            self._original_branch = self.repo.git.rev_parse('HEAD')
+        self.fork_owner = fork_owner
+        self.branch_to_checkout = branch_to_checkout
+        self._original_branch = None
 
     def __enter__(self):
         """Checks out the given branch"""
-        self.repo.git.checkout(self._branch_to_checkout)
-        print(f'Checked out to branch {self._branch_to_checkout}')
+        if self.fork_owner:
+            fork_remote = self.repo.remote(name=self.fork_owner)
+            fork_remote.fetch(self.branch_to_checkout)
+            self._original_branch = self.repo.active_branch.name
+            self.repo.git.checkout(f"remotes/{self.fork_owner}/{self.branch_to_checkout}")
+        else:
+            self.repo.remote().fetch(self.branch_to_checkout)
+            try:
+                self._original_branch = self.repo.active_branch.name
+            except TypeError:
+                self._original_branch = self.repo.git.rev_parse('HEAD')
+            self.repo.git.checkout(self.branch_to_checkout)
+
+        print(f"Checked out to branch {self.branch_to_checkout}")
         return self
 
     def __exit__(self, *args):
         """Checks out the previous branch"""
         self.repo.git.checkout(self._original_branch)
-        print(f'Checked out to original branch {self._original_branch}')
+        print(f"Checked out to original branch {self._original_branch}")

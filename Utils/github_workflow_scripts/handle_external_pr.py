@@ -2,8 +2,9 @@
 import json
 import os
 
-from typing import List, Set
+from typing import List, Set, Tuple
 
+import git
 import urllib3
 from blessings import Terminal
 from github import Github
@@ -66,21 +67,23 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_packs_support_levels(changed_pack_dirs: Set[str]):
+def get_packs_support_levels(changed_pack_dirs: Set[str]) -> Tuple[Set[str], Set[str]]:
     """
     Get the pack support levels from the pack metadata
 
     Args:
         changed_pack_dirs (set): paths to the packs that were changed
     """
-    packs_support_levels = set()
+    packs_support_levels, packs_with_no_support_label = set(), set()
 
     for pack_dir in changed_pack_dirs:
         if pack_support_level := get_pack_metadata(pack_dir).get('support'):
             print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
             packs_support_levels.add(pack_support_level)
+        else:
+            packs_with_no_support_label.add(pack_dir)
 
-    return packs_support_levels
+    return packs_support_levels, packs_with_no_support_label
 
 
 def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str) -> str:
@@ -113,18 +116,31 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
 
     print(f'{changed_pack_dirs=}')
 
-    packs_support_levels = get_packs_support_levels(changed_pack_dirs)
-    print(f'{packs_support_levels=}')
+    all_packs_support_levels, packs_with_no_support_label = get_packs_support_levels(changed_pack_dirs)
+    print(f'{all_packs_support_levels=}, {packs_with_no_support_label=}')
 
     # if this is a new pack, it is not in the content repo, so we need to
-    # checkout the contributor branch to retrieve them
-    with Checkout(repo=Repo(os.getcwd(), search_parent_directories=True), branch_to_checkout=external_pr_branch):
-        packs_support_levels = packs_support_levels.union(get_packs_support_levels(changed_pack_dirs))
+    # checkout the contributor forked branch to retrieve them
+    if packs_with_no_support_label:
+        fork_owner = os.getenv('GITHUB_REPOSITORY_OWNER')
+        try:
+            with Checkout(
+                repo=Repo(os.getcwd(), search_parent_directories=True),
+                branch_to_checkout=external_pr_branch,
+                fork_owner=fork_owner
+            ):
+                packs_support_levels, packs_with_no_support_label = get_packs_support_levels(
+                    packs_with_no_support_label
+                )
+            all_packs_support_levels.union(packs_support_levels)
+            if packs_with_no_support_label:
+                print(f'Could not find support label for packs {packs_with_no_support_label}')
+            print(f'all_packs_support_levels after checkout: {all_packs_support_levels}')
+        except git.GitCommandError as error:
+            print(f'received error when trying to checkout to {fork_owner} content repo\n{error=}')
 
-    print(f'packs_support_levels after checkout: {packs_support_levels}')
-
-    if packs_support_levels:
-        return get_highest_support_label(packs_support_levels)
+    if all_packs_support_levels:
+        return get_highest_support_label(all_packs_support_levels)
     return ''
 
 
