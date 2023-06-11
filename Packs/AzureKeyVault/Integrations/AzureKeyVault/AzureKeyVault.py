@@ -219,7 +219,7 @@ class KeyVaultClient:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}/accessPolicies/{operation_kind}'
 
-        return self.http_request('PUT', full_url=full_url, data=data, ok_codes=(200,201))
+        return self.http_request('PUT', full_url=full_url, data=data, ok_codes=(200, 201))
 
     def get_key_request(self, vault_name: str, key_name: str, key_version: str) -> Dict[str, Any]:
         """
