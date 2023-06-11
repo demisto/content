@@ -1660,7 +1660,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     selected_all_fields = (selected_fields == 'all')
 
     if selected_all_fields:
-        restricted_fields = list([x.name for x in Message.FIELDS])  # type: ignore
+        restricted_fields = set([x.name for x in Message.FIELDS])  # type: ignore
     else:
         restricted_fields = set(argToList(selected_fields))  # type: ignore
         restricted_fields.update(['id', 'message_id'])  # type: ignore
@@ -1681,12 +1681,12 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
                                         compact_fields=selected_all_fields) for item in items]
 
     if not selected_all_fields:
+        # we show id as 'itemId' for BC
+        restricted_fields.remove('id')
+        restricted_fields.add('itemId')
         searched_items_result = [
             {k: v for (k, v) in i.items()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
-
-        for item in searched_items_result:
-            item['itemId'] = item.pop('id', '')
 
     return get_entry_for_object('Searched items',
                                 CONTEXT_UPDATE_EWS_ITEM,
