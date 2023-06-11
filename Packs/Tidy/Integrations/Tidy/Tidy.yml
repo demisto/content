@@ -10,19 +10,28 @@ configuration:
   type: 0
 - additionalinfo: Endpoint user to be installed. (Can overide in command)
   display: User
+  hidden: true
   name: user
-  required: true
+  required: false
   type: 0
 - additionalinfo: User login password. (Can overide in command)
   display: Password
+  hidden: true
   name: password
-  required: true
+  required: false
   type: 4
-- additionalinfo: The ssh key is used to login to an AWS mac machine - for testing purposes.
+- display: User
+  displaypassword: Password
+  name: user_creds
+  required: false
+  type: 9
+- additionalinfo: The ssh key is used to login to an AWS mac machine - for testing
+    purposes.
   display: SSH Key
   name: ssh_key
   required: false
   type: 14
+
 description: Tidy integration handle endpoints enviorment installation.
 display: Tidy
 name: Tidy
