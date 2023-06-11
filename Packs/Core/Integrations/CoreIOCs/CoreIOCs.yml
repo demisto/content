@@ -20,7 +20,6 @@ configuration:
   hidden: true
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
-  hidden: false
   name: severity
   options:
   - info
@@ -32,7 +31,6 @@ configuration:
 - additionalinfo: The query used to collect indicators to sync from Cortex.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
-  hidden: false
   name: query
   required: true
   type: 0

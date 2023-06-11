@@ -5,7 +5,6 @@ commonfields:
 configuration:
 - defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
   display: Application ID
-  hidden: false
   name: app_id
   required: false
   type: 0
@@ -35,8 +34,7 @@ configuration:
   type: 0
 - display: Authorization code
   displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
-    Instructions (?) section
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
   hiddenusername: true
   name: auth_code
   required: false
@@ -48,18 +46,15 @@ configuration:
   hiddenusername: true
   type: 9
 - display: Subscription ID
-  hidden: false
   name: subscription_id
   required: true
   type: 0
 - display: Resource Group Name
-  hidden: false
   name: resource_group_name
   required: true
   type: 0
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   options:
   - https://login.microsoftonline.com
@@ -77,8 +72,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deploy and manage containerized applications with a fully managed Kubernetes
-  service.
+description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services
 name: Azure Kubernetes Services
 script:
@@ -88,18 +82,15 @@ script:
     execution: false
     name: azure-ks-auth-test
   - deprecated: false
-    description: Run this command to start the authorization process and follow the
-      instructions in the command results.
+    description: Run this command to start the authorization process and follow the instructions in the command results.
     execution: false
     name: azure-ks-auth-start
   - deprecated: false
-    description: Run this command to complete the authorization process. Should be
-      used after running the azure-ks-auth-start command.
+    description: Run this command to complete the authorization process. Should be used after running the azure-ks-auth-start command.
     execution: false
     name: azure-ks-auth-complete
   - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication
-      process.
+    description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-ks-auth-reset
   - deprecated: false
@@ -123,8 +114,7 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.provisioningState
-      description: The current deployment or provisioning state, which only appears
-        in the response.
+      description: The current deployment or provisioning state, which only appears in the response.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.kubernetesVersion
       description: Version of Kubernetes specified when creating the managed cluster.
@@ -139,13 +129,10 @@ script:
       description: FQDN for the master pool.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.name
-      description: Unique name of the agent pool profile in the context of the subscription
-        and resource group.
+      description: Unique name of the agent pool profile in the context of the subscription and resource group.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.count
-      description: Number of agents (VMs) to host Docker containers. Allowed values
-        must be in the range of 0 to 100 (inclusive) for user pools and in the range
-        of 1 to 100 (inclusive) for system pools.
+      description: Number of agents (VMs) to host Docker containers. Allowed values must be in the range of 0 to 100 (inclusive) for user pools and in the range of 1 to 100 (inclusive) for system pools.
       type: Number
     - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.vmSize
       description: Size of agent VMs.
@@ -178,15 +165,13 @@ script:
       description: Whether to enable Kubernetes Role-Based Access Control (RBAC).
       type: Boolean
     - contextPath: AzureKS.ManagedCluster.properties.diskEncryptionSetID
-      description: Resource ID of the disk encryption set to use for enabling encryption
-        at rest.
+      description: Resource ID of the disk encryption set to use for enabling encryption at rest.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.networkProfile.networkPlugin
       description: Network plugin used for building Kubernetes network.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.networkProfile.podCidr
-      description: A CIDR notation IP range from which to assign pod IPs when kubenet
-        is used.
+      description: A CIDR notation IP range from which to assign pod IPs when kubenet is used.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.networkProfile.serviceCidr
       description: A CIDR notation IP range from which to assign service cluster IPs.
@@ -201,28 +186,24 @@ script:
       description: Whether the Operations Management Suite Agent is enabled.
       type: Boolean
     - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.omsagent.config.logAnalyticsWorkspaceResourceID
-      description: The resource ID of an existing Log Analytics Workspace to use for
-        storing monitoring data.
+      description: The resource ID of an existing Log Analytics Workspace to use for storing monitoring data.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled
-      description: Whether the ingress is configured with automatic public DNS name
-        creation.
+      description: Whether the ingress is configured with automatic public DNS name creation.
       type: Boolean
     - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName
       description: The subscription DNS zone name.
       type: String
   - arguments:
     - default: false
-      description: The name of the managed cluster resource. Can be retrieved using
-        the azure-ks-clusters-list command.
+      description: The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.
       isArray: false
       name: resource_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Resource location, Can be retrieved using
-        the azure-ks-clusters-list command.
+      description: Resource location, Can be retrieved using the azure-ks-clusters-list command.
       isArray: false
       name: location
       predefined:
@@ -285,8 +266,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id
-        is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false".'
+      description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false".'
       isArray: false
       name: monitoring_agent_enabled
       predefined:
@@ -295,9 +275,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of an existing Log Analytics workspace to use for storing
-        monitoring data. Can be retrieved in the Log Analytics workspace from the Azure
-        portal.
+      description: The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal.
       isArray: false
       name: monitoring_resource_name
       required: false

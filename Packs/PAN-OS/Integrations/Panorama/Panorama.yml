@@ -213,7 +213,7 @@ configuration:
   required: false
   type: 13
   section: Connect
-description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
+description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation
 display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
@@ -1595,12 +1595,12 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object names for the rule. to create.
+      description: A comma-separated list of application object names for the rule to create.
       isArray: true
       name: application
-    - defaultValue: any
-      description: The source user for the rule to create.
+    - description: A comma-separated list of source users for the rule to create.
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -5027,12 +5027,12 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object names for the rule. to create.
+      description: A comma-separated list of application object names for the rule to create.
       isArray: true
       name: application
-    - defaultValue: any
-      description: The source user for the rule to create.
+    - description: A comma-separated list of source users for the rule to create.
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -7868,7 +7868,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: false
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       isArray: false
       name: sync
@@ -8056,7 +8055,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: false
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       isArray: false
       name: sync
@@ -9559,7 +9557,106 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.61510
+  - arguments:
+    - description: Whether to include shared tags in the list.
+      isArray: false
+      name: include_shared_tags
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'Yes'
+      - 'No'
+      defaultValue: 'No'
+    - description: The device group that the tags are part of.
+      isArray: false
+      name: device-group
+      required: false
+    description: Returns a list of tags from Panorama.
+    name: pan-os-list-tag
+    outputs:
+    - contextPath: Panorama.Tag.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Panorama.Tag.color
+      description: The color of the tag.
+      type: String
+    - contextPath: Panorama.Tag.comment
+      description: The comment in the tag.
+      type: String
+    - contextPath: Panorama.Tag.disable-override
+      description: Whether overriding the tag is disabled.
+      type: String
+    - contextPath: Panorama.Tag.location
+      description: The tag's device group location.
+      type: String
+  - arguments:
+    - description: The name for the new tag to be created.
+      isArray: false
+      name: name
+      required: true
+    - description: The device group that the tag will be part of.
+      isArray: false
+      name: device-group
+      required: false
+    - description: Whether to disable overriding the tag.
+      isArray: false
+      name: disable_override
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: Whether the tag should be generated in a shared location.
+      isArray: false
+      name: is_shared
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: The comment for the tag.
+      isArray: false
+      name: comment
+      required: false
+    description: Creates a new tag in Panorama.
+    name: pan-os-create-tag
+  - arguments:
+    - description: The existing name for the tag to be edited.
+      isArray: false
+      name: name
+      required: true
+    - description: The new name for the tag to be replaced with.
+      isArray: false
+      name: new_name
+      required: false
+    - description: The device group of the tag.
+      isArray: false
+      name: device-group
+      required: false
+    - description: Whether to disable overriding the tag.
+      isArray: false
+      name: disable_override
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The comment for the tag.
+      isArray: false
+      name: comment
+      required: false
+    description: Edits a tag in Panorama.
+    name: pan-os-edit-tag
+  - arguments:
+    - description: The name of the tag to delete.
+      isArray: false
+      name: name
+      required: true
+    description: Deletes a tag from Panorama.
+    name: pan-os-delete-tag
+  dockerimage: demisto/pan-os-python:1.0.0.62889
   feed: false
   isfetch: true
   longRunning: false

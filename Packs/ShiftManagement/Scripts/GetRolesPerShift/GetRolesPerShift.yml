@@ -2,7 +2,6 @@ comment: Retrieves the roles that are available per shift.
 commonfields:
   id: GetRolesPerShift
   version: -1
-enabled: false
 name: GetRolesPerShift
 script: '-'
 tags:
