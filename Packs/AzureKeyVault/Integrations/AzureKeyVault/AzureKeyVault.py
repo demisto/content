@@ -136,7 +136,7 @@ class KeyVaultClient:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
 
-        return self.http_request('PUT', full_url=full_url, data=data)
+        return self.http_request('PUT', full_url=full_url, data=data, ok_codes=[200, 201])
 
     def delete_key_vault_request(self, subscription_id: str, resource_group_name: str,
                                  vault_name: str) -> Dict[str, Any]:
@@ -616,20 +616,34 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
     ip_rules = argToList(args.get('ip_rules'))
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
-    resource_group_list = argToList(get_from_args_or_params(params, args, 'resource_group_name'))
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
 
     all_responses = []
-    for single_resource_group in resource_group_list:
-        response = client.create_or_update_key_vault_request(subscription_id, single_resource_group,
-                                                             vault_name, object_id, location, sku_name, keys_permissions,
-                                                             secrets_permissions, certificates_permissions,
-                                                             storage_accounts_permissions, enabled_for_deployment,
-                                                             enabled_for_disk_encryption, enabled_for_template_deployment,
-                                                             default_action, bypass, vnet_subnet_id,
-                                                             ignore_missing_vnet_service_endpoint, ip_rules)
+    warning_message = ''
+    all_resource_groups_are_wrong: bool = True
 
-    all_responses.append(response)
+    for single_resource_group in resource_group_list:
+        try:
+            response = client.create_or_update_key_vault_request(subscription_id, single_resource_group,
+                                                                 vault_name, object_id, location, sku_name, keys_permissions,
+                                                                 secrets_permissions, certificates_permissions,
+                                                                 storage_accounts_permissions, enabled_for_deployment,
+                                                                 enabled_for_disk_encryption, enabled_for_template_deployment,
+                                                                 default_action, bypass, vnet_subnet_id,
+                                                                 ignore_missing_vnet_service_endpoint, ip_rules)
+
+            all_responses.append(response)
+            all_resource_groups_are_wrong = False
+        except Exception as e:
+            # if at least one resource group is correct, we will not raise an error and we will return the response of
+            # the correct resource group and a warning message with the error of the wrong resource group.
+            warning_message += f'Failed to create or update Key Vault{vault_name} with resource group {single_resource_group}, \
+and subscription id {subscription_id}, the full error is: {e.message}.\n\n'
+            # if all resource groups are wrong, we will raise an error with the last error message.
+            if all_resource_groups_are_wrong and single_resource_group == resource_group_list[-1]:
+                raise e
+    return_warning(warning_message) if warning_message else None
 
     readable_output = tableToMarkdown(f'{vault_name} Information',
                                       all_responses,
@@ -661,10 +675,13 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
     vault_name = args['vault_name']
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
-    resource_group_list = argToList(get_from_args_or_params(params, args, 'resource_group_name'))
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params=params,
+                                                            args=args, key='resource_group_name'))
 
     message = ""
+    warning_message = ""
+    all_resource_groups_are_wrong: bool = True
     for single_resource_group in resource_group_list:
         try:
             response = client.delete_key_vault_request(subscription_id=subscription_id,
@@ -675,12 +692,18 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
                 message += f'Deleted Key Vault {vault_name} successfully.\n'
             elif response.get('status_code') == 204:
                 message += f'Key Vault {vault_name} does not exists.\n'
+            all_resource_groups_are_wrong = False
+
+        # If at least one resource group is correct and the others are wrong, we want to return a warning message
+        # to inform the user that some of the resource groups are wrong and some are correct.
         except Exception as e:
-            message += f'Failed to delete Key Vault {vault_name} with Resource Group {single_resource_group},\
-the error is: {e.message}\n'
-    # If all the resource groups failed, raise the exception.
-    if message == "":
-        raise
+            warning_message += f'Failed to delete Key Vault {vault_name} with Resource Group {single_resource_group} \
+and subscription id {subscription_id}, the full error is : {e.message}\n\n'
+            # If all the resource groups failed, raise the exception.
+            if all_resource_groups_are_wrong and single_resource_group == resource_group_list[-1]:
+                raise
+
+    return_warning(warning_message) if warning_message else None
 
     return CommandResults(readable_output=message)
 
@@ -699,8 +722,8 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: 
     vault_name = args['vault_name']
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
-    resource_group_name = get_from_args_or_params(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     response = client.get_key_vault_request(subscription_id=subscription_id,
                                             resource_group_name=resource_group_name,
                                             vault_name=vault_name)
@@ -734,7 +757,7 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params
     offset = arg_to_number(args.get('offset', DEFAULT_OFFSET))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
-    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     response = client.list_key_vaults_request(subscription_id=subscription_id,
                                               limit=limit, offset=offset)
 
@@ -774,16 +797,29 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     storage_accounts = argToList(args.get('storage', []))
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
-    resource_group_list = argToList(get_from_args_or_params(params, args, 'resource_group_name'))
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
 
     all_responses = []
+    warning_message = ''
+    all_resource_groups_are_wrong = True
     for single_resource_group in resource_group_list:
-        response = client.update_access_policy_request(subscription_id, single_resource_group,
-                                                       vault_name, operation_kind, object_id, keys,
-                                                       secrets, certificates, storage_accounts)
+        try:
+            response = client.update_access_policy_request(subscription_id, single_resource_group,
+                                                           vault_name, operation_kind, object_id, keys,
+                                                           secrets, certificates, storage_accounts)
 
-        all_responses.append(response)
+            all_responses.append(response)
+            all_resource_groups_are_wrong = False
+        except Exception as e:
+            # If at least one resource group is correct, we will return the response of the correct resource group
+            # and a warning message about the incorrect resource groups.
+            warning_message += f'Failed to update access policy for {vault_name} with \
+resource group {single_resource_group} and subscription id {subscription_id},  the full error is: {e.message}'
+            # if all resource groups are wrong, we will raise the exception
+            if all_resource_groups_are_wrong and single_resource_group == resource_group_list[-1]:
+                raise e
+    return_warning(warning_message) if warning_message else None
 
     readable_output = tableToMarkdown(f'{vault_name} Updated Access Policy',
                                       all_responses,
@@ -1243,12 +1279,26 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     # # subscription_id can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id_list = argToList(get_from_args_or_params(params, args, 'subscription_id'))
+    subscription_id_list = argToList(get_from_args_or_params(params=params, args=args, key='subscription_id'))
 
     all_responses = []
+    warning_message = ''
+    all_subscription_ids_are_wrong = True
+
     for subscription_id in subscription_id_list:
-        response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
-        all_responses.extend(response)
+        try:
+            response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
+            all_responses.extend(response)
+            all_subscription_ids_are_wrong = False
+
+        except Exception as e:
+            # if at least one subscription id is correct, the command will return the correct response
+            # and a warning message will be displayed for the wrong subscription ids.
+            warning_message += f'Failed to list resource groups for subscription {subscription_id}. ' \
+                               f'Error: {str(e)}\n\n'
+            # if all subscription ids are wrong, the command will raise an error.
+            if all_subscription_ids_are_wrong and subscription_id == subscription_id_list[-1]:
+                raise e.message
 
         readable_output = tableToMarkdown('Resource Groups List',
                                           all_responses,
@@ -1256,13 +1306,14 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
                                            'properties.provisioningState'
                                            ],
                                           removeNull=True, headerTransform=string_to_table_header)
-        return CommandResults(
-            outputs_prefix='AzureKeyVault.ResourceGroup',
-            outputs_key_field='id',
-            outputs=all_responses,
-            raw_response=all_responses,
-            readable_output=readable_output,
-        )
+    return_warning(warning_message) if warning_message else None
+    return CommandResults(
+        outputs_prefix='AzureKeyVault.ResourceGroup',
+        outputs_key_field='id',
+        outputs=all_responses,
+        raw_response=all_responses,
+        readable_output=readable_output,
+    )
 
 
 def test_module(client: KeyVaultClient, params: Dict[str, any]) -> None:
@@ -1494,8 +1545,8 @@ def main() -> None:
         elif 'SubscriptionNotFound' in str_error:
             custom_message = 'The given subscription ID could not be found.'
         elif 'perform action' in str_error:
-            custom_message = """The client does not have Key Vault permissions to
-            the given resource group name or the resource group name does not exist, or was not provided."""
+            custom_message = "The client does not have Key Vault permissions to\
+the given resource group name or the resource group name does not exist, or was not provided."
 
         return_error(custom_message + "\n" + error.message if hasattr(error, 'message') else str_error)
 
