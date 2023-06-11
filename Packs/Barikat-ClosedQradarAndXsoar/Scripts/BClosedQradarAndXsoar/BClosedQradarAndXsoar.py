@@ -21,11 +21,11 @@ def close_investigation_and_qradar_offense():
     try:
         # The incident is being closed.
         demisto.executeCommand('CloseInvestigation', close_params)
-        demisto.results('Incident başarıyla kapatıldı.')
+        demisto.results('The incident has been successfully resolved.')
 
         # Add the note to the Incident in XSOAR.
         demisto.executeCommand('setIncident', {'closeNotes': note})
-        demisto.results('Not, incident a başarıyla eklendi.')
+        demisto.results('Note, the incident has been successfully added.')
     except Exception as e:
         demisto.error(f'incident kapatılırken bir hata oluştu: {str(e)}')
 
@@ -40,7 +40,7 @@ def close_investigation_and_qradar_offense():
 
         # close the QRadar offense
         demisto.executeCommand('qradar-offense-update', qradar_close_params)
-        demisto.results('QRadar offense\'ı başarıyla kapatıldı.')
+        demisto.results('The QRadar offense has been successfully closed.')
 
         # Add the note to the QRadar offense.
         qradar_note_params = {
@@ -48,9 +48,9 @@ def close_investigation_and_qradar_offense():
             'note_text': note
         }
         demisto.executeCommand('qradar-offense-note-create', qradar_note_params)
-        demisto.results('Not, QRadar offense\'ına başarıyla eklendi.')
+        demisto.results('Not, successfully added to the QRadar offense.')
     except Exception as e:
-        demisto.error(f'QRadar offense\'ı kapatılırken bir hata oluştu: {str(e)}')
+        demisto.error(f'An error occurred while closing the QRadar offense. {str(e)}')
 
 
 # Main
