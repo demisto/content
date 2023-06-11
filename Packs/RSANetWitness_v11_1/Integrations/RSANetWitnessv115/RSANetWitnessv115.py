@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import urllib3
+from typing import Tuple
 
 ERROR_TITLES = {
     400: "400 Bad Request - The request was malformed, check the given arguments\n",
@@ -288,7 +288,7 @@ class Client(BaseClient):
         else:
             raise DemistoException("Error in authentication process- couldn't generate a token")
 
-    def get_incidents(self) -> tuple[list[Any], Any, Optional[Any]]:
+    def get_incidents(self) -> Tuple[List[Any], Any, Optional[Any]]:
         """Get incidents for fetch_incidents command.
 
         Return:
@@ -338,7 +338,7 @@ class Client(BaseClient):
 
 
 def paging_command(limit: Optional[int], page_size: Union[str, None, int], page_number: Optional[str], func_command,
-                   page_size_def='50', **kwargs) -> tuple[Any, Union[list, Any]]:
+                   page_size_def='50', **kwargs) -> Tuple[Any, Union[list, Any]]:
     """Generic command for requests that support paging.
 
        Args:
@@ -1069,7 +1069,7 @@ def create_filter(args: dict) -> Optional[dict]:
         return None
 
 
-def get_network_interfaces_info(endpoint: dict) -> tuple[list, list]:
+def get_network_interfaces_info(endpoint: dict) -> Tuple[list, list]:
     """Retrieve ip and mac lists from an endpoint item.
 
        Args:
@@ -1118,10 +1118,6 @@ def get_now_time() -> Optional[str]:
         return None
 
 
-def get_all_alerts():
-    pass
-
-
 def test_module(client: Client, params) -> None:
     if params.get('isFetch'):
         client.get_incidents()
@@ -1148,8 +1144,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        # Disable insecure warnings
-        urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings()
         client: Client = Client(url, verify_certificate, proxy, headers=headers, service_id=service_id,
                                 fetch_time=fetch_time, fetch_limit=fetch_limit, cred=cred)
         client.get_token()
