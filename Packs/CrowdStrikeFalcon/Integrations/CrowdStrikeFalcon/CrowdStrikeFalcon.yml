@@ -3734,7 +3734,7 @@ script:
       description: The number of seconds to pause between scanning each file.
       type: Number
     - contextPath: CrowdStrike.ODSScan.max_duration
-      description: The maximum amount of time to allow for the scan job in hours.
+      description: The maximum amount of time to allow for the scan job in seconds.
       type: Number
     - contextPath: CrowdStrike.ODSScan.max_file_size
       description: The maximum file size (in MB) to scan.
@@ -3840,10 +3840,10 @@ script:
       description: Whether notifications of the scan were sent to endpoints.
       type: Boolean
     - contextPath: CrowdStrike.ODSScheduledScan.pause_duration
-      description: The pause duration of the scan in hours.
+      description: The pause duration of the scan in seconds.
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.max_duration
-      description: The max duration of the scan in hours.
+      description: The max duration of the scan in seconds.
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.max_file_size
       description: The maximum file size that the scan can handle in MB.
@@ -4184,7 +4184,7 @@ script:
       description: The number of seconds to pause between scanning each file.
       type: Number
     - contextPath: CrowdStrike.ODSScan.max_duration
-      description: The maximum amount of time to allow for the scan job in hours.
+      description: The maximum amount of time to allow for the scan job in seconds.
       type: Number
     - contextPath: CrowdStrike.ODSScan.max_file_size
       description: The maximum file size (in MB) to scan.
@@ -4326,10 +4326,10 @@ script:
       description: Whether notifications of the scan were sent to endpoints.
       type: Boolean
     - contextPath: CrowdStrike.ODSScheduledScan.pause_duration
-      description: The pause duration of scan in hours.
+      description: The pause duration of scan in seconds.
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.max_duration
-      description: The max duration of scan in hours.
+      description: The max duration of scan in seconds.
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.max_file_size
       description: The maximum file size that the scan can handle in MB.
