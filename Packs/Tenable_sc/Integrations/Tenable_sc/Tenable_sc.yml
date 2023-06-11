@@ -1460,7 +1460,7 @@ script:
       isArray: false
       name: password
       required: true
-      secret: false
+      secret: true
     - default: false
       description: 'The user timezone, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html.'
       isArray: false
@@ -1806,13 +1806,13 @@ script:
       isArray: false
       name: password
       required: false
-      secret: false
+      secret: true
     - default: false
       description: This is the admin/Security Manager password from the instance parameters. Required when attempting to change a user's password. 
       isArray: false
       name: current_password
       required: false
-      secret: false
+      secret: true
     - default: false
       description: The ID of the user whose details you want to update.
       isArray: false
