@@ -3086,6 +3086,9 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
     separatecontext: true
     continueonerrortype: ""
     loop:

@@ -22,17 +22,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block IP - Generic v3
-* Office 365 and Azure Hunting
-* Panorama Query Logs
-* Block Indicators - Generic v3
-* Palo Alto Networks - Hunting And Threat Detection
 * SolarStorm Activity Behavior Hunting playbook
-* Office 365 and Azure Configuration Analysis
 * Search Endpoints By Hash - Generic V2
-* CVE Enrichment - Generic v2
-* Search Endpoint by CVE - Generic
 * Isolate Endpoint - Generic V2
+* Block IP - Generic v3
+* CVE Enrichment - Generic v2
+* Panorama Query Logs
+* Office 365 and Azure Configuration Analysis
+* Block Indicators - Generic v3
+* Office 365 and Azure Hunting
+* Search Endpoint by CVE - Generic
+* Palo Alto Networks - Hunting And Threat Detection
 
 ### Integrations
 
@@ -40,20 +40,20 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* http
-* UnEscapeURLs
-* FileCreateAndUploadV2
 * UnEscapeIPs
-* CreateIndicatorsFromSTIX
 * SearchIncidentsV2
+* UnEscapeURLs
+* CreateIndicatorsFromSTIX
+* http
+* FileCreateAndUploadV2
 
 ### Commands
 
-* closeInvestigation
-* appendIndicatorField
 * createNewIndicator
 * expanse-get-issues
 * extractIndicators
+* closeInvestigation
+* appendIndicatorField
 
 ## Playbook Inputs
 
