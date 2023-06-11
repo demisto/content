@@ -1079,7 +1079,9 @@ class BranchTestCollector(TestCollector):
             changed_files.extend(private_test_data)
 
         diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
-        print(f'diff=')
+        print(f'******************************')
+        print(f'{diff=}')
+        print(f'******************************')
         logger.debug(f'raw changed files string:\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
