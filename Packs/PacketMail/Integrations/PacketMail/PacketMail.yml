@@ -6,29 +6,36 @@ display: PacketMail.net
 category: Data Enrichment & Threat Intelligence
 description: Intel look up for IPS
 configuration:
-- display: URL
+- defaultvalue: https://www.packetmail.net/iprep.php/
+  display: URL
   name: url
-  defaultvalue: https://www.packetmail.net/iprep.php/
+  required: false
   type: 0
-  required: false
-- display: API Key
+- defaultvalue: ''
+  display: API Key
+  hidden: true
   name: apikey
-  defaultvalue: ""
-  type: 4
   required: false
+  type: 4
+- displaypassword: API Key
+  hiddenusername: true
+  name: apikey_creds
+  required: false
+  type: 9
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
+  required: false
   type: 8
-  required: false
-- display: CSV list of lists that should be considered malicious
+- defaultvalue: cleanmx_virus,et_c2
+  display: CSV list of lists that should be considered malicious
   name: maliciousList
-  defaultvalue: cleanmx_virus,et_c2
-  type: 0
   required: false
+  type: 0
+
 script:
   script: ''
   type: javascript
