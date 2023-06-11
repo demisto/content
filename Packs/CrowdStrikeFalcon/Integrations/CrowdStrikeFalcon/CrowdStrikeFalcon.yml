@@ -2519,7 +2519,7 @@ script:
       required: true
     - description: The file name to use for the archive name and the file within the archive.
       name: filename
-    - description: interval between polling. Default is 60 seconds. Must be higher than 10.
+    - description: Interval between polling. Default is 60 seconds. Must be higher than 10.
       name: interval_in_seconds
     - description: This is an internal argument used for the polling process, not to be used by the user.
       isArray: true
@@ -3668,7 +3668,7 @@ script:
       description: A unique identifier for the scan profile used in the scan.
       type: String
     - contextPath: CrowdStrike.ODSScan.description
-      description: the ID of the description of the scan.
+      description: The ID of the description of the scan.
       type: String
     - contextPath: CrowdStrike.ODSScan.scan_inclusions
       description: The files or folders included in the scan.
@@ -3937,31 +3937,31 @@ script:
       description: A unique identifier for the scan that was performed on the host.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.filecount.scanned
-      description: the number of files that were scanned during the scan.
+      description: The number of files that were scanned during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.filecount.malicious
-      description: the number of files that were detected as malicious during the scan.
+      description: The number of files that were detected as malicious during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.filecount.quarantined
-      description: the number of files that were quarantined during the scan.
+      description: The number of files that were quarantined during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.filecount.skipped
-      description: the number of files that were skipped during the scan.
+      description: The number of files that were skipped during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.status
-      description: the status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed")
+      description: The status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed")
       type: String
     - contextPath: CrowdStrike.ODSScanHost.severity
       description: A severity score assigned to the scan, ranging from 0 to 100
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.started_on
-      description: the date and time when the scan was started.
+      description: The date and time when the scan was started.
       type: Date
     - contextPath: CrowdStrike.ODSScanHost.completed_on
-      description: the date and time when the scan was completed.
+      description: The date and time when the scan was completed.
       type: Date
     - contextPath: CrowdStrike.ODSScanHost.last_updated
-      description: the date and time when the scan event was last updated.
+      description: The date and time when the scan event was last updated.
       type: Date
   - arguments:
     - description: Valid CS-Falcon-FQL filter to query with.
@@ -4016,16 +4016,16 @@ script:
       description: A unique identifier for the scan that detected the file on the host.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.filepath
-      description: the full path to the malicious file on the host system.
+      description: The full path to the malicious file on the host system.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.filename
-      description: the name of the malicious file.
+      description: The name of the malicious file.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.hash
       description: A SHA-256 hash of the malicious file, which can be used to identify it.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.pattern_id
-      description: the identifier of the pattern used to detect the malicious file.
+      description: The identifier of the pattern used to detect the malicious file.
       type: Number
     - contextPath: CrowdStrike.ODSMaliciousFile.severity
       description: A severity score assigned to the detection event, ranging from 0 to 100.
@@ -4034,7 +4034,7 @@ script:
       description: A Boolean value indicating whether the file has been quarantined.
       type: Boolean
     - contextPath: CrowdStrike.ODSMaliciousFile.last_updated
-      description: the date and time when the detection event was last updated.
+      description: The date and time when the detection event was last updated.
       type: Date
   - arguments:
     - description: List of hosts to be scanned. "hosts" OR "host_groups" must be set.
@@ -4118,7 +4118,7 @@ script:
       description: A unique identifier for the scan profile used in the scan.
       type: String
     - contextPath: CrowdStrike.ODSScan.description
-      description: the ID of the description of the scan.
+      description: The ID of the description of the scan.
       type: String
     - contextPath: CrowdStrike.ODSScan.scan_inclusions
       description: The files or folders included in the scan.
