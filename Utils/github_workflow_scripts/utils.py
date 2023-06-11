@@ -121,6 +121,7 @@ class Checkout:
     def __enter__(self):
         """Checks out the given branch"""
         self.repo.git.checkout(self.branch_to_checkout)
+        print(f'Checked out to branch {self.branch_to_checkout}')
 
     def __exit__(self, *args):
         """Checks out the previous branch"""
