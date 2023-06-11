@@ -616,8 +616,8 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
     ip_rules = argToList(args.get('ip_rules'))
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_list = argToList(get_from_params_or_args(params, args, 'resource_group_name'))
+    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params, args, 'resource_group_name'))
 
     all_responses = []
     for single_resource_group in resource_group_list:
@@ -661,19 +661,26 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
     vault_name = args['vault_name']
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_list = argToList(get_from_params_or_args(params, args, 'resource_group_name'))
+    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params, args, 'resource_group_name'))
 
     message = ""
     for single_resource_group in resource_group_list:
-        response = client.delete_key_vault_request(subscription_id=subscription_id,
-                                                   resource_group_name=single_resource_group,
-                                                   vault_name=vault_name)
+        try:
+            response = client.delete_key_vault_request(subscription_id=subscription_id,
+                                                       resource_group_name=single_resource_group,
+                                                       vault_name=vault_name)
 
-        if response.get('status_code') == 200:
-            message += f'Deleted Key Vault {vault_name} successfully.'
-        elif response.get('status_code') == 204:
-            message += f'Key Vault {vault_name} does not exists.'
+            if response.get('status_code') == 200:
+                message += f'Deleted Key Vault {vault_name} successfully.\n'
+            elif response.get('status_code') == 204:
+                message += f'Key Vault {vault_name} does not exists.\n'
+        except Exception as e:
+            message += f'Failed to delete Key Vault {vault_name} with Resource Group {single_resource_group},\
+the error is: {e.message}\n'
+    # If all the resource groups failed, raise the exception.
+    if message == "":
+        raise
 
     return CommandResults(readable_output=message)
 
@@ -692,8 +699,8 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: 
     vault_name = args['vault_name']
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
+    resource_group_name = get_from_args_or_params(params, args, 'resource_group_name')
     response = client.get_key_vault_request(subscription_id=subscription_id,
                                             resource_group_name=resource_group_name,
                                             vault_name=vault_name)
@@ -727,7 +734,7 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params
     offset = arg_to_number(args.get('offset', DEFAULT_OFFSET))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
+    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
     response = client.list_key_vaults_request(subscription_id=subscription_id,
                                               limit=limit, offset=offset)
 
@@ -767,8 +774,8 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     storage_accounts = argToList(args.get('storage', []))
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_list = argToList(get_from_params_or_args(params, args, 'resource_group_name'))
+    subscription_id = get_from_args_or_params(params, args, 'subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params, args, 'resource_group_name'))
 
     all_responses = []
     for single_resource_group in resource_group_list:
@@ -1236,7 +1243,7 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     # # subscription_id can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id_list = argToList(get_from_args_or_params(args, params, 'subscription_id'))
+    subscription_id_list = argToList(get_from_args_or_params(params, args, 'subscription_id'))
 
     all_responses = []
     for subscription_id in subscription_id_list:
