@@ -366,10 +366,10 @@ def main():  # pragma: no cover
     params = demisto.params()
     proxy = params.get('proxy', False)
     disable_ssl = params.get('insecure', False)
-    service_account_credentials = json.loads(params.get('service_account_credentials'))
-
+    service_account_credentials = params.get('credentials_service_account', {}).get(
+        'password') or params.get('service_account_credentials')
     try:
-        service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
+        service = get_client(json.loads(service_account_credentials), SCOPES, proxy, disable_ssl)
         if command == 'google-docs-update-document':
             return_results(batch_update_document_command(service))
         elif command == 'google-docs-create-document':
