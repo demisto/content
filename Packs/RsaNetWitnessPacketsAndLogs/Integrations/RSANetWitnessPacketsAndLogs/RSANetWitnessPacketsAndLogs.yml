@@ -34,7 +34,7 @@ configuration:
   type: 4
 - display: Username
   displaypassword: Password
-  name: username_creds
+  name: user_creds
   required: false
   type: 9
 - defaultvalue: 'true'
