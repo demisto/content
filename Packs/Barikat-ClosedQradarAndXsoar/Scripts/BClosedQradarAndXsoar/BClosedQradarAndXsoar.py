@@ -53,4 +53,5 @@ def close_investigation_and_qradar_offense():
 
 
 # Main modul
-close_investigation_and_qradar_offense()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    close_investigation_and_qradar_offense()
