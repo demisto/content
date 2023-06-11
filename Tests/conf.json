@@ -2816,7 +2816,7 @@
         {
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "VirusTotal (API v3)",
-            "instance_names": "virus_total_v3",
+            "instance_names": "VirusTotal_API_v3__virus_total_v3",
             "fromversion": "4.1.0"
         },
         {
