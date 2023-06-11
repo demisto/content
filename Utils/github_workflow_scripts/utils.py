@@ -86,7 +86,7 @@ def get_env_var(env_var_name: str, default_val: Optional[str] = None) -> str:
     return env_var_val
 
 
-class Checkout:
+class Checkout:  # pragma: no cover
     """Checks out a given branch.
     When the context manager exits, the context manager checks out the
     previously current branch.
