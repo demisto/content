@@ -175,7 +175,8 @@ def remove_events_before_last_scan(events, last_run):
         for event in events:
             if first_found := event.get('DETECTION', {}).get('FIRST_FOUND_DATETIME'):
                 if datetime.strptime(first_found, DATE_FORMAT) < datetime.strptime(last_run, DATE_FORMAT):
-                    demisto.debug(f'Removed event with time: {first_found}, qid: {event.get("DETECTION", {}).get("ID")}')
+                    demisto.debug(
+                        f'Removed event with time: {first_found}, qid: {event.get("DETECTION", {}).get("ID")}')
                 else:
                     edited_events.append(event)
         return edited_events
@@ -298,7 +299,7 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
     demisto.debug(f'Starting to fetch host list events: {last_run=}')
 
     host_list_detections = client.get_host_list_detection(since_datetime=last_run, max_fetch=max_fetch)
-    host_list_events = handle_host_list_detection_result(host_list_detections)
+    host_list_events = handle_host_list_detection_result(host_list_detections) or {}
     next_run = host_list_events[0].get('LAST_VM_SCANNED_DATE') if host_list_events else last_run
 
     edited_host_detections = get_detections_from_hosts(host_list_events)
@@ -349,20 +350,22 @@ def get_activity_logs_events_command(client, args, first_fetch_time):
 
     """
     limit = arg_to_number(args.get('limit', 50))
+    offset = arg_to_number(args.get('offset', 0))
     since_datetime = arg_to_datetime(args.get('since_datetime'))
     last_run = since_datetime.strftime(DATE_FORMAT) if since_datetime else first_fetch_time
     activity_logs_events, _ = get_activity_logs_events(
         client=client,
         last_run=last_run,
-        max_fetch=limit,
+        max_fetch=0,
     )
-    activity_logs_hr = tableToMarkdown(name='Activity Logs', t=activity_logs_events)
+    limited_activity_logs_events = activity_logs_events[offset:limit + offset]
+    activity_logs_hr = tableToMarkdown(name='Activity Logs', t=limited_activity_logs_events)
     results = CommandResults(
         readable_output=activity_logs_hr,
-        raw_response=activity_logs_events,
+        raw_response=limited_activity_logs_events,
     )
 
-    return activity_logs_events, results
+    return limited_activity_logs_events, results
 
 
 def get_host_list_detections_events_command(client, args, first_fetch_time):
@@ -375,22 +378,23 @@ def get_host_list_detections_events_command(client, args, first_fetch_time):
 
     """
     limit = arg_to_number(args.get('limit', 50))
+    offset = arg_to_number(args.get('offset', 0))
     since_datetime = arg_to_datetime(args.get('vm_scan_date_after'))
     last_run = since_datetime.strftime(DATE_FORMAT) if since_datetime else first_fetch_time
 
     host_list_detection_events, _ = get_host_list_detections_events(
         client=client,
         last_run=last_run,
-        max_fetch=limit,
+        max_fetch=0,
     )
-
-    host_list_detection_hr = tableToMarkdown(name='Host List Detection', t=host_list_detection_events)
+    limited_host_list_detection_events = host_list_detection_events[offset:limit + offset]
+    host_list_detection_hr = tableToMarkdown(name='Host List Detection', t=limited_host_list_detection_events)
     results = CommandResults(
         readable_output=host_list_detection_hr,
-        raw_response=host_list_detection_events,
+        raw_response=limited_host_list_detection_events,
     )
 
-    return host_list_detection_events, results
+    return limited_host_list_detection_events, results
 
 
 def test_module(client: Client, params: Dict[str, Any], first_fetch_time: str) -> str:
@@ -523,8 +527,7 @@ def main():  # pragma: no cover
                 fetch_function=get_activity_logs_events,
                 first_fetch_time=first_fetch_str,
             )
-            send_events_to_xsiam(activity_logs_events, vendor=VENDOR, product=PRODUCT)
-            send_events_to_xsiam(host_list_detection_events, vendor=VENDOR, product=PRODUCT)
+            send_events_to_xsiam(activity_logs_events + host_list_detection_events, vendor=VENDOR, product=PRODUCT)
 
             # saves next_run for the time fetch-events is invoked
             last_run.update(logs_next_run)

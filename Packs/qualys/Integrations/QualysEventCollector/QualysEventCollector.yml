@@ -66,6 +66,10 @@ script:
       name: since_datetime
       required: false
       secret: false
+    - default: false
+      description: Offset which events to return.
+      isArray: false
+      name: offset
     deprecated: false
     description: Gets activity logs from Qualys.
     execution: false
@@ -86,6 +90,10 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: Offset which events to return.
+      isArray: false
+      name: offset
     - default: false
       description: Date to return results from.
       isArray: false
