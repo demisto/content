@@ -5,6 +5,7 @@ import requests
 import json
 import re
 import urllib3
+import urllib
 
 urllib3.disable_warnings()
 
@@ -855,12 +856,10 @@ def add_reply_request(ticket_id, encoded):
 def add_reply():
     ticket_id = demisto.args().get('ticket-id')
     content = 'Action: comment\n'
-    text = demisto.args().get('text')
-    if text:
-        content += '\nText: ' + text.encode('utf-8')
-    cc = demisto.args().get('cc')
-    if cc:
-        content += '\nCc: ' + cc
+    if (text := demisto.args().get('text')):
+        content += f'\nText: {text}'
+    if (cc := demisto.args().get('cc')):
+        content += f'\nCc: {cc}'
     try:
         encoded = "content=" + urllib.parse.quote_plus(content)
         added_reply = add_reply_request(ticket_id, encoded)
