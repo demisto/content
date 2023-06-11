@@ -7,24 +7,31 @@ display: Cisco Webex Teams
 category: Messaging and Conferencing
 description: Send messages, create rooms and more, via the Cisco Spark API.
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- defaultvalue: https://api.ciscospark.com
+  display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: https://api.ciscospark.com
+  required: true
   type: 0
-  required: true
-- display: API Key
+- defaultvalue: ''
+  display: API Key
+  hidden: true
   name: apiKey
-  defaultvalue: ""
+  required: false
   type: 4
-  required: true
+- displaypassword: API Key
+  hiddenusername: true
+  name: apikey_creds
+  required: false
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
+
 script:
   script: ''
   type: javascript
