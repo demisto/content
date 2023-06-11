@@ -579,4 +579,4 @@ inputs:
   description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
   playbookInputQuery:
 outputs: []
-description: IP Enrichment V2 Test playbook check the IP Enrichment V2 playbook with different inputs.
+description: IP Enrichment V2 Test  playbook check the IP Enrichment V2 playbook with different inputs.
