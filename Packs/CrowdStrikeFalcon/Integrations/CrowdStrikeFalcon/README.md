@@ -5832,7 +5832,7 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.id | String | A unique identifier for the scan event. | 
 | CrowdStrike.ODSScan.cid | String | A unique identifier for the client that triggered the scan. | 
 | CrowdStrike.ODSScan.profile_id | String | A unique identifier for the scan profile used in the scan. | 
-| CrowdStrike.ODSScan.description | String | the ID of the description of the scan. | 
+| CrowdStrike.ODSScan.description | String | The ID of the description of the scan. | 
 | CrowdStrike.ODSScan.scan_inclusions | String | The files or folders included in the scan. | 
 | CrowdStrike.ODSScan.initiated_from | String | The source of the scan initiation. | 
 | CrowdStrike.ODSScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
@@ -5853,8 +5853,8 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.status | String | The status of the scan \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
 | CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
-| CrowdStrike.ODSScan.pause_duration | Number | The number of minutes to pause between scanning each file in hours. | 
-| CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in hours. | 
+| CrowdStrike.ODSScan.pause_duration | Number | The number of seconds to pause between scanning each file. | 
+| CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in seconds. | 
 | CrowdStrike.ODSScan.max_file_size | Number | The maximum file size \(in MB\) to scan. | 
 | CrowdStrike.ODSScan.sensor_ml_level_detection | Number | The level of detection sensitivity for the local sensor machine learning model. | 
 | CrowdStrike.ODSScan.sensor_ml_level_prevention | Number | The level of prevention sensitivity for the local sensor machine learning model. | 
@@ -5868,80 +5868,63 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
 
 #### Command example
-
-```!cs-falcon-ods-create-scan cpu_priority=Low scan_inclusions=* hosts=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 pause_duration=3 quarantine=true"```
-
+```!cs-falcon-ods-create-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b scan_inclusions=* cpu_priority=Highest max_duration=1 pause_duration=1```
 #### Context Example
-
 ```json
 {
     "CrowdStrike": {
-        "ODSScan": [
-            {
-                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "cloud_ml_level_detection": 4,
-                "cloud_ml_level_prevention": 4,
-                "cpu_priority": 2,
-                "created_by": "someone@email.com",
-                "created_on": "2023-05-03T08:45:41.688556439Z",
-                "endpoint_notification": true,
-                "file_paths": [
-                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\eicar_com.exe"
-                ],
-                "filecount": {},
-                "hosts": [
-                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
-                ],
-                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "initiated_from": "falcon_adhoc",
-                "last_updated": "2023-05-03T08:45:43.348230927Z",
-                "max_duration": 0,
-                "max_file_size": 60,
-                "metadata": [
-                    {
-                        "completed_on": "2023-05-03T08:45:43.274953782Z",
-                        "filecount": {
-                            "malicious": 2,
-                            "quarantined": 2,
-                            "scanned": 6,
-                            "skipped": 1,
-                            "traversed": 20
-                        },
-                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                        "last_updated": "2023-05-03T08:45:43.61797613Z",
-                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                        "started_on": "2023-05-03T08:45:43.069273028Z",
-                        "status": "completed"
-                    }
-                ],
-                "pause_duration": 3,
-                "policy_setting": [
-                    26439818675190,
-                    26405458936832,
-                    26405458936833,
-                    26405458936834,
-                    26405458936835,
-                    26405458936840,
-                    26456998543653,
-                    26456998543656,
-                    26456998543654,
-                    26456998543950,
-                    26456998543963
-                ],
-                "preemption_priority": 1,
-                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "quarantine": true,
-                "scan_completed_on": "2023-05-03T08:45:43.274953782Z",
-                "scan_inclusions": [
-                    "**\\Downloads\\**"
-                ],
-                "scan_started_on": "2023-05-03T08:45:43.069273028Z",
-                "sensor_ml_level_detection": 4,
-                "sensor_ml_level_prevention": 4,
-                "status": "completed"
-            }
-        ]
+        "ODSScan": {
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 5,
+            "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+            "created_on": "2023-06-11T13:23:05.139153881Z",
+            "filecount": {
+                "malicious": 0,
+                "quarantined": 0,
+                "scanned": 0,
+                "skipped": 0,
+                "traversed": 0
+            },
+            "host_groups": [
+                "7471ba0636b34cbb8c65fae7979a6a9b"
+            ],
+            "id": "9ba8489e9f604b61bf9b4a2c5f95ede7",
+            "initiated_from": "cloud_adhoc",
+            "last_updated": "2023-06-11T13:23:05.139153881Z",
+            "max_duration": 1,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "filecount": {},
+                    "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                    "last_updated": "2023-06-11T13:23:05.139153881Z",
+                    "scan_host_metadata_id": "31052e821a5a4189a1a9a2814cc88e4e",
+                    "status": "complete"
+                }
+            ],
+            "pause_duration": 1,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 1,
+            "profile_id": "335198a96e1a4a6b880d62b2e7ccbb91",
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "status": "complete"
+        }
     }
 }
 ```
@@ -5949,10 +5932,9 @@ Create an ODS scan and wait for results.
 #### Human Readable Output
 
 >### CrowdStrike Falcon ODS Scans
-
 >|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
 >|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | completed |  | scanned: 6<br/>malicious: 2<br/>quarantined: 2<br/>skipped: 1<br/>traversed: 20 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-03T08:45:43.274953782Z | 2023-05-03T08:45:43.069273028Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| 9ba8489e9f604b61bf9b4a2c5f95ede7 | complete |  |  |  | 7471ba0636b34cbb8c65fae7979a6a9b |  |  | f7acf1bd5d3d4b40afe77546cbbaefde |
 
 
 ### cs-falcon-ods-create-scheduled-scan
@@ -5983,7 +5965,7 @@ Create an ODS scheduled scan.
 | cloud_ml_level_prevention | Cloud ML prevention level for the scan. | Optional | 
 | max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". | Required | 
-| schedule_interval | Set the schedule interval. Possible values are: never, daily, weekly, every other week, every 4 weeks, monthly. | Required | 
+| schedule_interval | Set the schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required | 
 
 #### Context Output
 
@@ -6000,8 +5982,8 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.status | String | The status of the scan, whether it's "scheduled", "running", "completed", etc. | 
 | CrowdStrike.ODSScheduledScan.host_groups | String | The host groups targeted by the scan. | 
 | CrowdStrike.ODSScheduledScan.endpoint_notification | Boolean | Whether notifications of the scan were sent to endpoints. | 
-| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of scan in hours. | 
-| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of scan in hours. | 
+| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of scan in seconds. | 
+| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of scan in seconds. | 
 | CrowdStrike.ODSScheduledScan.max_file_size | Number | The maximum file size that the scan can handle in MB. | 
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_detection | Number | The machine learning detection level for the sensor. | 
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_detection | Number | The machine learning detection level for the cloud. | 
@@ -6018,42 +6000,70 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
 
 #### Command example
-
-```!cs-falcon-ods-create-scheduled-scan cpu_priority=Low scan_inclusions=* host_groups=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 pause_duration=3 quarantine=true schedule_start_timestamp="in a weeek" schedule_interval="every other week"```
-
+```!cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b schedule_interval=daily schedule_start_timestamp=tomorrow cpu_priority=Highest scan_inclusions=*```
 #### Context Example
-
 ```json
 {
     "CrowdStrike": {
         "ODSScan": {
-            "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
             "cloud_ml_level_detection": 2,
             "cloud_ml_level_prevention": 2,
-            "cpu_priority": 2,
-            "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "created_on": "2023-05-08T09:30:51.913654051Z",
+            "cpu_priority": 5,
+            "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+            "created_on": "2023-06-11T13:23:10.564070276Z",
             "deleted": false,
-            "endpoint_notification": true,
             "host_groups": [
-                "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                "7471ba0636b34cbb8c65fae7979a6a9b"
             ],
-            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "id": "7d08d9a3088f49b3aa20efafc355aef0",
             "initiated_from": "cloud_scheduled",
-            "last_updated": "2023-05-08T09:30:51.913654051Z",
+            "last_updated": "2023-06-11T13:23:10.564070276Z",
             "max_duration": 2,
             "max_file_size": 60,
             "metadata": [
                 {
-                    "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                    "last_updated": "2023-05-08T09:30:51.913654051Z"
+                    "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                    "last_updated": "2023-06-11T13:23:10.564070276Z"
                 }
             ],
-            "pause_duration": 3,
+            "pause_duration": 2,
             "policy_setting": [
                 26439818674573,
                 26439818674574,
                 26439818675074,
+                26405458936702,
+                26405458936703,
+                26405458936707,
+                26439818675124,
+                26439818675125,
+                26439818675157,
+                26439818675158,
+                26439818675182,
+                26439818675183,
+                26439818675190,
+                26439818675191,
+                26439818675196,
+                26439818675197,
+                26439818675204,
+                26439818675205,
+                26405458936760,
+                26405458936761,
+                26405458936793,
+                26405458936794,
+                26405458936818,
+                26405458936819,
+                26405458936825,
+                26405458936826,
+                26405458936832,
+                26405458936833,
+                26405458936840,
+                26405458936841,
+                26456998543793,
+                26456998544045,
+                26456998543652,
+                26456998543653,
+                26456998543656,
                 26456998543654,
                 26456998543950,
                 26456998543963
@@ -6064,8 +6074,8 @@ Create an ODS scheduled scan.
                 "*"
             ],
             "schedule": {
-                "interval": 14,
-                "start_timestamp": "2023-05-06T06:49"
+                "interval": 1,
+                "start_timestamp": "2023-06-12T13:23"
             },
             "sensor_ml_level_detection": 2,
             "sensor_ml_level_prevention": 2,
@@ -6077,8 +6087,11 @@ Create an ODS scheduled scan.
 
 #### Human Readable Output
 
->Scheduled Scan Created
->ID: a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+>### Scheduled Scan Created
+>|Scan ID|
+>|---|
+>| 7d08d9a3088f49b3aa20efafc355aef0 |
+
 
 ### cs-falcon-ods-delete-scheduled-scan
 

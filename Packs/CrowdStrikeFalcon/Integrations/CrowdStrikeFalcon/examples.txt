@@ -19,7 +19,7 @@ cs-falcon-apply-quarantine-file-action filename=test.exe action=delete comment=d
 cs-falcon-ods-query-scan
 cs-falcon-ods-query-scheduled-scan
 cs-falcon-ods-create-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b scan_inclusions=* cpu_priority=Highest max_duration=1 pause_duration=1
-!cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b schedule_interval=daily schedule_start_timestamp=tomorrow cpu_priority=Highest scan_inclusions=*
+cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b schedule_interval=daily schedule_start_timestamp=tomorrow cpu_priority=Highest scan_inclusions=*
 cs-falcon-ods-query-scan-host
 cs-falcon-ods-query-malicious-files
 cs-falcon-ods-delete-scheduled-scan ids=9acf0c069d3d4a5b82badb170966e77c
