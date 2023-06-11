@@ -5921,6 +5921,7 @@
         "BruteForceBlocker Feed",
         "CSVFeed",
         "CheckPhish",
+        "CIRCL",
         "Cloudflare Feed",
         "Cofense Feed",
         "Cortex Data Lake",
