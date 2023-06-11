@@ -3,7 +3,7 @@
 alter suspected_domain = arrayindex(regextract(_raw_log ,"Suspected\sDomain\(s\)\s\:\s(\S+)"),0),
     threat_category = arrayindex(regextract(_raw_log ,"Threat Category\:\s([^\,]+)\,"),0)
 | alter level = arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[\w\_]+\:\s([A-Za-z]+)\:"),0),
-    message = arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[\w\_]+\:\s[A-Za-z]+\:(.*)"),0),
+    message = arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[\w\_]+\:\s[A-Za-z]+\:\s*(.*)"),0),
     mid = arrayindex(regextract(_raw_log ,"\sMID\s(\d+)"),0),
     icid = arrayindex(regextract(_raw_log , "\sICID\s(\d+)"),0),
     src_ip = arrayindex(regextract(_raw_log ,"address\s(\d+\.\d+\.\d+\.\d+)\s"),0),
