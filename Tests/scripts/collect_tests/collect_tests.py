@@ -1079,6 +1079,7 @@ class BranchTestCollector(TestCollector):
             changed_files.extend(private_test_data)
 
         diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
+        print(f'diff=')
         logger.debug(f'raw changed files string:\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
@@ -1110,6 +1111,7 @@ class BranchTestCollector(TestCollector):
                 continue  # not adding to changed files list
 
             changed_files.append(file_path)  # non-deleted files (added, modified)
+        print(f'Collected++++++======{FilesToCollect(changed_files=tuple(changed_files),pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))}')
         return FilesToCollect(changed_files=tuple(changed_files),
                               pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
 
