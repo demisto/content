@@ -7,16 +7,23 @@ system: true
 category: Utilities
 description: Display random GIF in the War Room (e.g. !giphy hello). Powered By Giphy.
 configuration:
-- display: Giphy URL
+- defaultvalue: http://api.giphy.com/v1/gifs/random
+  display: Giphy URL
   name: url
-  defaultvalue: http://api.giphy.com/v1/gifs/random
+  required: true
   type: 0
-  required: true
-- display: API Key
+- defaultvalue: ''
+  display: API Key
+  hidden: true
   name: apikey
-  defaultvalue: ""
+  required: false
   type: 4
-  required: true
+- displaypassword: API Key
+  hiddenusername: true
+  name: apikey_creds
+  required: false
+  type: 9
+
 script:
   script: ''
   type: javascript
