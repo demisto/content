@@ -1915,7 +1915,7 @@ def main():
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
         logging.info("Installing packs in post-update step")
-        installed_content_packs_successfully = build.update_content_on_servers()
+        # installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow
