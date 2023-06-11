@@ -4,9 +4,15 @@ commonfields:
   version: -1
 configuration:
 - display: User's Service Account JSON
+  hidden: true
   name: user_service_account_json
-  required: true
+  required: false
   type: 4
+- displaypassword: User's Service Account JSON
+  hiddenusername: true
+  name: user_service_account_json_creds
+  required: false
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -15,6 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+
 description: Google Calendar is a time-management and scheduling calendar service developed by Google. This integration helps you to perform various tasks on the access control list (ACL).
 display: Google Calendar
 name: GoogleCalendar

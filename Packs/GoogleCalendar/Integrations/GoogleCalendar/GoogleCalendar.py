@@ -257,26 +257,26 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json_creds', {}).get('password') or GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+        verify_certificate=not params.get('insecure', False)
+        proxy=params.get('proxy', False)
 
-        headers = {
+        headers={
             'Content-Type': 'application/json'
         }
 
         # prepare client class object
-        gsuite_client = GSuiteClient(service_account_dict,
+        gsuite_client=GSuiteClient(service_account_dict,
                                      base_url='https://www.googleapis.com/', verify=verify_certificate, proxy=proxy,
                                      headers=headers)
 
         # Trim the arguments
-        args = GSuiteClient.strip_dict(demisto.args())
+        args=GSuiteClient.strip_dict(demisto.args())
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
 
-            result = test_module(gsuite_client)
+            result=test_module(gsuite_client)
             demisto.results(result)
 
         elif command in commands:
@@ -287,7 +287,7 @@ def main() -> None:
         return_error(f'Error: {str(e)}')
 
 
-from GSuiteApiModule import *  # noqa: E402
+from GSuiteApiModule import  # noqa: E402
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+* if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
