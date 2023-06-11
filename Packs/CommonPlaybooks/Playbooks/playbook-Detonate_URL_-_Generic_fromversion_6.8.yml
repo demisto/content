@@ -1,4 +1,4 @@
-id: detonate_url_-_generic
+id: Detonate URL - Generic
 version: -1
 name: Detonate URL - Generic
 description: |
@@ -11,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 218725c8-5f2a-438c-8b00-39eb76656d1f
+    taskid: de95415e-0608-4a99-8445-0c01ca7a9e36
     type: start
     task:
-      id: 218725c8-5f2a-438c-8b00-39eb76656d1f
+      id: de95415e-0608-4a99-8445-0c01ca7a9e36
       version: -1
       name: ""
       iscommand: false
@@ -24,11 +24,12 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1590,
-          "y": 70
+          "y": -90
         }
       }
     note: false
@@ -38,13 +39,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: bd46d172-dfb1-43e4-8904-643571582a5d
+    taskid: 9b3ee626-c603-43fa-85db-9366b19799a0
     type: title
     task:
-      id: bd46d172-dfb1-43e4-8904-643571582a5d
+      id: 9b3ee626-c603-43fa-85db-9366b19799a0
       version: -1
       name: Done
       type: title
@@ -52,6 +52,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -66,154 +67,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "12":
-    id: "12"
-    taskid: e0390fd8-4e73-42bc-8fdb-8480bf9af4d9
-    type: condition
-    task:
-      id: e0390fd8-4e73-42bc-8fdb-8480bf9af4d9
-      version: -1
-      name: Is JoeSecurity sandbox enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
-      type: condition
-      iscommand: false
-      brand: ""
-      scriptName: IsIntegrationAvailable
-    nexttasks:
-      "no":
-      - "3"
-      "yes":
-      - "29"
-    scriptarguments:
-      brandname:
-        simple: JoeSecurityV2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    results:
-    - brandInstances
-    continueonerrortype: ""
-  "28":
-    id: "28"
-    taskid: 603eed0e-4be1-4e78-81cc-1ee19961ac3b
-    type: playbook
-    task:
-      id: 603eed0e-4be1-4e78-81cc-1ee19961ac3b
-      version: -1
-      name: Detonate URL - WildFire v2.1
-      playbookName: Detonate URL - WildFire v2.1
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      URL:
-        complex:
-          root: inputs.URL
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1350,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "29":
-    id: "29"
-    taskid: e24eb7cd-22e4-48c7-8093-05bca0ceab7a
-    type: playbook
-    task:
-      id: e24eb7cd-22e4-48c7-8093-05bca0ceab7a
-      version: -1
-      name: Detonate URL - JoeSecurity
-      playbookName: Detonate URL - JoeSecurity
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "1200"
-      URL:
-        complex:
-          root: inputs.URL
-      EmailNotification:
-        simple: "False"
-      FastMode:
-        simple: "false"
-      FullDisplay:
-        simple: "True"
-      HybridCodeAnalysis:
-        simple: "True"
-      InternetAccess:
-        simple: "True"
-      LiveInteraction:
-        simple: "False"
-      SSLInspection:
-        simple: "False"
-      StartAsNormalUser:
-        simple: "False"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6adfc95d-487a-4753-846f-d1a4c14204b1
+    taskid: f309fe75-bca3-4529-801c-a4353198f34f
     type: condition
     task:
-      id: 6adfc95d-487a-4753-846f-d1a4c14204b1
+      id: f309fe75-bca3-4529-801c-a4353198f34f
       version: -1
       name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
@@ -225,7 +84,7 @@ tasks:
       "no":
       - "3"
       "yes":
-      - "30"
+      - "32"
     scriptarguments:
       brandname:
         simple: CrowdStrike Falcon Sandbox V2
@@ -249,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f1f3ca4a-6436-40b5-8f34-84f3328b1c6c
+    taskid: b86cf972-8284-4f6c-8919-8ba61e8ea263
     type: condition
     task:
-      id: f1f3ca4a-6436-40b5-8f34-84f3328b1c6c
+      id: b86cf972-8284-4f6c-8919-8ba61e8ea263
       version: -1
       name: Is there a URL?
       description: Is there a URL?
@@ -263,9 +122,9 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "6"
-      - "12"
-      - "4"
+      - "33"
+      - "34"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -283,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 220
+          "y": 60
         }
       }
     note: false
@@ -295,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 51bb2a80-7e44-44ed-8a77-24d48ecb48e9
+    taskid: 89e50404-2efb-4469-8006-49e7f9733a07
     type: condition
     task:
-      id: 51bb2a80-7e44-44ed-8a77-24d48ecb48e9
+      id: 89e50404-2efb-4469-8006-49e7f9733a07
       version: -1
       name: Is Wildfire enabled?
       description: Returns 'yes' if the WildFire integration is available.
@@ -310,7 +169,7 @@ tasks:
       "no":
       - "3"
       "yes":
-      - "28"
+      - "31"
     scriptarguments:
       brandname:
         simple: WildFire-v2
@@ -332,40 +191,70 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 168a8223-f9d3-4957-87ac-5c7291406a0a
+  "12":
+    id: "12"
+    taskid: 3a50ed87-f1ee-422e-8871-309ecb4cc09f
+    type: condition
+    task:
+      id: 3a50ed87-f1ee-422e-8871-309ecb4cc09f
+      version: -1
+      name: Is JoeSecurity sandbox enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "29"
+    scriptarguments:
+      brandname:
+        simple: JoeSecurityV2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0945e7bc-f12b-4b3c-841a-bf946085e174
     type: playbook
     task:
-      id: 168a8223-f9d3-4957-87ac-5c7291406a0a
+      id: 0945e7bc-f12b-4b3c-841a-bf946085e174
       version: -1
-      name: Detonate URL - CrowdStrike
-      playbookName: Detonate URL - CrowdStrike
+      name: Detonate URL - JoeSecurity
+      description: Deprecated. Use the joe-submit-url command instead.
+      playbookName: Detonate URL - JoeSecurity
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      AlertOS:
-        complex:
-          root: incident
-          accessor: deviceosname
-          transformers:
-          - operator: MapValuesTransformer
-            args:
-              input_values:
-                value:
-                  simple: Windows,Linux,Android
-              mapped_values:
-                value:
-                  simple: '160: Windows 10,300: Linux Ubuntu 16.04,300: Linux Ubuntu 16.04'
-      EnableTor:
-        simple: "false"
-      EnvironmentID:
-        simple: '''160: Windows 10'''
+      InternetAccess:
+        simple: "True"
+      Interval:
+        simple: "1"
+      ReportFileType:
+        simple: html
+      Timeout:
+        simple: "1200"
       URL:
         complex:
           root: inputs.URL
@@ -379,7 +268,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 510,
           "y": 690
         }
       }
@@ -390,21 +279,207 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: be152608-14b9-43c3-8ab3-2e9e3f87cb01
+    type: regular
+    task:
+      id: be152608-14b9-43c3-8ab3-2e9e3f87cb01
+      version: -1
+      name: WildFire upload and detonate
+      description: Uploads a URL of a webpage to WildFire for analysis.
+      script: '|||wildfire-upload-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extended_data:
+        simple: "true"
+      format:
+        simple: xml
+      polling:
+        simple: "true"
+      upload:
+        complex:
+          root: inputs.URL
+      verbose:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 690
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Wildfire sandbox report
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: f7b4fe53-1e42-4153-83a6-cc76d3ab3abb
+    type: regular
+    task:
+      id: f7b4fe53-1e42-4153-83a6-cc76d3ab3abb
+      version: -1
+      name: CrowdStrike Falcon Intelligence Sandbox upload and detonate
+      description: Submits a URL or FTP for sandbox analysis.
+      script: '|||cs-fx-submit-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      environment_id:
+        simple: '160: Windows 10'
+      execution-timeout:
+        simple: "600"
+      polling:
+        simple: "true"
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 690
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Falcon Intelligence Sandbox report
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ab6cfa64-8e65-4408-8197-3efa1d983e6b
+    type: title
+    task:
+      id: ab6cfa64-8e65-4408-8197-3efa1d983e6b
+      version: -1
+      name: WildFire sandbox
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 17472b04-4725-4000-85a5-77e8d7ccad60
+    type: title
+    task:
+      id: 17472b04-4725-4000-85a5-77e8d7ccad60
+      version: -1
+      name: CrowdStrike sandbox
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: b7eb1fd8-81dc-4423-8d60-1c90c19729a7
+    type: title
+    task:
+      id: b7eb1fd8-81dc-4423-8d60-1c90c19729a7
+      version: -1
+      name: JoeSecurity sandbox
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "12_3_no": 0.24,
       "4_3_no": 0.32,
       "5_3_#default#": 0.16,
-      "5_4_yes": 0.77,
       "6_3_no": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 855,
+        "height": 1015,
         "width": 1460,
         "x": 510,
-        "y": 70
+        "y": -90
       }
     }
   }
@@ -439,8 +514,6 @@ outputs:
 - contextPath: csfalconx
   description: The sandbox analysis details
   type: unknown
-fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
+fromversion: 6.8.0

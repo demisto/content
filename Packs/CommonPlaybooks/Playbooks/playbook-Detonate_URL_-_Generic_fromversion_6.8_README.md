@@ -12,8 +12,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Detonate URL - JoeSecurity
-* Detonate URL - WildFire v2.1
-* Detonate URL - CrowdStrike
 
 ### Integrations
 
@@ -25,7 +23,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-This playbook does not use any commands.
+* cs-fx-submit-url
+* wildfire-upload-url
 
 ## Playbook Inputs
 
