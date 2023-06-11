@@ -26,9 +26,9 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 def prepare_result(response: dict, args: dict, readable_comment: str) -> CommandResults:
     """
         This function is for the UPDATE command result formatting
-        echo_spreadsheat is false then the HR will be only success or failed,
-        and the output will be empty.
-        if echo_spreadsheet is true then we prepare the HR and substitute the response to the output
+        echo_spreadsheet is false then the HR will be only success or failed.
+        If echo_spreadsheet is true then we prepare the HR.
+        In any case substitute the response to the output.
 
         Args:
             response: the response from the google API
