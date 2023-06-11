@@ -8,9 +8,15 @@ configuration:
   required: true
   type: 0
 - display: API Token
+  hidden: true
   name: token
-  required: true
+  required: false
   type: 4
+- displaypassword: API Token
+  hiddenusername: true
+  name: token_creds
+  required: false
+  type: 9
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -37,6 +43,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+
 description: Use the Ivanti Heat integration to manage issues and create Cortex XSOAR incidents from Ivanti Heat.
 display: Ivanti Heat
 name: Ivanti Heat

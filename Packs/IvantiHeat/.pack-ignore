@@ -1,5 +1,5 @@
 [file:IvantiHeat.yml]
-ignore=IN126,IN145,BA124,IN140
+ignore=IN126,BA124,IN140
 
 [file:IvantiHeatCreateIncidentExample.yml]
 ignore=BA124
@@ -9,4 +9,3 @@ ignore=BA124
 
 [file:IvantiHeatCreateProblemExample.yml]
 ignore=BA124
-
