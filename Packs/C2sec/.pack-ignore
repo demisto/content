@@ -1,7 +1,8 @@
 [file:README.md]
 ignore=RM104
 
-,BA124
+[file:C2sec.yml]
+ignore=BA124
 
 [file:C2sec_image.png]
 ignore=IM111
