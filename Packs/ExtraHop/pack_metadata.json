@@ -37,7 +37,7 @@
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
-        },
+        }
     },
     "displayedImages": [
         "CommonScripts",
