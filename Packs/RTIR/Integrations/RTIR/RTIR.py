@@ -917,8 +917,8 @@ def main():
     global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
     SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
         '/') else params.get('server', '')
-    USERNAME = params.get('credentials').get('identifier', '')
-    PASSWORD = params.get('credentials').get('password', '')
+    USERNAME = params.get('credentials', {}).get('identifier', '')
+    PASSWORD = params.get('credentials', {}).get('password', '')
     BASE_URL = urljoin(SERVER, '/REST/1.0/')
     USE_SSL = not params.get('unsecure', False)
     FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1

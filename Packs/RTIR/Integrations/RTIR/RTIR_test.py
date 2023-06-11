@@ -31,7 +31,7 @@ def test_query_formatting(mocker):
 
     from RTIR import build_search_query
     query = build_search_query()
-    assert not (query.endswith('+OR+') or query.endswith('+AND+'))
+    assert not query.endswith(('+OR+', '+AND+'))
 
 
 RAW_HISTORY = """
