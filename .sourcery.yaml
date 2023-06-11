@@ -1,13 +1,3 @@
-ignore:
-  - .git
-  - venv
-  - .venv
-  - env
-  - .env
-  - .tox
-  - node_modules
-  - vendor
-
 rule_settings:
   enable:
     - aug-assign
@@ -22,11 +12,11 @@ rule_settings:
     - dataframe-append-to-concat
     - de-morgan
     - default-get
-    # - default-mutable-arg (and disable ruff b006)
+    # - default-mutable-arg (todo: disable ruff B006)
     - del-comprehension
     - dict-assign-update-to-union
     - dict-comprehension
-    # - ensure-file-closed (disable ruff sim115)
+    # - ensure-file-closed (todo: disable ruff sim115)
     - flatten-nested-try
     - for-append-to-extend
     - for-index-replacement
@@ -48,7 +38,7 @@ rule_settings:
     - merge-comparisons
     - merge-dict-assign
     - merge-duplicate-blocks
-    # - merge-else-if-into-elif (disable ruff prl501)
+    # - merge-else-if-into-elif (todo: disable ruff prl501)
     - merge-except-handler
     - merge-list-append
     - merge-list-appends-into-extend
@@ -118,7 +108,7 @@ rule_settings:
     - sum-comprehension
     - swap-nested-ifs
     - swap-variable
-    # - switch (remove sim114)
+    # - switch (todo: remove ruff sim114)
     - ternary-to-if-expression
     - tuple-literal
     - unwrap-iterable-construction
@@ -142,6 +132,7 @@ rule_settings:
     - while-to-for
 
 disable: []
+
 rule_types:
   - refactoring
   - suggestion
@@ -151,20 +142,3 @@ python_version: "3.7"
 
 rules: []
 
-metrics:
-  quality_threshold: 25.0
-
-github:
-  labels: []
-  ignore_labels:
-    - sourcery-ignore
-  request_review: author
-  sourcery_branch: sourcery/{base_branch}
-
-clone_detection:
-  min_lines: 3
-  min_duplicates: 2
-  identical_clones_only: false
-
-proxy:
-  no_ssl_verify: false
