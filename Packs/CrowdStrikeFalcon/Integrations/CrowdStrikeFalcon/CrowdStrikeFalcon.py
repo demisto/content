@@ -265,7 +265,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     'daily': 1,
     'weekly': 7,
     'every other week': 14,
-    'every 4 weeks': 28,
+    'every four weeks': 28,
     'monthly': 30,
 }
 
@@ -4718,10 +4718,13 @@ def ODS_get_scans_by_id_request(ids: list[str]) -> dict:
 
 
 def map_scan_resource_to_UI(resource: dict) -> dict:
+
     output = {
         'ID': resource.get('id'),
         'Status': resource.get('status'),
         'Severity': resource.get('severity'),
+        # Every host in resource.metadata has a "filecount" which is a dictionary
+        # that counts the files traversed, skipped, found to be malicious and the like.
         'File Count': '\n-\n'.join('\n'.join(f'{k}: {v}' for k, v in filecount.items())
                                    for host in resource.get('metadata', []) if (filecount := host.get('filecount', {}))),
         'Description': resource.get('description'),
@@ -5099,7 +5102,7 @@ def ods_create_scan(args: dict, is_scheduled: bool) -> dict:
     response = ODS_create_scan_request(args, is_scheduled)
     resource = dict_safe_get(response, ('resources', 0), return_type=dict, raise_return_type=False)
 
-    if not resource:
+    if not (resource and resource.get('id')):
         raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
     return resource
@@ -5109,9 +5112,6 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
 
     resource = ods_create_scan(args, is_scheduled=False)
     scan_id = resource.get('id')
-
-    if not scan_id:
-        raise DemistoException('Unexpected response from CrowdStrike Falcon')
 
     query_scan_args = {
         'ids': scan_id,
@@ -5127,11 +5127,11 @@ def cs_falcon_ods_create_scheduled_scan_command(args: dict) -> CommandResults:
 
     resource = ods_create_scan(args, is_scheduled=True)
 
-    human_readable = tableToMarkdown('Scheduled Scan Created', [resource.get("id")], headers=['Scan ID'])
+    human_readable = f'Successfully created scheduled scan with ID: {resource.get("id")}'
 
     command_results = CommandResults(
         raw_response=resource,
-        outputs_prefix='CrowdStrike.ODSScan',
+        outputs_prefix='CrowdStrike.ODSScheduledScan',
         outputs_key_field='id',
         outputs=resource,
         readable_output=human_readable,

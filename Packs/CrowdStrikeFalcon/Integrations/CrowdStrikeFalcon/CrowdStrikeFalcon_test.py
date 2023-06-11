@@ -5235,7 +5235,8 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
     'args, is_scheduled, body',
     (
         ({'quarantine': 'false', 'schedule_interval': 'every other week',
-          'schedule_start_timestamp': 'tomorrow'}, True, {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22'}}),
+          'schedule_start_timestamp': 'tomorrow'}, True,
+         {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22'}}),
         ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
     )
 )

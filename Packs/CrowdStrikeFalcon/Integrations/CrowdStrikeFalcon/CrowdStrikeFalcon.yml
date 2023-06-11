@@ -3731,7 +3731,7 @@ script:
       description: A boolean value indicating whether endpoint notifications are enabled.
       type: Boolean
     - contextPath: CrowdStrike.ODSScan.pause_duration
-      description: The number of minutes to pause between scanning each file in hours.
+      description: The number of seconds to pause between scanning each file.
       type: Number
     - contextPath: CrowdStrike.ODSScan.max_duration
       description: The maximum amount of time to allow for the scan job in hours.
@@ -4010,7 +4010,7 @@ script:
       description: A unique identifier for the scan that triggered the detection event.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.host_id
-      description: A unique identifier for the scan that detected the file on the host.
+      description: A unique identifier for the host that was scanned.
       type: String
     - contextPath: CrowdStrike.ODSMaliciousFile.host_scan_id
       description: A unique identifier for the scan that detected the file on the host.
@@ -4181,7 +4181,7 @@ script:
       description: A boolean value indicating whether endpoint notifications are enabled.
       type: Boolean
     - contextPath: CrowdStrike.ODSScan.pause_duration
-      description: The number of minutes to pause between scanning each file in hours.
+      description: The number of seconds to pause between scanning each file.
       type: Number
     - contextPath: CrowdStrike.ODSScan.max_duration
       description: The maximum amount of time to allow for the scan job in hours.
@@ -4283,12 +4283,12 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - never
-      - daily
-      - weekly
-      - every other week
-      - every 4 weeks
-      - monthly
+      - Never
+      - Daily
+      - Weekly
+      - Every other week
+      - Every four weeks
+      - Monthly
     description: Create an ODS scheduled scan.
     name: cs-falcon-ods-create-scheduled-scan
     outputs:
