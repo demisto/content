@@ -34,7 +34,7 @@
 	"toServerVersion": "",
 	"type": "shortText",
 	"unmapped": false,
-	"unsearchable": true,
+	"unsearchable": false,
 	"useAsKpi": false,
 	"validationRegex": "",
 	"version": -1,

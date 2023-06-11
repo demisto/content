@@ -20,13 +20,13 @@ ignore=SC105,BA109,BA124
 ignore=SC105,BA124
 
 [file:DBotPredictPhishingWords.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,CJ105
 
 [file:DBotPreprocessTextData.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,CJ105
 
 [file:DBotTrainTextClassifierV2.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,CJ105
 
 [file:FindSimilarIncidentsByText.yml]
 ignore=BA109
@@ -45,6 +45,15 @@ ignore=SC101
 
 [file:SanePdfReport.yml]
 ignore=SC101
+
+[file:DeleteIndicatorRelationships.yml]
+ignore=BA124,RM109
+
+[file:DBotShowClusteringModelInfo.yml]
+ignore=BA124,CJ105,RM109
+
+[file:DBotTrainClustering.yml]
+ignore=BA124,CJ105,RM109
 
 [known_words]
 createindicatorrelationship
@@ -65,13 +74,10 @@ ssl
 appendcontext
 refang
 indicatorssearcher
+FeedIndicatorType
+str
 
-[file:DeleteIndicatorRelationships.yml]
-ignore=BA124
-
-[file:DBotShowClusteringModelInfo.yml]
-ignore=BA124
-
-[file:DBotTrainClustering.yml]
-ignore=BA124
-
+[tests_require_network]
+CommonServerPython
+SanePdfReports
+CheckDockerImageAvailable

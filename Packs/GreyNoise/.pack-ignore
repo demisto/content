@@ -3,3 +3,7 @@ ignore=IN136,IN145
 
 [file:GreyNoise_Community.yml]
 ignore=BA108,BA109,BA111,IN145
+
+[known_words]
+XSOAR8
+XSIAM

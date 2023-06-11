@@ -1,0 +1,6 @@
+name: Barracuda Cloudgen Firewall Parsing Rules
+id: Barracuda_cgfw_Parsing_Rules
+fromversion: 8.2.0
+tags: []
+rules: ''
+samples: ''

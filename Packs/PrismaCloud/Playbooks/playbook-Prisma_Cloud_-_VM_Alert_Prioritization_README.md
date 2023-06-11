@@ -77,3 +77,7 @@ There are no outputs for this playbook.
 ---
 
 ![Prisma Cloud - VM Alert Prioritization](../doc_files/Prisma_Cloud_-_VM_Alert_Prioritization.png)
+
+##### Video
+
+[![Prisma Cloud VM Alert Prioritization](https://img.youtube.com/vi/MtLHCiV_1Wo/0.jpg)](https://www.youtube.com/watch?v=MtLHCiV_1Wo)

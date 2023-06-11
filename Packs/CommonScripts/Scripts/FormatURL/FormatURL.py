@@ -1,4 +1,5 @@
 import ipaddress
+import tldextract
 import urllib.parse
 from CommonServerPython import *
 from typing import Match
@@ -43,6 +44,8 @@ class URLCheck(object):
         '"': '"',
         '\'': '\'',
     }
+
+    no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)
 
     def __init__(self, original_url: str):
         """
@@ -488,8 +491,7 @@ class URLCheck(object):
         else:
             return False
 
-    @staticmethod
-    def check_domain(host: str) -> bool:
+    def check_domain(self, host: str) -> bool:
         """
         Checks if the domain is a valid domain (has at least 1 dot and a tld >= 2)
 
@@ -510,6 +512,9 @@ class URLCheck(object):
             raise URLError(f"Invalid domain {host}")
 
         elif len(host.split(".")[-1]) < 2:
+            raise URLError(f"Invalid tld for {host}")
+
+        elif not self.no_fetch_extract(host).suffix:
             raise URLError(f"Invalid tld for {host}")
 
         else:

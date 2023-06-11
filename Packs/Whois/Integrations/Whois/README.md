@@ -880,3 +880,6 @@ Provides data enrichment for ips.
 
 ## Troubleshooting
 - The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.
+- 
+## Known limitations
+- The IP lookup has a rate limit of 1 lookup per second.

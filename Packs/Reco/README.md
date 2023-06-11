@@ -18,6 +18,10 @@ The integration pack allows:
 - ***reco-get-assets-user-has-access-to*** - Get assets user has access to (optional to get only sensitive assets)
 - **reco-add-leaving-org-user-label** - Add leaving org user label in Reco
 - **reco-get-sensitive-assets-by-name** - Get sensitive assets by name (optional to search by regex)
+- **reco-get-sensitive-assets-by-id** - Get sensitive assets by file id
+- **reco-get-files-shared-with-3rd-parties** - Get 3rd parties list with access to files
+- **reco-get-3rd-parties-accessible-to-data-list** - Get files shared with 3rd parties
+- **reco-get-sensitive-assets-with-public-link** - Get sensitive assets publicly exposed
 
 
 For more information on Reco, please visit www.reco.ai

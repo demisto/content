@@ -8,7 +8,6 @@ commonfields:
 configuration:
 - defaultvalue: legacy
   display: Authentication Mode
-  hidden: false
   name: auth_mode
   options:
   - client credentials
@@ -77,7 +76,6 @@ configuration:
   section: Connect
   advanced: true
 - display: Incident severity
-  hidden: false
   name: severity
   required: false
   type: 16
@@ -87,20 +85,17 @@ configuration:
   - High
   - All
 - display: Maximum alerts to fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
   defaultvalue: '50'
 - display: First fetch time
-  hidden: false
   name: first_fetch
   required: false
   type: 0
   additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   section: Collect
 - display: Incident resolution status
-  hidden: false
   name: resolution_status
   required: false
   type: 16
@@ -1143,7 +1138,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.51452
+  dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: true
   longRunning: false

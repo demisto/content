@@ -2,6 +2,7 @@ import random
 import string
 import subprocess
 from typing import Dict
+from xml.sax import SAXParseException
 
 import dateparser
 import chardet
@@ -272,11 +273,9 @@ class EWSClient:
             item_ids = [item_ids]
         items = [Item(id=x) for x in item_ids]
         result = list(account.fetch(ids=items))
-        result = [x for x in result if not isinstance(x, ErrorItemNotFound)]
+        result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
         if len(result) != len(item_ids):
-            raise Exception(
-                "One or more items were not found. Check the input item ids"
-            )
+            raise Exception("One or more items were not found/malformed. Check the input item ids")
         return result
 
     def get_item_from_mailbox(self, account, item_id):
@@ -816,6 +815,11 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if value:
             raw_dict[list_dict_field] = [parse_object_as_dict(x) for x in value]
 
+    for list_str_field in ["categories"]:
+        value = getattr(item, list_str_field, None)
+        if value:
+            raw_dict[list_str_field] = value
+
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
@@ -844,6 +848,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
             "body",
             "folder_path",
             "is_read",
+            "categories"
         ]
 
         if "id" in raw_dict:
@@ -1935,11 +1940,13 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None):     # pragma: no cover
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None, importance=None,
+               renderBody=False):     # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
     reply_to = argToList(replyTo)
+    render_body = argToBoolean(renderBody)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1978,7 +1985,15 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
 
     client.send_email(message)
 
-    return 'Mail sent successfully', {}, {}
+    results = [CommandResults(entry_type=EntryType.NOTE, raw_response='Mail sent successfully')]
+    if render_body:
+        results.append(CommandResults(
+            entry_type=EntryType.NOTE,
+            content_format=EntryFormat.HTML,
+            raw_response=htmlBody,
+        ))
+
+    return results
 
 
 def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, cc=None, htmlBody=None,
@@ -2114,6 +2129,13 @@ def parse_incident_from_item(item):     # pragma: no cover
                 except TypeError as e:
                     if str(e) != "must be string or buffer, not None":
                         raise
+                    continue
+                except SAXParseException as e:
+                    # TODO: When a fix is released, we will need to bump the library version.
+                    #  https://github.com/ecederstrand/exchangelib/issues/1200
+                    demisto.debug(f'An XML error occurred while loading an attachments content.'
+                                  f'\nMessage ID is {item.id}'
+                                  f'\nError: {e.getMessage()}')
                     continue
             else:
                 # other item attachment
@@ -2435,7 +2457,6 @@ def sub_main():     # pragma: no cover
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
-            "send-mail": send_email,
         }
 
         # commands that may return multiple results or non-note result
@@ -2458,6 +2479,9 @@ def sub_main():     # pragma: no cover
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
 
             demisto.incidents(incidents)
+        elif command == "send-mail":
+            commands_res = send_email(client, **args)
+            return_results(commands_res)
 
         # special outputs commands
         elif command in special_output_commands:

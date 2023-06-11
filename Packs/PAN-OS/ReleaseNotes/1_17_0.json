@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"When using the fetch-incidents command, the name of incidents saved in XSOAR was changed from ID to device name and ID."}

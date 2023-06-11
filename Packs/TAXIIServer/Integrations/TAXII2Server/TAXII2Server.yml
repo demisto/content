@@ -15,7 +15,6 @@ configuration:
   section: Connect
   advanced: true
 - display: TAXII2 Server version
-  hidden: false
   name: version
   defaultvalue: "2.1"
   options:
@@ -32,7 +31,6 @@ configuration:
   section: Connect
 - display: Username
   additionalinfo: Credentials to use for the basic authentication.
-  hidden: false
   name: credentials
   required: false
   type: 9
@@ -44,7 +42,6 @@ configuration:
         "Collection2": {"query": "type:SomeType", "description": "IP from Cortex XSOAR Threat Intel" }
     }
   display: Collection JSON
-  hidden: false
   name: collections
   required: true
   type: 12
@@ -59,7 +56,6 @@ configuration:
 - additionalinfo: Maximum number of items to return.
   defaultvalue: '2000'
   display: Response Size
-  hidden: false
   name: res_size
   required: true
   type: 0
@@ -78,14 +74,12 @@ configuration:
   advanced: true
 - display: TAXII2 Service URL Address
   additionalinfo: Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL.
-  hidden: false
   name: service_address
   required: false
   type: 0
   section: Connect
 - additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   display: NGINX Global Directives
-  hidden: false
   name: nginx_global_directives
   required: false
   type: 0
@@ -93,7 +87,6 @@ configuration:
   advanced: true
 - additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   display: NGINX Server Conf
-  hidden: false
   name: nginx_server_conf
   required: false
   type: 12
@@ -154,7 +147,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.51330
+  dockerimage: demisto/flask-nginx:1.0.0.61723
   feed: false
   isfetch: false
   longRunning: true

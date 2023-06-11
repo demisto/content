@@ -166,7 +166,8 @@ class Client(BaseClient):
 
     def __init__(self, base_url, verify, proxy, auth_params, as_user=None):
         try:
-            self.credentials_dict = json.loads(auth_params.get('credentials_json', '{}'))
+            self.credentials_dict = json.loads(auth_params.get('cred_json', {}).get(
+                'password') or auth_params.get('credentials_json', '{}'))
         except ValueError as e:
             raise DemistoException("Failed to parse the credentials JSON. Please verify the JSON is "
                                    "valid.", exception=e)
@@ -178,12 +179,13 @@ class Client(BaseClient):
         self.private_key = self.app_auth.get('privateKey')
         self.passphrase = self.app_auth.get('passphrase')
         self.enterprise_id = self.credentials_dict.get('enterpriseID')
-        self.authentication_url = 'https://api.box.com/oauth2/token'
+        self.authentication_url = urljoin(base_url, 'oauth2/token')
         self.as_user = as_user
         self.default_as_user = auth_params.get('default_user')
         self.search_user_id = auth_params.get('search_user_id', False)
+        versioned_base_url = urljoin(base_url, '2.0')
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=versioned_base_url, verify=verify, proxy=proxy)
         self._headers = self._request_token()
 
     def _decrypt_private_key(self):
@@ -1979,14 +1981,14 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     return next_run, incidents
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
     # get the service API url
-    base_url = urljoin('https://api.box.com', '2.0')
+    demisto_params = demisto.params()
     verify_certificate = not demisto.params().get('insecure', False)
 
     # Determine first fetch time if none is found.
@@ -2002,7 +2004,7 @@ def main() -> None:
     try:
         client = Client(
             auth_params=demisto.params(),
-            base_url=base_url,
+            base_url=demisto_params.get('url', 'https://api.box.com'),
             verify=verify_certificate,
             proxy=proxy)
 
@@ -2110,7 +2112,7 @@ def main() -> None:
         elif demisto.command() == 'box-download-file':
             return_results(download_file_command(
                 auth_params=demisto.params(),
-                base_url=base_url,
+                base_url=demisto_params.get('url', 'https://api.box.com'),
                 verify=verify_certificate,
                 proxy=proxy,
                 args=demisto.args()

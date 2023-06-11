@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.10.51930
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false
@@ -178,6 +178,153 @@ script:
     description: Get all sensitive assets from Reco by name
     execution: false
     name: reco-get-sensitive-assets-by-name
+  - arguments:
+    - default: false
+      description: Asset id to search for
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all sensitive assets from Reco by id
+    execution: false
+    name: reco-get-sensitive-assets-by-id
+    outputs:
+    - contextPath: Reco.SensitiveAssets.file_name
+      description: The name of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_owner
+      description: The owner of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_url
+      description: Json string of the asset's url and the name
+      type: Unknown
+    - contextPath: Reco.SensitiveAssets.currently_permitted_users
+      description: List of currently permitted users
+      type: String
+    - contextPath: Reco.SensitiveAssets.visibility
+      description: Visibility of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.location
+      description: The path of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.sensitivity_level
+      description: The sensitivity level of the asset
+      type: Number
+  - arguments:
+    - default: false
+      description: Entity Type (RM_LINK_TYPE_USER)
+      isArray: false
+      name: entity
+      required: true
+      secret: false
+    - default: false
+      description: Entity ID (user email)
+      isArray: false
+      name: param
+      type: Boolean
+      required: false
+      secret: false
+    deprecated: false
+    description: Generate a magic link for reco UI (overview page)
+    execution: false
+    name: reco-get-link-to-user-overview-page
+  - arguments:
+    - default: false
+      description: Last interaction time in days
+      isArray: false
+      name: last_interaction_time_in_days
+      required: true
+      secret: false
+    deprecated: false
+    description: Get 3rd parties accessible to sensitive assets
+    execution: false
+    name: reco-get-3rd-parties-accessible-to-data-list
+    outputs:
+    - contextPath: Reco.Domains.domain
+      description: The domain of the 3rd party
+      type: String
+    - contextPath: Reco.Domains.last_activity
+      description: The last interaction time with the 3rd party
+      type: String
+    - contextPath: Reco.Domains.num_files
+      description: The number of files the 3rd party has access to
+      type: Number
+    - contextPath: Reco.Domains.num_users
+      description: The number of users the 3rd party has access to
+      type: Number
+    - contextPath: Reco.Domains.data_category
+      description: The data category of the assets the 3rd party has access to
+      type: String
+  - arguments: []
+    deprecated: false
+    description: Get all sensitive assets with public link from Reco
+    execution: false
+    name: reco-get-sensitive-assets-with-public-link
+    outputs:
+    - contextPath: Reco.Assets.asset_id
+      description: The asset id
+      type: String
+    - contextPath: Reco.Assets.asset
+      description: Json string of the asset's url and the name
+      type: Unknown
+    - contextPath: Reco.Assets.data_category
+      description: The data category of the asset
+      type: String
+    - contextPath: Reco.Assets.data_categories
+      description: The data categories of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.location
+      description: The path of the asset
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset
+      type: String
+    - contextPath: Reco.Assets.last_access_date
+      description: The last access date of the asset
+      type: String
+  - arguments:
+    - default: false
+      description: Last interaction time in days
+      isArray: false
+      name: last_interaction_time_in_days
+      required: true
+      secret: false
+    - default: false
+      description: Domain to search
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Get files shared with 3rd parties
+    execution: false
+    name: reco-get-files-shared-with-3rd-parties
+    outputs:
+    - contextPath: Reco.Assets.asset_id
+      description: The asset id of the file
+      type: String
+    - contextPath: Reco.Assets.location
+      description: The location of the file
+      type: String
+    - contextPath: Reco.Assets.users
+      description: Users the file is shared with
+      type: String
+    - contextPath: Reco.Assets.asset
+      description: The asset metadata
+      type: Unknown
+    - contextPath: Reco.Assets.data_category
+      description: The data category of the assets the 3rd party has access to
+      type: String
+    - contextPath: Reco.Assets.last_access_date
+      description: The last access date of the asset
+      type: String
+    - contextPath: Reco.Assets.domain
+      description: The domain of the 3rd party
+      type: String
 tests:
 - No tests
 fromversion: 6.5.0

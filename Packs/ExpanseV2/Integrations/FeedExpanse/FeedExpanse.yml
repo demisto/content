@@ -151,12 +151,10 @@ script:
   isfetch: false
   feed: true
   runonce: false
-  isremotesyncin: false
-  isremotesyncout: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.11.54132
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test

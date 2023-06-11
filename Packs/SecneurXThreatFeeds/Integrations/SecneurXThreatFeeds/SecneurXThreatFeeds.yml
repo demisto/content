@@ -11,7 +11,6 @@ configuration:
 - display: API Key
   name: apikey
   required: true
-  hidden: false
   additionalinfo: Input the API key for fetching feed from the source.
   type: 4
 - display: Fetch indicators
@@ -31,7 +30,6 @@ configuration:
   type: 18
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -74,7 +72,6 @@ configuration:
 - name: first_fetch
   additionalinfo: First fetch query e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
   display: First fetch
-  hidden: false
   defaultvalue: 2 days
   required: false
   type: 0
@@ -120,7 +117,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.61265
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

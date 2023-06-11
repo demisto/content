@@ -33,16 +33,18 @@
 .upload_content_graph: &upload_content_graph
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
-        section_start "Upload content graph CSVs to GCP" --collapsed
-        # gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
-        section_end "Upload content graph CSVs to GCP"
+        section_start "Upload content graph GraphML to GCP" --collapsed
+        gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
+        # copy the packs.json file to the bucket, used in contribution management
+        gsutil cp $ARTIFACTS_FOLDER/packs.json "gs://$GCS_MARKET_BUCKET_DEV/content_graph/"$MARKETPLACE_VERSION"_packs.json"
+        section_end "Upload content graph GraphML to GCP"
       fi
 
 .upload_dependencies_file: &upload_dependencies_file
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload packs_dependencies.json to GCP" --collapsed
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
         gsutil cp $ARTIFACTS_FOLDER/packs_dependencies.json "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
         section_end "Upload packs_dependencies.json to GCP"
       fi
@@ -64,7 +66,7 @@ jobs-done-check-upload-flow:
   extends:
     - .jobs-done-check
     - .bucket-upload-rule
-  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_5', 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace']
+  needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace']
   tags:
     - gke
 
@@ -154,11 +156,6 @@ xpanse-prepare-testing-bucket-upload-flow:
     - exit "$EXIT_CODE"
 
 
-install-packs-in-server6_5:
-  extends: .install_packs_in_xsoar_server
-  variables:
-    INSTANCE_ROLE: "Server 6.5"
-
 install-packs-in-server6_6:
   extends: .install_packs_in_xsoar_server
   variables:
@@ -169,6 +166,15 @@ install-packs-in-server6_8:
   variables:
     INSTANCE_ROLE: "Server 6.8"
 
+install-packs-in-server6_9:
+  extends: .install_packs_in_xsoar_server
+  variables:
+    INSTANCE_ROLE: "Server 6.9"
+
+install-packs-in-server6_10:
+  extends: .install_packs_in_xsoar_server
+  variables:
+    INSTANCE_ROLE: "Server 6.10"
 
 install-packs-in-server-master:
   extends: .install_packs_in_xsoar_server
@@ -205,7 +211,7 @@ install-packs-in-server-master:
     - section_end "Download configuration"
     - section_start "Lock Machine"
     - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh
     - source CloudEnvVariables
@@ -229,7 +235,7 @@ install-packs-in-server-master:
     - exit "$EXIT_CODE"
   after_script:
     - echo "Job finished, removing lock file"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/machines_locks/*-lock-$CI_JOB_ID"
     - echo "Finished removing lock file"
 
@@ -256,7 +262,7 @@ install-packs-in-xsiam-ga:
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_5", "install-packs-in-server6_6", "install-packs-in-server6_8", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_6", "install-packs-in-server6_8", "install-packs-in-server6_9", "install-packs-in-server6_10", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -514,6 +520,13 @@ upload-id-set-bucket:
     - .default-job-settings
   script:
     # This is needed because we still use id_set.json in other repos
+    - |
+      if [[ $TEST_UPLOAD == "true" ]]; then
+        echo "Skipping uploading id-set to the bucket in test upload-flow"
+        job-done
+        exit 0
+      fi
+
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
     - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"
@@ -530,6 +543,12 @@ sync-buckets-between-projects:
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
   when: always
   script:
+    - |
+      if [[ $TEST_UPLOAD == "true" ]]; then
+        echo "Skipping syncing buckets in test upload-flow"
+        exit 0
+      fi
+
     - |
       if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]] || [[ -z "$GCS_XSOAR_CONTENT_PROD_KEY" ]]; then
         echo "GCS_XSOAR_CONTENT_DEV_KEY or GCS_XSOAR_CONTENT_PROD_KEY not set, cannot perform sync"

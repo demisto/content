@@ -10,16 +10,14 @@ configuration:
   type: 8
 - defaultvalue: All GCP customer global and regional external IP ranges
   display: IP Address Ranges
-  hidden: false
   name: ip_ranges
   options:
-    - All GCP customer global and regional external IP ranges
-    - All available Google IP ranges
+  - All GCP customer global and regional external IP ranges
+  - All available Google IP ranges
   required: true
   type: 15
   additionalinfo: IP address ranges group to be fetched. See integration help for more information.
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: None
   display: Indicator Reputation
   name: feedReputation
@@ -78,9 +76,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -106,7 +102,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: google-ip-ranges-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.51296
+  dockerimage: demisto/py3-tools:1.0.0.61931
   feed: true
   isfetch: false
   longRunning: false

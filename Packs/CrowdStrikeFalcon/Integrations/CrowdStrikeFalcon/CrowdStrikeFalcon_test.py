@@ -637,7 +637,7 @@ def test_get_script_without_content(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -714,7 +714,7 @@ def test_get_script_with_content(requests_mock, mocker, request):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -765,7 +765,7 @@ def test_get_script_does_not_exist(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -905,7 +905,7 @@ def test_list_scripts(requests_mock):
         ]
     }
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2',
         json=response
     )
     results = list_scripts_command()
@@ -1052,7 +1052,7 @@ def test_get_file_without_content(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1130,7 +1130,7 @@ def test_get_file_with_content(requests_mock, mocker, request):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1185,7 +1185,7 @@ def test_get_file_does_not_exist(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1321,7 +1321,7 @@ def test_list_files(requests_mock):
         ]
     }
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2',
         json=response
     )
     results = list_files_command()
@@ -1634,7 +1634,7 @@ def test_list_host_files(requests_mock, mocker):
         status_code=201
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/file/v1',
+        f'{SERVER_URL}/real-time-response/entities/file/v2',
         json=response,
         status_code=201
     )
@@ -2268,6 +2268,62 @@ class TestFetch:
         incidents = fetch_incidents()
         for incident in incidents:
             assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
+
+    @pytest.mark.parametrize(
+        "expected_name, fetch_incidents_or_detections,incidents_len",
+        [
+            ('Incident ID:', ['Incidents'], 2),
+            ('Detection ID:', ['Detections'], 2),
+            ('Detection ID:', ['Detections', 'Incidents'], 4)
+        ],
+    )
+    def test_fetch_returns_all_types(self, requests_mock, set_up_mocks, mocker, expected_name,
+                                     fetch_incidents_or_detections, incidents_len):
+        """
+        Tests that fetch incidents returns incidents and detections types, depends on
+        the value of fetch_incidents_or_detections.
+        Given:
+            fetch_incidents_or_detections parameter.
+        When:
+            Fetching incidents.
+        Then:
+            Validate the results contains only detection when fetch_incidents_or_detections = ['Detections'],
+            Validate the results contains only incidents when fetch_incidents_or_detections = ['Incidents']
+            Validate the results contains detection and incidents when
+             fetch_incidents_or_detections = ['Detections', 'Incidents']
+
+        """
+        from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}])
+
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
+                                               {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
+
+        mocker.patch.object(
+            demisto,
+            'params',
+            return_value={
+                'url': SERVER_URL,
+                'proxy': True,
+                'incidents_per_fetch': 2,
+                'fetch_incidents_or_detections': fetch_incidents_or_detections,
+                'fetch_time': '3 days',
+            }
+        )
+
+        incidents = fetch_incidents()
+        assert len(incidents) == incidents_len
+
+        if incidents_len == 4:
+            assert 'Incident ID:' in incidents[0]['name']
+            assert 'Incident ID:' in incidents[1]['name']
+            assert 'Detection ID:' in incidents[2]['name']
+            assert 'Detection ID:' in incidents[3]['name']
+        else:
+            assert expected_name in incidents[0]['name']
+            assert expected_name in incidents[1]['name']
 
 
 class TestIncidentFetch:
@@ -3280,14 +3336,13 @@ def test_get_endpoint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'host1,host2'})
+    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'falcon-crowdstr'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe'," \
-                                                       "hostname:['host1'],hostname:['host2']"
+    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe',hostname:'falcon-crowdstr'"
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
@@ -4312,3 +4367,280 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
 
     outputs = cs_falcon_spotlight_list_host_by_vulnerability_command(args)
     assert outputs.readable_output == expected_hr
+
+
+def test_create_ml_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import create_ml_exclusion_command
+    requests_mock.post(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = create_ml_exclusion_command({'value': '/test', 'excluded_from': ['blocking'], 'groups': 123456})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_update_ml_exclusion_command_with_args(requests_mock):
+    from CrowdStrikeFalcon import update_ml_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = update_ml_exclusion_command({'id': 123456, 'value': '/test', 'excluded_from': ['blocking'], 'groups': 123456})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_update_ml_exclusion_command_without_args(requests_mock):
+    from CrowdStrikeFalcon import update_ml_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    with pytest.raises(Exception) as e:
+        update_ml_exclusion_command({'id': 123456})
+
+    assert str(e.value) == 'At least one argument (besides the id argument) should be provided to update the exclusion.'
+
+
+def test_delete_ml_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import delete_ml_exclusion_command
+    requests_mock.delete(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = delete_ml_exclusion_command({'ids': '123456 789456'})
+
+    assert results.readable_output == "The machine learning exclusions with IDs 123456 789456 was successfully deleted."
+
+
+def test_search_ml_exclusion_command_by_ids(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1?ids=123456&ids=789012',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = search_ml_exclusion_command({'ids': '123456,789012'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_search_ml_exclusion_command_by_value(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ml-exclusions/v1?filter=value%3A%27%2Ftest%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = search_ml_exclusion_command({'value': '/test'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_search_ml_exclusion_command_by_value_no_results(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ml-exclusions/v1?filter=value%3A%27%2Ftest-mock%27',
+        json={}
+    )
+
+    results = search_ml_exclusion_command({'value': '/test-mock'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any exclusion.'
+
+
+def test_search_ml_exclusion_command_by_filter(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ml-exclusions/v1?filter=value%3A%27%2Ftest%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ml-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ml_exclusion.json')
+    )
+
+    results = search_ml_exclusion_command({'filter': 'value:\'/test\''})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('value') == '/test'
+
+
+def test_create_ioa_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import create_ioa_exclusion_command
+    requests_mock.post(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = create_ioa_exclusion_command({'exclusion_name': 'test', 'pattern_id': 123456, 'groups': 123456})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_update_ioa_exclusion_command_with_args(requests_mock):
+    from CrowdStrikeFalcon import update_ioa_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = update_ioa_exclusion_command({'id': 123456, 'exclusion_name': 'test'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_update_ioa_exclusion_command_without_args(requests_mock):
+    from CrowdStrikeFalcon import update_ioa_exclusion_command
+    requests_mock.patch(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    with pytest.raises(Exception) as e:
+        update_ioa_exclusion_command({'id': 123456})
+
+    assert str(e.value) == 'At least one argument (besides the id argument) should be provided to update the exclusion.'
+
+
+def test_delete_ioa_exclusion_command(requests_mock):
+    from CrowdStrikeFalcon import delete_ioa_exclusion_command
+    requests_mock.delete(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = delete_ioa_exclusion_command({'ids': '123456, 456789'})
+
+    assert results.readable_output == "The IOA exclusions with IDs 123456 456789 was successfully deleted."
+
+
+def test_search_ioa_exclusion_command_by_ids(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1?ids=123456&ids=789012',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = search_ioa_exclusion_command({'ids': '123456,789012'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_search_ioa_exclusion_command_by_name(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A~%27test%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = search_ioa_exclusion_command({'name': 'test'})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_search_ioa_exclusion_command_by_name_no_results(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A~%27test-mock%27',
+        json={}
+    )
+
+    results = search_ioa_exclusion_command({'name': 'test-mock'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any exclusion.'
+
+
+def test_search_ioa_exclusion_command_by_filter(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A%27test%27',
+        json={'resources': ['123456']}
+    )
+    requests_mock.get(
+        f'{SERVER_URL}/policy/entities/ioa-exclusions/v1?ids=123456',
+        json=load_json('test_data/create_ioa_exclusion.json')
+    )
+
+    results = search_ioa_exclusion_command({'filter': 'name:\'test\''})
+
+    assert len(results.outputs) == 1
+    assert results.outputs[0].get('id') == '123456'
+    assert results.outputs[0].get('name') == 'test'
+
+
+def test_list_quarantined_file_command(requests_mock):
+    from CrowdStrikeFalcon import list_quarantined_file_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={'resources': ['121212', '171717']}
+    )
+    requests_mock.post(
+        f'{SERVER_URL}/quarantine/entities/quarantined-files/GET/v1',
+        json=load_json('test_data/list_quarantine_files.json')
+    )
+
+    results = list_quarantined_file_command({'hostname': 'INSTANCE-1'})
+
+    assert len(results.outputs) == 2
+    assert results.outputs[0].get('id') == '121212'
+    assert results.outputs[1].get('id') == '171717'
+
+
+def test_list_quarantined_file_command_no_results(requests_mock):
+    from CrowdStrikeFalcon import list_quarantined_file_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={}
+    )
+
+    results = list_quarantined_file_command({'hostname': 'INSTANCE-1'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any files.'
+
+
+def test_apply_quarantine_file_action_command(requests_mock):
+    from CrowdStrikeFalcon import apply_quarantine_file_action_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={'resources': ['121212', '171717']}
+    )
+    mock_request = requests_mock.patch(
+        f'{SERVER_URL}/quarantine/entities/quarantined-files/v1',
+        json={}
+    )
+
+    results = apply_quarantine_file_action_command({'hostname': 'INSTANCE-1', 'comment': 'Added a test comment.'})
+
+    assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
+    assert mock_request.last_request.text == '{"ids": ["121212", "171717"], "comment": "Added a test comment."}'

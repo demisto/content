@@ -52,16 +52,13 @@ configuration:
   name: compromised_is_malicious
   required: false
   type: 8
-- additionalinfo: Determines how many times a command should be retried before raising
-    an error.
+- additionalinfo: Determines how many times a command should be retried before raising an error.
   defaultvalue: '3'
   display: Number of retries
-  hidden: false
   name: retry
   required: false
   type: 0
-description: URLhaus has the goal of sharing malicious URLs that are being used for
-  malware distribution.
+description: URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
 display: URLhaus
 name: URLhaus
 script:
@@ -357,7 +354,7 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

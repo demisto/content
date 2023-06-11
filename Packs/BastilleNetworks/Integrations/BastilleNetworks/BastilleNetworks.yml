@@ -14,19 +14,16 @@ configuration:
   type: 4
 - additionalinfo: Enter site name of deployment area
   display: Site
-  hidden: false
   name: site
   required: true
   type: 0
 - additionalinfo: Enter concentrator name of deployment area
   display: Concentrator
-  hidden: false
   name: concentrator
   required: true
   type: 0
 - additionalinfo: Enter map name of deployment area
   display: Map
-  hidden: false
   name: map
   required: true
   type: 0
@@ -40,14 +37,12 @@ configuration:
   type: 13
 - additionalinfo: Fetch only events with listed tags
   display: Tags
-  hidden: false
   name: tags
   required: false
   type: 0
 - additionalinfo: Fetch only events with selected event types
   defaultvalue: zone_event
   display: Event types
-  hidden: false
   name: event_types
   options:
   - zone_event
@@ -339,7 +334,7 @@ script:
     description: Command to remove tag from an existing device
     execution: false
     name: bastille-remove-device-tag
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: true
   longRunning: false

@@ -28,7 +28,7 @@ def get_duration_html():
         diff = now - parsed_first_date
 
         return f"""
-                <table>
+                <table style="margin-left:auto;margin-right:auto;">
                 <tr>
                 <th style="font-size: 25px;">&#128345;</th>
                 <th style="font-size: 30px;">{diff.days}</th>
