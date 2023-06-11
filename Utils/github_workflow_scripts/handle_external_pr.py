@@ -74,7 +74,7 @@ def get_packs_support_levels(pack_dirs: Set[str]) -> Set[str]:
     Args:
         pack_dirs (set): paths to the packs that were changed
     """
-    packs_support_levels, packs_with_no_support_label = set(), set()
+    packs_support_levels = set()
 
     for pack_dir in pack_dirs.copy():
         if pack_support_level := get_pack_metadata(pack_dir).get('support'):
@@ -108,6 +108,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
         highest support level of the packs that were changed, empty string in case no packs were changed.
     """
     pack_dirs_to_check_support_labels = set()
+
     for file_path in file_paths:
         try:
             if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
@@ -126,7 +127,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
         # there are still packs to need to get their support labels
         fork_owner = os.getenv('GITHUB_ACTOR')
         print(
-            f'Trying to checkout to forked branch of {fork_owner} '
+            f'Trying to checkout to forked branch {external_pr_branch} '
             f'to retrieve support level of {pack_dirs_to_check_support_labels}'
         )
         try:
@@ -135,7 +136,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
                 branch_to_checkout=external_pr_branch,
                 fork_owner=fork_owner
             ):
-                packs_support_levels.union(get_packs_support_levels(pack_dirs_to_check_support_labels))
+                packs_support_levels = packs_support_levels.union(get_packs_support_levels(pack_dirs_to_check_support_labels))
         except Exception as error:
             print(f'received error when trying to checkout to {fork_owner} forked content repo\n{error=}')
 
