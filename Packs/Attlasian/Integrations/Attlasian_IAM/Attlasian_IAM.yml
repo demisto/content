@@ -8,9 +8,15 @@ configuration:
   required: true
   type: 0
 - display: Access Token
+  hidden: true
   name: access_token
-  required: true
+  required: false
   type: 4
+- displaypassword: Access Token
+  hiddenusername: true
+  name: access_token_creds
+  required: false
+  type: 9
 - display: Directory ID
   name: directory_id
   required: true
@@ -23,7 +29,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: If set to false, iam-create-user command will be skipped, and user will not be created.
+- additionalinfo: If set to false, iam-create-user command will be skipped, and user
+    will not be created.
   defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
@@ -59,6 +66,7 @@ configuration:
   name: mapper_out
   required: true
   type: 0
+
 description: Integrate with Atlassian's services to execute CRUD operations for employee lifecycle processes.
 display: Atlassian IAM
 name: Atlassian IAM
