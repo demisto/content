@@ -7161,8 +7161,24 @@ ipwhois_exception_mapping: Dict[type, str] = {
 }
 
 
+class WhoisException(Exception):
+    pass
+
+
+class WhoisWarningException(Exception):
+    pass
+
+# whois domain exception to execution metrics attribute mapping
+whois_exception_mapping: Dict[type, str] = {
+    socket.error: "connection_error",
+    socket.timeout: "timeout_error",
+    socket.herror: "connection_error",
+    socket.gaierror: "connection_error",
+    WhoisException: "service_error"
+}
+
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
-                  server_list=None, is_refer_server=False, is_recursive=True):
+                  server_list=None, is_recursive=True):
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -7175,8 +7191,6 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
         # registration.
         "example.com": "whois.verisign-grs.com"
     }
-
-    execution_metrics = ExecutionMetrics()
 
     if len(previous) == 0 and server == "":
         # Root query
@@ -7200,30 +7214,19 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
         request_domain = domain
     # The following loop handles errno 104 - "connection reset by peer" by retry whois_request with the same arguments.
     # If the request fails due to other cause - there will not be another try
-    for i in range(0, 3):
-        try:
-            response = whois_request(request_domain, target_server, is_refer_server=is_refer_server)
+    for attempt in range(3):
+        demisto.debug(f"Attempt {attempt} to get response for whois '{request_domain}' from '{target_server}'...")
+        response = whois_request_get_response(request_domain, target_server)
+        response_size = len(response.encode('utf-8'))
+        demisto.debug(f"Response byte size: {response_size}")
 
-        # Connection errors
-        # https://docs.python.org/3/library/socket.html#exceptions
-        except (socket.error, socket.herror, socket.gaierror) as err:
-            if err.errno == errno.ECONNRESET:
-                execution_metrics.connection_error += 1
-                continue
-            elif socket.timeout:
-                execution_metrics.timeout_error += 1
-                raise
-        break
-    # Executed only if the for loop ran to the full
-    # (3 tries led to errno.ECONNRESET)
-    else:
-        raise WhoisException('(104) Connection Reset By Peer')
+        if response_size > 0:
+            demisto.debug(f"Response received for domain '{domain}' on {attempt} attempt")
+            break
+
     if not response:
-        msg = f"Got an empty response for the requested domain {request_domain} from the server {target_server}. Please check your firewall or proxy settings."
-        if SHOULD_ERROR:
-            raise Exception(msg)
-        else:
-            return_warning(msg)
+        raise WhoisException(f"Got an empty response for the requested domain '{request_domain}' from the server '{target_server}'.")
+
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
         # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
@@ -7252,11 +7255,8 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
                 # We want to ignore anything non-WHOIS (eg. HTTP) for now.
                 if referral_server != server and "://" not in referral_server:
                     # Referral to another WHOIS server...
-                    try:
-                        return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
-                                             with_server_list=with_server_list, is_refer_server=True)
-                    except Exception as msg:
-                        demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
+                    return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
+                                             with_server_list=with_server_list)
 
     if with_server_list:
         return new_list, server_list
@@ -7296,54 +7296,35 @@ def get_root_server(domain):
         raise WhoisException("No root WHOIS server found for domain.")
 
 
-def whois_request(domain, server, port=43, is_refer_server=False):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        sock.connect((server, port))
-    except Exception as msg:
-        context = ({
-            outputPaths['domain']: {
-                'Name': domain,
-                'Whois': {
-                    'QueryStatus': 'Failed'
-                }
-            },
-        })
+def whois_request_get_response(domain: str, server: str) -> str:
 
-        if not is_refer_server:
+    """
+    Helper function to create a socket connection to the Whois server and return the response.
 
-            if SHOULD_ERROR:
-                return_error("Whois returned - Couldn't connect with the socket-server: {}".format(msg), outputs=context)
-            else:
-                return_warning("Whois returned - Couldn't connect with the socket-server: {}".format(msg),
-                               exit=True, outputs=context)
+    Arguments:
+        - `domain` (``str``): The domain to do the lookup on.
+        - `server` (``str``): The Whois server to use in the lookup.
 
-        else:  # in a referral server call
+    Returns:
+        - `str` with the raw response.
+    """
 
-            demisto.info("Whois returned - Couldn't connect with the socket-server"
-                         " of the referral server {}: {}".format(server, msg))
-
-    else:
-        return whois_request_get_response(socket=sock, domain=domain)
-    finally:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.connect((server, 43))
+        sock.send(("%s\r\n" % domain).encode("utf-8"))
+        buff = b""
+        while True:
+            data = sock.recv(1024)
+            if len(data) == 0:
+                break
+            buff += data
         sock.close()
+        try:
+            d = buff.decode("utf-8")
+        except UnicodeDecodeError:
+            d = buff.decode("latin-1")
 
-
-def whois_request_get_response(socket, domain):
-    socket.send(("%s\r\n" % domain).encode("utf-8"))
-    buff = b""
-    while True:
-        data = socket.recv(1024)
-        if len(data) == 0:
-            break
-        buff += data
-    socket.close()
-    try:
-        d = buff.decode("utf-8")
-    except UnicodeDecodeError:
-        d = buff.decode("latin-1")
-
-    return d
+        return d
 
 
 airports = {}  # type: dict
@@ -7351,22 +7332,6 @@ countries = {}  # type: dict
 states_au = {}  # type: dict
 states_us = {}  # type: dict
 states_ca = {}  # type: dict
-
-
-class WhoisException(Exception):
-    pass
-
-
-class WhoisWarningException(Exception):
-    pass
-
-
-# whois (domain) exception to execution metrics attributes mapping
-domainwhos_exception_mapping: Dict[type, str] = {
-    socket.timeout: "timeout_error",
-    WhoisException: "connection_error",
-    WhoisWarningException: "service_error"
-}
 
 
 def precompile_regexes(source, flags=0):
@@ -8336,11 +8301,10 @@ def parse_nic_contact(data):
     return handle_contacts
 
 
-def get_whois(domain, normalized=None, is_recursive=True):
-    if normalized is None:
-        normalized = []
+def get_whois(domain: str, is_recursive=True):
+
     raw_data, server_list = get_whois_raw(domain, with_server_list=True, is_recursive=is_recursive)
-    return parse_raw_whois(raw_data, normalized=normalized, never_query_handles=False,
+    return parse_raw_whois(raw_data, normalized=[], never_query_handles=False,
                            handle_server=server_list[-1])
 
 
@@ -8619,11 +8583,23 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
     return append_metrics(execution_metrics=execution, results=results)
 
 
-def whois_command(reliability: DBotScoreReliability) -> List[CommandResults]:
-    args = demisto.args()
-    query = args.get('query')
-    is_recursive = argToBoolean(args.get('recursive', 'false'))
-    verbose = argToBoolean(args.get('verbose', 'false'))
+def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: bool, verbose: bool) -> List[CommandResults]:
+
+    """
+    Runs Whois domain query.
+    If the `with_error` integration instance configuration is set, the command will terminate on the first error encountered.
+
+    Arguments:
+        - `reliability` (``DBotScoreReliability``): The source reliability. Set in the integration instance settings.
+        - `query` (``str``): The domain(s) to run the lookup for. 
+        - `is_recursive` (``bool``): Whether to run the command recursively.
+        - `verbose` (``bool``): Whether the output should be verbose or not. It will add the JSON raw response to the context.
+
+    Returns:
+        - `List[CommandResults]` with the command results and API execution metrics (if supported).
+        - If any lookup failed, an `Exception` will be returned. If all lookups succeeded, we'll return `None`.
+    """
+
     demisto.info(f'whois command is called with the query {query}')
 
     execution_metrics = ExecutionMetrics()
@@ -8656,11 +8632,37 @@ def whois_command(reliability: DBotScoreReliability) -> List[CommandResults]:
             results.append(result)
 
         except Exception as e:
-            #TODO
-            pass
+            demisto.debug(f"Exception caught performing whois lookup with domain '{domain}': {e}")
 
+            for exception_type, metric_attribute in whois_exception_mapping.items():
+                if isinstance(e, exception_type):
+                    execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
+                    break
+
+            output = ({
+                    outputPaths['domain']: {
+                        'Name': domain,
+                        'Whois': {
+                            'QueryStatus': 'Failed'
+                        }
+                    },
+                })
+            result = CommandResults(
+                outputs=output,
+                readable_output=f"Whois command failed: {e}",
+                entry_type=EntryType.ERROR,
+                raw_response=e
+            )
+
+            results.append(result)
+
+    
+    demisto.debug(f"Returning from whois_command")
+    # demisto.debug(execution_metrics.metrics)
+
+    # TODO figure out why nothing is returned here
+    demisto.debug(results)
     return append_metrics(execution_metrics=execution_metrics, results=results)
-
 
 def test_command():
     whois_result = get_whois('google.co.uk')
@@ -8708,6 +8710,7 @@ def setup_proxy():
 def main():
     demisto.debug('command is {}'.format(str(demisto.command())))
     command = demisto.command()
+    args: Dict[str, str] = demisto.args()
 
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
@@ -8729,7 +8732,21 @@ def main():
             if command == 'test-module':
                 test_command()
             elif command == 'whois':
-                results = whois_command(reliability)
+                results = whois_command(
+                    reliability=reliability,
+                    query=args.get("query"),
+                    is_recursive=argToBoolean(args.get("recursive", 'false')),
+                    verbose=argToBoolean(args.get('verbose', 'false'))
+                )
+
+                if SHOULD_ERROR:
+                    demisto.debug(f"with_error config is set, returning with error")
+                    return_error(
+                        f"Whois command failed",
+                        outputs=results
+
+                    )
+
             elif command == 'domain':
                 domain_command(reliability)
         

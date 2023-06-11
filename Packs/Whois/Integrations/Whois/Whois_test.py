@@ -185,7 +185,7 @@ def test_ip_command(mocker):
     response = load_test_data('./test_data/ip_output.json')
     mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
     result = ip_command(['4.4.4.4', '4.4.4.4'], DBotScoreReliability.B)
-    assert len(result) == 2
+    assert len(result) == 3
     assert result[0].outputs_prefix == 'Whois.IP'
     assert result[0].outputs.get('query') == '4.4.4.4'
     assert result[0].indicator.to_context() == {
@@ -291,7 +291,7 @@ def test_create_outputs_invalid_time(updated_date, expected_res):
     assert res[0]['Updated Date'] == expected_res
 
 
-@pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "recursive": "true", "verbose": "true"}, 3),
+@pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "recursive": "true", "verbose": "true"}, 2),
                                                 ({"query": "cnn.com", "recursive": "true"}, 2)])
 def test_whois_with_verbose(args, expected_res, mocker):
     """
@@ -308,11 +308,9 @@ def test_whois_with_verbose(args, expected_res, mocker):
     with open('test_data/cnn_pickled', 'rb') as f:
         get_whois_ret_value = pickle.load(f)
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
-    demisto_results = mocker.patch.object(demisto, 'results')
 
-    Whois.whois_command('B - Usually reliable')
-    demisto_results_call_args = demisto_results.call_args[0][0]
-    assert len(demisto_results_call_args.get('EntryContext')) == expected_res
+    result = Whois.whois_command('B - Usually reliable')
+    assert len(result) == expected_res
 
 
 def test_parse_nic_contact():
