@@ -70,8 +70,8 @@ Newly fetched incidents or detections will be mirrored in the chosen direction. 
 
 **Important Notes**
 
-- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and CrowdStrike Falcon.
-- When *mirroring in* incidents from CrowdStrike Falcon to XSOAR:
+- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CrowdStrike Falcon.
+- When *mirroring in* incidents from CrowdStrike Falcon to Cortex XSOAR:
   - For the `tags` field, tags can only be added from the remote system.
   - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
   - In case the *look-back* parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
@@ -711,7 +711,7 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 ### 12. cs-falcon-list-files
 
 ---
-Returns Returns a list of put-file ID's that are available for the user in the `put` command.
+Returns a list of put-file ID's that are available for the user in the `put` command.
 
 #### Base Command
 
@@ -5293,26 +5293,26 @@ Retrieve ODS scan details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Valid CS-Falcon-FQL filter to query with. | Optional | 
-| ids | Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments. | Optional | 
+| ids | Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments. | Optional | 
 | initiated_from | Comma-separated list of scan initiation sources to filter by. | Optional | 
 | status | Comma-separated list of scan statuses to filter by. | Optional | 
 | severity | Comma-separated list of scan severities to filter by. | Optional | 
 | scan_started_on | UTC-format time of scan start to filter by. | Optional | 
-| scan_completed_on | UTC-format time of scan start to filter by. | Optional | 
-| offset | Starting index of overall result set from which to return ids. | Optional | 
+| scan_completed_on | UTC-format time of the scan completion to filter by. | Optional | 
+| offset | Starting index of overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.ODSScan.id | String | a unique identifier for the scan event. | 
-| CrowdStrike.ODSScan.cid | String | a unique identifier for the client that triggered the scan. | 
-| CrowdStrike.ODSScan.profile_id | String | a unique identifier for the scan profile used in the scan. | 
-| CrowdStrike.ODSScan.description | String | the ID of the description of the scan. | 
+| CrowdStrike.ODSScan.id | String | A unique identifier for the scan event. | 
+| CrowdStrike.ODSScan.cid | String | A unique identifier for the client that triggered the scan. | 
+| CrowdStrike.ODSScan.profile_id | String | A unique identifier for the scan profile used in the scan. | 
+| CrowdStrike.ODSScan.description | String | The ID of the description of the scan. | 
 | CrowdStrike.ODSScan.scan_inclusions | String | The files or folders included in the scan. | 
 | CrowdStrike.ODSScan.initiated_from | String | The source of the scan initiation. | 
-| CrowdStrike.ODSScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
 | CrowdStrike.ODSScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
 | CrowdStrike.ODSScan.preemption_priority | Number | The preemption priority for the scan. | 
 | CrowdStrike.ODSScan.metadata.host_id | String | A unique identifier for the host that was scanned. | 
@@ -5323,11 +5323,11 @@ Retrieve ODS scan details.
 | CrowdStrike.ODSScan.metadata.filecount.quarantined | Number | The number of files that were quarantined. | 
 | CrowdStrike.ODSScan.metadata.filecount.skipped | Number | The number of files that were skipped during the scan. | 
 | CrowdStrike.ODSScan.metadata.filecount.traversed | Number | The number of files that were traversed during the scan. | 
-| CrowdStrike.ODSScan.metadata.status | String | The status of the scan on this host. \(e.q., "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.metadata.status | String | The status of the scan on this host \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.metadata.started_on | Date | The date and time that the scan started. | 
 | CrowdStrike.ODSScan.metadata.completed_on | Date | The date and time that the scan completed. | 
 | CrowdStrike.ODSScan.metadata.last_updated | Date | The date and time that the metadata was last updated. | 
-| CrowdStrike.ODSScan.status | String | The status of the scan. \(e.q., "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.status | String | The status of the scan \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
 | CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
 | CrowdStrike.ODSScan.pause_duration | Number | The number of minutes to pause between scanning each file in hours. | 
@@ -5337,7 +5337,7 @@ Retrieve ODS scan details.
 | CrowdStrike.ODSScan.sensor_ml_level_prevention | Number | The level of prevention sensitivity for the local sensor machine learning model. | 
 | CrowdStrike.ODSScan.cloud_ml_level_detection | Number | The level of detection sensitivity for the cloud machine learning model. | 
 | CrowdStrike.ODSScan.cloud_ml_level_prevention | Number | The level of prevention sensitivity for the cloud machine learning model. | 
-| CrowdStrike.ODSScan.policy_setting | Number | a list of policy setting IDs for the scan job \(these correspond to specific policy settings in the Falcon console\). | 
+| CrowdStrike.ODSScan.policy_setting | Number | A list of policy setting IDs for the scan job \(these correspond to specific policy settings in the Falcon console\). | 
 | CrowdStrike.ODSScan.scan_started_on | Date | The timestamp when the scan was started. | 
 | CrowdStrike.ODSScan.scan_completed_on | Date | The timestamp when the scan was completed. | 
 | CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. | 
@@ -5511,14 +5511,14 @@ Retrieve ODS scheduled scan details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Valid CS-Falcon-FQL filter to query with. | Optional | 
-| ids | Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments. | Optional | 
+| ids | Comma-separated list of scan IDs to retrieve details about. If set. will override all other arguments. | Optional | 
 | initiated_from | Comma-separated list of scan initiation sources to filter by. | Optional | 
 | status | Comma-separated list of scan statuses to filter by. | Optional | 
 | created_on | UTC-format time of scan creation to filter by. | Optional | 
 | created_by | UTC-format time of scan creator to filter by. | Optional | 
 | start_timestamp | UTC-format time of scan start to filter by. | Optional | 
 | deleted | Deleted scans only. | Optional | 
-| offset | Starting index of overall result set from which to return ids. | Optional | 
+| offset | Starting index of overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
 
 #### Context Output
@@ -5547,11 +5547,11 @@ Retrieve ODS scheduled scan details.
 | CrowdStrike.ODSScheduledScan.created_by | String | The user who created the scan. | 
 | CrowdStrike.ODSScheduledScan.last_updated | Date | The timestamp when the scan was last updated. | 
 | CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan has been deleted. | 
-| CrowdStrike.ODSScheduledScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScheduledScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
 | CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
-| CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
-| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
+| CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The cloud machine learning prevention level for the sensor. | 
+| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The cloud machine learning prevention level for the cloud. | 
 
 #### Command example
 
@@ -5670,28 +5670,28 @@ Retrieve ODS scan host details.
 | status | Comma-separated list of scan statuses to filter by. | Optional | 
 | started_on | UTC-format time of scan start to filter by. | Optional | 
 | completed_on | UTC-format time of scan completion to filter by. | Optional | 
-| offset | Starting index of overall result set from which to return ids. | Optional | 
+| offset | Starting index of overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.ODSScanHost.id | String | a unique identifier for the scan event. | 
-| CrowdStrike.ODSScanHost.cid | String | a unique identifier for the client that triggered the scan. | 
-| CrowdStrike.ODSScanHost.scan_id | String | a unique identifier for the scan. | 
-| CrowdStrike.ODSScanHost.profile_id | String | a unique identifier for the scan profile used in the scan. | 
-| CrowdStrike.ODSScanHost.host_id | String | a unique identifier for the host that was scanned | 
-| CrowdStrike.ODSScanHost.host_scan_id | String | a unique identifier for the scan that was performed on the host. | 
-| CrowdStrike.ODSScanHost.filecount.scanned | Number | the number of files that were scanned during the scan. | 
-| CrowdStrike.ODSScanHost.filecount.malicious | Number | the number of files that were detected as malicious during the scan. | 
-| CrowdStrike.ODSScanHost.filecount.quarantined | Number | the number of files that were quarantined during the scan. | 
-| CrowdStrike.ODSScanHost.filecount.skipped | Number | the number of files that were skipped during the scan. | 
-| CrowdStrike.ODSScanHost.status | String | the status of the scan. \(e.g., "completed", "pending", "cancelled", "running", or "failed"\) | 
-| CrowdStrike.ODSScanHost.severity | Number | a severity score assigned to the scan, ranging from 0 to 100 | 
-| CrowdStrike.ODSScanHost.started_on | Date | the date and time when the scan was started. | 
-| CrowdStrike.ODSScanHost.completed_on | Date | the date and time when the scan was completed. | 
-| CrowdStrike.ODSScanHost.last_updated | Date | the date and time when the scan event was last updated. | 
+| CrowdStrike.ODSScanHost.id | String | A unique identifier for the scan event. | 
+| CrowdStrike.ODSScanHost.cid | String | A unique identifier for the client that triggered the scan. | 
+| CrowdStrike.ODSScanHost.scan_id | String | A unique identifier for the scan. | 
+| CrowdStrike.ODSScanHost.profile_id | String | A unique identifier for the scan profile used in the scan. | 
+| CrowdStrike.ODSScanHost.host_id | String | A unique identifier for the host that was scanned | 
+| CrowdStrike.ODSScanHost.host_scan_id | String | A unique identifier for the scan that was performed on the host. | 
+| CrowdStrike.ODSScanHost.filecount.scanned | Number | The number of files that were scanned during the scan. | 
+| CrowdStrike.ODSScanHost.filecount.malicious | Number | The number of files that were detected as malicious during the scan. | 
+| CrowdStrike.ODSScanHost.filecount.quarantined | Number | The number of files that were quarantined during the scan. | 
+| CrowdStrike.ODSScanHost.filecount.skipped | Number | The number of files that were skipped during the scan. | 
+| CrowdStrike.ODSScanHost.status | String | The status of the scan \(e.g., "completed", "pending", "cancelled", "running", or "failed"\) | 
+| CrowdStrike.ODSScanHost.severity | Number | A severity score assigned to the scan, ranging from 0 to 100 | 
+| CrowdStrike.ODSScanHost.started_on | Date | The date and time when the scan was started. | 
+| CrowdStrike.ODSScanHost.completed_on | Date | The date and time when the scan was completed. | 
+| CrowdStrike.ODSScanHost.last_updated | Date | The date and time when the scan event was last updated. | 
 
 #### Command example
 
@@ -5760,31 +5760,31 @@ Retrieve ODS malicious file details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Valid CS-Falcon-FQL filter to query with. | Optional | 
-| file_ids | Comma-separated list of malicious file IDs to retrieve details about. If set will override all other arguments. | Optional | 
+| file_ids | Comma-separated list of malicious file IDs to retrieve details about. If set, will override all other arguments. | Optional | 
 | host_ids | Comma-separated list of host IDs to filter by. | Optional | 
 | scan_ids | Comma-separated list of scan IDs to filter by. | Optional | 
 | file_paths | Comma-separated list of file paths to filter by. | Optional | 
 | file_names | Comma-separated list of file names to filter by. | Optional | 
 | hash | Comma-separated list of hashes to filter by. | Optional | 
-| offset | Starting index of overall result set from which to return ids. | Optional | 
+| offset | Starting index of overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.ODSMaliciousFile.id | String | a unique identifier of the detection event. | 
-| CrowdStrike.ODSMaliciousFile.cid | String | a unique identifier for the client that triggered the detection event. | 
-| CrowdStrike.ODSMaliciousFile.scan_id | String | a unique identifier for the scan that triggered the detection event. | 
-| CrowdStrike.ODSMaliciousFile.host_id | String | a unique identifier for the scan that detected the file on the host. | 
-| CrowdStrike.ODSMaliciousFile.host_scan_id | String | a unique identifier for the scan that detected the file on the host. | 
-| CrowdStrike.ODSMaliciousFile.filepath | String | the full path to the malicious file on the host system. | 
-| CrowdStrike.ODSMaliciousFile.filename | String | the name of the malicious file. | 
-| CrowdStrike.ODSMaliciousFile.hash | String | a SHA-256 hash of the malicious file, which can be used to identify it. | 
-| CrowdStrike.ODSMaliciousFile.pattern_id | Number | the identifier of the pattern used to detect the malicious file. | 
-| CrowdStrike.ODSMaliciousFile.severity | Number | a severity score assigned to the detection event, ranging from 0 to 100. | 
-| CrowdStrike.ODSMaliciousFile.quarantined | Boolean | a Boolean value indicating whether the file has been quarantined. | 
-| CrowdStrike.ODSMaliciousFile.last_updated | Date | the date and time when the detection event was last updated. | 
+| CrowdStrike.ODSMaliciousFile.id | String | A unique identifier of the detection event. | 
+| CrowdStrike.ODSMaliciousFile.cid | String | A unique identifier for the client that triggered the detection event. | 
+| CrowdStrike.ODSMaliciousFile.scan_id | String | A unique identifier for the scan that triggered the detection event. | 
+| CrowdStrike.ODSMaliciousFile.host_id | String | A unique identifier for the scan that detected the file on the host. | 
+| CrowdStrike.ODSMaliciousFile.host_scan_id | String | A unique identifier for the scan that detected the file on the host. | 
+| CrowdStrike.ODSMaliciousFile.filepath | String | The full path to the malicious file on the host system. | 
+| CrowdStrike.ODSMaliciousFile.filename | String | The name of the malicious file. | 
+| CrowdStrike.ODSMaliciousFile.hash | String | A SHA-256 hash of the malicious file, which can be used to identify it. | 
+| CrowdStrike.ODSMaliciousFile.pattern_id | Number | The identifier of the pattern used to detect the malicious file. | 
+| CrowdStrike.ODSMaliciousFile.severity | Number | A severity score assigned to the detection event, ranging from 0 to 100. | 
+| CrowdStrike.ODSMaliciousFile.quarantined | Boolean | A Boolean value indicating whether the file has been quarantined. | 
+| CrowdStrike.ODSMaliciousFile.last_updated | Date | The date and time when the detection event was last updated. | 
 
 #### Command example
 
@@ -5819,8 +5819,8 @@ Create an ODS scan and wait for results.
 | pause_duration | Amount of time (in seconds) for scan pauses. Default is 2. | Optional | 
 | sensor_ml_level_detection | Sensor ML detection level. | Optional | 
 | sensor_ml_level_prevention | Sensor ML prevention level. | Optional | 
-| cloud_ml_level_detection | ML Detection level for the scan. | Optional | 
-| cloud_ml_level_prevention | ML Prevention level for the scan. | Optional | 
+| cloud_ml_level_detection | Cloud ML detection level for the scan. | Optional | 
+| cloud_ml_level_prevention | Cloud ML prevention level for the scan. | Optional | 
 | max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
@@ -5835,7 +5835,7 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.description | String | the ID of the description of the scan. | 
 | CrowdStrike.ODSScan.scan_inclusions | String | The files or folders included in the scan. | 
 | CrowdStrike.ODSScan.initiated_from | String | The source of the scan initiation. | 
-| CrowdStrike.ODSScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
 | CrowdStrike.ODSScan.cpu_priority | Number | The CPU priority for the scan \(1-5\). | 
 | CrowdStrike.ODSScan.preemption_priority | Number | The preemption priority for the scan. | 
 | CrowdStrike.ODSScan.metadata.host_id | String | A unique identifier for the host that was scanned. | 
@@ -5846,11 +5846,11 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.metadata.filecount.quarantined | Number | The number of files that were quarantined. | 
 | CrowdStrike.ODSScan.metadata.filecount.skipped | Number | The number of files that were skipped during the scan. | 
 | CrowdStrike.ODSScan.metadata.filecount.traversed | Number | The number of files that were traversed during the scan. | 
-| CrowdStrike.ODSScan.metadata.status | String | The status of the scan on this host. \(e.q., "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.metadata.status | String | The status of the scan on this host \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.metadata.started_on | Date | The date and time that the scan started. | 
 | CrowdStrike.ODSScan.metadata.completed_on | Date | The date and time that the scan completed. | 
 | CrowdStrike.ODSScan.metadata.last_updated | Date | The date and time that the metadata was last updated. | 
-| CrowdStrike.ODSScan.status | String | The status of the scan. \(e.q., "pending", "running", "completed", or "failed"\). | 
+| CrowdStrike.ODSScan.status | String | The status of the scan \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
 | CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
 | CrowdStrike.ODSScan.pause_duration | Number | The number of minutes to pause between scanning each file in hours. | 
@@ -5979,8 +5979,8 @@ Create an ODS scheduled scan.
 | pause_duration | Amount of time (in seconds) for scan pauses. Default is 2. | Optional | 
 | sensor_ml_level_detection | Sensor ML detection level. | Optional | 
 | sensor_ml_level_prevention | Sensor ML prevention level. | Optional | 
-| cloud_ml_level_detection | ML Detection level for the scan. | Optional | 
-| cloud_ml_level_prevention | ML Prevention level for the scan. | Optional | 
+| cloud_ml_level_detection | Cloud ML detection level for the scan. | Optional | 
+| cloud_ml_level_prevention | Cloud ML prevention level for the scan. | Optional | 
 | max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". | Required | 
 | schedule_interval | Set the schedule interval. Possible values are: never, daily, weekly, every other week, every 4 weeks, monthly. | Required | 
@@ -6011,7 +6011,7 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.created_by | String | The user who created the scan. | 
 | CrowdStrike.ODSScheduledScan.last_updated | Date | The timestamp when the scan was last updated. | 
 | CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan has been deleted. | 
-| CrowdStrike.ODSScheduledScan.quarantine | Boolean | If was set to quarantine. | 
+| CrowdStrike.ODSScheduledScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
 | CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
