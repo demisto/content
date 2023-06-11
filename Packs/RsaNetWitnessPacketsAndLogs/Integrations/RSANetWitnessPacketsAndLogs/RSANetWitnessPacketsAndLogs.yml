@@ -9,42 +9,50 @@ description: RSA NetWitness Logs and Packets decoders are responsible for the re
   and reconstruct data for full session analysis. In addition, the decoder can collect
   flow and endpoint data.
 configuration:
-- display: Server URL (e.g. http(s)://192.168.0.1)
+- defaultvalue: ''
+  display: Server URL (e.g. http(s)://192.168.0.1)
   name: url
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) /
+  type: 0
+- defaultvalue: ''
+  display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) /
     Broker (50103)
   name: port
-  defaultvalue: ""
-  type: 0
   required: true
-- display: Username
+  type: 0
+- defaultvalue: admin
+  display: Username
+  hidden: true
   name: username
-  defaultvalue: admin
+  required: false
   type: 0
-  required: true
-- display: Password
+- defaultvalue: ''
+  display: Password
+  hidden: true
   name: password
-  defaultvalue: ""
+  required: false
   type: 4
-  required: true
-- display: Validate server certificate
+- display: Username
+  displaypassword: Password
+  name: username_creds
+  required: false
+  type: 9
+- defaultvalue: 'true'
+  display: Validate server certificate
   name: secure
-  defaultvalue: "true"
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  required: false
   type: 8
-  required: false
-- display: Expiration time
+- defaultvalue: ''
+  display: Expiration time
   name: expiry
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
+
 script:
   script: ''
   type: javascript
