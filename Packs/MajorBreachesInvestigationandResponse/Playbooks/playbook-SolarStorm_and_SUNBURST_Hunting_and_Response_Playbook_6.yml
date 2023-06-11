@@ -98,20 +98,12 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
-      body: {}
       filename:
         simple: fireeye_Indicator_Release_Hashes.csv
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile: {}
-      unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/fireeye/sunburst_countermeasures/main/indicator_release/Indicator_Release_Hashes.csv
-      username: {}
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -142,13 +134,6 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -205,14 +190,8 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      ip: {}
       log_type:
         simple: threat
-      port-dst: {}
       query:
         simple: (threatid eq 86237) or (threatid eq 86245) or (threatid eq 86242)
           or (threatid eq 86246) or (threatid eq 86249) or (threatid eq 86247) or
@@ -1021,160 +1000,18 @@ tasks:
       '#none#':
       - "54"
     scriptarguments:
-      accounttype: {}
-      actor: {}
-      admincountry: {}
-      adminemail: {}
-      adminname: {}
-      adminphone: {}
-      asn: {}
-      assignedrole: {}
-      assigneduser: {}
-      associatedfilenames: {}
-      associations: {}
-      biosversion: {}
-      campaign: {}
-      category: {}
-      city: {}
-      costcenter: {}
-      costcentercode: {}
-      countryname: {}
-      creationdate: {}
-      customFields: {}
-      cvedescription: {}
-      cvemodified: {}
-      cvss: {}
-      department: {}
-      description: {}
-      detectionengines: {}
-      devicemodel: {}
-      dhcpserver: {}
-      displayname: {}
-      dns: {}
-      domainidnname: {}
-      domainname: {}
-      domainreferringips: {}
-      domainreferringsubnets: {}
-      domainstatus: {}
-      email: {}
-      emailaddress: {}
-      entryid: {}
-      expirationdate: {}
-      feedrelatedindicators: {}
-      fileextension: {}
-      filetype: {}
-      firstseenbysource: {}
-      geocountry: {}
-      geolocation: {}
-      givenname: {}
-      groups: {}
-      hostname: {}
-      imphash: {}
-      indicatoridentification: {}
-      internal: {}
-      ipaddress: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      lastseenbysource: {}
-      leadership: {}
-      location: {}
-      locationregion: {}
-      macaddress: {}
-      malwarefamily: {}
-      malwaretypes: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      memory: {}
       merge:
         simple: "True"
-      mobilephone: {}
-      name: {}
-      namefield: {}
-      nameservers: {}
-      office365category: {}
-      office365expressroute: {}
-      office365required: {}
-      operatingsystem: {}
-      operatingsystemversion: {}
-      organization: {}
-      organizationalunitou: {}
-      osversion: {}
-      path: {}
-      personalemail: {}
-      port: {}
-      positivedetections: {}
-      primarymotivation: {}
-      processor: {}
-      processors: {}
-      published: {}
-      quarantined: {}
-      region: {}
-      registrantcountry: {}
-      registrantemail: {}
-      registrantname: {}
-      registrantphone: {}
-      registrarabuseemail: {}
-      registrarabusephone: {}
-      registrarname: {}
-      relateToIncident: {}
-      relatedIncidents: {}
-      reportedby: {}
-      reputation: {}
-      seenNow: {}
-      service: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signatureauthentihash: {}
-      signaturecopyright: {}
-      signaturedescription: {}
-      signaturefileversion: {}
-      signatureinternalname: {}
-      signed: {}
-      size: {}
-      source: {}
-      sourceTimeStamp: {}
-      sourceoriginalseverity: {}
-      ssdeep: {}
-      state: {}
-      stixaliases: {}
-      stixdescription: {}
-      stixgoals: {}
-      stixid: {}
-      stixismalwarefamily: {}
-      stixkillchainphases: {}
-      stixmalwaretypes: {}
-      stixprimarymotivation: {}
-      stixresourcelevel: {}
-      stixroles: {}
-      stixsecondarymotivations: {}
-      stixsophistication: {}
-      stixthreatactortypes: {}
-      stixtooltypes: {}
-      stixtoolversion: {}
-      streetaddress: {}
-      subdomains: {}
-      surname: {}
       tags:
         simple: SolarStorm, SUNBURST
-      threattypes: {}
-      title: {}
-      trafficlightprotocol: {}
       type:
         simple: IP
-      updateddate: {}
-      username: {}
       value:
         complex:
           root: IP
           accessor: Address
           transformers:
           - operator: uniq
-      workphone: {}
-      xdrstatus: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -1205,160 +1042,18 @@ tasks:
       '#none#':
       - "83"
     scriptarguments:
-      accounttype: {}
-      actor: {}
-      admincountry: {}
-      adminemail: {}
-      adminname: {}
-      adminphone: {}
-      asn: {}
-      assignedrole: {}
-      assigneduser: {}
-      associatedfilenames: {}
-      associations: {}
-      biosversion: {}
-      campaign: {}
-      category: {}
-      city: {}
-      costcenter: {}
-      costcentercode: {}
-      countryname: {}
-      creationdate: {}
-      customFields: {}
-      cvedescription: {}
-      cvemodified: {}
-      cvss: {}
-      department: {}
-      description: {}
-      detectionengines: {}
-      devicemodel: {}
-      dhcpserver: {}
-      displayname: {}
-      dns: {}
-      domainidnname: {}
-      domainname: {}
-      domainreferringips: {}
-      domainreferringsubnets: {}
-      domainstatus: {}
-      email: {}
-      emailaddress: {}
-      entryid: {}
-      expirationdate: {}
-      feedrelatedindicators: {}
-      fileextension: {}
-      filetype: {}
-      firstseenbysource: {}
-      geocountry: {}
-      geolocation: {}
-      givenname: {}
-      groups: {}
-      hostname: {}
-      imphash: {}
-      indicatoridentification: {}
-      internal: {}
-      ipaddress: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      lastseenbysource: {}
-      leadership: {}
-      location: {}
-      locationregion: {}
-      macaddress: {}
-      malwarefamily: {}
-      malwaretypes: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      memory: {}
       merge:
         simple: "True"
-      mobilephone: {}
-      name: {}
-      namefield: {}
-      nameservers: {}
-      office365category: {}
-      office365expressroute: {}
-      office365required: {}
-      operatingsystem: {}
-      operatingsystemversion: {}
-      organization: {}
-      organizationalunitou: {}
-      osversion: {}
-      path: {}
-      personalemail: {}
-      port: {}
-      positivedetections: {}
-      primarymotivation: {}
-      processor: {}
-      processors: {}
-      published: {}
-      quarantined: {}
-      region: {}
-      registrantcountry: {}
-      registrantemail: {}
-      registrantname: {}
-      registrantphone: {}
-      registrarabuseemail: {}
-      registrarabusephone: {}
-      registrarname: {}
-      relateToIncident: {}
-      relatedIncidents: {}
-      reportedby: {}
-      reputation: {}
-      seenNow: {}
-      service: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signatureauthentihash: {}
-      signaturecopyright: {}
-      signaturedescription: {}
-      signaturefileversion: {}
-      signatureinternalname: {}
-      signed: {}
-      size: {}
-      source: {}
-      sourceTimeStamp: {}
-      sourceoriginalseverity: {}
-      ssdeep: {}
-      state: {}
-      stixaliases: {}
-      stixdescription: {}
-      stixgoals: {}
-      stixid: {}
-      stixismalwarefamily: {}
-      stixkillchainphases: {}
-      stixmalwaretypes: {}
-      stixprimarymotivation: {}
-      stixresourcelevel: {}
-      stixroles: {}
-      stixsecondarymotivations: {}
-      stixsophistication: {}
-      stixthreatactortypes: {}
-      stixtooltypes: {}
-      stixtoolversion: {}
-      streetaddress: {}
-      subdomains: {}
-      surname: {}
       tags:
         simple: SolarStorm, SUNBURST
-      threattypes: {}
-      title: {}
-      trafficlightprotocol: {}
       type:
         simple: URL
-      updateddate: {}
-      username: {}
       value:
         complex:
           root: URL
           accessor: Data
           transformers:
           - operator: uniq
-      workphone: {}
-      xdrstatus: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -1389,7 +1084,7 @@ tasks:
       '#default#':
       - "56"
       "yes":
-      - "114"
+      - "116"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1517,19 +1212,10 @@ tasks:
       '#none#':
       - "45"
     scriptarguments:
-      body: {}
-      filename: {}
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile: {}
-      unsecure: {}
       url:
         simple: https://github.com/pan-unit42/iocs/blob/master/SolarStorm/IOCs
-      username: {}
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -1632,15 +1318,15 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: a2b00860-013f-4ea8-867a-3eceb0f79006
+    taskid: 31b82d2f-dc62-4dc5-8702-3f58845246ba
     type: regular
     task:
-      id: a2b00860-013f-4ea8-867a-3eceb0f79006
+      id: 31b82d2f-dc62-4dc5-8702-3f58845246ba
       version: -1
       name: Create aSTIX file
       description: |
-        Create a file (using the given data input or entry ID) and upload it to the current investigation in the War Room.
-      scriptName: FileCreateAndUpload
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
       type: regular
       iscommand: false
       brand: ""
@@ -1651,7 +1337,6 @@ tasks:
       data:
         complex:
           root: inputs.SunBurstSTIX
-      entryId: {}
       filename:
         simple: SunBurst STIX
     separatecontext: false
@@ -1967,26 +1652,10 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      activity_status: {}
-      assignee: {}
-      business_unit: {}
-      content_search: {}
-      created_after: {}
-      created_before: {}
-      domain_search: {}
-      inet_search: {}
       issue_type:
         simple: Insecure SolarWinds Orion Platform, SolarWinds Orion Platform
-      limit: {}
-      modified_after: {}
-      modified_before: {}
-      port_number: {}
-      priority: {}
-      progress_status: {}
-      provider: {}
-      sort: {}
-      tag: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1999,129 +1668,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "77":
-    id: "77"
-    taskid: 17ac7616-1163-4f67-8062-0728c1b00d73
-    type: regular
-    task:
-      id: 17ac7616-1163-4f67-8062-0728c1b00d73
-      version: -1
-      name: Expanse Search for SolarStorm C2 traffic
-      description: Search Expanse risky flows for SolarStorm C2 traffic.
-      script: '|||expanse-list-risk-rules'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "78"
-    scriptarguments:
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4030,
-          "y": 1150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "78":
-    id: "78"
-    taskid: efb2c07f-c31b-478d-8074-460011014ec8
-    type: condition
-    task:
-      id: efb2c07f-c31b-478d-8074-460011014ec8
-      version: -1
-      name: Were risky flows related to SolarWinds found?
-      description: Checks if any risky flows related to SolarWinds were found.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "79"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Expanse.RiskRule
-                accessor: abbreviatedName
-            iscontext: true
-          right:
-            value:
-              simple: SolarWinds C2
-    view: |-
-      {
-        "position": {
-          "x": 4030,
-          "y": 1320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "79":
-    id: "79"
-    taskid: a62664df-12a1-49a3-80ac-9004746db107
-    type: regular
-    task:
-      id: a62664df-12a1-49a3-80ac-9004746db107
-      version: -1
-      name: Expanse get SolarWinds risky flows
-      description: Retrieve risky flows detected by Expanse Behavior.
-      script: '|||expanse-get-risky-flows'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "89"
-    scriptarguments:
-      created_after: {}
-      created_before: {}
-      internal_ip_range: {}
-      limit: {}
-      risk_rule:
-        complex:
-          root: Expanse.RiskRule
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: Expanse.RiskRule.abbreviatedName
-                iscontext: true
-              right:
-                value:
-                  simple: SolarWinds C2
-          accessor: id
-      tag_names: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4140,
-          "y": 1520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "81":
     id: "81"
     taskid: dc0d9da2-ba62-4849-87f6-7b2353a410ce
@@ -2369,34 +1917,10 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      details: {}
       extend-context:
         simple: XDRSolarStormBehaviorIncidents=
-      fromclosedate: {}
-      fromdate: {}
-      fromduedate: {}
-      id: {}
-      level: {}
-      name: {}
-      notstatus: {}
-      owner: {}
-      page: {}
       query:
-        simple: 'xdralerts.name:"Malicious NetSetupSvc.dll loaded into svchost.exe"
-          or xdralerts.name:"ADFind queries Active Directory for Exchange groups"
-          or xdralerts.name:"Virtual Directory configuration access via PowerShell"
-          or xdralerts.name:"PowerShell dumps users and roles from Exchange server"
-          or xdralerts.name:"Unverified domain added to Azure AD" or xdralerts.name:"Domain
-          federation settings have been modified" or xdralerts.name:"Uncommon PowerShell
-          commands used to create or alter scheduled task parameters" '
-      reason: {}
-      size: {}
-      sort: {}
-      status: {}
-      toclosedate: {}
-      todate: {}
-      toduedate: {}
-      type: {}
+        simple: 'xdralerts.name:"Malicious NetSetupSvc.dll loaded into svchost.exe" or xdralerts.name:"ADFind queries Active Directory for Exchange groups" or xdralerts.name:"Virtual Directory configuration access via PowerShell" or xdralerts.name:"PowerShell dumps users and roles from Exchange server" or xdralerts.name:"Unverified domain added to Azure AD" or xdralerts.name:"Domain federation settings have been modified" or xdralerts.name:"Uncommon PowerShell commands used to create or alter scheduled task parameters" '
     separatecontext: false
     view: |-
       {
@@ -3089,139 +2613,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "114":
-    id: "114"
-    taskid: 57729b69-717e-4470-87f1-09ce908e6338
-    type: playbook
-    task:
-      id: 57729b69-717e-4470-87f1-09ce908e6338
-      version: -1
-      name: Block Indicators - Generic v3
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic v2
-        - Block Account - Generic v2
-        - Block IP - Generic v3
-        - Block File - Generic v2
-        - Block Email - Generic
-        - Block Domain - Generic
-
-      playbookName: Block Indicators - Generic v3
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "83"
-    scriptarguments:
-      AutoBlockIndicators:
-        simple: "True"
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      IP:
-        complex:
-          root: PANWHunting
-          accessor: DetectedExternalIPs
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: '(item: IP.Address)'
-      InputEnrichment:
-        simple: "False"
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block Indicators playbook - ${incident.id}
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-      URL:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      UserVerification:
-        simple: "True"
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2480,
-          "y": 2310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "115":
     id: "115"
     taskid: 48339eeb-7c30-46db-83a3-e80e890befaa
@@ -3271,6 +2662,47 @@ tasks:
         "position": {
           "x": 2270,
           "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 58b5a676-bce9-4bc5-853b-98d763a886dc
+    type: playbook
+    task:
+      id: 58b5a676-bce9-4bc5-853b-98d763a886dc
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 2310
         }
       }
     note: false
