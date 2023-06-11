@@ -5,7 +5,6 @@ commonfields:
 configuration:
 - defaultvalue: MySQL
   display: SQL DB
-  hidden: false
   name: dialect
   options:
   - MySQL
@@ -20,7 +19,6 @@ configuration:
   required: true
   type: 0
 - display: Port
-  hidden: false
   name: port
   required: false
   type: 0
@@ -33,7 +31,6 @@ configuration:
   required: false
   type: 15
   defaultvalue: ID and timestamp
-  hidden: false
   options:
   - Unique timestamp
   - Unique ascending ID
@@ -58,17 +55,14 @@ configuration:
   type: 8
 - display: Incident Name
   additionalinfo: Enter the exact column's incident name (if empty - it's the Fetch Column).
-  hidden: false
   name: incident_name
   required: false
   type: 0
 - display: Database Name
-  hidden: false
   name: dbname
   required: false
   type: 0
 - display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
-  hidden: false
   name: connect_parameters
   required: false
   type: 0
@@ -78,18 +72,15 @@ configuration:
   required: false
   type: 0
 - display: First fetch timestamp or First fetch ID
-  hidden: false
   name: first_fetch
   required: false
   type: 0
   section: Collect
 - display: Use an SSL connection
-  hidden: false
   name: ssl_connect
   required: false
   type: 8
 - display: Use Connection Pooling
-  hidden: false
   name: use_pool
   required: false
   type: 8
@@ -100,7 +91,6 @@ configuration:
 - display: Connection Pool Time to Live (seconds)
   additionalinfo: After this time the connection pool will be refreshed
   defaultvalue: 600
-  hidden: false
   name: pool_ttl
   required: false
   type: 0
@@ -224,7 +214,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.54884
+  dockerimage: demisto/genericsql:1.1.0.61812
   feed: false
   isfetch: true
   longRunning: false

@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 from functools import lru_cache
 import glob
@@ -428,6 +427,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      packs_to_install: list,
                                      installation_request_body: list,
                                      lock: Lock,
+                                     packs_in_the_list_to_install: list,
                                      one_pack_and_its_dependencies_in_batch: bool = False,
                                      batch_packs_install_request_body: list = None,
                                      ):
@@ -440,6 +440,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
+        packs_in_the_list_to_install (list): list of packs that are already in the list to install
         one_pack_and_its_dependencies_in_batch(bool): Whether to install packs in small batches.
             If false - install all packs in one batch.
         batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
@@ -471,12 +472,15 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     global SUCCESS_FLAG
                     SUCCESS_FLAG = False
                 else:
-                    current_packs_to_install.extend(dependencies)
+                    current_packs_to_install.append(dependency)
 
         lock.acquire()
         if one_pack_and_its_dependencies_in_batch:
-            pack_and_its_dependencies = {p['id']: p for p in current_packs_to_install}
-            batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))  # type:ignore[union-attr]
+            pack_and_its_dependencies = \
+                {p['id']: p for p in current_packs_to_install if p['id'] not in packs_in_the_list_to_install}
+            if pack_and_its_dependencies:
+                packs_in_the_list_to_install += pack_and_its_dependencies
+                batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))  # type:ignore[union-attr]
         else:
             for pack in current_packs_to_install:
                 if pack['id'] not in packs_to_install:
@@ -664,7 +668,7 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client, hostname: str = '',
+                                                    client: demisto_client, hostname: str | None = None,
                                                     install_packs_one_by_one=False):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
@@ -687,20 +691,29 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     installation_request_body: list = []  # the packs to install, in the request format
     batch_packs_install_request_body: list = []    # list of lists of packs to install if install packs one by one.
     # Each list contain one pack and its dependencies.
+    packs_in_the_list_to_install: list = []    # list of packs that are already in the list to install.
 
     lock = Lock()
 
-    with ThreadPoolExecutor(max_workers=130) as pool:
+    if install_packs_one_by_one:
         for pack_id in pack_ids:
             if is_pack_hidden(pack_id):
                 logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
                 continue
-            pool.submit(search_pack_and_its_dependencies,
-                        client, pack_id, packs_to_install, installation_request_body, lock,
-                        install_packs_one_by_one,
-                        batch_packs_install_request_body)
-
-    if not install_packs_one_by_one:
+            search_pack_and_its_dependencies(
+                client, pack_id, packs_to_install, installation_request_body, lock,
+                packs_in_the_list_to_install, install_packs_one_by_one,
+                batch_packs_install_request_body)
+    else:
+        with ThreadPoolExecutor(max_workers=130) as pool:
+            for pack_id in pack_ids:
+                if is_pack_hidden(pack_id):
+                    logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
+                    continue
+                pool.submit(search_pack_and_its_dependencies,
+                            client, pack_id, packs_to_install, installation_request_body, lock,
+                            packs_in_the_list_to_install, install_packs_one_by_one,
+                            batch_packs_install_request_body)
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:

@@ -3985,8 +3985,10 @@ script:
       required: true
       predefined:
       - Audit
+      - Block
       - BlockAndRemediate
       - Allowed
+      - Warn
     - default: false
       auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
@@ -4174,8 +4176,10 @@ script:
       required: true
       predefined:
       - Audit
+      - Block
       - BlockAndRemediate
       - Allowed
+      - Warn
     - default: false
       auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
@@ -6685,7 +6689,7 @@ script:
     execution: false
     name: microsoft-atp-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.54410
+  dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: true
   longRunning: false

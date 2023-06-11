@@ -302,14 +302,15 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         if (relations := item.get('relations')) and create_relationships:
             relationships = []
             for relation in relations:
-                entity_relation = EntityRelationship(
-                    name=relation.get('relationType'),
-                    entity_a=value_,
-                    entity_a_type=type_,
-                    entity_b=relation.get('value'),
-                    entity_b_type=relation.get('type')
-                )
-                relationships.append(entity_relation.to_indicator())
+                if relation:
+                    entity_relation = EntityRelationship(
+                        name=relation.get('relationType'),
+                        entity_a=value_,
+                        entity_a_type=type_,
+                        entity_b=relation.get('value'),
+                        entity_b_type=relation.get('type')
+                    )
+                    relationships.append(entity_relation.to_indicator())
 
             indicator_obj['relationships'] = relationships
 

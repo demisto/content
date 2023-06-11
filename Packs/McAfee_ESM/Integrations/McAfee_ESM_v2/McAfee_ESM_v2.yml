@@ -40,7 +40,6 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: Fetch cases limit
-  hidden: false
   name: fetchLimitCases
   required: false
   type: 0
@@ -51,7 +50,6 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: Fetch alarms limit
-  hidden: false
   name: fetchLimitAlarms
   required: false
   type: 0

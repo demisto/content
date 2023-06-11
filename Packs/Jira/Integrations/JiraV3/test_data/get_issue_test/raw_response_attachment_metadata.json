@@ -1,0 +1,22 @@
+{
+    "id": 16465,
+    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/attachment/16465",
+    "filename": "dummy.pdf",
+    "author": {
+        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
+        "accountId": "dummy_account_id",
+        "avatarUrls": {
+            "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+            "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+            "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+            "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+        },
+        "displayName": "Example User",
+        "active": true
+    },
+    "created": "2023-04-20T00:51:21.057+0300",
+    "size": 13264,
+    "mimeType": "application/pdf",
+    "properties": {},
+    "content": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/attachment/content/16465"
+}

@@ -40,6 +40,13 @@ args:
   - html
   description: Type of email body to send - text ot HTML
   defaultValue: text
+- name: renderBody
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Indicates whether to render the email body
+  defaultValue: "false"
 - name: replyAddress
   description: Address of reply for html links
 - name: replyEntriesTag
@@ -61,7 +68,7 @@ args:
   description: The BCC email address
 - name: playbookTaskID
   description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all`
-    to complete all tasks from all plabooks
+    to complete all tasks from all playbooks
   defaultValue: ${currentPlaybookID}
 scripttarget: 0
 runonce: false

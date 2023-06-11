@@ -117,6 +117,12 @@ def fix_traceback_line_numbers(trace_str):
     :return: The new formated traceback.
     :rtype: ``str``
     """
+    def is_adjusted_block(start, end, adjusted_lines):
+        return any(
+            block_start < start < end < block_end 
+            for block_start, block_end in adjusted_lines.items()
+        )
+        
     for number in re.findall(r'line (\d+)', trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
@@ -124,12 +130,18 @@ def fix_traceback_line_numbers(trace_str):
             module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
             actual_number = line_num - module_start_line
 
-            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
-            for module_info in _MODULES_LINE_MAPPING.values():
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection
+            # should avoid adjust ApiModule twice in case of ApiModuleA -> import ApiModuleB
+            adjusted_lines = {}  # type: ignore[var-annotated]
+            modules_info = list(_MODULES_LINE_MAPPING.values())
+            modules_info.sort(key=lambda obj: int(obj.get('start_wrapper', obj['start'])))
+            for module_info in modules_info:
                 block_start = module_info.get('start_wrapper', module_info['start'])
                 block_end = module_info.get('end_wrapper', module_info['end'])
-                if block_start > module_start_line and block_end < line_num:
+                if block_start > module_start_line and block_end < line_num \
+                        and not is_adjusted_block(block_start, block_end, adjusted_lines):
                     actual_number -= block_end - block_start
+                    adjusted_lines[block_start] = block_end
 
             # a traceback line is of the form: File "<string>", line 8853, in func5
             trace_str = trace_str.replace(
@@ -1579,7 +1591,8 @@ class IntegrationLogger(object):
                     js = js[:-1]
                 to_add.append(js)
                 if IS_PY3:
-                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                    from urllib import parse as urllib_parse
+                    to_add.append(urllib_parse.quote_plus(a))  # type: ignore[attr-defined]
                 else:
                     to_add.append(urllib.quote_plus(a))  # type: ignore[attr-defined]
 
@@ -7522,7 +7535,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
     if is_error(res):
         error_message = get_error(res)
         if fail_on_error:
-            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+            raise DemistoException('Failed to execute {}. Error details:\n{}'.format(command, error_message))
         else:
             return False, error_message
 
@@ -7763,6 +7776,45 @@ def string_to_context_key(string):
         return "".join(word.capitalize() for word in string.split('_'))
     else:
         raise Exception('The key is not a string: {}'.format(string))
+
+
+def response_to_context(reponse_obj, user_predefiend_keys=None):
+    """
+    Recursively creates a data dictionary where all key starts with capital letters.
+    If a key include underscores,  removes underscores, capitalize every word.
+    Example: "one_two" to "OneTwo
+
+    :type reponse_obj: ``Any``
+    :param reponse_obj: The response object to update.
+    :type reponse_obj: ``dict``
+    :user_predefiend_keys: An optional argument, 
+    a dict with predefined keys where the key is the key in the response and value is the key we want to turn the key into.
+
+    :return: A response with all keys (if there're any) starts with a capital letter.
+    :rtype: ``Any``
+    """
+    predefined_keys = {"id": "ID", "uuid": "UUID"}
+    if user_predefiend_keys:
+        predefined_keys.update(user_predefiend_keys)
+    parsed_dict = {}
+    key = ""
+    if isinstance(reponse_obj, dict):
+        for key, value in reponse_obj.items():
+            if key in predefined_keys:
+                key = predefined_keys.get(key, "")  # type: ignore
+            else:
+                key = string_to_context_key(key)
+            if isinstance(value, dict):
+                parsed_dict[key] = response_to_context(value)
+            elif isinstance(value, list):
+                parsed_dict[key] = [response_to_context(list_item) for list_item in value]
+            else:
+                parsed_dict[key] = value
+        return parsed_dict
+    elif isinstance(reponse_obj, list):
+        return [response_to_context(list_item) for list_item in reponse_obj]
+    else:
+        return reponse_obj
 
 
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
@@ -8371,6 +8423,8 @@ if 'requests' in sys.modules:
 
             def __init__(self, verify=True, **kwargs):
                 # type: (bool, dict) -> None
+                if not verify and IS_PY3:
+                    self.context.check_hostname = False
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
                 super().__init__(**kwargs)  # type: ignore[arg-type]
@@ -9673,7 +9727,14 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
     :return: None
     """
     if is_demisto_version_ge('6.6.0'):
-        demisto.setLastMirrorRun(last_mirror_run)
+        try:
+            demisto.setLastMirrorRun(last_mirror_run)
+        except json.JSONDecodeError as e:
+            # see XSUP-24343
+            if not isinstance(last_mirror_run, dict):
+                raise TypeError("non-dictionary passed to set_last_mirror_run")
+            demisto.debug("encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
+            demisto.debug(e)
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 

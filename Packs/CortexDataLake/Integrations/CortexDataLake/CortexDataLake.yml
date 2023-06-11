@@ -5,16 +5,36 @@ commonfields:
 configuration:
 - display: Token
   name: refresh_token
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: ID
   name: reg_id
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Key
   name: auth_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: Key
+  name: credentials_auth_key
+  required: false
+  hiddenusername: true
+  type: 9
+- displaypassword: Token
+  additionalinfo: The API Key to use for connection
+  name: credentials_refresh_token
+  required: false
+  hiddenusername: true
+  type: 9
+- displaypassword: ID
+  name: credentials_reg_id
+  required: false
+  type: 9
+  hiddenusername: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -27,7 +47,6 @@ configuration:
 - additionalinfo: Choose which table incidents will be fetched from.
   defaultvalue: firewall.threat
   display: Fetch Table
-  hidden: false
   name: fetch_table
   options:
   - firewall.threat
@@ -94,13 +113,11 @@ configuration:
 - additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
-  hidden: false
   name: fetch_fields
   required: false
   type: 12
 - additionalinfo: 'Filter the fetched incidents according to the given query. Query example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: Can not be used in combination with `Severity` and `Subtype` parameters.'
   display: Fetch Filter
-  hidden: false
   name: filter_query
   required: false
   type: 12
@@ -111,7 +128,6 @@ configuration:
 - additionalinfo: "The maximum number of incidents to fetch per query.\t\nCaution: A large number could create overload. Default is 10."
   defaultvalue: '10'
   display: Max. number of incidents fetched per query
-  hidden: false
   name: limit
   required: false
   type: 0
@@ -2414,7 +2430,7 @@ script:
     description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     execution: false
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.54576
+  dockerimage: demisto/python_pancloud_v2:1.0.0.60697
   feed: false
   isfetch: true
   longRunning: false

@@ -2,7 +2,6 @@ comment: 'This script returns an HTML result of the cloud providers in the incid
 commonfields:
   id: CortexXDRCloudProviderWidget
   version: -1
-enabled: false
 name: CortexXDRCloudProviderWidget
 script: '-'
 system: false

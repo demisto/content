@@ -1,3 +1,5 @@
+Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
+
 ## EWS Extension Online Powershell v2
 
 ### App authentication

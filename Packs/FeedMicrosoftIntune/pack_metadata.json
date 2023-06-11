@@ -10,7 +10,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Threat Intelligence Management"],
+    "tags": [
+        "Threat Intelligence Management",
+        "Allow List"
+    ],
     "useCases": [],
     "keywords": [
         "Intune",

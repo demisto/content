@@ -59,6 +59,16 @@ args:
   name: tableTextMaxLength
   required: false
   secret: false
+- default: false
+  defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
+  description: use server preformatted time string in time section
+  isArray: false
+  name: forceServerFormattedTimeString
+  required: false
+  secret: false
 comment: Parse Sane-json-reports and export them as pdf files (used internally).
 commonfields:
   id: SanePdfReports
@@ -74,7 +84,7 @@ tags:
 - pdf
 timeout: '0'
 type: python
-dockerimage: demisto/sane-pdf-reports:1.0.0.55272
+dockerimage: demisto/sane-pdf-reports:1.0.0.58997
 runas: DBotWeakRole
 runonce: false
 tests:

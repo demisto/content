@@ -2158,3 +2158,384 @@ Retrieves result of the last Sigma analysis.
 >|MatchContext|RuleLevel|RuleDescription|RuleSource|RuleTitle|RuleId|RuleAuthor|
 >|---|---|---|---|---|---|---|
 >| $EventID: '1117' | high | Detects all actions taken by Windows Defender malware detection engines | Sigma Integrated Rule Set (GitHub) | Windows Defender Threat Detected | 693c36f61ac022fd66354b440464f490058c22b984ba1bef05ca246aba210ed1 | Ján Trenčanský |
+
+
+### vt-privatescanning-file
+
+***
+Checks the file reputation of the specified private hash.
+
+See files through the eyes of VirusTotal without uploading them to the main threat corpus, keeping them entirely private. Static, dynamic, network and similarity analysis included, as well as automated threat intel enrichment, but NOT multi-antivirus analysis.
+
+#### Base Command
+
+`vt-privatescanning-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | File hash (md5, sha1, sha256). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.File.attributes.type_description | String | Description of the type of the file. |
+| VirusTotal.File.attributes.tlsh | String | The locality-sensitive hashing. |
+| VirusTotal.File.attributes.exiftool.MIMEType | String | MIME type of the file. |
+| VirusTotal.File.attributes.names | String | Names of the file. |
+| VirusTotal.File.attributes.javascript_info.tags | String | Tags of the JavaScript. |
+| VirusTotal.File.attributes.exiftool.FileType | String | The file type. |
+| VirusTotal.File.attributes.exiftool.WordCount | Number | Total number of words in the file. |
+| VirusTotal.File.attributes.exiftool.LineCount | Number | Total number of lines in file. |
+| VirusTotal.File.attributes.exiftool.MIMEEncoding | String | The MIME encoding. |
+| VirusTotal.File.attributes.exiftool.FileTypeExtension | String | The file type extension. |
+| VirusTotal.File.attributes.exiftool.Newlines | Number | Number of newlines signs. |
+| VirusTotal.File.attributes.crowdsourced_ids_stats.info | Number | Number of IDS that marked the file as "info". |
+| VirusTotal.File.attributes.crowdsourced_ids_stats.high | Number | Number of IDS that marked the file as "high". |
+| VirusTotal.File.attributes.crowdsourced_ids_stats.medium | Number | Number of IDS that marked the file as "medium". |
+| VirusTotal.File.attributes.crowdsourced_ids_stats.low | Number | Number of IDS that marked the file as "low". |
+| VirusTotal.File.attributes.trid.file_type | String | The TrID file type. |
+| VirusTotal.File.attributes.trid.probability | Number | The TrID probability. |
+| VirusTotal.File.attributes.crowdsourced_yara_results.description | String | Description of the YARA rule. |
+| VirusTotal.File.attributes.crowdsourced_yara_results.source | String | Source of the YARA rule. |
+| VirusTotal.File.attributes.crowdsourced_yara_results.author | String | Author of the YARA rule. |
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name | String | Rule set name of the YARA rule. |
+| VirusTotal.File.attributes.crowdsourced_yara_results.rule_name | String | Name of the YARA rule. |
+| VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id | String | ID of the YARA rule. |
+| VirusTotal.File.attributes.names | String | Name of the file. |
+| VirusTotal.File.attributes.type_tag | String | Tag of the type. |
+| VirusTotal.File.attributes.size | Number | Size of the file. |
+| VirusTotal.File.attributes.sha256 | String | SHA-256 hash of the file. |
+| VirusTotal.File.attributes.type_extension | String | Extension of the type. |
+| VirusTotal.File.attributes.tags | String | File tags. |
+| VirusTotal.File.attributes.last_analysis_date | Number | Last analysis date in epoch format. |
+| VirusTotal.File.attributes.ssdeep | String | SSDeep hash of the file. |
+| VirusTotal.File.attributes.md5 | String | MD5 hash of the file. |
+| VirusTotal.File.attributes.sha1 | String | SHA-1 hash of the file. |
+| VirusTotal.File.attributes.magic | String | Identification of file by the magic number. |
+| VirusTotal.File.attributes.meaningful_name | String | Meaningful name of the file. |
+| VirusTotal.File.attributes.threat_severity.threat_severity_level | String | Threat severity level of the file. |
+| VirusTotal.File.attributes.threat_severity.threat_severity_data.popular_threat_category | String | Popular threat category of the file. |
+| VirusTotal.File.attributes.threat_verdict | String | Threat verdict of the file. |
+| VirusTotal.File.type | String | Type of the file. |
+| VirusTotal.File.id | String | ID of the file. |
+| VirusTotal.File.links.self | String | Link to the response. |
+
+#### Command Example
+
+```!vt-privatescanning-file file=example-file-hash```
+
+#### Context Example
+
+```json
+{
+    "VirusTotal": {
+        "File": {
+            "attributes": {
+                "type_description": "ELF",
+                "tlsh": "Example tlsh",
+                "vhash": "Example vhash",
+                "exiftool": {
+                    "MIMEType": "application/octet-stream",
+                    "CPUByteOrder": "Little endian",
+                    "ObjectFileType": "Executable file",
+                    "CPUArchitecture": "32 bit",
+                    "CPUType": "i386",
+                    "FileType": "ELF executable"
+                },
+                "trid": [
+                    {
+                        "file_type": "ELF Executable and Linkable format (Linux)",
+                        "probability": 55
+                    },
+                    {
+                        "file_type": "ELF Executable and Linkable format (generic)",
+                        "probability": 45
+                    }
+                ],
+                "crowdsourced_yara_results": [
+                    {
+                        "description": "Detects a suspicious ELF binary with UPX compression",
+                        "source": "https://www.example.com",
+                        "author": "Author X",
+                        "ruleset_name": "gen_elf_file_anomalies",
+                        "rule_name": "SUSP_ELF_LNX_UPX_Compressed_File",
+                        "ruleset_id": "0224a54ba7"
+                    }
+                ],
+                "threat_severity": {
+                    "threat_severity_level": "SEVERITY_HIGH",
+                    "threat_severity_data": {
+                        "has_dropped_files_with_detections": true,
+                        "type_tag": "elf",
+                        "has_execution_parents_with_detections": true,
+                        "can_be_detonated": true,
+                        "popular_threat_category": "trojan"
+                    },
+                    "last_analysis_date": "1681045097",
+                    "version": 1
+                },
+                "names": [
+                    "private",
+                    "/usr/lib/sample.so",
+                    "private_sample.bin",
+                ],
+                "owner": "virustotal",
+                "type_tag": "elf",
+                "elf_info": {
+                    "header": {
+                        "hdr_version": "1 (current)",
+                        "type": "EXEC (Executable file)",
+                        "obj_version": "0x1",
+                        "data": "2's complement, little endian",
+                        "machine": "Intel 80386",
+                        "num_section_headers": 0,
+                        "os_abi": "UNIX - Linux",
+                        "abi_version": 0,
+                        "entrypoint": 4633,
+                        "num_prog_headers": 2,
+                        "class": "ELF32"
+                    },
+                    "packers": [
+                        "upx"
+                    ],
+                    "segment_list": [
+                        {
+                            "segment_type": "LOAD"
+                        }
+                    ]
+                },
+                "size": 255510,
+                "type_extension": "so",
+                "threat_verdict": "VERDICT_MALICIOUS",
+                "detectiteasy": {
+                    "filetype": "ELF32",
+                    "values": [
+                        {
+                            "info": "EXEC 386-32",
+                            "version": "3.05",
+                            "type": "Packer",
+                            "name": "UPX"
+                        }
+                    ]
+                },
+                "crowdsourced_ids_stats": {
+                    "high": 0,
+                    "info": 0,
+                    "medium": 1,
+                    "low": 1
+                },
+                "type_tags": [
+                    "executable",
+                    "linux",
+                    "elf"
+                ],
+                "sandbox_verdicts": {
+                    "Zenbox Linux": {
+                        "category": "malicious",
+                        "confidence": 81,
+                        "sandbox_name": "Zenbox Linux",
+                        "malware_classification": [
+                            "MALWARE",
+                            "TROJAN",
+                            "EVADER"
+                        ],
+                        "malware_names": [
+                            "MalwareName"
+                        ]
+                    }
+                },
+                "sha256": "Example_sha256",
+                "tags": [
+                    "elf",
+                    "upx"
+                ],
+                "crowdsourced_ids_results": [
+                    {
+                        "rule_category": "Misc Attack",
+                        "alert_severity": "medium",
+                        "rule_msg": "Known Compromised or Hostile Host Traffic",
+                        "rule_raw": "alert ip [8.8.8.8] any -> $HOME_NET any"
+                    },
+                    {
+                        "rule_category": "Misc Attack",
+                        "alert_severity": "low",
+                        "rule_msg": "Poor Reputation IP",
+                        "rule_raw": "alert ip [1.1.1.1] any -> $HOME_NET any)"
+                    },
+                ],
+                "last_analysis_date": 1681386314,
+                "ssdeep": "Example ssdeep",
+                "packers": {
+                    "Gandelf": "upx"
+                },
+                "md5": "Example_md5",
+                "sha1": "Example_sha1",
+                "magic": "ELF 32-bit LSB executable, Intel 80386, version 1 (GNU/Linux), statically linked, stripped",
+                "meaningful_name": "private"
+            },
+            "type": "private_file",
+            "id": "Example_sha256",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/private/files/Example_sha256"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results of file hash Example_sha256
+>
+>|Sha1|Sha256|Md5|Meaningful Name|Threat Severity Level|Popular Threat Category|Threat Verdict|
+>|---|---|---|---|---|---|---|
+>| Example_sha1 | Example_sha256 | Example_md5 | private | HIGH | trojan | MALICIOUS |
+
+
+### vt-privatescanning-file-scan
+
+***
+Submits a file for private scanning. Use the vt-privatescanning-analysis-get command to get the scan results.
+
+#### Base Command
+
+`vt-privatescanning-file-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entryID | The file entry ID to submit. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.Submission.type | String | The type of the submission (analysis). |
+| VirusTotal.Submission.id | String | The ID of the submission. |
+| VirusTotal.Submission.EntryID | String | The entry ID of the file detonated. |
+| VirusTotal.Submission.Extension | String | File extension. |
+| VirusTotal.Submission.Info | String | File info. |
+| VirusTotal.Submission.MD5 | String | MD5 hash of the file. |
+| VirusTotal.Submission.Name | String | Name of the file. |
+| VirusTotal.Submission.SHA1 | String | SHA-1 of the file. |
+| VirusTotal.Submission.SHA256 | String | SHA-256 of the file. |
+| VirusTotal.Submission.SHA512 | String | SHA-512 of the file. |
+| VirusTotal.Submission.SSDeep | String | SSDeep of the file. |
+| VirusTotal.Submission.Size | String | Size of the file. |
+| VirusTotal.Submission.Type | String | Type of the file. |
+
+#### Command Example
+
+```!vt-privatescanning-file-scan entryID=example-entry-id```
+
+#### Context Example
+
+```json
+{
+    "VirusTotal": {
+        "Submission": {
+            "type": "private_analysis",
+            "id": "example-analysis-id",
+            "EntryID": "example-entry-id",
+            "Extension": "txt",
+            "Info": "ASCII text, with no line terminators",
+            "MD5": "Example_md5",
+            "Name": "Testing.txt",
+            "SHA1": "Example_sha1",
+            "SHA256": "Example_sha256",
+            "SHA512": "Example_sha512",
+            "SSDeep": "Example ssdeep",
+            "Size": "71 bytes",
+            "Type": "text/plain; charset=utf-8"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### The file has been submitted "Testing.txt"
+>
+>|id|EntryID|MD5|SHA1|SHA256|
+>|---|---|---|---|---|---|---|
+>| example-analysis-id | example-entry-id | Example_md5 | Example_sha1 | Example_sha256 |
+
+
+### vt-privatescanning-analysis-get
+
+***
+Get analysis of a private file submitted to VirusTotal.
+
+#### Base Command
+
+`vt-privatescanning-analysis-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the analysis. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. |
+| VirusTotal.Analysis.data.attributes.status | String | Status of the analysis. |
+| VirusTotal.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file. |
+| VirusTotal.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file. |
+| VirusTotal.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file. |
+| VirusTotal.Analysis.data.id | String | ID of the analysis. |
+| VirusTotal.Analysis.data.type | String | Type of object (analysis). |
+| VirusTotal.Analysis.meta.file_info.sha256 | String | SHA-256 hash of the file (if it is a file). |
+| VirusTotal.Analysis.meta.file_info.sha1 | String | SHA-1 hash of the file (if it is a file). |
+| VirusTotal.Analysis.meta.file_info.md5 | String | MD5 hash of the file (if it is a file). |
+| VirusTotal.Analysis.meta.file_info.size | Number | Size of the file (if it is a file). |
+| VirusTotal.Analysis.id | String | The analysis ID. |
+
+#### Command Example
+
+```!vt-privatescanning-analysis-get id=example-analysis-id```
+
+#### Context Example
+
+```json
+{
+    "VirusTotal": {
+        "Analysis": {
+            "id": "example-analysis-id",
+            "meta": {
+                "file_info": {
+                    "sha256": "Example_sha256",
+                    "sha1": "Example_sha1",
+                    "md5": "Example_md5",
+                    "size": 48
+                }
+            },
+            "data": {
+                "attributes": {
+                    "date": 1681461324,
+                    "status": "completed",
+                    "threat_severity_level": "SEVERITY_HIGH",
+                    "popular_threat_category": "trojan",
+                    "threat_verdict": "VERDICT_MALICIOUS",
+                },
+                "type": "private_analysis",
+                "id": "example-analysis-id"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Analysis results
+>
+>|Id|Threat Severity Level|Popular Threat Category|Threat Verdict|Status|
+>|---|---|---|---|---|---|---|
+>| example-analysis-id | HIGH | trojan | MALICIOUS | completed |

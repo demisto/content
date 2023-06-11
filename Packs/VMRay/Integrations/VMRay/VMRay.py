@@ -675,7 +675,7 @@ def get_sample_command():
     entry = create_sample_entry(data)
     scores = dbot_score_by_hash(entry)
     entry_context = {
-        'VMRay.Sample(var.SampleID === obj.SampleID)': entry,
+        'VMRay.Sample(val.SampleID === obj.SampleID)': entry,
         outputPaths.get('dbotscore'): scores,
     }
 
