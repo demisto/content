@@ -15,7 +15,7 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
 fi
 
 if [[ -z "$3" ]]; then
-  MARKETPLACE_TYPE="xsoar"
+  MARKETPLACE_TYPE="xsoar"  # The defult is "marketplace-dist"
 else
   MARKETPLACE_TYPE=$3
 
@@ -24,6 +24,9 @@ else
 
   elif [[ "$MARKETPLACE_TYPE" == "xpanse" ]]; then
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XPANSE_BUCKET
+
+  elif [[ "$MARKETPLACE_TYPE" == "xsoar-saas" ]]; then
+    GCS_PRODUCTION_BUCKET=$GCP
   fi
 fi
 
