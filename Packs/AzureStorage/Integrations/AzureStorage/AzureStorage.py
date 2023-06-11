@@ -377,8 +377,8 @@ def storage_account_list(client: ASClient, params: Dict, args: Dict) -> CommandR
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(=params'subscription_id')
+    resource_group_name = get_from_args_or_params(=params'resource_group_name')
     account_name = args.get('account_name', '')
     response = client.storage_account_list_request(account_name=account_name,
                                                    resource_group_name=resource_group_name,
@@ -431,8 +431,8 @@ def storage_account_create_update(client: ASClient, params: Dict, args: Dict) ->
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(=params'subscription_id')
+    resource_group_name = get_from_args_or_params(=params'resource_group_name')
 
     response = client.storage_account_create_update_request(subscription_id=subscription_id,
                                                             resource_group_name=resource_group_name,
@@ -488,8 +488,8 @@ def storage_blob_service_properties_get(client: ASClient, params: Dict, args: Di
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     account_name = args.get('account_name')
     response = client.storage_blob_service_properties_get_request(account_name=account_name,
                                                                   resource_group_name=resource_group_name,
@@ -543,9 +543,9 @@ def storage_blob_service_properties_set(client: ASClient, params: Dict, args: Di
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
-
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
+    for resource_group_name in resource_group_list:
     response = client.storage_blob_service_properties_set_request(subscription_id=subscription_id,
                                                                   resource_group_name=resource_group_name,
                                                                   args=args)
@@ -601,8 +601,8 @@ def storage_blob_containers_create(client: ASClient, params: Dict, args: Dict):
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
     response = client.storage_blob_containers_create_update_request(subscription_id=subscription_id,
                                                                     resource_group_name=resource_group_name,
@@ -650,8 +650,8 @@ def storage_blob_containers_update(client: ASClient, params: Dict, args: Dict) -
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(=params'subscription_id')
+    resource_group_name = get_from_args_or_params(=params'resource_group_name')
 
     response = client.storage_blob_containers_create_update_request(subscription_id=subscription_id,
                                                                     resource_group_name=resource_group_name,
@@ -700,8 +700,8 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
     """
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(=params, key='resource_group_name')
 
     response = client.storage_blob_containers_list_request(subscription_id=subscription_id,
                                                            resource_group_name=resource_group_name,
@@ -747,8 +747,8 @@ def storage_blob_containers_list(client: ASClient, params: Dict, args: Dict) -> 
 def storage_blob_containers_delete(client: ASClient, params: Dict, args: Dict) -> str:
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
-    subscription_id = get_from_params_or_args(params, args, 'subscription_id')
-    resource_group_name = get_from_params_or_args(params, args, 'resource_group_name')
+    subscription_id = get_from_args_or_params(=params'subscription_id')
+    resource_group_name = get_from_args_or_params(=params'resource_group_name')
     account_name = args.get("account_name", '')
     container_name = args.get("container_name", '')
 
@@ -802,7 +802,7 @@ def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> C
     limit = arg_to_number(args.get('limit', 50))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
-    subscription_id_list = argToList(get_from_params_or_args(params, args, 'subscription_id'))
+    subscription_id_list = argToList(get_from_args_or_params(=params'subscription_id'))
 
     filter_by_tag = ''
     if tag:
@@ -815,13 +815,24 @@ def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> C
             raise Exception("""Invalid tag format, please use the following format: '{"key_name":"value_name"}""", e)
 
     all_responses = []
+    warning_message = ''
+    all_subscriptions_are_wrong: bool = True
     for subscription_id in subscription_id_list:
-        response = client.list_resource_groups_request(subscription_id=subscription_id,
-                                                       filter_by_tag=filter_by_tag, limit=limit)
+        try:
+            response = client.list_resource_groups_request(subscription_id=subscription_id,
+                                                           filter_by_tag=filter_by_tag, limit=limit)
 
-        if "error" in response:
-            raise Exception(response)
-        all_responses.extend(response.get('value', []))
+            all_responses.extend(response.get('value', []))
+            all_subscriptions_are_wrong = False
+        except Exception as e:
+            # If at least one subscription is correct, we will not return the data of the correct subscriptions,
+            # and a warning message for the wrong subscriptions will be returned as well.
+            warning_message += f'Failed to get resource groups for subscription {subscription_id}. Error: {str(e)}\n\n'
+            if all_subscriptions_are_wrong and subscription_id == subscription_id_list[-1]:
+                # if all subscriptions are wrong, we will raise an exception.
+                raise (e.message)
+
+    return_warning(warning_message) if warning_message else None
 
     readable_output = tableToMarkdown('Resource Groups List',
                                       all_responses,
