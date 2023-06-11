@@ -1,0 +1,44 @@
+[
+  {
+    "x_mitre_platforms": [
+      "Windows"
+    ],
+    "x_mitre_domains": [
+      "enterprise-attack"
+    ],
+    "id": "T1111",
+    "type": "attack-pattern",
+    "created": "2020-01-14T17:18:32.126Z",
+    "created_by_ref": "identity--1",
+    "external_references": [
+      {
+        "source_name": "mitre-attack",
+        "external_id": "T1113",
+        "url": "test_mitre_url1"
+      }
+    ],
+    "modified": "2022-04-25T14:00:00.188Z",
+    "name": "Test Mitre Name 1"
+  },
+  {
+    "x_mitre_platforms": [
+      "Windows"
+    ],
+    "x_mitre_domains": [
+      "enterprise-attack"
+    ],
+    "id": "T2222",
+    "type": "attack-pattern",
+    "created": "2020-01-14T17:18:32.126Z",
+    "created_by_ref": "identity--2",
+    "external_references": [
+      {
+        "source_name": "mitre-attack",
+        "external_id": "T2223",
+        "url": "test_mitre_url2"
+      }
+    ],
+    "modified": "2022-04-25T14:00:00.188Z",
+    "name": "Test Mitre Name 2"
+  }
+]

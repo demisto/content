@@ -573,7 +573,7 @@ def test_metrics_list_command_error_code_401(requests_mock):
         (
             {"filter": '{"invalid_arg": 1}'},
             "invalid_arg is an invalid value for key. Possible values are: ['assignee', "
-            "'category', 'resolution', 'risk_score_min', 'status', 'ticket_id', 'types']",
+            "'categories', 'category', 'resolution', 'risk_score_min', 'status', 'ticket_id', 'types']",
         ),
     ],
 )
@@ -588,7 +588,7 @@ def test_detections_list_command_invalid_args(requests_mock, args, error_msg):
      - Ensure appropriate error is raised.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud=False)
     with pytest.raises(Exception) as error:
@@ -596,9 +596,31 @@ def test_detections_list_command_invalid_args(requests_mock, args, error_msg):
     assert str(error.value) == error_msg
 
 
+def test_detections_list_command_failure_when_firmware_version_is_outdated(requests_mock):
+    """Test case scenario for execution of detections list command when ExtraHop firmware version is less than 9.3.0.
+
+    Given:
+       - Arguments for detections list command.
+    When:
+       - detections_list_command is called.
+    Then:
+       - Returns a valid error message.
+    """
+    client = init_mock_client(requests_mock, on_cloud=False)
+    requests_mock.get(
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
+    )
+    with pytest.raises(DemistoException) as err:
+        ExtraHop_v2.detections_list_command(client, {}, True, '{}')
+    assert (
+        str(err.value)
+        == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
+    )
+
+
 @pytest.mark.parametrize("on_cloud", [False, True])
-def test_list_detections_command_successful_execution(on_cloud, requests_mock):
-    """Test case scenario for successful execution of detections-list command.
+def test_list_detections_command_successful_execution_with_categories(on_cloud, requests_mock):
+    """Test case scenario for successful execution of detections-list command with categories.
 
     Given:
      - User has provided valid credentials.
@@ -609,13 +631,90 @@ def test_list_detections_command_successful_execution(on_cloud, requests_mock):
      - Ensure outputs prefix is correct.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "2",
         "filter": """{
-        \"category\": \"sec\",
+        \"categories\": [\"sec.attack\"],
+        \"risk_score_min\": 51
+    }""",
+        "from": "1573500360001",
+        "offset": "2",
+        "sort": "end_time asc,id desc",
+        "until": "1673569370001",
+    }
+    response = load_mock_response(LIST_DETECTIONS_SUCCESS)
+
+    expected_hr = load_file("list_detections_success_hr.md")
+
+    requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=response)
+
+    results = ExtraHop_v2.detections_list_command(client, args)
+
+    assert results.readable_output == expected_hr
+    assert results.outputs_prefix == "ExtraHop.Detections"
+
+
+@pytest.mark.parametrize("on_cloud", [False, True])
+def test_list_detections_command_successful_execution_with_category(on_cloud, requests_mock):
+    """Test case scenario for successful execution of detections-list command with category.
+
+    Given:
+     - User has provided valid credentials.
+    When:
+     - detections_list_command is called.
+    Then:
+     - Ensure human-readable output is correct.
+     - Ensure outputs prefix is correct.
+    """
+    requests_mock.get(
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
+    )
+    client = init_mock_client(requests_mock, on_cloud)
+    args = {
+        "limit": "2",
+        "filter": """{
+        \"category\": \"sec.attack\",
+        \"risk_score_min\": 51
+    }""",
+        "from": "1573500360001",
+        "offset": "2",
+        "sort": "end_time asc,id desc",
+        "until": "1673569370001",
+    }
+    response = load_mock_response(LIST_DETECTIONS_SUCCESS)
+
+    expected_hr = load_file("list_detections_success_hr.md")
+
+    requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=response)
+
+    results = ExtraHop_v2.detections_list_command(client, args)
+
+    assert results.readable_output == expected_hr
+    assert results.outputs_prefix == "ExtraHop.Detections"
+
+
+@pytest.mark.parametrize("on_cloud", [False, True])
+def test_list_detections_command_successful_execution_without_category(on_cloud, requests_mock):
+    """Test case scenario for successful execution of detections-list command without categories.
+
+    Given:
+     - User has provided valid credentials.
+    When:
+     - detections_list_command is called.
+    Then:
+     - Ensure human-readable output is correct.
+     - Ensure outputs prefix is correct.
+    """
+    requests_mock.get(
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
+    )
+    client = init_mock_client(requests_mock, on_cloud)
+    args = {
+        "limit": "2",
+        "filter": """{
         \"risk_score_min\": 51
     }""",
         "from": "1573500360001",
@@ -648,13 +747,13 @@ def test_list_detections_command_when_description_has_metric_link(on_cloud, requ
      - Ensure outputs prefix is correct.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "1",
         "filter": """{
-        \"category\": \"sec\",
+        \"categories\": [\"sec.attack\"],
         \"risk_score_min\": 30
     }""",
         "from": "1573500360001",
@@ -688,13 +787,13 @@ def test_list_detections_command_when_description_has_complete_metric_link(on_cl
      - Ensure outputs prefix is correct.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud)
     args = {
         "limit": "1",
         "filter": """{
-        \"category\": \"sec\",
+        \"categories\": [\"sec.attack\"],
         \"risk_score_min\": 30
     }""",
         "from": "1573500360001",
@@ -726,11 +825,11 @@ def test_list_detections_command_using_advanced_filter(requests_mock):
      - Ensure outputs prefix is correct.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {}
-    advanced_filter = """{\"filter\": {\"category\": \"sec\",\"risk_score_min\": 51},
+    advanced_filter = """{\"filter\": {\"categories\": [\"sec.attack\"],\"risk_score_min\": 51},
                 \"limit\": 1,\"offset\": 0,
                 \"sort\": [
                     {
@@ -763,11 +862,11 @@ def test_list_detections_command_using_advanced_filter_invalid_arg(requests_mock
      - Ensure appropriate error is raised.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {}
-    advanced_filter = """{\"filter\": {\"category\": \"sec\",\"risk_score_min\": 51},
+    advanced_filter = """{\"filter\": {\"categories\": [\"sec.attack\"],\"risk_score_min\": 51},
                 \"limit\": 1,\"offset\": 0,\"invalid_arg\": 0,
                 \"sort\": [
                     {
@@ -798,7 +897,7 @@ def test_list_detections_command_error_code_400(requests_mock):
      - Ensure error is raised with error code.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {
@@ -831,7 +930,7 @@ def test_list_detections_command_error_code_502(requests_mock):
      - Ensure error is raised with error code.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {}
@@ -852,7 +951,7 @@ def test_list_detections_command_error_code_401(requests_mock):
      - Ensure error is raised with error code.
     """
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     client = init_mock_client(requests_mock, on_cloud=False)
     args = {"limit": "2"}
@@ -2361,7 +2460,7 @@ def test_fetch_detection_when_invalid_arguments_provided(
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     with pytest.raises(ValueError) as err:
         ExtraHop_v2.fetch_incidents(client, parameters, last_run, False)
@@ -2369,7 +2468,7 @@ def test_fetch_detection_when_invalid_arguments_provided(
 
 
 def test_fetch_detections_failure_when_firmware_version_is_outdated(requests_mock):
-    """Test case scenario for execution of fetch_detections when ExtraHop firmware version is less than 9.1.2.
+    """Test case scenario for execution of fetch_detections when ExtraHop firmware version is less than 9.3.0.
 
     Given:
        - Parameters for fetch_incident
@@ -2380,17 +2479,18 @@ def test_fetch_detections_failure_when_firmware_version_is_outdated(requests_moc
     """
     client = init_mock_client(requests_mock, on_cloud=False)
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.0.1943"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
     )
     with pytest.raises(DemistoException) as err:
         ExtraHop_v2.fetch_incidents(client, {}, {}, False)
     assert (
         str(err.value)
-        == "This integration works with ExtraHop firmware version greater than or equal to 9.1.2"
+        == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
     )
 
 
-def test_fetch_detection_success_with_last_run(requests_mock):
+@pytest.mark.parametrize("advanced_filter", ["{}", '{"categories":["sec.attack"]}'])
+def test_fetch_detection_success_with_last_run(requests_mock, advanced_filter):
     """Test case scenario for execution of fetch_detections when last_run is present.
 
     Given:
@@ -2403,7 +2503,7 @@ def test_fetch_detection_success_with_last_run(requests_mock):
     incidents = load_mock_response("mock_incidents.json")
 
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
 
     mock_response = load_mock_response("fetch_detections_success.json")
@@ -2422,7 +2522,8 @@ def test_fetch_detection_success_with_last_run(requests_mock):
         "offset": 0,
         "version_recheck_time": mock_time,
     }
-    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, {}, last_run, False)
+    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(
+        client, {"advanced_filter": advanced_filter}, last_run, False)
 
     assert next_run == {
         "detection_start_time": 1673518450001,
@@ -2448,7 +2549,7 @@ def test_fetch_detection_participants_is_empty(requests_mock):
     incidents = load_mock_response("mock_incidents_no_participants.json")
 
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
 
     mock_response = load_mock_response("fetch_detections_empty_participants.json")
@@ -2491,7 +2592,7 @@ def test_fetch_detections_success_when_detections_equal_to_max_fetch(requests_mo
     incidents = load_mock_response("mock_incidents.json")
 
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
 
     mock_response = load_mock_response("fetch_detections_success.json")
@@ -2523,7 +2624,7 @@ def test_fetch_incident_empty_response(requests_mock):
     last_run = {"update_or_mod_time": "update_time"}
     parameters = {"first_fetch": "1 Jan"}
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=[], status_code=200)
     actual_incidents, next_run = ExtraHop_v2.fetch_incidents(
@@ -2546,13 +2647,13 @@ def test_test_module_failure_extrahop_version_is_outdated(requests_mock):
     client = init_mock_client(requests_mock, on_cloud=False)
     requests_mock.get(f"{BASE_URL}/api/v1/extrahop", json={})
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.0.1943"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
     )
     with pytest.raises(DemistoException) as err:
         ExtraHop_v2.test_module(client)
     assert (
         str(err.value)
-        == "This integration works with ExtraHop firmware version greater than or equal to 9.1.2"
+        == "This integration works with ExtraHop firmware version greater than or equal to 9.3.0"
     )
 
 
@@ -2569,7 +2670,7 @@ def test_test_module_failure(requests_mock):
     client = init_mock_client(requests_mock, on_cloud=False)
     requests_mock.get(f"{BASE_URL}/api/v1/extrahop", json={})
     requests_mock.get(
-        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.3.0.1319"}
     )
     with pytest.raises(ValueError) as err:
         ExtraHop_v2.test_module(client)

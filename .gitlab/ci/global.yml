@@ -362,6 +362,6 @@
     - job-done
 
 .jobs-done-check:
-  stage: are-jobs-realy-done
+  stage: are-jobs-really-done
   script:
     - python3 Tests/scripts/check_jobs_done.py --job-done-files $PIPELINE_JOBS_FOLDER
