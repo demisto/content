@@ -261,7 +261,7 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 ''' CLIENT CLASS '''
 
-
+# TEST
 class Client(BaseClient):
     """Client class to interact with the service API
 

