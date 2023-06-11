@@ -131,3 +131,5 @@ ignore=IF113
 [file:incidentfield-Use_Case_Priority.json]
 ignore=IF113
 
+[file:Use_Case_Builder.yml]
+ignore=PB105
