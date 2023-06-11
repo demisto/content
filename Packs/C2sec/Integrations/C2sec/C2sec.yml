@@ -7,29 +7,36 @@ fromversion: 5.0.0
 category: Data Enrichment & Threat Intelligence
 description: Understand Your Cyber Exposure as Easy as a Google Search
 configuration:
-- display: API URL (e.g. https://api.c2sec.com/api)
+- defaultvalue: ''
+  display: API URL (e.g. https://api.c2sec.com/api)
   name: endpointURL
-  defaultvalue: ""
-  type: 0
   required: true
-- display: API Key
+  type: 0
+- defaultvalue: ''
+  display: API Key
+  hidden: true
   name: apikey
-  defaultvalue: ""
+  required: false
   type: 4
-  required: true
-- display: Default domain name
+- displaypassword: API Key
+  hiddenusername: true
+  name: apikey_creds
+  required: false
+  type: 9
+- defaultvalue: ''
+  display: Default domain name
   name: domainName
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: Trust any certificate (not secure)
   name: unsecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+
 script:
   script: '-'
   type: python
