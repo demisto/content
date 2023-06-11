@@ -3605,7 +3605,7 @@ script:
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
   - arguments:
-    - description: If to poll for results.
+    - description: Whether to poll for results.
       auto: PREDEFINED
       name: wait_for_result
       defaultValue: 'false'
@@ -3616,7 +3616,7 @@ script:
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
       required: false
-    - description: Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments.
+    - description: Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments.
       isArray: true
       name: ids
       required: false
@@ -3635,10 +3635,10 @@ script:
     - description: UTC-format time of scan start to filter by.
       name: scan_started_on
       required: false
-    - description: UTC-format time of scan start to filter by.
+    - description: UTC-format time of the scan completion to filter by.
       name: scan_completed_on
       required: false
-    - description: Starting index of overall result set from which to return ids.
+    - description: Starting index of overall result set from which to return IDs.
       name: offset
       required: false
     - description: Maximum number of resources to return.
@@ -3677,7 +3677,7 @@ script:
       description: The source of the scan initiation.
       type: String
     - contextPath: CrowdStrike.ODSScan.quarantine
-      description: If was set to quarantine.
+      description: Whether the scan was set to quarantine.
       type: Boolean
     - contextPath: CrowdStrike.ODSScan.cpu_priority
       description: The CPU priority for the scan (1-5).
@@ -3710,7 +3710,7 @@ script:
       description: The number of files that were traversed during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScan.metadata.status
-      description: The status of the scan on this host. (e.q., "pending", "running", "completed", or "failed").
+      description: The status of the scan on this host. (e.g., "pending", "running", "completed", or "failed").
       type: String
     - contextPath: CrowdStrike.ODSScan.metadata.started_on
       description: The date and time that the scan started.
@@ -3722,7 +3722,7 @@ script:
       description: The date and time that the metadata was last updated.
       type: Date
     - contextPath: CrowdStrike.ODSScan.status
-      description: The status of the scan. (e.q., "pending", "running", "completed", or "failed").
+      description: The status of the scan (e.g., "pending", "running", "completed", or "failed").
       type: String
     - contextPath: CrowdStrike.ODSScan.hosts
       description: A list of the host IDs that were scanned.
@@ -3773,7 +3773,7 @@ script:
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
       required: false
-    - description: Comma-separated list of scan IDs to retrieve details about. If set will override all other arguments.
+    - description: Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments.
       isArray: true
       name: ids
       required: false
@@ -3797,7 +3797,7 @@ script:
     - description: Deleted scans only.
       name: deleted
       required: false
-    - description: Starting index of overall result set from which to return ids.
+    - description: Starting index of overall result set from which to return IDs.
       name: offset
       required: false
     - description: Maximum number of resources to return.
@@ -3840,10 +3840,10 @@ script:
       description: Whether notifications of the scan were sent to endpoints.
       type: Boolean
     - contextPath: CrowdStrike.ODSScheduledScan.pause_duration
-      description: The pause duration of scan in hours.
+      description: The pause duration of the scan in hours.
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.max_duration
-      description: The max duration of scan in hours.
+      description: The max duration of the scan in hours.
       type: Number
     - contextPath: CrowdStrike.ODSScheduledScan.max_file_size
       description: The maximum file size that the scan can handle in MB.
@@ -3873,7 +3873,7 @@ script:
       description: Whether the scan has been deleted.
       type: Boolean
     - contextPath: CrowdStrike.ODSScheduledScan.quarantine
-      description: If was set to quarantine.
+      description: Whether the scan was set to quarantine.
       type: Boolean
     - contextPath: CrowdStrike.ODSScheduledScan.metadata.host_id
       description: Scan host IDs.
@@ -3909,7 +3909,7 @@ script:
     - description: UTC-format time of scan completion to filter by.
       name: completed_on
       required: false
-    - description: Starting index of overall result set from which to return ids.
+    - description: Starting index of overall result set from which to return IDs.
       name: offset
       required: false
     - description: Maximum number of resources to return.
@@ -3967,7 +3967,7 @@ script:
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
       required: false
-    - description: Comma-separated list of malicious file IDs to retrieve details about. If set will override all other arguments.
+    - description: Comma-separated list of malicious file IDs to retrieve details about. If set, will override all other arguments.
       isArray: true
       name: file_ids
       required: false
@@ -3991,7 +3991,7 @@ script:
       isArray: true
       name: hash
       required: false
-    - description: Starting index of overall result set from which to return ids.
+    - description: Starting index of overall result set from which to return IDs.
       name: offset
       required: false
     - description: Maximum number of resources to return.
@@ -4086,10 +4086,10 @@ script:
     - description: Sensor ML prevention level.
       name: sensor_ml_level_prevention
       required: false
-    - description: ML Detection level for the scan.
+    - description: Cloud ML detection level for the scan.
       name: cloud_ml_level_detection
       required: false
-    - description: ML Prevention level for the scan.
+    - description: Cloud ML prevention level for the scan.
       name: cloud_ml_level_prevention
       required: false
     - description: Maximum time (in seconds) the scan is allowed to execute.
@@ -4127,7 +4127,7 @@ script:
       description: The source of the scan initiation.
       type: String
     - contextPath: CrowdStrike.ODSScan.quarantine
-      description: If was set to quarantine.
+      description: Whether the scan was set to quarantine.
       type: Boolean
     - contextPath: CrowdStrike.ODSScan.cpu_priority
       description: The CPU priority for the scan (1-5).
@@ -4160,7 +4160,7 @@ script:
       description: The number of files that were traversed during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScan.metadata.status
-      description: The status of the scan on this host. (e.q., "pending", "running", "completed", or "failed").
+      description: The status of the scan on this host (e.g., "pending", "running", "completed", or "failed").
       type: String
     - contextPath: CrowdStrike.ODSScan.metadata.started_on
       description: The date and time that the scan started.
@@ -4172,7 +4172,7 @@ script:
       description: The date and time that the metadata was last updated.
       type: Date
     - contextPath: CrowdStrike.ODSScan.status
-      description: The status of the scan. (e.q., "pending", "running", "completed", or "failed").
+      description: The status of the scan (e.g., "pending", "running", "completed", or "failed").
       type: String
     - contextPath: CrowdStrike.ODSScan.hosts
       description: A list of the host IDs that were scanned.
@@ -4265,10 +4265,10 @@ script:
     - description: Sensor ML prevention level.
       name: sensor_ml_level_prevention
       required: false
-    - description: ML Detection level for the scan.
+    - description: Cloud ML detection level for the scan.
       name: cloud_ml_level_detection
       required: false
-    - description: ML Prevention level for the scan.
+    - description: Cloud ML prevention level for the scan.
       name: cloud_ml_level_prevention
       required: false
     - description: Maximum time (in seconds) the scan is allowed to execute.
@@ -4359,7 +4359,7 @@ script:
       description: Whether the scan has been deleted.
       type: Boolean
     - contextPath: CrowdStrike.ODSScheduledScan.quarantine
-      description: If was set to quarantine.
+      description: Whether the scan was set to quarantine.
       type: Boolean
     - contextPath: CrowdStrike.ODSScheduledScan.metadata.host_id
       description: Scan host IDs.
