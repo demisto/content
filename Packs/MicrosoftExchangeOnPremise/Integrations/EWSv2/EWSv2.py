@@ -31,9 +31,6 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
-# calling ews-get-folders command returns AccessDenied due to permission set field, solution suggested in this pr -https://github.com/ecederstrand/exchangelib/issues/610#issuecomment-512197149
-Folder.FIELDS = [f for f in Folder.FIELDS if f.name != 'permission_set']
-
 
 class exchangelibSSLAdapter(SSLAdapter):
     def cert_verify(self, conn, url, verify, cert):
