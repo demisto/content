@@ -1,34 +1,36 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# For Turkish
 # Bu script Halim ONUR tarafından 06/06/2023 tarihinde yazılmıştır.
-
+# For English
+# This script has been written by Halim ONUR on June 6, 2023.
 
 def close_investigation_and_qradar_offense():
-    # Get Investigation kısmı
+    # The section titled Get Investigation
     current_investigation_id = demisto.investigation()['id']
 
-    # Kapatılacak notu gir
+    # For entry, a note is required.
     note = demisto.args().get('note')
 
-    # Incident ı kapatmak için gerekli adımmlar
+    # The necessary steps to close the incident.
     close_params = {
         'id': current_investigation_id,
         'status': 'Closed'
     }
 
     try:
-        # Incident kapatılıyor
+        # The incident is being closed.
         demisto.executeCommand('CloseInvestigation', close_params)
         demisto.results('Incident başarıyla kapatıldı.')
 
-        # Notu XSOAR'daki Incident a ekle
+        # Add the note to the Incident in XSOAR.
         demisto.executeCommand('setIncident', {'closeNotes': note})
         demisto.results('Not, incident a başarıyla eklendi.')
     except Exception as e:
         demisto.error(f'incident kapatılırken bir hata oluştu: {str(e)}')
 
     try:
-        # QRadar offense'ını kapatmak için gerekli parametrele
+        # The parameters required to close the QRadar offense.
         incident = demisto.incident()
         qradar_close_params = {
             'offense_id': incident.get('CustomFields', {}).get('alertid', ''),
@@ -36,13 +38,12 @@ def close_investigation_and_qradar_offense():
             'closing_reason_id': '2'
         }
 
-        # QRadar offense'ını kapat
+        # close the QRadar offense
         demisto.executeCommand('qradar-offense-update', qradar_close_params)
         demisto.results('QRadar offense\'ı başarıyla kapatıldı.')
 
-        # Notu QRadar offense'ına ekle
+        # Add the note to the QRadar offense.
         qradar_note_params = {
-            # 'offense_id': qradar_close_params['id'],
             'offense_id': incident.get('CustomFields', {}).get('alertid', ''),
             'note_text': note
         }
@@ -52,6 +53,6 @@ def close_investigation_and_qradar_offense():
         demisto.error(f'QRadar offense\'ı kapatılırken bir hata oluştu: {str(e)}')
 
 
-# Main modul
+# Main
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     close_investigation_and_qradar_offense()
