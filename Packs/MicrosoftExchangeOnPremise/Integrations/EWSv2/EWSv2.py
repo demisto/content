@@ -7,9 +7,9 @@ from multiprocessing import Process
 import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
-from io import StringIO  #python3 change
+from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
-                         Body, Build, Configuration, Credentials, EWSDateTime,
+                         Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
                          ItemAttachment, Version)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
@@ -21,18 +21,18 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter, Protocol
+from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016, EXCHANGE_2019)
-
-Folder.FIELDS = [f for f in Folder.FIELDS if f.name != 'permission_set']
-
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
+
+# calling ews-get-folders command returns AccessDenied due to permission set field, solution suggested in this pr -https://github.com/ecederstrand/exchangelib/issues/610#issuecomment-512197149
+Folder.FIELDS = [f for f in Folder.FIELDS if f.name != 'permission_set']
 
 
 class exchangelibSSLAdapter(SSLAdapter):
@@ -45,13 +45,7 @@ class exchangelibSSLAdapter(SSLAdapter):
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
 
-# Docker BC
-MNS = None
-TNS = None
-if exchangelib.__version__ == "1.12.0":
-    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
-else:
-    MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS  # pylint: disable=E1101
+MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
 
 # consts
 VERSIONS = {
@@ -331,10 +325,6 @@ ACCOUNT_EMAIL = ''
 PASSWORD = ''
 config = None
 credentials = None
-
-PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
-if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
-    return_error(PUBLIC_FOLDERS_ERROR)
 
 
 # NOTE: Same method used in EWSMailSender
@@ -648,8 +638,6 @@ def get_item_from_mailbox(account, item_id):      # pragma: no cover
 
 
 def is_default_folder(folder_path, is_public):      # pragma: no cover
-    if exchangelib.__version__ != "1.12.0":  # Docker BC
-        return False
 
     if is_public is not None:
         return is_public
@@ -798,10 +786,7 @@ class GetSearchableMailboxes(EWSService):
         if self.protocol.version.build < EXCHANGE_2013:
             raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
         elements = self._get_elements(payload=self.get_payload())
-        res = []
-        for e in elements:
-            res.append(self.parse_element(e))
-        return res
+        return [self.parse_element(e) for e in elements]
 
     def get_payload(self):
         element = create_element(
@@ -1063,6 +1048,7 @@ def parse_object_as_dict_with_serialized_items(object):
                 json.dumps(v)
                 raw_dict[field.name] = v
             except (TypeError, OverflowError):
+                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field')
                 continue
     return raw_dict
 
@@ -1636,10 +1622,7 @@ def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no c
 def prepare_args(d):      # pragma: no cover
     d = dict((k.replace("-", "_"), v) for k, v in list(d.items()))
     if 'is_public' in d:
-        if exchangelib.__version__ != "1.12.0":  # Docker BC
-            raise Exception(PUBLIC_FOLDERS_ERROR)
-        else:
-            d['is_public'] = d['is_public'] == 'True'
+        d['is_public'] = d['is_public'] == 'True'
     return d
 
 
@@ -1768,7 +1751,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
         try:
             json.dumps(x)
             return True
-        except (TypeError, OverflowError):
+        except Exception:
             return False
 
     def parse_contact(contact):
@@ -1786,7 +1769,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
         if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
             contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
         contact_dict = keys_to_camel_case(contact_dict)
-        contact_dict = dict((k, v) for k, v in list(contact_dict.items()) if v and is_jsonable(v))
+        contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
         contact_dict['originMailbox'] = target_mailbox
         return contact_dict
 
@@ -1818,9 +1801,8 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):     # prag
 def find_folders(target_mailbox=None, is_public=None):     # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     root = account.root
-    if exchangelib.__version__ == "1.12.0":  # Docker BC
-        if is_public:
-            root = account.public_folders_root
+    if is_public:
+        root = account.public_folders_root
     folders = []
     for f in root.walk():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
@@ -1883,9 +1865,7 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
 
         items_result.append(item_attachment)
     hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
-                  'receivedBy', 'author', 'toRecipients', ]
-    if exchangelib.__version__ == "1.12.0":  # Docker BC
-        hm_headers.append('itemId')
+                  'receivedBy', 'author', 'toRecipients', 'itemId']
     return get_entry_for_object('Items in folder ' + folder_path,
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 items_result,
@@ -1939,8 +1919,6 @@ def folder_to_context_entry(f):
 def check_cs_prereqs():      # pragma: no cover
     if 'outlook.office365.com' not in EWS_SERVER:
         raise Exception("This command is only supported for Office 365")
-    if exchangelib.__version__ != "1.12.0":
-        raise Exception("Please update your docker image to use this command")
 
 
 def get_cs_error(stderr):
@@ -2449,7 +2427,7 @@ def sub_main():     # pragma: no cover
                                    "Additional information: {}".format(str(e))
         if isinstance(e, ErrorInvalidPropertyRequest):
             error_message_simple = "Verify that the Exchange version is correct."
-        elif exchangelib.__version__ == "1.12.0":
+        else:
             from exchangelib.errors import MalformedResponseError
 
             if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
