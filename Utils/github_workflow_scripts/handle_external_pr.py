@@ -67,23 +67,24 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_packs_support_levels(changed_pack_dirs: Set[str]) -> Tuple[Set[str], Set[str]]:
+def get_packs_support_levels(pack_dirs: Set[str]) -> Set[str]:
     """
-    Get the pack support levels from the pack metadata
+    Get the pack support levels from the pack metadata, removes pack_dirs that their support label was retrieved successfully.
 
     Args:
-        changed_pack_dirs (set): paths to the packs that were changed
+        pack_dirs (set): paths to the packs that were changed
     """
     packs_support_levels, packs_with_no_support_label = set(), set()
 
-    for pack_dir in changed_pack_dirs:
+    for pack_dir in pack_dirs.copy():
         if pack_support_level := get_pack_metadata(pack_dir).get('support'):
             print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
             packs_support_levels.add(pack_support_level)
+            pack_dirs.remove(pack_dir)
         else:
-            packs_with_no_support_label.add(pack_dir)
+            print(f'Could not find pack support level for pack {pack_dir}')
 
-    return packs_support_levels, packs_with_no_support_label
+    return packs_support_levels
 
 
 def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str) -> str:
@@ -106,41 +107,44 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
     Returns:
         highest support level of the packs that were changed, empty string in case no packs were changed.
     """
-    changed_pack_dirs = set()
+    pack_dirs_to_check_support_labels = set()
     for file_path in file_paths:
         try:
             if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
-                changed_pack_dirs.add(f'Packs/{pack_name}')
+                pack_dirs_to_check_support_labels.add(f'Packs/{pack_name}')
         except Exception as err:
             print(f'Could not retrieve pack name from file {file_path}, {err=}')
 
-    print(f'{changed_pack_dirs=}')
+    print(f'{pack_dirs_to_check_support_labels=}')
 
-    all_packs_support_levels, packs_with_no_support_label = get_packs_support_levels(changed_pack_dirs)
-    print(f'{all_packs_support_levels=}, {packs_with_no_support_label=}')
+    packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_labels)
+    print(f'{packs_support_levels=}')
 
     # if this is a new pack, it is not in the content repo, so we need to
     # checkout the contributor forked branch to retrieve them
-    if packs_with_no_support_label:
+    if pack_dirs_to_check_support_labels:
+        # there are still packs to need to get their support labels
         fork_owner = os.getenv('GITHUB_ACTOR')
+        print(
+            f'Trying to checkout to forked branch of {fork_owner} '
+            f'to retrieve support level of {pack_dirs_to_check_support_labels}'
+        )
         try:
             with Checkout(
                 repo=Repo(os.getcwd(), search_parent_directories=True),
                 branch_to_checkout=external_pr_branch,
                 fork_owner=fork_owner
             ):
-                packs_support_levels, packs_with_no_support_label = get_packs_support_levels(
-                    packs_with_no_support_label
-                )
-            all_packs_support_levels.union(packs_support_levels)
-            if packs_with_no_support_label:
-                print(f'Could not find support label for packs {packs_with_no_support_label}')
-            print(f'all_packs_support_levels after checkout: {all_packs_support_levels}')
-        except git.GitCommandError as error:
-            print(f'received error when trying to checkout to {fork_owner} content repo\n{error=}')
+                packs_support_levels.union(get_packs_support_levels(pack_dirs_to_check_support_labels))
+        except Exception as error:
+            print(f'received error when trying to checkout to {fork_owner} forked content repo\n{error=}')
 
-    if all_packs_support_levels:
-        return get_highest_support_label(all_packs_support_levels)
+    if pack_dirs_to_check_support_labels:
+        print(f'Could not retrieve support label for packs {pack_dirs_to_check_support_labels}')
+    print(f'{packs_support_levels=}')
+
+    if packs_support_levels:
+        return get_highest_support_label(packs_support_levels)
     return ''
 
 
