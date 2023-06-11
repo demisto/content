@@ -108,7 +108,11 @@ class Checkout:
     def __enter__(self):
         """Checks out the given branch"""
         if self.fork_owner:
-            fork_remote = self.repo.remote(name=self.fork_owner)
+            try:
+                fork_remote = self.repo.remote(name='GuyAfik')
+            except ValueError as error:
+                print(f'{error=} when trying to fetch remote for GuyAfik')
+                fork_remote = self.repo.remote(name=self.fork_owner)
             fork_remote.fetch(self.branch_to_checkout)
             self._original_branch = self.repo.active_branch.name
             self.repo.git.checkout(f"remotes/{self.fork_owner}/{self.branch_to_checkout}")

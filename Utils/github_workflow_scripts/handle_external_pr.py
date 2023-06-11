@@ -122,7 +122,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
     # if this is a new pack, it is not in the content repo, so we need to
     # checkout the contributor forked branch to retrieve them
     if packs_with_no_support_label:
-        fork_owner = os.getenv('GITHUB_REPOSITORY_OWNER')
+        fork_owner = os.getenv('GITHUB_ACTOR')
         try:
             with Checkout(
                 repo=Repo(os.getcwd(), search_parent_directories=True),
