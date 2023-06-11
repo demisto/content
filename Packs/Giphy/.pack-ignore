@@ -1,4 +1,5 @@
-,IN153
+[file:Giphy.yml]
+ignore=IN153
 
 [file:Giphy_image.png]
 ignore=IM111
