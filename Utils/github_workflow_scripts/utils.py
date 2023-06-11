@@ -107,7 +107,7 @@ class Checkout:  # pragma: no cover
             self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{fork_owner}/content")
 
             forked_remote = self.repo.remote(forked_remote_name)
-            forked_remote.fetch(self.branch_to_checkout)
+            forked_remote.fetch(branch_to_checkout)
             self.branch_to_checkout = f'refs/remotes/{forked_remote_name}/{branch_to_checkout}'
         else:
             self.branch_to_checkout = branch_to_checkout
