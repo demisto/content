@@ -7,27 +7,21 @@ configuration:
   name: app_id
   required: true
   type: 9
-- additionalinfo: If the percentage of 'Malicious' reported statuses is above this
-    threshold the indicator will be defined as malicious, otherwise suspicious
+- additionalinfo: If the percentage of 'Malicious' reported statuses is above this threshold the indicator will be defined as malicious, otherwise suspicious
   defaultvalue: '50'
   display: Malicious Threshold
-  hidden: false
   name: malicious_threshold
   required: false
   type: 0
-- additionalinfo: If the number of 'Suspicious' reported statuses is above this threshold
-    the indicator will be defined as suspicious
+- additionalinfo: If the number of 'Suspicious' reported statuses is above this threshold the indicator will be defined as suspicious
   defaultvalue: '1'
   display: Suspicious Threshold
-  hidden: false
   name: suspicious_threshold
   required: false
   type: 0
-- additionalinfo: If the percentage of 'Non Malicious' reported statuses is above
-    this threshold the indicator will be defined as good, otherwise unknown
+- additionalinfo: If the percentage of 'Non Malicious' reported statuses is above this threshold the indicator will be defined as good, otherwise unknown
   defaultvalue: '50'
   display: Non Malicious Threshold
-  hidden: false
   name: non_malicious_threshold
   required: false
   type: 0
@@ -55,8 +49,7 @@ configuration:
   required: false
   type: 8
 defaultclassifier: 'null'
-description: Receive threat intelligence about applications, IP addresses, URLs, and
-  hashes. A service by Facebook.
+description: Receive threat intelligence about applications, IP addresses, URLs, and hashes. A service by Facebook.
 display: ThreatExchange v2
 name: ThreatExchange v2
 script:
@@ -76,24 +69,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of headers to display in human-readable
-        format. For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -134,8 +122,7 @@ script:
       description: For malicious files, the score from the vendor.
       type: Number
     - contextPath: ThreatExchange.File.share_level
-      description: A designation of how the indicator may be shared, based on the
-        US-CERT's Traffic Light Protocol.
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
       type: String
     - contextPath: ThreatExchange.File.privacy_type
       description: The level of privacy applied to the descriptor. Also known as "visibility".
@@ -147,15 +134,13 @@ script:
       description: Describes how the indicator was vetted.
       type: String
     - contextPath: ThreatExchange.File.id
-      description: Unique identifier of the threat descriptor. Automatically assigned
-        at create time, and non-editable.
+      description: Unique identifier of the threat descriptor. Automatically assigned at create time, and non-editable.
       type: String
     - contextPath: ThreatExchange.File.description
       description: A short summary of the indicator and threat.
       type: String
     - contextPath: ThreatExchange.File.added_on
-      description: The datetime this descriptor was first uploaded. Automatically
-        computed; not directly editable.
+      description: The datetime this descriptor was first uploaded. Automatically computed; not directly editable.
       type: Date
     - contextPath: ThreatExchange.File.sha1
       description: The SHA1 hash of the file.
@@ -195,24 +180,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of headers to display in human-readable
-        format. For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -235,8 +215,7 @@ script:
       description: For malicious IP addresses, the vendor that made the decision.
       type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the
-        decision.
+      description: For malicious IP addresses, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -254,13 +233,10 @@ script:
       description: For malicious IP addresses, the score from the vendor.
       type: Number
     - contextPath: ThreatExchange.IP.share_level
-      description: A designation of how the indicator may be shared, based on the
-        US-CERT's Traffic Light Protocol.
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
       type: String
     - contextPath: ThreatExchange.IP.confidence
-      description: A rating, from 0-100, on how confident the publisher is of the
-        threat indicator's status. 0 is least confident. 100 is
-        most confident.
+      description: A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is least confident. 100 is most confident.
       type: Number
     - contextPath: ThreatExchange.IP.indicator.id
       description: The ID of the threat indicator described by the descriptor.
@@ -275,23 +251,19 @@ script:
       description: The level of privacy applied to the descriptor. Also known as "visibility".
       type: String
     - contextPath: ThreatExchange.IP.last_updated
-      description: Datetime the threat descriptor was last updated. Automatically
-        computed; not directly editable.
+      description: Datetime the threat descriptor was last updated. Automatically computed; not directly editable.
       type: Date
     - contextPath: ThreatExchange.IP.status
       description: If the indicator is known to be malicious.
       type: String
     - contextPath: ThreatExchange.IP.owner.email
-      description: The email of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The email of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.IP.owner.id
-      description: The ID of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The ID of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.IP.owner.name
-      description: The name of the ThreatExchange member that submitted the descriptor.
-        Non-editable
+      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable
       type: String
     - contextPath: ThreatExchange.IP.raw_indicator
       description: A raw, unsanitized string of the indicator being described.
@@ -303,8 +275,7 @@ script:
       description: The type of indicator.
       type: String
     - contextPath: ThreatExchange.IP.id
-      description: Unique identifier of the threat descriptor. Automatically assigned
-        at create time, and non-editable.
+      description: Unique identifier of the threat descriptor. Automatically assigned at create time, and non-editable.
       type: String
     - contextPath: ThreatExchange.IP.description
       description: A short summary of the indicator and threat.
@@ -313,8 +284,7 @@ script:
       description: Severity of the threat associated with the indicator.
       type: String
     - contextPath: ThreatExchange.IP.added_on
-      description: The datetime this descriptor was first uploaded. Automatically
-        computed; not directly editable.
+      description: The datetime this descriptor was first uploaded. Automatically computed; not directly editable.
       type: Date
   - arguments:
     - default: true
@@ -331,24 +301,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of headers to display in human-readable
-        format. For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -383,13 +348,10 @@ script:
       description: For malicious URLs, the score from the vendor.
       type: Number
     - contextPath: ThreatExchange.URL.share_level
-      description: A designation of how the indicator may be shared, based on the
-        US-CERT's Traffic Light Protocol.
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
       type: String
     - contextPath: ThreatExchange.URL.confidence
-      description: A rating, from 0-100, on how confident the publisher is of the
-        threat indicator's status. 0 is least confident. 100 is
-        most confident.
+      description: A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is least confident. 100 is most confident.
       type: Number
     - contextPath: ThreatExchange.URL.indicator.id
       description: The ID of the threat indicator described by the descriptor.
@@ -404,23 +366,19 @@ script:
       description: The level of privacy applied to the descriptor. Also known as "visibility".
       type: String
     - contextPath: ThreatExchange.URL.last_updated
-      description: Datetime the threat descriptor was last updated. Automatically
-        computed; not directly editable.
+      description: Datetime the threat descriptor was last updated. Automatically computed; not directly editable.
       type: Date
     - contextPath: ThreatExchange.URL.status
       description: If the indicator is known to be malicious.
       type: String
     - contextPath: ThreatExchange.URL.owner.email
-      description: The email of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The email of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.URL.owner.id
-      description: The ID of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The ID of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.URL.owner.name
-      description: The name of the ThreatExchange member that submitted the descriptor.
-        Non-editable
+      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable
       type: String
     - contextPath: ThreatExchange.URL.raw_indicator
       description: A raw, unsanitized string of the indicator being described.
@@ -432,8 +390,7 @@ script:
       description: The type of indicator.
       type: String
     - contextPath: ThreatExchange.URL.id
-      description: Unique identifier of the threat descriptor. Automatically assigned
-        at create time, and non-editable.
+      description: Unique identifier of the threat descriptor. Automatically assigned at create time, and non-editable.
       type: String
     - contextPath: ThreatExchange.URL.description
       description: A short summary of the indicator and threat.
@@ -442,8 +399,7 @@ script:
       description: Severity of the threat associated with the indicator.
       type: String
     - contextPath: ThreatExchange.URL.added_on
-      description: The datetime this descriptor was first uploaded. Automatically
-        computed; not directly editable.
+      description: The datetime this descriptor was first uploaded. Automatically computed; not directly editable.
       type: Date
   - arguments:
     - default: true
@@ -460,24 +416,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of headers to display in human-readable format.
-        For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -509,13 +460,10 @@ script:
       description: For malicious domains, the reason that the vendor made the decision.
       type: String
     - contextPath: ThreatExchange.Domain.share_level
-      description: A designation of how the indicator may be shared, based on the
-        US-CERT's Traffic Light Protocol.
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
       type: String
     - contextPath: ThreatExchange.Domain.confidence
-      description: A rating, from 0-100, on how confident the publisher is of the
-        threat indicator's status. 0 is least confident. 100 is
-        most confident.
+      description: A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is least confident. 100 is most confident.
       type: Number
     - contextPath: ThreatExchange.Domain.indicator.id
       description: The ID of the threat indicator described by the descriptor.
@@ -530,23 +478,19 @@ script:
       description: The level of privacy applied to the descriptor. Also known as "visibility".
       type: String
     - contextPath: ThreatExchange.Domain.last_updated
-      description: Datetime the threat descriptor was last updated. Automatically
-        computed; not directly editable.
+      description: Datetime the threat descriptor was last updated. Automatically computed; not directly editable.
       type: Date
     - contextPath: ThreatExchange.Domain.status
       description: If the indicator is known to be malicious.
       type: String
     - contextPath: ThreatExchange.Domain.owner.email
-      description: The email of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The email of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.Domain.owner.id
-      description: The ID of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The ID of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.Domain.owner.name
-      description: The name of the ThreatExchange member that submitted the descriptor.
-        Non-editable
+      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable
       type: String
     - contextPath: ThreatExchange.Domain.raw_indicator
       description: A raw, unsanitized string of the indicator being described.
@@ -558,8 +502,7 @@ script:
       description: The type of indicator.
       type: String
     - contextPath: ThreatExchange.Domain.id
-      description: Unique identifier of the threat descriptor. Automatically assigned
-        at create time, and non-editable.
+      description: Unique identifier of the threat descriptor. Automatically assigned at create time, and non-editable.
       type: String
     - contextPath: ThreatExchange.Domain.description
       description: A short summary of the indicator and threat.
@@ -572,8 +515,7 @@ script:
       type: Date
   - arguments:
     - default: true
-      description: Free-form text field with a value to search for. This can be a
-        file hash or a string found in other fields of the objects.
+      description: Free-form text field with a value to search for. This can be a file hash or a string found in other fields of the objects.
       isArray: false
       name: text
       required: true
@@ -672,32 +614,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of headers to display in human-readable format.
-        For example: header1,header2,header3.'
+      description: 'A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3.'
       isArray: false
       name: headers
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware. Supported time formats:
-        epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text
-        (e.g., 24 hours ago).'
+      description: 'The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago).'
       isArray: false
       name: until
       required: false
       secret: false
     - default: false
       defaultValue: 'false'
-      description: When set to 'true', the API will not do approximate matching on
-        the value in the text.
+      description: When set to 'true', the API will not do approximate matching on the value in the text.
       isArray: false
       name: strict_text
       required: false
@@ -715,30 +651,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for subjective opinions on indicators of compromise stored
-      in ThreatExchange.
+    description: Searches for subjective opinions on indicators of compromise stored in ThreatExchange.
     execution: false
     name: threatexchange-query
     outputs:
     - contextPath: ThreatExchange.Query.data.share_level
-      description: A designation of how the indicator may be shared, based on the
-        US-CERT's Traffic Light Protocol.
+      description: A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol.
       type: String
     - contextPath: ThreatExchange.Query.data.last_updated
-      description: Datetime the threat descriptor was last updated. Automatically
-        computed; not directly editable.
+      description: Datetime the threat descriptor was last updated. Automatically computed; not directly editable.
       type: Date
     - contextPath: ThreatExchange.Query.data.owner.email
-      description: The email of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The email of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.Query.data.owner.id
-      description: The ID of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The ID of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.Query.data.owner.name
-      description: The name of the ThreatExchange member that submitted the descriptor.
-        Non-editable.
+      description: The name of the ThreatExchange member that submitted the descriptor. Non-editable.
       type: String
     - contextPath: ThreatExchange.Query.data.raw_indicator
       description: A raw, unsanitized string of the indicator being described.
@@ -747,12 +677,10 @@ script:
       description: The type of indicator.
       type: String
     - contextPath: ThreatExchange.Query.data.id
-      description: Unique identifier of the threat descriptor. Automatically assigned
-        at create time, and non-editable.
+      description: Unique identifier of the threat descriptor. Automatically assigned at create time, and non-editable.
       type: String
     - contextPath: ThreatExchange.Query.data.added_on
-      description: The datetime this descriptor was first uploaded. Automatically
-        computed; not directly editable.
+      description: The datetime this descriptor was first uploaded. Automatically computed; not directly editable.
       type: Date
     - contextPath: ThreatExchange.Query.paging.before
       description: Paging before cursor.
@@ -761,10 +689,7 @@ script:
       description: Paging after cursor.
       type: String
   - deprecated: false
-    description: Returns a list of current members of  ThreatExchange, alphabetized
-      by application name. Each application may also include an optional contact email
-      address. You can set this address, if desired, under the settings panel for
-      your application.
+    description: Returns a list of current members of  ThreatExchange, alphabetized by application name. Each application may also include an optional contact email address. You can set this address, if desired, under the settings panel for your application.
     execution: false
     name: threatexchange-members
     outputs:
@@ -819,8 +744,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: ThreatTag ID to get it's related tagged objects. ThreatTag ID can
-        be retrieved by the threatexchange-tags-search command.
+      description: ThreatTag ID to get it's related tagged objects. ThreatTag ID can be retrieved by the threatexchange-tags-search command.
       isArray: false
       name: tag_id
       required: true
@@ -871,8 +795,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: ID of a ThreatExchange object. Can be retrieved by ThreatExchange
-        reputation commands and the threatexchange-tagged-objects-list command.
+      description: ID of a ThreatExchange object. Can be retrieved by ThreatExchange reputation commands and the threatexchange-tagged-objects-list command.
       isArray: false
       name: object_id
       required: true
@@ -896,5 +819,4 @@ script:
   type: python
 tests:
 - ThreatExchangeV2-test
-hidden: false
 fromversion: 5.5.0
