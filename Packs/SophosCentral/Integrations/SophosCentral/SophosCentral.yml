@@ -623,7 +623,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
-      defaultValue: false
       description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
       isArray: false
       name: get_password
@@ -665,7 +664,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
-      defaultValue: false
       description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
       isArray: false
       name: get_password
@@ -1774,9 +1772,9 @@ script:
       required: false
       secret: false
       predefined:
-        - custom
-        - activeDirectory
-        - azureActiveDirectory
+      - custom
+      - activeDirectory
+      - azureActiveDirectory
     - default: false
       description: Search groups associated with the given user ID.
       isArray: false
@@ -2046,63 +2044,63 @@ script:
       description: 'Deleted Group ID.'
       type: String
   - arguments:
-      - default: false
-        description: Group name.
-        isArray: false
-        name: name
-        required: true
-        secret: false
-      - default: false
-        description: Group description.
-        isArray: false
-        name: description
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: 'Group type. The following values are allowed: computer, server.'
-        isArray: false
-        name: type
-        required: true
-        secret: false
-        predefined:
-          - server
-          - computer
-      - default: false
-        description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
-        isArray: true
-        name: endpointIds
-        required: false
-        secret: false
+    - default: false
+      description: Group name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Group description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Group type. The following values are allowed: computer, server.'
+      isArray: false
+      name: type
+      required: true
+      secret: false
+      predefined:
+      - server
+      - computer
+    - default: false
+      description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+      isArray: true
+      name: endpointIds
+      required: false
+      secret: false
     deprecated: false
     description: Create a new endpoint group.
     execution: false
     name: sophos-central-group-create
     outputs:
-      - contextPath: SophosCentral.EndpointGroups.id
-        description: 'Group ID.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.name
-        description: 'Group name.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.description
-        description: 'Group description.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.type
-        description: 'Endpoint group types.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.endpoints.total
-        description: 'Total number of endpoints in this group.'
-        type: Number
-      - contextPath: SophosCentral.EndpointGroups.endpoints.itemsCount
-        description: 'Total number of items in the list.'
-        type: Number
-      - contextPath: SophosCentral.EndpointGroups.tenant.id
-        description: 'Tenant ID.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.createdAt
-        description: 'When the group was created.'
-        type: Date
+    - contextPath: SophosCentral.EndpointGroups.id
+      description: 'Group ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.name
+      description: 'Group name.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.description
+      description: 'Group description.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.type
+      description: 'Endpoint group types.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.endpoints.total
+      description: 'Total number of endpoints in this group.'
+      type: Number
+    - contextPath: SophosCentral.EndpointGroups.endpoints.itemsCount
+      description: 'Total number of items in the list.'
+      type: Number
+    - contextPath: SophosCentral.EndpointGroups.tenant.id
+      description: 'Tenant ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.createdAt
+      description: 'When the group was created.'
+      type: Date
   - arguments:
     - default: false
       description: Group name.
@@ -2194,173 +2192,173 @@ script:
       description: 'When the group was updated.'
       type: Date
   - arguments:
-      - default: false
-        description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
-        isArray: false
-        name: groupId
-        required: true
-        secret: false
+    - default: false
+      description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
     deprecated: false
     description: Get endpoints in a group.
     execution: false
     name: sophos-central-group-membership-get
     outputs:
-      - contextPath: SophosCentral.EndpointGroups.id
-        description: 'Group ID.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.type
-        description: 'Endpoint group types.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.tenant.id
-        description: 'Tenant ID.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.hostname
-        description: 'Hostname of the endpoint.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.os.isServer
-        description: 'Whether the OS is a server OS.'
-        type: Boolean
-      - contextPath: SophosCentral.EndpointGroups.os.platform
-        description: 'OS platform type.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.os.name
-        description: 'OS name as reported by the endpoint.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.os.majorVersion
-        description: 'OS major version.'
-        type: Number
-      - contextPath: SophosCentral.EndpointGroups.os.minorVersion
-        description: 'OS minor version.'
-        type: Number
-      - contextPath: SophosCentral.EndpointGroups.os.build
-        description: 'OS build.'
-        type: Number
-      - contextPath: SophosCentral.EndpointGroups.ipv4Addresses
-        description: 'List of IPv4 addresses.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.ipv6Addresses
-        description: 'List of IPv6 addresses.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.macAddresses
-        description: 'List of MAC addresses.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.group.name
-        description: 'Endpoint group name.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.group.id
-        description: 'Unique ID for endpoint group.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.associatedPerson.name
-        description: "Person's name."
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.associatedPerson.viaLogin
-        description: "Person's login on the endpoint."
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.associatedPerson.id
-        description: 'Unique ID for endpoint group.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.tamperProtectionEnabled
-        description: 'Whether Tamper Protection is turned on.'
-        type: Boolean
-      - contextPath: SophosCentral.EndpointGroups.lastSeenAt
-        description: 'Date and time (UTC) when the endpoint last communicated with Sophos Central.'
-        type: Date
+    - contextPath: SophosCentral.EndpointGroups.id
+      description: 'Group ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.type
+      description: 'Endpoint group types.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.tenant.id
+      description: 'Tenant ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.hostname
+      description: 'Hostname of the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.os.isServer
+      description: 'Whether the OS is a server OS.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointGroups.os.platform
+      description: 'OS platform type.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.os.name
+      description: 'OS name as reported by the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.os.majorVersion
+      description: 'OS major version.'
+      type: Number
+    - contextPath: SophosCentral.EndpointGroups.os.minorVersion
+      description: 'OS minor version.'
+      type: Number
+    - contextPath: SophosCentral.EndpointGroups.os.build
+      description: 'OS build.'
+      type: Number
+    - contextPath: SophosCentral.EndpointGroups.ipv4Addresses
+      description: 'List of IPv4 addresses.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.ipv6Addresses
+      description: 'List of IPv6 addresses.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.macAddresses
+      description: 'List of MAC addresses.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.group.name
+      description: 'Endpoint group name.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.group.id
+      description: 'Unique ID for endpoint group.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.associatedPerson.name
+      description: "Person's name."
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.associatedPerson.viaLogin
+      description: "Person's login on the endpoint."
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.associatedPerson.id
+      description: 'Unique ID for endpoint group.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.tamperProtectionEnabled
+      description: 'Whether Tamper Protection is turned on.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointGroups.lastSeenAt
+      description: 'Date and time (UTC) when the endpoint last communicated with Sophos Central.'
+      type: Date
   - arguments:
-      - default: false
-        description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
-        isArray: false
-        name: groupId
-        required: true
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
-        isArray: true
-        name: endpointIds
-        required: true
-        secret: false
+    - default: false
+      description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+      isArray: true
+      name: endpointIds
+      required: true
+      secret: false
     deprecated: false
     description: Add endpoints in a group.
     execution: false
     name: sophos-central-group-endpoints-add
     outputs:
-      - contextPath: SophosCentral.EndpointGroups.endpoints.id
-        description: 'Unique endpoint ID.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.endpoints.hostname
-        description: 'Endpoint hostname.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.id
-        description: 'Unique group ID.'
-        type: String
+    - contextPath: SophosCentral.EndpointGroups.endpoints.id
+      description: 'Unique endpoint ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.endpoints.hostname
+      description: 'Endpoint hostname.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.id
+      description: 'Unique group ID.'
+      type: String
   - arguments:
-      - default: false
-        description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
-        isArray: false
-        name: groupId
-        required: true
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
-        isArray: true
-        name: endpointIds
-        required: true
-        secret: false
+    - default: false
+      description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+      isArray: true
+      name: endpointIds
+      required: true
+      secret: false
     deprecated: false
     description: Remove endpoints from a group.
     execution: false
     name: sophos-central-group-endpoints-remove
     outputs:
-      - contextPath: SophosCentral.EndpointGroups.endpoints.id
-        description: 'Unique endpoint ID.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.endpoints.hostname
-        description: 'Endpoint hostname.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.id
-        description: 'Unique group ID.'
-        type: String
-      - contextPath: SophosCentral.EndpointGroups.removedEndpoints
-        description: 'List of removed EndpointIds from the group.'
-        type: String
+    - contextPath: SophosCentral.EndpointGroups.endpoints.id
+      description: 'Unique endpoint ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.endpoints.hostname
+      description: 'Endpoint hostname.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.id
+      description: 'Unique group ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointGroups.removedEndpoints
+      description: 'List of removed EndpointIds from the group.'
+      type: String
   - arguments:
-      - default: false
-        description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
-        isArray: false
-        name: groupId
-        required: true
-        secret: false
-      - default: false
-        description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
-        isArray: false
-        name: endpointId
-        required: true
-        secret: false
+    - default: false
+      description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+      isArray: false
+      name: endpointId
+      required: true
+      secret: false
     deprecated: false
     description: Remove endpoint from a group.
     execution: false
     name: sophos-central-group-endpoint-remove
     outputs:
-      - contextPath: SophosCentral.EndpointGroups.removedEndpoint
-        description: 'EndpointId of removed endpoint.'
-        type: Boolean
-      - contextPath: SophosCentral.EndpointGroups.id
-        description: 'Group Id.'
-        type: String
+    - contextPath: SophosCentral.EndpointGroups.removedEndpoint
+      description: 'EndpointId of removed endpoint.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointGroups.id
+      description: 'Group Id.'
+      type: String
   - arguments:
-      - default: false
-        defaultValue: '50'
-        description: The maximum size of the page requested. Default is "50". Maximum is "1000".
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-      - default: false
-        defaultValue: '1'
-        description: Page number to return. Default is "1".
-        isArray: false
-        name: page
-        required: false
-        secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum size of the page requested. Default is "50". Maximum is "1000".
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number to return. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
     deprecated: false
     description: List endpoint groups.
     execution: false
@@ -2391,23 +2389,23 @@ script:
       description: 'Group description.'
       type: String
   - arguments:
-      - default: false
-        description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
-        isArray: false
-        name: groupId
-        required: true
-        secret: false
+    - default: false
+      description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
     deprecated: false
     description: Delete an endpoint group by ID.
     execution: false
     name: sophos-central-group-delete
     outputs:
-      - contextPath: SophosCentral.EndpointGroups.deleted
-        description: 'Endpoint group deleted.'
-        type: Boolean
-      - contextPath: SophosCentral.EndpointGroups.id
-        description: 'Group Id.'
-        type: String
+    - contextPath: SophosCentral.EndpointGroups.deleted
+      description: 'Endpoint group deleted.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointGroups.id
+      description: 'Group Id.'
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
@@ -2659,9 +2657,9 @@ script:
       required: false
       secret: false
       predefined:
-        - custom
-        - activeDirectory
-        - azureActiveDirectory
+      - custom
+      - activeDirectory
+      - azureActiveDirectory
     - default: false
       defaultValue: 1
       description: The page number to fetch. Default is "1".
@@ -2718,330 +2716,330 @@ script:
       description: Types of sources of directory information.
       type: String
   - arguments:
-      - default: false
-        defaultValue: "50"
-        description: The maximum number of items to return. Default is "50". Maximum is "100".
-        isArray: false
-        name: pageSize
-        required: false
-        secret: false
-      - default: false
-        defaultValue: "1"
-        description: Page number to return. Default is "1".
-        isArray: false
-        name: page
-        required: false
-        secret: false
-      - default: false
-        description: Search for items that match the given terms.
-        isArray: false
-        name: search
-        required: false
-        secret: false
-      - default: false
-        description: 'Search only within the specified comma-seperated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only.'
-        isArray: false
-        name: searchFields
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: 'Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
-        isArray: false
-        name: sourceType
-        required: false
-        secret: false
-        predefined:
-          - custom
-          - activeDirectory
-          - azureActiveDirectory
-      - default: false
-        description: 'Search for users in a group that has this ID (You can get the group ID from sophos-central-usergroups-list command).'
-        isArray: false
-        name: groupId
-        required: false
-        secret: false
-      - default: false
-        description: 'List the items that match the given domain.'
-        isArray: false
-        name: domain
-        required: false
-        secret: false
+    - default: false
+      defaultValue: "50"
+      description: The maximum number of items to return. Default is "50". Maximum is "100".
+      isArray: false
+      name: pageSize
+      required: false
+      secret: false
+    - default: false
+      defaultValue: "1"
+      description: Page number to return. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Search for items that match the given terms.
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - default: false
+      description: 'Search only within the specified comma-seperated field values. The following values are allowed: name, firstName, lastName, email, exchangeLogin  When not specified, the default behavior is to search the full names of users, only.'
+      isArray: false
+      name: searchFields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
+      isArray: false
+      name: sourceType
+      required: false
+      secret: false
+      predefined:
+      - custom
+      - activeDirectory
+      - azureActiveDirectory
+    - default: false
+      description: 'Search for users in a group that has this ID (You can get the group ID from sophos-central-usergroups-list command).'
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
+      description: 'List the items that match the given domain.'
+      isArray: false
+      name: domain
+      required: false
+      secret: false
     description: List users for the given tenant.
     execution: false
     deprecated: false
     name: sophos-central-users-list
     outputs:
-      - contextPath: SophosCentral.Users.id
-        description: User ID.
-        type: String
-      - contextPath: SophosCentral.Users.name
-        description: User's name.
-        type: String
-      - contextPath: SophosCentral.Users.firstName
-        description: User's first name or given name.
-        type: String
-      - contextPath: SophosCentral.Users.lastName
-        description: User's last name or surname.
-        type: String
-      - contextPath: SophosCentral.Users.email
-        description: User's email address.
-        type: String
-      - contextPath: SophosCentral.Users.groups.total
-        description: Total users.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.itemsCount
-        description: Total number of groups in which user is exists.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.items.id
-        description: Group ID.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.name
-        description: Group name.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.displayName
-        description: Group display name.
-        type: string
-      - contextPath: SophosCentral.Users.tenant.id
-        description: Tenant ID.
-        type: String
-      - contextPath: SophosCentral.Users.source.type
-        description: SourceType of the user.
-        type: String
-      - contextPath: SophosCentral.Users.createdAt
-        description: When the user was created.
-        type: Date
+    - contextPath: SophosCentral.Users.id
+      description: User ID.
+      type: String
+    - contextPath: SophosCentral.Users.name
+      description: User's name.
+      type: String
+    - contextPath: SophosCentral.Users.firstName
+      description: User's first name or given name.
+      type: String
+    - contextPath: SophosCentral.Users.lastName
+      description: User's last name or surname.
+      type: String
+    - contextPath: SophosCentral.Users.email
+      description: User's email address.
+      type: String
+    - contextPath: SophosCentral.Users.groups.total
+      description: Total users.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.itemsCount
+      description: Total number of groups in which user is exists.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.items.id
+      description: Group ID.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.name
+      description: Group name.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.displayName
+      description: Group display name.
+      type: string
+    - contextPath: SophosCentral.Users.tenant.id
+      description: Tenant ID.
+      type: String
+    - contextPath: SophosCentral.Users.source.type
+      description: SourceType of the user.
+      type: String
+    - contextPath: SophosCentral.Users.createdAt
+      description: When the user was created.
+      type: Date
   - arguments:
-      - default: false
-        name: userId
-        description: Unique User UUID (You can get the user ID from sophos-central-users-list command).
-        isArray: false
-        required: true
-        secret: false
+    - default: false
+      name: userId
+      description: Unique User UUID (You can get the user ID from sophos-central-users-list command).
+      isArray: false
+      required: true
+      secret: false
     description: List user with userId for the given tenant.
     execution: false
     deprecated: false
     name: sophos-central-users-get
     outputs:
-      - contextPath: SophosCentral.Users.id
-        description: User ID.
-        type: String
-      - contextPath: SophosCentral.Users.name
-        description: User's name.
-        type: String
-      - contextPath: SophosCentral.Users.firstName
-        description: User's first name or given name.
-        type: String
-      - contextPath: SophosCentral.Users.lastName
-        description: User's last name or surname.
-        type: String
-      - contextPath: SophosCentral.Users.email
-        description: User's email address.
-        type: String
-      - contextPath: SophosCentral.Users.groups.total
-        description: Total users.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.itemsCount
-        description: Total number of groups in which user is exists.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.items.id
-        description: Group ID.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.name
-        description: Group name.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.displayName
-        description: Group display name.
-        type: string
-      - contextPath: SophosCentral.Users.tenant.id
-        description: Tenant ID.
-        type: String
-      - contextPath: SophosCentral.Users.source.type
-        description: SourceType of the user.
-        type: String
-      - contextPath: SophosCentral.Users.createdAt
-        description: When the user was created.
-        type: Date
-      - contextPath: SophosCentral.Users.updatedAt
-        description: When the user was updated.
-        type: Date
+    - contextPath: SophosCentral.Users.id
+      description: User ID.
+      type: String
+    - contextPath: SophosCentral.Users.name
+      description: User's name.
+      type: String
+    - contextPath: SophosCentral.Users.firstName
+      description: User's first name or given name.
+      type: String
+    - contextPath: SophosCentral.Users.lastName
+      description: User's last name or surname.
+      type: String
+    - contextPath: SophosCentral.Users.email
+      description: User's email address.
+      type: String
+    - contextPath: SophosCentral.Users.groups.total
+      description: Total users.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.itemsCount
+      description: Total number of groups in which user is exists.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.items.id
+      description: Group ID.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.name
+      description: Group name.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.displayName
+      description: Group display name.
+      type: string
+    - contextPath: SophosCentral.Users.tenant.id
+      description: Tenant ID.
+      type: String
+    - contextPath: SophosCentral.Users.source.type
+      description: SourceType of the user.
+      type: String
+    - contextPath: SophosCentral.Users.createdAt
+      description: When the user was created.
+      type: Date
+    - contextPath: SophosCentral.Users.updatedAt
+      description: When the user was updated.
+      type: Date
   - arguments:
-      - default: false
-        description: First Name of the user. This must not include a space. Maximum length should be 250 characters.
-        isArray: false
-        name: firstName
-        required: true
-        secret: false
-      - default: false
-        description: Last Name of the user. This must not include a space. Maximum length should be 250 characters.
-        isArray: false
-        name: lastName
-        required: true
-        secret: false
-      - default: false
-        description: Email Address of the user.
-        isArray: false
-        name: email
-        required: true
-        secret: false
-      - default: false
-        description: Exchange Login for the user.
-        isArray: false
-        name: exchangeLogin
-        required: false
-        secret: false
-      - default: false
-        description: Comma-separated list of GroupIds to be enrolled in (You can get the list of user IDs from sophos-central-usergroups-list command).
-        isArray: true
-        name: groupIds
-        required: false
-        secret: false
+    - default: false
+      description: First Name of the user. This must not include a space. Maximum length should be 250 characters.
+      isArray: false
+      name: firstName
+      required: true
+      secret: false
+    - default: false
+      description: Last Name of the user. This must not include a space. Maximum length should be 250 characters.
+      isArray: false
+      name: lastName
+      required: true
+      secret: false
+    - default: false
+      description: Email Address of the user.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    - default: false
+      description: Exchange Login for the user.
+      isArray: false
+      name: exchangeLogin
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of GroupIds to be enrolled in (You can get the list of user IDs from sophos-central-usergroups-list command).
+      isArray: true
+      name: groupIds
+      required: false
+      secret: false
     deprecated: false
     description: Add a new user.
     execution: false
     name: sophos-central-users-add
     outputs:
-      - contextPath: SophosCentral.Users.id
-        description: User ID.
-        type: String
-      - contextPath: SophosCentral.Users.name
-        description: User's name.
-        type: String
-      - contextPath: SophosCentral.Users.firstName
-        description: User's first name or given name.
-        type: String
-      - contextPath: SophosCentral.Users.lastName
-        description: User's last name or surname.
-        type: String
-      - contextPath: SophosCentral.Users.email
-        description: User's email address.
-        type: String
-      - contextPath: SophosCentral.Users.groups.total
-        description: Total users.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.itemsCount
-        description: Total number of groups in which user is exists.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.items.id
-        description: Group ID.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.name
-        description: Group name.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.displayName
-        description: Group display name.
-        type: string
-      - contextPath: SophosCentral.Users.tenant.id
-        description: Tenant ID.
-        type: String
-      - contextPath: SophosCentral.Users.source.type
-        description: SourceType of the user.
-        type: String
-      - contextPath: SophosCentral.Users.createdAt
-        description: When the user was created.
-        type: Date
-      - contextPath: SophosCentral.Users.updatedAt
-        description: When the user was updated.
-        type: Date
+    - contextPath: SophosCentral.Users.id
+      description: User ID.
+      type: String
+    - contextPath: SophosCentral.Users.name
+      description: User's name.
+      type: String
+    - contextPath: SophosCentral.Users.firstName
+      description: User's first name or given name.
+      type: String
+    - contextPath: SophosCentral.Users.lastName
+      description: User's last name or surname.
+      type: String
+    - contextPath: SophosCentral.Users.email
+      description: User's email address.
+      type: String
+    - contextPath: SophosCentral.Users.groups.total
+      description: Total users.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.itemsCount
+      description: Total number of groups in which user is exists.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.items.id
+      description: Group ID.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.name
+      description: Group name.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.displayName
+      description: Group display name.
+      type: string
+    - contextPath: SophosCentral.Users.tenant.id
+      description: Tenant ID.
+      type: String
+    - contextPath: SophosCentral.Users.source.type
+      description: SourceType of the user.
+      type: String
+    - contextPath: SophosCentral.Users.createdAt
+      description: When the user was created.
+      type: Date
+    - contextPath: SophosCentral.Users.updatedAt
+      description: When the user was updated.
+      type: Date
   - arguments:
-      - default: false
-        description: Unique User UUID (You can get the user ID from sophos-central-users-list command).
-        isArray: false
-        name: userId
-        required: true
-        secret: false
-      - default: false
-        description: User's fullname.
-        isArray: false
-        name: name
-        required: false
-        secret: false
-      - default: false
-        description: First Name of the user. This must not include a space. Maximum length should be 250 characters.
-        isArray: false
-        name: firstName
-        required: false
-        secret: false
-      - default: false
-        description: Last Name of the user. This must not include a space. Maximum length should be 250 characters.
-        isArray: false
-        name: lastName
-        required: false
-        secret: false
-      - default: false
-        description: Email Address of the user.
-        isArray: false
-        name: email
-        required: false
-        secret: false
-      - default: false
-        description: Exchange Login for the user.
-        isArray: false
-        name: exchangeLogin
-        required: false
-        secret: false
+    - default: false
+      description: Unique User UUID (You can get the user ID from sophos-central-users-list command).
+      isArray: false
+      name: userId
+      required: true
+      secret: false
+    - default: false
+      description: User's fullname.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: First Name of the user. This must not include a space. Maximum length should be 250 characters.
+      isArray: false
+      name: firstName
+      required: false
+      secret: false
+    - default: false
+      description: Last Name of the user. This must not include a space. Maximum length should be 250 characters.
+      isArray: false
+      name: lastName
+      required: false
+      secret: false
+    - default: false
+      description: Email Address of the user.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: Exchange Login for the user.
+      isArray: false
+      name: exchangeLogin
+      required: false
+      secret: false
     deprecated: false
     description: Update a user.
     execution: false
     name: sophos-central-users-update
     outputs:
-      - contextPath: SophosCentral.Users.id
-        description: User ID.
-        type: String
-      - contextPath: SophosCentral.Users.name
-        description: User's name.
-        type: String
-      - contextPath: SophosCentral.Users.firstName
-        description: User's first name or given name.
-        type: String
-      - contextPath: SophosCentral.Users.lastName
-        description: User's last name or surname.
-        type: String
-      - contextPath: SophosCentral.Users.email
-        description: User's email address.
-        type: String
-      - contextPath: SophosCentral.Users.groups.total
-        description: Total users.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.itemsCount
-        description: Total number of groups in which user is exists.
-        type: Number
-      - contextPath: SophosCentral.Users.groups.items.id
-        description: Group ID.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.name
-        description: Group name.
-        type: string
-      - contextPath: SophosCentral.Users.groups.items.displayName
-        description: Group display name.
-        type: string
-      - contextPath: SophosCentral.Users.tenant.id
-        description: Tenant ID.
-        type: String
-      - contextPath: SophosCentral.Users.source.type
-        description: SourceType of the user.
-        type: String
-      - contextPath: SophosCentral.Users.createdAt
-        description: When the user was created.
-        type: Date
-      - contextPath: SophosCentral.Users.updatedAt
-        description: When the user was updated.
-        type: Date
+    - contextPath: SophosCentral.Users.id
+      description: User ID.
+      type: String
+    - contextPath: SophosCentral.Users.name
+      description: User's name.
+      type: String
+    - contextPath: SophosCentral.Users.firstName
+      description: User's first name or given name.
+      type: String
+    - contextPath: SophosCentral.Users.lastName
+      description: User's last name or surname.
+      type: String
+    - contextPath: SophosCentral.Users.email
+      description: User's email address.
+      type: String
+    - contextPath: SophosCentral.Users.groups.total
+      description: Total users.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.itemsCount
+      description: Total number of groups in which user is exists.
+      type: Number
+    - contextPath: SophosCentral.Users.groups.items.id
+      description: Group ID.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.name
+      description: Group name.
+      type: string
+    - contextPath: SophosCentral.Users.groups.items.displayName
+      description: Group display name.
+      type: string
+    - contextPath: SophosCentral.Users.tenant.id
+      description: Tenant ID.
+      type: String
+    - contextPath: SophosCentral.Users.source.type
+      description: SourceType of the user.
+      type: String
+    - contextPath: SophosCentral.Users.createdAt
+      description: When the user was created.
+      type: Date
+    - contextPath: SophosCentral.Users.updatedAt
+      description: When the user was updated.
+      type: Date
   - arguments:
-      - default: false
-        description: Unique User UUID (You can get user ID from sophos-central-users-list command).
-        isArray: false
-        name: userId
-        required: true
-        secret: false
+    - default: false
+      description: Unique User UUID (You can get user ID from sophos-central-users-list command).
+      isArray: false
+      name: userId
+      required: true
+      secret: false
     deprecated: false
     description: Delete a user.
     execution: false
     name: sophos-central-users-delete
     outputs:
-      - contextPath: SophosCentral.DeletedUsers.deletedUserId
-        description: Deleted User's Id.
-        type: String
+    - contextPath: SophosCentral.DeletedUsers.deletedUserId
+      description: Deleted User's Id.
+      type: String
   dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true

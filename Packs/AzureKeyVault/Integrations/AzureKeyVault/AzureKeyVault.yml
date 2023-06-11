@@ -59,32 +59,27 @@ configuration:
   additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
   section: Connect
 - display: Fetches credentials
-  hidden: false
   name: isFetchCredentials
   required: false
   type: 8
   section: Collect
 - display: Key Vault names - comma seperated list of Key Vaults to fetch secrets from.
-  hidden: false
   name: key_vaults
   required: false
   type: 0
   section: Collect
 - display: Secret names - comma seperated list of secrets to fetch.
-  hidden: false
   name: secrets
   required: false
   type: 0
   section: Collect
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8

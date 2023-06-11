@@ -13,13 +13,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: The mirroring direction in which to mirror the incident. You can
-    mirror only in (from CyCognito to XSOAR), out (from XSOAR to CyCognito), or in
-    both directions.
+- additionalinfo: The mirroring direction in which to mirror the incident. You can mirror only in (from CyCognito to XSOAR), out (from XSOAR to CyCognito), or in both directions.
   display: Incident Mirroring Direction
   defaultvalue: Incoming and Outgoing
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -36,24 +34,21 @@ configuration:
     The date or relative timestamp from which to begin fetching incidents.
 
     Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-    
+
     For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
   defaultvalue: 3 days
   display: First Fetch Time
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The maximum number of incidents to fetch every time. The maximum
-    value is '1000'.
+- additionalinfo: The maximum number of incidents to fetch every time. The maximum value is '1000'.
   defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: The type of issue to fetch. By default, all types of issues will
-    be fetched. Multiple selection is supported.
+- additionalinfo: The type of issue to fetch. By default, all types of issues will be fetched. Multiple selection is supported.
   display: Issue Type
-  hidden: false
   name: issue_type
   options:
   - Abandoned Asset
@@ -76,48 +71,12 @@ configuration:
   type: 16
 - additionalinfo: Filters incidents according to the geographic locations in which the issue is found. Multiple selection is supported.
   display: Locations
-  hidden: false
   name: locations
-  options: ["Afghanistan","Aland Islands","Albania","Algeria","American Samoa","Andorra","Angola","Anguilla","Antarctica",
-            "Antigua and Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain",
-            "Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia, Plurinational State of",
-            "Bonaire, Sint Eustatius and Saba","Bosnia and Herzegovina","Botswana","Bouvet Island","Brazil",
-            "British Indian Ocean Territory","Brunei Darussalam","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia",
-            "Cameroon","Canada","Cayman Islands","Central African Republic","Chad","Chile","China","Christmas Island",
-            "Cocos (Keeling) Islands","Colombia","Comoros","Congo","Congo, The Democratic Republic of the","Cook Islands",
-            "Costa Rica","Cote d'Ivoire","Croatia","Cuba","Curacao","Cyprus","Czechia","Denmark","Djibouti","Dominica",
-            "Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini",
-            "Ethiopia","Falkland Islands (Malvinas)","Faroe Islands","Fiji","Finland","France","French Guiana",
-            "French Polynesia","French Southern Territories","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar",
-            "Greece","Greenland","Grenada","Guadeloupe","Guam","Guatemala","Guernsey","Guinea","Guinea-Bissau","Guyana",
-            "Haiti","Heard Island and McDonald Islands","Holy See","Honduras","Hong Kong","Hungary","Iceland","India",
-            "Indonesia","Iran, Islamic Republic of","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan",
-            "Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Korea, Democratic People's Republic of","Korea, Republic of",
-            "Kuwait","Kyrgyzstan","Lao People's Democratic Republic","Latvia","Lebanon","Lesotho","Liberia","Libya",
-            "Liechtenstein","Lithuania","Luxembourg","Macao","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta",
-            "Marshall Islands","Martinique","Mauritania","Mauritius","Mayotte","Mexico","Micronesia, Federated States of",
-            "Moldova, Republic of","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia",
-            "Nauru","Nepal","Netherlands","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Niue","Norfolk Island",
-            "North Macedonia","Northern Mariana Islands","Norway","Oman","Pakistan","Palau","Palestine, State of","Panama",
-            "Papua New Guinea","Paraguay","Peru","Philippines","Pitcairn","Poland","Portugal","Puerto Rico","Qatar","Reunion",
-            "Romania","Russian Federation","Rwanda","Saint Barthelemy","Saint Helena, Ascension and Tristan da Cunha",
-            "Saint Kitts and Nevis","Saint Lucia","Saint Martin (French part)","Saint Pierre and Miquelon",
-            "Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal",
-            "Serbia","Seychelles","Sierra Leone","Singapore","Sint Maarten (Dutch part)","Slovakia","Slovenia",
-            "Solomon Islands","Somalia","South Africa","South Georgia and the South Sandwich Islands","South Sudan","Spain",
-            "Sri Lanka","Sudan","Suriname","Svalbard and Jan Mayen","Sweden","Switzerland","Syrian Arab Republic",
-            "Taiwan, Province of China","Tajikistan","Tanzania, United Republic of","Thailand","Timor-Leste","Togo",
-            "Tokelau","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Turks and Caicos Islands","Tuvalu",
-            "Uganda","Ukraine","United Arab Emirates","United Kingdom of Great Britain and Northern Ireland",
-            "United States of America","United States Minor Outlying Islands","Uruguay","Uzbekistan","Vanuatu",
-            "Venezuela, Bolivarian Republic of","Vietnam","Virgin Islands, British","Virgin Islands, U.S.",
-            "Wallis and Futuna","Western Sahara","Yemen","Zambia","Zimbabwe"]
+  options: ["Afghanistan", "Aland Islands", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia, Plurinational State of", "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo", "Congo, The Democratic Republic of the", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Curacao", "Cyprus", "Czechia", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern Territories", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard Island and McDonald Islands", "Holy See", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran, Islamic Republic of", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, Democratic People's Republic of", "Korea, Republic of", "Kuwait", "Kyrgyzstan", "Lao People's Democratic Republic", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Moldova, Republic of", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "North Macedonia", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russian Federation", "Rwanda", "Saint Barthelemy", "Saint Helena, Ascension and Tristan da Cunha", "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan, Province of China", "Tajikistan", "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom of Great Britain and Northern Ireland", "United States of America", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela, Bolivarian Republic of", "Vietnam", "Virgin Islands, British", "Virgin Islands, U.S.", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe"]
   required: false
   type: 16
-- additionalinfo: The severity levels of the issues to fetch from CyCognito. By default,
-    all the severity levels will be fetched, Multiple selection is supported.
+- additionalinfo: The severity levels of the issues to fetch from CyCognito. By default, all the severity levels will be fetched, Multiple selection is supported.
   display: Severity
-  hidden: false
   name: severity_filter
   options:
   - low
@@ -126,11 +85,9 @@ configuration:
   - critical
   required: false
   type: 16
-- additionalinfo: The investigation status of the issues to fetch from CyCognito.
-    By default, it fetches uninvestigated issues.
+- additionalinfo: The investigation status of the issues to fetch from CyCognito. By default, it fetches uninvestigated issues.
   defaultvalue: uninvestigated
   display: Investigation Status
-  hidden: false
   name: investigation_status
   options:
   - uninvestigated
@@ -138,27 +95,17 @@ configuration:
   - investigated
   required: false
   type: 15
-- additionalinfo: "Applies a filter to the list of issues based on a JSON-specific\
-    \ query.\n\nFormat:\n[{\n    \"field\": \"issue-type\",\n    \"op\": \"in\",\n\
-    \    \"values\": [\n       \"Unsafe Authentication\",\n       \"Vulnerable Software\"\
-    \n    ]\t\n},\n{\n    \"op\": \"not-in\",\n    \"field\": \"severity-score\",\n\
-    \    \"values\": [10, 9]\n}]\n\nNote: When using several filtering options (e.g.,\
-    \ 'Issue Type' and 'Advanced Filter'), Advanced Filter parameters will take precedence\
-    \ over other parameters.\nFor a complete reference to the CyCognito fields and\
-    \ operations, please refer to the CyCognito API V0 documentation at \nhttps://docs.cycognito.com/reference/query-issues"
+- additionalinfo: "Applies a filter to the list of issues based on a JSON-specific query.\n\nFormat:\n[{\n    \"field\": \"issue-type\",\n    \"op\": \"in\",\n    \"values\": [\n       \"Unsafe Authentication\",\n       \"Vulnerable Software\"\n    ]\t\n},\n{\n    \"op\": \"not-in\",\n    \"field\": \"severity-score\",\n    \"values\": [10, 9]\n}]\n\nNote: When using several filtering options (e.g., 'Issue Type' and 'Advanced Filter'), Advanced Filter parameters will take precedence over other parameters.\nFor a complete reference to the CyCognito fields and operations, please refer to the CyCognito API V0 documentation at \nhttps://docs.cycognito.com/reference/query-issues"
   display: Advanced Filter
-  hidden: false
   name: advanced_filter
   required: false
   type: 12
-- additionalinfo: Indicates whether to allow connections without verifying SSL certificate's
-    validity.
+- additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect
-    to the API.
+- additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
   required: false
@@ -168,12 +115,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: The CyCognito integration fetches issues discovered by the CyCognito
-  platform, thereby providing users with a view of their organization's internet-exposed
-  attack surface. These issues include identification, prioritization, and recommendations
-  for remediation of the risks faced by the organization. The integration contains
-  commands to query assets and issues detected by the CyCognito platform, and includes
-  a rich dashboard and layout with issue management capability.
+description: The CyCognito integration fetches issues discovered by the CyCognito platform, thereby providing users with a view of their organization's internet-exposed attack surface. These issues include identification, prioritization, and recommendations for remediation of the risks faced by the organization. The integration contains commands to query assets and issues detected by the CyCognito platform, and includes a rich dashboard and layout with issue management capability.
 display: CyCognito
 name: CyCognito
 script:
@@ -192,8 +134,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves information about an issue associated with a particular
-      instance based on the provided issue instance ID.
+    description: Retrieves information about an issue associated with a particular instance based on the provided issue instance ID.
     execution: false
     name: cycognito-issue-get
     outputs:
@@ -228,8 +169,7 @@ script:
       description: The geographic location of the instance.
       type: Unknown
     - contextPath: CyCognito.Issue.detection_complexity
-      description: Measures the difficulty at which a vulnerable asset can be detected
-        by a potential attacker.
+      description: Measures the difficulty at which a vulnerable asset can be detected by a potential attacker.
       type: String
     - contextPath: CyCognito.Issue.title
       description: Title of the issue.
@@ -250,8 +190,7 @@ script:
       description: A list of actions that describe how to resolve the issue.
       type: Unknown
     - contextPath: CyCognito.Issue.potential_impact
-      description: A list of categories that describe what might happen if the issue
-        is exploited.
+      description: A list of categories that describe what might happen if the issue is exploited.
       type: Unknown
     - contextPath: CyCognito.Issue.exploitation_method
       description: Exploitation method of the issue.
@@ -260,8 +199,7 @@ script:
       description: The unique ID of the asset with which the issue is associated.
       type: String
     - contextPath: CyCognito.Issue.severity_score
-      description: The numeric severity of the issue is in the range of 0 (not severe)
-        through 10 (severe).
+      description: The numeric severity of the issue is in the range of 0 (not severe) through 10 (severe).
       type: Number
     - contextPath: CyCognito.Issue.last_detected
       description: The time at which the issue was last detected.
@@ -302,8 +240,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves information about a specific asset according to the specified
-      asset type and asset ID.
+    description: Retrieves information about a specific asset according to the specified asset type and asset ID.
     execution: false
     name: cycognito-asset-get
     outputs:
@@ -316,7 +253,7 @@ script:
     - contextPath: CyCognito.Asset.id
       description: |-
         Unique identifier of the asset.
-        
+
         Note: The asset ID is derived from the asset_id input field.
       type: String
     - contextPath: CyCognito.Asset.type
@@ -484,7 +421,7 @@ script:
       default: false
       description: |-
         The investigation status of the asset. 
-        
+
         Supported values: 'uninvestigated', 'investigating', 'investigated'
       isArray: false
       name: investigation_status
@@ -505,7 +442,7 @@ script:
     - contextPath: CyCognito.Asset.id
       description: |-
         Unique identifier of the asset.
-        
+
         Note: The asset ID is derived from the asset_ID input field."
       type: String
     - contextPath: CyCognito.Asset.investigation_status
@@ -560,7 +497,7 @@ script:
       defaultValue: '50'
       description: |-
         The number of results to retrieve.
-        
+
         Maximum value is '1000'
       isArray: false
       name: count
@@ -590,7 +527,7 @@ script:
         The date and time at which CyCognito first discovered and attributed the asset to the organization.
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        
+
         For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
       isArray: false
       name: first_detected
@@ -601,7 +538,7 @@ script:
         The date and time at which CyCognito most recently attributed the asset to the organization.
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
-        
+
         For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
       isArray: false
       name: last_detected
@@ -614,9 +551,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The geographical locations in which the issue is found. Supported
-        values contain the three-letter ISO country code for the respective countries--e.g.,
-        IND, USA.
+      description: The geographical locations in which the issue is found. Supported values contain the three-letter ISO country code for the respective countries--e.g., IND, USA.
       isArray: false
       name: locations
       required: false
@@ -652,15 +587,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Applies a filter to the list of issues based on a JSON-specific\
-        \ query.\n\nFormat:\n[{\n    \"field\": \"issue-type\",\n    \"op\": \"in\"\
-        ,\n    \"values\": [\n       \"Unsafe Authentication\",\n       \"Vulnerable\
-        \ Software\"\n    ]\t\n},\n{\n    \"op\": \"not-in\",\n    \"field\": \"severity-score\"\
-        ,\n    \"values\": [10, 9]\n}]\n\nNote: When using several filtering options\
-        \ (e.g., 'Issue Type' and 'Advanced Filter'), advance_json parameters will\
-        \ take precedence over other parameters. \nFor a complete reference to the\
-        \ CyCognito fields and operations, please refer to the CyCognito API V0 documentation\
-        \ at \nhttps://docs.cycognito.com/reference/query-issues"
+      description: "Applies a filter to the list of issues based on a JSON-specific query.\n\nFormat:\n[{\n    \"field\": \"issue-type\",\n    \"op\": \"in\",\n    \"values\": [\n       \"Unsafe Authentication\",\n       \"Vulnerable Software\"\n    ]\t\n},\n{\n    \"op\": \"not-in\",\n    \"field\": \"severity-score\",\n    \"values\": [10, 9]\n}]\n\nNote: When using several filtering options (e.g., 'Issue Type' and 'Advanced Filter'), advance_json parameters will take precedence over other parameters. \nFor a complete reference to the CyCognito fields and operations, please refer to the CyCognito API V0 documentation at \nhttps://docs.cycognito.com/reference/query-issues"
       isArray: false
       name: advanced_filter
       required: false
@@ -701,8 +628,7 @@ script:
       description: The geographic location of the instance.
       type: Unknown
     - contextPath: CyCognito.Issue.detection_complexity
-      description: Measures the difficulty at which a vulnerable asset can be detected
-        by a potential attacker.
+      description: Measures the difficulty at which a vulnerable asset can be detected by a potential attacker.
       type: String
     - contextPath: CyCognito.Issue.title
       description: Title of the issue.
@@ -723,8 +649,7 @@ script:
       description: A list of actions that describe how to resolve the issue.
       type: Unknown
     - contextPath: CyCognito.Issue.potential_impact
-      description: A list of categories that describe what might happen if the issue
-        is exploited.
+      description: A list of categories that describe what might happen if the issue is exploited.
       type: Unknown
     - contextPath: CyCognito.Issue.exploitation_method
       description: Exploitation method of the issue.
@@ -768,7 +693,7 @@ script:
       defaultValue: '50'
       description: |-
         The number of results to be retrieved in a response. 
-        
+
         Maximum value is '1000'
       isArray: false
       name: count
@@ -794,17 +719,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: |- 
+      description: |-
         Filters the assets according to the selected status. Supports comma-separated values.
-        
+
         Supported values: 'changed', 'new', 'normal'
       isArray: false
       name: status
       required: false
       secret: false
     - default: false
-      description: Filters the assets according to the provided organizations. Supports
-        comma-separated values.
+      description: Filters the assets according to the provided organizations. Supports comma-separated values.
       isArray: false
       name: organizations
       required: false
@@ -880,12 +804,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Applies a filter to the list of assets based on a JSON-specific query.\n\nFormat:\n\
-        [{\n    \"field\": \"status\",\n    \"op\": \"in\",\n    \"values\":\
-        \ [\n        \"new\",\n        \"changed\"\n    ]\t\n},\n{\n    \"op\": \"\
-        not-in\",\n    \"field\": \"security-rating\",\n    \"values\": [\"A\"]\n}]\n\
-        \nNote: For a complete reference to the CyCognito fields and operations, please\
-        \ refer to the CyCognito API V0 documentation at https://docs.cycognito.com/reference/query-assets."
+      description: "Applies a filter to the list of assets based on a JSON-specific query.\n\nFormat:\n[{\n    \"field\": \"status\",\n    \"op\": \"in\",\n    \"values\": [\n        \"new\",\n        \"changed\"\n    ]\t\n},\n{\n    \"op\": \"not-in\",\n    \"field\": \"security-rating\",\n    \"values\": [\"A\"]\n}]\n\nNote: For a complete reference to the CyCognito fields and operations, please refer to the CyCognito API V0 documentation at https://docs.cycognito.com/reference/query-assets."
       isArray: false
       name: advanced_filter
       required: false
@@ -902,8 +821,7 @@ script:
       description: Comments related to the asset.
       type: String
     - contextPath: CyCognito.Asset.id
-      description: "Unique identifier of the asset. \n\nNote: Asset ID is derived\
-        \ from the asset_id input field."
+      description: "Unique identifier of the asset. \n\nNote: Asset ID is derived from the asset_id input field."
       type: String
     - contextPath: CyCognito.Asset.type
       description: Type of the asset.
@@ -939,8 +857,7 @@ script:
       description: Date and time at which the asset is expired.
       type: Date
     - contextPath: CyCognito.Asset.first_seen
-      description: Time at which an asset was first discovered and attributed to the
-        organization.
+      description: Time at which an asset was first discovered and attributed to the organization.
       type: Date
     - contextPath: CyCognito.Asset.hosting_type
       description: Hosting type of the asset.
@@ -1000,8 +917,7 @@ script:
       description: Last status of the asset.
       type: String
     - contextPath: CyCognito.Asset.security_grade
-      description: Security rating of the asset based on the number and severity of
-        the associated issues.
+      description: Security rating of the asset based on the number and severity of the associated issues.
       type: String
     - contextPath: CyCognito.Asset.severe_issues
       description: The number of severe issues associated with the asset.
