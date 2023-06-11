@@ -1,8 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
+
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 DEFAULT_OUTGOING_MAPPER = "User Profile - Salesforce (Outgoing)"
@@ -401,7 +403,6 @@ def main():
     client_secret = params.get('credentials_consumer', {}).get('password') or params.get('consumer_secret')
     if not (client_id and client_secret):
         return_error('Consumer Key and Consumer Secret must be provided.')
-    
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
