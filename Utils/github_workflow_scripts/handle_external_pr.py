@@ -2,9 +2,8 @@
 import json
 import os
 
-from typing import List, Set, Tuple
+from typing import List, Set
 
-import git
 import urllib3
 from blessings import Terminal
 from github import Github
