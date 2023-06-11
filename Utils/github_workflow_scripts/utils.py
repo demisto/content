@@ -101,31 +101,26 @@ class Checkout:
                 Leave it as None if the branch is in the same repository.
         """
         self.repo = repo
-        self.fork_owner = fork_owner
-        self.branch_to_checkout = branch_to_checkout
-        self._original_branch = None
+
+        if fork_owner:
+            forked_remote_name = f'{fork_owner}_remote'
+            self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{fork_owner}/content")
+
+            forked_remote = self.repo.remote(forked_remote_name)
+            forked_remote.fetch(self.branch_to_checkout)
+            self.branch_to_checkout = f'refs/remotes/{forked_remote_name}/{branch_to_checkout}'
+        else:
+            self.branch_to_checkout = branch_to_checkout
+            self.repo.remote().fetch(branch_to_checkout)
+
+        try:
+            self._original_branch = self.repo.active_branch.name
+        except TypeError:
+            self._original_branch = self.repo.git.rev_parse('HEAD')
 
     def __enter__(self):
         """Checks out the given branch"""
-        if self.fork_owner:
-            try:
-                fork_remote = self.repo.remote(name='GuyAfik')
-            except ValueError as error:
-                print(f'{error=} when trying to fetch remote for GuyAfik')
-                fork_remote = self.repo.remote(name=self.fork_owner)
-            fork_remote.fetch(self.branch_to_checkout)
-            self._original_branch = self.repo.active_branch.name
-            self.repo.git.checkout(f"remotes/{self.fork_owner}/{self.branch_to_checkout}")
-        else:
-            self.repo.remote().fetch(self.branch_to_checkout)
-            try:
-                self._original_branch = self.repo.active_branch.name
-            except TypeError:
-                self._original_branch = self.repo.git.rev_parse('HEAD')
-            self.repo.git.checkout(self.branch_to_checkout)
-
-        print(f"Checked out to branch {self.branch_to_checkout}")
-        return self
+        self.repo.git.checkout(self.branch_to_checkout)
 
     def __exit__(self, *args):
         """Checks out the previous branch"""
