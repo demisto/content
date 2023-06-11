@@ -866,7 +866,7 @@ def prepare_fetch_incidents_query(fetch_timestamp: str,
     """
     if fetch_filter and (fetch_subtype or fetch_severity):
         raise DemistoException('Fetch Filter parameter cannot be used with Subtype/Severity parameters.')
-    query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line
+    query = f'SELECT {fetch_fields} FROM `{fetch_table}` '  # guardrails-disable-line # noqa: S608
     time_filter = 'event_time' if 'log' in fetch_table else 'time_generated'
     query += f'WHERE {time_filter} Between TIMESTAMP("{fetch_timestamp}") ' \
              f'AND CURRENT_TIMESTAMP'
@@ -907,7 +907,7 @@ def test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query
         # fetch params not to be tested (won't be used)
         fetch_fields = '*'
         fetch_table = 'firewall.traffic'
-        query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'
+        query = f'SELECT {fetch_fields} FROM `{fetch_table}` limit 1'  # noqa: S608
     client.query_loggings(query)
     return_outputs('ok')
 
@@ -1013,7 +1013,7 @@ def search_by_file_hash_command(args: dict, client: Client) -> Tuple[str, Dict[s
     file_hash = args.get('SHA256')
 
     query_start_time, query_end_time = query_timestamp(args)
-    query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line
+    query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
     query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
              f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
 
@@ -1105,7 +1105,7 @@ def build_query(args, table_name):
                            f'TIMESTAMP("{query_end_time}") '
     limit = args.get('limit', '5')
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
-    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'
+    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'  # noqa: S608
     return fields, query
 
 
@@ -1119,6 +1119,8 @@ def fetch_incidents(client: Client,
                     last_run: dict,
                     fetch_filter: str = '') -> Tuple[Dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get('lastRun')
+    demisto.debug("CortexDataLake - Start fetching")
+    demisto.debug(f"CortexDataLake - Last run: {json.dumps(last_run)}")
 
     if last_fetched_event_timestamp:
         last_fetched_event_timestamp = parser.parse(last_fetched_event_timestamp)
@@ -1127,7 +1129,7 @@ def fetch_incidents(client: Client,
         last_fetched_event_timestamp = last_fetched_event_timestamp.replace(microsecond=0)
     query = prepare_fetch_incidents_query(last_fetched_event_timestamp, fetch_severity, fetch_table,
                                           fetch_subtype, fetch_fields, fetch_limit, fetch_filter)
-    demisto.debug('Query being fetched: {}'.format(query))
+    demisto.debug(f"CortexDataLake - Query sent to the server: {query}")
     records, _ = client.query_loggings(query)
     if not records:
         return {'lastRun': str(last_fetched_event_timestamp)}, []
@@ -1137,6 +1139,9 @@ def fetch_incidents(client: Client,
     max_fetched_event_timestamp = max(records, key=lambda record: record.get(time_filter, 0)).get(time_filter, 0)
 
     next_run = {'lastRun': epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
+    demisto.debug(f'CortexDataLake - Next run after incidents fetching: {json.dumps(next_run)}')
+    demisto.debug(f"CortexDataLake- Number of incidents before filtering: {len(records)}")
+    demisto.debug(f"CortexDataLake - Number of incidents after filtering: {len(incidents)}")
     return next_run, incidents
 
 
