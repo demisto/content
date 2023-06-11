@@ -260,7 +260,7 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
   type: python
 tests:
 - Pwned v2 test
