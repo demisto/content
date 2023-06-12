@@ -1,4 +1,7 @@
 category: IT Services
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Azure Kubernetes Services
   version: -1
@@ -8,6 +11,7 @@ configuration:
   name: app_id
   required: false
   type: 0
+  section: Connect
 - additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
@@ -18,20 +22,24 @@ configuration:
   - Device Code
   - Azure Managed Identities
   type: 15
+  section: Connect
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
   type: 0
+  section: Connect
 - display: Client Secret (for authorization code mode)
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
@@ -39,20 +47,28 @@ configuration:
   name: auth_code
   required: false
   type: 9
+  section: Connect
+  advanced: true
 - additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   required: false
   hiddenusername: true
   type: 9
-- display: Subscription ID
+  section: Connect
+  advanced: true
+- display: Default Subscription ID
   name: subscription_id
   required: true
   type: 0
-- display: Resource Group Name
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  section: Connect
+- display: Default Resource Group Name
   name: resource_group_name
   required: true
   type: 0
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  section: Connect
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -64,14 +80,20 @@ configuration:
   required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services
 name: Azure Kubernetes Services
