@@ -429,14 +429,14 @@ def wildfire_upload_file(upload):
     # body = {'apikey': TOKEN}
     body = BODY_DICT
 
-    file_path = demisto.getFilePath(upload)['path']
-    file_name = demisto.getFilePath(upload)['name']
+    # file_path = demisto.getFilePath(upload)['path']
+    file_name = demisto.getFilePath(upload)['path']
 
-    try:
-        shutil.copy(file_path, file_name)
-    except Exception as exc:
-        demisto.error(f'Failed to prepare file for upload. Error: {exc}')
-        raise Exception('Failed to prepare file for upload.')
+    # try:
+    #     shutil.copy(file_path, file_name)
+    # except Exception as exc:
+    #     demisto.error(f'Failed to prepare file for upload. Error: {exc}')
+    #     raise Exception('Failed to prepare file for upload.')
 
     try:
         with open(file_name, 'rb') as file:
@@ -1413,7 +1413,8 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             params=PARAMS_DICT
         )
         # we get the report and file info from the XML object
-        reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
+
+        reports = ((json_res.get('wildfire') or {}).get('task_info') or {}).get('report')
         file_info = json_res.get('wildfire', {}).get('file_info')
 
         # extra options to provide in the query
