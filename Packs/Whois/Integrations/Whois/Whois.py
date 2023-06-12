@@ -7190,7 +7190,8 @@ whois_exception_mapping: Dict[type, str] = {
     socket.timeout: "timeout_error",
     socket.herror: "connection_error",
     socket.gaierror: "connection_error",
-    WhoisException: "service_error"
+    WhoisException: "service_error",
+    TypeError: "general_error"
 }
 
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
@@ -8442,25 +8443,6 @@ def prepare_readable_ip_data(response):
 '''COMMANDS'''
 
 
-def domain_command(reliability):
-    domains = demisto.args().get('domain', [])
-    is_recursive = argToBoolean(demisto.args().get('recursive'))
-    for domain in argToList(domains):
-        try:
-            whois_result = get_whois(domain, is_recursive=is_recursive)
-        except WhoisWarningException:
-            continue
-        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
-        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
-            'Contents': str(whois_result),
-            'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': dbot_score,
-        })
-
-
 def get_whois_ip(ip: str,
                  retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
                  rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT
@@ -8599,7 +8581,7 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
     return append_metrics(execution_metrics=execution, results=results)
 
 
-def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: bool, verbose: bool, should_error: bool) -> List[CommandResults]:
+def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: bool, should_error: bool, verbose: bool = False) -> List[CommandResults]:
 
     """
     Runs Whois domain query.
@@ -8780,9 +8762,13 @@ def main():
                     should_error=should_error
                 ))
 
-            # TODO handle 
             elif command == 'domain':
-                domain_command(reliability)
+                results.extend(whois_command(
+                    reliability=reliability,
+                    query=args.get('domain', []),
+                    is_recursive=argToBoolean(args.get("recursive", 'false')),
+                    should_error=should_error,
+                    ))
 
 
         return_results(results)
