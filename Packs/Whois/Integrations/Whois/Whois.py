@@ -8571,8 +8571,8 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
                     execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
                     break
 
-            if rate_limit_errors_suppressed:
-                results.append(CommandResults(readable_output=f"Error performing RDAP lookup for IP {ip}: {e}"))
+            if rate_limit_errors_suppressed and type(e) in [ipwhois.exceptions.HTTPRateLimitError, ipwhois.exceptions.IPDefinedError, ipwhois.exceptions.WhoisRateLimitError]:
+                results.append(CommandResults(entry_type=EntryType.ERROR, readable_output=f"Error performing RDAP lookup for IP {ip}: {e}"))
 
             else:
                 demisto.error(f"Rate limit error not suppressed, raising exception: {e}")
