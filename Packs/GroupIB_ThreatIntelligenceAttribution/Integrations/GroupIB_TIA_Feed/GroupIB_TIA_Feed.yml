@@ -72,7 +72,6 @@ configuration:
   type: 8
 - additionalinfo: Collections List to include for fetching.
   display: Indicator collections
-  hidden: false
   name: indicator_collections
   options:
   - compromised/mule
@@ -93,14 +92,12 @@ configuration:
 - additionalinfo: Date to start fetching indicators from.
   defaultvalue: 3 days
   display: Indicator first fetch
-  hidden: false
   name: indicators_first_fetch
   required: false
   type: 0
 - additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 objects with different amount of indicators). If you face some runtime errors, lower the value.
   defaultvalue: '2'
   display: Number of requests per collection
-  hidden: false
   name: requests_count
   options:
   - '1'

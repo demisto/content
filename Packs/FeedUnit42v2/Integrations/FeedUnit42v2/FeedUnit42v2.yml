@@ -79,7 +79,6 @@ configuration:
   required: false
   type: 0
   additionalinfo: Supports CSV values.
-  hidden: false
 - display: Use system proxy settings
   name: proxy
   required: false

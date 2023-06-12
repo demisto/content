@@ -1,4 +1,3 @@
-beta: false
 sectionorder:
 - Connect
 - Collect
@@ -212,7 +211,6 @@ script:
   - deprecated: false
     description: Retrieve the amount of query quota available and used.
     execution: false
-    hidden: false
     name: xdr-xql-get-quota
     outputs:
     - contextPath: PaloAltoNetworksXQL.Quota.license_quota
@@ -255,7 +253,6 @@ script:
       When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
       unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-get-query-results
     outputs:
@@ -433,7 +430,6 @@ script:
     deprecated: false
     description: Query file events by the SHA256 file.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-file-event-query
     outputs:
@@ -557,7 +553,6 @@ script:
     deprecated: false
     description: Query process events by the SHA256 process.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-process-event-query
     outputs:
@@ -708,7 +703,6 @@ script:
     deprecated: false
     description: Query DLL module events by the SHA256 DLL.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-dll-module-query
     outputs:
@@ -868,7 +862,6 @@ script:
     deprecated: false
     description: Query network connections between a source IP, destination IP and port.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-network-connection-query
     outputs:
@@ -1019,7 +1012,6 @@ script:
     deprecated: false
     description: Query windows registry by registry key name.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-registry-query
     outputs:
@@ -1155,7 +1147,6 @@ script:
     deprecated: false
     description: Query event logs by event ID.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-event-log-query
     outputs:
@@ -1297,7 +1288,6 @@ script:
     deprecated: false
     description: Query by DNS query or domain name.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-dns-query
     outputs:
@@ -1466,7 +1456,6 @@ script:
     deprecated: false
     description: Search for the process that wrote the given file, by its SHA256 or file path.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-file-dropper-query
     outputs:
@@ -1632,7 +1621,6 @@ script:
     deprecated: false
     description: Search for network connection created by a given process instance ID.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-process-instance-network-activity-query
     outputs:
@@ -1801,7 +1789,6 @@ script:
     deprecated: false
     description: Search for network connection created by a given process causality ID.
     execution: false
-    hidden: false
     polling: true
     name: xdr-xql-process-causality-network-activity-query
     outputs:
