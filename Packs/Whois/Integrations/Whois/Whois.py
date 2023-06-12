@@ -9,7 +9,6 @@ import socks
 import ipwhois
 from typing import Dict, List, Optional
 
-SHOULD_ERROR = demisto.params().get('with_error', False)
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
@@ -7160,6 +7159,24 @@ ipwhois_exception_mapping: Dict[type, str] = {
 }
 
 
+def has_rate_limited_result(cmd_results: List[CommandResults]) -> bool:
+    """
+    Helper function to return whether a rate limited `CommandResult` exists in the list
+
+    Args:
+        - `cmd_results`: (``List[CommandResults]``): List of command results to search in.
+
+    Returns:
+        - `True` if one of the supplied command results has a rate limited reason for failure.
+    """
+
+    for c in cmd_results:
+        if c.entry_type == EntryType.ERROR and 'reason' in c.outputs and c.outputs['reason'] == "quota_error":
+            return True
+
+    return False
+
+
 class WhoisException(Exception):
     pass
 
@@ -7214,7 +7231,7 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
     # The following loop handles errno 104 - "connection reset by peer" by retry whois_request with the same arguments.
     # If the request fails due to other cause - there will not be another try
     for attempt in range(3):
-        demisto.debug(f"Attempt {attempt} to get response for whois '{request_domain}' from '{target_server}'...")
+        demisto.debug(f"Attempt {attempt} to get response for whois '{domain}' from '{target_server}'...")
         response = whois_request_get_response(request_domain, target_server)
         response_size = len(response.encode('utf-8'))
         demisto.debug(f"Response byte size: {response_size}")
@@ -7264,35 +7281,20 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
 
 
 def get_root_server(domain):
-    ext = domain.split(".")[-1]
-    for dble in dble_ext:
-        if domain.endswith(dble):
-            ext = dble
 
-    if ext in list(tlds.keys()):
-        entry = tlds[ext]
-        try:
+    try:
+        ext = domain.split(".")[-1]
+        for dble in dble_ext:
+            if domain.endswith(dble):
+                ext = dble
+
+        if ext in list(tlds.keys()):
+            entry = tlds[ext]
             host = entry["host"]
-        except KeyError:
-            context = ({
-                outputPaths['domain']: {
-                    'Name': domain,
-                    'Whois': {
-                        'QueryStatus': 'Failed'
-                    }
-                },
-            })
-            if SHOULD_ERROR:
-                return_error('The domain - {} - is not supported by the Whois service'.format(domain),
-                             outputs=context)
-            else:
-                return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
-                               outputs=context)
-                raise WhoisWarningException('The domain - {} - is not supported by the Whois service'.format(domain))
-        return host
-
-    else:
-        raise WhoisException("No root WHOIS server found for domain.")
+            return host
+        
+    except KeyError as e:
+        raise WhoisException(f"{e.__class__.__name__}: Can't parse the root server from domain '{domain}'")
 
 
 def whois_request_get_response(domain: str, server: str) -> str:
@@ -8496,7 +8498,7 @@ def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_count: int, rate_limit_wait_seconds: int, rate_limit_suppress_errors: bool) -> List[CommandResults]:
+def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_count: int, rate_limit_wait_seconds: int) -> List[CommandResults]:
 
     """
     Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
@@ -8507,7 +8509,6 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
         - `reliability` (``DBotScoreReliability``): RDAP lookup source reliability.
         - `rate_limit_retry_count` (``int``): Number of retries in case a rate limit error is encountered.
         - `rate_limit_wait_seconds` (``int``): Number of seconds between retries in case a rate limit error is encountered.
-        - `rate_limit_errors_suppressed` (``bool``): Raise exception in case a rate limit error is encountered.
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
@@ -8558,32 +8559,26 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
         except Exception as e:
             demisto.debug(f"Exception type {e.__class__.__name__} caught performing RDAP lookup for IP {ip}: {e}")
 
+            output = {
+                'query': ip,
+                'raw': f"Query failed for {ip}: {e.__class__.__name__} {e}"
+            }
+
             # Find and increment execution metrics according to known ipwhois exceptions
             for exception_type, metric_attribute in ipwhois_exception_mapping.items():
                 if isinstance(e, exception_type):
                     execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
+                    output['reason'] = metric_attribute
                     break
 
-            # If suppressing rate limiting is set and one of the rate limiting errors is received from the server
-            if rate_limit_suppress_errors and isinstance(e, ipwhois.exceptions.HTTPRateLimitError | ipwhois.exceptions.WhoisRateLimitError):
-                output = {
-                            'query': ip,
-                            'raw': f"Query failed: {ip}: {e.__class__.__name__} {e}"
-                }
-
-                results.append(
-                    CommandResults(
-                        outputs_prefix="Whois.IP",
-                        outputs_key_field="query",
-                        outputs=output,
-                        entry_type=EntryType.ERROR,
-                        readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
-                    ))
-
-            elif SHOULD_ERROR:
-                #TODO should we raise an error? we need to return execution_metrics though
-                demisto.error(f"Rate limit error not suppressed, raising exception: {e}")
-                raise e
+            results.append(
+                CommandResults(
+                    outputs_prefix="Whois.IP",
+                    outputs_key_field="query",
+                    outputs=output,
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
+                ))
 
     return append_metrics(execution_metrics=execution, results=results)
 
@@ -8604,7 +8599,7 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
 
-    demisto.info(f'whois command is called with the query {query}')
+    demisto.info(f"whois command is called with the query '{query}'")
 
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
@@ -8643,28 +8638,25 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
                     execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
                     break
 
-            
             output = ({
                     outputPaths['domain']: {
                         'Name': domain,
                         'Whois': {
-                            'QueryStatus': 'Failed'
+                            'QueryStatus': f"Failed whois lookup: {e}"
                         }
                     },
                 })
-            demisto.debug("8648")
             result = CommandResults(
                 outputs=output,
                 readable_output=f"Exception caught performing whois lookup with domain '{domain}': {e}",
                 entry_type=EntryType.ERROR,
-                raw_response=e
+                raw_response=str(e)
             )
 
-            demisto.debug("8655")
             results.append(result)
 
-    demisto.debug("8659")
     return append_metrics(execution_metrics=execution_metrics, results=results)
+
 
 def test_command():
     whois_result = get_whois('google.co.uk')
@@ -8713,6 +8705,7 @@ def main():
     demisto.debug('command is {}'.format(str(demisto.command())))
     command = demisto.command()
     args: Dict[str, str] = demisto.args()
+    should_error = demisto.params().get('with_error', False)
 
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
@@ -8729,7 +8722,20 @@ def main():
             rate_limit_retry_count: int = arg_to_number(get_param_or_arg(param_key='rate_limit_retry_count', arg_key='rate_limit_retry_count'), arg_name="rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT
             rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(param_key='rate_limit_wait_seconds', arg_key="rate_limit_wait_seconds")) or RATE_LIMIT_WAIT_SECONDS_DEFAULT
             rate_limit_errors_suppressed: bool = argToBoolean(get_param_or_arg(param_key='rate_limit_errors_suppressed', arg_key='rate_limit_errors_suppressed')) or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
-            results.extend(ip_command(ips=ip, reliability=reliability, rate_limit_retry_count=rate_limit_retry_count, rate_limit_wait_seconds=rate_limit_wait_seconds, rate_limit_suppress_errors=rate_limit_errors_suppressed))
+
+            cmd_res = ip_command(ips=ip, reliability=reliability, rate_limit_retry_count=rate_limit_retry_count, rate_limit_wait_seconds=rate_limit_wait_seconds)
+            is_rate_limited = has_rate_limited_result(cmd_res)
+
+            # Return an error rate limiting is not suppressed
+            # and whether one of the requests failed because of rate limiting
+            if not rate_limit_errors_suppressed and is_rate_limited:
+                return_error(
+                    f"Rate limit errors are no suppressed and one or more of the IP queries failed with rate-limiting.",
+                    outputs=cmd_res,
+                    error="quota_error"
+                )
+            else:
+                results.extend(cmd_res)
             
         else:
             org_socket = socket.socket
@@ -8750,7 +8756,7 @@ def main():
         
         # Check if integration instance configuration to exit on error is set 
         # and that at least one of the command results is an error type
-        if SHOULD_ERROR and isError(results):
+        if should_error and isError(results):
             demisto.debug(f"with_error config is set, returning with error")
             return_error(
                 f"One or more of the Whois queries failed.",
