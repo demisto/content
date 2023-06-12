@@ -1079,9 +1079,6 @@ class BranchTestCollector(TestCollector):
             changed_files.extend(private_test_data)
 
         diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
-        print(f'******************************')
-        print(f'{diff=}')
-        print(f'******************************')
         logger.debug(f'raw changed files string:\n{diff}')
 
         # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
@@ -1113,7 +1110,15 @@ class BranchTestCollector(TestCollector):
                 continue  # not adding to changed files list
 
             changed_files.append(file_path)  # non-deleted files (added, modified)
-        print(f'Collected++++++======{FilesToCollect(changed_files=tuple(changed_files),pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))}')
+        p = FilesToCollect(changed_files=tuple(changed_files), pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
+        logger.info(f'Collected before filter======{p}')
+        changed_packs = []
+        for f in p.split('\t'):
+            if 'Packs' in f:
+                pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
+                pack_path = '/'.join(pack_path.split('/')[:-1])
+                changed_packs.append(pack_path)
+        logger.info(f'Collected after filter======{changed_packs}')
         return FilesToCollect(changed_files=tuple(changed_files),
                               pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
 
