@@ -6,7 +6,10 @@ import subprocess
 from oletools import crypto
 import os
 import hashlib
-
+# suppress logs from oletools
+import logging
+vba_logger = logging.getLogger("olevba")
+vba_logger.setLevel(logging.CRITICAL)
 
 class OleClient:
     def __init__(self, file_info, ole_command, password=None, decoded=False):
