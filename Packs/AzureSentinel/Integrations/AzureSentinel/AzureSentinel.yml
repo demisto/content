@@ -1418,8 +1418,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Phrases used to filter threat indicators.
-      isArray: false
+      description: A comma-separated list of keywords.
+      isArray: true
       name: keywords
       required: false
       secret: false
