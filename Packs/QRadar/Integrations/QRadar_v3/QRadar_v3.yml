@@ -21,7 +21,7 @@ configuration:
   required: true
   section: Connect
 - display: QRadar API Version
-  defaultvalue: 14.0
+  defaultvalue: 17.0
   additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1.
   name: api_version
   type: 0
