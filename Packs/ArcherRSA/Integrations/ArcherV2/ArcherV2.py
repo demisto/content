@@ -556,7 +556,7 @@ class Client(BaseClient):
             else:
                 return {}, res, errors
 
-            for _id, field in content_obj.get('FieldContents').items():
+            for i, (_id, field) in enumerate(content_obj.get('FieldContents').items()):
                 field_data = level_fields.get(str(_id), {})  # type: ignore
                 field_type = field_data.get('Type')
 
@@ -573,7 +573,7 @@ class Client(BaseClient):
                     field_value = field.get('Value')
 
                 if field_value:
-                    record[field_data.get('Name')] = field_value
+                    record[field_data.get('Name') or self.get_field_value_name(_id) or f'None-{i}'] = field_value
 
             record['Id'] = content_obj.get('Id')
         return record, res, errors
@@ -743,6 +743,24 @@ class Client(BaseClient):
                 merge_integration_context(cache)
                 return field_data
         return {}
+
+    def get_field_value_name(self, field_id):
+        cache = get_integration_context()
+
+        if cache['fieldValueNames'].get(field_id):
+            return cache.get('fieldValueNames').get(field_id)
+        res = self.do_rest_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
+        errors = get_errors_from_res(res)
+        if errors:
+            return_error(errors)
+
+        field = {}
+        if res.get('RequestedObject') and res.get('IsSuccessful'):
+            field_obj = res['RequestedObject']
+            cache['fieldValueNames'][field_obj.get('Id')] = field_obj.get('Name')
+            merge_integration_context(cache)
+            return field_obj.get('Name')
+        return field_id
 
     def get_field_id(self, app_id: str, field_name: str) -> str:
         """Get field ID by field name
