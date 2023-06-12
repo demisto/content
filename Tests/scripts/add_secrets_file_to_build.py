@@ -79,11 +79,18 @@ def run(options):
     branch_name = paths.content_repo.active_branch.name
     root_dir = Path(__file__).absolute().parents[2]
     root_dir_instance = pathlib.Path(root_dir)
+    print(f'{root_dir_instance=}')
+    print(f'{root_dir_instance=}')
     filesindir = [item.name for item in root_dir_instance.glob("*")]
+    print(f'{filesindir=}')
+    root_dir_instance = pathlib.Path(f'{options.artifacts_folder}')
+    filesindir2 = [item.name for item in root_dir_instance.glob("*")]
+    print(f'{filesindir2=}')
     # TODO: Add Ddup
     # changed_files = get_git_diff(branch_name, paths.content_repo)
+    changed_packs = []
     try:
-        with open('options.artifacts_folder/changed_packs_test.txt', 'r') as file:
+        with open(f'{options.artifacts_folder}/changed_packs_test.txt', 'r') as file:
             for line in file:
                 print(f'{line=}')
                 line_split = line.strip().split('=')
@@ -92,7 +99,6 @@ def run(options):
     except Exception as e:
         logging.info(f'Could not fined changed pack from collect tests, the error is: {e}')
 
-    changed_packs = []
     yml_ids = []
     # for f in changed_files:
     #     if 'Packs' in f:
@@ -127,11 +133,10 @@ def run(options):
                 except yaml.YAMLError as exc:
                     print(exc)
     print('^^^^^^^^^^^^^^^^^^^^m^^^^^^^^^^')
-    print(yml_ids)
+    print(f'{yml_ids=}')
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True, ignore_dev=True)
-    secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, branch_name=branch_name,
-                                           ignore_dev=False)
+    secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, branch_name=branch_name, ignore_dev=False)
     print('==============================')
     print(f'secrets pre merge: {secrets}')
     print('==============================')

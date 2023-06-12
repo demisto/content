@@ -44,9 +44,8 @@ class GoogleSecreteManagerModule:
                 # print(f'{labels=}')
             secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
-            formatted_integration_search_ids = [GoogleSecreteManagerModule.convert_to_gsm_format(s.lower()) for s in
-                                                name_filter]
-            if not secret_pack_id or labels.get('ignore') or (ignore_dev and labels.get('dev')) or (
+            formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
+            if not secret_pack_id or labels.get('ignore') or labels.get('merged') or (ignore_dev and labels.get('dev')) or (
                     formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
                     branch_name and labels.get('branch', '') != branch_name):
                 continue
@@ -58,7 +57,7 @@ class GoogleSecreteManagerModule:
                     secret_value['secret_name'] = secret.name
                     secrets.append(secret_value)
                 except Exception as e:
-                    # logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
+                    logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
                     print(f'Error getting the secret: {secret.name}, got the error: {e}')
             else:
                 secrets.append(secret)
