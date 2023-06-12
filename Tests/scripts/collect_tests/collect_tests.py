@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-import yaml
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
@@ -1111,20 +1110,8 @@ class BranchTestCollector(TestCollector):
                 continue  # not adding to changed files list
 
             changed_files.append(file_path)  # non-deleted files (added, modified)
-        files_to_collect = FilesToCollect(changed_files=tuple(changed_files), pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
-        self.add_changed_integrations_to_artifact(files_to_collect.changed_files)
-        return files_to_collect
-
-    @staticmethod
-    def add_changed_integrations_to_artifact(files_to_collect):
-        changed_packs = []
-        for f in files_to_collect:
-            if 'Packs' in f:
-                pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
-                pack_path = '/'.join(pack_path.split('/')[:-1])
-                changed_packs.append(pack_path)
-        logger.info(f'changed_packs={changed_packs}')
-
+        return FilesToCollect(changed_files=tuple(changed_files),
+                              pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
 
 
 def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
