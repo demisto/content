@@ -1125,7 +1125,7 @@ script:
     execution: false
     name: azure-storage-blob-container-delete
   - description: Gets all subscriptions for a tenant.
-    name: azure-sql-subscriptions-list
+    name: azure-storage-subscriptions-list
     outputs:
     - contextPath: AzureStorage.Subscription.id
       description: 'The unique identifier of the Azure storage subscription.'
@@ -1164,7 +1164,7 @@ script:
       description: 'The value of the Azure storage subscription count.'
       type: Number
   - description: Gets all resource groups for a subscription.
-    name: azure-sql-resource-group-list
+    name: azure-storage-resource-group-list
     arguments:
       - default: false
         description: "A comma separated list of the subscription ID's, optional. Note: This argument will override the instance parameter ‘Subscription ID'."
