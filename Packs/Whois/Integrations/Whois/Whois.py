@@ -8518,17 +8518,15 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
     rate_limit_errors_suppressed: bool = bool(get_param_or_arg(
         'rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
 
-    execution = ExecutionMetrics()
 
-    results = []
+    execution = ExecutionMetrics()
+    results: List[CommandResults] = []
     for ip in argToList(ips):
 
         try:
             response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds)
-
             if response:
                 execution.success += 1
-
                 dbot_score = Common.DBotScore(
                     indicator=ip,
                     indicator_type=DBotScoreType.IP,
@@ -8560,7 +8558,7 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
                 )
             else:
                 execution.general_error += 1
-                result = CommandResults(readable_output=f"No results returned for IP {ip}")
+                result = CommandResults(readable_output=f"No results returned for IP {ip}", entry_type=EntryType.ERROR)
 
             results.append(result)
 
@@ -8597,13 +8595,12 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
 
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
-        - If any lookup failed, an `Exception` will be returned. If all lookups succeeded, we'll return `None`.
     """
 
     demisto.info(f'whois command is called with the query {query}')
 
     execution_metrics = ExecutionMetrics()
-    results = []
+    results: List[CommandResults] = []
     for query in argToList(query):
         domain = get_domain_from_query(query)
 
@@ -8639,6 +8636,7 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
                     execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
                     break
 
+            
             output = ({
                     outputPaths['domain']: {
                         'Name': domain,
@@ -8647,21 +8645,18 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
                         }
                     },
                 })
+            demisto.debug("8648")
             result = CommandResults(
                 outputs=output,
-                readable_output=f"Whois command failed: {e}",
+                readable_output=f"Exception caught performing whois lookup with domain '{domain}': {e}",
                 entry_type=EntryType.ERROR,
                 raw_response=e
             )
 
+            demisto.debug("8655")
             results.append(result)
 
-    
-    demisto.debug(f"Returning from whois_command")
-    # demisto.debug(execution_metrics.metrics)
-
-    # TODO figure out why nothing is returned here
-    demisto.debug(results)
+    demisto.debug("8659")
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
 def test_command():
@@ -8721,10 +8716,10 @@ def main():
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")    
     try:
+        results: List[CommandResults] = []
         if command == 'ip':
-            demisto_args = demisto.args()
-            ip = demisto_args.get('ip')
-            results = ip_command(ip, reliability)
+            ip = args.get('ip')
+            results.extend(ip_command(ip, reliability))
             
         else:
             org_socket = socket.socket
@@ -8732,24 +8727,26 @@ def main():
             if command == 'test-module':
                 test_command()
             elif command == 'whois':
-                results = whois_command(
+                results.extend(whois_command(
                     reliability=reliability,
                     query=args.get("query"),
                     is_recursive=argToBoolean(args.get("recursive", 'false')),
                     verbose=argToBoolean(args.get('verbose', 'false'))
-                )
+                ))
 
-                if SHOULD_ERROR:
-                    demisto.debug(f"with_error config is set, returning with error")
-                    return_error(
-                        f"Whois command failed",
-                        outputs=results
-
-                    )
-
+            # TODO handle 
             elif command == 'domain':
                 domain_command(reliability)
         
+        # Check if integration instance configuration to exit on error is set 
+        # and that at least one of the command results is an error type
+        if SHOULD_ERROR and isError(results):
+            demisto.debug(f"with_error config is set, returning with error")
+            return_error(
+                f"One or more of the Whois queries failed.",
+                outputs=results
+            )
+
         return_results(results)
     except Exception as e:
         LOG(e)
