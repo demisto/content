@@ -8498,7 +8498,7 @@ def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_count: int, rate_limit_wait_seconds: int) -> List[CommandResults]:
+def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_count: int, rate_limit_wait_seconds: int, should_error: bool) -> List[CommandResults]:
 
     """
     Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
@@ -8509,6 +8509,7 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
         - `reliability` (``DBotScoreReliability``): RDAP lookup source reliability.
         - `rate_limit_retry_count` (``int``): Number of retries in case a rate limit error is encountered.
         - `rate_limit_wait_seconds` (``int``): Number of seconds between retries in case a rate limit error is encountered.
+        - `should_error` (``bool``): Whether to return an error entry if the lookup fails.
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
@@ -8552,7 +8553,11 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                 )
             else:
                 execution.general_error += 1
-                result = CommandResults(readable_output=f"No results returned for IP {ip}", entry_type=EntryType.ERROR)
+
+                if should_error:
+                    result = CommandResults(readable_output=f"No results returned for IP {ip}", entry_type=EntryType.ERROR)
+                else:
+                    result = CommandResults(readable_output=f"No results returned for IP {ip}", entry_type=EntryType.WARNING)
 
             results.append(result)
 
@@ -8571,19 +8576,30 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                     output['reason'] = metric_attribute
                     break
 
-            results.append(
-                CommandResults(
-                    outputs_prefix="Whois.IP",
-                    outputs_key_field="query",
-                    outputs=output,
-                    entry_type=EntryType.ERROR,
-                    readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
-                ))
+
+            if should_error:
+                results.append(
+                    CommandResults(
+                        outputs_prefix="Whois.IP",
+                        outputs_key_field="query",
+                        outputs=output,
+                        entry_type=EntryType.ERROR,
+                        readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
+                    ))
+            else:
+                results.append(
+                    CommandResults(
+                        outputs_prefix="Whois.IP",
+                        outputs_key_field="query",
+                        outputs=output,
+                        entry_type=EntryType.WARNING,
+                        readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
+                    ))
 
     return append_metrics(execution_metrics=execution, results=results)
 
 
-def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: bool, verbose: bool) -> List[CommandResults]:
+def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: bool, verbose: bool, should_error: bool) -> List[CommandResults]:
 
     """
     Runs Whois domain query.
@@ -8594,7 +8610,7 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
         - `query` (``str``): The domain(s) to run the lookup for. 
         - `is_recursive` (``bool``): Whether to run the command recursively.
         - `verbose` (``bool``): Whether the output should be verbose or not. It will add the JSON raw response to the context.
-
+        - `should_error` (``bool``): Whether to return an error entry if the lookup fails.
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
@@ -8646,14 +8662,21 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
                         }
                     },
                 })
-            result = CommandResults(
-                outputs=output,
-                readable_output=f"Exception caught performing whois lookup with domain '{domain}': {e}",
-                entry_type=EntryType.ERROR,
-                raw_response=str(e)
-            )
-
-            results.append(result)
+            
+            if should_error:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception caught performing whois lookup with domain '{domain}': {e}",
+                    entry_type=EntryType.ERROR,
+                    raw_response=str(e)
+                ))
+            else:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception caught performing whois lookup with domain '{domain}': {e}",
+                    entry_type=EntryType.WARNING,
+                    raw_response=str(e)
+                ))
 
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
@@ -8723,10 +8746,16 @@ def main():
             rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(param_key='rate_limit_wait_seconds', arg_key="rate_limit_wait_seconds")) or RATE_LIMIT_WAIT_SECONDS_DEFAULT
             rate_limit_errors_suppressed: bool = argToBoolean(get_param_or_arg(param_key='rate_limit_errors_suppressed', arg_key='rate_limit_errors_suppressed')) or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
 
-            cmd_res = ip_command(ips=ip, reliability=reliability, rate_limit_retry_count=rate_limit_retry_count, rate_limit_wait_seconds=rate_limit_wait_seconds)
+            cmd_res = ip_command(
+                ips=ip,
+                reliability=reliability,
+                rate_limit_retry_count=rate_limit_retry_count,
+                rate_limit_wait_seconds=rate_limit_wait_seconds,
+                should_error=should_error
+            )
             is_rate_limited = has_rate_limited_result(cmd_res)
 
-            # Return an error rate limiting is not suppressed
+            # Return an error if rate limiting is not suppressed
             # and whether one of the requests failed because of rate limiting
             if not rate_limit_errors_suppressed and is_rate_limited:
                 return_error(
@@ -8747,21 +8776,14 @@ def main():
                     reliability=reliability,
                     query=args.get("query"),
                     is_recursive=argToBoolean(args.get("recursive", 'false')),
-                    verbose=argToBoolean(args.get('verbose', 'false'))
+                    verbose=argToBoolean(args.get('verbose', 'false')),
+                    should_error=should_error
                 ))
 
             # TODO handle 
             elif command == 'domain':
                 domain_command(reliability)
-        
-        # Check if integration instance configuration to exit on error is set 
-        # and that at least one of the command results is an error type
-        if should_error and isError(results):
-            demisto.debug(f"with_error config is set, returning with error")
-            return_error(
-                f"One or more of the Whois queries failed.",
-                outputs=results
-            )
+
 
         return_results(results)
     except Exception as e:
