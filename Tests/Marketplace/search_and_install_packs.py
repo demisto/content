@@ -307,6 +307,8 @@ def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
                   request_timeout: int = 3600,
+                  attempts_count: int = 3,
+                  sleep_interval: int = 60
                   ):
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
@@ -319,86 +321,67 @@ def install_packs(client: demisto_client,
         host (str): The server URL.
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval between install attempts.
     """
     global SUCCESS_FLAG
-
-    class GCPTimeOutException(ApiException):
-        def __init__(self, error):
-            if '/packs/' in error:
-                self.pack_id = get_pack_id_from_error_with_gcp_path(error)
-            super().__init__()
-
-    class MalformedPackException(ApiException):
-        def __init__(self, pack_ids):
-            self.malformed_ids = pack_ids
-            super().__init__()
-
-    class GeneralItemNotFoundError(ApiException):
-        def __init__(self, error_msg):
-            self.error_msg = error_msg
-            super().__init__()
-
-    def call_install_packs_request(packs, attempts_count=1):
-        for attempt in range(attempts_count):
+    try:
+        for attempt in range(attempts_count - 1, -1, -1):
             try:
-                logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
-                             f'Attempts left on failure: {attempts_count - attempt - 1}.')
-                response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                    path='/contentpacks/marketplace/install',
-                                                                                    method='POST',
-                                                                                    body={'packs': packs,
-                                                                                          'ignoreWarnings': True},
-                                                                                    accept='application/json',
-                                                                                    _request_timeout=request_timeout,
-                                                                                    response_type='object')
+                logging.info(f"Installing packs {', '.join([p.get('id') for p in packs_to_install])} on server {host}. "
+                             f"Attempt:{attempts_count - attempt}/{attempts_count}")
+                response, status_code, headers = demisto_client.generic_request_func(client,
+                                                                                     path='/contentpacks/marketplace/install',
+                                                                                     method='POST',
+                                                                                     body={'packs': packs_to_install,
+                                                                                           'ignoreWarnings': True},
+                                                                                     accept='application/json',
+                                                                                     _request_timeout=request_timeout,
+                                                                                     response_type='object')
 
-                if status_code in range(200, 300) and status_code != 204:
-                    packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
+                if 200 <= status_code < 300 and status_code != 204:
+                    packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response]
                     logging.success(f'Packs were successfully installed on server {host}')
                     logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
                     break
 
+                if not attempt:
+                    raise Exception(f"Got bad status code: {status_code}, headers:{headers}")
+
+                logging.warning(f"Got bad status code: {status_code} from the server, "
+                                f"Sleeping for {sleep_interval} seconds and trying again.")
+                logging.debug(f"response headers:{headers}")
+                sleep(sleep_interval)
+
             except ApiException as ex:
-                try:
-                    if ex.status in [502, 599]:
-                        # 502 - Bad Gateway, 599 - Connection timed out
-                        # In case of a timeout, sleep retry the request
-                        logging.info("Got 502, 599 from server, retrying the request. Sleeping for 60 seconds.")
-                        sleep(60)
-                    elif 'timeout awaiting response' in ex.body:
-                        raise GCPTimeOutException(ex.body)
-                    elif malformed_ids := find_malformed_pack_id(ex.body):
-                        raise MalformedPackException(malformed_ids)
-                    elif 'Item not found' in ex.body:
-                        raise GeneralItemNotFoundError(ex.body)
-                    else:
-                        raise ex
-                except Exception:
-                    logging.debug(f'An error occurred during parsing the install error: {str(ex)}')
-                    raise ex
-    try:
-        try:
-            call_install_packs_request(packs_to_install, attempts_count=3)
+                if malformed_ids := find_malformed_pack_id(ex.body):
+                    handle_malformed_pack_ids(malformed_ids, packs_to_install)
+                    if not attempt:
+                        raise Exception(f"malformed packs:{malformed_ids}") from ex
 
-        except MalformedPackException as e:
-            # if this is malformed pack error, remove malformed packs and retry until success
-            handle_malformed_pack_ids(e.malformed_ids, packs_to_install)
-            logging.warning(f'The request to install packs on server {host} has failed, retrying without packs '
-                            f'{e.malformed_ids}')
-            return install_packs(client, host, [pack for pack in packs_to_install if pack['id'] not in e.malformed_ids],
-                                 request_timeout)
+                    # We've more attempts, retrying without tho malformed packs.
+                    SUCCESS_FLAG = False
+                    logging.error(f"Unable to install malformed packs:{malformed_ids}, retrying without them.")
+                    packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
 
-        except GCPTimeOutException as e:
-            # if this is a gcp timeout, try only once more
-            logging.warning(f'The request to install packs on server {host} has failed due to timeout awaiting response'
-                            f' headers while trying to install pack {e.pack_id}, trying again for one more time')
-            call_install_packs_request(packs_to_install)
+                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                    if 'timeout awaiting response' in ex.body:
+                        if '/packs/' in ex.body:
+                            pack_id = get_pack_id_from_error_with_gcp_path(ex.body)
+                            raise Exception(f"timeout awaiting response headers while trying to install pack {pack_id}") from ex
 
-        except GeneralItemNotFoundError as e:
-            logging.warning(f'The request to install all packs on server {host} has failed due to an item not found '
-                            f'error, with the message: {e.error_msg}.\n trying again for one more time')
-            call_install_packs_request(packs_to_install)
+                        raise Exception("timeout awaiting response headers while trying to install, "
+                                        "couldn't determine pack id.") from ex
 
+                    if 'Item not found' in ex.body:
+                        raise Exception(f'Item not found error, headers:{ex.headers}.') from ex
+
+                    # Unknown exception reason, re-raise.
+                    raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+
+                # There are more attempts available, sleep and retry.
+                logging.debug(f"failed to install pack, sleeping for {sleep_interval} seconds.")
+                sleep(sleep_interval)
     except Exception as e:
         logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
         SUCCESS_FLAG = False
@@ -570,7 +553,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
     index_folder_path, _, _ = download_and_extract_index(build_bucket, extract_destination_path, bucket_packs_root_path)
 
     for pack_id in os.listdir(index_folder_path):
-        if os.path.isdir(os.path.join(index_folder_path, pack_id)):
+        if Path(os.path.join(index_folder_path, pack_id)).is_dir():
             metadata_path = os.path.join(index_folder_path, pack_id, Pack.METADATA)
             pack_metadata = load_json(metadata_path)
             if 'partnerId' in pack_metadata:  # not installing private packs
@@ -605,7 +588,7 @@ def upload_zipped_packs(client: demisto_client,
         'Content-Type': 'multipart/form-data'
     }
     auth_settings = ['api_key', 'csrf_token', 'x-xdr-auth-id']
-    file_path = os.path.abspath(pack_path)
+    file_path = str(Path(pack_path).resolve())
     files = {'file': file_path}
 
     logging.info(f'Making "POST" request to server {host} - to install all packs from file {pack_path}')
