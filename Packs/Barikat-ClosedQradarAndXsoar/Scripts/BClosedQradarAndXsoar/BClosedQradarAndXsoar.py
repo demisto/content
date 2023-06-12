@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa: F401
 
 def close_investigation_and_qradar_offense():
     
-    
     # The section titled Get Investigation
     current_investigation_id = demisto.investigation()['id']
 
