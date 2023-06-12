@@ -143,8 +143,8 @@ def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains available lists.
     """
-    list_name = args.get("name")
-    list_type = args.get("type")
+    list_name = args.get("name", "")
+    list_type = args.get("type", "")
     res = []
     result = client.get_lists(list_name, list_type)
     data = json.loads(xml2json(result))
@@ -184,7 +184,7 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | s
                         that contains the list details and content.
     """
     resEntries = []
-    list_id: str = args["list_id"]
+    list_id: str = args.get("list_id", "")
     result = client.get_list(list_id)
 
     data = json.loads(xml2json(result))
@@ -243,8 +243,8 @@ def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    list_id: str = args["list_id"]
-    entry_pos: str = args["entry_pos"]
+    list_id: str = args.get("list_id", "")
+    entry_pos: str = args.get("entry_pos", "")
 
     result = client.get_list_entry(list_id, entry_pos)
 
@@ -287,8 +287,8 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
                         that contains the list details and content.
     """
-    list_id: str = args["list_id"]
-    conf: str = args["config"]
+    list_id: str = args.get("list_id", "")
+    conf: str = args.get("config", "")
 
     result = client.put_list(list_id, conf.encode("utf-8"))
     client.commit()
@@ -332,9 +332,9 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
                         that contains the inserted list entry.
     """
-    list_id: str = args["list_id"]
-    entry_pos: str = args["entry_pos"]
-    name: str = args["name"]
+    list_id: str = args.get("list_id", "")
+    entry_pos: str = args.get("entry_pos", "")
+    name: str = args.get("name", "")
     description: str = args.get("description", "")
 
     entry = f"<listEntry><entry>{name}</entry><description>{description}</description></listEntry>"
@@ -380,8 +380,8 @@ def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    list_id: str = args["list_id"]
-    entry_pos: str = args["entry_pos"]
+    list_id: str = args.get("list_id", "")
+    entry_pos: str = args.get("entry_pos", "")
 
     result = client.delete_entry(list_id, entry_pos)
     client.commit()
@@ -424,8 +424,8 @@ def create_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    list_name = args.get("name")
-    list_type = args.get("type")
+    list_name: str = args.get("name", "")
+    list_type: str = args.get("type", "")
 
     list_data = f'<list name="{list_name}" typeId="com.scur.type.{list_type}" classifier="Other" systemList="false" ' \
                 + 'structuralList="false" defaultRights="2"><description /><content /></list>'
@@ -471,7 +471,7 @@ def delete_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains the list entry.
     """
-    list_id: str = args["list_id"]
+    list_id: str = args.get("list_id", "")
 
     result = client.delete_list(list_id)
     client.commit()
