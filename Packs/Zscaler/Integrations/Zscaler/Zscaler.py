@@ -149,7 +149,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
 
 def validate_urls(urls):
     for url in urls:
-        if url.startswith("http://") or url.startswith("https://"):
+        if url.startswith(("http://", "https://")):
             return_error(
                 "Enter a valid URL address without an http:// or https:// prefix. URL should have at least host."
                 "domain pattern to qualify."
@@ -1188,7 +1188,7 @@ def list_ip_destination_groups(args: dict):
         "IpCategories",
     ]
 
-    def get_contents(responses: Dict[str, Any]):
+    def get_contents(responses: List[dict]):
         contents = list()
         for response in responses:
             content = {
@@ -1203,7 +1203,7 @@ def list_ip_destination_groups(args: dict):
             contents.append(content)
         return contents
 
-    def get_contents_lite(responses: Dict[str, Any]):
+    def get_contents_lite(responses: List[dict]):
         contents = list()
         for response in responses:
             content = dict()
