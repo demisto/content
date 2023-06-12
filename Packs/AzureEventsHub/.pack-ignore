@@ -1,0 +1,6 @@
+[file:AzureEventsHub.yml]
+ignore=MR108,PR101
+
+[file:AzureEventsHub_1_3.yml]
+ignore=MR108
+

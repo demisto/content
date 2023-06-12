@@ -111,6 +111,7 @@ configuration:
   required: true
   type: 0
   section: Collect
+  additionalinfo: During authentication, ensure you are logged in to this email address.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   required: true
@@ -755,7 +756,7 @@ script:
     execution: false
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.58768
+  dockerimage: demisto/crypto:1.0.0.62834
   isfetch: true
   runonce: false
   script: ''
