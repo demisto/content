@@ -104,7 +104,6 @@
 <ul>
 <li><a href="#h_176763804101526383549368">Send simulation results to Cortex XSOAR: Send To button in SafeBreach</a></li>
 <li><a href="#h_441071342251526383556458">Rerun a simulation in SafeBreach: safebreach-rerun</a></li>
-<li><a href="#h_718307413401526383562362">Retrieve results of a rerun simulation: safebreach-get-simulation</a></li>
 </ul>
 <hr>
 <h3 id="h_176763804101526383549368">Send simulation results to Cortex XSOAR: Send To button in SafeBreach</h3>
@@ -123,10 +122,6 @@
 <p><code>ok</code></p>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip3.png"></p>
 <hr>
-<h3 id="h_718307413401526383562362">Retrieve results of a rerun simulation: safebreach-get-simulation</h3>
-<p>After you rerun a simulation, retrieve the results of that simulation. You execute this command from the Cortex XSOAR CLI or a playbook. You can only run this command inside an incident that was fetched from SafeBreach.</p>
-<h4>Inputs</h4>
-<p><code>!safebreach-get-simulation</code></p>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip4.png"></p>
 <h4>Outputs</h4>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip5.png"></p>
