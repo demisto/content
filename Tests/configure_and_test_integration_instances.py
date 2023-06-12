@@ -1915,14 +1915,14 @@ def main():
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
         logging.info("Installing packs in post-update step")
-        # installed_content_packs_successfully = build.update_content_on_servers()
+        installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow
             build.create_and_upload_test_pack(packs_to_install=build.pack_ids_to_install)
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                       new_integrations_names, build)
-        if not success:
+        if not success or not installed_content_packs_successfully:
             logging.exception('Failed to configure and test integration instances.')
             sys.exit(2)
 
