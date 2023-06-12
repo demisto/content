@@ -573,6 +573,8 @@ class Client(BaseClient):
                     field_value = field.get('Value')
 
                 if field_value:
+                    if not field_data.get('Name'):
+                        demisto.debug(f"{field_data.get('Name')=}\n{field_data.get('Value')=}")
                     record[field_data.get('Name') or self.get_field_value_name(_id) or f'None-{i}'] = field_value
 
             record['Id'] = content_obj.get('Id')
