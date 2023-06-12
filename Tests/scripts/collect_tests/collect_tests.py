@@ -1113,7 +1113,7 @@ class BranchTestCollector(TestCollector):
         p = FilesToCollect(changed_files=tuple(changed_files), pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
         logger.info(f'Collected before filter======{p}')
         changed_packs = []
-        for f in p.split('\t'):
+        for f in p.changed_files:
             if 'Packs' in f:
                 pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
                 pack_path = '/'.join(pack_path.split('/')[:-1])
