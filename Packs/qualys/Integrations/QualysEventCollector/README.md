@@ -3,7 +3,7 @@ This integration was integrated and tested with version 3.15.2.0-1 of Qualys.
 
 ## Configure Qualys Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**. 
 2. Search for Qualys Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
