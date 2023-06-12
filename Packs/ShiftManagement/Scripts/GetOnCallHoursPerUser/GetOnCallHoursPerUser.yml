@@ -2,7 +2,6 @@ comment: Retrieves the number of on call hours per user.
 commonfields:
   id: GetOnCallHoursPerUser
   version: -1
-enabled: false
 name: GetOnCallHoursPerUser
 script: '-'
 tags:
