@@ -19,6 +19,7 @@ from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
 from google.cloud.storage import Bucket
 from packaging.version import Version
+from urllib3.exceptions import HTTPWarning, HTTPError
 
 from Tests.Marketplace.marketplace_constants import (IGNORED_FILES,
                                                      PACKS_FOLDER,
@@ -231,21 +232,22 @@ def find_malformed_pack_id(body: str) -> List:
     """
     malformed_ids = []
     if body:
-        response_info = json.loads(body)
-        if error_info := response_info.get('error'):
-            errors_info = [error_info]
-        else:
-            # the error is returned as a list of error
-            errors_info = response_info.get('errors', [])
-        for error in errors_info:
-            if 'pack id: ' in error:
-                malformed_ids.extend(error.split('pack id: ')[1].replace(']', '').replace('[', '').replace(
-                    ' ', '').split(','))
+        with contextlib.suppress(JSONDecodeError):
+            response_info = json.loads(body)
+            if error_info := response_info.get('error'):
+                errors_info = [error_info]
             else:
-                malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
-                malformed_pack_id = malformed_pack_pattern.findall(str(error))
-                if malformed_pack_id and error:
-                    malformed_ids.extend(malformed_pack_id)
+                # the error is returned as a list of error
+                errors_info = response_info.get('errors', [])
+            for error in errors_info:
+                if 'pack id: ' in error:
+                    malformed_ids.extend(error.split('pack id: ')[1].replace(']', '').replace('[', '').replace(
+                        ' ', '').split(','))
+                else:
+                    malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
+                    malformed_pack_id = malformed_pack_pattern.findall(str(error))
+                    if malformed_pack_id and error:
+                        malformed_ids.extend(malformed_pack_id)
     return malformed_ids
 
 
@@ -317,7 +319,7 @@ def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
                   request_timeout: int = 3600,
-                  attempts_count: int = 3,
+                  attempts_count: int = 5,
                   sleep_interval: int = 60
                   ):
     """ Make a packs installation request.
@@ -358,10 +360,7 @@ def install_packs(client: demisto_client,
                 if not attempt:
                     raise Exception(f"Got bad status code: {status_code}, headers:{headers}")
 
-                logging.warning(f"Got bad status code: {status_code} from the server, "
-                                f"Sleeping for {sleep_interval} seconds and trying again.")
-                logging.debug(f"response headers:{headers}")
-                sleep(sleep_interval)
+                logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
 
             except ApiException as ex:
                 if malformed_ids := find_malformed_pack_id(ex.body):
@@ -392,10 +391,13 @@ def install_packs(client: demisto_client,
 
                     # Unknown exception reason, re-raise.
                     raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+            except (HTTPError, HTTPWarning) as http_ex:
+                if not attempt:
+                    raise Exception("Failed to perform http request to the server") from http_ex
 
-                # There are more attempts available, sleep and retry.
-                logging.debug(f"failed to install pack, sleeping for {sleep_interval} seconds.")
-                sleep(sleep_interval)
+            # There are more attempts available, sleep and retry.
+            logging.debug(f"failed to install pack, sleeping for {sleep_interval} seconds.")
+            sleep(sleep_interval)
     except Exception as e:
         logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
         SUCCESS_FLAG = False
