@@ -5048,6 +5048,10 @@ def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
 
 
 def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
+
+    def to_hour(seconds: int | None) -> int | None:
+        return seconds * 3600 if isinstance(seconds, int) else None
+
     result = {
         'host_groups': argToList(args.get('host_groups')),
         'file_paths': argToList(args.get('file_paths')),
@@ -5057,12 +5061,12 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
         'description': args.get('description'),
         'quarantine': argToBoolean(args.get('quarantine')) if args.get('quarantine') is not None else None,
-        'pause_duration': arg_to_number(args.get('pause_duration')),
+        'pause_duration': to_hour(arg_to_number(args.get('pause_duration'))),
         'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
         'sensor_ml_level_prevention': arg_to_number(args.get('sensor_ml_level_prevention')),
         'cloud_ml_level_detection': arg_to_number(args.get('cloud_ml_level_detection')),
         'cloud_ml_level_prevention': arg_to_number(args.get('cloud_ml_level_prevention')),
-        'max_duration': arg_to_number(args.get('max_duration')),
+        'max_duration': to_hour(arg_to_number(args.get('max_duration'))),
     }
 
     if is_scheduled:

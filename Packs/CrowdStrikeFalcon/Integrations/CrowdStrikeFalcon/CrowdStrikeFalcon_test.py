@@ -5168,7 +5168,7 @@ def test_map_malicious_file_resource_to_UI(mocker):
     (
         ({'quarantine': 'false', 'schedule_interval': 'every other week',
           'schedule_start_timestamp': 'tomorrow'}, True, {'quarantine': False}),
-        ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
+        ({'cpu_priority': 'Low', 'max_duration': 1}, False, {'cpu_priority': 2, 'max_duration': 3600}),
     )
 )
 def test_make_create_scan_request_body(args, is_scheduled, expected_result):

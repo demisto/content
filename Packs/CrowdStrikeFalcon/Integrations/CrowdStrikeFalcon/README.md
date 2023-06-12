@@ -271,8 +271,8 @@ Searches for and fetches the behavior that matches the query.
 
 >| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
 >| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
->| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | user@u-MacBook-Pro-2.local |   a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   197949010450449117|
->|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   root@u-MacBook-Pro-2.local|          a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |197949016741905142|
+>| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | <user@u-MacBook-Pro-2.local> |   a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   197949010450449117|
+>|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   <root@u-MacBook-Pro-2.local>|          a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |197949016741905142|
 
  
 
@@ -706,7 +706,7 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 
 >|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
 >|---|---|---|---|---|---|---|---|---|---|
->| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
+>| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
 
 ### 12. cs-falcon-list-files
 
@@ -767,7 +767,7 @@ Returns a list of put-file ID's that are available for the user in the `put` com
 
 >|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
 >|---|---|---|---|---|---|---|---|---|---|
->| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
+>| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
 
 ### 13. cs-falcon-get-script
 
@@ -836,7 +836,7 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 
 >|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
 >|---|---|---|---|---|---|---|---|---|
->| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
 ### 14. cs-falcon-delete-script
@@ -922,7 +922,7 @@ Returns a list of custom script IDs that are available for the user in the `runs
 
 >| CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- |
->| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| <spongobob@demisto.com> |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
 ### 16. cs-falcon-run-script
@@ -4625,7 +4625,7 @@ Create an ML exclusion.
 
 >|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 123456 | /demo-test | \/demo-test | abcdef123456 | ***values***: blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 |
+>| 123456 | /demo-test | \/demo-test | abcdef123456 | ***values***: blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: <admin@test.com><br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: <admin@test.com><br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 |
 
 
 ### cs-falcon-update-ml-exclusion
@@ -4717,7 +4717,7 @@ Updates an ML exclusion. At least one argument is required in addition to the ID
 
 >|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | /demo | \/demo | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | ***values***: extraction, blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:21.57829431Z | api-client-id:123456 | 2023-03-06T13:56:25.940685483Z | api-client-id:123456 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | /demo | \/demo | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | ***values***: extraction, blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id:<br/>	***created_by***: <admin@test.com><br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: <admin@test.com><br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:21.57829431Z | api-client-id:123456 | 2023-03-06T13:56:25.940685483Z | api-client-id:123456 |
 
 
 ### cs-falcon-delete-ml-exclusion
@@ -4844,7 +4844,7 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 >|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 123456 | /MosheTest2-432 | \/MosheTest2-432 | abcdef123456 | ***values***: blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 |
+>| 123456 | /MosheTest2-432 | \/MosheTest2-432 | abcdef123456 | ***values***: blocking | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: <admin@test.com><br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: <admin@test.com><br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 |
 
 
 ### cs-falcon-create-ioa-exclusion
@@ -4944,7 +4944,7 @@ Create an IOA exclusion.
 
 >|Id|Name|PatternId|IfnRegex|ClRegex|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 123456 | demo-test | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 |
+>| 123456 | demo-test | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: <admin@test.com><br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: <admin@test.com><br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 |
 
 
 ### cs-falcon-update-ioa-exclusion
@@ -5045,7 +5045,7 @@ Updates an IOA exclusion. At least one argument is required in addition to the I
 
 >|Id|Name|Description|PatternId|IfnRegex|ClRegex|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 123456 | demo | demo-description | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: admin@test.com<br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: admin@test.com<br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:49.086458198Z | api-client-id:123456 | 2023-03-06T13:46:58.137122925Z | api-client-id:123456 |
+>| 123456 | demo | demo-description | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-**	***id***: 999999<br/>	***group_type***: static<br/>	***name***: Lab env<br/>	***description***: <br/>	***assignment_rule***: device_id<br/>	***created_by***: <admin@test.com><br/>	***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/>	***modified_by***: <admin@test.com><br/>	***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:49.086458198Z | api-client-id:123456 | 2023-03-06T13:46:58.137122925Z | api-client-id:123456 |
 
 
 ### cs-falcon-delete-ioa-exclusion
@@ -5157,7 +5157,7 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 
 >|Id|Name|Description|PatternId|PatternName|IfnRegex|ClRegex|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 123456 | My IOA Exclusion | demo description | 101010 | P_name | .*\\Windows\\System32\\choice\.exe | choice\s+/m\s+crowdstrike_sample_detection |  | 2023-02-26T15:30:04.554767735Z | api-client-id:123456 | 2023-02-06T16:42:19.29906839Z | user@test.com |
+>| 123456 | My IOA Exclusion | demo description | 101010 | P_name | .*\\Windows\\System32\\choice\.exe | choice\s+/m\s+crowdstrike_sample_detection |  | 2023-02-26T15:30:04.554767735Z | api-client-id:123456 | 2023-02-06T16:42:19.29906839Z | <user@test.com> |
 
 
 ### cs-falcon-list-quarantined-file
@@ -5495,7 +5495,7 @@ Retrieve ODS scan details.
 >|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
 >|---|---|---|---|---|---|---|---|---|
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518464 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-03-15T15:57:37.59543591Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-03-13T14:47:44.674818897Z | someone@email.com |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-03-13T14:47:44.674818897Z | <someone@email.com> |
 
 ### cs-falcon-ods-query-scheduled-scan
 
@@ -5816,12 +5816,12 @@ Create an ODS scan and wait for results.
 | cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
 | description | Scan description. | Optional | 
 | quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
-| pause_duration | Amount of time (in seconds) for scan pauses. Default is 2. | Optional | 
+| pause_duration | Amount of time (in hours) for scan pauses. Default is 2. | Optional | 
 | sensor_ml_level_detection | Sensor ML detection level. | Optional | 
 | sensor_ml_level_prevention | Sensor ML prevention level. | Optional | 
 | cloud_ml_level_detection | Cloud ML detection level for the scan. | Optional | 
 | cloud_ml_level_prevention | Cloud ML prevention level for the scan. | Optional | 
-| max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
+| max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
 
@@ -5868,8 +5868,11 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
 
 #### Command example
+
 ```!cs-falcon-ods-create-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b scan_inclusions=* cpu_priority=Highest max_duration=1 pause_duration=1```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -5932,6 +5935,7 @@ Create an ODS scan and wait for results.
 #### Human Readable Output
 
 >### CrowdStrike Falcon ODS Scans
+>
 >|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
 >|---|---|---|---|---|---|---|---|---|
 >| 9ba8489e9f604b61bf9b4a2c5f95ede7 | complete |  |  |  | 7471ba0636b34cbb8c65fae7979a6a9b |  |  | f7acf1bd5d3d4b40afe77546cbbaefde |
@@ -5958,12 +5962,12 @@ Create an ODS scheduled scan.
 | cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
 | description | Scan description. | Optional | 
 | quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
-| pause_duration | Amount of time (in seconds) for scan pauses. Default is 2. | Optional | 
+| pause_duration | Amount of time (in hours) for scan pauses. Default is 2. | Optional | 
 | sensor_ml_level_detection | Sensor ML detection level. | Optional | 
 | sensor_ml_level_prevention | Sensor ML prevention level. | Optional | 
 | cloud_ml_level_detection | Cloud ML detection level for the scan. | Optional | 
 | cloud_ml_level_prevention | Cloud ML prevention level for the scan. | Optional | 
-| max_duration | Maximum time (in seconds) the scan is allowed to execute. Default is 2. | Optional | 
+| max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional | 
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". | Required | 
 | schedule_interval | Set the schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required | 
 
@@ -6000,8 +6004,11 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
 
 #### Command example
+
 ```!cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b schedule_interval=daily schedule_start_timestamp=tomorrow cpu_priority=Highest scan_inclusions=*```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -6088,6 +6095,7 @@ Create an ODS scheduled scan.
 #### Human Readable Output
 
 >### Scheduled Scan Created
+>
 >|Scan ID|
 >|---|
 >| 7d08d9a3088f49b3aa20efafc355aef0 |

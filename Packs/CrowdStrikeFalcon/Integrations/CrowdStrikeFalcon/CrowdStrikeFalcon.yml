@@ -4076,7 +4076,7 @@ script:
     - description: Flag indicating if identified threats should be quarantined.
       name: quarantine
       required: false
-    - description: Amount of time (in seconds) for scan pauses.
+    - description: Amount of time (in hours) for scan pauses.
       name: pause_duration
       required: false
       defaultValue: '2'
@@ -4092,7 +4092,7 @@ script:
     - description: Cloud ML prevention level for the scan.
       name: cloud_ml_level_prevention
       required: false
-    - description: Maximum time (in seconds) the scan is allowed to execute.
+    - description: Maximum time (in hours) the scan is allowed to execute.
       name: max_duration
       required: false
       defaultValue: '2'
@@ -4255,7 +4255,7 @@ script:
     - description: Flag indicating if identified threats should be quarantined.
       name: quarantine
       required: false
-    - description: Amount of time (in seconds) for scan pauses.
+    - description: Amount of time (in hours) for scan pauses.
       name: pause_duration
       required: false
       defaultValue: '2'
@@ -4271,7 +4271,7 @@ script:
     - description: Cloud ML prevention level for the scan.
       name: cloud_ml_level_prevention
       required: false
-    - description: Maximum time (in seconds) the scan is allowed to execute.
+    - description: Maximum time (in hours) the scan is allowed to execute.
       name: max_duration
       required: false
       defaultValue: '2'
