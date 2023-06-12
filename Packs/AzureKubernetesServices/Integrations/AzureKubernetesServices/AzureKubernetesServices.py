@@ -58,7 +58,8 @@ class AKSClient:
     def clusters_list_request(self, subscription_id: str) -> Dict:
         return self.ms_client.http_request(
             method='GET',
-            full_url='https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.ContainerService/managedClusters?',
+            full_url='https://management.azure.com/subscriptions/{subscription_id}/providers/\
+Microsoft.ContainerService/managedClusters?',
             params={
                 'api-version': API_VERSION,
             },
