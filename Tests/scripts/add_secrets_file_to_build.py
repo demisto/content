@@ -77,32 +77,35 @@ def run(options):
     print(options.artifacts_folder)
     paths = PathManager(Path(__file__).absolute().parents[2])
     branch_name = paths.content_repo.active_branch.name
-    root_dir = Path(__file__).absolute().parents[2]
-    root_dir_instance = pathlib.Path(root_dir)
-    filesindir = [item.name for item in root_dir_instance.glob("*")]
+    # root_dir = Path(__file__).absolute().parents[2]
+    # root_dir_instance = pathlib.Path(root_dir)
+    # filesindir = [item.name for item in root_dir_instance.glob("*")]
     # TODO: Add Ddup
     changed_files = get_git_diff(branch_name, paths.content_repo)
-    changed_packs = []
     yml_ids = []
-    for f in changed_files:
-        if 'Packs' in f:
-            pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
-            pack_path = '/'.join(pack_path.split('/')[:-1])
-            changed_packs.append(pack_path)
+    changed_packs = []
+    try:
+        with open('options.artifacts_folder/changed_packs_test.txt', 'r') as file:
+            for line in file:
+                line_split = line.strip().split('=')
+                if line_split[0] == 'changed_packs=':
+                    changed_packs = line_split[1].split(',')
+    except Exception as e:
+        logging.info(f'Could not fined changed pack from collect tests, the error is: {e}')
+
     print(f'{changed_packs=}')
     for changed_pack in changed_packs:
-        # print(f'changed_pack: {changed_pack}')
         pack_dir = changed_pack
         print(f'pack_dir: {pack_dir}')
         pack_dir_instance = pathlib.Path(pack_dir)
         pack_files = [item.name for item in pack_dir_instance.glob("*")]
-        # print(branch_name)  # the branch name
-        # print('******************************')
-        # print(f'{filesindir=}')  # the files in content
-        # print('******************************')
-        # print(f'{changed_files=}')  # the array of changed files
-        # print('******************************')
-        # print(f'{changed_pack=}')  # the path of the changed integration
+        print(branch_name)  # the branch name
+        print('******************************')
+        print(f'{filesindir=}')  # the files in content
+        print('******************************')
+        print(f'{changed_files=}')  # the array of changed files
+        print('******************************')
+        print(f'{changed_pack=}')  # the path of the changed integration
         print('******************************')
         # print(f'{pack_files=}')  # the content of the paath location
         root_dir = Path(changed_pack)

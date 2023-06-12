@@ -1119,27 +1119,12 @@ class BranchTestCollector(TestCollector):
     @staticmethod
     def add_changed_integrations_to_artifact(files_to_collect):
         changed_packs = []
-        yml_ids = []
         for f in files_to_collect:
             if 'Packs' in f:
                 pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
                 pack_path = '/'.join(pack_path.split('/')[:-1])
                 changed_packs.append(pack_path)
-        for changed_pack in changed_packs:
-            root_dir = Path(changed_pack)
-            root_dir_instance = pathlib.Path(root_dir)
-            files_in_dir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
-            logger.info(f'root_dir_instance======{root_dir_instance}')
-            logger.info(f'files_in_dir======{files_in_dir}')
-            for yml_file in files_in_dir:
-                with open(f'{changed_pack}/{yml_file}', "r") as stream:
-                    try:
-                        yml_obj = yaml.safe_load(stream)
-                        yml_ids.append(yml_obj['commonfields']['id'])
-                    except yaml.YAMLError as exc:
-                        logger.info(f'Error occur in YML extraction: {exc}')
-        logger.info(f'Collected after filter======{changed_packs}')
-        logger.info(f'yml_ids======{yml_ids}')
+        logger.info(f'changed_packs={",".join(changed_packs)}')
 
 
 def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
