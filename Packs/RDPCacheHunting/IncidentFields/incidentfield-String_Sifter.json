@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "RDPCacheHuntingstringsifter",
+    "cliName": "incidentrdpcacheHuntingstringsifter",
     "closeForm": false,
     "columns": [
         {
