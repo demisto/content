@@ -9,3 +9,6 @@ ignore=BA124
 
 [file:IvantiHeatCreateProblemExample.yml]
 ignore=BA124
+
+[known_words]
+Ivanti
