@@ -1,4 +1,4 @@
-Extract custom content ids from custom content bundle file and exclude ids as specified.
+Extract custom content IDs from custom content bundle file and exclude IDs as specified.
 
 ## Script Data
 
