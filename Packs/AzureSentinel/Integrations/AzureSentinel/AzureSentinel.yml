@@ -1423,7 +1423,7 @@ script:
       name: keywords
       required: false
       secret: false
-      additionalinfo: It is possible to pass several keywords in one string with spaces between them.
+      additionalinfo: To use multiple keywords, separate them with spaces.
     - default: false
       description: The subscription ID.
       isArray: false
