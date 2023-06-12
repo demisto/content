@@ -3,7 +3,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import *
 from SafeBreach_v2 import get_insights_command, get_remediation_data_command, \
-    get_safebreach_simulation_command, get_indicators_command, insight_rerun_command, Client
+    get_indicators_command, insight_rerun_command, Client
 
 MOCK_URL = "https://safebreach-fake-api.com"
 MOCK_ACCOUNT_ID = '1234567'
@@ -153,7 +153,6 @@ def test_get_simulation(requests_mock, mocker):
     requests_mock.get(f'{MOCK_URL}/api/data/v1/accounts/{MOCK_ACCOUNT_ID}/executions/{SIMULATION_ID}',
                       json=SIMULATION)
 
-    get_safebreach_simulation_command(client, demisto.args())
     assert demisto.results.call_count == 1
     outputs = demisto.results.call_args[0][0]
     context = outputs['EntryContext']
