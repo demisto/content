@@ -48,7 +48,7 @@ def close_investigation_and_qradar_offense():
             'note_text': note
         }
         demisto.executeCommand('qradar-offense-note-create', qradar_note_params)
-        demisto.results('Not, successfully added to the QRadar offense.')
+        demisto.results('Note, successfully added to the QRadar offense.')
     except Exception as e:
         demisto.error(f'An error occurred while closing the QRadar offense. {str(e)}')
 
