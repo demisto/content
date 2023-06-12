@@ -1099,7 +1099,7 @@ script:
     - contextPath: Rundeck.WebhookEvent.executionId
       description: The ID of the execution.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: false
   longRunning: false
