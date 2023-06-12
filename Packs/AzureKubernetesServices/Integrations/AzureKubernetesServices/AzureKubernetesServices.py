@@ -55,10 +55,10 @@ class AKSClient:
         self.resource_group_name = resource_group_name
 
     @logger
-    def clusters_list_request(self) -> Dict:
+    def clusters_list_request(self, subscription_id: str) -> Dict:
         return self.ms_client.http_request(
             method='GET',
-            url_suffix='providers/Microsoft.ContainerService/managedClusters',
+            full_url='https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.ContainerService/managedClusters?',
             params={
                 'api-version': API_VERSION,
             },
@@ -116,8 +116,20 @@ class AKSClient:
         )
 
 
-def clusters_list(client: AKSClient) -> CommandResults:
-    response = client.clusters_list_request()
+def clusters_list(client: AKSClient, params: Dict, args: Dict) -> CommandResults:
+    """
+    This command is used to list all the AKS clusters in the subscription.
+    Args:
+        client: AKS client.
+        params: The configuration parameters.
+        args: the arguments from the user.
+    Returns:
+        CommandResults: The results of the command execution.
+    """
+    # subscription_id can be passed as command arguments or as configuration parameters,
+    # if both are passed, the command arguments will be used.
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    response = client.clusters_list_request(subscription_id)
     clusters = response.get('value', [])
     readable_output = [{
         'Name': cluster.get('name'),
@@ -230,7 +242,7 @@ def main() -> None:
         elif command == 'azure-ks-auth-reset':
             return_results(reset_auth())
         elif command == 'azure-ks-clusters-list':
-            return_results(clusters_list(client))
+            return_results(clusters_list(client=client, params=params, args=args))
         elif command == 'azure-ks-cluster-addon-update':
             return_results(clusters_addon_update(client, args))
         else:

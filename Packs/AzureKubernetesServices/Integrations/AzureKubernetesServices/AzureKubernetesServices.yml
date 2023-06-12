@@ -223,6 +223,10 @@ script:
       name: resource_name
       required: true
       secret: false
+    - default: false
+      isArray: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      name: subscription_id
     - auto: PREDEFINED
       default: false
       description: Resource location, Can be retrieved using the azure-ks-clusters-list command.
