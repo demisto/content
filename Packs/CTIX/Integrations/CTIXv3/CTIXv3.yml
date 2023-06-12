@@ -306,10 +306,10 @@ script:
     arguments:
     - name: page
       description: page from where to start
-      required: true
+      defaultValue: 1
     - name: page_size
       description: page size of the result
-      required: true
+      defaultValue: 15
     outputs:
     - contextPath: CTIX.SavedSearch.id
       description: ID of the object
@@ -345,10 +345,10 @@ script:
     arguments:
     - name: page
       description: page of the result
-      required: true
+      defaultValue: 1
     - name: page_size
       description: page size of the result
-      required: true
+      defaultValue: 15
     outputs:
     - contextPath: CTIX.ServerCollection.name
       description: Name of the server
@@ -382,10 +382,10 @@ script:
     arguments:
     - name: page
       description: page of the result
-      required: true
+      defaultValue: 1
     - name: page_size
       description: page size of the result
-      required: true
+      defaultValue: 15
     - name: object_type
       description: object type of the indicator
     - name: action_type
@@ -691,14 +691,14 @@ script:
       description: query
     - name: object_id
       description: object id
-      required: true
+      defaultValue: ""
     - name: object_type
       description: object type
-      required: true
+      defaultValue: ""
     - name: tag_id
       description: tag id
       isArray: true
-      required: true
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.TagUpdation.meesage
       description: Result of the add indicator tag request
@@ -716,14 +716,14 @@ script:
       description: query
     - name: object_id
       description: object_id
-      required: true
+      defaultValue: ""
     - name: object_type
       description: object_type
-      required: true
+      defaultValue: ""
     - name: tag_id
       description: tag_id
       isArray: true
-      required: true
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.TagUpdation.message
       description: Result of the remove indicator tag request
@@ -773,10 +773,10 @@ script:
       defaultValue: "10"
     - name: object_id
       description: object id
-      required: true
+      defaultValue: ""
     - name: object_type
       description: object type
-      required: true
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.IndicatorDetails.aliases
       description: Aliases of the tag if any
@@ -883,10 +883,10 @@ script:
     arguments:
     - name: object_id
       description: object id
-      required: true
+      defaultValue: ""
     - name: object_type
       description: object type
-      required: true
+      defaultValue: ""
     - name: page
       default: true
       description: page
@@ -942,10 +942,10 @@ script:
       defaultValue: "10"
     - name: object_id
       description: object id
-      required: true
+      defaultValue: ""
     - name: object_type
       description: object type
-      required: true
+      defaultValue: ""
     outputs:
     - contextPath: CTIX.IndicatorRelations.relationship_type
       description: Indicator relation types
