@@ -11,6 +11,7 @@ import logging
 vba_logger = logging.getLogger("olevba")
 vba_logger.setLevel(logging.CRITICAL)
 
+
 class OleClient:
     def __init__(self, file_info, ole_command, password=None, decoded=False):
         self.name = file_info['name']
