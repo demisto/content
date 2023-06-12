@@ -595,8 +595,8 @@ def storage_blob_service_properties_set(client: ASClient, params: Dict, args: Di
             if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
                 raise
             else:
-                warning_message += f'Failed to set the blob service properties for the storage account: {account_name}, and\
- resource group: {resource_group_name}. The error message is: {str(e)}\n\n'
+                warning_message += f'Failed to set the blob service properties for the storage account "{account_name}", and\
+ resource group "{resource_group_name}". The error message is: {str(e)}\n\n'
 
     return_warning(message=warning_message) if warning_message else None
     return command_results_lst
@@ -848,7 +848,7 @@ def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> L
         except Exception as e:
             # If at least one subscription is correct, we will not return the data of the correct subscriptions,
             # and a warning message for the wrong subscriptions will be returned as well.
-            warning_message += f'Failed to get resource groups for subscription id {subscription_id}. Error: {str(e)}\n\n'
+            warning_message += f'Failed to get resource groups for subscription id "{subscription_id}". Error: {str(e)}\n\n'
             if all_subscriptions_are_wrong and subscription_id == subscription_id_list[-1]:
                 # if all subscriptions are wrong, we will raise an exception.
                 raise
