@@ -1,6 +1,8 @@
 import json
 import os
+import pathlib
 import sys
+import yaml
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
@@ -1110,17 +1112,32 @@ class BranchTestCollector(TestCollector):
                 continue  # not adding to changed files list
 
             changed_files.append(file_path)  # non-deleted files (added, modified)
-        p = FilesToCollect(changed_files=tuple(changed_files), pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
-        logger.info(f'Collected before filter======{p}')
+        files_to_collect = FilesToCollect(changed_files=tuple(changed_files), pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
+        self.add_changed_integrations_to_artifact(files_to_collect.changed_files)
+        return files_to_collect
+
+    @staticmethod
+    def add_changed_integrations_to_artifact(files_to_collect):
         changed_packs = []
-        for f in p.changed_files:
+        yml_ids = []
+        for f in files_to_collect:
             if 'Packs' in f:
                 pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
                 pack_path = '/'.join(pack_path.split('/')[:-1])
                 changed_packs.append(pack_path)
+        for changed_pack in changed_packs:
+            root_dir = Path(changed_pack)
+            root_dir_instance = pathlib.Path(root_dir)
+            files_in_dir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
+            for yml_file in files_in_dir:
+                with open(f'{changed_pack}/{yml_file}', "r") as stream:
+                    try:
+                        yml_obj = yaml.safe_load(stream)
+                        yml_ids.append(yml_obj['commonfields']['id'])
+                    except yaml.YAMLError as exc:
+                        logger.info(f'Error occur in YML extraction: {exc}')
         logger.info(f'Collected after filter======{changed_packs}')
-        return FilesToCollect(changed_files=tuple(changed_files),
-                              pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
+        logger.info(f'yml_ids======{yml_ids}')
 
 
 def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):

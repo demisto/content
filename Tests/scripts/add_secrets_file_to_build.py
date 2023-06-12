@@ -74,6 +74,7 @@ def get_git_diff(branch_name, repo):
 
 
 def run(options):
+    print(options.artifacts_folder)
     paths = PathManager(Path(__file__).absolute().parents[2])
     branch_name = paths.content_repo.active_branch.name
     root_dir = Path(__file__).absolute().parents[2]
@@ -155,6 +156,7 @@ def options_handler(args=None):
     parser.add_argument('-u', '--user', help='the user for Demisto.')
     parser.add_argument('-p', '--password', help='The password for Demisto.')
     parser.add_argument('-sf', '--json_path_file', help='Path to the secret json file.')
+    parser.add_argument('-a', '--artifacts_folder', help='Path to the artifacts.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, for circleCI usage. "
