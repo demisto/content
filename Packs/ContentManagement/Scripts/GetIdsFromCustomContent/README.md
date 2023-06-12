@@ -16,7 +16,7 @@ Extract custom content ids from custom content bundle file and exclude ids as sp
 | **Argument Name** | **Description** |
 | --- | --- |
 | exclude_ids_list | list of dicts of ids to exclude n json format \(e.g. \[\{"job": \["job1", "job2"\], "pack": \["pack1"\]\}, \{"job": \["job3"\]\}\] |
-| file_entry_id | The entry id of the custom content tar file. |
+| file_entry_id | The entry ID of the custom content tar file. |
 
 ## Outputs
 
