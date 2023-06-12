@@ -21,12 +21,12 @@ configuration:
   advanced: true
 - display: Use system proxy settings
   additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
-  hidden: false
   name: proxy
   required: false
   type: 8
   section: Connect
   advanced: true
+  hidden: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -61,12 +61,12 @@ configuration:
 - display: Suppress Rate Limit errors
   additionalinfo: "Whether Rate Limit errors should be suppressed or not."
   defaultvalue: "false"
-  hidden: false
   name: rate_limit_errors_suppressed
   required: false
   type: 8
   section: Collect
   advanced: true
+  hidden: false
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -85,11 +85,11 @@ script:
     - name: verbose
       description: Whether to add the raw response as a dictionary to the context. Default value is False.
       required: false
-      defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+      defaultValue: false
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
@@ -605,7 +605,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.61823
+  dockerimage: demisto/ippysocks-py3:1.0.0.62771
   feed: false
   isfetch: false
   longRunning: false
@@ -614,7 +614,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultEnabled: false
 tests:
 - whois_test
 fromversion: 5.0.0
+defaultEnabled: false
