@@ -8,35 +8,35 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The API Key to use for connection. Required for private repositories.
-  display: The API key
-  hidden: true
+- display: The API key
+  additionalinfo: The API Key to use for connection. Required for private repositories.
   name: api_key
   required: false
   type: 4
-- displaypassword: The API key
-  hiddenusername: true
-  name: api_key_creds
-  required: false
+  hidden: true
+- name: api_key_creds
   type: 9
-- additionalinfo: Type of version control system
-  display: Version control system type
+  required: false
+  displaypassword: The API key
+  hiddenusername: true
+- display: Version control system type
   name: vcs_type
+  type: 15
+  required: true
+  additionalinfo: Type of version control system
   options:
   - github
   - bitbucket
-  required: true
-  type: 15
-- additionalinfo: Name of the organization
-  display: Organization name
+- display: Organization name
   name: organization
-  required: true
   type: 0
-- additionalinfo: Name of the project
-  display: Project Name
+  required: true
+  additionalinfo: Name of the organization
+- display: Project Name
   name: project
   required: true
   type: 0
+  additionalinfo: Name of the project
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -171,8 +171,8 @@ script:
       default: true
       auto: PREDEFINED
       predefined:
-        - github
-        - bitbucket
+      - github
+      - bitbucket
       defaultValue: github
     - default: false
       description: The organization from which to retrieve artifacts. Defaults to the organization instance parameter.
@@ -266,8 +266,8 @@ script:
       default: true
       auto: PREDEFINED
       predefined:
-        - github
-        - bitbucket
+      - github
+      - bitbucket
       defaultValue: github
     - default: false
       description: Organization from which to retrieve workflow last runs. Defaults to the organization instance parameter.
@@ -342,7 +342,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

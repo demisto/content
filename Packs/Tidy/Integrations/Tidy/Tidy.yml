@@ -10,23 +10,22 @@ configuration:
   type: 0
 - additionalinfo: Endpoint user to be installed. (Can overide in command)
   display: User
-  hidden: true
   name: user
   required: false
   type: 0
+  hidden: true
 - additionalinfo: User login password. (Can overide in command)
   display: Password
-  hidden: true
   name: password
   required: false
   type: 4
+  hidden: true
 - display: User
-  displaypassword: Password
   name: user_creds
   required: false
   type: 9
-- additionalinfo: The ssh key is used to login to an AWS mac machine - for testing
-    purposes.
+  displaypassword: Password
+- additionalinfo: The ssh key is used to login to an AWS mac machine - for testing purposes.
   display: SSH Key
   name: ssh_key
   required: false
@@ -603,7 +602,7 @@ script:
   - arguments: []
     description: Install python environment.
     name: tidy-python-env
-  dockerimage: demisto/tidy:1.0.0.31762
+  dockerimage: demisto/tidy:1.0.0.62989
   runonce: false
   script: ''
   subtype: python3

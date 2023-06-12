@@ -7,27 +7,27 @@ fromversion: 5.0.0
 category: Data Enrichment & Threat Intelligence
 description: Understand Your Cyber Exposure as Easy as a Google Search
 configuration:
-- defaultvalue: ''
-  display: API URL (e.g. https://api.c2sec.com/api)
+- display: API URL (e.g. https://api.c2sec.com/api)
   name: endpointURL
-  required: true
+  defaultvalue: ""
   type: 0
-- defaultvalue: ''
-  display: API Key
-  hidden: true
+  required: true
+- display: API Key
   name: apikey
-  required: false
+  defaultvalue: ""
   type: 4
-- displaypassword: API Key
-  hiddenusername: true
-  name: apikey_creds
   required: false
+  hidden: true
+- name: apikey_creds
   type: 9
-- defaultvalue: ''
-  display: Default domain name
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
+- display: Default domain name
   name: domainName
-  required: true
   type: 0
+  required: true
+  defaultvalue: ''
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -199,4 +199,6 @@ script:
       type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
+tests:
+- No tests (auto formatted)

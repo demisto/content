@@ -8,15 +8,15 @@ configuration:
   required: true
   type: 0
 - display: Access Token
-  hidden: true
   name: access_token
   required: false
   type: 4
-- displaypassword: Access Token
-  hiddenusername: true
-  name: access_token_creds
+  hidden: true
+- name: access_token_creds
   required: false
   type: 9
+  displaypassword: Access Token
+  hiddenusername: true
 - display: Directory ID
   name: directory_id
   required: true
@@ -29,13 +29,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: If set to false, iam-create-user command will be skipped, and user
-    will not be created.
-  defaultvalue: 'true'
+- defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
   required: false
   type: 8
+  additionalinfo: If set to false, iam-create-user command will be skipped, and user will not be created.
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
@@ -266,7 +265,7 @@ script:
     description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: false
   longRunning: false
