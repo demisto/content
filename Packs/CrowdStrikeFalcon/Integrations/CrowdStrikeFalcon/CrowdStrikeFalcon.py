@@ -4785,22 +4785,25 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
 
     else:
         response = ODS_get_scans_by_id_request(ids)
-        resources = response.get('resources', [])
-        human_readable = ODS_get_scan_resources_to_human_readable(resources)
 
-        command_results = CommandResults(
-            raw_response=response,
-            outputs_prefix='CrowdStrike.ODSScan',
-            outputs_key_field='id',
-            outputs=resources,
-            readable_output=human_readable,
-        )
+        if any(dict_safe_get(scan, ['status'], return_type=str) in ('pending', 'running') for scan in response):
 
-    scan_in_progress = any(dict_safe_get(scan, ('status',), return_type=str) in ('pending', 'running')
-                           for scan in command_results.outputs)  # type: ignore[attr-defined]
+            resources = response.get('resources', [])
+            human_readable = ODS_get_scan_resources_to_human_readable(resources)
+
+            command_results = CommandResults(
+                raw_response=response,
+                outputs_prefix='CrowdStrike.ODSScan',
+                outputs_key_field='id',
+                outputs=resources,
+                readable_output=human_readable,
+            )
+            
+        else:
+            command_results = None
 
     return PollResult(response=command_results,
-                      continue_to_poll=scan_in_progress,
+                      continue_to_poll=bool(command_results),
                       partial_result=command_results,
                       args_for_next_run=args)
 
@@ -5049,9 +5052,6 @@ def cs_falcon_ODS_query_malicious_files_command(args: dict) -> CommandResults:
 
 def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
 
-    def to_hour(seconds: int | None) -> int | None:
-        return seconds * 3600 if isinstance(seconds, int) else None
-
     result = {
         'host_groups': argToList(args.get('host_groups')),
         'file_paths': argToList(args.get('file_paths')),
@@ -5061,12 +5061,12 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
         'cpu_priority': CPU_UTILITY_STR_TO_INT_KEY_MAP.get(args.get('cpu_priority')),  # type: ignore[arg-type]
         'description': args.get('description'),
         'quarantine': argToBoolean(args.get('quarantine')) if args.get('quarantine') is not None else None,
-        'pause_duration': to_hour(arg_to_number(args.get('pause_duration'))),
+        'pause_duration': arg_to_number(args.get('pause_duration')),
         'sensor_ml_level_detection': arg_to_number(args.get('sensor_ml_level_detection')),
         'sensor_ml_level_prevention': arg_to_number(args.get('sensor_ml_level_prevention')),
         'cloud_ml_level_detection': arg_to_number(args.get('cloud_ml_level_detection')),
         'cloud_ml_level_prevention': arg_to_number(args.get('cloud_ml_level_prevention')),
-        'max_duration': to_hour(arg_to_number(args.get('max_duration'))),
+        'max_duration': arg_to_number(args.get('max_duration')),
     }
 
     if is_scheduled:
@@ -5122,6 +5122,7 @@ def cs_falcon_ods_create_scan_command(args: dict) -> CommandResults:
         'wait_for_result': True,
         'interval_in_seconds': args.get('interval_in_seconds'),
         'timeout_in_seconds': args.get('timeout_in_seconds'),
+        'hide_polling_output': True,
     }
 
     return cs_falcon_ODS_query_scans_command(query_scan_args)

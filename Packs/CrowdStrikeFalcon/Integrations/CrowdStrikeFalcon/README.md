@@ -5853,8 +5853,8 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.status | String | The status of the scan \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
 | CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
-| CrowdStrike.ODSScan.pause_duration | Number | The number of seconds to pause between scanning each file. | 
-| CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in seconds. | 
+| CrowdStrike.ODSScan.pause_duration | Number | The number of hours to pause between scanning each file. | 
+| CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in hours. | 
 | CrowdStrike.ODSScan.max_file_size | Number | The maximum file size \(in MB\) to scan. | 
 | CrowdStrike.ODSScan.sensor_ml_level_detection | Number | The level of detection sensitivity for the local sensor machine learning model. | 
 | CrowdStrike.ODSScan.sensor_ml_level_prevention | Number | The level of prevention sensitivity for the local sensor machine learning model. | 
@@ -5986,8 +5986,8 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.status | String | The status of the scan, whether it's "scheduled", "running", "completed", etc. | 
 | CrowdStrike.ODSScheduledScan.host_groups | String | The host groups targeted by the scan. | 
 | CrowdStrike.ODSScheduledScan.endpoint_notification | Boolean | Whether notifications of the scan were sent to endpoints. | 
-| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of scan in seconds. | 
-| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of scan in seconds. | 
+| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of scan in hours. | 
+| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of scan in hours. | 
 | CrowdStrike.ODSScheduledScan.max_file_size | Number | The maximum file size that the scan can handle in MB. | 
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_detection | Number | The machine learning detection level for the sensor. | 
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_detection | Number | The machine learning detection level for the cloud. | 
