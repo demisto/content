@@ -59,7 +59,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Suppress Rate Limit errors
-  additionalinfo: "Whether Rate Limit errors should be supressed or not."
+  additionalinfo: "Whether Rate Limit errors should be suppressed or not."
   defaultvalue: "false"
   hidden: false
   name: rate_limit_errors_suppressed

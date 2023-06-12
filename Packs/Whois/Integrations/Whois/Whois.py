@@ -6,9 +6,8 @@ import socket
 import sys
 from codecs import encode, decode
 import socks
-import errno
 import ipwhois
-from typing import Tuple, Dict, List, Optional
+from typing import Dict, List, Optional
 
 SHOULD_ERROR = demisto.params().get('with_error', False)
 
@@ -8565,7 +8564,8 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                     execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
                     break
 
-            if rate_limit_suppress_errors and isinstance(e, ipwhois.exceptions.HTTPRateLimitError | ipwhois.exceptions.IPDefinedError | ipwhois.exceptions.WhoisRateLimitError):
+            # If suppressing rate limiting is set and one of the rate limiting errors is received from the server
+            if rate_limit_suppress_errors and isinstance(e, ipwhois.exceptions.HTTPRateLimitError | ipwhois.exceptions.WhoisRateLimitError):
                 output = {
                             'query': ip,
                             'raw': f"Query failed: {ip}: {e.__class__.__name__} {e}"
@@ -8580,7 +8580,8 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                         readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
                     ))
 
-            else:
+            elif SHOULD_ERROR:
+                #TODO should we raise an error? we need to return execution_metrics though
                 demisto.error(f"Rate limit error not suppressed, raising exception: {e}")
                 raise e
 
@@ -8725,10 +8726,9 @@ def main():
         results: List[CommandResults] = []
         if command == 'ip':
             ip: str = args.get('ip')
-            rate_limit_retry_count: int = arg_to_number(args.get('rate_limit_retry_count', RATE_LIMIT_RETRY_COUNT_DEFAULT), arg_name="rate_limit_retry_count")
-            rate_limit_wait_seconds: int = arg_to_number(args.get('rate_limit_wait_seconds', RATE_LIMIT_WAIT_SECONDS_DEFAULT), arg_name="rate_limit_wait_seconds")
-            rate_limit_errors_suppressed: bool = argToBoolean(args.get('rate_limit_errors_suppressed', RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT))
-            
+            rate_limit_retry_count: int = arg_to_number(get_param_or_arg(param_key='rate_limit_retry_count', arg_key='rate_limit_retry_count'), arg_name="rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT
+            rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(param_key='rate_limit_wait_seconds', arg_key="rate_limit_wait_seconds")) or RATE_LIMIT_WAIT_SECONDS_DEFAULT
+            rate_limit_errors_suppressed: bool = argToBoolean(get_param_or_arg(param_key='rate_limit_errors_suppressed', arg_key='rate_limit_errors_suppressed')) or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
             results.extend(ip_command(ips=ip, reliability=reliability, rate_limit_retry_count=rate_limit_retry_count, rate_limit_wait_seconds=rate_limit_wait_seconds, rate_limit_suppress_errors=rate_limit_errors_suppressed))
             
         else:
