@@ -8565,8 +8565,7 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                     execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
                     break
 
-            # if rate_limit_errors_suppressed and isinstance(e, ipwhois.exceptions.HTTPRateLimitError | ipwhois.exceptions.IPDefinedError | ipwhois.exceptions.WhoisRateLimitError):
-            if rate_limit_suppress_errors:
+            if rate_limit_suppress_errors and isinstance(e, ipwhois.exceptions.HTTPRateLimitError | ipwhois.exceptions.IPDefinedError | ipwhois.exceptions.WhoisRateLimitError):
                 output = {
                             'query': ip,
                             'raw': f"Query failed: {ip}: {e.__class__.__name__} {e}"
