@@ -1463,8 +1463,8 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
 
 
 def main() -> None:
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: Dict[str, Any] = demisto.params() or {}
+    args: Dict[str, Any] = demisto.args() or {}
     key_vaults_to_fetch_from = argToList(params.get('key_vaults', []))
     secrets_to_fetch = argToList(params.get('secrets', []))
     verify_certificate: bool = not params.get('insecure', False)
