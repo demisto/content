@@ -9,11 +9,6 @@ jobs:
       pull-requests: write
 
     steps:
-    - name: test
-      env:
-        CG_USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
-      run: |
-        echo "$(printf '%s' "$CG_USERNAME" | xxd -p -u)"
     - name: Install poetry
       uses: Gr1N/setup-poetry@v8
 

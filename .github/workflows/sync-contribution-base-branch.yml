@@ -31,8 +31,3 @@ jobs:
           pipenv sync
           pipenv run ./sync_contrib_base.py
           echo "Finished updating base branches"
-      - name: test
-        env:
-          CG_USERNAME: ${{ secrets.LINK_PR_TO_JIRA_ISSUE_USER }}
-        run: |
-          echo "$(printf '%s' "$CG_USERNAME" | xxd -p -u)"
