@@ -826,7 +826,7 @@ def sandbox_report_command():
         'Type': 'file',
         'Vendor': 'Zscaler',
         'Score': dbot_score,
-        'reliability': demisto.params().get('reliability')
+        'Reliability': demisto.params().get('reliability')
     }}
 
     human_readable_report = ec['DBotScore'].copy()
