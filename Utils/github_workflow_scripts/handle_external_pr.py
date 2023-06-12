@@ -3,6 +3,7 @@ import json
 import os
 
 from typing import List, Set
+from pathlib import Path
 
 import urllib3
 from blessings import Terminal
@@ -121,23 +122,22 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
     print(f'{packs_support_levels=}')
 
     # if this is a new pack, it is not in the content repo, so we need to
-    # checkout the contributor forked branch to retrieve them
+    # checkout the contributor forked branch to retrieve the pack_metadata.json
     if pack_dirs_to_check_support_labels:
         # there are still packs to need to get their support labels
-        fork_owner = os.getenv('GITHUB_ACTOR')
         print(
             f'Trying to checkout to forked branch {external_pr_branch} '
             f'to retrieve support level of {pack_dirs_to_check_support_labels}'
         )
         try:
             with Checkout(
-                repo=Repo(os.getcwd(), search_parent_directories=True),
+                repo=Repo(Path().cwd(), search_parent_directories=True),
                 branch_to_checkout=external_pr_branch,
-                fork_owner=fork_owner
+                fork_owner=os.getenv('GITHUB_ACTOR')
             ):
                 packs_support_levels = packs_support_levels.union(get_packs_support_levels(pack_dirs_to_check_support_labels))
         except Exception as error:
-            print(f'received error when trying to checkout to {fork_owner} forked content repo\n{error=}')
+            print(f'Received error when trying to checkout to {external_pr_branch} forked content repo\n{error=}')
 
     if pack_dirs_to_check_support_labels:
         print(f'Could not retrieve support label for packs {pack_dirs_to_check_support_labels}')
