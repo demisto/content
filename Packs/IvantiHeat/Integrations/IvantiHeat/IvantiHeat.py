@@ -4,11 +4,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
 import dateparser
+import urllib3
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
