@@ -8760,8 +8760,8 @@ def main():
 
         return_results(results)
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
+        demisto.error(f"Exception {e.__class__.__name__}: {e}")
+        return_error(message=f"{e.__class__.__name__}: {e}", error=e)
     finally:
         if command != 'ip':
             socks.set_default_proxy()  # clear proxy settings
