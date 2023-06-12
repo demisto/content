@@ -33,7 +33,7 @@ from requests.exceptions import ConnectionError
 
 
 class exchangelibSSLAdapter(SSLAdapter):
-    def cert_verify(self, conn, url, verify, cert):
+    def cert_verify(self, conn, url, cert):
         # pylint: disable=unused-argument
         # We're overriding a method, so we have to keep the signature
         super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
