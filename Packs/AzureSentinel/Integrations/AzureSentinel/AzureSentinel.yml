@@ -1418,11 +1418,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: phrases used to filter threat indicators.
+      description: Phrases used to filter threat indicators.
       isArray: false
       name: keywords
       required: false
       secret: false
+      additionalinfo: To use multiple keywords, separate them with spaces.
     - default: false
       description: The subscription ID.
       isArray: false
