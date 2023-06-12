@@ -24,4 +24,4 @@ Extract custom content ids from custom content bundle file and exclude ids as sp
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| GetIdsFromCustomContent.ids | Dict of ids of custom content excluding the ones specified. | Unknown |
+| GetIdsFromCustomContent.ids | Dictionary of IDs of custom content excluding the ones specified. | Unknown |
