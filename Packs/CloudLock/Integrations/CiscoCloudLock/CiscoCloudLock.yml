@@ -7,32 +7,32 @@ display: Cisco CloudLock
 category: Network Security
 description: Query Cisco CloudLock
 configuration:
-- defaultvalue: https://api.cloudlock.com
-  display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://192.168.0.1)
   name: server
-  required: true
+  defaultvalue: https://api.cloudlock.com
   type: 0
-- defaultvalue: v2
-  display: Version
+  required: true
+- display: Version
   name: version
-  required: true
+  defaultvalue: v2
   type: 0
-- defaultvalue: ''
-  display: API token
-  hidden: true
+  required: true
+- display: API token
   name: token
-  required: false
+  defaultvalue: ""
   type: 4
-- displaypassword: API token
-  hiddenusername: true
-  name: token_creds
   required: false
+  hidden: true
+- name: token_creds
   type: 9
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
-  name: insecure
   required: false
+  displaypassword: API token
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy

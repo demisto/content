@@ -7,26 +7,26 @@ display: Cisco Webex Teams
 category: Messaging and Conferencing
 description: Send messages, create rooms and more, via the Cisco Spark API.
 configuration:
-- defaultvalue: https://api.ciscospark.com
-  display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://192.168.0.1)
   name: server
-  required: true
+  defaultvalue: https://api.ciscospark.com
   type: 0
-- defaultvalue: ''
-  display: API Key
-  hidden: true
+  required: true
+- display: API Key
   name: apiKey
-  required: false
+  defaultvalue: ""
   type: 4
-- displaypassword: API Key
-  hiddenusername: true
-  name: apikey_creds
   required: false
+  hidden: true
+- name: apikey_creds
   type: 9
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -465,3 +465,5 @@ script:
       description: The public URL to a binary file to be posted into the room. Only one file is allowed per message. Uploaded files are automatically converted into a format that all Spark clients can render. For the supported media types and the behavior of uploads, see the Message AttachmentsGuide.
     description: Sends a message to a room, by name or room ID.
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
