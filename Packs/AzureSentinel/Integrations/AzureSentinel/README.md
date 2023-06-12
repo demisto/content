@@ -1430,7 +1430,7 @@ Returns a list of threat indicators with specific entities.
 | sources | The sources of the threat indicator. | Optional | 
 | indicator_types | The indicator types of the threat indicator. Possible values are: ipv4, ipv6, file, url, domain. | Optional | 
 | threat_types | A comma-separated list of threat types of the threat indicator. Possible values are: anomalous-activity, attribution, anonymization, benign, malicious-activity, compromised, unknown. | Optional | 
-| keywords | phrases used to filter threat indicators. | Optional | 
+| keywords | Phrases used to filter threat indicators. | Optional | 
 | subscription_id | The subscription ID. | Optional |
 | resource_group_name | The resource group name. | Optional |
 
