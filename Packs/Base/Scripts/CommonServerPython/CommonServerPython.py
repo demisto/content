@@ -6942,7 +6942,7 @@ def return_results(results):
         return
 
     elif results and isinstance(results, list):
-        result_list = []
+        result_list = [] # type: list
         for result in results:
             # Results of type dict or str are of the old results format and work with demisto.results()
             if isinstance(result, dict):
