@@ -2,7 +2,6 @@ comment: A script that creates a table of all the ToDo tasks assigned to the cur
 commonfields:
   id: MyToDoTasksWidget
   version: -1
-enabled: false
 name: MyToDoTasksWidget
 script: '-'
 system: false

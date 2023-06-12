@@ -18,7 +18,7 @@ This integration provides ssh-based access to network devices, servers, and othe
 	 - *Credentials*: The username/password, or XSOAR credential object, to be used for the connection.
 	 **NOTE**: Platform names are taken from the supported [SSH](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-ssh-device_type-values) or [Telnet](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-telnet-device_type-values) device type lists on GitHub.
 
-4. Click **Test** to validate the new instance. This performs a simple connection to the system hosting the SSH server.
+ 4. Click **Test** to validate the new instance. This performs a simple connection to the system hosting the SSH server.
 
 ## Commands
 
@@ -27,12 +27,15 @@ This integration provides ssh-based access to network devices, servers, and othe
 1. [Executes a command, or series of commands, over an SSH connection: netmiko-cmds](#netmiko-cmds)
 
 ## netmiko-cmds
+
 Executes a command, or series of commands, over an SSH connection. Outputs from the executed commands are returned to the incident/playground context.
 
 #### Base Command
+
 `netmiko-cmds`
 
 #### Input
+
 ------------------
 | **Argument Name** | **Description**  | **Required** |
 |--|--|--|
@@ -50,6 +53,7 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 |require_exit|Specifies an optional command that must be executed upon completion of the cmds parameter being executed. Default: False.|Optional|
 
 #### Context Output 
+
 |**Path**|**Type**|**Description**|
 |--|--|--|
 |Netmiko.Command|String|The executed command(s).|
@@ -58,51 +62,59 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 |Netmiko.Output|String|The results of the command(s) that were executed.|
 
 #### Command Example (Single command)
+
 `!netmiko-cmds cmds="whoami"`
+
 #### Context Example
 
->{<br> 	
->&emsp;"Command": "whoami",<br>
->&emsp;"DateTimeUTC": "2023-04-24T21:40:21.755985",<br>
->&emsp;"Hostname": "192.168.0.1",<br>
->&emsp;"Output": "[someuser@someserver ~]$ root"<br>
->}<br>
+>{   	
+>&emsp;"Command": "whoami",  
+>&emsp;"DateTimeUTC": "2023-04-24T21:40:21.755985",  
+>&emsp;"Hostname": "192.168.0.1",  
+>&emsp;"Output": "[someuser@someserver ~]$ root"  
+>}  
 
 #### Human Readable Output
+
 #### Command(s) against 192.168.0.1 (linux)
+
 |**Command**|**DateTimeUTC**|**Hostname**|**Output**|
 |--|--|--|--|
 |whoami|2023-04-24T21:40:21.755985|192.168.0.1|root|
 
 ### Command Example (Multiple commands)
+
 #### As multiple commands via CLI or task
 
-`!netmiko-cmds cmds="whoami`
-`who"`
+`!netmiko-cmds cmds="whoami`  
+`who"`  
 
 #### As multiple commands via CLI or task using an array
-`array context key = ["whoami", "who"]`
-`!netmiko-cmds cmds=${array}`
+
+`array context key = ["whoami", "who"]`  
+`!netmiko-cmds cmds=${array}`  
 
 #### Context Example
 
->{<br>
->&emsp;"Netmiko": [{<br>
->&emsp;&emsp;"Command": "whoami",<br>
->&emsp;&emsp;"DateTimeUTC": "2023-04-24T21:59:02.177240",<br>
->&emsp;&emsp;"Hostname": "192.168.0.1",<br>
->&emsp;&emsp;"Output": "[someuser@somehost ~]$ root"<br>
->&emsp;},<br>
->&emsp;{<br>
->&emsp;&emsp;"Command": "who",<br>
->&emsp;&emsp;"DateTimeUTC": "2023-04-24T21:59:04.882842",<br>
->&emsp;&emsp;"Hostname": "192.168.0.1",<br>
->&emsp;&emsp;"Output": "[someuser@somehost ~]$ root pts/0        2023-04-24 17:58 (192.168.0.1)"<br>
->&emsp;}]<br>
->}<br>
+>{  
+>&emsp;"Netmiko": [{  
+>&emsp;&emsp;"Command": "whoami",  
+>&emsp;&emsp;"DateTimeUTC": "2023-04-24T21:59:02.177240",  
+>&emsp;&emsp;"Hostname": "192.168.0.1",  
+>&emsp;&emsp;"Output": "[someuser@somehost ~]$ root"  
+>&emsp;},  
+>&emsp;{  
+>&emsp;&emsp;"Command": "who",  
+>&emsp;&emsp;"DateTimeUTC": "2023-04-24T21:59:04.882842",  
+>&emsp;&emsp;"Hostname": "192.168.0.1",  
+>&emsp;&emsp;"Output": "[someuser@somehost ~]$ root pts/0        2023-04-24 17:58 (192.168.0.1)"  
+>&emsp;}]  
+>}  
 
 #### Human Readable Output
+
 #### Command(s) against 192.168.0.1 (linux)
+
 |**Command**|**DateTimeUTC**|**Hostname**|**Output**|
 |--|--|--|--|
 |whoami|2023-04-24T21:59:02.177240|192.168.0.1|root|
