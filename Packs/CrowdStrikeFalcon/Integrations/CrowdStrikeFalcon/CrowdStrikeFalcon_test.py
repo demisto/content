@@ -5231,6 +5231,28 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
         ODS_verify_create_scan_command(args)
 
 
+def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
+    """
+    Test cs_falcon_ods_create_scheduled_scan_command.
+
+    Given
+        - Arguments to create a scheduled-scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scheduled-scan" command
+
+    Then
+        - Create a scheduled scan.
+    """
+
+    from CrowdStrikeFalcon import cs_falcon_ods_create_scheduled_scan_command
+    
+    mocker.patch('CrowdStrikeFalcon.ods_create_scan', return_value={'id': 'random_id'})
+    result = cs_falcon_ods_create_scheduled_scan_command(
+        {'quarantine': 'false', 'schedule_interval': 'every other week'})
+    assert result.readable_output == 'Successfully created scheduled scan with ID: random_id'
+
+
 @pytest.mark.parametrize(
     'args, is_scheduled, body',
     (
