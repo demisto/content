@@ -1388,10 +1388,10 @@ def build_query_filter(args):
     filtering_args = {
         'minConfidence': args.get('min_confidence', ''),
         'maxConfidence': args.get('max_confidence', ''),
+        'keywords': args.get('keywords', ''),
         'minValidUntil': format_date(args.get('min_valid_from', '')),
         'maxValidUntil': format_date(args.get('max_valid_from', '')),
         'sources': argToList(args.get('sources')),
-        'keywords': argToList(args.get('keywords')),
         'threatTypes': argToList(args.get('threat_types')),
         'patternTypes': []
     }
