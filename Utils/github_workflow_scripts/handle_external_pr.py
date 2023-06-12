@@ -206,40 +206,40 @@ def main():
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
     # check base branch is master
-    # if pr.base.ref == 'master':
-    #     print(f'{t.cyan}Determining name for new base branch{t.normal}')
-    #     branch_prefix = 'contrib/'
-    #     new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
-    #     existant_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
-    #     potential_conflicting_branch_names = [branch.ref.lstrip('refs/heads/') for branch in existant_branches]
-    #     # make sure new branch name does not conflict with existing branch name
-    #     while new_branch_name in potential_conflicting_branch_names:
-    #         # append or increment digit
-    #         if not new_branch_name[-1].isdigit():
-    #             new_branch_name += '-1'
-    #         else:
-    #             digit = str(int(new_branch_name[-1]) + 1)
-    #             new_branch_name = f'{new_branch_name[:-1]}{digit}'
-    #     master_branch_commit_sha = content_repo.get_branch('master').commit.sha
-    #     # create new branch
-    #     print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
-    #     content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
-    #     # update base branch of the PR
-    #     pr.edit(base=new_branch_name)
-    #     print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
-    #
-    # # assign reviewers / request review from
-    # reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
-    # pr.add_to_assignees(reviewer_to_assign)
-    # pr.create_review_request(reviewers=[reviewer_to_assign])
-    # print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
-    # print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
-    #
-    # # create welcome comment (only users who contributed through Github need to have that contribution form filled)
-    # message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
-    # body = message_to_send.format(selected_reviewer=reviewer_to_assign)
-    # pr.create_issue_comment(body)
-    # print(f'{t.cyan}Created welcome comment{t.normal}')
+    if pr.base.ref == 'master':
+        print(f'{t.cyan}Determining name for new base branch{t.normal}')
+        branch_prefix = 'contrib/'
+        new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
+        existant_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
+        potential_conflicting_branch_names = [branch.ref.lstrip('refs/heads/') for branch in existant_branches]
+        # make sure new branch name does not conflict with existing branch name
+        while new_branch_name in potential_conflicting_branch_names:
+            # append or increment digit
+            if not new_branch_name[-1].isdigit():
+                new_branch_name += '-1'
+            else:
+                digit = str(int(new_branch_name[-1]) + 1)
+                new_branch_name = f'{new_branch_name[:-1]}{digit}'
+        master_branch_commit_sha = content_repo.get_branch('master').commit.sha
+        # create new branch
+        print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
+        content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
+        # update base branch of the PR
+        pr.edit(base=new_branch_name)
+        print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
+
+    # assign reviewers / request review from
+    reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
+    pr.add_to_assignees(reviewer_to_assign)
+    pr.create_review_request(reviewers=[reviewer_to_assign])
+    print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
+    print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
+
+    # create welcome comment (only users who contributed through Github need to have that contribution form filled)
+    message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
+    body = message_to_send.format(selected_reviewer=reviewer_to_assign)
+    pr.create_issue_comment(body)
+    print(f'{t.cyan}Created welcome comment{t.normal}')
 
 
 if __name__ == "__main__":
