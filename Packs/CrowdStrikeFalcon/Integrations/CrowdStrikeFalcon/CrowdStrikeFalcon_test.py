@@ -5246,7 +5246,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
     """
 
     from CrowdStrikeFalcon import cs_falcon_ods_create_scheduled_scan_command
-    
+
     mocker.patch('CrowdStrikeFalcon.ods_create_scan', return_value={'id': 'random_id'})
     result = cs_falcon_ods_create_scheduled_scan_command(
         {'quarantine': 'false', 'schedule_interval': 'every other week'})
