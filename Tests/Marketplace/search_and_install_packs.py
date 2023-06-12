@@ -135,6 +135,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
     Returns:
         (list) The pack's dependencies.
     """
+    global SUCCESS_FLAG
     pack_id = pack_data['id']
     logging.debug(f'Getting dependencies for pack {pack_id}')
     try:
@@ -161,13 +162,15 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             return []
         msg = response_data.get('message', '')
         raise Exception(f'status code {status_code}\n{msg}\n')
+    except ApiException as api_ex:
+        with lock:
+            SUCCESS_FLAG = False
+        logging.exception(f"The request to get pack {pack_id} dependencies has failed, Got {api_ex.status} from server, "
+                          f"message:{api_ex.body}, headers:{api_ex.headers}")
     except Exception as ex:
-        logging.exception(f'The request to get pack {pack_id} dependencies has failed. {ex}.')
-
-        lock.acquire()
-        global SUCCESS_FLAG
-        SUCCESS_FLAG = False
-        lock.release()
+        with lock:
+            SUCCESS_FLAG = False
+        logging.exception(f"The request to get pack {pack_id} dependencies has failed. {ex}.")
 
 
 def search_pack(client: demisto_client,
