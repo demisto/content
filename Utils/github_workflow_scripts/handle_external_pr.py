@@ -69,7 +69,7 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
 
 def get_packs_support_levels(pack_dirs: Set[str]) -> Set[str]:
     """
-    Get the pack support levels from the pack metadata, removes pack_dirs that their support label was retrieved successfully.
+    Get the pack support levels from the pack metadata.
 
     Args:
         pack_dirs (set): paths to the packs that were changed
@@ -80,7 +80,6 @@ def get_packs_support_levels(pack_dirs: Set[str]) -> Set[str]:
         if pack_support_level := get_pack_metadata(pack_dir).get('support'):
             print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
             packs_support_levels.add(pack_support_level)
-            pack_dirs.remove(pack_dir)
         else:
             print(f'Could not find pack support level for pack {pack_dir}')
 
@@ -118,34 +117,23 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
 
     print(f'{pack_dirs_to_check_support_labels=}')
 
-    packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_labels)
+    # we need to check out to the contributor branch in order to retrieve the files cause workflow runs on demisto master
+    print(
+        f'Trying to checkout to forked branch {external_pr_branch} '
+        f'to retrieve support level of {pack_dirs_to_check_support_labels}'
+    )
+    try:
+        with Checkout(
+            repo=Repo(Path().cwd(), search_parent_directories=True),
+            branch_to_checkout=external_pr_branch,
+            fork_owner=os.getenv('GITHUB_ACTOR')
+        ):
+            packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_labels)
+    except Exception as error:
+        print(f'Received error when trying to checkout to {external_pr_branch} forked content repo\n{error=}')
+
     print(f'{packs_support_levels=}')
-
-    # if this is a new pack, it is not in the content repo, so we need to
-    # checkout the contributor forked branch to retrieve the pack_metadata.json
-    if pack_dirs_to_check_support_labels:
-        # there are still packs to need to get their support labels
-        print(
-            f'Trying to checkout to forked branch {external_pr_branch} '
-            f'to retrieve support level of {pack_dirs_to_check_support_labels}'
-        )
-        try:
-            with Checkout(
-                repo=Repo(Path().cwd(), search_parent_directories=True),
-                branch_to_checkout=external_pr_branch,
-                fork_owner=os.getenv('GITHUB_ACTOR')
-            ):
-                packs_support_levels = packs_support_levels.union(get_packs_support_levels(pack_dirs_to_check_support_labels))
-        except Exception as error:
-            print(f'Received error when trying to checkout to {external_pr_branch} forked content repo\n{error=}')
-
-    if pack_dirs_to_check_support_labels:
-        print(f'Could not retrieve support label for packs {pack_dirs_to_check_support_labels}')
-    print(f'{packs_support_levels=}')
-
-    if packs_support_levels:
-        return get_highest_support_label(packs_support_levels)
-    return ''
+    return get_highest_support_label(packs_support_levels) if packs_support_levels else ''
 
 
 def get_highest_support_label(packs_support_levels: Set[str]):
