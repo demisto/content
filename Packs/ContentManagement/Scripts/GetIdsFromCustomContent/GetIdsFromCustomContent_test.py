@@ -86,13 +86,13 @@ def test_get_included_ids_command(mocker, exclude_ids_list, expected_outputs):
 
 
 @pytest.mark.parametrize('custom_content_ids, exclude_ids_list, expected_outputs', [
-    pytest.param({'dashboard': [{'id': 'dashboard1', 'display': 'dashboard1'},
-                                {'id': 'dashboard2', 'display': 'dashboard2'},
-                                {'id': 'dashboard3', 'display': 'dashboard3'}]},
+    pytest.param({'dashboard': [{'id': 'dashboard1', 'name': 'dashboard1'},
+                                {'id': 'dashboard2', 'name': 'dashboard2'},
+                                {'id': 'dashboard3', 'name': 'dashboard3'}]},
                  [{'dashboard': ['dashboard1']}, {'dashboard': ['dashboard2']}],
                  {'included_ids': {'dashboard': ['dashboard3']}, 'excluded_ids': {}},
                  id='exclude dashboard1, dashboard2, include dashboard3'),
-    pytest.param({'dashboard': [{'id': 'dashboard1', 'display': 'dashboard1'}]},
+    pytest.param({'dashboard': [{'id': 'dashboard1', 'name': 'dashboard1'}]},
                  [{'report': ['report1']}],
                  {'included_ids': {'dashboard': ['dashboard1']}, 'excluded_ids': {'report': ['report1']}},
                  id='include dashboard1, exclude report1'),
