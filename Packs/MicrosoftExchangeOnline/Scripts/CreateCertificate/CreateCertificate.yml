@@ -30,13 +30,10 @@ args:
   name: state_or_province
   required: false
   secret: false
-comment: Creates a public key (.cer file), a private key (.pfx) file, and a Base64
-  encoded private key to use to authenticate the EWS Extension Online Powershell v2
-  integration.
+comment: Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encoded private key to use to authenticate the EWS Extension Online Powershell v2 integration.
 commonfields:
   id: CreateCertificate
   version: -1
-enabled: false
 name: CreateCertificate
 outputs:
 - contextPath: Certificate.PublicKey
