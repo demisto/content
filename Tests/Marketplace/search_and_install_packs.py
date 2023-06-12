@@ -1,4 +1,5 @@
 
+import contextlib
 from functools import lru_cache
 import glob
 import json
@@ -6,6 +7,7 @@ import os
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
+from json import JSONDecodeError
 from pathlib import Path
 from threading import Lock
 from time import sleep
@@ -30,6 +32,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
                                      r'+\.zip$')
 SUCCESS_FLAG = True
+TEST_MODELING_RULE_ERROR_CODE = 101704
 
 
 def is_pack_deprecated(pack_path: str) -> bool:
@@ -303,6 +306,13 @@ def install_packs_private(client: demisto_client,
                                  test_pack_path=test_pack_path)
 
 
+def get_error_ids(body: str) -> set[str] | None:
+    with contextlib.suppress(JSONDecodeError):
+        response_info = json.loads(body)
+        return {error["id"] for error in response_info.get("errors", [])}
+    return None
+
+
 def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
@@ -363,6 +373,10 @@ def install_packs(client: demisto_client,
                     SUCCESS_FLAG = False
                     logging.error(f"Unable to install malformed packs:{malformed_ids}, retrying without them.")
                     packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
+
+                if (error_ids := get_error_ids(ex.body)) and TEST_MODELING_RULE_ERROR_CODE in error_ids:
+                    # If we got this error code, it means that the modeling rules are not valid, exiting install flow.
+                    raise Exception("Test modeling rules for pack are not valid") from ex
 
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     if 'timeout awaiting response' in ex.body:
