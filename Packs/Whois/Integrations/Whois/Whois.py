@@ -8497,7 +8497,7 @@ def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResults]:
+def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_count: int, rate_limit_wait_seconds: int, rate_limit_suppress_errors: bool) -> List[CommandResults]:
 
     """
     Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
@@ -8506,18 +8506,12 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
     Args:
         - `ips` (``str``): Comma-separated list of IPs to perform the RDAP lookup for.
         - `reliability` (``DBotScoreReliability``): RDAP lookup source reliability.
-
+        - `rate_limit_retry_count` (``int``): Number of retries in case a rate limit error is encountered.
+        - `rate_limit_wait_seconds` (``int``): Number of seconds between retries in case a rate limit error is encountered.
+        - `rate_limit_errors_suppressed` (``bool``): Raise exception in case a rate limit error is encountered.
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
-
-    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
-                                      'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
-    rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
-                                       'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
-    rate_limit_errors_suppressed: bool = bool(get_param_or_arg(
-        'rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
-
 
     execution = ExecutionMetrics()
     results: List[CommandResults] = []
@@ -8563,7 +8557,7 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
             results.append(result)
 
         except Exception as e:
-            demisto.debug(f"Exception caught performing RDAP lookup for IP {ip}: {e}")
+            demisto.debug(f"Exception type {e.__class__.__name__} caught performing RDAP lookup for IP {ip}: {e}")
 
             # Find and increment execution metrics according to known ipwhois exceptions
             for exception_type, metric_attribute in ipwhois_exception_mapping.items():
@@ -8571,8 +8565,21 @@ def ip_command(ips: str, reliability: DBotScoreReliability) -> List[CommandResul
                     execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
                     break
 
-            if rate_limit_errors_suppressed and type(e) in [ipwhois.exceptions.HTTPRateLimitError, ipwhois.exceptions.IPDefinedError, ipwhois.exceptions.WhoisRateLimitError]:
-                results.append(CommandResults(entry_type=EntryType.ERROR, readable_output=f"Error performing RDAP lookup for IP {ip}: {e}"))
+            # if rate_limit_errors_suppressed and isinstance(e, ipwhois.exceptions.HTTPRateLimitError | ipwhois.exceptions.IPDefinedError | ipwhois.exceptions.WhoisRateLimitError):
+            if rate_limit_suppress_errors:
+                output = {
+                            'query': ip,
+                            'raw': f"Query failed: {ip}: {e.__class__.__name__} {e}"
+                }
+
+                results.append(
+                    CommandResults(
+                        outputs_prefix="Whois.IP",
+                        outputs_key_field="query",
+                        outputs=output,
+                        entry_type=EntryType.ERROR,
+                        readable_output=f"Error performing RDAP lookup for IP {ip}: {e.__class__.__name__} {e}"
+                    ))
 
             else:
                 demisto.error(f"Rate limit error not suppressed, raising exception: {e}")
@@ -8718,8 +8725,12 @@ def main():
     try:
         results: List[CommandResults] = []
         if command == 'ip':
-            ip = args.get('ip')
-            results.extend(ip_command(ip, reliability))
+            ip: str = args.get('ip')
+            rate_limit_retry_count: int = arg_to_number(args.get('rate_limit_retry_count', RATE_LIMIT_RETRY_COUNT_DEFAULT), arg_name="rate_limit_retry_count")
+            rate_limit_wait_seconds: int = arg_to_number(args.get('rate_limit_wait_seconds', RATE_LIMIT_WAIT_SECONDS_DEFAULT), arg_name="rate_limit_wait_seconds")
+            rate_limit_errors_suppressed: bool = argToBoolean(args.get('rate_limit_errors_suppressed', RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT))
+            
+            results.extend(ip_command(ips=ip, reliability=reliability, rate_limit_retry_count=rate_limit_retry_count, rate_limit_wait_seconds=rate_limit_wait_seconds, rate_limit_suppress_errors=rate_limit_errors_suppressed))
             
         else:
             org_socket = socket.socket
