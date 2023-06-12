@@ -76,7 +76,7 @@ def get_packs_support_levels(pack_dirs: Set[str]) -> Set[str]:
     """
     packs_support_levels = set()
 
-    for pack_dir in pack_dirs.copy():
+    for pack_dir in pack_dirs:
         if pack_support_level := get_pack_metadata(pack_dir).get('support'):
             print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
             packs_support_levels.add(pack_support_level)
