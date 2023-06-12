@@ -1122,9 +1122,10 @@ class BranchTestCollector(TestCollector):
         logger.info(f'files_to_collect={files_to_collect}')
         for f in files_to_collect:
             if 'Packs' in f:
-                pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
+                pack_path = f'{Path(__file__).absolute().parents[1]}/{f}'
                 pack_path = '/'.join(pack_path.split('/')[:-1])
                 changed_packs.append(pack_path)
+        logger.info(f'changed_packs={Path(__file__).absolute().parents}')
         logger.info(f'changed_packs={changed_packs}')
         for changed_pack in changed_packs:
             files_in_dir = os.listdir(changed_pack)
