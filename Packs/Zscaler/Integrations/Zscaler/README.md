@@ -1,4 +1,4 @@
-Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create manage and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
+Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
 
 For the integration to work properly, the Zscaler user must have admin permissions.
 
@@ -14,7 +14,7 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Cloud Name (i.e. <https://zsapi.zscalertwo.net>) | See, <https://help.zscaler.com/zia/getting-started-zia-api#RetrieveBaseURL> on how to retrieve your cloud name. | True |
+    | Cloud Name (i.e. <https://zsapi.zscalertwo.net>) | See <https://help.zscaler.com/zia/getting-started-zia-api#RetrieveBaseURL> on how to retrieve your cloud name. | True |
     | Username |  | True |
     | Password |  | True |
     | API Key |  | True |
