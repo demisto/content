@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import concurrent.futures
 import secrets
 from enum import Enum
@@ -8,9 +11,9 @@ import dateparser
 
 import pytz
 import urllib3
-from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -4045,7 +4048,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-
+    print("TEST")
     # handle allowed advanced parameters
     adv_params = params.get('adv_params')
     if adv_params:
@@ -4220,3 +4223,4 @@ def main() -> None:  # pragma: no cover
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
