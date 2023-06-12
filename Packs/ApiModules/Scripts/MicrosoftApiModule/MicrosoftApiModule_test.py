@@ -619,3 +619,61 @@ def test_get_token_managed_identities__error(requests_mock, mocker):
 
     err_message = 'Error in Microsoft authorization with Azure Managed Identities'
     assert err_message in MicrosoftApiModule.return_error.call_args[0][0]
+
+
+args = {'test': 'test_arg_value'}
+params = {'test': 'test_param_value', 'test_unique': 'test_arg2_value'}
+
+
+def test_get_from_args_or_params__when_the_key_exists():
+    """
+    Given:
+        args and params with the same key in both, and a unique key in params
+    When:
+        get value from args or params
+    Then:
+        Verify that the result are as expected
+    """
+
+    assert get_from_args_or_params(args, params, 'test') == 'test_arg_value'
+    assert get_from_args_or_params(args, params, 'test_unique') == 'test_arg2_value'
+
+
+def test_get_from_args_or_params__when_the_key_dose_not_exists():
+    """
+    Given:
+        args and params
+    When:
+        get value from args or params is called with a key that dose not exist
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        get_from_args_or_params(args, params, 'mock')
+    assert 'No mock was provided. Please provide a mock in the instance parameters or in the command' in e.value.args
+
+
+def test_arg_to_tag__with_valid_input():
+    """
+    Given:
+        A valid json as a string
+    When:
+        arg_to_tag is called
+    Then:
+        Verify that the result are as expected
+    """
+    assert arg_to_tag('{"key":"value"}') == "tagName eq 'key' and tagValue eq 'value'"
+
+
+def test_arg_to_tag__with_invalid_input():
+    """
+    Given:
+        A invalid json as a string
+    When:
+        arg_to_tag is called
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        arg_to_tag('{"key:value"}')
+    assert """Invalid tag format, please use the following format: '{"key_name":"value_name"}""" in e.value.args
