@@ -3340,6 +3340,27 @@ class Common(object):
                 'description': self.description
             }
 
+    class Rank:
+        """
+        Single row in a rank grid field
+
+        :type rank: float / int
+        :param rank: A numerical rank value
+
+        :type source: ``str``
+        :param source: The name of the source from which the rank was taken
+        """
+
+        def __init__(self, rank=None, source=None):
+            self.rank = rank
+            self.source = source
+
+        def to_context(self):
+            return {
+                'source': self.source,
+                'rank': self.rank
+            }
+
     class ExternalReference(object):
         """
         ExternalReference class
@@ -4419,7 +4440,7 @@ class Common(object):
                      community_notes=None, publications=None, geo_location=None, geo_country=None, geo_description=None,
                      tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
                      whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
-                     certificates=None, dns_records=None,):
+                     certificates=None, dns_records=None, rank=None):
 
             # Main indicator value
             self.domain = domain
@@ -4445,6 +4466,7 @@ class Common(object):
             self.organization = organization
             self.sub_domains = sub_domains
             self.updated_date = updated_date
+            self.rank = rank
 
             # Whois related records - Registrar
             self.registrar_name = registrar_name
@@ -4650,6 +4672,9 @@ class Common(object):
 
             if self.certificates:
                 domain_context['Certificates'] = self.create_context_table(self.certificates)
+
+            if self.rank:
+                domain_context['Rank'] = self.create_context_table(self.rank)
 
             return ret_value
 
