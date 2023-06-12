@@ -22,7 +22,7 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* core-api-download
+core-api-download
 
 ## Playbook Inputs
 
