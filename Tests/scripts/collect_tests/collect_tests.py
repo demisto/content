@@ -1119,7 +1119,13 @@ class BranchTestCollector(TestCollector):
     def add_changed_integrations_to_artifact(files_to_collect):
         changed_packs = []
         yml_ids = []
-        logger.info(f'files_to_collect={files_to_collect}')
+        logger.info(f'0={os.listdir(Path(__file__).absolute().parents[0])}')
+        logger.info(f'00={Path(__file__).absolute().parents[0]}')
+        logger.info(f'1={os.listdir(Path(__file__).absolute().parents[1])}')
+        logger.info(f'11={Path(__file__).absolute().parents[1]}')
+        logger.info(f'2={os.listdir(Path(__file__).absolute().parents[2])}')
+        logger.info(f'22={Path(__file__).absolute().parents[2]}')
+
         for f in files_to_collect:
             if 'Packs' in f:
                 pack_path = f'{Path(__file__).absolute().parents[1]}/{f}'
