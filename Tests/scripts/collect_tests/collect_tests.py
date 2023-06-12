@@ -1129,6 +1129,8 @@ class BranchTestCollector(TestCollector):
             root_dir = Path(changed_pack)
             root_dir_instance = pathlib.Path(root_dir)
             files_in_dir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
+            logger.info(f'root_dir_instance======{root_dir_instance}')
+            logger.info(f'files_in_dir======{files_in_dir}')
             for yml_file in files_in_dir:
                 with open(f'{changed_pack}/{yml_file}', "r") as stream:
                     try:
