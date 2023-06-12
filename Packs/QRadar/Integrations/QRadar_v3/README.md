@@ -1,5 +1,5 @@
 Use the QRadar v3 integration to help security teams quickly and accurately detect and prioritize threats across the enterprise.  
-This integration was integrated and tested with API versions 10.1-14.0 on QRadar platform 7.4.1 (supports API versions 10.1 and above).
+This integration was integrated and tested with API versions 10.1-17.0 on QRadar platform 7.5.0 (supports API versions 10.1 and above).
 
 ## Configure QRadar v3 on Cortex XSOAR
 
