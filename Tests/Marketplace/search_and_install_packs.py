@@ -41,6 +41,7 @@ def is_pack_deprecated(pack_path: str) -> bool:
         True if the pack is deprecated, False otherwise
     """
     pack_metadata_path = Path(pack_path) / PACK_METADATA_FILENAME
+    logging.debug(f"TESTDEBUG: Checking if pack {pack_path} is deprecated.\nPacks metadata path: {pack_metadata_path}")
     if not pack_metadata_path.is_file():
         return True
     return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
@@ -146,6 +147,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         if 200 <= status_code < 300:
             dependencies_data: list = []
             dependants_ids = [pack_id]
+            logging.debug(f"TESTDEBUG: API response: {json.dumps(response_data)}")
             response_data = response_data.get('dependencies', [])
             create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, dependants_ids)
             if dependencies_data:
@@ -445,11 +447,13 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
     if pack_data:
         dependencies = get_pack_dependencies(client, pack_data, lock)
+        logging.debug(f"TESTDEBUG: Dependencies for pack {pack_id} are: {json.dumps(dependencies)}")
 
         current_packs_to_install = [pack_data]
         if dependencies:
             # Check that the dependencies don't include a deprecated pack:
             for dependency in dependencies:
+                logging.debug(f"TESTDEBUG: Current dependency data: {json.dumps(dependency)}")
                 pack_path = os.path.join(PACKS_FOLDER, dependency.get('id'))
                 if is_pack_deprecated(pack_path):
                     logging.critical(f'Pack {pack_id} depends on pack {dependency.get("id")} which is a deprecated '
