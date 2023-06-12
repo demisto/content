@@ -4,15 +4,15 @@ commonfields:
   version: -1
 configuration:
 - display: API Key
-  hidden: true
   name: apikey
   required: false
   type: 4
-- displaypassword: API Key
-  hiddenusername: true
-  name: apikey_creds
+  hidden: true
+- name: apikey_creds
   required: false
   type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -373,7 +373,7 @@ script:
     - contextPath: CloudConvert.Task.links
       description: API link for the task.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: false
   longRunning: false
@@ -383,5 +383,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - CloudConvert-test
+- CloudConvert-test
 fromversion: 5.0.0
