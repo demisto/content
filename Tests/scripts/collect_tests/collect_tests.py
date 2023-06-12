@@ -1,6 +1,5 @@
 import json
 import os
-import pathlib
 import sys
 import yaml
 from abc import ABC, abstractmethod
@@ -1120,6 +1119,7 @@ class BranchTestCollector(TestCollector):
     def add_changed_integrations_to_artifact(files_to_collect):
         changed_packs = []
         yml_ids = []
+        logger.info(f'files_to_collect={files_to_collect}')
         for f in files_to_collect:
             if 'Packs' in f:
                 pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
@@ -1127,11 +1127,8 @@ class BranchTestCollector(TestCollector):
                 changed_packs.append(pack_path)
         logger.info(f'changed_packs={changed_packs}')
         for changed_pack in changed_packs:
-            root_dir = Path(changed_pack)
-            root_dir_instance = pathlib.Path(root_dir)
+            files_in_dir = os.listdir(changed_pack)
             # files_in_dir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
-            files_in_dir = [item.name for item in root_dir_instance.glob("*")]
-            logger.info(f'root_dir_instance======{root_dir_instance}')
             logger.info(f'files_in_dir======{files_in_dir}')
             for yml_file in files_in_dir:
                 with open(f'{changed_pack}/{yml_file}', "r") as stream:
