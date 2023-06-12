@@ -38,9 +38,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SafeBreach
-    nexttasks:
-      '#none#':
-      - "2"
     scriptarguments:
       rerunData:
         simple: |-
@@ -119,30 +116,6 @@ tasks:
         "position": {
           "x": 741,
           "y": 188
-        }
-      }
-  "2":
-    id: "2"
-    taskid: 2f161268-7999-4abc-821b-9ad06207bc05
-    type: regular
-    task:
-      id: 2f161268-7999-4abc-821b-9ad06207bc05
-      version: -1
-      name: safebreach-get-simulation
-      description: Fetch the breach simulation results
-      script: SafeBreach|||safebreach-get-simulation
-      type: regular
-      iscommand: true
-      brand: SafeBreach
-    scriptarguments:
-      simulationId:
-        simple: 03ff1fb5d3fe765a20280754b4be04ce
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 741,
-          "y": 368
         }
       }
 view: |-

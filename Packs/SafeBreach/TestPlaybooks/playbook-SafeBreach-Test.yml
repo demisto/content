@@ -206,7 +206,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "15"
     scriptarguments:
       testId:
         complex:
@@ -220,68 +220,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "11":
-    id: "11"
-    taskid: efcd560e-f4d7-4269-83a9-caed3a130b35
-    type: regular
-    task:
-      id: efcd560e-f4d7-4269-83a9-caed3a130b35
-      version: -1
-      name: safebreach-get-simulation
-      script: '|||safebreach-get-simulation'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      simulationId:
-        simple: 5dc919e10d29b3b6df5e983fe7b62838
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 8cf6aeea-7cff-416d-84e0-4f3da80f224d
-    type: regular
-    task:
-      id: 8cf6aeea-7cff-416d-84e0-4f3da80f224d
-      version: -1
-      name: safebreach-rerun-simulation
-      script: '|||safebreach-rerun-simulation'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      simulationId:
-        simple: 5dc919e10d29b3b6df5e983fe7b62838
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
         }
       }
     note: false

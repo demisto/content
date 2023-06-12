@@ -112,19 +112,7 @@ script:
             sendRequest('POST', url, rerunData);
 
             return 'ok';
-        case 'safebreach-get-simulation':
-            var simulationId = args.simulationId;
 
-            if (!simulationId && incidents && incidents[0] && incidents[0].labels) {
-                for (var index = 0; index <= incidents[0].labels.length; index++) {
-                    var label = incidents[0].labels[index];
-
-                    if (label.type === "id") {
-                        simulationId = label.value;
-                        break;
-                    }
-                }
-            }
 
             var url = SERVER_URL + '/api/data/v' + params.apiVersion +
                       '/accounts/' + params.accountId + '/executions/' + simulationId;
@@ -171,34 +159,6 @@ script:
     - name: rerunData
       description: The rerun command to execute. By default taken from the incident
     description: Rerun the simulation/s related to the incident
-    deprecated: true
-  - name: safebreach-get-simulation
-    arguments:
-    - name: simulationId
-      description: The ID of the simulation. By default taken from the incident
-    outputs:
-    - contextPath: SafeBreach.Simulation
-      description: Simulation details and result
-      type: unknown
-    - contextPath: SafeBreach.Simulation.status
-      description: Simulation Result (SUCCESS,FAIL,INTERNAL_FAIL)
-      type: string
-    - contextPath: SafeBreach.Simulation.srcNodeName
-      description: Source simulator
-      type: string
-    - contextPath: SafeBreach.Simulation.srcNodeIp
-      description: Source simulator IP
-      type: string
-    - contextPath: SafeBreach.Simulation.destNodeName
-      description: Destination simulator
-      type: string
-    - contextPath: SafeBreach.Simulation.destNodeIp
-      description: 'Destination simulator '
-      type: string
-    - contextPath: SafeBreach.Simulation.serverPort
-      description: Port
-      type: number
-    description: Fetch the breach simulation results
     deprecated: true
   runonce: false
 tests:
