@@ -7,20 +7,17 @@ commonfields:
 configuration:
 - defaultvalue: cf22fd73-29f1-4245-8e16-533704926d20
   display: App ID
-  hidden: false
   name: app_id
   required: false
   type: 0
   section: Connect
 - display: Default Subscription ID
-  hidden: false
   name: subscription_id
   required: true
   type: 0
   additionalinfo: Default subscription ID value can be overridden using subscription_id argument to commands.
   section: Connect
 - display: Default Resource Group Name
-  hidden: false
   name: resource_group_name
   required: true
   type: 0
@@ -56,8 +53,7 @@ configuration:
   section: Connect
 - display: Authorization code
   displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
-    Instructions (?) section
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
   hiddenusername: true
   name: auth_code
   required: false
@@ -72,7 +68,6 @@ configuration:
   section: Connect
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   options:
   - https://login.microsoftonline.com
@@ -189,8 +184,7 @@ script:
       description: The name of the resource that is unique within a policy. This name can be used to access the resource.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.priority
-      description: Priority of the rule. Rules with a lower value will be evaluated
-        before rules with a higher value.
+      description: Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.
       type: Number
     - contextPath: AzureWAF.Policy.properties.customRules.ruleType
       description: The rule type.
@@ -232,8 +226,7 @@ script:
       description: The variable to be excluded.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selectorMatchOperator
-      description: When matchVariable is a collection, operate on the selector to
-        specify which elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selector
       description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
@@ -252,8 +245,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Maximum number of policies to be shown. (This will only affect visualized
-        data, not context.)
+      description: Maximum number of policies to be shown. (This will only affect visualized data, not context.)
       isArray: false
       name: limit
       required: false
@@ -279,8 +271,7 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureWAF.Policy.etag
-      description: A unique read-only string that changes whenever the resource is
-        updated.
+      description: A unique read-only string that changes whenever the resource is updated.
       type: String
     - contextPath: AzureWAF.Policy.tags
       description: Resource tags.
@@ -313,8 +304,7 @@ script:
       description: The name of the resource that is unique within a policy. This name can be used to access the resource.
       type: String
     - contextPath: AzureWAF.Policy.properties.customRules.priority
-      description: Priority of the rule. Rules with a lower value will be evaluated
-        before rules with a higher value.
+      description: Priority of the rule. Rules with a lower value will be evaluated before rules with a higher value.
       type: Number
     - contextPath: AzureWAF.Policy.properties.customRules.ruleType
       description: The rule type.
@@ -356,8 +346,7 @@ script:
       description: The variable to be excluded.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selectorMatchOperator
-      description: When matchVariable is a collection, operate on the selector to
-        specify which elements in the collection this exclusion applies to.
+      description: When matchVariable is a collection, operate on the selector to specify which elements in the collection this exclusion applies to.
       type: String
     - contextPath: AzureWAF.Policy.properties.managedRules.exclusions.selector
       description: When matchVariable is a collection, the operator used to specify which elements in the collection this exclusion applies to.
