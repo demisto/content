@@ -706,7 +706,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
     """
     limit = arg_to_number(args.get('limit')) or DEFAULT_MAX_LIMIT
     should_push_events = argToBoolean(args.get('should_push_events', False))
-    log_type = args.get('log_type') or 'all'
+    log_types = argToList(args.get('log_type')) or []
     from_time = args.get('from_time')
     to_time = args.get('to_time') or datetime.now().strftime(DATE_FORMAT)
 
@@ -768,17 +768,16 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             } for log in audit_logs
         ]
 
-    if log_type == 'all':
-        events = parse_workbench_logs() + parse_observed_attack_techniques_logs() + \
-            parse_search_detection_logs() + parse_audit_logs()
-    else:
-        log_type_to_parse_func = {
-            LogTypes.AUDIT.value: parse_audit_logs,
-            LogTypes.OBSERVED_ATTACK_TECHNIQUES.value: parse_observed_attack_techniques_logs,
-            LogTypes.SEARCH_DETECTIONS.value: parse_search_detection_logs,
-            LogTypes.WORKBENCH.value: parse_workbench_logs
-        }
-        events = log_type_to_parse_func[log_type]()
+    events = []
+
+    if LogTypes.WORKBENCH.value in log_types:
+        events.extend(parse_workbench_logs())
+    if LogTypes.OBSERVED_ATTACK_TECHNIQUES.value in log_types:
+        events.extend(parse_observed_attack_techniques_logs())
+    if LogTypes.SEARCH_DETECTIONS.value in log_types:
+        events.extend(parse_search_detection_logs())
+    if LogTypes.AUDIT.value in log_types:
+        events.extend(parse_audit_logs())
 
     if should_push_events:
         send_events_to_xsiam(
@@ -788,7 +787,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         outputs=events,
         outputs_prefix='TrendMicroVisionOne.Events',
-        readable_output=tableToMarkdown(f'events for {log_type=}', events, removeNull=True)
+        readable_output=tableToMarkdown(f'events for {log_types=}', events, removeNull=True)
     )
 
 

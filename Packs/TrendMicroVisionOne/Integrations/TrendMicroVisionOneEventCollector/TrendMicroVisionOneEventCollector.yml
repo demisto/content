@@ -76,15 +76,9 @@ script:
       - 'false'
       - 'true'
     - name: log_type
-      defaultValue: 'all'
-      description: The log type to retrieve.
-      auto: PREDEFINED
-      predefined:
-      - 'all'
-      - 'audit'
-      - 'observed_attack_techniques'
-      - 'search_detections'
-      - 'workbench'
+      defaultValue: 'audit,observed_attack_techniques,search_detections,workbench'
+      description: Comma-separated list of log-types to retrieve, options are audit, observed_attack_techniques, search_detections and workbench.
+      isArray: true
     outputs:
     - contextPath: TrendMicroVisionOne.Events
       description: Trend Micro Vision One events.

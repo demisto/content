@@ -422,7 +422,12 @@ def test_module_main_flow(mocker):
     "args, expected_outputs",
     [
         (
-            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': 'all'},
+            {
+                'from_time': '2023-01-01T15:00:45Z',
+                'to_time': '2023-01-01T15:20:45Z',
+                'log_type': f'{LogTypes.AUDIT.value},{LogTypes.SEARCH_DETECTIONS.value},'
+                            f'{LogTypes.OBSERVED_ATTACK_TECHNIQUES.value},{LogTypes.WORKBENCH.value}'
+            },
             [
                 {'Id': 1, 'Time': '2023-01-01T15:19:44Z', 'Type': 'Workbench'},
                 {'Id': 1, 'Time': '2023-01-01T15:18:14Z', 'Type': 'Observed Attack Technique'},
@@ -506,4 +511,4 @@ def test_get_events_command_main_flow(mocker, args: Dict, expected_outputs: List
 
     assert return_results_mocker.call_args.args[0].outputs == expected_outputs
     log_type = args['log_type']
-    assert f"events for log_type='{log_type}'" in return_results_mocker.call_args.args[0].readable_output
+    assert f"events for log_types=" in return_results_mocker.call_args.args[0].readable_output
