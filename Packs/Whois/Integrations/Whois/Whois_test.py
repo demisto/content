@@ -7,8 +7,10 @@ import subprocess
 import time
 import tempfile
 import sys
+from typing import List
 
-from CommonServerPython import DBotScoreReliability
+from CommonServerPython import DBotScoreReliability, CommandResults, EntryType
+from Whois import has_rate_limited_result
 
 import json
 
@@ -83,6 +85,51 @@ def test_socks_proxy(mocker, request):
     assert_results_ok()
     tmp.seek(0)
     assert 'connected to' in tmp.read()  # make sure we went through microsocks
+
+
+@pytest.mark.parametrize(
+    "cmd_results,expected",
+    [
+        ([], False),
+        ([CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'})], True),
+        ([
+            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'}),
+            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'})
+        ], True),
+        ([
+            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'service_error'}),
+            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'})
+        ], True),
+        ([
+            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'service_error'}),
+            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'service_error'})
+        ], False),
+        ([CommandResults(entry_type=EntryType.ERROR)], False),
+
+    ]
+)
+def test_has_rate_limited_result(cmd_results: List[CommandResults], expected: bool):
+    """
+    Given:
+        - A list of `CommandResults` is passed as input
+
+    When:
+        - Case A: An empty list is given as input.
+        - Case B: A list with 2 quota error command results is given as input.
+        - Case C: A list with 1 quota error command results is given as input.
+        - Case D: A list with 0 quota error command results is given as input.
+        - Case E: A list with a command result with no outputs is given as input.
+
+    Then:
+        - Case A: False is expected.
+        - Case B: True is expected.
+        - Case C: True is expected.
+        - Case D: False is expected.
+        - Case E: False is expected.
+    """
+
+    actual = has_rate_limited_result(cmd_results=cmd_results)
+    assert actual == expected
 
 
 TEST_QUERY_RESULT_INPUT = [
@@ -184,7 +231,13 @@ def test_ip_command(mocker):
     from Whois import ip_command
     response = load_test_data('./test_data/ip_output.json')
     mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
-    result = ip_command(['4.4.4.4', '4.4.4.4'], DBotScoreReliability.B)
+    result = ip_command(
+        ips='4.4.4.4,4.4.4.4',
+        reliability=DBotScoreReliability.B,
+        rate_limit_retry_count=3,
+        rate_limit_wait_seconds=180,
+        should_error=False
+    )
     assert len(result) == 3
     assert result[0].outputs_prefix == 'Whois.IP'
     assert result[0].outputs.get('query') == '4.4.4.4'
@@ -291,8 +344,8 @@ def test_create_outputs_invalid_time(updated_date, expected_res):
     assert res[0]['Updated Date'] == expected_res
 
 
-@pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "recursive": "true", "verbose": "true"}, 2),
-                                                ({"query": "cnn.com", "recursive": "true"}, 2)])
+@pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
+                                                ({"query": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)])
 def test_whois_with_verbose(args, expected_res, mocker):
     """
     Given:
@@ -309,7 +362,12 @@ def test_whois_with_verbose(args, expected_res, mocker):
         get_whois_ret_value = pickle.load(f)
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
 
-    result = Whois.whois_command('B - Usually reliable')
+    result = Whois.whois_command(
+        reliability='B - Usually reliable',
+        query=args['query'],
+        is_recursive=args['is_recursive'],
+        should_error=args['should_error']
+    )
     assert len(result) == expected_res
 
 

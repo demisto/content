@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 import re
 import socket
 import sys
-from codecs import encode, decode
 import socks
 import ipwhois
 from typing import Dict, List, Optional
@@ -7151,7 +7150,7 @@ ipwhois_exception_mapping: Dict[type, str] = {
 
     # Connection Errors
     ipwhois.exceptions.NetError: "connection_error",
-    
+
     # Rate Limit Errors
     ipwhois.exceptions.HTTPRateLimitError: "quota_error",
     ipwhois.exceptions.IPDefinedError: "quota_error",
@@ -7171,8 +7170,11 @@ def has_rate_limited_result(cmd_results: List[CommandResults]) -> bool:
     """
 
     for c in cmd_results:
-        if c.entry_type == EntryType.ERROR and 'reason' in c.outputs and c.outputs['reason'] == "quota_error":
+        # type: ignore
+        if c.entry_type == EntryType.ERROR and c.outputs and 'reason' in c.outputs and c.outputs['reason'] == "quota_error":
             return True
+        else:
+            continue
 
     return False
 
@@ -7184,6 +7186,7 @@ class WhoisException(Exception):
 class WhoisWarningException(Exception):
     pass
 
+
 # whois domain exception to execution metrics attribute mapping
 whois_exception_mapping: Dict[type, str] = {
     socket.error: "connection_error",
@@ -7193,6 +7196,7 @@ whois_exception_mapping: Dict[type, str] = {
     WhoisException: "service_error",
     TypeError: "general_error"
 }
+
 
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
                   server_list=None, is_recursive=True):
@@ -7242,7 +7246,8 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
             break
 
     if not response:
-        raise WhoisException(f"Got an empty response for the requested domain '{request_domain}' from the server '{target_server}'.")
+        raise WhoisException(
+            f"Got an empty response for the requested domain '{request_domain}' from the server '{target_server}'.")
 
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
@@ -7273,7 +7278,7 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
                 if referral_server != server and "://" not in referral_server:
                     # Referral to another WHOIS server...
                     return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
-                                             with_server_list=with_server_list)
+                                         with_server_list=with_server_list)
 
     if with_server_list:
         return new_list, server_list
@@ -7293,13 +7298,12 @@ def get_root_server(domain):
             entry = tlds[ext]
             host = entry["host"]
             return host
-        
+
     except KeyError as e:
         raise WhoisException(f"{e.__class__.__name__}: Can't parse the root server from domain '{domain}'")
 
 
 def whois_request_get_response(domain: str, server: str) -> str:
-
     """
     Helper function to create a socket connection to the Whois server and return the response.
 
@@ -8446,8 +8450,7 @@ def prepare_readable_ip_data(response):
 def get_whois_ip(ip: str,
                  retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
                  rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT
-                 ) -> Optional[Dict[str, None]]:
-    
+                 ) -> Optional[Dict[str, Any]]:
     """
     Performs an Registration Data Access Protocol (RDAP) lookup for an IP.
 
@@ -8481,7 +8484,6 @@ def get_param_or_arg(param_key: str, arg_key: str):
 
 
 def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_count: int, rate_limit_wait_seconds: int, should_error: bool) -> List[CommandResults]:
-
     """
     Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
     Sets API execution metrics functionality (if supported) and adds them to the list of CommandResults.
@@ -8515,7 +8517,7 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                     value=response.get('network', {}).get('cidr'),
                     indicator_type='CIDR'
                 )
-                network_data = response.get('network', {})
+                network_data: Dict[str, Any] = response.get('network', {})
                 ip_output = Common.IP(
                     ip=ip,
                     asn=response.get('asn'),
@@ -8558,7 +8560,6 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                     output['reason'] = metric_attribute
                     break
 
-
             if should_error:
                 results.append(
                     CommandResults(
@@ -8582,7 +8583,6 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
 
 
 def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: bool, should_error: bool, verbose: bool = False) -> List[CommandResults]:
-
     """
     Runs Whois domain query.
     If the `with_error` integration instance configuration is set, the command will terminate on the first error encountered.
@@ -8637,14 +8637,14 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
                     break
 
             output = ({
-                    outputPaths['domain']: {
-                        'Name': domain,
-                        'Whois': {
-                            'QueryStatus': f"Failed whois lookup: {e}"
-                        }
-                    },
-                })
-            
+                outputPaths['domain']: {
+                    'Name': domain,
+                    'Whois': {
+                        'QueryStatus': f"Failed whois lookup: {e}"
+                    }
+                },
+            })
+
             if should_error:
                 results.append(CommandResults(
                     outputs=output,
@@ -8664,15 +8664,15 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
 
 
 def test_command():
-    whois_result = get_whois('google.co.uk')
+    test_domain = 'google.co.uk'
+    demisto.debug(f"Testing module using domain '{test_domain}'...")
+    whois_result = get_whois(test_domain)
 
     try:
-        domain_test = whois_result['nameservers'][0]
-    except ValueError as e:
-        return_error('Whois did not return the correct result: {}'.format(str(e)))
-
-    if domain_test == 'ns1.google.com':
-        demisto.results('ok')
+        if whois_result['nameservers'][0] == 'ns1.google.com':
+            return_results('ok')
+    except Exception as e:
+        raise WhoisException(f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}")
 
 
 def setup_proxy():
@@ -8707,10 +8707,10 @@ def setup_proxy():
 
 
 def main():
-    demisto.debug('command is {}'.format(str(demisto.command())))
+    demisto.debug(f"command is {demisto.command()}")
     command = demisto.command()
     args: Dict[str, str] = demisto.args()
-    should_error = demisto.params().get('with_error', False)
+    should_error = argToBoolean(demisto.params().get('with_error', False))
 
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
@@ -8719,14 +8719,17 @@ def main():
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")    
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
     try:
         results: List[CommandResults] = []
         if command == 'ip':
             ip: str = args.get('ip')
-            rate_limit_retry_count: int = arg_to_number(get_param_or_arg(param_key='rate_limit_retry_count', arg_key='rate_limit_retry_count'), arg_name="rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT
-            rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(param_key='rate_limit_wait_seconds', arg_key="rate_limit_wait_seconds")) or RATE_LIMIT_WAIT_SECONDS_DEFAULT
-            rate_limit_errors_suppressed: bool = argToBoolean(get_param_or_arg(param_key='rate_limit_errors_suppressed', arg_key='rate_limit_errors_suppressed')) or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
+            rate_limit_retry_count: int = arg_to_number(get_param_or_arg(
+                param_key='rate_limit_retry_count', arg_key='rate_limit_retry_count'), arg_name="rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT
+            rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(
+                param_key='rate_limit_wait_seconds', arg_key="rate_limit_wait_seconds")) or RATE_LIMIT_WAIT_SECONDS_DEFAULT
+            rate_limit_errors_suppressed: bool = argToBoolean(get_param_or_arg(
+                param_key='rate_limit_errors_suppressed', arg_key='rate_limit_errors_suppressed')) or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
 
             cmd_res = ip_command(
                 ips=ip,
@@ -8747,7 +8750,7 @@ def main():
                 )
             else:
                 results.extend(cmd_res)
-            
+
         else:
             org_socket = socket.socket
             setup_proxy()
@@ -8756,7 +8759,7 @@ def main():
             elif command == 'whois':
                 results.extend(whois_command(
                     reliability=reliability,
-                    query=args.get("query"),
+                    query=args.get("query"),  # type: ignore
                     is_recursive=argToBoolean(args.get("recursive", 'false')),
                     verbose=argToBoolean(args.get('verbose', 'false')),
                     should_error=should_error
@@ -8765,16 +8768,16 @@ def main():
             elif command == 'domain':
                 results.extend(whois_command(
                     reliability=reliability,
-                    query=args.get('domain', []),
+                    query=args.get('domain'),  # type: ignore
                     is_recursive=argToBoolean(args.get("recursive", 'false')),
                     should_error=should_error,
-                    ))
-
+                ))
 
         return_results(results)
     except Exception as e:
-        demisto.error(f"Exception {e.__class__.__name__}: {e}")
-        return_error(message=f"{e.__class__.__name__}: {e}", error=e)
+        msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
+        demisto.error(msg)
+        return_error(message=msg, error=e)
     finally:
         if command != 'ip':
             socks.set_default_proxy()  # clear proxy settings
