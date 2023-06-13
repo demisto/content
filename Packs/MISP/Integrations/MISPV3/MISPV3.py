@@ -1,14 +1,16 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 # type: ignore
 from typing import Union, List, Dict
 from urllib.parse import urlparse
 import urllib3
-
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute, MISPUser
 from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
 from pymisp.tools import FileObject
 
-from CommonServerPython import *
+
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
@@ -538,6 +540,25 @@ def create_event_command(demisto_args: dict):
     )
 
 
+def add_user_to_misp(demisto_args: dict = {}):
+    """Adding a new user to MISP.
+
+    Args:
+        demisto_args (dict): Demisto args
+    """
+    new_user = MISPUser()
+    new_user.email = demisto_args.get('email')
+    new_user.org_id = demisto_args.get('org_id')
+    new_user.role_id = demisto_args.get('role_id')
+    new_user.password = demisto_args.get('password')
+    response = PYMISP.add_user(new_user)
+    if 'errors' in response:
+        raise DemistoException(f'Failed to add user.\nError message: {response}')
+    else:
+        human_readable = f"## MISP add user\nNew user was added to MISP.\nEmail:{new_user.email}"
+        return CommandResults(readable_output=human_readable, raw_response=response)
+
+
 def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
     """Adding attribute to a given MISP event object
     This function can be called as an independence command or as part of another command (create event for example)
@@ -549,13 +570,14 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         new_event (MISPEvent): When this function was called from create event command, the attrubite will be added to
         that existing event.
     """
+    value = demisto_args.get('value')
     attributes_args = {
         'id': demisto_args.get('event_id'),  # misp event id
         'type': demisto_args.get('type', 'other'),
         'category': demisto_args.get('category', 'External analysis'),
         'to_ids': argToBoolean(demisto_args.get('to_ids', True)),
         'comment': demisto_args.get('comment'),
-        'value': demisto_args.get('value')
+        'value': argToList(value)
     }
     event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None
@@ -1661,6 +1683,8 @@ def main():
             return_results(set_event_attributes_command(args))
         elif command == "misp-check-warninglist":
             return_results(warninglist_command(args))
+        elif command == "misp-add-user":
+            return_results(add_user_to_misp(args))
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
@@ -1669,3 +1693,4 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+
