@@ -11,7 +11,7 @@ For forwarding Event logs:
 2. In the **Alert Mappings** section, make sure Audit Events are kept in Syslog (action).
 3. Click the **Global Settings** tab and click **Logging**.
 4. Mark the **Whether to mirror the audit log to EventID** checkbox as **Yes**.
-5. Under the **Apply Changes** section, press on **Update** once you are done.
+5. Under the **Apply Changes** section, click **Update**.
 
 Setup for forwarding requests logging per Virtual Server (VS):
 1. Open the **Services** tab, Under **Virtual Servers**, select a VS.
