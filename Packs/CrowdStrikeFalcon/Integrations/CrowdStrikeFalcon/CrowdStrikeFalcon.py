@@ -4787,7 +4787,10 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
         response = ODS_get_scans_by_id_request(ids)
         resources = response.get('resources', [])
 
-        scan_in_progress = any(dict_safe_get(scan, ['status'], return_type=str) in ('pending', 'running') for scan in resources)
+        scan_in_progress = (
+            len(resources) == 1
+            and dict_safe_get(resources, [0, 'status']) in ('pending', 'running')
+        )
 
         human_readable = ODS_get_scan_resources_to_human_readable(resources)
         command_results = CommandResults(
@@ -4800,7 +4803,6 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
 
     return PollResult(response=command_results,
                       continue_to_poll=scan_in_progress,
-                      partial_result=command_results,
                       args_for_next_run=args)
 
 
