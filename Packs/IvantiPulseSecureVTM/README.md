@@ -7,7 +7,7 @@ You need to configure the Virtual Traffic Manager (VTM) to forward Syslog messag
 Open the VTM UI; 
 
 For forwarding Event logs:
-1. Open the **System** tab, then, click on **Alerting**.
+1. Click the **System** tab and click **Alerting**.
 2. At the **Alert Mappings** section, make sure Audit Events are kept in Syslog (action).
 3. Next, open the **Global Settings** tab, then, click on **Logging**.
 4. Mark the "Whether to mirror the audit log to EventID" checkbox as **Yes**.
