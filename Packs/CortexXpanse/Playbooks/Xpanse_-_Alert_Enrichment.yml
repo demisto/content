@@ -190,7 +190,7 @@ tasks:
       id: bb9c5569-7c11-44d6-82bc-2cdc01fdb8c1
       version: -1
       name: GCP - Enrichment
-      description: Given the IP address this playbook enriches GCP and Firewall information.
+      description: Given the IP address, this playbook enriches GCP and Firewall information.
       playbookName: GCP - Enrichment
       type: playbook
       iscommand: false
