@@ -26,7 +26,7 @@ Setup for forwarding requests logging per Virtual Server (VS):
    ```bash
    %t|%T|%h|%m %U|%{Content-Type}o|%s|%u|%b|%{Cookie}i|%{Referer}i|%{User-Agent}i
    ``` 
-1. Under the **Apply Changes** section, press on **Update** once you are done. 
+4. In the **Apply Changes** section, click **Update**.
     
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
