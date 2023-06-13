@@ -1,5 +1,5 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
-This integration was integrated and tested with API version 2021-09-01 of AKS.
+This integration was integrated and tested with API version 2023-02-01 of AKS.
 
 # Self-Deployed Application
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
@@ -42,38 +42,42 @@ At end of the process you'll see a message that you've logged in successfully.
 ## Configure Azure Kubernetes Services on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Kubernetes Services.
+2. Search for Azure Kubernetes Services Dev.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | Application ID | False |
-    | subscription_id | Subscription ID | True |
-    | resource_group_name | Resource Group Name | True |
-    | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | Tenant ID (for User Auth mode) | Tenant ID | False |
-    | Client Secret (for User Auth mode) | Encryption key given by the admin | False |
-    | Authentication Type | The request authentication type for the instance | False |
-    | Authorization code | as received from the authorization step | False |
-    | Application redirect URI | the redirect URI entered in the Azure portal | False |
-    | Azure Managed Identities Client ID | False |
-
+    | Application ID |  | False |
+    | Authentication Type | Type of authentication - can be Authorization Code Flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
+    | Tenant ID (for authorization code mode) |  | False |
+    | Client Secret (for authorization code mode) |  | False |
+    | Client Secret (for authorization code mode) |  | False |
+    | Application redirect URI (for authorization code mode) |  | False |
+    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+    | Authorization code |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
+    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value. | True |
+    | Default Resource Group Name | There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value. | True |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-ks-auth-test
+
 ***
 Tests the connectivity to Azure.
-
 
 #### Base Command
 
 `azure-ks-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -83,13 +87,14 @@ There are no input arguments for this command.
 
 
 ### azure-ks-auth-start
+
 ***
 Run this command to start the authorization process and follow the instructions in the command results.
-
 
 #### Base Command
 
 `azure-ks-auth-start`
+
 #### Input
 
 There are no input arguments for this command.
@@ -136,16 +141,19 @@ There are no input arguments for this command.
 >Authorization was reset successfully. You can now run ***!azure-ks-auth-start*** and ***!azure-ks-auth-complete***.
 
 ### azure-ks-clusters-list
+
 ***
 Gets a list of managed clusters in the specified subscription.
-
 
 #### Base Command
 
 `azure-ks-clusters-list`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
 
 #### Context Output
 
@@ -167,12 +175,12 @@ There are no input arguments for this command.
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.maxPods | Number | Maximum number of pods that can run on a node. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.osType | String | The operating system type, either Linux or Windows. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.provisioningState | String | The current deployment or provisioning state. | 
-| AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion | String | Version of orchestrator specified when creating the managed cluster. | 
+| AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion | String | Version of the orchestrator specified when creating the managed cluster. | 
 | AzureKS.ManagedCluster.properties.linuxProfile.adminUsername | String | The name of the administrator account. | 
 | AzureKS.ManagedCluster.properties.linuxProfile.ssh.publicKeys.keyData | String | Certificate public key used to authenticate with VMs through SSH. | 
 | AzureKS.ManagedCluster.properties.servicePrincipalProfile.clientId | String | The ID for the service principal. | 
 | AzureKS.ManagedCluster.properties.nodeResourceGroup | String | Name of the resource group containing agent pool nodes. | 
-| AzureKS.ManagedCluster.properties.enableRBAC | Boolean | Whether to enable Kubernetes Role-Based Access Control. | 
+| AzureKS.ManagedCluster.properties.enableRBAC | Boolean | Whether to enable Kubernetes Role-Based Access Control \(RBAC\). | 
 | AzureKS.ManagedCluster.properties.diskEncryptionSetID | String | Resource ID of the disk encryption set to use for enabling encryption at rest. | 
 | AzureKS.ManagedCluster.properties.networkProfile.networkPlugin | String | Network plugin used for building Kubernetes network. | 
 | AzureKS.ManagedCluster.properties.networkProfile.podCidr | String | A CIDR notation IP range from which to assign pod IPs when kubenet is used. | 
@@ -184,78 +192,141 @@ There are no input arguments for this command.
 | AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled | Boolean | Whether the ingress is configured with automatic public DNS name creation. | 
 | AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | String | The subscription DNS zone name. | 
 
-
-#### Command Example
+#### Command example
 ```!azure-ks-clusters-list```
-
 #### Context Example
 ```json
 {
     "AzureKS": {
         "ManagedCluster": {
-          "id": "/subscriptions/subid1/providers/Microsoft.ContainerService/managedClusters",
-          "location": "location1",
-          "name": "clustername1",
-          "tags": {
-            "archv2": "",
-            "tier": "production"
-          },
-          "type": "Microsoft.ContainerService/ManagedClusters",
-          "properties": {
-            "provisioningState": "Succeeded",
-            "kubernetesVersion": "1.9.6",
-            "maxAgentPools": 1,
-            "dnsPrefix": "dnsprefix1",
-            "fqdn": "dnsprefix1-abcd1234.hcp.eastus.azmk8s.io",
-            "agentPoolProfiles": [
-              {
-                "name": "nodepool1",
-                "count": 3,
-                "vmSize": "Standard_DS1_v2",
-                "maxPods": 110,
-                "osType": "Linux",
+            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
+            "identity": {
+                "principalId": "33575493-486b-4146-89da-fc5fce26968c",
+                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+                "type": "SystemAssigned"
+            },
+            "location": "westus",
+            "name": "aks-integration",
+            "properties": {
+                "addonProfiles": {
+                    "azurepolicy": {
+                        "config": null,
+                        "enabled": false
+                    },
+                    "httpApplicationRouting": {
+                        "config": {
+                            "HTTPApplicationRoutingZoneName": "a6ec8d51bb4e488dae4d.westus.aksapp.io"
+                        },
+                        "enabled": true,
+                        "identity": {
+                            "clientId": "9c372d32-6a74-41f7-b466-7555cff4f77c",
+                            "objectId": "02158873-b32b-4595-b18a-9d618771336c",
+                            "resourceId": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/httpapplicationrouting-aks-integration"
+                        }
+                    },
+                    "omsagent": {
+                        "config": {
+                            "logAnalyticsWorkspaceResourceID": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WUS/providers/Microsoft.OperationalInsights/workspaces/tesrt"
+                        },
+                        "enabled": false
+                    }
+                },
+                "agentPoolProfiles": [
+                    {
+                        "count": 1,
+                        "currentOrchestratorVersion": "1.21.7",
+                        "enableAutoScaling": true,
+                        "enableFIPS": false,
+                        "enableNodePublicIP": false,
+                        "kubeletDiskType": "OS",
+                        "maxCount": 5,
+                        "maxPods": 110,
+                        "minCount": 1,
+                        "mode": "System",
+                        "name": "agentpool",
+                        "nodeImageVersion": "AKSUbuntu-1804gen2containerd-2021.12.07",
+                        "orchestratorVersion": "1.21.7",
+                        "osDiskSizeGB": 128,
+                        "osDiskType": "Managed",
+                        "osSKU": "Ubuntu",
+                        "osType": "Linux",
+                        "powerState": {
+                            "code": "Running"
+                        },
+                        "provisioningState": "Succeeded",
+                        "tags": {
+                            "type": "aks-slb-managed-outbound-ip"
+                        },
+                        "type": "VirtualMachineScaleSets",
+                        "vmSize": "Standard_DS2_v2"
+                    }
+                ],
+                "azurePortalFQDN": "aks-integration-dns-05664bc0.portal.hcp.westus.azmk8s.io",
+                "currentKubernetesVersion": "1.21.7",
+                "dnsPrefix": "aks-integration-dns",
+                "enableRBAC": true,
+                "fqdn": "aks-integration-dns-05664bc0.hcp.westus.azmk8s.io",
+                "identityProfile": {
+                    "kubeletidentity": {
+                        "clientId": "060f057a-64b7-4227-a198-d38a8d8504d7",
+                        "objectId": "fa6fda50-4c4a-4044-909c-51591917ffb1",
+                        "resourceId": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aks-integration-agentpool"
+                    }
+                },
+                "kubernetesVersion": "1.21.7",
+                "maxAgentPools": 100,
+                "networkProfile": {
+                    "dnsServiceIP": "10.0.0.10",
+                    "dockerBridgeCidr": "172.17.0.1/16",
+                    "loadBalancerProfile": {
+                        "effectiveOutboundIPs": [
+                            {
+                                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.Network/publicIPAddresses/81661302-1ebc-450b-80a3-1e5d351ec2c0"
+                            }
+                        ],
+                        "managedOutboundIPs": {
+                            "count": 1
+                        }
+                    },
+                    "loadBalancerSku": "Standard",
+                    "networkPlugin": "kubenet",
+                    "outboundType": "loadBalancer",
+                    "podCidr": "10.244.0.0/16",
+                    "serviceCidr": "10.0.0.0/16"
+                },
+                "nodeResourceGroup": "MC_aks-integration_aks-integration_westus",
+                "oidcIssuerProfile": {
+                    "enabled": false
+                },
+                "powerState": {
+                    "code": "Running"
+                },
                 "provisioningState": "Succeeded",
-                "orchestratorVersion": "1.9.6"
-              }
-            ],
-            "linuxProfile": {
-              "adminUsername": "azureuser",
-              "ssh": {
-                "publicKeys": [
-                  {
-                    "keyData": "keydata"
-                  }
-                ]
-              }
+                "securityProfile": {},
+                "servicePrincipalProfile": {
+                    "clientId": "msi"
+                },
+                "storageProfile": {
+                    "diskCSIDriver": {
+                        "enabled": true
+                    },
+                    "fileCSIDriver": {
+                        "enabled": true
+                    },
+                    "snapshotController": {
+                        "enabled": true
+                    }
+                },
+                "workloadAutoScalerProfile": {}
             },
-            "servicePrincipalProfile": {
-              "clientId": "clientid"
+            "sku": {
+                "name": "Base",
+                "tier": "Free"
             },
-            "nodeResourceGroup": "MC_rg1_clustername1_location1",
-            "enableRBAC": false,
-            "diskEncryptionSetID": "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
-            "networkProfile": {
-              "networkPlugin": "kubenet",
-              "podCidr": "10.244.0.0/16",
-              "serviceCidr": "10.0.0.0/16",
-              "dnsServiceIP": "10.0.0.10",
-              "dockerBridgeCidr": "172.17.0.1/16"
+            "tags": {
+                "type": "aks-slb-managed-outbound-ip"
             },
-            "addonProfiles": {
-              "omsagent": {
-                "enabled": false,
-                "config": {
-                  "logAnalyticsWorkspaceResourceID": "workspace"
-                }
-              },
-              "httpApplicationRouting": {
-                "enabled": true,
-                "config": {
-                  "HTTPApplicationRoutingZoneName": "zone"
-                }
-              }
-            }
-          }
+            "type": "Microsoft.ContainerService/ManagedClusters"
         }
     }
 }
@@ -266,65 +337,517 @@ There are no input arguments for this command.
 >### AKS Clusters List
 >|Name|Status|Location|Tags|Kubernetes version|API server address|Network type (plugin)|
 >|---|---|---|---|---|---|---|
->| clustername1 | Succeeded | location1 | tier: production | 1.9.6 | dnsprefix1-abcd1234.hcp.eastus.azmk8s.io | kubenet |
+>| aks-integration | Succeeded | westus | type: aks-slb-managed-outbound-ip | 1.21.7 | aks-integration-dns-05664bc0.hcp.westus.azmk8s.io | kubenet |
 
 
 ### azure-ks-cluster-addon-update
+
 ***
 Updates a managed cluster with the specified configuration.
-
 
 #### Base Command
 
 `azure-ks-cluster-addon-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_name | The name of the managed cluster resource. Can be retrieved using the ***azure-ks-clusters-list*** command. | Required | 
-| location | Resource location. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required | 
-| http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values are: true, false. | Optional | 
-| monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and *monitoring_resource_id* is not specified, will use the current configured workspace resource ID. Possible values are: true, false. | Optional | 
-| monitoring_resource_name | The name of an existing Log Analytics Workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional | 
-
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'. | Optional | 
+| resource_name | The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command. | Required | 
+| location | Resource location, Can be retrieved using the azure-ks-clusters-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required | 
+| http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
+| monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
+| monitoring_resource_name | The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
+#### Command example
 ```!azure-ks-cluster-addon-update resource_name=aks-integration location=westus http_application_routing_enabled=true```
-
 #### Human Readable Output
 
 >The request to update the managed cluster was sent successfully.
 
-
 ### azure-ks-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
 
 `azure-ks-generate-login-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### azure-ks-subscriptions-list
+
+***
+Gets all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-ks-subscriptions-list`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureKS.Subscription.id | String | The unique identifier of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.authorizationSource | String | The source of authorization for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionId | String | The ID of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.tenantId | String | The ID of the tenant associated with the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.displayName | String | The display name of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.state | String | The current state of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.count.type | String | The type of the Azure Kubernetes subscription count. | 
+| AzureKS.Subscription.count.value | Number | The value of the Azure Kubernetes subscription count. | 
 
-#### Command Example
-```azure-ks-generate-login-url```
+#### Command example
+```!azure-ks-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureKS": {
+        "Subscription": [
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Access to Azure Active Directory",
+                "id": "/subscriptions/057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                },
+                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+            },
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Pay-As-You-Go",
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                },
+                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
->### Authorization instructions
->1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
-You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
->2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
-and paste it in your instance configuration under the **Authorization code** parameter.
+>### Azure Kubernetes Subscriptions list
+>|subscriptionId|tenantId|displayName|state|
+>|---|---|---|---|
+>| 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Access to Azure Active Directory | Enabled |
+>| 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Pay-As-You-Go | Enabled |
 
+
+### azure-ks-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-ks-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | A comma separated list of the subscription ID's, optional. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureKS.ResourceGroup.id | String | The unique identifier of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.name | String | The name of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.type | String | The type of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.location | String | The location of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.properties.provisioningState | String | The provisioning state of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.Owner | String | The owner tag of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags | Unknown | The tags associated with the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.Name | String | The name tag of the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.managedBy | String | The entity that manages the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.aks-managed-cluster-name | String | The AKS managed cluster name tag associated with the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.aks-managed-cluster-rg | String | The AKS managed cluster resource group tag associated with the Azure Kubernetes resource group. | 
+| AzureKS.ResourceGroup.tags.type | String | The type tag associated with the Azure Kubernetes resource group. | 
+
+#### Command example
+```!azure-ks-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureKS": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto",
+                "location": "centralus",
+                "name": "demisto",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demisto"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/compute-integration",
+                "location": "eastus",
+                "name": "compute-integration",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/NetworkWatcherRG",
+                "location": "westeurope",
+                "name": "NetworkWatcherRG",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/echoteamsbot",
+                "location": "centralus",
+                "name": "echoteamsbot",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/testingteamsbot",
+                "location": "centralus",
+                "name": "testingteamsbot",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/socbot",
+                "location": "eastasia",
+                "name": "socbot",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg-backups",
+                "location": "westus",
+                "name": "us-east-rg-backups",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg",
+                "location": "eastus",
+                "name": "us-east-rg",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/xcloud",
+                "location": "westeurope",
+                "name": "xcloud",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MSDE",
+                "location": "westeurope",
+                "name": "MSDE",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WEU",
+                "location": "westeurope",
+                "name": "DefaultResourceGroup-WEU",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-test_group",
+                "location": "centralus",
+                "name": "aks-integration-test_group",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-tes_group",
+                "location": "centralus",
+                "name": "aks-integration-tes_group",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/XDR_Event_Hub_API_Automation",
+                "location": "centralus",
+                "name": "XDR_Event_Hub_API_Automation",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-CUS",
+                "location": "centralus",
+                "name": "DefaultResourceGroup-CUS",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration",
+                "location": "eastus",
+                "name": "sql-integration",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/ferrum-collector",
+                "location": "eastus",
+                "name": "ferrum-collector",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Name": "ferrum collector"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-EUS",
+                "location": "eastus",
+                "name": "DefaultResourceGroup-EUS",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/intune-xdr-eventhub",
+                "location": "eastus",
+                "name": "intune-xdr-eventhub",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Name": "intune-xdr-eventhub"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WUS",
+                "location": "westus",
+                "name": "DefaultResourceGroup-WUS",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration",
+                "location": "westus",
+                "name": "aks-integration",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/LogAnalyticsDefaultResources",
+                "location": "westus",
+                "name": "LogAnalyticsDefaultResources",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MC_aks-integration_aks-integration_westus",
+                "location": "westus",
+                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
+                "name": "MC_aks-integration_aks-integration_westus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "aks-managed-cluster-name": "aks-integration",
+                    "aks-managed-cluster-rg": "aks-integration",
+                    "type": "aks-slb-managed-outbound-ip"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Elastic_Search",
+                "location": "westus2",
+                "name": "Elastic_Search",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG",
+                "location": "westus2",
+                "name": "Purview-RG",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/managed-rg-demistodevpurview",
+                "location": "westus2",
+                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG/providers/Microsoft.Purview/accounts/demistodevpurview",
+                "name": "managed-rg-demistodevpurview",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Name": "demistodevpurview"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-es",
+                "location": "germanywestcentral",
+                "name": "demisto-es",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Azure_Firewall",
+                "location": "eastus",
+                "name": "Azure_Firewall",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {},
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/SecAndCompRG",
+                "location": "eastus",
+                "name": "SecAndCompRG",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2",
+                "location": "centralus",
+                "name": "demisto-sentinel2",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resource Groups List
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell-storage-eastus | eastus |  |
+>| demisto | centralus | Owner: Demisto |
+>| compute-integration | eastus |  |
+>| NetworkWatcherRG | westeurope |  |
+>| echoteamsbot | centralus |  |
+>| testingteamsbot | centralus |  |
+>| socbot | eastasia |  |
+>| us-east-rg-backups | westus |  |
+>| us-east-rg | eastus |  |
+>| xcloud | westeurope |  |
+>| MSDE | westeurope |  |
+>| DefaultResourceGroup-WEU | westeurope |  |
+>| aks-integration-test_group | centralus |  |
+>| aks-integration-tes_group | centralus |  |
+>| XDR_Event_Hub_API_Automation | centralus |  |
+>| DefaultResourceGroup-CUS | centralus |  |
+>| sql-integration | eastus |  |
+>| ferrum-collector | eastus | Name: ferrum collector |
+>| DefaultResourceGroup-EUS | eastus |  |
+>| intune-xdr-eventhub | eastus | Name: intune-xdr-eventhub |
+>| DefaultResourceGroup-WUS | westus |  |
+>| aks-integration | westus |  |
+>| LogAnalyticsDefaultResources | westus |  |
+>| MC_aks-integration_aks-integration_westus | westus | aks-managed-cluster-name: aks-integration<br/>aks-managed-cluster-rg: aks-integration<br/>type: aks-slb-managed-outbound-ip |
+>| Elastic_Search | westus2 |  |
+>| Purview-RG | westus2 |  |
+>| managed-rg-demistodevpurview | westus2 | Name: demistodevpurview |
+>| demisto-es | germanywestcentral |  |
+>| Azure_Firewall | eastus |  |
+>| SecAndCompRG | eastus |  |
+>| demisto-sentinel2 | centralus |  |
 

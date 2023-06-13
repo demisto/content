@@ -808,7 +808,7 @@ def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> L
     """
     List all resource groups in the subscription.
     Args:
-        client (KeyVaultClient):  Azure Key Vault API client.
+        client (KeyVaultClient): microsoft client.
         args (Dict[str, Any]): command arguments.
         params (Dict[str, Any]): configuration parameters.
     Returns:

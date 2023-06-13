@@ -6,7 +6,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-API_VERSION = '2021-09-01'
+API_VERSION = '2023-02-01'
 
 
 class AKSClient:
@@ -118,6 +118,20 @@ Microsoft.ContainerService/managedClusters/{resource_name}?',
             timeout=30,
         )
 
+    @logger
+    def ks_subscriptions_list_request(self):
+        return self.ms_client.http_request(
+            method='GET',
+            full_url='https://management.azure.com/subscriptions?api-version=2020-01-01')
+
+    @logger
+    def list_resource_groups_request(self, subscription_id: str | None,
+                                     filter_by_tag: str | None, limit: str | int | None) -> Dict:
+        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+        return self.ms_client.http_request('GET', full_url=full_url,
+                                           params={'$filter': filter_by_tag, '$top': limit,
+                                                   'api-version': '2021-04-01'})
+
 
 def clusters_list(client: AKSClient, params: Dict, args: Dict) -> CommandResults:
     """
@@ -170,6 +184,83 @@ def clusters_addon_update(client: AKSClient, params: Dict, args: Dict) -> str:
         update_args['monitoring_resource_name'] = args.get('monitoring_resource_name')
     client.cluster_addon_update(**update_args)
     return 'The request to update the managed cluster was sent successfully.'
+
+
+def ks_subscriptions_list(client: AKSClient) -> CommandResults:
+    """
+        Gets a list of subscriptions.
+    Args:
+        client: The microsoft client.
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+    res = client.ks_subscriptions_list_request()
+    subscriptions = res.get('value', '[res]')
+
+    return CommandResults(
+        outputs_prefix='AzureKS.Subscription',
+        outputs_key_field='id',
+        outputs=subscriptions,
+        readable_output=tableToMarkdown(
+            'Azure Kubernetes Subscriptions list',
+            subscriptions,
+            ['subscriptionId', 'tenantId', 'displayName', 'state'],
+        ),
+        raw_response=res
+    )
+
+
+def ks_resource_group_list(client: AKSClient, params: Dict, args: Dict) -> List[CommandResults]:
+    """
+    List all resource groups in the subscription.
+    Args:
+        client (AKSClient): AKS client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        List of Command results with raw response, outputs and readable outputs.
+    """
+    tag = args.get('tag')
+    limit = arg_to_number(args.get('limit', 50))
+    # subscription_id can be passed as command argument or as configuration parameter,
+    # if both are passed as arguments, the command argument will be used.
+    subscription_id_list = argToList(get_from_args_or_params(params=params, args=args, key='subscription_id'))
+    filter_by_tag = arg_to_tag(tag) if tag else ''
+
+    command_results_list = []
+    warning_message = ''
+    all_subscriptions_are_wrong: bool = True
+    for subscription_id in subscription_id_list:
+        try:
+            response = client.list_resource_groups_request(subscription_id=subscription_id,
+                                                           filter_by_tag=filter_by_tag, limit=limit)
+            all_subscriptions_are_wrong = False
+            data_from_response = response.get('value', [response])
+
+            readable_output = tableToMarkdown('Resource Groups List',
+                                              data_from_response,
+                                              ['name', 'location', 'tags',
+                                               'properties.provisioningState'
+                                               ],
+                                              removeNull=True, headerTransform=string_to_table_header)
+            command_results_list.append(CommandResults(
+                outputs_prefix='AzureKS.ResourceGroup',
+                outputs_key_field='id',
+                outputs=data_from_response,
+                raw_response=response,
+                readable_output=readable_output,
+            ))
+
+        except Exception as e:
+            # If at least one subscription is correct, we will not return the data of the correct subscriptions,
+            # and a warning message for the wrong subscriptions will be returned as well.
+            warning_message += f'Failed to get resource groups for subscription id "{subscription_id}". Error: {str(e)}\n\n'
+            if all_subscriptions_are_wrong and subscription_id == subscription_id_list[-1]:
+                # if all subscriptions are wrong, we will raise an exception.
+                raise
+
+    return_warning(warning_message) if warning_message else None
+    return command_results_list
 
 
 def start_auth(client: AKSClient) -> CommandResults:
@@ -250,6 +341,10 @@ def main() -> None:
             return_results(clusters_list(client=client, params=params, args=args))
         elif command == 'azure-ks-cluster-addon-update':
             return_results(clusters_addon_update(client=client, params=params, args=args))
+        elif command == 'azure-ks-subscriptions-list':
+            return_results(ks_subscriptions_list(client))
+        elif command == 'azure-ks-resource-group-list':
+            return_results(ks_resource_group_list(client=client, params=params, args=args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
