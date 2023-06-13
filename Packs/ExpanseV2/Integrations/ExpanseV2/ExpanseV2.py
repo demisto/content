@@ -244,7 +244,7 @@ class Client(BaseClient):
             'cloudManagementStatus': cloud_management_status if cloud_management_status else None,
             'sort': sort
         }
-
+        demisto.debug(f"ExpanseV2 - Query sent to the server: {params}")
         return self._paginate(
             method='GET', url_suffix="/v1/issues/issues", params=params
         )
@@ -1406,7 +1406,7 @@ def fetch_incidents(client: Client, max_incidents: int,
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     :rtype: ``Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]``
     """
-
+    demisto.debug(f"ExpanseV2 - Last run: {json.dumps(last_run)}")
     last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         last_fetch = cast(int, first_fetch)
@@ -1449,7 +1449,6 @@ def fetch_incidents(client: Client, max_incidents: int,
         issue_type=issue_types, cloud_management_status=_cloud_management_status,
         created_after=created_after, sort='created'
     )
-
     broken = False
     issues: List = []
     skip = cast(str, last_issue_id)
@@ -1470,7 +1469,8 @@ def fetch_incidents(client: Client, max_incidents: int,
             issues.append(i)
         if len(issues) == max_incidents:
             break
-
+    demisto.debug(f"ExpanseV2 - Number of incidents before filtering: {len(issues)}")
+    skip_incidents = 0
     for issue in issues:
         ml_feature_list: List[str] = []
 
@@ -1480,6 +1480,9 @@ def fetch_incidents(client: Client, max_incidents: int,
 
         if last_fetch:
             if incident_created_time < last_fetch:
+                skip_incidents += 1
+                demisto.debug(f"ExpanseV2 - Skipping incident with id={issue.get('id')} and date={incident_created_time} "
+                              "because its creation time is smaller than the last fetch.")
                 continue
         incident_name = issue.get('headline') if 'headline' in issue else issue.get('id')
 
@@ -1531,6 +1534,11 @@ def fetch_incidents(client: Client, max_incidents: int,
     next_run = {
         'last_fetch': latest_created_time,
         'last_issue_id': latest_issue_id if latest_issue_id else last_issue_id}
+
+    demisto.debug(f"ExpanseV2 - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"ExpanseV2 - Number of incidents skipped: {skip_incidents}")
+    demisto.debug(f"ExpanseV2 - Next run after incidents fetching: : {json.dumps(next_run)}")
+
     return next_run, incidents
 
 
