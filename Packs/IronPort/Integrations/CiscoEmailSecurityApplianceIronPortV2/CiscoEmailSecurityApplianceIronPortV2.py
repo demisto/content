@@ -39,21 +39,20 @@ class Client(BaseClient):
         self.password = password
         self.handle_request_headers()
 
-    def handle_request_headers(self):
+    def handle_request_headers(self, force_retrieve_jwt: bool = False):
         """Retrieve and save to integration context JWT token for authorized client class API requests."""
         integration_context = get_integration_context()
         jwt_token = integration_context.get("jwt_token")
-        jwt_token_issued_time = integration_context.get("jwt_token_issued_time")
-        if jwt_token and jwt_token_issued_time >= datetime.timestamp(
-            datetime.now() - timedelta(minutes=JWT_TOKEN_EXPIRATION_PERIOD)
-        ):
-            self._headers["jwtToken"] = jwt_token
-        else:
+        jwt_token_issued_time = integration_context.get("jwt_token_issued_time", 0.0)
+        current_time = datetime.now().timestamp()
+        next_refresh = (datetime.fromtimestamp(jwt_token_issued_time)
+                        + timedelta(minutes=JWT_TOKEN_EXPIRATION_PERIOD - 0.2)).timestamp()
+        if force_retrieve_jwt or not jwt_token or current_time > next_refresh:
             jwt_token = self.retrieve_jwt_token()
             set_integration_context(
-                {"jwt_token": jwt_token, "jwt_token_issued_time": time.time()}
+                {"jwt_token": jwt_token, "jwt_token_issued_time": current_time}
             )
-            self._headers["jwtToken"] = jwt_token
+        self._headers["jwtToken"] = jwt_token
 
     def retrieve_jwt_token(self) -> str:
         """
@@ -69,7 +68,7 @@ class Client(BaseClient):
             }
         }
         try:
-            response = self._http_request("POST", "login", json_data=data)
+            response = super()._http_request("POST", "login", json_data=data)
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
@@ -78,6 +77,15 @@ class Client(BaseClient):
                     "Authorization Error: make sure username and password are set correctly."
                 )
             raise e
+
+    def _http_request(self, *args, **kwargs):
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as e:
+            if e.res.status_code == 401:
+                self._session.cookies.clear()
+                self.handle_request_headers(force_retrieve_jwt=True)
+                return super()._http_request(*args, **kwargs)
 
     def spam_quarantine_message_search_request(
         self,
