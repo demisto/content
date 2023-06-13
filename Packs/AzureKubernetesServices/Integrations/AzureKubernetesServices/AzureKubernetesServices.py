@@ -58,7 +58,7 @@ class AKSClient:
     def clusters_list_request(self, subscription_id: str) -> Dict:
         return self.ms_client.http_request(
             method='GET',
-            full_url='https://management.azure.com/subscriptions/{subscription_id}/providers/\
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/providers/\
 Microsoft.ContainerService/managedClusters?',
             params={
                 'api-version': API_VERSION,
@@ -79,6 +79,8 @@ Microsoft.ContainerService/managedClusters?',
     @logger
     def cluster_addon_update(self,
                              resource_name: str,
+                             resource_group_name: str,
+                             subscription_id: str,
                              location: str,
                              http_application_routing_enabled: Optional[bool] = None,
                              monitoring_agent_enabled: Optional[bool] = None,
@@ -102,8 +104,8 @@ Microsoft.ContainerService/managedClusters?',
             }
         return self.ms_client.http_request(
             'PUT',
-            url_suffix=f'resourceGroups/{self.resource_group_name}/providers/Microsoft.ContainerService/managedClusters'
-                       f'/{resource_name}',
+            full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/\
+Microsoft.ContainerService/managedClusters/{resource_name}?',
             params={
                 'api-version': API_VERSION,
             },
@@ -154,9 +156,11 @@ def clusters_list(client: AKSClient, params: Dict, args: Dict) -> CommandResults
     )
 
 
-def clusters_addon_update(client: AKSClient, args: Dict) -> str:
+def clusters_addon_update(client: AKSClient, params: Dict, args: Dict) -> str:
     update_args = {
         'resource_name': args.get('resource_name'),
+        'resource_group_name': get_from_args_or_params(params=params, args=args, key='resource_group_name'),
+        'subscription_id': get_from_args_or_params(params=params, args=args, key='subscription_id'),
         'location': args.get('location'),
     }
     if args.get('http_application_routing_enabled'):
@@ -245,7 +249,7 @@ def main() -> None:
         elif command == 'azure-ks-clusters-list':
             return_results(clusters_list(client=client, params=params, args=args))
         elif command == 'azure-ks-cluster-addon-update':
-            return_results(clusters_addon_update(client, args))
+            return_results(clusters_addon_update(client=client, params=params, args=args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:

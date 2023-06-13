@@ -119,6 +119,11 @@ script:
     description: Gets a list of managed clusters in the specified subscription.
     execution: false
     name: azure-ks-clusters-list
+    arguments:
+    - default: false
+      isArray: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      name: subscription_id
     outputs:
     - contextPath: AzureKS.ManagedCluster.id
       description: Resource ID.
@@ -217,16 +222,22 @@ script:
       description: The subscription DNS zone name.
       type: String
   - arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
     - default: false
       description: The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.
       isArray: false
       name: resource_name
       required: true
       secret: false
-    - default: false
-      isArray: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
-      name: subscription_id
     - auto: PREDEFINED
       default: false
       description: Resource location, Can be retrieved using the azure-ks-clusters-list command.
