@@ -894,7 +894,7 @@ def zoom_list_user_channels_command(client, **args) -> CommandResults:
     client = client
     page_size = arg_to_number(args.get('page_size', 50))
     channel_id = args.get('channel_id')
-    user_id = args.get('user_id', None)
+    user_id = args.get('user_id', '')
     next_page_token = args.get('next_page_token')
     limit = arg_to_number(args.get('limit'))
     page_number = arg_to_number(args.get('page_number', 1))
@@ -1138,23 +1138,19 @@ def zoom_send_file_command(client, **args) -> CommandResults:
     )
 
 
-def parse_markdown_message(markdown_message: str, at_contact: str = None):
-    formatted_message = markdown_message
-    formats = []
-    at_items = []
-    rich_text = []
+def process_links(formatted_message, formats):
+    """
+    Processes markdown links in the formatted message. 
+    for example- [my link](https://****.com)
+    Args:
+        formatted_message (str): The formatted message to process.
 
-    # add_link_regex = r"\[(.*?)\]\((http[s]?://.*?)\)"
-
+    Returns:
+        str: The formatted message with links processed.
+    """
     add_link_regex = r'\[([^[\]]*?)\]\((http[s]?://.*?)\)'
-    paragraph_regex = r"(#{1,4})\s(.*?)$"  # Regex to match Markdown headings
-    font_size_regex = "\\[(s|m|l)\\]\\((.*?)\\)"
-    font_color_regex = "\\[#([A-Fa-f0-9]{6})\\]\\((.*?)\\)"
-    bg_color_regex = r"\[#([A-Fa-f0-9]{6})bg\]\((.*?)\)"
-    mention_regex = r"(@\w+)"
-    left_indent_regex = r"(>{1,5})\s(.*?)$"
-
     matches = re.findall(add_link_regex, formatted_message)
+
     for match in matches:
         link_text, link_url = match
         add_link_range = {
@@ -1165,6 +1161,23 @@ def parse_markdown_message(markdown_message: str, at_contact: str = None):
         formats.append(add_link_range)
         # Replace Markdown syntax with plain text
         formatted_message = formatted_message.replace("[" + link_text + "](" + link_url + ")", link_text)
+
+    return formatted_message, formats
+
+
+def process_mentions(formatted_message, formats, at_contact=None):
+    """
+    Processes mentions in the markdown message you can provide just one mention on each message.
+    for example-'@all'
+
+    Args:
+        formatted_message (str): The markdown message to process.
+        at_contact (str): The contact to mention.
+
+    Returns:
+        str: The formatted message without the mention markdown.
+    """
+    mention_regex = r"(@\w+)"
 
     matches = re.findall(mention_regex, formatted_message)[:1]
     for match in matches:
@@ -1182,6 +1195,22 @@ def parse_markdown_message(markdown_message: str, at_contact: str = None):
                 "at_type": 1,
             }
             formats.append(mention_range)
+    return formatted_message, formats
+
+
+def process_background_colors(formatted_message, formats):
+    """
+    Processes background colors in the markdown message.
+    for example- [#<rgb>bg](message that will be with background)
+
+    Args:
+        formatted_message (str): The markdown message to process.
+
+    Returns:
+        str: The formatted message without background color markdown.
+    """
+    bg_color_regex = r"\[#([A-Fa-f0-9]{6})bg\]\((.*?)\)"
+
     matches = re.findall(bg_color_regex, formatted_message)
     for match in matches:
         bg_color, text = match
@@ -1194,7 +1223,22 @@ def parse_markdown_message(markdown_message: str, at_contact: str = None):
 
         # Replace Markdown syntax with plain text
         formatted_message = formatted_message.replace("[#" + bg_color + "bg](" + text + ")", text)
+    return formatted_message, formats
 
+
+def process_font_sizes(formatted_message, formats):
+    """
+    Processes font sizes in the markdown message.
+    use s|m|l for text size
+    for example- [s](message)
+
+    Args:
+        formatted_message (str): The markdown message to process.
+
+    Returns:
+        str: The formatted message without fontsize markdown.
+    """
+    font_size_regex = "\\[(s|m|l)\\]\\((.*?)\\)"
     matches = re.findall(font_size_regex, formatted_message)
     for match in matches:
         size, text = match
@@ -1207,7 +1251,20 @@ def parse_markdown_message(markdown_message: str, at_contact: str = None):
 
         # Replace Markdown syntax with plain text
         formatted_message = formatted_message.replace("[" + size + "](" + text + ")", text)
+    return formatted_message, formats
 
+
+def process_font_colors(formatted_message, formats):
+    """
+    Processes font colors in the formatted message.
+
+    Args:
+        formatted_message (str): The formatted message to process.
+
+    Returns:
+        str: The formatted message with font colors processed.
+    """
+    font_color_regex = "\\[#([A-Fa-f0-9]{6})\\]\\((.*?)\\)"
     matches = re.findall(font_color_regex, formatted_message)
     for match in matches:
         color, text = match
@@ -1220,6 +1277,25 @@ def parse_markdown_message(markdown_message: str, at_contact: str = None):
 
         # Replace Markdown syntax with plain text
         formatted_message = formatted_message.replace("[#" + color + "](" + text + ")", text)
+    return formatted_message, formats
+
+
+def process_left_indent_and_paragraphs(formatted_message, formats):
+    """
+    Processes left indents and paragraphs in the markdown message.
+    for left indents use >,>>,>>> 
+    for paragraph usr #,##,### (up to 3)
+    this type of markdowns effect the whole line.
+
+    Args:
+        formatted_message (str): The formatted message to process.
+
+    Returns:
+        tuple: A tuple containing the formatted message, rich text formatting data, and @mention items.
+    """
+
+    left_indent_regex = r"(>{1,4})\s(.*?)$"
+    paragraph_regex = r"(#{1,4})\s(.*?)$"
     lines = formatted_message.split("\n")
     for i, line in enumerate(lines):
         match = re.findall(left_indent_regex, line)
@@ -1243,10 +1319,34 @@ def parse_markdown_message(markdown_message: str, at_contact: str = None):
                 "format_attr": f"h{len(heading_level)}",
             }
             formats.append(paragraph_range)
-            # Replace Markdown syntax with plain text
             lines[i] = heading_text
     formatted_message = "\n".join(lines)
+    return formatted_message, formats
 
+
+def parse_markdown_message(markdown_message: str, at_contact: str = None):
+    """
+    Parses a Markdown message and extracts formatting information.
+
+    Args:
+        markdown_message (str): The Markdown message to parse.
+        at_contact (str, optional): The contact to mention. Defaults to None.
+
+    Returns:
+        tuple: A tuple containing the formatted message, rich text formatting data, and @mention items.
+    """
+
+    formats: List[dict] = []
+    at_items = []
+    rich_text = []
+    formatted_message, formats = process_links(markdown_message, formats)
+    formatted_message, formats = process_mentions(formatted_message, formats, at_contact)
+    formatted_message, formats = process_background_colors(formatted_message, formats)
+    formatted_message, formats = process_font_sizes(formatted_message, formats)
+    formatted_message, formats = process_font_colors(formatted_message, formats)
+    formatted_message, formats = process_left_indent_and_paragraphs(formatted_message, formats)
+
+    # extract the start,end positions
     for i in range(len(formats)):
         t = formats[i]['text']
         start_position = formatted_message.find(t)
@@ -1270,20 +1370,20 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         Send  Zoom chat message
     """
     client = client
-    at_contact = args.get('at_contact', None)
+    at_contact = args.get('at_contact')
     at_type = AT_TYPE.get(args.get('at_type', None))
     user_id = args.get('user_id')
-    end_position = arg_to_number(args.get('end_position'), None)
-    start_position = arg_to_number(args.get('start_position', None))
-    rt_start_position = arg_to_number(args.get('rt_start_position', None))
-    rt_end_position = arg_to_number(args.get('rt_end_position', None))
-    format_type = args.get('format_type', None)
-    format_attr = args.get('format_attr', None)
-    message = args.get('message', None)
+    end_position = arg_to_number(args.get('end_position'))
+    start_position = arg_to_number(args.get('start_position'))
+    rt_start_position = arg_to_number(args.get('rt_start_position'))
+    rt_end_position = arg_to_number(args.get('rt_end_position'))
+    format_type = args.get('format_type')
+    format_attr = args.get('format_attr')
+    message = args.get('message', '')
     entry_ids = argToList(args.get('entry_ids', []))
-    reply_main_message_id = args.get('reply_main_message_id', None)
-    to_channel = args.get('to_channel', None)
-    to_contact = args.get('to_contact', None)
+    reply_main_message_id = args.get('reply_main_message_id')
+    to_channel = args.get('to_channel')
+    to_contact = args.get('to_contact')
     is_markdown = args.get('is_markdown', False)
 
     if user_id and re.match(emailRegex, user_id):
@@ -1350,7 +1450,7 @@ def zoom_delete_message_command(client, **args) -> CommandResults:
     """
     client = client
     message_id = args.get('message_id')
-    to_contact = args.get('to_contact', None)
+    to_contact = args.get('to_contact',)
     user_id = args.get('user_id')
     to_channel = args.get('to_channel')
 
@@ -1376,7 +1476,7 @@ def zoom_update_message_command(client, **args) -> CommandResults:
     """
     client = client
     message_id = args.get('message_id')
-    to_contact = args.get('to_contact', None)
+    to_contact = args.get('to_contact')
     user_id = args.get('user_id')
     to_channel = args.get('to_channel')
     message = args.get('message')
