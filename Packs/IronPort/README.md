@@ -12,7 +12,7 @@ The Cisco Email Security Appliance is an email security gateway product. It is d
 - Reporting - get Cisco SMA's statistics reports.
 - Fetch quarantine messages as incidents.
 
-## Creating a Log Subscription in the GUI
+## Creating a Log Subscription in the Cisco ESA GUI
 
 1. Choose System Administration > Log Subscriptions.
 2. Click Add Log Subscription.
