@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://192.168.100.55:4712
-  display: Server URL (e.g. https://192.168.100.55:4712)
+  display: Server URL (e.g., https://192.168.100.55:4712)
   name: url
   required: true
   type: 0
@@ -19,7 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Manages the block and allow lists within Skyhigh Secure Web Gateway
+description: Manages the block and allow lists within Skyhigh Secure Web Gateway.
 display: 'Skyhigh Secure Web Gateway (On Prem)'
 name: Skyhigh Secure Web Gateway (On Prem)
 script:
@@ -39,58 +39,58 @@ script:
       - string
       description: Filter to be applied on list type.
       name: type
-    description: Get all available lists
+    description: Get all available lists.
     execution: false
     name: swg-get-available-lists
     outputs:
     - contextPath: SWG.Lists.ID
-      description: List ID
+      description: List ID.
       type: Unknown
     - contextPath: SWG.Lists.Title
-      description: List Title
+      description: List title.
       type: Unknown
     - contextPath: SWG.Lists.Type
-      description: List Type
+      description: List type.
       type: Unknown
   - arguments:
-    - description: List ID
+    - description: List ID.
       name: list_id
       required: true
       default: true
-    description: Retrieve a specific list
+    description: Retrieve a specific list.
     execution: false
     name: swg-get-list
     outputs:
     - contextPath: SWG.ListEntries.ListID
-      description: List ID of entry's list
+      description: List ID of the entry's list.
       type: Unknown
     - contextPath: SWG.ListEntries.Name
-      description: Entry name
+      description: Entry name.
       type: Unknown
     - contextPath: SWG.ListEntries.Description
-      description: Entry Description
+      description: Entry description.
       type: Unknown
     - contextPath: SWG.ListEntries.Position
-      description: Entry position in list
+      description: Entry position in the list.
       type: Unknown
     - contextPath: SWG.List.ID
-      description: List ID
+      description: List ID.
       type: Unknown
     - contextPath: SWG.List.Title
-      description: List Title
+      description: List title.
       type: Unknown
     - contextPath: SWG.List.Type
-      description: List Type
+      description: List type.
       type: Unknown
     - contextPath: SWG.List.Description
-      description: List Description
+      description: List description.
       type: Unknown
   - arguments:
-    - description: List ID
+    - description: List ID.
       name: list_id
       required: true
       default: true
-    - description: Entry Position in table
+    - description: Entry position in the table.
       name: entry_pos
       required: true
     description: Retrieve a specific entry from a list.
@@ -98,29 +98,29 @@ script:
     name: swg-get-list-entry
     outputs:
     - contextPath: SWG.ListEntries.ListID
-      description: List ID of entry's list
+      description: List ID of the entry's list.
       type: Unknown
     - contextPath: SWG.ListEntries.Name
-      description: Entry Name
+      description: Entry name.
       type: Unknown
     - contextPath: SWG.ListEntries.Position
-      description: Entry position in list
+      description: Entry position in the list.
       type: Unknown
     - contextPath: SWG.ListEntries.Description
-      description: Entry Description
+      description: Entry description.
       type: Unknown
   - arguments:
-    - description: List ID
+    - description: List ID.
       name: list_id
       required: true
       default: true
-    - description: Entry Position in table
+    - description: Entry position in the table.
       name: entry_pos
       required: true
-    - description: Entry description
+    - description: Entry description.
       name: description
       required: false
-    - description: Entry Name
+    - description: Entry name.
       name: name
       required: true
     description: Insert a new entry to a list.
@@ -128,34 +128,34 @@ script:
     name: swg-insert-entry
     outputs:
     - contextPath: SWG.ListEntries.ListID
-      description: List ID of entry's list
+      description: List ID of the entry's list.
       type: Unknown
     - contextPath: SWG.ListEntries.Name
-      description: Entry Name
+      description: Entry name.
       type: Unknown
     - contextPath: SWG.ListEntries.Position
-      description: Entry position in list
+      description: Entry position in the list.
       type: Unknown
     - contextPath: SWG.ListEntries.Description
-      description: Entry Description
+      description: Entry description.
       type: Unknown
   - arguments:
-    - description: List ID
+    - description: List ID.
       name: list_id
       required: true
       default: true
-    - description: Entry Position in table
+    - description: Entry position in the table.
       name: entry_pos
       required: true
     description: Insert a new entry to a list.
     execution: false
     name: swg-delete-entry
   - arguments:
-    - description: List ID
+    - description: List ID.
       name: list_id
       required: true
       default: true
-    - description: XML configuration to write to the list
+    - description: XML configuration to write to the list.
       name: config
       required: true
     description: Overwrites the complete XML config of a list.
@@ -163,16 +163,16 @@ script:
     name: swg-modify-list
     outputs:
     - contextPath: SWG.List.ID
-      description: List ID
+      description: List ID.
       type: Unknown
     - contextPath: SWG.List.Title
-      description: List Title
+      description: List title.
       type: Unknown
     - contextPath: SWG.List.Type
-      description: List Type
+      description: List type.
       type: Unknown
     - contextPath: SWG.List.Description
-      description: List Description
+      description: List description.
       type: Unknown
   - arguments:
     - description: Name for the list to be created.
@@ -192,42 +192,42 @@ script:
       description: Type for the list to be created.
       name: type
       required: true
-    description: Create a new list
+    description: Create a new list.
     execution: false
     name: swg-create-list
     outputs:
     - contextPath: SWG.List.ID
-      description: List ID
+      description: List ID.
       type: Unknown
     - contextPath: SWG.List.Title
-      description: List Title
+      description: List title.
       type: Unknown
     - contextPath: SWG.List.Type
-      description: List Type
+      description: List type.
       type: Unknown
     - contextPath: SWG.List.Description
-      description: List Description
+      description: List description.
       type: Unknown
   - arguments:
-    - description: List ID
+    - description: List ID.
       name: list_id
       default: true
       required: true
-    description: Delete a list
+    description: Delete a list.
     execution: false
     name: swg-delete-list
     outputs:
     - contextPath: SWG.List.ID
-      description: List ID
+      description: List ID.
       type: Unknown
     - contextPath: SWG.List.Title
-      description: List Title
+      description: List title.
       type: Unknown
     - contextPath: SWG.List.Type
-      description: List Type
+      description: List type.
       type: Unknown
     - contextPath: SWG.List.Description
-      description: List Description
+      description: List description.
       type: Unknown
   isfetch: false
   runonce: false

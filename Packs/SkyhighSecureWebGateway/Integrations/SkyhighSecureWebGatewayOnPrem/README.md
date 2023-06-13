@@ -1,4 +1,4 @@
-Manages the block and allow lists within Skyhigh Secure Web Gateway
+Manages the block and allow lists within Skyhigh Secure Web Gateway.
 This integration was integrated and tested with version 11.2.9 of Skyhigh Secure Web Gateway (On Prem)
 
 ## Configure Skyhigh Secure Web Gateway (On Prem) on Cortex XSOAR
@@ -24,7 +24,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### swg-get-available-lists
 
 ***
-Get all available lists
+Get all available lists.
 
 #### Base Command
 
@@ -34,16 +34,16 @@ Get all available lists
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filter to be applied on list name. | Optional |
-| type | Filter to be applied on list type. | Optional | 
+| name | Filter to be applied on a list name. | Optional |
+| type | Filter to be applied on a list type. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.Lists.ID | Unknown | List ID | 
-| SWG.Lists.Title | Unknown | List Title | 
-| SWG.Lists.Type | Unknown | List Type | 
+| SWG.Lists.ID | Unknown | List ID. |
+| SWG.Lists.Title | Unknown | List title. | 
+| SWG.Lists.Type | Unknown | List type. | 
 
 #### Command example
 ```!swg-get-available-lists name=blocklist```
@@ -73,7 +73,7 @@ Get all available lists
 ### swg-get-list
 
 ***
-Retrieve a specific list
+Retrieve a specific list.
 
 #### Base Command
 
@@ -89,14 +89,14 @@ Retrieve a specific list
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.ListEntries.ListID | Unknown | List ID of entry's list | 
-| SWG.ListEntries.Name | Unknown | Entry name | 
-| SWG.ListEntries.Description | Unknown | Entry Description | 
-| SWG.ListEntries.Position | Unknown | Entry position in list | 
-| SWG.List.ID | Unknown | List ID | 
-| SWG.List.Title | Unknown | List Title | 
+| SWG.ListEntries.ListID | Unknown | List ID of the entry's list. |
+| SWG.ListEntries.Name | Unknown | Entry name. | 
+| SWG.ListEntries.Description | Unknown | Entry description. | 
+| SWG.ListEntries.Position | Unknown | Entry position in list. | 
+| SWG.List.ID | Unknown | List ID. | 
+| SWG.List.Title | Unknown | List title. | 
 | SWG.List.Type | Unknown | List Type | 
-| SWG.List.Description | Unknown | List Description | 
+| SWG.List.Description | Unknown | List description. | 
 
 #### Command example
 ```!swg-get-list list_id=com.scur.type.regex.386```
@@ -154,16 +154,16 @@ Retrieve a specific entry from a list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_id | List ID. | Required | 
-| entry_pos | Entry Position in table. | Required | 
+| entry_pos | Entry position in the table. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.ListEntries.ListID | Unknown | List ID of entry's list | 
-| SWG.ListEntries.Name | Unknown | Entry Name | 
-| SWG.ListEntries.Position | Unknown | Entry position in list | 
-| SWG.ListEntries.Description | Unknown | Entry Description | 
+| SWG.ListEntries.ListID | Unknown | List ID of the entry's list. | 
+| SWG.ListEntries.Name | Unknown | Entry name. | 
+| SWG.ListEntries.Position | Unknown | Entry position in the list. | 
+| SWG.ListEntries.Description | Unknown | Entry description. | 
 
 #### Command example
 ```!swg-get-list-entry list_id=com.scur.type.regex.386 entry_pos=0```
@@ -202,18 +202,18 @@ Insert a new entry to a list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_id | List ID. | Required | 
-| entry_pos | Entry Position in table. | Required | 
+| entry_pos | Entry position in the table. | Required | 
 | description | Entry description. | Optional | 
-| name | Entry Name. | Required | 
+| name | Entry name. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.ListEntries.ListID | Unknown | List ID of entry's list | 
-| SWG.ListEntries.Name | Unknown | Entry Name | 
-| SWG.ListEntries.Position | Unknown | Entry position in list | 
-| SWG.ListEntries.Description | Unknown | Entry Description | 
+| SWG.ListEntries.ListID | Unknown | List ID of the entry's list. | 
+| SWG.ListEntries.Name | Unknown | Entry name. | 
+| SWG.ListEntries.Position | Unknown | Entry position in the list. | 
+| SWG.ListEntries.Description | Unknown | Entry description. | 
 
 #### Command example
 ```!swg-insert-entry list_id=com.scur.type.regex.386 entry_pos=0 name="http*://evil.corp/*" description="ticket #1: This is an evil domain"```
@@ -253,7 +253,7 @@ Insert a new entry to a list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_id | List ID. | Required | 
-| entry_pos | Entry Position in table. | Required | 
+| entry_pos | Entry position in the table. | Required | 
 
 #### Context Output
 
@@ -271,7 +271,7 @@ There is no context output for this command.
 ### swg-modify-list
 
 ***
-Overwrites the complete XML config of a list.
+Overwrites the complete XML configuration of a list.
 
 #### Base Command
 
@@ -288,10 +288,10 @@ Overwrites the complete XML config of a list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.List.ID | Unknown | List ID | 
-| SWG.List.Title | Unknown | List Title | 
-| SWG.List.Type | Unknown | List Type | 
-| SWG.List.Description | Unknown | List Description | 
+| SWG.List.ID | Unknown | List ID. | 
+| SWG.List.Title | Unknown | List title. |
+| SWG.List.Type | Unknown | List type. | 
+| SWG.List.Description | Unknown | List description. | 
 
 #### Command example
 ```!swg-modify-list list_id=com.scur.type.regex.386 config=`<list version="1.0.3.46" mwg-version="11.2.9-44482" name="blocklist" id="com.scur.type.regex.386" typeId="com.scur.type.regex" classifier="Other" systemList="false" structuralList="false" defaultRights="2"><description>blocklist</description><content><listEntry><entry>http*://evil.corp/*</entry><description>ticket #1: This is an evil domain</description></listEntry></content></list>` ```
@@ -320,7 +320,7 @@ Overwrites the complete XML config of a list.
 ### swg-create-list
 
 ***
-Create a new list
+Create a new list.
 
 #### Base Command
 
@@ -337,10 +337,10 @@ Create a new list
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.List.ID | Unknown | List ID | 
-| SWG.List.Title | Unknown | List Title | 
-| SWG.List.Type | Unknown | List Type | 
-| SWG.List.Description | Unknown | List Description | 
+| SWG.List.ID | Unknown | List ID. | 
+| SWG.List.Title | Unknown | List title. |  
+| SWG.List.Type | Unknown | List type. |
+| SWG.List.Description | Unknown | List description. |  
 
 #### Command example
 ```!swg-create-list name="blocklist" type=regex```
@@ -369,7 +369,7 @@ Create a new list
 ### swg-delete-list
 
 ***
-Delete a list
+Delete a list.
 
 #### Base Command
 
@@ -385,10 +385,10 @@ Delete a list
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.List.ID | Unknown | List ID | 
-| SWG.List.Title | Unknown | List Title | 
-| SWG.List.Type | Unknown | List Type | 
-| SWG.List.Description | Unknown | List Description | 
+| SWG.List.ID | Unknown | List ID. |  
+| SWG.List.Title | Unknown | List title. |
+| SWG.List.Type | Unknown | List type. | 
+| SWG.List.Description | Unknown | List description. | 
 
 #### Command example
 ```!swg-delete-list list_id=com.scur.type.regex.460```
