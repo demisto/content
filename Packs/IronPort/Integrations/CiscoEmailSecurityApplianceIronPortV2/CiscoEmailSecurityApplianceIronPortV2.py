@@ -75,7 +75,7 @@ class Client(BaseClient):
             if e.res.status_code == 401:
                 raise Exception(
                     "Authorization Error: make sure username and password are set correctly."
-                )
+                ) from e
             raise e
 
     def _http_request(self, *args, **kwargs):
@@ -86,6 +86,7 @@ class Client(BaseClient):
                 self._session.cookies.clear()
                 self.handle_request_headers(force_retrieve_jwt=True)
                 return super()._http_request(*args, **kwargs)
+            raise e
 
     def spam_quarantine_message_search_request(
         self,
