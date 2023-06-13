@@ -79,10 +79,12 @@ filter _raw_log not contains "|" AND _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
 | alter
     log_format_check = if(_raw_log ~= "\[\d+\/\S+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]", arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+(\S+\s+\S+\s+[\s\S]+)"), ""), arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+(\S+\s+\S+[\s\S]+)"), ""))
 | alter
-    extract_event_log = arraystring(regextract(log_format_check, "^([^\t]+)\t[^\t]+\t.*"), ""),
-    extract_event_group = arraystring(regextract(log_format_check, "^[^\t]+\t([^\t]+)\t.*"), ""),
-    extract_event_details = arraystring(regextract(log_format_check, "^[^\t]+\t[^\t]+\t(.*)"), ""),
+    extract_event_log = arraystring(regextract(log_format_check, "^(\S+)\s+\S+\s\S+\=.*"), ""),
+    extract_event_group_details = arraystring(regextract(log_format_check, "^\S+\s+([\S\s]+\s\b\S+)"), ""),
     extract_agentapp_name = arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+(\S+)[\s\[]\d+[\]\:\s\-]+"), "")
+| alter
+    extract_event_group = arraystring(regextract(extract_event_group_details, "^([^=]+)\s.*"), ""),
+    extract_event_details = arraystring(regextract(extract_event_group_details, "^[^=]+\s(.*)"), "")
 | alter
     details_with_pipe = replex(extract_event_details, "\s{3,}", "| ")
 | alter
