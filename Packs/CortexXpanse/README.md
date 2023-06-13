@@ -24,5 +24,5 @@ This playbook handles ASM alerts by enriching alert information with Xpanse serv
 ![Xpanse - Alert Self-Enrichment](https://raw.githubusercontent.com/demisto/content/5e6599c239629219147885acd54cc2cbde147034/Packs/CortexXpanse/doc_files/Xpanse_-_Alert_Self-Enrichment.png)
 
 ## Expanse - NMap - Detect Service
-Playbook that confirms the observability of a risk by running a quick port scan using NMap.
+This playbook confirms the observability of a risk by running a quick port scan using NMap.
 ![Xpanse - NMap - Detect Service](https://raw.githubusercontent.com/demisto/content/5e6599c239629219147885acd54cc2cbde147034/Packs/CortexXpanse/doc_files/Xpanse_-_NMap_-_Detect_Service.png)
