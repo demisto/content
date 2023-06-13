@@ -15,7 +15,7 @@ For forwarding Event logs:
 
 Setup for forwarding requests logging per Virtual Server (VS):
 1. Open the **Services** tab, Under **Virtual Servers**, select a VS.
-2. Press on the **Request Logging** section for the relevant VS.
+2. Click the **Request Logging** section for the relevant VS.
 3. Under **Remote Request Logging**, make sure to preform the following;
  3.1. Mark the checkbox for **syslog!enabled** as **Yes**.
  3.2. At the **syslog!ipendpoint** section, fill the remote IP and Port of your syslog collector.
