@@ -7,7 +7,6 @@ import os
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from json import JSONDecodeError
 from pathlib import Path
 from threading import Lock
 from time import sleep
@@ -33,7 +32,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
                                      r'+\.zip$')
 SUCCESS_FLAG = True
-INSTALL_MODELING_RULE_ERROR_CODE = 101704
+WLM_TASK_FAILED_ERROR_CODE = 101704
 
 
 def is_pack_deprecated(pack_path: str) -> bool:
@@ -235,14 +234,14 @@ def find_malformed_pack_id(body: str) -> List:
     """
     malformed_ids = []
     if body:
-        with contextlib.suppress(JSONDecodeError):
-            malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
+        with contextlib.suppress(json.JSONDecodeError):
             response_info = json.loads(body)
             if error_info := response_info.get('error'):
                 errors_info = [error_info]
             else:
                 # the errors are returned as a list of error
                 errors_info = response_info.get('errors', [])
+            malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
             for error in errors_info:
                 if 'pack id: ' in error:
                     malformed_ids.extend(error.split('pack id: ')[1].replace(']', '').replace('[', '').replace(
@@ -312,7 +311,7 @@ def install_packs_private(client: demisto_client,
 
 
 def get_error_ids(body: str) -> set[str]:
-    with contextlib.suppress(JSONDecodeError):
+    with contextlib.suppress(json.JSONDecodeError):
         response_info = json.loads(body)
         return {error["id"] for error in response_info.get("errors", [])}
     return set()
@@ -323,7 +322,7 @@ def install_packs(client: demisto_client,
                   packs_to_install: list,
                   request_timeout: int = 3600,
                   attempts_count: int = 5,
-                  sleep_interval: int = 60
+                  sleep_interval: int = 60,
                   ):
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
@@ -376,9 +375,10 @@ def install_packs(client: demisto_client,
                     logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
                     packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
 
-                if (error_ids := get_error_ids(ex.body)) and INSTALL_MODELING_RULE_ERROR_CODE in error_ids:
+                if (error_ids := get_error_ids(ex.body)) and WLM_TASK_FAILED_ERROR_CODE in error_ids:
                     # If we got this error code, it means that the modeling rules are not valid, exiting install flow.
-                    raise Exception(f"Test modeling rules for packs {packs_to_install} are not valid") from ex
+                    raise Exception(f"Got [{WLM_TASK_FAILED_ERROR_CODE}] error code - Modeling rules and Dataset validations "
+                                    f"failed. Please look at GCP logs to understand why it failed.") from ex
 
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     if 'timeout awaiting response' in ex.body:
