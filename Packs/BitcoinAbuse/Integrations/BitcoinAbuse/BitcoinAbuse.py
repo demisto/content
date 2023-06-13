@@ -339,7 +339,9 @@ def main() -> None:
 
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
 
-    api_key = params.get('api_key', '')
+    api_key = params.get('credentials_api_key', {}).get('password') or params.get('api_key', '')
+    if not api_key:
+        raise DemistoException('API Key must be provided.')
     insecure = params.get('insecure', False)
     proxy = params.get('proxy', False)
     feed_tags = argToList(params.get('feedTags'))
