@@ -231,7 +231,7 @@ tasks:
       id: f4efa98a-0b7f-4ef3-8fdc-95e71d706276
       version: -1
       name: AWS - Enrichment
-      description: Given the IP address this playbook enriches EC2 and IAM information.
+      description: Given the IP address, this playbook enriches EC2 and IAM information.
       playbookName: AWS - Enrichment
       type: playbook
       iscommand: false
