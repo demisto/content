@@ -199,10 +199,10 @@ Gets a list of managed clusters in the specified subscription.
 {
     "AzureKS": {
         "ManagedCluster": {
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
+            "id": "/subscriptions/00000000/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
             "identity": {
-                "principalId": "33575493-486b-4146-89da-fc5fce26968c",
-                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+                "principalId": "000000000000000000",
+                "tenantId": "000000000000000",
                 "type": "SystemAssigned"
             },
             "location": "westus",
@@ -215,18 +215,18 @@ Gets a list of managed clusters in the specified subscription.
                     },
                     "httpApplicationRouting": {
                         "config": {
-                            "HTTPApplicationRoutingZoneName": "a6ec8d51bb4e488dae4d.westus.aksapp.io"
+                            "HTTPApplicationRoutingZoneName": "a6ec8d.westus.aksapp.io"
                         },
                         "enabled": true,
                         "identity": {
-                            "clientId": "9c372d32-6a74-41f7-b466-7555cff4f77c",
-                            "objectId": "02158873-b32b-4595-b18a-9d618771336c",
-                            "resourceId": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/httpapplicationrouting-aks-integration"
+                            "clientId": "0000000",
+                            "objectId": "000000",
+                            "resourceId": "/subscriptions/00000000/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/httpapplicationrouting-aks-integration"
                         }
                     },
                     "omsagent": {
                         "config": {
-                            "logAnalyticsWorkspaceResourceID": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WUS/providers/Microsoft.OperationalInsights/workspaces/tesrt"
+                            "logAnalyticsWorkspaceResourceID": "/subscriptions/00000000/resourceGroups/DefaultResourceGroup-WUS/providers/Microsoft.OperationalInsights/workspaces/tesrt"
                         },
                         "enabled": false
                     }
@@ -261,27 +261,27 @@ Gets a list of managed clusters in the specified subscription.
                         "vmSize": "Standard_DS2_v2"
                     }
                 ],
-                "azurePortalFQDN": "aks-integration-dns-05664bc0.portal.hcp.westus.azmk8s.io",
+                "azurePortalFQDN": "aks-integration-dns.portal.hcp.westus.azmk8s.io",
                 "currentKubernetesVersion": "1.21.7",
                 "dnsPrefix": "aks-integration-dns",
                 "enableRBAC": true,
-                "fqdn": "aks-integration-dns-05664bc0.hcp.westus.azmk8s.io",
+                "fqdn": "aks-integration-dns.hcp.westus.azmk8s.io",
                 "identityProfile": {
                     "kubeletidentity": {
-                        "clientId": "060f057a-64b7-4227-a198-d38a8d8504d7",
-                        "objectId": "fa6fda50-4c4a-4044-909c-51591917ffb1",
-                        "resourceId": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aks-integration-agentpool"
+                        "clientId": "000000000000",
+                        "objectId": "0000000000",
+                        "resourceId": "/subscriptions/00000000/resourcegroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aks-integration-agentpool"
                     }
                 },
                 "kubernetesVersion": "1.21.7",
                 "maxAgentPools": 100,
                 "networkProfile": {
-                    "dnsServiceIP": "10.0.0.10",
-                    "dockerBridgeCidr": "172.17.0.1/16",
+                    "dnsServiceIP": "8.8.8.8",
+                    "dockerBridgeCidr": "8.8.8.8/8",
                     "loadBalancerProfile": {
                         "effectiveOutboundIPs": [
                             {
-                                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.Network/publicIPAddresses/81661302-1ebc-450b-80a3-1e5d351ec2c0"
+                                "id": "/subscriptions/00000000/resourceGroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.Network/publicIPAddresses/81661302-1ebc-450b-80a3-1e5d351ec2c0"
                             }
                         ],
                         "managedOutboundIPs": {
@@ -291,8 +291,8 @@ Gets a list of managed clusters in the specified subscription.
                     "loadBalancerSku": "Standard",
                     "networkPlugin": "kubenet",
                     "outboundType": "loadBalancer",
-                    "podCidr": "10.244.0.0/16",
-                    "serviceCidr": "10.0.0.0/16"
+                    "podCidr": "8.8.8.8",
+                    "serviceCidr": "8.8.8./8"
                 },
                 "nodeResourceGroup": "MC_aks-integration_aks-integration_westus",
                 "oidcIssuerProfile": {
@@ -337,7 +337,7 @@ Gets a list of managed clusters in the specified subscription.
 >### AKS Clusters List
 >|Name|Status|Location|Tags|Kubernetes version|API server address|Network type (plugin)|
 >|---|---|---|---|---|---|---|
->| aks-integration | Succeeded | westus | type: aks-slb-managed-outbound-ip | 1.21.7 | aks-integration-dns-05664bc0.hcp.westus.azmk8s.io | kubenet |
+>| aks-integration | Succeeded | westus | type: aks-slb-managed-outbound-ip | 1.21.7 | aks-integration-dns.hcp.westus.azmk8s.io | kubenet |
 
 
 ### azure-ks-cluster-addon-update
@@ -427,30 +427,30 @@ There are no input arguments for this command.
             {
                 "authorizationSource": "RoleBased",
                 "displayName": "Access to Azure Active Directory",
-                "id": "/subscriptions/057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "id": "/subscriptions/000000000000000",
                 "managedByTenants": [],
                 "state": "Enabled",
-                "subscriptionId": "057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "subscriptionId": "000000000000000",
                 "subscriptionPolicies": {
                     "locationPlacementId": "Public_2014-09-01",
                     "quotaId": "AAD_2015-09-01",
                     "spendingLimit": "On"
                 },
-                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+                "tenantId": "000000000000000"
             },
             {
                 "authorizationSource": "RoleBased",
                 "displayName": "Pay-As-You-Go",
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "id": "/subscriptions/00000000",
                 "managedByTenants": [],
                 "state": "Enabled",
-                "subscriptionId": "0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "subscriptionId": "00000000",
                 "subscriptionPolicies": {
                     "locationPlacementId": "Public_2014-09-01",
                     "quotaId": "PayAsYouGo_2014-09-01",
                     "spendingLimit": "Off"
                 },
-                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+                "tenantId": "000000000000000"
             }
         ]
     }
@@ -462,8 +462,8 @@ There are no input arguments for this command.
 >### Azure Kubernetes Subscriptions list
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
->| 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Access to Azure Active Directory | Enabled |
->| 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Pay-As-You-Go | Enabled |
+>| 000000000000000 | 000000000000000 | Access to Azure Active Directory | Enabled |
+>| 00000000 | 000000000000000 | Pay-As-You-Go | Enabled |
 
 
 ### azure-ks-resource-group-list
@@ -508,7 +508,7 @@ Gets all resource groups for a subscription.
     "AzureKS": {
         "ResourceGroup": [
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus",
+                "id": "/subscriptions/00000000/resourceGroups/cloud-shell-storage-eastus",
                 "location": "eastus",
                 "name": "cloud-shell-storage-eastus",
                 "properties": {
@@ -517,7 +517,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto",
+                "id": "/subscriptions/00000000/resourceGroups/demisto",
                 "location": "centralus",
                 "name": "demisto",
                 "properties": {
@@ -529,7 +529,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/compute-integration",
+                "id": "/subscriptions/00000000/resourceGroups/compute-integration",
                 "location": "eastus",
                 "name": "compute-integration",
                 "properties": {
@@ -538,7 +538,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/NetworkWatcherRG",
+                "id": "/subscriptions/00000000/resourceGroups/NetworkWatcherRG",
                 "location": "westeurope",
                 "name": "NetworkWatcherRG",
                 "properties": {
@@ -547,7 +547,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/echoteamsbot",
+                "id": "/subscriptions/00000000/resourceGroups/echoteamsbot",
                 "location": "centralus",
                 "name": "echoteamsbot",
                 "properties": {
@@ -556,7 +556,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/testingteamsbot",
+                "id": "/subscriptions/00000000/resourceGroups/testingteamsbot",
                 "location": "centralus",
                 "name": "testingteamsbot",
                 "properties": {
@@ -565,7 +565,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/socbot",
+                "id": "/subscriptions/00000000/resourceGroups/socbot",
                 "location": "eastasia",
                 "name": "socbot",
                 "properties": {
@@ -574,7 +574,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg-backups",
+                "id": "/subscriptions/00000000/resourceGroups/us-east-rg-backups",
                 "location": "westus",
                 "name": "us-east-rg-backups",
                 "properties": {
@@ -583,7 +583,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg",
+                "id": "/subscriptions/00000000/resourceGroups/us-east-rg",
                 "location": "eastus",
                 "name": "us-east-rg",
                 "properties": {
@@ -592,7 +592,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/xcloud",
+                "id": "/subscriptions/00000000/resourceGroups/xcloud",
                 "location": "westeurope",
                 "name": "xcloud",
                 "properties": {
@@ -601,7 +601,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MSDE",
+                "id": "/subscriptions/00000000/resourceGroups/MSDE",
                 "location": "westeurope",
                 "name": "MSDE",
                 "properties": {
@@ -610,7 +610,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WEU",
+                "id": "/subscriptions/00000000/resourceGroups/DefaultResourceGroup-WEU",
                 "location": "westeurope",
                 "name": "DefaultResourceGroup-WEU",
                 "properties": {
@@ -620,7 +620,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-test_group",
+                "id": "/subscriptions/00000000/resourceGroups/aks-integration-test_group",
                 "location": "centralus",
                 "name": "aks-integration-test_group",
                 "properties": {
@@ -629,7 +629,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-tes_group",
+                "id": "/subscriptions/00000000/resourceGroups/aks-integration-tes_group",
                 "location": "centralus",
                 "name": "aks-integration-tes_group",
                 "properties": {
@@ -638,7 +638,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/XDR_Event_Hub_API_Automation",
+                "id": "/subscriptions/00000000/resourceGroups/XDR_Event_",
                 "location": "centralus",
                 "name": "XDR_Event_Hub_API_Automation",
                 "properties": {
@@ -647,7 +647,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-CUS",
+                "id": "/subscriptions/00000000/resourceGroups/DefaultResourceGroup-CUS",
                 "location": "centralus",
                 "name": "DefaultResourceGroup-CUS",
                 "properties": {
@@ -656,7 +656,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration",
+                "id": "/subscriptions/00000000/resourceGroups/sql-integration",
                 "location": "eastus",
                 "name": "sql-integration",
                 "properties": {
@@ -665,7 +665,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/ferrum-collector",
+                "id": "/subscriptions/00000000/resourceGroups/ferrum-collector",
                 "location": "eastus",
                 "name": "ferrum-collector",
                 "properties": {
@@ -677,7 +677,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-EUS",
+                "id": "/subscriptions/00000000/resourceGroups/DefaultResourceGroup-EUS",
                 "location": "eastus",
                 "name": "DefaultResourceGroup-EUS",
                 "properties": {
@@ -687,7 +687,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/intune-xdr-eventhub",
+                "id": "/subscriptions/00000000/resourceGroups/intune-xdr-eventhub",
                 "location": "eastus",
                 "name": "intune-xdr-eventhub",
                 "properties": {
@@ -699,7 +699,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WUS",
+                "id": "/subscriptions/00000000/resourceGroups/DefaultResourceGroup-WUS",
                 "location": "westus",
                 "name": "DefaultResourceGroup-WUS",
                 "properties": {
@@ -708,7 +708,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration",
+                "id": "/subscriptions/00000000/resourceGroups/aks-integration",
                 "location": "westus",
                 "name": "aks-integration",
                 "properties": {
@@ -717,7 +717,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/LogAnalyticsDefaultResources",
+                "id": "/subscriptions/00000000/resourceGroups/LogAnalyticsDefaultResources",
                 "location": "westus",
                 "name": "LogAnalyticsDefaultResources",
                 "properties": {
@@ -726,9 +726,9 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MC_aks-integration_aks-integration_westus",
+                "id": "/subscriptions/00000000/resourceGroups/MC_aks-integration_aks-integration_westus",
                 "location": "westus",
-                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
+                "managedBy": "/subscriptions/00000000/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
                 "name": "MC_aks-integration_aks-integration_westus",
                 "properties": {
                     "provisioningState": "Succeeded"
@@ -741,7 +741,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Elastic_Search",
+                "id": "/subscriptions/00000000/resourceGroups/Elastic_Search",
                 "location": "westus2",
                 "name": "Elastic_Search",
                 "properties": {
@@ -750,7 +750,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG",
+                "id": "/subscriptions/00000000/resourceGroups/Purview-RG",
                 "location": "westus2",
                 "name": "Purview-RG",
                 "properties": {
@@ -759,9 +759,9 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/managed-rg-demistodevpurview",
+                "id": "/subscriptions/00000000/resourceGroups/managed-rg-demistodevpurview",
                 "location": "westus2",
-                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG/providers/Microsoft.Purview/accounts/demistodevpurview",
+                "managedBy": "/subscriptions/00000000/resourceGroups/Purview-RG/providers/Microsoft.Purview/accounts/demistodevpurview",
                 "name": "managed-rg-demistodevpurview",
                 "properties": {
                     "provisioningState": "Succeeded"
@@ -772,7 +772,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-es",
+                "id": "/subscriptions/00000000/resourceGroups/demisto-es",
                 "location": "germanywestcentral",
                 "name": "demisto-es",
                 "properties": {
@@ -782,7 +782,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Azure_Firewall",
+                "id": "/subscriptions/00000000/resourceGroups/Azure_Firewall",
                 "location": "eastus",
                 "name": "Azure_Firewall",
                 "properties": {
@@ -792,7 +792,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/SecAndCompRG",
+                "id": "/subscriptions/00000000/resourceGroups/SecAndCompRG",
                 "location": "eastus",
                 "name": "SecAndCompRG",
                 "properties": {
@@ -801,7 +801,7 @@ Gets all resource groups for a subscription.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2",
+                "id": "/subscriptions/00000000/resourceGroups/demisto-sentinel2",
                 "location": "centralus",
                 "name": "demisto-sentinel2",
                 "properties": {

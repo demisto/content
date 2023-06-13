@@ -903,30 +903,30 @@ There are no input arguments for this command.
             {
                 "authorizationSource": "RoleBased",
                 "displayName": "Access to Azure Active Directory",
-                "id": "/subscriptions/057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "id": "/subscriptions/00000000000000000000",
                 "managedByTenants": [],
                 "state": "Enabled",
-                "subscriptionId": "057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "subscriptionId": "00000000000000000000",
                 "subscriptionPolicies": {
                     "locationPlacementId": "Public_2014-09-01",
                     "quotaId": "AAD_2015-09-01",
                     "spendingLimit": "On"
                 },
-                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+                "tenantId": "00000000000000000"
             },
             {
                 "authorizationSource": "RoleBased",
                 "displayName": "Pay-As-You-Go",
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "id": "/subscriptions/000000000000",
                 "managedByTenants": [],
                 "state": "Enabled",
-                "subscriptionId": "0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "subscriptionId": "000000000000",
                 "subscriptionPolicies": {
                     "locationPlacementId": "Public_2014-09-01",
                     "quotaId": "PayAsYouGo_2014-09-01",
                     "spendingLimit": "Off"
                 },
-                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+                "tenantId": "00000000000000000"
             }
         ]
     }
@@ -938,8 +938,8 @@ There are no input arguments for this command.
 >### Azure Storage Subscriptions list
 >|subscriptionId|tenantId|displayName|state|
 >|---|---|---|---|
->| 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Access to Azure Active Directory | Enabled |
->| 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 | Pay-As-You-Go | Enabled |
+>| 00000000000000000000 | 00000000000000000 | Access to Azure Active Directory | Enabled |
+>| 000000000000 | 00000000000000000 | Pay-As-You-Go | Enabled |
 
 ### azure-storage-resource-group-list
 
@@ -969,7 +969,7 @@ There is no context output for this command.
     "AzureStorage": {
         "ResourceGroup": [
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus",
+                "id": "/subscriptions/000000000000/resourceGroups/cloud-shell-storage-eastus",
                 "location": "eastus",
                 "name": "cloud-shell-storage-eastus",
                 "properties": {
@@ -978,7 +978,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto",
+                "id": "/subscriptions/000000000000/resourceGroups/demisto",
                 "location": "centralus",
                 "name": "demisto",
                 "properties": {
@@ -990,7 +990,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/compute-integration",
+                "id": "/subscriptions/000000000000/resourceGroups/compute-integration",
                 "location": "eastus",
                 "name": "compute-integration",
                 "properties": {
@@ -999,7 +999,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/NetworkWatcherRG",
+                "id": "/subscriptions/000000000000/resourceGroups/NetworkWatcherRG",
                 "location": "westeurope",
                 "name": "NetworkWatcherRG",
                 "properties": {
@@ -1008,7 +1008,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/echoteamsbot",
+                "id": "/subscriptions/000000000000/resourceGroups/echoteamsbot",
                 "location": "centralus",
                 "name": "echoteamsbot",
                 "properties": {
@@ -1017,7 +1017,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/testingteamsbot",
+                "id": "/subscriptions/000000000000/resourceGroups/testingteamsbot",
                 "location": "centralus",
                 "name": "testingteamsbot",
                 "properties": {
@@ -1026,7 +1026,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/socbot",
+                "id": "/subscriptions/000000000000/resourceGroups/socbot",
                 "location": "eastasia",
                 "name": "socbot",
                 "properties": {
@@ -1035,7 +1035,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg-backups",
+                "id": "/subscriptions/000000000000/resourceGroups/us-east-rg-backups",
                 "location": "westus",
                 "name": "us-east-rg-backups",
                 "properties": {
@@ -1044,7 +1044,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/us-east-rg",
+                "id": "/subscriptions/000000000000/resourceGroups/us-east-rg",
                 "location": "eastus",
                 "name": "us-east-rg",
                 "properties": {
@@ -1053,7 +1053,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/xcloud",
+                "id": "/subscriptions/000000000000/resourceGroups/xcloud",
                 "location": "westeurope",
                 "name": "xcloud",
                 "properties": {
@@ -1062,7 +1062,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MSDE",
+                "id": "/subscriptions/000000000000/resourceGroups/MSDE",
                 "location": "westeurope",
                 "name": "MSDE",
                 "properties": {
@@ -1071,7 +1071,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WEU",
+                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-WEU",
                 "location": "westeurope",
                 "name": "DefaultResourceGroup-WEU",
                 "properties": {
@@ -1081,7 +1081,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-test_group",
+                "id": "/subscriptions/000000000000/resourceGroups/aks-integration-test_group",
                 "location": "centralus",
                 "name": "aks-integration-test_group",
                 "properties": {
@@ -1090,7 +1090,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration-tes_group",
+                "id": "/subscriptions/000000000000/resourceGroups/aks-integration-tes_group",
                 "location": "centralus",
                 "name": "aks-integration-tes_group",
                 "properties": {
@@ -1099,7 +1099,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/XDR_Event_Hub_API_Automation",
+                "id": "/subscriptions/000000000000/resourceGroups/XDR_Event_Hub_API_Automation",
                 "location": "centralus",
                 "name": "XDR_Event_Hub_API_Automation",
                 "properties": {
@@ -1108,7 +1108,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-CUS",
+                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-CUS",
                 "location": "centralus",
                 "name": "DefaultResourceGroup-CUS",
                 "properties": {
@@ -1117,7 +1117,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/storage-integration",
+                "id": "/subscriptions/000000000000/resourceGroups/storage-integration",
                 "location": "eastus",
                 "name": "storage-integration",
                 "properties": {
@@ -1126,7 +1126,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/ferrum-collector",
+                "id": "/subscriptions/000000000000/resourceGroups/ferrum-collector",
                 "location": "eastus",
                 "name": "ferrum-collector",
                 "properties": {
@@ -1138,7 +1138,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-EUS",
+                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-EUS",
                 "location": "eastus",
                 "name": "DefaultResourceGroup-EUS",
                 "properties": {
@@ -1148,7 +1148,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/intune-xdr-eventhub",
+                "id": "/subscriptions/000000000000/resourceGroups/intune-xdr-eventhub",
                 "location": "eastus",
                 "name": "intune-xdr-eventhub",
                 "properties": {
@@ -1160,7 +1160,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WUS",
+                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-WUS",
                 "location": "westus",
                 "name": "DefaultResourceGroup-WUS",
                 "properties": {
@@ -1169,7 +1169,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/aks-integration",
+                "id": "/subscriptions/000000000000/resourceGroups/aks-integration",
                 "location": "westus",
                 "name": "aks-integration",
                 "properties": {
@@ -1178,7 +1178,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/LogAnalyticsDefaultResources",
+                "id": "/subscriptions/000000000000/resourceGroups/LogAnalyticsDefaultResources",
                 "location": "westus",
                 "name": "LogAnalyticsDefaultResources",
                 "properties": {
@@ -1187,9 +1187,9 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MC_aks-integration_aks-integration_westus",
+                "id": "/subscriptions/000000000000/resourceGroups/MC_aks-integration_aks-integration_westus",
                 "location": "westus",
-                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
+                "managedBy": "/subscriptions/000000000000/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
                 "name": "MC_aks-integration_aks-integration_westus",
                 "properties": {
                     "provisioningState": "Succeeded"
@@ -1202,7 +1202,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Elastic_Search",
+                "id": "/subscriptions/000000000000/resourceGroups/Elastic_Search",
                 "location": "westus2",
                 "name": "Elastic_Search",
                 "properties": {
@@ -1211,7 +1211,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG",
+                "id": "/subscriptions/000000000000/resourceGroups/Purview-RG",
                 "location": "westus2",
                 "name": "Purview-RG",
                 "properties": {
@@ -1220,9 +1220,9 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/managed-rg-demistodevpurview",
+                "id": "/subscriptions/000000000000/resourceGroups/managed-rg-demistodevpurview",
                 "location": "westus2",
-                "managedBy": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Purview-RG/providers/Microsoft.Purview/accounts/demistodevpurview",
+                "managedBy": "/subscriptions/000000000000/resourceGroups/Purview-RG/providers/Microsoft.Purview/accounts/demistodevpurview",
                 "name": "managed-rg-demistodevpurview",
                 "properties": {
                     "provisioningState": "Succeeded"
@@ -1233,7 +1233,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-es",
+                "id": "/subscriptions/000000000000/resourceGroups/demisto-es",
                 "location": "germanywestcentral",
                 "name": "demisto-es",
                 "properties": {
@@ -1243,7 +1243,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/Azure_Firewall",
+                "id": "/subscriptions/000000000000/resourceGroups/Azure_Firewall",
                 "location": "eastus",
                 "name": "Azure_Firewall",
                 "properties": {
@@ -1253,7 +1253,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/SecAndCompRG",
+                "id": "/subscriptions/000000000000/resourceGroups/SecAndCompRG",
                 "location": "eastus",
                 "name": "SecAndCompRG",
                 "properties": {
@@ -1262,7 +1262,7 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto-sentinel2",
+                "id": "/subscriptions/000000000000/resourceGroups/demisto-sentinel2",
                 "location": "centralus",
                 "name": "demisto-sentinel2",
                 "properties": {
