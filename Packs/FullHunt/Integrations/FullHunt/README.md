@@ -108,7 +108,7 @@ Get details about one specified domain
 
 #### Base Command
 
-`domain`
+`fullhunt-domain`
 
 #### Input
 
