@@ -74,7 +74,6 @@ def get_git_diff(branch_name, repo):
 
 
 def run(options):
-    print(options.)
     paths = PathManager(Path(__file__).absolute().parents[2])
     branch_name = paths.content_repo.active_branch.name
     root_dir = Path(__file__).absolute().parents[2]
