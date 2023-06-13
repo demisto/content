@@ -670,7 +670,7 @@ def format_timestamp(timestamp: str, output_format: str = DATETIME_FORMAT) -> st
         except ValueError:
             datetime_res = arg_to_datetime(timestamp.replace('GMT ', 'GMT'))
         return datetime_res.strftime(output_format)  # type: ignore
-    except:
+    except:  # noqa: E722
         return timestamp
 
 
