@@ -272,17 +272,13 @@ Tests connectivity of the email.
 There is no context output for this command.
 ### msgraph-mail-auth-reset
 ***
-Run this command to rerun the authentication process.
-
+Run this command if for some reason you need to rerun the authentication process.
 
 #### Base Command
 
 `msgraph-mail-auth-reset`
 #### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 

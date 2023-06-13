@@ -697,6 +697,10 @@ script:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
       description: The address ID.
       type: String
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-vm-auth-reset
   dockerimage: demisto/crypto:1.0.0.62171
   feed: false
   isfetch: false

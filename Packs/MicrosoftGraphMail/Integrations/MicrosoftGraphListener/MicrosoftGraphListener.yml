@@ -499,7 +499,7 @@ script:
   - description: Tests connectivity of the email.
     name: msgraph-mail-test
     arguments: []
-  - description: Run this command to rerun the authentication process.
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-mail-auth-reset
     arguments: []
   - name: msgraph-mail-list-emails

@@ -339,6 +339,10 @@ script:
     execution: false
     name: azure-log-analytics-generate-login-url
     arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-log-analytics-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: false

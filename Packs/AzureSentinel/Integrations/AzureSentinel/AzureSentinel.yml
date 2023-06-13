@@ -3005,6 +3005,10 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-sentinel-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.61689
   feed: false
   isfetch: true

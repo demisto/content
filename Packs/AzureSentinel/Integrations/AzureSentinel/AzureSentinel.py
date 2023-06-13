@@ -139,7 +139,8 @@ class AzureSentinelClient:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-sentinel",
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -1944,6 +1945,8 @@ def main():
             'azure-sentinel-delete-alert-rule': delete_alert_rule_command,
             'azure-sentinel-create-alert-rule': create_and_update_alert_rule_command,
             'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
+            'azure-sentinel-update-alert-rule': create_and_update_alert_rule_command,
+            'azure-sentinel-auth-reset': reset_auth,
             # mirroring commands
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-remote-data': get_remote_data_command,

@@ -542,6 +542,10 @@ script:
     - contextPath: Azure.Securescore.weight
       description: The relative weight for each subscription.
       type: String
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-sc-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.59331
   isfetch: false
   longRunning: false

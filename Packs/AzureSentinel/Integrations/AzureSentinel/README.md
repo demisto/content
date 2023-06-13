@@ -2255,3 +2255,19 @@ Updates an alert rule.
 >|ID|Name|Kind|Display Name|Enabled|Etag|
 >|---|---|---|---|---|---|---|---|
 >| test_name | test_name | MicrosoftSecurityIncidentCreation | Testing updating Display Name | true | "097809060-0000-6hd400" |
+### azure-sentinel-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-sentinel-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

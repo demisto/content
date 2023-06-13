@@ -541,8 +541,7 @@ script:
       arguments: []
       outputs: []
     - deprecated: false
-      description: Run this command if for some reason you need to rerun the
-        authentication process.
+      description: Run this command if for some reason you need to rerun the authentication process.
       execution: false
       name: azure-data-explorer-auth-reset
       arguments: []

@@ -56,7 +56,8 @@ class Client:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix = "azure-log-analytics",
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -363,7 +364,8 @@ def main():
             'azure-log-analytics-list-saved-searches': list_saved_searches_command,
             'azure-log-analytics-get-saved-search-by-id': get_saved_search_by_id_command,
             'azure-log-analytics-create-or-update-saved-search': create_or_update_saved_search_command,
-            'azure-log-analytics-delete-saved-search': delete_saved_search_command
+            'azure-log-analytics-delete-saved-search': delete_saved_search_command,
+            'azure-log-analytics-auth-reset': reset_auth,
         }
 
         if demisto.command() == 'test-module':

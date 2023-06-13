@@ -1348,7 +1348,7 @@ def main():
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
                           server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-                          managed_identities_client_id=managed_identities_client_id)
+                          managed_identities_client_id=managed_identities_client_id, command_prefix="azure-sc")
 
         if demisto.command() == "test-module":
             # If the command will fail, error will be thrown from the request itself
@@ -1389,7 +1389,8 @@ def main():
             return_outputs(*list_sc_subscriptions_command(client))
         elif demisto.command() == "azure-get-secure-score":
             return_outputs(*get_secure_scores_command(client, demisto.args()))
-
+        elif demisto.command() == "azure-sc-auth-reset":
+            return_results(reset_auth())
     except Exception as err:
         LOG(str(err))
         LOG.print_log()

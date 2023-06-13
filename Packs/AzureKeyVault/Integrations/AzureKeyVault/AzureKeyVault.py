@@ -45,6 +45,7 @@ class KeyVaultClient:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
+            command_prefix="azure-key-vault",
         )
 
     def http_request(self, method: str, url_suffix: str = None, full_url: str = None,
@@ -1313,7 +1314,8 @@ def main() -> None:
             'azure-key-vault-secret-delete': delete_secret_command,
             'azure-key-vault-certificate-get': get_certificate_command,
             'azure-key-vault-certificate-list': list_certificates_command,
-            'azure-key-vault-certificate-policy-get': get_certificate_policy_command
+            'azure-key-vault-certificate-policy-get': get_certificate_policy_command,
+            'azure-key-vault-auth-reset': reset_auth,
         }
 
         if command == 'test-module':

@@ -61,7 +61,7 @@ GRAPH_BASE_ENDPOINTS = {
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
-TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008,
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005,
                              }  # See: https://login.microsoftonline.com/error?code=
 
 
@@ -370,8 +370,8 @@ class MicrosoftClient(BaseClient):
         except Exception as ex:
             demisto.error(f'Failed parsing error response - Exception: {ex}')
         if oproxy_response.status_code == 403 and "Hash Verification Error" in oproxy_response.text:
-            msg += f'\nThe Oproxy server returned an error, there may be an issue with the *Token* parameter. ' \
-                   f'You can run the *{self.command_prefix}-auth-reset* command to reset the authentication process.'
+            msg += f'\nThe Oproxy server returned an error. There may be an issue with the *Token* parameter. ' \
+                   f'You can run the ***{self.command_prefix}-auth-reset*** command to reset the authentication process.'
         raise Exception(msg)
 
     def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
@@ -683,7 +683,7 @@ class MicrosoftClient(BaseClient):
             if err_str:
                 if set(response.get("error_codes", [""])).issubset(TOKEN_EXPIRED_ERROR_CODES):
                     err_str += f"\nThere may be an issue with the *Authorization code* parameter. " \
-                               f"You can run the *{self.command_prefix}-auth-reset* command " \
+                               f"You can run the ***{self.command_prefix}-auth-reset*** command " \
                                f"to reset the authentication process."
                 return err_str
             # If no error message
