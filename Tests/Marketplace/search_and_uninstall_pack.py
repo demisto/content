@@ -229,12 +229,12 @@ def main():
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
     sync_marketplace(client=client)
-    success = reset_base_pack_version(client) and uninstall_all_packs(client,
-                                                                      host) and wait_for_uninstallation_to_complete(
-        client)
-    sync_marketplace(client=client)
-    if not success:
-        sys.exit(2)
+    # success = reset_base_pack_version(client) and uninstall_all_packs(client,
+    #                                                                   host) and wait_for_uninstallation_to_complete(
+    #     client)
+    # sync_marketplace(client=client)
+    # if not success:
+    #     sys.exit(2)
     logging.info('Uninstalling packs done.')
 
 
