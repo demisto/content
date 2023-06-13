@@ -15,6 +15,7 @@
     "id": "Xpanse Alert",
     "layout": "Xpanse Alert Layout",
     "locked": false,
+    "playbookId": "Xpanse - Alert Handler",
     "name": "Xpanse Alert",
     "onChangeRepAlg": 0,
     "readonly": false,
@@ -23,6 +24,5 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.5.0",
-    "toVersion": "6.7.9"
+    "fromVersion": "6.8.0"
 }
