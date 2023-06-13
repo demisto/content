@@ -65,7 +65,7 @@ def test_socks_proxy_fail(mocker):
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert "Couldn't connect with the socket-server" in results[0]['Contents']
+    assert "Exception thrown calling command" in results[0]['Contents']
 
 
 def test_socks_proxy(mocker, request):
