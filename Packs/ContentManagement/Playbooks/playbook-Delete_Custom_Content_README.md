@@ -1,4 +1,4 @@
-This playbook deletes custom content from the system. It deletes playbooks, scripts, layouts, incident types and incident fields.
+This playbook deletes custom content from the system. It deletes Playbooks, Scripts, Layouts, Classifiers, Mappers, Incident Types and Incident Fields.
 
 ## Dependencies
 
@@ -14,10 +14,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* DeleteContent
 * DeleteContext
 * PrintErrorEntry
 * Print
-* DeleteContent
 * GetIdsFromCustomContent
 
 ### Commands
@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ---
 
-![DeleteCustomContent](../doc_files/DeleteCustomContent.png)
+![Delete Custom Content](../doc_files/Delete_Custom_Content.png)
