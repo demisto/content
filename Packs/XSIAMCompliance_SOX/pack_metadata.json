@@ -1,6 +1,6 @@
 {
-    "name": "Palo Alto Networks Cortex XSIAM - SOX Dashboards and Reports",
-    "description": "Pack for generating SOX reports and dashboards. Dashboards and reports utilize XQL queries which refrence XDM, allowing queries to refrence data across multiple datasets.",
+    "name": "SOX Compliance",
+    "description": "Ensure your organization is following SOX guidelines with the relevant dashboard and report evidence.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSIAM",
