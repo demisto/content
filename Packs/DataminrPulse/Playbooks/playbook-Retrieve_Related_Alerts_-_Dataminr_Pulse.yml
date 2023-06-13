@@ -1,0 +1,164 @@
+id: Retrieve Related Alerts - Dataminr Pulse
+version: -1
+name: Retrieve Related Alerts - Dataminr Pulse
+description: This playbook is used to run the Default playbook from XSOAR and to fetch related alerts for Dataminr Pulse. The information required to fetch related alerts will be used from the incident s alert ID for which the playbook is going to run. After that, it will store them in the context.
+starttaskid: "0"
+fromversion: 6.5.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 975a6b7c-614c-44b7-8f5f-bf6258c9e3ee
+    type: start
+    task:
+      id: 975a6b7c-614c-44b7-8f5f-bf6258c9e3ee
+      version: -1
+      name: ""
+      description: "Start of playbook"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 57d06e6f-6049-4a25-8ab1-21da51208039
+    type: regular
+    task:
+      id: 57d06e6f-6049-4a25-8ab1-21da51208039
+      version: -1
+      name: Fetch related alerts
+      description: Retrieves the alerts related to the provided Alert ID.
+      script: '|||dataminrpulse-related-alerts-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: incident
+          accessor: alertid
+      extend-context:
+        simple: RelatedAlerts=.
+      ignore-outputs:
+        simple: "true"
+      include_root:
+        simple: "False"
+      retry-count:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f8eeaaf1-fca8-4d80-8496-ec68de67e2c4
+    type: title
+    task:
+      id: f8eeaaf1-fca8-4d80-8496-ec68de67e2c4
+      version: -1
+      name: end
+      type: title
+      description: "End of playbook"
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 23cec11c-ca3e-4277-8af1-5b370a8f47cd
+    type: regular
+    task:
+      id: 23cec11c-ca3e-4277-8af1-5b370a8f47cd
+      version: -1
+      name: Delete Context for Related Alerts
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: RelatedAlerts
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 555,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- DataminrPulse-Test

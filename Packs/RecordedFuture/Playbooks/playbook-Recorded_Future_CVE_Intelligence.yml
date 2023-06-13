@@ -130,7 +130,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Recorded Future
+                        simple: Recorded Future v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -242,7 +242,7 @@ tasks:
       recordedfutureriskrules:
         simple: ${RecordedFuture.CVE.concatRules}
       value:
-        simple: ${RecordedFuture.CVE.name}
+        simple: ${inputs.CVE}
     separatecontext: false
     view: |-
       {

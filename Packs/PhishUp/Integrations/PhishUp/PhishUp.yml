@@ -24,7 +24,6 @@ configuration:
 - additionalinfo: If there is any Phishing activity in mail, what should PhishUp do?
   defaultvalue: Nothing
   display: PhishUp Playbook Actions
-  hidden: false
   name: phishup-playbook-action
   options:
   - Nothing
@@ -61,8 +60,7 @@ configuration:
   display: ''
   required: false
   type: 1
-description: PhishUp prevents phishing attacks, protects your staff and your brand
-  with AI
+description: PhishUp prevents phishing attacks, protects your staff and your brand with AI
 display: PhishUp
 name: 6437c006-1d86-4cdc-89d5-23305f207e3a
 script:
@@ -126,7 +124,7 @@ script:
     - contextPath: PhishUp.Evaluation
       description: returns "Phish" if any response has "Phish" result
       type: String
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.11.57890
   feed: false
   isfetch: false
   longRunning: false

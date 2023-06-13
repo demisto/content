@@ -119,10 +119,10 @@ def fix_traceback_line_numbers(trace_str):
     """
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
-            block_start < start < end < block_end 
+            block_start < start < end < block_end
             for block_start, block_end in adjusted_lines.items()
         )
-        
+
     for number in re.findall(r'line (\d+)', trace_str):
         line_num = int(number)
         module = _find_relevant_module(line_num)
@@ -1591,7 +1591,8 @@ class IntegrationLogger(object):
                     js = js[:-1]
                 to_add.append(js)
                 if IS_PY3:
-                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                    from urllib import parse as urllib_parse
+                    to_add.append(urllib_parse.quote_plus(a))  # type: ignore[attr-defined]
                 else:
                     to_add.append(urllib.quote_plus(a))  # type: ignore[attr-defined]
 
@@ -3339,6 +3340,27 @@ class Common(object):
                 'description': self.description
             }
 
+    class Rank:
+        """
+        Single row in a rank grid field
+
+        :type rank: float / int
+        :param rank: A numerical rank value
+
+        :type source: ``str``
+        :param source: The name of the source from which the rank was taken
+        """
+
+        def __init__(self, rank=None, source=None):
+            self.rank = rank
+            self.source = source
+
+        def to_context(self):
+            return {
+                'source': self.source,
+                'rank': self.rank
+            }
+
     class ExternalReference(object):
         """
         ExternalReference class
@@ -4381,7 +4403,7 @@ class Common(object):
                      community_notes=None, publications=None, geo_location=None, geo_country=None, geo_description=None,
                      tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
                      whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
-                     certificates=None, dns_records=None,):
+                     certificates=None, dns_records=None, rank=None):
 
             # Main indicator value
             self.domain = domain
@@ -4407,6 +4429,7 @@ class Common(object):
             self.organization = organization
             self.sub_domains = sub_domains
             self.updated_date = updated_date
+            self.rank = rank
 
             # Whois related records - Registrar
             self.registrar_name = registrar_name
@@ -4612,6 +4635,9 @@ class Common(object):
 
             if self.certificates:
                 domain_context['Certificates'] = self.create_context_table(self.certificates)
+
+            if self.rank:
+                domain_context['Rank'] = self.create_context_table(self.rank)
 
             return ret_value
 
@@ -6907,6 +6933,23 @@ class CommandResults:
         return return_entry
 
 
+def is_integration_command_execution():
+    """
+    This function determines whether the current execution a script execution or a integration command execution.
+
+    :return: Is the current execution a script execution or a integration command execution.
+    :rtype: ``bool``
+    """
+
+    try:
+        return demisto.callingContext['context']['ExecutedCommands'][0]['moduleBrand'] != 'Scripts'
+    except (KeyError, IndexError, TypeError):
+        return True
+
+
+EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning results with Type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
+
+
 def return_results(results):
     """
     This function wraps the demisto.results(), supports.
@@ -6917,17 +6960,24 @@ def return_results(results):
     :return: None
     :rtype: ``None``
     """
+    is_integration = is_integration_command_execution()
     if results is None:
         # backward compatibility reasons
         demisto.results(None)
         return
 
     elif results and isinstance(results, list):
-        result_list = []
+        result_list = [] # type: list
         for result in results:
-            if isinstance(result, (dict, str)):
-                # Results of type dict or str are of the old results format and work with demisto.results()
+            # Results of type dict or str are of the old results format and work with demisto.results()
+            if isinstance(result, dict):
+                if is_integration or result.get('Type') != EntryType.EXECUTION_METRICS:
+                    result_list.append(result)
+                else:
+                    demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
+            elif isinstance(result, str):
                 result_list.append(result)
+
             else:
                 # The rest are of the new format and have a corresponding function (to_context, to_display, etc...)
                 return_results(result)
@@ -6935,7 +6985,11 @@ def return_results(results):
             demisto.results(result_list)
 
     elif isinstance(results, CommandResults):
-        demisto.results(results.to_context())
+        context = results.to_context()
+        if is_integration or context.get('Type') != EntryType.EXECUTION_METRICS:
+            demisto.results(context)
+        else:
+            demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
 
     elif isinstance(results, BaseWidget):
         demisto.results(results.to_display())
@@ -6950,8 +7004,14 @@ def return_results(results):
         demisto.results(results.to_entry())
 
     elif hasattr(results, 'to_entry'):
-        demisto.results(results.to_entry())
+        entry = results.to_entry()
+        if is_integration or entry.get('Type') != EntryType.EXECUTION_METRICS:
+            demisto.results(entry)
+        else:
+            demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
 
+    elif not is_integration and isinstance(results, dict) and results.get('Type') == EntryType.EXECUTION_METRICS:
+        demisto.debug(EXECUTION_METRICS_SCRIPT_SKIP_MSG)
     else:
         demisto.results(results)
 
@@ -7777,6 +7837,45 @@ def string_to_context_key(string):
         raise Exception('The key is not a string: {}'.format(string))
 
 
+def response_to_context(reponse_obj, user_predefiend_keys=None):
+    """
+    Recursively creates a data dictionary where all key starts with capital letters.
+    If a key include underscores,  removes underscores, capitalize every word.
+    Example: "one_two" to "OneTwo
+
+    :type reponse_obj: ``Any``
+    :param reponse_obj: The response object to update.
+    :type reponse_obj: ``dict``
+    :user_predefiend_keys: An optional argument,
+    a dict with predefined keys where the key is the key in the response and value is the key we want to turn the key into.
+
+    :return: A response with all keys (if there're any) starts with a capital letter.
+    :rtype: ``Any``
+    """
+    predefined_keys = {"id": "ID", "uuid": "UUID"}
+    if user_predefiend_keys:
+        predefined_keys.update(user_predefiend_keys)
+    parsed_dict = {}
+    key = ""
+    if isinstance(reponse_obj, dict):
+        for key, value in reponse_obj.items():
+            if key in predefined_keys:
+                key = predefined_keys.get(key, "")  # type: ignore
+            else:
+                key = string_to_context_key(key)
+            if isinstance(value, dict):
+                parsed_dict[key] = response_to_context(value)
+            elif isinstance(value, list):
+                parsed_dict[key] = [response_to_context(list_item) for list_item in value]
+            else:
+                parsed_dict[key] = value
+        return parsed_dict
+    elif isinstance(reponse_obj, list):
+        return [response_to_context(list_item) for list_item in reponse_obj]
+    else:
+        return reponse_obj
+
+
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
@@ -8383,6 +8482,8 @@ if 'requests' in sys.modules:
 
             def __init__(self, verify=True, **kwargs):
                 # type: (bool, dict) -> None
+                if not verify and IS_PY3:
+                    self.context.check_hostname = False
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
                 super().__init__(**kwargs)  # type: ignore[arg-type]
@@ -9685,7 +9786,14 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
     :return: None
     """
     if is_demisto_version_ge('6.6.0'):
-        demisto.setLastMirrorRun(last_mirror_run)
+        try:
+            demisto.setLastMirrorRun(last_mirror_run)
+        except json.JSONDecodeError as e:
+            # see XSUP-24343
+            if not isinstance(last_mirror_run, dict):
+                raise TypeError("non-dictionary passed to set_last_mirror_run")
+            demisto.debug("encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
+            demisto.debug(e)
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 
@@ -10490,7 +10598,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     found_incidents = last_run.get('found_incident_ids', {})
 
     incidents = []
-    
+
     demisto.debug('lb: Number of incidents before filtering: {}, their ids: {}'.format(len(incidents_res),
                                                                                        [incident_res[id_field] for incident_res in incidents_res]))
     for incident in incidents_res:
@@ -10654,12 +10762,12 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         new_last_run = {
             'time': start_fetch_time,
         }
-    
+
     if look_back > 0:
         new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     else:
         new_last_run['limit'] = fetch_limit
-    
+
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
 
@@ -10884,7 +10992,7 @@ def xsiam_api_call_with_retries(
 
     :type headers: ``dict``
     :param headers: headers for the request
-    
+
     :type error_msg: ``str``
     :param error_msg: The error message prefix in case of an error.
 

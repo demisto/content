@@ -69,8 +69,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1195
+          "x": 110,
+          "y": 1845
         }
       }
     note: false
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1620
+          "y": 2270
         }
       }
     note: false
@@ -125,7 +125,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+      - "85"
       "yes":
       - "67"
     separatecontext: false
@@ -236,7 +236,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 900
+          "y": 1550
         }
       }
     note: false
@@ -328,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 755
+          "y": 1405
         }
       }
     note: false
@@ -355,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 4560
+          "x": 110,
+          "y": 5210
         }
       }
     note: false
@@ -397,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1770
+          "y": 2420
         }
       }
     note: false
@@ -428,7 +428,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1940
+          "y": 2590
         }
       }
     note: false
@@ -471,7 +471,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2090
+          "y": 2740
         }
       }
     note: false
@@ -551,7 +551,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 580
+          "y": 1240
         }
       }
     note: false
@@ -591,8 +591,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 4210
+          "x": 110,
+          "y": 4860
         }
       }
     note: false
@@ -632,8 +632,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 1100
+          "x": 1120,
+          "y": 1740
         }
       }
     note: false
@@ -664,7 +664,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2260
+          "y": 2910
         }
       }
     note: false
@@ -707,7 +707,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2400
+          "y": 3050
         }
       }
     note: false
@@ -750,7 +750,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2700
+          "y": 3350
         }
       }
     note: false
@@ -781,7 +781,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2570
+          "y": 3220
         }
       }
     note: false
@@ -812,7 +812,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 2870
+          "y": 3520
         }
       }
     note: false
@@ -855,7 +855,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3000
+          "y": 3650
         }
       }
     note: false
@@ -886,8 +886,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1230
+          "x": 790,
+          "y": 1880
         }
       }
     note: false
@@ -918,8 +918,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 4380
+          "x": 110,
+          "y": 5030
         }
       }
     note: false
@@ -966,7 +966,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3205
+          "y": 3855
         }
       }
     note: false
@@ -1029,7 +1029,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3430
+          "y": 4080
         }
       }
     note: false
@@ -1060,7 +1060,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3650
+          "y": 4300
         }
       }
     note: false
@@ -1093,7 +1093,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3790
+          "y": 4440
         }
       }
     note: false
@@ -1105,10 +1105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 5198686f-a3c5-4c75-8508-e51635974a3a
+    taskid: a1c806a0-c11f-4ea3-8adb-d4c1a3ffc466
     type: regular
     task:
-      id: 5198686f-a3c5-4c75-8508-e51635974a3a
+      id: a1c806a0-c11f-4ea3-8adb-d4c1a3ffc466
       version: -1
       name: Set service owners from Tag grid field
       description: |-
@@ -1127,6 +1127,8 @@ tasks:
       keys:
         simple: Name,Email,Source,Timestamp
       val1:
+        simple: n/a
+      val2:
         complex:
           root: alert.asmtags.Value
           filters:
@@ -1150,8 +1152,6 @@ tasks:
                   simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
               unpack_matches: {}
           - operator: uniq
-      val2:
-        simple: n/a
       val3:
         complex:
           root: alert.asmtags
@@ -1175,7 +1175,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3980
+          "y": 4630
         }
       }
     note: false
@@ -1216,7 +1216,130 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1345
+          "y": 1995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 6a1eaa17-3d05-4304-8613-a1a84229ae39
+    type: regular
+    task:
+      id: 6a1eaa17-3d05-4304-8613-a1a84229ae39
+      version: -1
+      name: Sleep for 1 hour
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      execution-timeout:
+        simple: "3660"
+      seconds:
+        simple: "3600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: da1ae0f9-43b2-4814-8a96-53b30be702b7
+    type: condition
+    task:
+      id: da1ae0f9-43b2-4814-8a96-53b30be702b7
+      version: -1
+      name: Was there a result?
+      description: Determines if there was a result from the previous command to continue cloud enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ASM.ExternalService
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 7d26fca6-9f79-4ebb-861b-b72153e4e3c5
+    type: regular
+    task:
+      id: 7d26fca6-9f79-4ebb-861b-b72153e4e3c5
+      version: -1
+      name: Get external service information
+      description: Get service details according to the service ID.
+      script: Cortex Attack Surface Management|||asm-get-external-service
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '[\"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 830
         }
       }
     note: false
@@ -1232,16 +1355,15 @@ view: |-
       "11_1_#default#": 0.2,
       "11_66_yes": 0.59,
       "1_3_yes": 0.24,
-      "6_1_#default#": 0.25,
       "6_67_yes": 0.62,
       "7_1_#default#": 0.35,
       "7_69_Azure": 0.81
     },
     "paper": {
       "dimensions": {
-        "height": 4805,
-        "width": 1300,
-        "x": 100,
+        "height": 5455,
+        "width": 1390,
+        "x": 110,
         "y": -180
       }
     }
