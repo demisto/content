@@ -8,7 +8,7 @@ Open the VTM UI;
 
 For forwarding Event logs:
 1. Click the **System** tab and click **Alerting**.
-2. At the **Alert Mappings** section, make sure Audit Events are kept in Syslog (action).
+2. In the **Alert Mappings** section, make sure Audit Events are kept in Syslog (action).
 3. Next, open the **Global Settings** tab, then, click on **Logging**.
 4. Mark the "Whether to mirror the audit log to EventID" checkbox as **Yes**.
 5. Under the **Apply Changes** section, press on **Update** once you are done.
