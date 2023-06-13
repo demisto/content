@@ -38,11 +38,6 @@ ARG_LIST = [({'limit': '2', 'page_size': '3'}, 2, False, 3),
             ({}, 50, False, None)]
 
 
-class AWSClient:
-    def aws_session(self):
-        pass
-
-
 class Boto3Client:
     def list_user_policies(self):
         pass
@@ -112,11 +107,10 @@ def test_list_user_policies(mocker, args, res):
             'PolicyName': policy,
         })
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_user_policies", return_value=response)
     mocker.patch.object(demisto, 'results')
 
-    client = AWSClient()
+    client = Boto3Client()
     AWS_IAM.list_user_policies(args, client)
     contents = demisto.results.call_args[0][0]
 
@@ -145,11 +139,10 @@ def test_list_attached_user_polices(mocker):
     policy_name = ATTACHED_POLICIES[0].get('PolicyName')
     policy_arn = ATTACHED_POLICIES[0].get('PolicyArn')
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_attached_user_policies", return_value=ATTACHED_RESPONSE)
     mocker.patch.object(demisto, 'results')
 
-    client = AWSClient()
+    client = Boto3Client()
     AWS_IAM.list_attached_user_policies(args, client)
     contents = demisto.results.call_args[0][0]
 
@@ -179,11 +172,10 @@ def test_list_attached_group_polices(mocker):
     policy_name = ATTACHED_POLICIES[0].get('PolicyName')
     policy_arn = ATTACHED_POLICIES[0].get('PolicyArn')
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_attached_group_policies", return_value=ATTACHED_RESPONSE)
     mocker.patch.object(demisto, 'results')
 
-    client = AWSClient()
+    client = Boto3Client()
     AWS_IAM.list_attached_group_policies(args, client)
     contents = demisto.results.call_args[0][0]
 
@@ -223,11 +215,10 @@ def test_get_user_login_profile(mocker):
         }
     })
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "get_login_profile", return_value=res)
     mocker.patch.object(demisto, 'results')
 
-    client = AWSClient()
+    client = Boto3Client()
     AWS_IAM.get_user_login_profile(args, client)
     contents = demisto.results.call_args[0][0]
 
@@ -258,10 +249,9 @@ def test_put_role_policy_command(args, mocked_res, expected_hr, mocker):
        Then:
        - Ensure that the right header appears in the human readable results.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "put_role_policy", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.put_role_policy_command(args, client)
     assert expected_hr in cr_obj.readable_output
 
@@ -280,10 +270,9 @@ def test_put_user_policy_command(args, mocked_res, expected_hr, mocker):
        Then:
        - Ensure that the right header appears in the human readable results.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "put_user_policy", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.put_user_policy_command(args, client)
     assert expected_hr in cr_obj.readable_output
 
@@ -302,10 +291,9 @@ def test_put_group_policy_command(args, mocked_res, expected_hr, mocker):
        Then:
        - Ensure that the right header appears in the human readable results.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "put_group_policy", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.put_group_policy_command(args, client)
     assert expected_hr in cr_obj.readable_output
 
@@ -324,10 +312,9 @@ def test_tag_role_command(args, mocked_res, expected_hr, mocker):
        Then:
        - Ensure that the results were parsed correctly into a 2 columns table with all the keys and values.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "tag_role", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.tag_role_command(args, client)
     assert expected_hr == cr_obj.readable_output
 
@@ -346,10 +333,9 @@ def test_tag_user_command(args, mocked_res, expected_hr, mocker):
        Then:
        - Ensure that the results were parsed correctly into a 2 columns table with all the keys and values.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "tag_user", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.tag_user_command(args, client)
     assert expected_hr == cr_obj.readable_output
 
@@ -368,10 +354,9 @@ def test_untag_role_command(args, mocked_res, expected_hr, mocker):
        Then:
        - Ensure that the results were parsed correctly into a 1 column table with all the keys.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "untag_role", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.untag_role_command(args, client)
     assert expected_hr == cr_obj.readable_output
 
@@ -391,10 +376,9 @@ def test_untag_user_command(args, mocked_res, expected_hr, mocker):
        Then:
        - Ensure that the results were parsed correctly into a 1 column table with all the keys.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "untag_user", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.untag_user_command(args, client)
     assert expected_hr == cr_obj.readable_output
 
@@ -421,10 +405,9 @@ def test_get_access_key_last_used_command(args, mocked_res, expected_hr, expecte
        - Ensure that the returned CR object contain the right data - all fields are included in the HR and EC,
        and that the LastUsedDate field in the response was converted to str.
        """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "get_access_key_last_used", return_value=mocked_res)
 
-    client = AWSClient()
+    client = Boto3Client()
     cr_obj = AWS_IAM.get_access_key_last_used_command(args, client)
     assert expected_hr == cr_obj.readable_output
     assert expected_ec == cr_obj.outputs
