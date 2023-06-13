@@ -510,5 +510,5 @@ def test_get_events_command_main_flow(mocker, args: Dict, expected_outputs: List
     main()
 
     assert return_results_mocker.call_args.args[0].outputs == expected_outputs
-    log_type = args['log_type']
-    assert f"events for log_types=" in return_results_mocker.call_args.args[0].readable_output
+    args['log_type']
+    assert "events for log_types=" in return_results_mocker.call_args.args[0].readable_output
