@@ -6,7 +6,8 @@ alter
         http_method = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s([\S]+)\s"),0)
 | alter
         Protocol = if(Protocol not in ("TCP", "UDP", "ICMP"), "None", Protocol)
-| alter xdm.event.duration = to_integer(arrayindex(regextract(_raw_log ,"\.\d+\s*(\d+)\s\d{1,3}"),0)),
+| alter
+        xdm.event.duration = to_integer(arrayindex(regextract(_raw_log ,"\.\d+\s*(\d+)\s\d{1,3}"),0)),
         xdm.source.ipv4 = arrayindex(regextract(_raw_log ,"\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
         xdm.source.ipv6 = arrayindex(regextract(_raw_log ,"\s+([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
         xdm.observer.action = arrayindex(regextract(_raw_log ,"\s*([^\/^\s]+)\/\d*\s"),0),
