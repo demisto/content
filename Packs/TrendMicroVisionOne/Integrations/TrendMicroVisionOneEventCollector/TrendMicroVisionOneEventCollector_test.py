@@ -85,31 +85,31 @@ def _http_request_side_effect_decorator(
     def _http_request_side_effect(**kwargs):
         full_url = kwargs.get('full_url') or ''
         params = kwargs.get('params') or {}
-        if UrlSuffixes.WORKBENCH in full_url:
+        if UrlSuffixes.WORKBENCH.value in full_url:
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_workbench_logs,
-                url_suffix=UrlSuffixes.WORKBENCH,
+                url_suffix=UrlSuffixes.WORKBENCH.value,
                 created_time_field='createdDateTime',
                 id_field_name='id',
                 top=10,
                 extra_seconds=60
             )
-        if UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES in full_url:
+        if UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value in full_url:
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_oat_logs,
-                url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES,
+                url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value,
                 created_time_field='detectedDateTime',
                 id_field_name='uuid',
                 top=params.get('top') or 200,
                 extra_seconds=150
             )
-        if UrlSuffixes.SEARCH_DETECTIONS in full_url:
+        if UrlSuffixes.SEARCH_DETECTIONS.value in full_url:
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_search_detection_logs,
-                url_suffix=UrlSuffixes.SEARCH_DETECTIONS,
+                url_suffix=UrlSuffixes.SEARCH_DETECTIONS.value,
                 created_time_field='eventTime',
                 id_field_name='uuid',
                 top=params.get('top') or DEFAULT_MAX_LIMIT,
@@ -119,7 +119,7 @@ def _http_request_side_effect_decorator(
             return create_logs_mocks(
                 url=full_url,
                 num_of_events=num_of_audit_logs,
-                url_suffix=UrlSuffixes.AUDIT,
+                url_suffix=UrlSuffixes.AUDIT.value,
                 created_time_field='loggedDateTime',
                 id_field_name='loggedUser',
                 top=params.get('top') or 200,
@@ -312,35 +312,35 @@ class TestFetchEvents:
         (
             None,
             '3 years',
-            LastRunLogsTimeFields.WORKBENCH,
+            LastRunLogsTimeFields.WORKBENCH.value,
             '2023-01-01T15:20:45Z',
             ('2020-01-01T15:20:45Z', '2023-01-01T15:20:45Z')
         ),
         (
             None,
             '3 years',
-            LastRunLogsTimeFields.AUDIT,
+            LastRunLogsTimeFields.AUDIT.value,
             '2023-01-01T15:20:45Z',
             ('2022-07-05T15:20:45Z', '2023-01-01T15:20:45Z')
         ),
         (
             None,
             '3 years ago',
-            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
             ('2020-01-01T15:20:45Z', '2020-12-31T15:20:45Z')
         ),
         (
             None,
             '1 month ago',
-            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
             ('2022-12-01T15:20:45Z', '2023-01-01T15:20:45Z')
         ),
         (
             '2023-01-01T15:00:00Z',
             '1 month ago',
-            LastRunLogsTimeFields.SEARCH_DETECTIONS,
+            LastRunLogsTimeFields.SEARCH_DETECTIONS.value,
             '2023-01-01T15:20:45Z',
             ('2023-01-01T15:00:00Z', '2023-01-01T15:20:45Z')
         )
@@ -431,7 +431,7 @@ def test_module_main_flow(mocker):
             ]
         ),
         (
-            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': LogTypes.AUDIT},
+            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': LogTypes.AUDIT.value},
             [
                 {'Id': 1, 'Time': '2023-01-01T15:20:24Z', 'Type': 'Audit'}
             ]
@@ -440,7 +440,7 @@ def test_module_main_flow(mocker):
             {
                 'from_time': '2023-01-01T15:00:45Z',
                 'to_time': '2023-01-01T15:20:45Z',
-                'log_type': LogTypes.OBSERVED_ATTACK_TECHNIQUES
+                'log_type': LogTypes.OBSERVED_ATTACK_TECHNIQUES.value
             },
             [
                 {'Id': 1, 'Time': '2023-01-01T15:18:14Z', 'Type': 'Observed Attack Technique'},
@@ -450,14 +450,18 @@ def test_module_main_flow(mocker):
             {
                 'from_time': '2023-01-01T15:00:45Z',
                 'to_time': '2023-01-01T15:20:45Z',
-                'log_type': LogTypes.SEARCH_DETECTIONS
+                'log_type': LogTypes.SEARCH_DETECTIONS.value
             },
             [
                 {'Id': 1, 'Time': '2023-01-01T15:15:44Z', 'Type': 'Search Detection'},
             ]
         ),
         (
-            {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': LogTypes.WORKBENCH},
+            {
+                'from_time': '2023-01-01T15:00:45Z',
+                'to_time': '2023-01-01T15:20:45Z',
+                'log_type': LogTypes.WORKBENCH.value
+            },
             [
                 {'Id': 1, 'Time': '2023-01-01T15:19:44Z', 'Type': 'Workbench'},
             ]

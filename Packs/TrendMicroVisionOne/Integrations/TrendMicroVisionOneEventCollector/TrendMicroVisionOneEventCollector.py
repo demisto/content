@@ -4,6 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Dict, Any, Tuple
+from enum import Enum
 
 
 # Disable insecure warnings
@@ -14,33 +15,33 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC
 DEFAULT_MAX_LIMIT = 1000
-
+DEFAULT_URL = 'https://api.xdr.trendmicro.com'
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
 
 
-class LastRunLogsTimeFields:
+class LastRunLogsTimeFields(Enum):
     OBSERVED_ATTACK_TECHNIQUES = 'oat_detection_logs_time'
     WORKBENCH = 'workbench_logs_time'
     SEARCH_DETECTIONS = 'search_detection_logs_time'
     AUDIT = 'audit_logs_time'
 
 
-class LogTypes:
+class LogTypes(Enum):
     OBSERVED_ATTACK_TECHNIQUES = 'observed_attack_techniques'
     WORKBENCH = 'workbench'
     SEARCH_DETECTIONS = 'search_detections'
     AUDIT = 'audit'
 
 
-class UrlSuffixes:
+class UrlSuffixes(Enum):
     OBSERVED_ATTACK_TECHNIQUES = '/oat/detections'
     WORKBENCH = '/workbench/alerts'
     SEARCH_DETECTIONS = '/search/detections'
     AUDIT = '/audit/logs'
 
 
-class CreatedTimeFields:
+class CreatedTimeFields(Enum):
     OBSERVED_ATTACK_TECHNIQUES = 'detectedDateTime'
     WORKBENCH = 'createdDateTime'
     SEARCH_DETECTIONS = 'eventTime'
@@ -48,21 +49,21 @@ class CreatedTimeFields:
 
 
 URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD = {
-    UrlSuffixes.AUDIT: (
-        LogTypes.AUDIT,
-        CreatedTimeFields.AUDIT
+    UrlSuffixes.AUDIT.value: (
+        LogTypes.AUDIT.value,
+        CreatedTimeFields.AUDIT.value
     ),
-    UrlSuffixes.WORKBENCH: (
-        LogTypes.WORKBENCH,
-        CreatedTimeFields.WORKBENCH
+    UrlSuffixes.WORKBENCH.value: (
+        LogTypes.WORKBENCH.value,
+        CreatedTimeFields.WORKBENCH.value
     ),
-    UrlSuffixes.SEARCH_DETECTIONS: (
-        LogTypes.SEARCH_DETECTIONS,
-        CreatedTimeFields.SEARCH_DETECTIONS
+    UrlSuffixes.SEARCH_DETECTIONS.value: (
+        LogTypes.SEARCH_DETECTIONS.value,
+        CreatedTimeFields.SEARCH_DETECTIONS.value
     ),
-    UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES: (
-        LogTypes.OBSERVED_ATTACK_TECHNIQUES,
-        CreatedTimeFields.OBSERVED_ATTACK_TECHNIQUES
+    UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value: (
+        LogTypes.OBSERVED_ATTACK_TECHNIQUES.value,
+        CreatedTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
     )
 }
 
@@ -153,7 +154,7 @@ class Client(BaseClient):
         for event in events:
             event['event_type'] = event_type
             if event_time := event.get(created_time_field):
-                if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS:
+                if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS.value:
                     event['_time'] = timestamp_to_datestring(timestamp=event_time, date_format=DATE_FORMAT, is_utc=True)
                 else:
                     event['_time'] = event_time
@@ -194,7 +195,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix=UrlSuffixes.WORKBENCH,
+            url_suffix=UrlSuffixes.WORKBENCH.value,
             params=params,
             limit=limit
         )
@@ -230,7 +231,7 @@ class Client(BaseClient):
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # The data retrieval time range cannot be greater than 365 days.
         return self.get_events(
-            url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES,
+            url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value,
             params={
                 'detectedStartDateTime': detected_start_datetime,
                 'detectedEndDateTime': detected_end_datetime,
@@ -269,7 +270,7 @@ class Client(BaseClient):
             params['endDateTime'] = end_datetime
 
         return self.get_events(
-            url_suffix=UrlSuffixes.SEARCH_DETECTIONS,
+            url_suffix=UrlSuffixes.SEARCH_DETECTIONS.value,
             params=params,
             limit=limit,
             headers={'TMV1-Query': '*', "Authorization": f"Bearer {self.api_key}"}
@@ -316,7 +317,7 @@ class Client(BaseClient):
             params['orderBy'] = order_by
 
         return self.get_events(
-            url_suffix=UrlSuffixes.AUDIT,
+            url_suffix=UrlSuffixes.AUDIT.value,
             params=params,
             limit=limit
         )
@@ -357,14 +358,16 @@ def get_datetime_range(
     last_run_time_before_parse = last_run_time_datetime.strftime(date_format)  # type: ignore[union-attr]
     demisto.info(f'{last_run_time_before_parse=}')
 
-    if log_type_time_field_name == LastRunLogsTimeFields.AUDIT and now - last_run_time_datetime > timedelta(days=180):
+    if log_type_time_field_name == LastRunLogsTimeFields.AUDIT.value and now - last_run_time_datetime > timedelta(
+        days=180
+    ):
         # cannot retrieve audit logs that are older than 180 days.
         last_run_time_datetime = dateparser.parse(  # type: ignore[assignment]
             '180 days ago',
             settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
         )
 
-    if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES:
+    if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
         one_year_from_last_run_time = last_run_time_datetime + timedelta(days=365)  # type: ignore[operator]
@@ -455,7 +458,7 @@ def get_workbench_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=workbench_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsTimeFields.WORKBENCH,
+        log_type_time_field_name=LastRunLogsTimeFields.WORKBENCH.value,
         date_format=date_format
     )
     workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
@@ -463,7 +466,7 @@ def get_workbench_logs(
 
     latest_workbench_log_time = get_latest_log_created_time(
         logs=workbench_logs,
-        log_type=LogTypes.WORKBENCH,
+        log_type=LogTypes.WORKBENCH.value,
         date_format=date_format,
         increase_latest_log=True
     ) or end_time
@@ -507,7 +510,7 @@ def get_observed_attack_techniques_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=observed_attack_technique_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES,
+        log_type_time_field_name=LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
         date_format=date_format
     )
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
@@ -517,7 +520,7 @@ def get_observed_attack_techniques_logs(
 
     latest_observed_attack_technique_log_time = get_latest_log_created_time(
         logs=observed_attack_techniques_logs,
-        log_type=LogTypes.OBSERVED_ATTACK_TECHNIQUES,
+        log_type=LogTypes.OBSERVED_ATTACK_TECHNIQUES.value,
         date_format=date_format,
         increase_latest_log=True
     ) or end_time
@@ -549,14 +552,14 @@ def get_search_detection_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=search_detection_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS,
+        log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS.value,
         date_format=date_format
     )
     search_detection_logs = client.get_search_detection_logs(start_datetime=start_time, top=limit, limit=limit)
 
     latest_search_detection_log_time = get_latest_log_created_time(
         logs=search_detection_logs,
-        log_type=LogTypes.SEARCH_DETECTIONS,
+        log_type=LogTypes.SEARCH_DETECTIONS.value,
         date_format=date_format,
         increase_latest_log=True
     ) or end_time
@@ -588,7 +591,7 @@ def get_audit_logs(
     start_time, end_time = get_datetime_range(
         last_run_time=audit_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsTimeFields.AUDIT,
+        log_type_time_field_name=LastRunLogsTimeFields.AUDIT.value,
         date_format=date_format
     )
     audit_logs = client.get_audit_logs(
@@ -597,7 +600,7 @@ def get_audit_logs(
 
     latest_audit_log_time = get_latest_log_created_time(
         logs=audit_logs,
-        log_type=LogTypes.AUDIT,
+        log_type=LogTypes.AUDIT.value,
         date_format=date_format,
     ) or end_time
 
@@ -630,7 +633,7 @@ def fetch_events(
     demisto.info(f'starting to fetch {LogTypes.WORKBENCH} logs')
     workbench_logs, latest_workbench_log_time = get_workbench_logs(
         client=client,
-        workbench_log_last_run_time=last_run.get(LastRunLogsTimeFields.WORKBENCH),
+        workbench_log_last_run_time=last_run.get(LastRunLogsTimeFields.WORKBENCH.value),
         first_fetch=first_fetch,
         limit=limit
     )
@@ -638,7 +641,9 @@ def fetch_events(
     demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
     observed_attack_techniques_logs, latest_observed_attack_technique_log_time = get_observed_attack_techniques_logs(
         client=client,
-        observed_attack_technique_log_last_run_time=last_run.get(LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES),
+        observed_attack_technique_log_last_run_time=last_run.get(
+            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
+        ),
         first_fetch=first_fetch,
         limit=limit
     )
@@ -646,7 +651,7 @@ def fetch_events(
     demisto.info(f'starting to fetch {LogTypes.SEARCH_DETECTIONS} logs')
     search_detection_logs, latest_search_detection_log_time = get_search_detection_logs(
         client=client,
-        search_detection_log_last_run_time=last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS),
+        search_detection_log_last_run_time=last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS.value),
         first_fetch=first_fetch,
         limit=limit
     )
@@ -654,7 +659,7 @@ def fetch_events(
     demisto.info(f'starting to fetch {LogTypes.AUDIT} logs')
     audit_logs, latest_audit_log_time = get_audit_logs(
         client=client,
-        audit_log_last_run_time=last_run.get(LastRunLogsTimeFields.AUDIT),
+        audit_log_last_run_time=last_run.get(LastRunLogsTimeFields.AUDIT.value),
         first_fetch=first_fetch,
         limit=limit
     )
@@ -662,10 +667,10 @@ def fetch_events(
     events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
     updated_last_run = {
-        LastRunLogsTimeFields.WORKBENCH: latest_workbench_log_time,
-        LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES: latest_observed_attack_technique_log_time,
-        LastRunLogsTimeFields.SEARCH_DETECTIONS: latest_search_detection_log_time,
-        LastRunLogsTimeFields.AUDIT: latest_audit_log_time
+        LastRunLogsTimeFields.WORKBENCH.value: latest_workbench_log_time,
+        LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value: latest_observed_attack_technique_log_time,
+        LastRunLogsTimeFields.SEARCH_DETECTIONS.value: latest_search_detection_log_time,
+        LastRunLogsTimeFields.AUDIT.value: latest_audit_log_time
     }
     demisto.info(f'{updated_last_run=}')
 
@@ -767,10 +772,10 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             parse_search_detection_logs() + parse_audit_logs()
     else:
         log_type_to_parse_func = {
-            LogTypes.AUDIT: parse_audit_logs,
-            LogTypes.OBSERVED_ATTACK_TECHNIQUES: parse_observed_attack_techniques_logs,
-            LogTypes.SEARCH_DETECTIONS: parse_search_detection_logs,
-            LogTypes.WORKBENCH: parse_workbench_logs
+            LogTypes.AUDIT.value: parse_audit_logs,
+            LogTypes.OBSERVED_ATTACK_TECHNIQUES.value: parse_observed_attack_techniques_logs,
+            LogTypes.SEARCH_DETECTIONS.value: parse_search_detection_logs,
+            LogTypes.WORKBENCH.value: parse_workbench_logs
         }
         events = log_type_to_parse_func[log_type]()
 
