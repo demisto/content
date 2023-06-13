@@ -1,7 +1,6 @@
 commonfields:
   id: JiraV3ConvertAttachmentsToTable
   version: -1
-enabled: false
 comment: This script is used to convert Jira attachments to a table.
 name: JiraV3ConvertAttachmentsToTable
 outputs: []

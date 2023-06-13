@@ -4971,7 +4971,8 @@
             "integrations": "Azure Sentinel",
             "fromversion": "5.5.0",
             "is_mockable": false,
-            "playbookID": "TestAzureSentinelPlaybookV2"
+            "playbookID": "TestAzureSentinelPlaybookV2",
+            "instance_names": "azure_sentinel_dev"
         },
         {
             "integrations": "AnsibleAlibabaCloud",
@@ -5586,7 +5587,6 @@
         "Elasticsearch_v2_test-v8": "CRTX-61980",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
-        "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode": "No credentials",
         "Google-KMS-test": "No instance",
@@ -5663,7 +5663,7 @@
         "ArcSight Logger": "No instance - Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
-        "Prisma Access": "No instance - Instance will be provided soon by Lior and Prasen - Issue 27112",
+        "Prisma Access": "No instance - Issue CRTX-84209",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
