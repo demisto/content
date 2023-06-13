@@ -69,9 +69,9 @@ Returns the configuration information of the Lambda function and a presigned URL
 | AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds | string | A list of VPC security groups IDs. | 
 | AWS.Lambda.Functions.Configuration.VpcConfig.VpcId | string | The ID of the VPC. | 
 | AWS.Lambda.Functions.Configuration.DeadLetterConfig.TargetArn | string | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. | 
-| AWS.Lambda.Functions.Configuration.Environment.Variables | string | Environment variable key-value pairs | 
-| AWS.Lambda.Functions.Configuration.Environment.Error.ErrorCode | string | Error messages for environment variables that could not be applied. The error code. | 
-| AWS.Lambda.Functions.Configuration.Environment. | string | Error messages for environment variables that could not be applied. The error message. | 
+| AWS.Lambda.Functions.Configuration.Environment.Variables | string | Environment variable key-value pairs. | 
+| AWS.Lambda.Functions.Configuration.Environment.Error.ErrorCode | string | The error code for environment variables that could not be applied. | 
+| AWS.Lambda.Functions.Configuration.Environment.Error.Message | string | The error message for environment variables that could not be applied. |
 | AWS.Lambda.Functions.Configuration.KMSKeyArn | string | The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK. | 
 | AWS.Lambda.Functions.Configuration.TracingConfig.Mode | string | The function's AWS X-Ray tracing configuration. The tracing mode. | 
 | AWS.Lambda.Functions.Configuration.MasterArn | string | The ARN of the master function. | 
@@ -408,7 +408,7 @@ Retrieves details about your account's limits and usage in an AWS Region.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -468,8 +468,422 @@ Retrieves details about your account's limits and usage in an AWS Region.
 
 #### Human Readable Output
 
+
+
 >### AWS Lambda Functions
 >|AccountLimit|AccountUsage|
 >|---|---|
 >| TotalCodeSize: 80530636800<br/>CodeSizeUnzipped: 262144000<br/>CodeSizeZipped: 52428800<br/>ConcurrentExecutions: 1000<br/>UnreservedConcurrentExecutions: 1000 | TotalCodeSize: 272431<br/>FunctionCount: 3 |
 
+
+ ### aws-lambda-get-policy
+
+***
+Returns the resource-based IAM policy for a function, version, or alias.
+
+#### Base Command
+
+`aws-lambda-get-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Policy.Version | String | The version of the policy. | 
+| AWS.Lambda.Policy.Id | String | The ID of the policy. | 
+| AWS.Lambda.Policy.Statement.Sid | String | The statement ID within the policy. | 
+| AWS.Lambda.Policy.Statement.Effect | String | The effect \(allow/deny\) specified in the policy statement. | 
+| AWS.Lambda.Policy.Statement.Principal.AWS | String | The AWS principal ARN specified in the AWS Lambda policy statement. | 
+| AWS.Lambda.Policy.Statement.Action | String | The action specified in the AWS Lambda policy statement. | 
+| AWS.Lambda.Policy.Statement.Resource | String | The resource ARN specified in the AWS Lambda policy statement. | 
+| AWS.Lambda.RevisionId | String | A unique identifier for the current revision of the policy. | 
+
+#### Command example
+```!aws-lambda-get-policy functionName="test"```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Lambda": {
+            "Policy": {
+                "Id": "default",
+                "Statement": [
+                    {
+                        "Action": "lambda",
+                        "Condition": {
+                            "ArnLike": {
+                                "AWS:SourceArn": "arn:aws:dummy-api:dummy:12345678:dummy/*/*/test"
+                            }
+                        },
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "apidummy.dummy.com"
+                        },
+                        "Resource": "arn:aws:dummy-api:dummy:12345678:dummy/*/*/test",
+                        "Sid": "lambda-1111-1111-1111-1111-1111"
+                    }
+                ],
+                "Version": "2012-10-17"
+            },
+            "RevisionId": "1111-1111-111-111-11111"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy
+>|Action|Effect|Id|Resource|RevisionId|Sid|Version|Principal|
+>|---|---|---|---|---|---|---|
+>| lambda | Allow | default | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 1111-1111-111-111-11111 | arn:aws:dummy-api:dummy:12345678:dummy/*/*/test | 2015-10-17 | apidummy.dummy.com |
+
+
+### aws-lambda-list-versions-by-function
+
+***
+Returns a list of versions, with the version-specific configuration of each.
+
+#### Base Command
+
+`aws-lambda-list-versions-by-function`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+| Marker | Specify the pagination token that’s returned by a previous request to retrieve the next page of results. | Optional | 
+| MaxItems | The maximum number of versions to return. Note that ListVersionsByFunction returns a maximum of 50 items in each response, even if you set the number higher. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.NextMarker | String | The pagination token that's included if more results are available. | 
+| AWS.Lambda.Versions.FunctionName | String | The name of the function. | 
+| AWS.Lambda.Versions.FunctionArn | String | The function’s Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.Versions.Runtime | String | The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive. | 
+| AWS.Lambda.Versions.Role | String | The function’s execution role. | 
+| AWS.Lambda.Versions.Handler | String | The function that Lambda calls to begin running your function. | 
+| AWS.Lambda.Versions.CodeSize | Number | The size of the function’s deployment package, in bytes. | 
+| AWS.Lambda.Versions.Description | String | The function’s description. | 
+| AWS.Lambda.Versions.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
+| AWS.Lambda.Versions.MemorySize | Number | The amount of memory available to the function at runtime. | 
+| AWS.Lambda.Versions.LastModified | String | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.Versions.CodeSha256 | String | The SHA256 hash of the function’s deployment package. | 
+| AWS.Lambda.Versions.Version | String | The version of the Lambda function. | 
+| AWS.Lambda.Versions.VpcConfig.SubnetIds | String | A list of VPC subnet IDs. | 
+| AWS.Lambda.Versions.VpcConfig.SecurityGroupIds | String | A list of VPC security group IDs. | 
+| AWS.Lambda.Versions.VpcConfig.VpcId | String | The ID of the VPC. | 
+| AWS.Lambda.Versions.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. | 
+| AWS.Lambda.Versions.Environment.Variables.string | String | Environment variable key-value pairs. Omitted from CloudTrail logs. | 
+| AWS.Lambda.Versions.Environment.Error.ErrorCode | String | The error code for environment variables that couldn't be applied. | 
+| AWS.Lambda.Versions.Environment.Error.Message | String | The error message for environment variables that couldn't be applied. | 
+| AWS.Lambda.Versions.KMSKeyArn | String | The ARN of the KMS key used to encrypt the function's environment variables. | 
+| AWS.Lambda.Versions.TracingConfig.Mode | String | The tracing mode for the Lambda function. | 
+| AWS.Lambda.Versions.MasterArn | String | The ARN of the main function for Lambda@Edge functions. | 
+| AWS.Lambda.Versions.FunctionVersion | String | The specific function version. | 
+| AWS.Lambda.Versions.Tags | Object | The tags assigned to the Lambda function. | 
+| AWS.Lambda.Versions.State | String | The current state of the function. When the state is Inactive, you can reactivate the function by invoking it. | 
+| AWS.Lambda.Versions.StateReason | String | The reason for the function’s current state. | 
+| AWS.Lambda.Versions.StateReasonCode | String | The reason code for the current state of the function. | 
+| AWS.Lambda.Versions.LastUpdateStatus | String | The status of the last update that was performed on the function. This is first set to Successful after function creation completes. | 
+| AWS.Lambda.Versions.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. | 
+| AWS.Lambda.Versions.LastUpdateStatusReasonCode | String | The reason code for the last update operation status. | 
+| AWS.Lambda.Versions.PackageType | String | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. | 
+| AWS.Lambda.Versions.ImageConfigResponse.ImageConfigError.ErrorCode | String | The error code for image configuration. | 
+| AWS.Lambda.Versions.ImageConfigResponse.ImageConfigError.Message | String | The error message for image configuration. | 
+| AWS.Lambda.Versions.ImageConfigResponse.ImageConfigError.Type | String | The error type for image configuration. | 
+| AWS.Lambda.Versions.ImageConfigResponse.ImageConfig | Object | The image configuration values. | 
+
+#### Command example
+```!aws-lambda-list-versions-by-function functionName=test```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Lambda": {
+            "Versions": [
+                {
+                    "Architectures": [
+                        "test"
+                    ],
+                    "CodeSha256": "111111111111111",
+                    "CodeSize": 111,
+                    "Description": "",
+                    "EphemeralStorage": {
+                        "Size": 111
+                    },
+                    "FunctionArn": "arn:aws:dummy-api:dummy:12345678:dummy/*/*/test",
+                    "FunctionName": "test",
+                    "Handler": "handler",
+                    "LastModified": "2024-06-05T11:54:29.646+0000",
+                    "MemorySize": 128,
+                    "PackageType": "Zip",
+                    "RevisionId": "11111-11111-1111",
+                    "Role": "dummyy.111111:role/dummy-role/test-role-11111",
+                    "Runtime": "nodejs18.x",
+                    "SnapStart": {
+                        "ApplyOn": "None",
+                        "OptimizationStatus": "Off"
+                    },
+                    "Timeout": 3,
+                    "TracingConfig": {
+                        "Mode": "PassThrough"
+                    },
+                    "Version": "$LATEST"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Versions
+>|Function Name|Role|Runtime|Last Modified|State|Description|
+>|---|---|---|---|---|---|
+>| test | dummy.111111:role/dummy-role/test-role-11111 | nodejs18.x | 2024-06-05T11:54:29.646+0000 |  |  |
+
+
+### aws-lambda-get-function-url-config
+
+***
+Returns details about a Lambda function URL.
+
+#### Base Command
+
+`aws-lambda-get-function-url-config`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+| qualifier | The alias name. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionURLConfig.FunctionUrl | String | The HTTP URL endpoint for the function. | 
+| AWS.Lambda.FunctionURLConfig.FunctionArn | String | The Amazon Resource Name \(ARN\) of your function. | 
+| AWS.Lambda.FunctionURLConfig.AuthType | String | The type of authentication that the function URL uses. Set to AWS_IAM if you want to restrict access to authenticated users only. Set to NONE if you want to bypass IAM authentication to create a public endpoint. | 
+| AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials | Boolean | Whether to allow cookies or other credentials in requests to the function URL. The default is false. | 
+| AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders | List | The HTTP headers that origins can include in requests to the function URL. For example Date, Keep-Alive, X-Custom-Header. | 
+| AWS.Lambda.FunctionURLConfig.Cors.AllowMethods | List | The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character \( \*\). | 
+| AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins | List | The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character \( \*\). | 
+| AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders | List | The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header. | 
+| AWS.Lambda.FunctionURLConfig.Cors.MaxAge | Number | The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results. | 
+| AWS.Lambda.FunctionURLConfig.CreationTime | String | When the function URL was created, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.FunctionURLConfig.InvokeMode | String | Use one of the following options: BUFFERED – This is the default option. Lambda invokes your function using the Invoke API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB. RESPONSE_STREAM – Your function streams payload results as they become available. Lambda invokes your function using the InvokeWithResponseStream API operation. The maximum response payload size is 20 MB, however, you can request a quota increase. | 
+
+#### Command example
+```!aws-lambda-get-function-url-config functionName="test"```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Lambda": {
+            "FunctionURLConfig": {
+                "AuthType": "NONE",
+                "CreationTime": "2024-05-02T07:23:12.573458Z",
+                "FunctionArn": "dummy111111:role/dummy/test-11111",
+                "FunctionUrl": "hxxps://dummy.com/",
+                "InvokeMode": "BUFFERED",
+                "LastModifiedTime": "2024-05-02T07:23:12.573458Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Function URL Config
+>|Auth Type|Creation Time|Function Arn|Function Url|Invoke Mode|Last Modified Time|
+>|---|---|---|---|---|---|
+>| NONE | 2024-05-02T07:23:12.573458Z | dummy.111111:role/dummy/test-11111 | hxxps:<span>//</span>dummy.com/ | BUFFERED | 2024-05-02T07:23:12.573458Z |
+
+
+### aws-lambda-get-function-configuration
+
+***
+Returns the version-specific settings of a Lambda function or version. The output includes only options that can vary between versions of a function.
+
+#### Base Command
+
+`aws-lambda-get-function-configuration`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+| qualifier | Specify a version or alias to get details about a published version of the function. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionConfig.FunctionName | String | The name of the function. | 
+| AWS.Lambda.FunctionConfig.FunctionArn | String | The function’s Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.FunctionConfig.Runtime | String | The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive. | 
+| AWS.Lambda.FunctionConfig.Role | String | The function’s execution role. | 
+| AWS.Lambda.FunctionConfig.Handler | String | The function that Lambda calls to begin running your function. | 
+| AWS.Lambda.FunctionConfig.CodeSize | Number | The size of the function’s deployment package, in bytes. | 
+| AWS.Lambda.FunctionConfig.Description | String | The function’s description. | 
+| AWS.Lambda.FunctionConfig.Timeout | Number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
+| AWS.Lambda.FunctionConfig.MemorySize | Number | The amount of memory available to the function at runtime. | 
+| AWS.Lambda.FunctionConfig.LastModified | String | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.FunctionConfig.CodeSha256 | String | The SHA256 hash of the function’s deployment package. | 
+| AWS.Lambda.FunctionConfig.Version | String | The version of the Lambda function. | 
+| AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds | String | A list of VPC subnet IDs. | 
+| AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds | String | A list of VPC security group IDs. | 
+| AWS.Lambda.FunctionConfig.VpcConfig.VpcId | String | The ID of the VPC. | 
+| AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn | String | The Amazon Resource Name \(ARN\) of an Amazon SQS queue or Amazon SNS topic. | 
+| AWS.Lambda.FunctionConfig.Environment.Variables.string | String | Environment variable key-value pairs. Omitted from CloudTrail logs. | 
+| AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode | String | The error code for environment variables that couldn't be applied. | 
+| AWS.Lambda.FunctionConfig.Environment.Error.Message | String | The error message for environment variables that couldn't be applied. | 
+| AWS.Lambda.FunctionConfig.KMSKeyArn | String | The ARN of the KMS key used to encrypt the function's environment variables. | 
+| AWS.Lambda.FunctionConfig.TracingConfig.Mode | String | The tracing mode for the Lambda function. | 
+| AWS.Lambda.FunctionConfig.MasterArn | String | The ARN of the main function for Lambda@Edge functions. | 
+| AWS.Lambda.FunctionConfig.FunctionVersion | String | The specific function version. | 
+| AWS.Lambda.FunctionConfig.Tags | Object | The tags assigned to the Lambda function. | 
+| AWS.Lambda.FunctionConfig.State | String | The current state of the function. When the state is Inactive, you can reactivate the function by invoking it. | 
+| AWS.Lambda.FunctionConfig.StateReason | String | The reason for the function’s current state. | 
+| AWS.Lambda.FunctionConfig.StateReasonCode | String | The reason code for the current state of the function. | 
+| AWS.Lambda.FunctionConfig.LastUpdateStatus | String | The status of the last update that was performed on the function. This is first set to Successful after function creation completes. | 
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReason | String | The reason for the last update that was performed on the function. | 
+| AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode | String | The reason code for the last update operation status. | 
+| AWS.Lambda.FunctionConfig.PackageType | String | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. | 
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfigError.ErrorCode | String | The error code for image configuration. | 
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfigError.Message | String | The error message for image configuration. | 
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfigError.Type | String | The error type for image configuration. | 
+| AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig | Object | The image configuration values. | 
+
+#### Command example
+```!aws-lambda-get-function-configuration functionName=test```
+#### Context Example
+```json
+{
+    "AWS": {
+        "Lambda": {
+            "FunctionConfig": {
+                "Architectures": [
+                    "x86"
+                ],
+                "CodeSha256": "111111/1111111",
+                "CodeSize": 000,
+                "Description": "",
+                "EphemeralStorage": {
+                    "Size": 000
+                },
+                "FunctionArn": "arn:aws:lambda:dummy1111:function:test",
+                "FunctionName": "test",
+                "Handler": "handler",
+                "LastModified": "2024-06-05T11:54:29.646+0000",
+                "LastUpdateStatus": "Successful",
+                "MemorySize": 128,
+                "PackageType": "Zip",
+                "RevisionId": "11111-1111-11111",
+                "Role": "11111:role/dummy-role/test-role-11111",
+                "Runtime": "nodejs18.x",
+                "RuntimeVersionConfig": {
+                    "RuntimeVersionArn": "arn:aws:lambda:dummy::runtime11111111"
+                },
+                "SnapStart": {
+                    "ApplyOn": "None",
+                    "OptimizationStatus": "Off"
+                },
+                "State": "Active",
+                "Timeout": 3,
+                "TracingConfig": {
+                    "Mode": "PassThrough"
+                },
+                "Version": "$LATEST"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Function Configuration
+>|Code Sha256|Description|Function Arn|Function Name|Revision Id|Runtime|State|
+>|---|---|---|---|---|---|---|
+>| 11111111 |  | dummy:role/dummy-role/test-role-11111 | test | 11111-11111-111 | nodejs18.x | Active |
+
+
+### aws-lambda-delete-function-url-config
+
+***
+Deletes a Lambda function URL. When you delete a function URL, you can’t recover it. Creating a new function URL results in a different URL address.
+
+#### Base Command
+
+`aws-lambda-delete-function-url-config`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+| qualifier | Specify a version or alias to get details about a published version of the function. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-delete-function
+
+***
+Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
+
+#### Base Command
+
+`aws-lambda-delete-function`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+| qualifier | Specify a version or alias to get details about a published version of the function. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
