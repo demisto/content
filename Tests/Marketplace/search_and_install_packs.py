@@ -236,6 +236,7 @@ def find_malformed_pack_id(body: str) -> List:
     malformed_ids = []
     if body:
         with contextlib.suppress(JSONDecodeError):
+            malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
             response_info = json.loads(body)
             if error_info := response_info.get('error'):
                 errors_info = [error_info]
@@ -247,7 +248,6 @@ def find_malformed_pack_id(body: str) -> List:
                     malformed_ids.extend(error.split('pack id: ')[1].replace(']', '').replace('[', '').replace(
                         ' ', '').split(','))
                 else:
-                    malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
                     malformed_pack_id = malformed_pack_pattern.findall(str(error))
                     if malformed_pack_id and error:
                         malformed_ids.extend(malformed_pack_id)
@@ -311,11 +311,11 @@ def install_packs_private(client: demisto_client,
                                  test_pack_path=test_pack_path)
 
 
-def get_error_ids(body: str) -> set[str] | None:
+def get_error_ids(body: str) -> set[str]:
     with contextlib.suppress(JSONDecodeError):
         response_info = json.loads(body)
         return {error["id"] for error in response_info.get("errors", [])}
-    return None
+    return set()
 
 
 def install_packs(client: demisto_client,
@@ -376,7 +376,7 @@ def install_packs(client: demisto_client,
                     logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
                     packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
 
-                if (error_ids := get_error_ids(ex.body)) and TEST_MODELING_RULE_ERROR_CODE in error_ids:
+                if (error_ids := get_error_ids(ex.body)) and INSTALL_MODELING_RULE_ERROR_CODE in error_ids:
                     # If we got this error code, it means that the modeling rules are not valid, exiting install flow.
                     raise Exception(f"Test modeling rules for packs {packs_to_install} are not valid") from ex
 
