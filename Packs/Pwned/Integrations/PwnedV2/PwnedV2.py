@@ -9,14 +9,11 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
-''' GLOBALS/PARAMS '''
-
+params = demisto.params()
 VENDOR = 'Have I Been Pwned? V2'
-MAX_RETRY_ALLOWED = demisto.params().get('max_retry_time', -1)
-API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
-print(API_KEY)
-USE_SSL = not demisto.params().get('insecure', False)
+MAX_RETRY_ALLOWED = params.get('max_retry_time', -1)
+API_KEY = params.get('credentials_api_key', {}).get('password') or params.get('api_key')
+USE_SSL = not params.get('insecure', False)
 BASE_URL = 'https://haveibeenpwned.com/api/v3'
 HEADERS = {
     'hibp-api-key': API_KEY,
@@ -25,9 +22,14 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email') == 'SUSPICIOUS' else 3
-DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
+DEFAULT_DBOT_SCORE_EMAIL = 2 if params.get('default_dbot_score_email') == 'SUSPICIOUS' else 3
+DEFAULT_DBOT_SCORE_DOMAIN = 2 if params.get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
+
+''' GLOBALS/PARAMS '''
+
+
+VENDOR = 'Have I Been Pwned? V2'
 SUFFIXES = {
     "email": '/breachedaccount/',
     "domain": '/breaches?domain=',
@@ -331,27 +333,32 @@ def pwned_username(username_list):
     return api_res_list
 
 
-command = demisto.command()
-LOG('Command being called is: {}'.format(command))
-try:
-    handle_proxy()
-    set_retry_end_time()
-    commands = {
-        'test-module': test_module,
-        'email': pwned_email_command,
-        'pwned-email': pwned_email_command,
-        'domain': pwned_domain_command,
-        'pwned-domain': pwned_domain_command,
-        'pwned-username': pwned_username_command
-    }
-    print(API_KEY)
+def main():
     if not API_KEY:
         raise DemistoException('API key must be provided.')
-    if command in commands:
-        md_list, ec_list, api_email_res_list = commands[command](demisto.args())
-        for md, ec, api_paste_res in zip(md_list, ec_list, api_email_res_list):
-            return_outputs(md, ec, api_paste_res)
+    print(API_KEY)
+    command = demisto.command()
+    LOG(f'Command being called is: {command}')
+    try:
+        handle_proxy()
+        set_retry_end_time()
+        commands = {
+            'test-module': test_module,
+            'email': pwned_email_command,
+            'pwned-email': pwned_email_command,
+            'domain': pwned_domain_command,
+            'pwned-domain': pwned_domain_command,
+            'pwned-username': pwned_username_command
+        }
+        if command in commands:
+            md_list, ec_list, api_email_res_list = commands[command](demisto.args())
+            for md, ec, api_paste_res in zip(md_list, ec_list, api_email_res_list):
+                return_outputs(md, ec, api_paste_res)
 
-# Log exceptions
-except Exception as e:
-    return_error(str(e))
+    # Log exceptions
+    except Exception as e:
+        return_error(str(e))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
