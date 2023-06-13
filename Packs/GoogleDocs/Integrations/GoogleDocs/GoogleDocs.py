@@ -368,6 +368,8 @@ def main():  # pragma: no cover
     disable_ssl = params.get('insecure', False)
     service_account_credentials = params.get('credentials_service_account', {}).get(
         'password') or params.get('service_account_credentials')
+    if not service_account_credentials:
+        return_error('Service Account Private Key file must be provided.')
     try:
         service = get_client(json.loads(service_account_credentials), SCOPES, proxy, disable_ssl)
         if command == 'google-docs-update-document':
