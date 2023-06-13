@@ -4782,6 +4782,7 @@ def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
 
     if not ids:
         command_results = CommandResults(readable_output='No scans match the arguments/filter.')
+        scan_in_progress = False
 
     else:
         response = ODS_get_scans_by_id_request(ids)

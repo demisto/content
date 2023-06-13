@@ -6,7 +6,7 @@ from urllib.parse import unquote
 from _pytest.python_api import raises
 
 import demistomock as demisto
-from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus
+from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus, ScheduledCommand
 from test_data import input_data
 from freezegun import freeze_time
 
@@ -4680,6 +4680,79 @@ def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
 
 
 @pytest.mark.parametrize(
+    'command_args, query_result, entites_result, readable_output',
+    (
+        ({'wait_for_result': False}, [], {}, 'No scans match the arguments/filter.'),
+        ({'wait_for_result': False}, ['123456'], {'resources': [{'id': '123456'}]},
+         ('### CrowdStrike Falcon ODS Scans\n'
+          '|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|\n'
+          '|---|---|---|---|---|---|---|---|---|\n'
+          '| 123456 |  |  |  |  |  |  |  |  |\n')),
+        ({'wait_for_result': True, 'ids': '123456'}, [], {'resources': [{'status': 'pending'}]}, 'Fetching Results:'),
+    )
+)
+def test_cs_falcon_ODS_query_scans_command(mocker, command_args, query_result, entites_result, readable_output):
+    """
+    Test cs_falcon_ODS_query_scans_command.
+
+    Given
+        - A request for a list of ODS endpoint scans by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command or the "cs-falcon-ods-create-scan".
+
+    Then
+        - Get a list of scans from CS Falcon and poll for results if wait_for_results is True.
+    """
+
+# @polling_function(
+#     'cs-falcon-ods-query-scan',
+#     polling_arg_name='wait_for_result',
+#     interval=arg_to_number(dict_safe_get(demisto.args(), ['interval_in_seconds'], 0, (int, str))),
+#     timeout=arg_to_number(dict_safe_get(demisto.args(), ['timeout_in_seconds'], 0, (int, str))),
+# )
+# def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
+#     # call the query api if no ids given
+#     ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
+
+#     if not ids:
+#         command_results = CommandResults(readable_output='No scans match the arguments/filter.')
+#         scan_in_progress = False
+
+#     else:
+#         response = ODS_get_scans_by_id_request(ids)
+#         resources = response.get('resources', [])
+
+#         scan_in_progress = (
+#             len(resources) == 1
+#             and dict_safe_get(resources, [0, 'status']) in ('pending', 'running')
+#         )
+
+#         human_readable = ODS_get_scan_resources_to_human_readable(resources)
+#         command_results = CommandResults(
+#             raw_response=response,
+#             outputs_prefix='CrowdStrike.ODSScan',
+#             outputs_key_field='id',
+#             outputs=resources,
+#             readable_output=human_readable,
+#         )
+
+#     return PollResult(response=command_results,
+#                       continue_to_poll=scan_in_progress,
+#                       args_for_next_run=args)
+
+    from CrowdStrikeFalcon import cs_falcon_ODS_query_scans_command
+
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    mocker.patch('CrowdStrikeFalcon.get_ODS_scan_ids', return_value=query_result)
+    mocker.patch('CrowdStrikeFalcon.ODS_get_scans_by_id_request', return_value=entites_result)
+
+    result = cs_falcon_ODS_query_scans_command(command_args)
+
+    assert result.readable_output == readable_output
+
+
+@pytest.mark.parametrize(
     'input_params, call_params',
     (
         ({'key1': 'val1', 'key2': None}, 'key1=val1'),
@@ -5191,7 +5264,7 @@ def test_make_create_scan_request_body(args, is_scheduled, expected_result):
 
     if is_scheduled:
         assert 'hosts' not in output
-        assert type(output['schedule']['interval']) is int  # function doesn't enforce this
+        assert isinstance(output['schedule']['interval'], int)  # function doesn't enforce this
     else:
         assert 'hosts' in output
         assert 'schedule' not in output
