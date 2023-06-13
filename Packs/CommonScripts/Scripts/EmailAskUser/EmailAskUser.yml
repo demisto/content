@@ -70,8 +70,6 @@ args:
   description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all`
     to complete all tasks from all playbooks
   defaultValue: ${currentPlaybookID}
-- name: usingSender
-  description: Indicates the email sender to use when sending the email.
 scripttarget: 0
 runonce: false
 marketplaces:

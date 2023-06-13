@@ -80,7 +80,6 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | cc                | The CC email address.                                                                                                  |
 | bcc               | The BCC email address.                                                                                                 |
 | playbookTaskID    | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all plabooks. |
- | usingSender       | Indicates the email instance to use when sending the email.                                                            |
 
 ## Outputs
 ---
