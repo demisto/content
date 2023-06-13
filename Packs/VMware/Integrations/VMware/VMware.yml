@@ -16,12 +16,11 @@ configuration:
   type: 9
   additionalinfo: Username and password used to login into the system.
   displaypassword: ""
-  hiddenusername: false
 - name: redirect_std_out
   display: Redirect stdout
   required: false
   type: 8
-  additionalinfo: Used for troubleshooting purposes. 
+  additionalinfo: Used for troubleshooting purposes.
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -33,8 +32,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo:
-description: VMware vCenter server is a centralized management application that lets
-  you manage virtual machines and ESXi hosts centrally.
+description: VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.
 display: VMware
 name: VMware
 script:
@@ -61,8 +59,7 @@ script:
       name: limit
       required: false
       secret: false
-    - description: Page number you would like to view. Each page contains page_size
-        values. Must be used along with page_size.
+    - description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
       isArray: false
       name: page
       required: false
@@ -206,8 +203,7 @@ script:
     - description: VM UUID of virtual machine to reboot.
       name: vm-uuid
       required: true
-    description: Issues a command to the guest operating system asking it to perform
-      a reboot.
+    description: Issues a command to the guest operating system asking it to perform a reboot.
     name: vmware-soft-reboot
     outputs: []
   - arguments:
@@ -227,8 +223,7 @@ script:
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Quiesce guest file system (needs VMWare Tools installed). Default
-        is "False".
+      description: Quiesce guest file system (needs VMWare Tools installed). Default is "False".
       name: quiesce
       predefined:
       - "true"
@@ -286,8 +281,7 @@ script:
       name: limit
       required: false
       secret: false
-    - description: The page number from which to start the search. Must be used along
-        with page_size.
+    - description: The page number from which to start the search. Must be used along with page_size.
       isArray: false
       name: page
       required: false
@@ -366,9 +360,7 @@ script:
       description: VM name to which the tag is attached.
       type: String
   - name: vmware-create-vm
-    description: Creates a new virtual machine in the current folder and attaches
-      it to the specified resource pool. This operation creates a virtual machine,
-      rather than cloning an existing one.
+    description: Creates a new virtual machine in the current folder and attaches it to the specified resource pool. This operation creates a virtual machine, rather than cloning an existing one.
     deprecated: false
     arguments:
     - name: name
@@ -441,8 +433,7 @@ script:
       description: If true, the VM was deleted.
       type: Boolean
   - name: vmware-clone-vm
-    description: Creates a clone of this virtual machine. If the virtual machine is
-      used as a template, this method corresponds to the deploy command.
+    description: Creates a clone of this virtual machine. If the virtual machine is used as a template, this method corresponds to the deploy command.
     deprecated: false
     arguments:
     - name: uuid
@@ -458,14 +449,12 @@ script:
       required: true
       isArray: false
     - name: template
-      description: Specifies whether or not the new virtual machine should be marked
-        as a template.
+      description: Specifies whether or not the new virtual machine should be marked as a template.
       required: false
       isArray: false
     - auto: PREDEFINED
       name: powerOn
-      description: Specifies whether or not the new VirtualMachine should be powered
-        on after creation.
+      description: Specifies whether or not the new VirtualMachine should be powered on after creation.
       required: true
       isArray: false
       defaultValue: "False"
@@ -526,8 +515,7 @@ script:
     deprecated: false
     arguments:
     - name: datastore
-      description: The datastore where the virtual machine should be located. If not
-        specified, the current datastore is used.
+      description: The datastore where the virtual machine should be located. If not specified, the current datastore is used.
       required: false
       isArray: false
     - name: folder
@@ -543,8 +531,7 @@ script:
       required: false
       isArray: false
     - name: service
-      description: The service endpoint of vCenter where the virtual machine should
-        be located. If not specified, the current vCenter service is used.
+      description: The service endpoint of vCenter where the virtual machine should be located. If not specified, the current vCenter service is used.
       required: false
       isArray: false
     - name: profile
@@ -566,8 +553,7 @@ script:
       isArray: false
     outputs: []
   - name: vmware-delete-vm
-    description: Destroys this object, deleting its contents and removing it from
-      its parent folder (if any).
+    description: Destroys this object, deleting its contents and removing it from its parent folder (if any).
     deprecated: false
     arguments:
     - name: uuid
@@ -600,8 +586,7 @@ script:
     - auto: PREDEFINED
       defaultValue: "False"
       name: as_template
-      description: Specifies whether or not the virtual machine should be marked as
-        a template.
+      description: Specifies whether or not the virtual machine should be marked as a template.
       required: false
       isArray: false
       predefined:
@@ -613,8 +598,7 @@ script:
       isArray: false
     outputs: []
   - name: vmware-unregister-vm
-    description: Removes this virtual machine from the inventory without removing
-      any of the virtual machine's files on disk.
+    description: Removes this virtual machine from the inventory without removing any of the virtual machine's files on disk.
     deprecated: false
     arguments:
     - name: uuid

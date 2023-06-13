@@ -100,6 +100,8 @@ configuration:
 - additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
   defaultvalue: 'No Mirroring'
   display: Mirroring Options
+  hidden:
+  - marketplacev2
   name: mirror_options
   required: false
   type: 15
@@ -115,6 +117,8 @@ configuration:
   name: close_incident
   required: false
   type: 8
+  hidden:
+  - marketplacev2
   section: Collect
   advanced: true
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
@@ -125,6 +129,8 @@ configuration:
   defaultvalue: '100'
   section: Collect
   advanced: true
+  hidden:
+  - marketplacev2
 - display: Advanced Parameters
   name: adv_params
   type: 12
@@ -2278,6 +2284,7 @@ script:
     - description: 'Range of results to return. e.g.: 0-20'
       name: range
     description: Get Source IPs
+    execution: false
     name: qradar-ips-source-get
     outputs:
     - contextPath: QRadar.SourceIP.ID
@@ -2321,6 +2328,7 @@ script:
     - description: 'Range of results to return. e.g.: 0-20'
       name: range
     description: Get Source IPs
+    execution: false
     name: qradar-ips-local-destination-get
     outputs:
     - contextPath: QRadar.LocalDestinationIP.ID
@@ -2534,6 +2542,8 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.12.62631
+  feed: false
+  isfetch: false
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

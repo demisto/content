@@ -1,0 +1,122 @@
+{
+    "id": "incident_dataminrpulsecompanies",
+    "version": -1,
+    "modified": "2023-01-30T12:09:13.424719552+05:30",
+    "name": "Dataminr Pulse Companies",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsecompanies",
+    "type": "grid",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "topicType",
+            "displayName": "Topic Type",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "id",
+            "displayName": "ID",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 280,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "dm_bucket",
+            "displayName": "DM Bucket",
+            "type": "longText",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "dm_sector",
+            "displayName": "DM Sector",
+            "type": "longText",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "ticker",
+            "displayName": "Ticker",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 120,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "retired",
+            "displayName": "Retired",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 100,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

@@ -28,6 +28,7 @@
       "assetType": "IPV4",
       "findingId": "RE5isckTYGbU9LVCc76NTV",
       "findingStatus": {
+        "lastClosedAt": "2022-01-01T13:37:42Z",
         "score": {
           "environmental": 10,
           "hyScore": 980

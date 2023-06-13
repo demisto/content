@@ -236,7 +236,7 @@ class Client:
         html = u''
         attachments = []  # type: list
         for part in parts:
-            if 'multipart' in part['mimeType']:
+            if 'multipart' in part['mimeType'] and part.get('parts'):
                 part_body, part_html, part_attachments = self.parse_mail_parts(
                     part['parts'])
                 body += part_body
@@ -1034,11 +1034,11 @@ def mail_command(client, args, email_from, send_as, subject_prefix='', in_reply_
                                                  rendering_body, subject)
 
     if render_body:
-        html_result = CommandResults(
-            entry_type=EntryType.NOTE,
-            content_format=EntryFormat.HTML,
-            raw_response=html_body,
-        )
+        html_result = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['html'],
+            'Contents': html_body
+        }
 
         return [send_mail_result, html_result]
     return send_mail_result
