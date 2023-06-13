@@ -1438,7 +1438,7 @@ def test_module_hec_url(mocker):
         - Run test-module command
 
     Then:
-        - Validate taht the request.get was called with the expected args
+        - Validate that the request.get was called with the expected args
     """
     # prepare
     mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
@@ -1453,6 +1453,30 @@ def test_module_hec_url(mocker):
 
     # validate
     assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
+
+
+def test_module_message_object(mocker):
+    """
+    Given:
+        - query results with one message item.
+
+    When:
+        - Run test-module command.
+
+    Then:
+        - Validate the test_module run successfully and the info method was called once.
+    """
+    import splunklib.results as results
+    # prepare
+    mocker.patch.object(demisto, 'params', return_value={'isFetch': True, 'fetchQuery': 'something'})
+    message = results.Message("DEBUG", "There's something in that variable...")
+    mocker.patch('splunklib.results.ResultsReader', return_value=[message])
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    # run
+    splunk.test_module(service)
+
+    # validate
+    assert service.info.call_count == 1
 
 
 def test_labels_with_non_str_values(mocker):

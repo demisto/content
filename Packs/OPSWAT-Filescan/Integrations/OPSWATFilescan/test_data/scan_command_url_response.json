@@ -1,0 +1,277 @@
+{
+    "allFilesDownloadFinished": true,
+    "allFinished": true,
+    "flowId": "641d9d0b8f3f4544f6cbc685",
+    "pollPause": 5,
+    "priority": "max",
+    "reports":
+    {
+        "3701b166-7dc6-4ce0-b7d1-e2829dc55907":
+        {
+            "allSignalGroups":
+            [
+                {
+                    "allTags":
+                    [],
+                    "averageSignalStrength": 0.75,
+                    "description": "OSINT source detected malicious resource",
+                    "finalSignalStrength": 0.75,
+                    "identifier": "I000",
+                    "peakSignalStrength": 0.75,
+                    "signals":
+                    [
+                        {
+                            "additionalInfo": "https://www.google.com",
+                            "isStrictlyBasedOnInputData": false,
+                            "originIdentifier": "912baec8bf1c36806d9a9048517cf2ced18dc596409e6ee1f7af5b42dcd5cde4",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "signalReadable": "OSINT provider \"VIRUS_TOTAL\" detected resource \"https://www.google.com\" as \"LIKELY_MALICIOUS\" (2/87)",
+                            "strength": 0.75
+                        }
+                    ],
+                    "verdict":
+                    {
+                        "confidence": 1,
+                        "threatLevel": 0.75,
+                        "verdict": "LIKELY_MALICIOUS"
+                    }
+                },
+                {
+                    "allTags":
+                    [],
+                    "averageSignalStrength": 0.1,
+                    "description": "OSINT source detected benign resource",
+                    "finalSignalStrength": 0.1,
+                    "identifier": "I001",
+                    "peakSignalStrength": 0.1,
+                    "signals":
+                    [
+                        {
+                            "additionalInfo": "https://www.google.com",
+                            "isStrictlyBasedOnInputData": false,
+                            "originIdentifier": "912baec8bf1c36806d9a9048517cf2ced18dc596409e6ee1f7af5b42dcd5cde4",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "signalReadable": "OSINT provider \"OPSWAT_REPUTATION\" detected resource \"https://www.google.com\" as \"BENIGN\"",
+                            "strength": 0.1
+                        }
+                    ],
+                    "verdict":
+                    {
+                        "confidence": 1,
+                        "threatLevel": 0.1,
+                        "verdict": "INFORMATIONAL"
+                    }
+                },
+                {
+                    "allTags":
+                    [],
+                    "averageSignalStrength": 0.25,
+                    "description": "Found a base64 encoded http(s) URL prefix",
+                    "finalSignalStrength": 0.25,
+                    "identifier": "S049",
+                    "peakSignalStrength": 0.25,
+                    "signals":
+                    [
+                        {
+                            "isStrictlyBasedOnInputData": false,
+                            "originIdentifier": "11510973d968e610179734f9058cce15f01dbe174bc3a4d80b095007e2ba73ca",
+                            "originPath": "file.strings.references",
+                            "originType": "EXTRACTED_FILE",
+                            "signalReadable": "Found artifact \"aHR0cDovL3d3dy\" in string \"ap:wrap;flex-wrap:wrap;font-size:12px;-webkit-justify-content:space-between;justify-content:space-between;padding:0 24px 14px}.H (..)\"",
+                            "strength": 0.25
+                        }
+                    ],
+                    "verdict":
+                    {
+                        "confidence": 1,
+                        "threatLevel": 0.2,
+                        "verdict": "INFORMATIONAL"
+                    }
+                },
+                {
+                    "allTags":
+                    [],
+                    "averageSignalStrength": 0.25,
+                    "description": "Contains a HTTP refresh header",
+                    "finalSignalStrength": 0.25,
+                    "identifier": "S050",
+                    "peakSignalStrength": 0.25,
+                    "signals":
+                    [
+                        {
+                            "isStrictlyBasedOnInputData": false,
+                            "originIdentifier": "11510973d968e610179734f9058cce15f01dbe174bc3a4d80b095007e2ba73ca",
+                            "originPath": "file.strings.references",
+                            "originType": "EXTRACTED_FILE",
+                            "signalReadable": "Found artifact \"meta http-equiv=\"refresh\"\" in string \"/*# sourceURL=/_/mss/boq-identity/_/ss/k=boq-identity.AccountsSignInUi.-nOcdirXyoo.L.W.O/am=gMfhAFAACACgQAAAAAAAAAAAAMIQJQQ/d=1/ (..)\"",
+                            "strength": 0.25
+                        }
+                    ],
+                    "verdict":
+                    {
+                        "confidence": 1,
+                        "threatLevel": 0.2,
+                        "verdict": "INFORMATIONAL"
+                    }
+                }
+            ],
+            "allTags":
+            [
+                {
+                    "isRootTag": true,
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "912baec8bf1c36806d9a9048517cf2ced18dc596409e6ee1f7af5b42dcd5cde4",
+                    "tag":
+                    {
+                        "descriptions":
+                        [],
+                        "name": "html",
+                        "synonyms":
+                        [],
+                        "verdict":
+                        {
+                            "confidence": 1,
+                            "threatLevel": 0.1,
+                            "verdict": "INFORMATIONAL"
+                        }
+                    }
+                },
+                {
+                    "isRootTag": true,
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "912baec8bf1c36806d9a9048517cf2ced18dc596409e6ee1f7af5b42dcd5cde4",
+                    "tag":
+                    {
+                        "descriptions":
+                        [],
+                        "name": "png",
+                        "synonyms":
+                        [],
+                        "verdict":
+                        {
+                            "confidence": 1,
+                            "threatLevel": 0.1,
+                            "verdict": "INFORMATIONAL"
+                        }
+                    }
+                }
+            ],
+            "created_date": "03/24/2023, 12:52:28",
+            "estimatedTime": "10",
+            "estimated_progress": 1.0,
+            "file":
+            {
+                "hash": "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09",
+                "name": "https://www.google.com",
+                "type": "other"
+            },
+            "filesDownloadFinished": true,
+            "finalVerdict":
+            {
+                "confidence": 1,
+                "threatLevel": -1,
+                "verdict": "BENIGN"
+            },
+            "overallState": "success_partial",
+            "subtaskReferences":
+            [
+                {
+                    "ID": "17b2040b-c73f-4097-bc0b-4b9602cc496c",
+                    "additionalInfo": "d58f2198-e09a-4504-ae5a-818996f08015",
+                    "name": "osint",
+                    "opcount": 6,
+                    "processTime": 1015,
+                    "resourceReference":
+                    {
+                        "ID": "f42256ec-7d18-4fc9-9744-b41dd189a68d",
+                        "name": "osint",
+                        "type": "OSINT"
+                    },
+                    "state": "SUCCESS"
+                },
+                {
+                    "ID": "84de1e62-aa80-4014-b99e-9330c35f0d30",
+                    "additionalInfo": 1,
+                    "name": "url-render",
+                    "opcount": 1,
+                    "processTime": 14393,
+                    "resourceReference":
+                    {
+                        "ID": "a1d5e641-dea0-4e7a-901c-dbc45394e2c5",
+                        "name": "url-render",
+                        "type": "URL_RENDER"
+                    },
+                    "state": "SUCCESS"
+                },
+                {
+                    "ID": "c7fc9208-b480-4f3c-842b-dc67b87e2ba3",
+                    "additionalInfo": 76,
+                    "name": "domain-resolve",
+                    "opcount": 20,
+                    "processTime": 10412,
+                    "resourceReference":
+                    {
+                        "ID": "4edb82fa-daa4-4270-a63a-fdbdce550ec2",
+                        "name": "domain-resolve",
+                        "type": "DOMAIN_RESOLVE"
+                    },
+                    "state": "SUCCESS"
+                },
+                {
+                    "ID": "ceb72338-bcf0-4bf2-9cb3-09d78da72a3f",
+                    "additionalInfo": 131,
+                    "name": "file-download",
+                    "opcount": 11,
+                    "processTime": 7824,
+                    "resourceReference":
+                    {
+                        "ID": "5f02c57a-40ea-4d01-afc1-8a33e17f4a34",
+                        "name": "file-download",
+                        "type": "FILE_DOWNLOAD"
+                    },
+                    "state": "SUCCESS_PARTIAL"
+                },
+                {
+                    "ID": "29116eb5-3e62-4dc0-becd-23774ec0461a",
+                    "additionalInfo": "d58f2198-e09a-4504-ae5a-818996f08015",
+                    "name": "osint-fuzzyhash",
+                    "opcount": 2,
+                    "processTime": 1007,
+                    "resourceReference":
+                    {
+                        "ID": "8ee5e923-e238-42ed-9b3e-98a39c910545",
+                        "name": "osint",
+                        "type": "OSINT"
+                    },
+                    "state": "SUCCESS"
+                }
+            ],
+            "taskReference":
+            {
+                "ID": "a9713ca1-75b9-490e-ab89-98ff9f613861",
+                "additionalInfo":
+                {
+                    "digests":
+                    {
+                        "SHA-256": "ac6bb669e40e44a8d9f8f0c94dfc63734049dcf6219aac77f02edf94b9162c09"
+                    },
+                    "submitName": "https://www.google.com",
+                    "submitTime": 1679662348419
+                },
+                "name": "transform-file",
+                "opcount": 1,
+                "processTime": 19845,
+                "resourceReference":
+                {
+                    "ID": "d58f2198-e09a-4504-ae5a-818996f08015",
+                    "name": "file",
+                    "type": "TRANSFORM_FILE"
+                },
+                "state": "SUCCESS"
+            }
+        }
+    },
+    "reportsAmount": 1
+}

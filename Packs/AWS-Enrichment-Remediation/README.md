@@ -1,7 +1,7 @@
 ##### What does this pack do?
 
 The pack contains AWS playbooks that conduct enrichment and/or remediation and can use multiple other AWS content packs:
-- Enrichment: Give an IP address, see if there is a EC2 instance associated and if so pull information on the security group associated and IAM information for the user that created that security group.
+- Enrichment: Give an IP address, see if there is a EC2 instance associated and if so pull information on the security group associated.
 - Remediation: Give the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved.
 - Unclaimed S3 Bucket Validation: The playbook sends a HTTP get response to the domain and validates the missing bucket information.
 - Unclaimed S3 Bucket Remediation: The playbook will create the unclaimed S3 bucket.
@@ -20,7 +20,7 @@ This content pack includes the following playbooks:
 - AWS - Unclaimed S3 Bucket Remediation
 
 #### AWS - Enrichment
-AWS - Enrichment playbook reports EC2 and IAM information given an IP address of an EC2 instance.
+AWS - Enrichment playbook reports EC2 information given an IP address of an EC2 instance.
 
 ![AWS - Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Enrichment.png)
 

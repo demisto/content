@@ -350,6 +350,56 @@ INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID = {
     "event_context": "4-eyJldCI6Im1lc3NhZ2UiLCJ0aWQiOiJUQUJRTVBLUDAiLCJhaWQiOiJBMDFUWFFBR0IyUCIsImNpZCI6IkMwMzNITEwzTjgxIn0"
 }
 
+SIMPLE_USER_MESSAGE = {
+    "token": "d8on5ZZu1q907qYxV65stnfx",
+    "team_id": "team_id",
+    "context_team_id": "context_team_id",
+    "context_enterprise_id": None,
+    "api_app_id": "api_app_id",
+    "event": {
+        "client_msg_id": "6af5a984-e50c-426f-abf0-d42c2246a9d1",
+        "type": "message",
+        "text": "messgae from user test_1",
+        "user": "USER_USER_1",
+        "ts": "1681650557.769109",
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "UgHdS",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "messgae from user test_1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "team": "ABCDFCFRTGY",
+        "channel": "ABCDFCFRTGR",
+        "event_ts": "1681650557.769109",
+        "channel_type": "group"
+    },
+    "type": "event_callback",
+    "event_id": "event_id",
+    "event_time": 1681650557,
+    "authorizations": [
+        {
+            "enterprise_id": None,
+            "team_id": "team_id",
+            "user_id": "user_id",
+            "is_bot": True,
+            "is_enterprise_install": False
+        }
+    ],
+    "is_ext_shared_channel": False,
+    "event_context": "event_context"
+}
+
 
 def test_exception_in_invite_to_mirrored_channel(mocker):
     import SlackV3
@@ -4391,10 +4441,11 @@ def test_pin_message_invalid_thread_id(mocker):
 
 TEST_BANK_MSG = [
     (INBOUND_MESSAGE_FROM_BOT, True),
-    (INBOUND_MESSAGE_FROM_USER, True),
+    (INBOUND_MESSAGE_FROM_USER, False),
     (INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID, True),
     (INBOUND_EVENT_MESSAGE, False),
-    (INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID, True)
+    (INBOUND_MESSAGE_FROM_BOT_WITHOUT_USER_ID, True),
+    (SIMPLE_USER_MESSAGE, False)
 ]
 
 

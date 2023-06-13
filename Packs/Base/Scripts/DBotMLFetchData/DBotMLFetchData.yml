@@ -13,17 +13,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: The start date by which to filter incidents. Date format is the same
-    as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00
-    +0200").
+  description: The start date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: The end date by which to filter incidents. Date format is the same
-    as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00
-    +0200").
+  description: The end date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
   isArray: false
   name: toDate
   required: false
@@ -38,8 +34,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: 'Whether to query and fetch incident context. Can be: "true" or "false".
-    The default is "false".'
+  description: 'Whether to query and fetch incident context. Can be: "true" or "false". The default is "false".'
   isArray: false
   name: includeContext
   predefined:
@@ -50,8 +45,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
-  description: 'The incident field to specify for the date range. Can be: "created"
-    or "modified". The default is "created".'
+  description: 'The incident field to specify for the date range. Can be: "created" or "modified". The default is "created".'
   isArray: false
   name: timeField
   predefined:
@@ -60,8 +54,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of non-empty value incident field names by which
-    to filter incidents.
+  description: A comma-separated list of non-empty value incident field names by which to filter incidents.
   isArray: false
   name: NonEmptyFields
   required: false
@@ -144,7 +137,6 @@ comment: Deprecated. No available replacement. Collect telemetry data from the e
 commonfields:
   id: DBotMLFetchData
   version: -1
-enabled: false
 name: DBotMLFetchData
 script: '-'
 subtype: python3

@@ -5,7 +5,6 @@ sectionOrder:
 commonfields:
   id: WildFire-v2
   version: -1
-defaultEnabled: false
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   display: Server base URL (e.g., https://192.168.0.1/publicapi)
@@ -237,7 +236,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data
@@ -509,7 +507,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data
@@ -768,13 +765,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: Retrieves results for a URL using WildFire. The report format is in JSON.
+      description: Retrieves results for a URL using WildFire. The report will be populated in the context as JSON format.
       isArray: true
       name: url
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data
@@ -1132,7 +1128,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data
@@ -1405,7 +1400,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

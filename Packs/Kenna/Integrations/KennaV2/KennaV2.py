@@ -559,7 +559,9 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
 
 def main():
     params = demisto.params()
-    api = params.get('key')
+    api = params.get('credentials_key', {}).get('password') or params.get('key')
+    if not api:
+        raise DemistoException('Kenna API key must be provided.')
     # Service base URL
     base_url = params.get('url')
     # Should we use SSL

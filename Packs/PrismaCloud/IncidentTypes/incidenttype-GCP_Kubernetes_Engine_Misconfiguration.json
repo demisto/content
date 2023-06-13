@@ -10,7 +10,7 @@
     "id": "GCP Kubernetes Engine Misconfiguration",
     "locked": false,
     "name": "GCP Kubernetes Engine Misconfiguration",
-    "playbookId": "Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration",
+    "playbookId": "Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration v2",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

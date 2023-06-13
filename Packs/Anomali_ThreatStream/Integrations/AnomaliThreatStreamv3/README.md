@@ -1467,6 +1467,7 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | confidence | The observable certainty level of a reported indicator type. Default is 50. | Optional | 
+| source_confidence_weight | Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100. | Optional | 
 | classification | Whether the indicator data is public or private to the organization. Possible values are: private, public. Default is private. | Optional | 
 | threat_type | Type of threat associated with the imported observables. Possible values are: adware, anomalous, anonymization, apt, bot, brute, c2, compromised, crypto, data_leakage, ddos, dyn_dns, exfil, exploit, hack_tool, i2p, informational, malware, p2p, parked, phish, scan, sinkhole, spam, suppress, suspicious, tor, vps. Default is exploit. | Optional | 
 | severity | The potential impact of the indicator type with which the observable is believed to be associated. Possible values are: low, medium, high, very-high. Default is low. | Optional | 
@@ -1512,6 +1513,7 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 ***
 Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
 
+ Note: This command indicates that the JSON you submitted was valid. However, in cases where data is incorrect or required fields are left unspecified, observables can be ignored or imported as false positive.
 
 #### Base Command
 
@@ -1521,14 +1523,15 @@ Imports indicators (observables) into ThreatStream. Approval is not required for
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | confidence | The observable certainty level of a reported indicator type. Default is 50. | Optional | 
-| source_confidence_weight | To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set source_confidence_ weight to 100. | Optional | 
+| source_confidence_weight | Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100. | Optional | 
 | expiration_ts | The time stamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. | Optional | 
 | severity | The severity to assign to the observable when it is imported. Can be "low", "medium", "high" , or "very-high". Possible values are: low, medium, high, very-high. | Optional | 
 | tags | A comma-separated list of tags. For example, tag1,tag2. | Optional | 
 | trustedcircles | A comma-separated list of trusted circle IDs with which threat data should be shared. | Optional | 
 | classification | Denotes whether the indicator data is public or private to the organization. Possible values are: private, public. | Required | 
 | allow_unresolved | Whether unresolved domain observables are included in the file will be accepted as valid in ThreatStream and imported. Possible values are: yes, no. | Optional | 
-| file_id | The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. | Required | 
+| file_id | The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. | Optional | 
+| indicators_json | The “meta” section will be added to this json, and we will send this json to the api endpoint. | Optional | 
 
 
 #### Context Output

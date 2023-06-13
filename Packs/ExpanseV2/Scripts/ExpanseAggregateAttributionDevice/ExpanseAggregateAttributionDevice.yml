@@ -1,4 +1,3 @@
-enabled: false
 name: ExpanseAggregateAttributionDevice
 comment: Aggregate entries from multiple sources into AttributionDevice
 commonfields:

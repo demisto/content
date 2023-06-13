@@ -1,0 +1,11 @@
+{
+    "success": {
+        "amount": 1
+    },
+    "failure": [
+        {
+            "cveId": "CVE-5555-0003",
+            "failReason": "Unsupported CVE by Intsights"
+        }
+    ]
+}
