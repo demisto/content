@@ -3470,7 +3470,7 @@ def prettify_rule(rule: dict):
         entries = [entries]
     rule_devices = [
         entry.get('@name') for entry in entries if isinstance(entry, dict)
-    ] or None
+    ]
 
     pretty_rule: Dict[str, Any] = {
 
