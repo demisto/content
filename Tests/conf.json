@@ -26,7 +26,6 @@
                 "Joe Security"
             ],
             "playbookID": "Test Playbook - Cortex XDR Malware - Investigation And Response",
-            "fromversion": "6.5.0"
         },
         {
             "integrations": "CrowdstrikeFalcon",
