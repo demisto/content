@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -3235
+          "y": -3405
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 4dbfaa04-78aa-482f-800b-e0ed5b5dd204
+    taskid: d1179a42-cc49-4b11-8622-ad6e2c702c6b
     type: regular
     task:
-      id: 4dbfaa04-78aa-482f-800b-e0ed5b5dd204
+      id: d1179a42-cc49-4b11-8622-ad6e2c702c6b
       version: -1
       name: Delete Context
       description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
@@ -49,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "248"
+      - "363"
     scriptarguments:
       all:
         simple: "yes"
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -3100
+          "y": -3270
         }
       }
     note: false
@@ -86,7 +86,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7610,
+          "x": 5690,
           "y": 500
         }
       }
@@ -226,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "248":
     id: "248"
-    taskid: 4ab40d4c-f6c1-4ac9-826d-e89721534ed2
+    taskid: 3e8ca2c2-6ee1-46da-8241-11ef5818cc0a
     type: playbook
     task:
-      id: 4ab40d4c-f6c1-4ac9-826d-e89721534ed2
+      id: 3e8ca2c2-6ee1-46da-8241-11ef5818cc0a
       version: -1
       name: CrowdStrike Falcon - Get Detections by Incident
       description: |-
@@ -244,7 +244,17 @@ tasks:
       - "361"
     scriptarguments:
       IncidentID:
-        simple: inc:046761c46ec84f40b27b6f79ce7cd32c:b249f531b46849ecb576bf429cc4cc78
+        complex:
+          root: CrowdStrike.Incidents
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CrowdStrike.Incidents
+                iscontext: true
+          accessor: incident_id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -398,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "256":
     id: "256"
-    taskid: a380acfa-b96c-473a-8224-4d8433f67710
+    taskid: 35420dd9-dbfb-4582-890f-21058283da3c
     type: condition
     task:
-      id: a380acfa-b96c-473a-8224-4d8433f67710
+      id: 35420dd9-dbfb-4582-890f-21058283da3c
       version: -1
       name: Verify Incident ID
       description: Verify that the 'CrowdStrike.IncidentDetection.incident_id' context key was populated.
@@ -424,6 +434,8 @@ tasks:
                 root: CrowdStrike.IncidentDetection
                 accessor: incident_id
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -655,7 +667,6 @@ tasks:
       - "270"
       - "276"
       - "278"
-      - "280"
       - "282"
       - "284"
       - "286"
@@ -699,7 +710,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
+          "x": 5370,
           "y": -820
         }
       }
@@ -730,7 +741,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7280,
+          "x": 5360,
           "y": -1420
         }
       }
@@ -837,7 +848,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
+          "x": 5370,
           "y": -240
         }
       }
@@ -1076,82 +1087,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "280":
-    id: "280"
-    taskid: 22d5c83a-9df3-499b-819b-4efbd8bb0d83
-    type: condition
-    task:
-      id: 22d5c83a-9df3-499b-819b-4efbd8bb0d83
-      version: -1
-      name: Verify Max Confidence
-      description: Verify that the 'CrowdStrike.Detection.MaxConfidence' context key was populated.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "281"
-      Verified:
-      - "269"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: CrowdStrike.Detection
-                accessor: MaxConfidence
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1830,
-          "y": -420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "281":
-    id: "281"
-    taskid: 0e1df142-9278-4df7-80a1-82055c05293b
-    type: regular
-    task:
-      id: 0e1df142-9278-4df7-80a1-82055c05293b
-      version: -1
-      name: Verify Context Data Error - Max Confidence
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'CrowdStrike.Detection.MaxConfidence’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Detections by Incident' playbook:\n1- The 'Get full detection details' task failed.\n2- The 'ids' input configuration was changed for the 'cs-falcon-search-detection' automation used in the 'Get full detection details' task.\n3- The 'cs-falcon-search-detection' automation outputs have been modified and no longer contain the 'CrowdStrike.Detection.MaxConfidence' context key. \n4- The 'cs-falcon-get-detections-for-incident' automation outputs have been modified and no longer contain the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input configuration of 'cs-falcon-search-detection' automation.\n5- The 'Get detections for incident' task that uses the 'cs-falcon-get-detections-for-incident' automation failed to execute. As a result, the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input within the 'cs-falcon-search-detection' automation was empty.\n6 - The 'Get detections for incident' task utilizing the automation 'cs-falcon-get-detections-for-incident' produced no results. Therefore, instead of progressing to the \"Get full detection details\" task, the playbook flow proceeded to the \"Set no detections found\" task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1830,
-          "y": -210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "282":
     id: "282"
     taskid: e0d4d408-2997-46ad-8b2a-29881ba91a44
@@ -1185,7 +1120,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
+          "x": 1830,
           "y": -420
         }
       }
@@ -1217,7 +1152,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
+          "x": 1830,
           "y": -210
         }
       }
@@ -1261,7 +1196,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2620,
+          "x": 2230,
           "y": -420
         }
       }
@@ -1293,7 +1228,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2620,
+          "x": 2230,
           "y": -210
         }
       }
@@ -1337,7 +1272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3020,
+          "x": 2630,
           "y": -420
         }
       }
@@ -1369,7 +1304,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3020,
+          "x": 2630,
           "y": -210
         }
       }
@@ -1413,7 +1348,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3420,
+          "x": 3030,
           "y": -420
         }
       }
@@ -1445,7 +1380,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3420,
+          "x": 3030,
           "y": -210
         }
       }
@@ -1489,7 +1424,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3820,
+          "x": 3430,
           "y": -420
         }
       }
@@ -1521,7 +1456,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3820,
+          "x": 3430,
           "y": -210
         }
       }
@@ -1549,22 +1484,17 @@ tasks:
       - "293"
       - "295"
       - "297"
-      - "299"
-      - "301"
       - "303"
       - "305"
-      - "307"
       - "309"
       - "311"
       - "313"
-      - "315"
       - "317"
-      - "319"
-      - "321"
       - "323"
       - "325"
       - "327"
       - "329"
+      - "315"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1809,158 +1739,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "299":
-    id: "299"
-    taskid: 1fea0cb1-6fcd-4d65-8292-336006d5324e
-    type: condition
-    task:
-      id: 1fea0cb1-6fcd-4d65-8292-336006d5324e
-      version: -1
-      name: Verify SHA256
-      description: Verify that the 'CrowdStrike.Detection.Behavior.SHA256' context key was populated.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "300"
-      Verified:
-      - "331"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: CrowdStrike.Detection.Behavior
-                accessor: SHA256
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1000,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "300":
-    id: "300"
-    taskid: f50e3e11-9810-4cf0-8c96-c86e0fa9b4ba
-    type: regular
-    task:
-      id: f50e3e11-9810-4cf0-8c96-c86e0fa9b4ba
-      version: -1
-      name: Verify Context Data Error - SHA256
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'CrowdStrike.Detection.Behavior.SHA256’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Detections by Incident' playbook:\n1- The 'Get full detection details' task failed.\n2- The 'ids' input configuration was changed for the 'cs-falcon-search-detection' automation used in the 'Get full detection details' task.\n3- The 'cs-falcon-search-detection' automation outputs have been modified and no longer contain the 'CrowdStrike.Detection.Behavior.SHA256' context key. \n4- The 'cs-falcon-get-detections-for-incident' automation outputs have been modified and no longer contain the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input configuration of 'cs-falcon-search-detection' automation.\n5- The 'Get detections for incident' task that uses the 'cs-falcon-get-detections-for-incident' automation failed to execute. As a result, the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input within the 'cs-falcon-search-detection' automation was empty.\n6 - The 'Get detections for incident' task utilizing the automation 'cs-falcon-get-detections-for-incident' produced no results. Therefore, instead of progressing to the \"Get full detection details\" task, the playbook flow proceeded to the \"Set no detections found\" task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1000,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "301":
-    id: "301"
-    taskid: bbd45061-0b20-4c43-83b6-f9c9d7972107
-    type: condition
-    task:
-      id: bbd45061-0b20-4c43-83b6-f9c9d7972107
-      version: -1
-      name: Verify File Name
-      description: Verify that the 'CrowdStrike.Detection.Behavior.FileName' context key was populated.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "302"
-      Verified:
-      - "331"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: CrowdStrike.Detection.Behavior
-                accessor: FileName
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1390,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "302":
-    id: "302"
-    taskid: 5c086c79-f720-4bbb-8a04-54f50d8cea42
-    type: regular
-    task:
-      id: 5c086c79-f720-4bbb-8a04-54f50d8cea42
-      version: -1
-      name: Verify Context Data Error - File Name
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'CrowdStrike.Detection.Behavior.FileName’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Detections by Incident' playbook:\n1- The 'Get full detection details' task failed.\n2- The 'ids' input configuration was changed for the 'cs-falcon-search-detection' automation used in the 'Get full detection details' task.\n3- The 'cs-falcon-search-detection' automation outputs have been modified and no longer contain the 'CrowdStrike.Detection.Behavior.FileName' context key. \n4- The 'cs-falcon-get-detections-for-incident' automation outputs have been modified and no longer contain the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input configuration of 'cs-falcon-search-detection' automation.\n5- The 'Get detections for incident' task that uses the 'cs-falcon-get-detections-for-incident' automation failed to execute. As a result, the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input within the 'cs-falcon-search-detection' automation was empty.\n6 - The 'Get detections for incident' task utilizing the automation 'cs-falcon-get-detections-for-incident' produced no results. Therefore, instead of progressing to the \"Get full detection details\" task, the playbook flow proceeded to the \"Set no detections found\" task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1390,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "303":
     id: "303"
     taskid: 96e093b4-725c-4e90-889e-46ecfaf7b773
@@ -1994,7 +1772,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
+          "x": 1010,
           "y": 180
         }
       }
@@ -2026,7 +1804,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
+          "x": 1010,
           "y": 390
         }
       }
@@ -2070,7 +1848,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
+          "x": 1400,
           "y": 180
         }
       }
@@ -2102,83 +1880,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "307":
-    id: "307"
-    taskid: be94401c-a09b-41af-8e95-4c0eb6de73b2
-    type: condition
-    task:
-      id: be94401c-a09b-41af-8e95-4c0eb6de73b2
-      version: -1
-      name: Verify Technique ID
-      description: Verify that the 'CrowdStrike.Detection.Behavior.TechniqueId' context key was populated.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "308"
-      Verified:
-      - "331"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: CrowdStrike.Detection.Behavior
-                accessor: TechniqueId
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2570,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "308":
-    id: "308"
-    taskid: 88254fad-a6c6-47b4-8542-efc67bd36c60
-    type: regular
-    task:
-      id: 88254fad-a6c6-47b4-8542-efc67bd36c60
-      version: -1
-      name: Verify Context Data Error - Technique ID
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'CrowdStrike.Detection.Behavior.TechniqueId’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Detections by Incident' playbook:\n1- The 'Get full detection details' task failed.\n2- The 'ids' input configuration was changed for the 'cs-falcon-search-detection' automation used in the 'Get full detection details' task.\n3- The 'cs-falcon-search-detection' automation outputs have been modified and no longer contain the 'CrowdStrike.Detection.Behavior.TechniqueId' context key. \n4- The 'cs-falcon-get-detections-for-incident' automation outputs have been modified and no longer contain the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input configuration of 'cs-falcon-search-detection' automation.\n5- The 'Get detections for incident' task that uses the 'cs-falcon-get-detections-for-incident' automation failed to execute. As a result, the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input within the 'cs-falcon-search-detection' automation was empty.\n6 - The 'Get detections for incident' task utilizing the automation 'cs-falcon-get-detections-for-incident' produced no results. Therefore, instead of progressing to the \"Get full detection details\" task, the playbook flow proceeded to the \"Set no detections found\" task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2570,
+          "x": 1400,
           "y": 390
         }
       }
@@ -2222,7 +1924,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2960,
+          "x": 1790,
           "y": 180
         }
       }
@@ -2254,7 +1956,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2960,
+          "x": 1790,
           "y": 390
         }
       }
@@ -2298,7 +2000,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3360,
+          "x": 2190,
           "y": 180
         }
       }
@@ -2330,7 +2032,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3360,
+          "x": 2190,
           "y": 390
         }
       }
@@ -2374,7 +2076,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3750,
+          "x": 2580,
           "y": 180
         }
       }
@@ -2406,7 +2108,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3750,
+          "x": 2580,
           "y": 390
         }
       }
@@ -2450,7 +2152,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4150,
+          "x": 2980,
           "y": 180
         }
       }
@@ -2482,7 +2184,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4150,
+          "x": 2980,
           "y": 390
         }
       }
@@ -2526,7 +2228,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4540,
+          "x": 3370,
           "y": 180
         }
       }
@@ -2558,159 +2260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4540,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "319":
-    id: "319"
-    taskid: 9e3e1453-31b9-4fff-8b52-b89aa28844ae
-    type: condition
-    task:
-      id: 9e3e1453-31b9-4fff-8b52-b89aa28844ae
-      version: -1
-      name: Verify Sensor ID
-      description: Verify that the 'CrowdStrike.Detection.Behavior.SensorID' context key was populated.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "320"
-      Verified:
-      - "331"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: CrowdStrike.Detection.Behavior
-                accessor: SensorID
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 4930,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "320":
-    id: "320"
-    taskid: 21841f37-48f7-4bdb-8578-becef0767dce
-    type: regular
-    task:
-      id: 21841f37-48f7-4bdb-8578-becef0767dce
-      version: -1
-      name: Verify Context Data Error - Sensor ID
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'CrowdStrike.Detection.Behavior.SensorID’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Detections by Incident' playbook:\n1- The 'Get full detection details' task failed.\n2- The 'ids' input configuration was changed for the 'cs-falcon-search-detection' automation used in the 'Get full detection details' task.\n3- The 'cs-falcon-search-detection' automation outputs have been modified and no longer contain the 'CrowdStrike.Detection.Behavior.SensorID' context key. \n4- The 'cs-falcon-get-detections-for-incident' automation outputs have been modified and no longer contain the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input configuration of 'cs-falcon-search-detection' automation.\n5- The 'Get detections for incident' task that uses the 'cs-falcon-get-detections-for-incident' automation failed to execute. As a result, the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input within the 'cs-falcon-search-detection' automation was empty.\n6 - The 'Get detections for incident' task utilizing the automation 'cs-falcon-get-detections-for-incident' produced no results. Therefore, instead of progressing to the \"Get full detection details\" task, the playbook flow proceeded to the \"Set no detections found\" task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 4930,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "321":
-    id: "321"
-    taskid: 69a55e34-a0de-4085-8bcb-479c69e03ff5
-    type: condition
-    task:
-      id: 69a55e34-a0de-4085-8bcb-479c69e03ff5
-      version: -1
-      name: Verify User Name
-      description: Verify that the 'CrowdStrike.Detection.Behavior.UserName' context key was populated.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "322"
-      Verified:
-      - "331"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: CrowdStrike.Detection.Behavior
-                accessor: UserName
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 5320,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "322":
-    id: "322"
-    taskid: 4d8f67e9-eba9-41b2-8b82-bf240c807ea1
-    type: regular
-    task:
-      id: 4d8f67e9-eba9-41b2-8b82-bf240c807ea1
-      version: -1
-      name: Verify Context Data Error - User Name
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'CrowdStrike.Detection.Behavior.UserName’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Detections by Incident' playbook:\n1- The 'Get full detection details' task failed.\n2- The 'ids' input configuration was changed for the 'cs-falcon-search-detection' automation used in the 'Get full detection details' task.\n3- The 'cs-falcon-search-detection' automation outputs have been modified and no longer contain the 'CrowdStrike.Detection.Behavior.UserName' context key. \n4- The 'cs-falcon-get-detections-for-incident' automation outputs have been modified and no longer contain the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input configuration of 'cs-falcon-search-detection' automation.\n5- The 'Get detections for incident' task that uses the 'cs-falcon-get-detections-for-incident' automation failed to execute. As a result, the 'CrowdStrike.IncidentDetection.detection_ids' context key which is used for the 'ids' input within the 'cs-falcon-search-detection' automation was empty.\n6 - The 'Get detections for incident' task utilizing the automation 'cs-falcon-get-detections-for-incident' produced no results. Therefore, instead of progressing to the \"Get full detection details\" task, the playbook flow proceeded to the \"Set no detections found\" task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 5320,
+          "x": 3370,
           "y": 390
         }
       }
@@ -2754,7 +2304,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5710,
+          "x": 3770,
           "y": 180
         }
       }
@@ -2786,7 +2336,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5710,
+          "x": 3770,
           "y": 390
         }
       }
@@ -2830,7 +2380,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6100,
+          "x": 4160,
           "y": 180
         }
       }
@@ -2862,7 +2412,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6100,
+          "x": 4160,
           "y": 390
         }
       }
@@ -2906,7 +2456,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6490,
+          "x": 4550,
           "y": 180
         }
       }
@@ -2938,7 +2488,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6490,
+          "x": 4550,
           "y": 390
         }
       }
@@ -2951,12 +2501,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "329":
     id: "329"
-    taskid: 89bbe6bc-9c96-4e9e-856f-c0a1625613cc
+    taskid: baabfd21-f534-4e81-856d-2e71dcf6207a
     type: condition
     task:
-      id: 89bbe6bc-9c96-4e9e-856f-c0a1625613cc
+      id: baabfd21-f534-4e81-856d-2e71dcf6207a
       version: -1
-      name: Verify ID
+      name: Verify Behavior ID
       description: Verify that the 'CrowdStrike.Detection.Behavior.ID' context key was populated.
       type: condition
       iscommand: false
@@ -2977,12 +2527,14 @@ tasks:
                 root: CrowdStrike.Detection.Behavior
                 accessor: ID
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 6890,
+          "x": 4950,
           "y": 180
         }
       }
@@ -2995,12 +2547,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "330":
     id: "330"
-    taskid: 4f7dd383-b7ff-4b4c-889d-2252dd422b49
+    taskid: 71b3d21c-c767-4e1b-8ecc-4e990048d77b
     type: regular
     task:
-      id: 4f7dd383-b7ff-4b4c-889d-2252dd422b49
+      id: 71b3d21c-c767-4e1b-8ecc-4e990048d77b
       version: -1
-      name: Verify Context Data Error - ID
+      name: Verify Context Data Error - Behavior ID
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
@@ -3014,7 +2566,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6890,
+          "x": 4950,
           "y": 390
         }
       }
@@ -3045,7 +2597,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7290,
+          "x": 5370,
           "y": 360
         }
       }
@@ -3089,7 +2641,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4220,
+          "x": 3830,
           "y": -420
         }
       }
@@ -3121,7 +2673,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4220,
+          "x": 3830,
           "y": -210
         }
       }
@@ -3165,7 +2717,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4610,
+          "x": 4220,
           "y": -420
         }
       }
@@ -3197,7 +2749,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4610,
+          "x": 4220,
           "y": -210
         }
       }
@@ -3229,7 +2781,6 @@ tasks:
       - "348"
       - "350"
       - "352"
-      - "354"
       - "356"
       - "358"
     separatecontext: false
@@ -3829,89 +3380,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "354":
-    id: "354"
-    taskid: 9143c230-b855-4d77-8a57-f28410559098
-    type: condition
-    task:
-      id: 9143c230-b855-4d77-8a57-f28410559098
-      version: -1
-      name: Verify Tactic ID
-      description: |
-        Verify that the ‘tacticid’ incident field was filled out correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "355"
-      Verified:
-      - "360"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: inList
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: tacticid
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: CrowdStrike.Detection.Behavior
-                accessor: TacticID
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2550,
-          "y": -2490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "355":
-    id: "355"
-    taskid: bf541564-5dc4-4b81-8532-0e8dd4f467b1
-    type: regular
-    task:
-      id: bf541564-5dc4-4b81-8532-0e8dd4f467b1
-      version: -1
-      name: Verify Incident Field Error - Tactic ID
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'tacticid' incident field was not set correctly. This may indicate that one or more of the following changes have been made to the 'CrowdStrike Falcon - Get Detections by Incident' playbook:\n1- The 'cs-falcon-search-detection' automation outputs have been modified and no longer contain the 'CrowdStrike.Detection.Behavior.TacticID' context key. \n2- The 'ids' input configuration was changed for the 'cs-falcon-search-detection' automation used in the 'Get full detection details' task.\n3- The custom output mapping rule for the 'tacticid' incident field configured within the 'Get full detection details' task was changed. "
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2550,
-          "y": -2280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "356":
     id: "356"
     taskid: 31e068d4-8bfb-4c7d-8573-ffbf98ae92a6
@@ -3952,7 +3420,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2940,
+          "x": 2550,
           "y": -2490
         }
       }
@@ -3984,7 +3452,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2940,
+          "x": 2550,
           "y": -2280
         }
       }
@@ -4035,7 +3503,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3330,
+          "x": 2940,
           "y": -2490
         }
       }
@@ -4067,7 +3535,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3330,
+          "x": 2940,
           "y": -2280
         }
       }
@@ -4098,7 +3566,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7280,
+          "x": 5360,
           "y": -2310
         }
       }
@@ -4183,6 +3651,38 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "363":
+    id: "363"
+    taskid: fa148b4e-2db6-4c44-8e6e-17f28eb009a3
+    type: regular
+    task:
+      id: fa148b4e-2db6-4c44-8e6e-17f28eb009a3
+      version: -1
+      name: Check CrowdStrike Falcon Available Incidents
+      description: Obtains a list of CrowdStrike Falcon incidents before performing the tests.
+      script: '|||cs-falcon-list-incident-summaries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "248"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": -3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -4194,7 +3694,6 @@ view: |-
       "270_269_Verified": 0.1,
       "276_269_Verified": 0.12,
       "278_269_Verified": 0.1,
-      "280_269_Verified": 0.1,
       "282_269_Verified": 0.1,
       "284_269_Verified": 0.11,
       "286_269_Verified": 0.1,
@@ -4203,18 +3702,13 @@ view: |-
       "293_331_Verified": 0.1,
       "295_331_Verified": 0.1,
       "297_331_Verified": 0.1,
-      "299_331_Verified": 0.1,
-      "301_331_Verified": 0.1,
       "303_331_Verified": 0.1,
       "305_331_Verified": 0.1,
-      "307_331_Verified": 0.11,
       "309_331_Verified": 0.1,
       "311_331_Verified": 0.11,
       "313_331_Verified": 0.1,
       "315_331_Verified": 0.1,
       "317_331_Verified": 0.12,
-      "319_331_Verified": 0.1,
-      "321_331_Verified": 0.12,
       "323_331_Verified": 0.1,
       "325_331_Verified": 0.12,
       "327_331_Verified": 0.15,
@@ -4227,16 +3721,15 @@ view: |-
       "348_360_Verified": 0.1,
       "350_360_Verified": 0.1,
       "352_360_Verified": 0.1,
-      "354_360_Verified": 0.1,
       "356_360_Verified": 0.16,
       "358_360_Verified": 0.2
     },
     "paper": {
       "dimensions": {
-        "height": 3800,
-        "width": 8390,
+        "height": 3970,
+        "width": 6470,
         "x": -400,
-        "y": -3235
+        "y": -3405
       }
     }
   }
