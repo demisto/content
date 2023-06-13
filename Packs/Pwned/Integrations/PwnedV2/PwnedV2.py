@@ -43,8 +43,6 @@ RETRIES_END_TIME = datetime.min
 
 
 def http_request(method, url_suffix, params=None, data=None):
-    if not API_KEY:
-        raise DemistoException('API key must be provided.')
     while True:
         res = requests.request(
             method,
@@ -345,7 +343,8 @@ try:
         'pwned-domain': pwned_domain_command,
         'pwned-username': pwned_username_command
     }
-
+    if not API_KEY:
+        raise DemistoException('API key must be provided.')
     if command in commands:
         md_list, ec_list, api_email_res_list = commands[command](demisto.args())
         for md, ec, api_paste_res in zip(md_list, ec_list, api_email_res_list):
