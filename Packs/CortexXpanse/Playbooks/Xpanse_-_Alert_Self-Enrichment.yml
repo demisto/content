@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Xpanse - Alert Self-Enrichment
-description: Enrichment on the alert itself using Cortex Xpanse APIs
+description: Enrichment on the alert itself using Cortex Xpanse APIs.
 starttaskid: "0"
 tasks:
   "0":
