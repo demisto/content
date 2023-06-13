@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 from typing import Dict, Any, Tuple
 from demisto_sdk.commands.common.tools import _get_file_id, get_file_displayed_name, find_type, get_file
 from pathlib import Path
+from collections import defaultdict
 
 import traceback
 import tempfile
@@ -75,7 +76,7 @@ def get_custom_content_ids(file_entry_id: Any) -> dict:
     Return:
         A dict of custom content ids.
     """
-    custom_content_ids: dict = dict()
+    custom_content_ids: defaultdict[Any, list] = defaultdict(list)
     get_file_path_res = demisto.getFilePath(file_entry_id)
     custom_content_file_path = get_file_path_res.get('path')
     if not custom_content_file_path:
@@ -86,10 +87,7 @@ def get_custom_content_ids(file_entry_id: Any) -> dict:
     for custom_content_member in custom_content_members:
         entity, entity_id_name = get_content_details(custom_content_tar_file, custom_content_member)
         if entity and entity_id_name.get('id'):
-            if custom_content_ids.get(entity):
-                custom_content_ids[entity].append(entity_id_name)
-            else:
-                custom_content_ids[entity] = [entity_id_name]
+            custom_content_ids[entity].append(entity_id_name)
         else:
             raise Exception(f"Could not parse content type and id from file name {custom_content_member.name}")
 
@@ -114,26 +112,22 @@ def get_included_ids_command(args: Dict[str, Any]) -> CommandResults:
     Return:
         CommandResults Outputs with included ids dict and excluded ids dict, ready to pass to DeleteContent script.
     """
-    excluded_ids_dicts = args.get('exclude_ids_list', [])
-    if args.get('exclude_ids_list') and isinstance(args.get('exclude_ids_list'), str):
-        try:
-            excluded_ids_dicts = json.loads(args.get('exclude_ids_list'))  # type: ignore
-        except json.JSONDecodeError as err:
-            raise ValueError(f'Failed decoding excluded_ids_list as json: {str(err)}')
+    if excluded_ids_dicts := args.get('exclude_ids_list', []):
+        if not isinstance(excluded_ids_dicts, list):
+            try:
+                excluded_ids_dicts = json.loads(str(args.get('exclude_ids_list')))
+            except json.JSONDecodeError as err:
+                raise ValueError(f'Failed decoding excluded_ids_list as json: {str(err)}')
 
     custom_content_ids = get_custom_content_ids(file_entry_id=args.get('file_entry_id'))
 
-    included_custom_ids_names: dict = {}
-    excluded_ids: dict = {}
+    included_custom_ids_names = {}
+    excluded_ids: defaultdict[Any, list] = defaultdict(list)
     if excluded_ids_dicts:
         # Merge exclusion dicts
         for excluded_ids_dict in excluded_ids_dicts:
             for excluded_entity in excluded_ids_dict.keys():
-                if excluded_ids.get(excluded_entity):
-                    ids_to_exclude = excluded_ids.get(excluded_entity, []) + excluded_ids_dict.get(excluded_entity, [])
-                    excluded_ids[excluded_entity] = list(dict.fromkeys(ids_to_exclude))
-                else:
-                    excluded_ids[excluded_entity] = excluded_ids_dict.get(excluded_entity, [])
+                excluded_ids[excluded_entity] += excluded_ids_dict.get(excluded_entity, [])
 
         # Exclude what is relevant
         for custom_entity in custom_content_ids.keys():

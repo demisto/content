@@ -60,7 +60,7 @@ class EntityAPI(ABC):
         return [entity.get('id', '') for entity in response] if isinstance(response, list) else []
 
 
-class PlaybookAPI(EntityAPI):  # works
+class PlaybookAPI(EntityAPI):
     name = 'playbook'
 
     def search_specific_id(self, specific_id: str):
@@ -90,7 +90,7 @@ class PlaybookAPI(EntityAPI):  # works
         return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
 
 
-class IntegrationAPI(EntityAPI):  # works
+class IntegrationAPI(EntityAPI):
     name = 'integration'
 
     def search_specific_id(self, specific_id: str):
@@ -124,7 +124,7 @@ class IntegrationAPI(EntityAPI):  # works
         return [entity.get('id') for entity in integrations] if type(integrations) is list else []
 
 
-class ScriptAPI(EntityAPI):  # works :)
+class ScriptAPI(EntityAPI):
     name = 'script'
     always_excluded = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer', SCRIPT_NAME]
 
@@ -208,7 +208,7 @@ class PreProcessingRuleAPI(EntityAPI):  # checked and works
         return get_the_name_of_specific_id(response, id)
 
 
-class WidgetAPI(EntityAPI):  # works
+class WidgetAPI(EntityAPI):
     name = 'widget'
 
     def search_specific_id(self, specific_id: str):
@@ -238,7 +238,7 @@ class WidgetAPI(EntityAPI):  # works
         return [entity.get('id', '') for entity in response] if type(response) is list else []
 
 
-class DashboardAPI(EntityAPI):  # works
+class DashboardAPI(EntityAPI):
     name = 'dashboard'
 
     def search_specific_id(self, specific_id: str):
@@ -268,7 +268,7 @@ class DashboardAPI(EntityAPI):  # works
         return [entity.get('id', '') for entity in response] if type(response) is list else []
 
 
-class ReportAPI(EntityAPI):  # works
+class ReportAPI(EntityAPI):
     name = 'report'
 
     def search_specific_id(self, specific_id: str):
@@ -319,7 +319,7 @@ class IncidentTypeAPI(EntityAPI):  # checked and works
         return get_the_name_of_specific_id(response, id)
 
 
-class ClassifierAPI(EntityAPI):  # works
+class ClassifierAPI(EntityAPI):
     name = 'classifier'
 
     def search_specific_id(self, specific_id: str):
@@ -353,7 +353,7 @@ class MapperAPI(ClassifierAPI):
     name = 'mapper'
 
 
-class ReputationAPI(EntityAPI):  # works
+class ReputationAPI(EntityAPI):
     name = 'reputation'
 
     def search_specific_id(self, specific_id: str):
@@ -378,7 +378,7 @@ class ReputationAPI(EntityAPI):  # works
         return get_the_name_of_specific_id(response, id)
 
 
-class LayoutAPI(EntityAPI):  # works
+class LayoutAPI(EntityAPI):
     name = 'layoutscontainer'
 
     def search_specific_id(self, specific_id: str):
