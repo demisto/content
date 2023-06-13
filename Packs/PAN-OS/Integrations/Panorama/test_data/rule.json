@@ -35,6 +35,9 @@
                     "#text": "default"
                 }
             }
+        },
+        "group": {
+            "member": "Prince Security Profile Group"
         }
     },
     "qos": {

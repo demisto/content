@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
+from functools import partial
 import enum
 import html
 
@@ -3457,105 +3458,63 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 ''' Security Rules Managing '''
 
 
-def dict_recursive_get(dict_object: Any, keys: list = [], possible_keys: list = [], default_return_value: Any = None, return_type: type = None, recurse_lists: bool = True) -> Any:
-    """Retrieves a value from a nested dictionary using a list of keys.
-
-    Args:
-        dict_object (Any): The dictionary object from which to retrieve the value.
-        keys (list): A list of keys representing the possible path to the desired value in the dictionary.
-        possible_keys (list): A list of keys representing the possible keys to the desired value in the dictionary if the desired value was not found from "keys".
-                              The keys will be used until a value that is not a dict or a list is found, even if not all the keys were used.
-        default_return_value (Any, optional): The value to return if the desired value is not found.. Defaults to None.
-        return_type (type, optional): The expected type of the value to be returned. If the retrieved value is not of this type,
-                                    the default_return_value will be returned instead. Defaults to None.
-        recurse_lists (bool, optional): Specifies whether to recursively search for the value in nested lists. If True and a list is
-                                    encountered during traversal, the function will apply itself to each item in the list using
-                                    the remaining keys. Defaults to True.
-
-    Returns:
-        Any: The value retrieved from the dictionary or the default_return_value if the value is not found or the type does not match.
-    """
-
-    return_value = dict_object
-
-    for i, key in enumerate(keys + possible_keys):
-        try:
-            return_value = return_value[key]
-        except (KeyError, TypeError, IndexError, AttributeError):
-            if recurse_lists and isinstance(return_value, list):
-
-                new_keys, new_possible_keys = keys[i:], possible_keys[max(i - len(keys), 0):]
-
-                sub_list = [
-                    elem for item in return_value
-                    if (elem := dict_recursive_get(
-                        item, new_keys, new_possible_keys, default_return_value, return_type, recurse_lists
-                    )) != default_return_value
-                ] or default_return_value
-
-                return sub_list
-
-            if i < len(keys):
-                return_value = default_return_value
-                break
-
-    if return_type and not isinstance(return_value, return_type):
-        return_value = default_return_value
-
-    return return_value
-
-
 def prettify_rule(rule: dict):
 
-    def rule_get(*path: str, possibles: list = [], from_dict: dict = rule, default_return_value=None, return_type=(str, list)):
-        return dict_recursive_get(from_dict, keys=list(path), possible_keys=possibles + ['member', '#text'], default_return_value=default_return_value, return_type=return_type)
+    parse_pan_os_un_committed_data(rule, ['@admin', '@dirtyId', '@time'])
+
+    rule_get = partial(dict_safe_get, rule, return_type=(str, list), raise_return_type=False)
+
+    # get rule devices:
+    entries = rule_get(['target', 'devices', 'entry'])
+    if not isinstance(entries, list):
+        entries = [entries]
+    rule_devices = [
+        entry.get('@name') for entry in entries if isinstance(entry, dict)
+    ] or None
 
     pretty_rule: Dict[str, Any] = {
 
         'DeviceGroup': DEVICE_GROUP,
-        'Location': rule_get('@loc'),
-        'NegateDestination': rule_get('negate-destination'),
-        'Disabled': rule_get('disabled'),
-        'ICMPUnreachable': rule_get('icmp-unreachable'),
-        'Description': rule_get('description'),
-        'GroupTag': rule_get('group-tag'),
-        'LogForwardingProfile': rule_get('log-setting'),
-        'NegateSource': rule_get('negate-source'),
-        'SecurityProfileGroup': rule_get('profile-setting', 'group', return_type=str),
+        'Location': rule.get('@loc'),
+        'NegateDestination': rule.get('negate-destination'),
+        'Disabled': rule.get('disabled'),
+        'ICMPUnreachable': rule.get('icmp-unreachable'),
+        'Description': rule.get('description'),
+        'GroupTag': rule.get('group-tag'),
+        'LogForwardingProfile': rule.get('log-setting'),
+        'NegateSource': rule.get('negate-source'),
+        'SecurityProfileGroup': rule_get(['profile-setting', 'group', 'member']),
         'SecurityProfile': {
-            key: rule_get(from_dict=value)
+            key: value.get('member')
             for key, value in profiles.items()  # pylint: disable=E0601  # disables "Using variable 'profiles' before assignment"
-            if not str(key).startswith('@')
+            if isinstance(value, dict)
         }
-        if (profiles := rule_get('profile-setting', 'profiles', return_type=dict, default_return_value={}))
+        if (profiles := rule_get(['profile-setting', 'profiles'], return_type=dict, default_return_value={}))
         else None,
         'Target': {
-            'devices': rule_get('target', 'devices', 'entry', '@name'),
-            'negate': rule_get('target', 'negate'),
+            'devices': rule_devices,
+            'negate': rule_get(['target', 'negate']),
         },
-        'Name': rule_get('@name'),
-        'Type': rule_get('rule-type'),
-        'From': rule_get('from'),
-        'DestinationDevice': rule_get('destination-hip'),
-        'Action': rule_get('action'),
-        'SourceDevice': rule_get('source-hip'),
-        'Tags': rule_get('tag'),
-        'SourceUser': rule_get('source-user'),
-        'Application': rule_get('application'),
-        'Service': rule_get('service'),
-        'To': rule_get('to'),
-        'Source': rule_get('source'),
-        'CustomUrlCategory': rule_get('category'),
-        'Destination': rule_get('destination'),
+        'Name': rule.get('@name'),
+        'Type': rule.get('rule-type'),
+        'From': rule_get(['from', 'member']),
+        'DestinationDevice': rule_get(['destination-hip', 'member']),
+        'Action': rule.get('action'),
+        'SourceDevice': rule_get(['source-hip', 'member']),
+        'Tags': rule_get(['tag', 'member']),
+        'SourceUser': rule_get(['source-user', 'member']),
+        'Application': rule_get(['application', 'member']),
+        'Service': rule_get(['service', 'member']),
+        'To': rule_get(['to', 'member']),
+        'Source': rule_get(['source', 'member']),
+        'CustomUrlCategory': rule_get(['category', 'member']),
+        'Destination': rule_get(['destination', 'member']),
         'Options': {
-            'LogAtSessionStart': rule_get("log-start"),
-            'LogForwarding': rule_get("log-setting"),
-            'Schedule': rule_get("schedule"),
-            'QoSMarking': next(
-                (key for key in rule_get('qos', 'marking', return_type=dict, default_return_value={}).keys()
-                 if not key.startswith('@')),
-                None),
-            'DisableServerResponseInspection': rule_get('option', 'disable-server-response-inspection'),
+            'LogAtSessionStart': rule.get('log-start'),
+            'LogForwarding': rule.get('log-setting'),
+            'Schedule': rule.get('schedule'),
+            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()), None),
+            'DisableServerResponseInspection': rule_get(['option', 'disable-server-response-inspection']),
         }
     }
 

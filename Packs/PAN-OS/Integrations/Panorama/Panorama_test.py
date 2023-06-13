@@ -911,34 +911,6 @@ def test_prettify_configured_user_id_agents__single_result():
     assert response == expected
 
 
-test_dict1 = {'a': [{'b': [{'c': 1}, {'c': 2}]}, {'b': [{'c': 3}, {'c': 4}]}]}
-test_dict2 = {'a': 1, 'b': {'c': 2, 'd': {'e': 3}}}
-
-
-@pytest.mark.parametrize(
-    'dict_object, keys, possible_keys, default_return_value, return_type, recurse_lists, expected_output',
-    (
-        (test_dict1, [], ['a', 'b', 'c'], None, int, True, [[1, 2], [3, 4]]),
-        (test_dict1, [], ['a', 'b', 'c'], None, list, False, [{'b': [{'c': 1}, {'c': 2}]}, {'b': [{'c': 3}, {'c': 4}]}]),
-        (test_dict1, [], ['a', 'b', 'c'], None, int, False, None),
-        (test_dict1, [], ['a', 'b', 'c'], 'test', str, True, 'test'),
-        (test_dict1, [], ['a', 'b'], 'test', int, True, 'test'),
-        (test_dict2, [], ['b', 'd', 'e'], None, int, False, 3),
-        (test_dict2, [], ['b', 'd', 'e'], 'test', dict, False, 'test'),
-
-        (test_dict1, ['a', 'b', 'c'], ['d'], None, int, True, [[1, 2], [3, 4]]),
-        (test_dict1, ['a', 'b'], ['c', 'd'], None, int, True, [[1, 2], [3, 4]]),
-        (test_dict1, ['a', 'b'], ['test', 'c'], None, int, True, [[1, 2], [3, 4]]),
-    )
-)
-def test_dict_recursive_get(dict_object, keys, possible_keys, default_return_value, return_type, recurse_lists, expected_output):
-    from Panorama import dict_recursive_get
-
-    output = dict_recursive_get(dict_object, keys, possible_keys, default_return_value, return_type, recurse_lists)
-
-    assert output == expected_output
-
-
 def test_prettify_rule():
     from Panorama import prettify_rule
     with open("test_data/rule.json") as f:
