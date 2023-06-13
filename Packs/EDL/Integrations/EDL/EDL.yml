@@ -44,13 +44,12 @@ configuration:
 - additionalinfo: Maximum number of items in the list.
   defaultvalue: '2500'
   display: List Size
-  hidden: false
   name: edl_size
   required: true
   type: 0
   section: Collect
 - additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
-  defaultvalue: 5 minutes
+  defaultvalue: 30 minutes
   display: Refresh Rate
   name: cache_refresh_rate
   required: false
@@ -85,7 +84,6 @@ configuration:
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
-  hidden: false
   name: add_comment_if_empty
   required: false
   type: 8
@@ -94,7 +92,6 @@ configuration:
 - additionalinfo: If selected, ports in URLs are removed. For example, 'www.example.com:9999/path' becomes 'www.example.com/path'.
   defaultvalue: 'true'
   display: Strip ports from URLs
-  hidden: false
   name: url_port_stripping
   required: false
   type: 8
@@ -103,7 +100,6 @@ configuration:
 - additionalinfo: If selected, strips the protocol from URLs (http/https).
   defaultvalue: 'true'
   display: Strip protocols from URLs
-  hidden: false
   name: url_protocol_stripping
   required: false
   type: 8
@@ -112,7 +108,6 @@ configuration:
 - additionalinfo: If selected, URLs are truncated to no more than 254 characters.
   defaultvalue: 'false'
   display: Truncate URL length
-  hidden: false
   name: url_truncate
   required: false
   type: 8
@@ -135,7 +130,6 @@ configuration:
 - additionalinfo: For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR).
   defaultvalue: Don't Collapse
   display: IP Collapsing
-  hidden: false
   name: collapse_ips
   options:
   - Don't Collapse
@@ -148,7 +142,6 @@ configuration:
 - additionalinfo: 'CIDRs with a lower network prefix bits number are not included. For example - if the number is 8, then 0.0.0.0/2 is excluded from the list.'
   defaultvalue: 8
   display: 'Maximum CIDR network prefix bits size'
-  hidden: false
   name: maximum_cidr_size
   required: false
   type: 0
@@ -157,7 +150,6 @@ configuration:
 - additionalinfo: 'Option to remove top level domainGlobs from the list. For example - *.com.'
   defaultvalue: 'false'
   display: 'Exclude top level domainGlobs'
-  hidden: false
   name: no_wildcard_tld
   required: false
   type: 8
@@ -165,7 +157,6 @@ configuration:
   advanced: true
 - additionalinfo: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
   display: "PAN-OS: drop invalid URL entries"
-  hidden: false
   name: drop_invalids
   required: false
   type: 8
@@ -174,7 +165,6 @@ configuration:
 - additionalinfo: For use with McAfee Web Gateway format - set the indicator list type.
   defaultvalue: string
   display: "McAfee Gateway: Indicator List Type"
-  hidden: false
   name: mwg_type
   options:
   - string
@@ -192,7 +182,6 @@ configuration:
 - additionalinfo: For use with Symantec ProxySG format - set the default category for the output.
   defaultvalue: bc_category
   display: "Symantec ProxySG: Default Category"
-  hidden: false
   name: category_default
   required: false
   type: 0
@@ -200,7 +189,6 @@ configuration:
   advanced: true
 - additionalinfo: For use with Symantec ProxySG format - set the categories that should be listed in the output (comma separated list). If not set, lists all existing categories.
   display: "Symantec ProxySG: Listed Categories"
-  hidden: false
   name: category_attribute
   required: false
   type: 0
@@ -208,16 +196,14 @@ configuration:
   advanced: true
 - additionalinfo: If selected, CSV format appears in a textual webpage instead of initiating a file download.
   display: Show CSV format as Text
-  hidden: false
   name: csv_text
   required: false
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators.
-  defaultvalue: '2000'
+- additionalinfo: Internal page size used when querying Cortex XSOAR for the indicators. Value can be up to 10,000 due to performance limitations.
+  defaultvalue: '10000'
   display: XSOAR Indicator Page Size
-  hidden: false
   name: page_size
   required: false
   type: 0
@@ -232,7 +218,6 @@ configuration:
   section: Connect
 - additionalinfo: 'NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support.'
   display: NGINX Global Directives
-  hidden: false
   name: nginx_global_directives
   required: false
   type: 0
@@ -240,7 +225,6 @@ configuration:
   advanced: true
 - additionalinfo: NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support.
   display: NGINX Server Conf
-  hidden: false
   name: nginx_server_conf
   required: false
   type: 12
@@ -248,15 +232,13 @@ configuration:
   advanced: true
 - additionalinfo: NGNIX read timeout in seconds.
   display: NGINX Read Timeout
-  hidden: false
   name: timeout
   required: false
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
-  display: 'Advanced: Use Legacy Queries'
-  hidden: false
+- additionalinfo: 'This parameter will be deprecated from September 2023. Make sure to adjust your default queries accordingly..'
+  display: 'Advanced: Use Legacy Queries (Deprecated)'
   name: use_legacy_query
   required: false
   type: 8
@@ -537,7 +519,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.58905
+  dockerimage: demisto/flask-nginx:1.0.0.62466
   feed: false
   isfetch: false
   longRunning: true
