@@ -4,11 +4,75 @@ from collections.abc import Callable
 from enum import Enum
 from http import HTTPStatus
 from typing import Any
+from functools import partial
 
 from CommonServerPython import *
 from requests import Response
 
 LIMIT_SIZE = 50
+
+
+class ArgumentValues(Enum):
+    SOURCE_ADDRESS_IP = "IP"
+    SOURCE_ADDRESS_IP_RESOLVED = "IP Resolved by Specified Domain"
+    SOURCE_ADDRESS_SOURCE_DOMAIN = "Source Domain"
+    URL_ACTION = ["Pass", "Alert & Deny", "Continue", "Deny (no log)"]
+    SEVERITY = ["High", "Medium", "Low", "Informative"]
+    ENABLE = "enable"
+    DISABLE = "disable"
+    ENABLE_DISABLE = [ENABLE, DISABLE]
+    SOURCE_ADDRESS_TYPE = [
+        SOURCE_ADDRESS_IP,
+        SOURCE_ADDRESS_IP_RESOLVED,
+        SOURCE_ADDRESS_SOURCE_DOMAIN,
+    ]
+    SERVER_POOL_RULE_IP = "IP"
+    SERVER_POOL_RULE_DOMAIN = "Domain"
+    SERVER_POOL_RULE_EXTERNAL = "External connector"
+    REVERSE_PROXY = "Reverse Proxy"
+    OFFLINE_PROTECTION = "Offline Protection"
+    TRUE_TRANSPARENT_PROXY = "True Transparent Proxy"
+    TRANSPARENT_INSPECTION = "Transparent Inspection"
+    WCCP = "WCCP"
+    SERVER_POOL_TYPE = [
+        REVERSE_PROXY,
+        OFFLINE_PROTECTION,
+        TRUE_TRANSPARENT_PROXY,
+        TRANSPARENT_INSPECTION,
+        WCCP
+    ]
+    SERVER_BALANCE = "Server Balance"
+    SINGLE_SERVER = "Single Server"
+    SERVER_POOL_BALANCE = [SERVER_BALANCE, SINGLE_SERVER]
+    ROUND_ROBIN = "Round Robin"
+    WEIGHTED_ROUND_ROBIN = "Weighted Round Robin"
+    LEAST_CONNECTION = "Least Connection"
+    URI_HASH = "URI Hash"
+    FULL_URI_HASH = "Full URI Hash"
+    HOST_HASH = "Host Hash"
+    HOST_DOMAIN_HASH = "Host Domain Hash"
+    SOURCE_IP_HASH = "Source IP Hash"
+    SERVER_POOL_ALGO = [
+        ROUND_ROBIN,
+        WEIGHTED_ROUND_ROBIN,
+        LEAST_CONNECTION,
+        URI_HASH,
+        FULL_URI_HASH,
+        HOST_HASH,
+        HOST_DOMAIN_HASH,
+        SOURCE_IP_HASH
+    ]
+    SERVER_POOL_HTTP_REUSE = [
+        "Aggressive",
+        "Always",
+        "Always",
+        "Safe",
+    ]
+    SERVER_POOL_PROTOCOL = [
+        "HTTP",
+        "FTP",
+        "ADFSPIP",
+    ]
 
 
 class OutputTitle(Enum):
@@ -93,6 +157,8 @@ class OutputTitle(Enum):
     CUSTOM_PREDIFINED_UPDATE = (
         "Custom predifined whitelist member successfully updated!"
     )
+    URL_ACCESS_RULE_GROUP = "URL access rule group"
+    URL_ACCESS_RULE_CONDITION = "URL access rule condition"
 
 
 class ErrorMessage(Enum):
@@ -156,6 +222,8 @@ class ErrorMessage(Enum):
         "retry_times_on_http_layer should be a number in range of 1-5."
     )
     RETRY_ON_HTTP_RESPONSE_CODES = "Please insert codes from the list."
+    ARGUMENT = "{0} argument should be {1}"
+    INSERT_VALUE = "Please insert {0}."
 
 
 class Parser:
@@ -273,6 +341,18 @@ class Parser:
         """
         return {"id": data["name"]}
 
+    @abstractmethod
+    def parse_url_access_rule_group(
+        self, access_rule_group: dict[str, Any]
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def parse_url_access_rule_condition(
+        self, url_access_rule_condition: dict[str, Any]
+    ) -> dict[str, Any]:
+        pass
+
     @property
     @abstractmethod
     def sub_object_id_key(self) -> str:
@@ -341,6 +421,60 @@ class Parser:
     @abstractmethod
     def custom_whitelist_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
         pass
+
+    @property
+    @abstractmethod
+    def url_action_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def url_action_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def meet_condition_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def meet_condition_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def url_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def url_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def source_address_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def source_address_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def ip_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def ip_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    def enable_disable_to_boolean_mapper(self) -> dict[bool, str]:
+        return {True: "enable", False: "disable"}
 
 
 class ParserV1(Parser):
@@ -626,6 +760,51 @@ class ParserV1(Parser):
         }
         return parsed_data
 
+    def parse_url_access_rule_group(
+        self, access_rule_group: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": access_rule_group["_id"],
+            "action": access_rule_group.get("disaction") or "",
+            "host_status": access_rule_group["hostStatus"],
+            "host": access_rule_group["host"],
+            "severity": dict_safe_get(
+                self.severity_api_to_user_mapper,
+                [access_rule_group["severity"]],
+            ),
+            "trigger_policy": access_rule_group["triggerPolicy"],
+            "count": access_rule_group["count"],
+        }
+
+    def parse_url_access_rule_condition(
+        self, url_access_rule_condition: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": url_access_rule_condition["_id"],
+            "url_type": self.url_type_api_to_user_mapper[
+                url_access_rule_condition["urlType"]
+            ],
+            "url_pattern": url_access_rule_condition["urlPattern"],
+            "meet_this_condition_if": self.meet_condition_api_to_user_mapper[
+                url_access_rule_condition["meetthisconditionif"]
+            ],
+            "source_address": self.enable_disable_to_boolean_mapper.get(
+                url_access_rule_condition["sourceAddress"]
+            ),
+            "source_address_type": self.source_address_type_api_to_user_mapper.get(
+                url_access_rule_condition["sourceAddressType"]
+            ),
+            "ip_range": url_access_rule_condition["iPv4IPv6"],
+            "ip_type": self.ip_type_api_to_user_mapper.get(
+                url_access_rule_condition["type"]
+            ),
+            "domain": url_access_rule_condition["domain"],
+            "source_domain_type": self.url_type_api_to_user_mapper.get(
+                url_access_rule_condition.get("source_domain_type", ""), ""
+            ),
+            "source_domain": url_access_rule_condition["source_domain"],
+        }
+
     @property
     def sub_object_id_key(self) -> str:
         """Hold sub object id key in Fortiweb V1
@@ -733,6 +912,59 @@ class ParserV1(Parser):
             dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.custom_whitelist_user_to_api_mapper)
+
+    @property
+    def url_action_user_to_api_mapper(self) -> dict[str, int]:
+        """Mapping the user input for URL access rule action to the API input
+        Returns:
+            dict[str, int]: Mapped dictionary.
+        """
+        return {"Pass": 1, "Alert & Deny": 2, "Continue": 3, "Deny (no log)": 4}
+
+    @property
+    def url_action_api_to_user_mapper(self) -> dict[int, str]:
+        """Mapping the API output for URL access rule action to the user output
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
+        return reverse_dict(self.url_action_user_to_api_mapper)
+
+    @property
+    @abstractmethod
+    def meet_condition_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "Object matches the URL Pattern": "1",
+            "Object does not match the URL Pattern": "2",
+        }
+
+    @property
+    @abstractmethod
+    def meet_condition_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.meet_condition_user_to_api_mapper)
+
+    @property
+    def url_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {"Simple String": "1", "Regular Expression": "2"}
+
+    @property
+    def url_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.url_type_user_to_api_mapper)
+
+    @property
+    def source_address_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {"IP": 1, "IP Resolved by Specified Domain": 2, "Source Domain": 3}
+
+    @property
+    def source_address_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.source_address_type_user_to_api_mapper)
+
+    @property
+    def ip_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {"IPv4": 2, "IPv6": 10}
+
+    @property
+    def ip_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.ip_type_user_to_api_mapper)
 
 
 class ParserV2(Parser):
@@ -1066,6 +1298,50 @@ class ParserV2(Parser):
         }
         return parsed_data
 
+    def parse_url_access_rule_group(
+        self, access_rule_group: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": access_rule_group["name"],
+            "action": access_rule_group["action"],
+            "host_status": access_rule_group["host-status"],
+            "host": access_rule_group["host"],
+            "severity": access_rule_group["severity"],
+            "trigger_policy": access_rule_group["trigger"],
+            "count": access_rule_group["sz_match-condition"],
+        }
+
+    def parse_url_access_rule_condition(
+        self, url_access_rule_condition: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": url_access_rule_condition["id"],
+            "url_type": self.url_type_api_to_user_mapper[
+                url_access_rule_condition["type"]
+            ],
+            "url_pattern": url_access_rule_condition["reg-exp"],
+            "meet_this_condition_if": self.meet_condition_api_to_user_mapper.get(
+                url_access_rule_condition["reverse-match"]
+            ),
+            "source_address": url_access_rule_condition["sip-address-check"],
+            "source_address_type": self.source_address_type_api_to_user_mapper.get(
+                url_access_rule_condition["sip-address-type"]
+            ),
+            "ip_range": url_access_rule_condition["sip-address-value"],
+            "ip_type": self.ip_type_api_to_user_mapper.get(
+                url_access_rule_condition["sdomain-type"]
+            ),
+            "domain": url_access_rule_condition["sip-address-domain"],
+            "source_domain_type": self.url_type_api_to_user_mapper.get(
+                url_access_rule_condition["source-domain-type"]
+            ),
+            "source_domain": url_access_rule_condition["source-domain"],
+            "only_method_check": url_access_rule_condition["only-method-check"],
+            "only_protocol_check": url_access_rule_condition["only-protocol-check"],
+            "only_method": url_access_rule_condition["only-method"],
+            "only_protocol": url_access_rule_condition["only-protocol"],
+        }
+
     @property
     def sub_object_id_key(self) -> str:
         """Hold sub object id key in Fortiweb V2
@@ -1188,6 +1464,71 @@ class ParserV2(Parser):
             dict[str, str]: Mapped dictionary.
         """
         return reverse_dict(self.custom_whitelist_user_to_api_mapper)
+
+    @property
+    def url_action_user_to_api_mapper(self) -> dict[str, str]:
+        """Mapping the user input for URL access rule action to the API input
+        Returns:
+            dict[str, int]: Mapped dictionary.
+        """
+        return {
+            "Pass": "pass",
+            "Alert & Deny": "alert_deny",
+            "Continue": "continue",
+            "Deny (no log)": "deny_no_log",
+        }
+
+    @property
+    def url_action_api_to_user_mapper(self) -> dict[str, str]:
+        """Mapping the API output for URL access rule action to the user output
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
+        return reverse_dict(self.url_action_user_to_api_mapper)
+
+    @property
+    @abstractmethod
+    def meet_condition_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "Object matches the URL Pattern": "yes",
+            "Object does not match the URL Pattern": "no",
+        }
+
+    @property
+    @abstractmethod
+    def meet_condition_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.meet_condition_user_to_api_mapper)
+
+    @property
+    def url_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "Simple String": "simple-string",
+            "Regular Expression": "regex-expression",
+        }
+
+    @property
+    def url_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.url_type_user_to_api_mapper)
+
+    @property
+    def source_address_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "IP": "sip",
+            "IP Resolved by Specified Domain": "sdomain",
+            "Source Domain": "source-domain",
+        }
+
+    @property
+    def source_address_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.source_address_type_user_to_api_mapper)
+
+    @property
+    def ip_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {"IPv4": "ipv4", "IPv6": "ipv6"}
+
+    @property
+    def ip_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.ip_type_user_to_api_mapper)
 
 
 class Client(BaseClient):
@@ -1790,6 +2131,45 @@ class Client(BaseClient):
         if block_period is not None and not 1 <= block_period <= 600:
             raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
 
+    def validate_url_access_group(self, args: dict[str, Any]):
+        """Validate argument for server policy.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Returns:
+            CommandResults: outputs, readable outputs and raw response for XSOAR.
+        """
+        validate = partial(validate_argument, args=args)
+        validate(key_="action", values=ArgumentValues.URL_ACTION.value)
+        validate(key_="severity", values=ArgumentValues.SEVERITY.value)
+        validate(key_="host_status", values=ArgumentValues.ENABLE_DISABLE.value)
+        if (host_status := args.get("host_status")) and host_status == ArgumentValues.ENABLE.value and not args.get("host"):
+            raise ValueError(ErrorMessage.INSERT_VALUE.value.format("host"))
+
+    def validate_url_access_rule_condition(self, args: dict[str, Any]):
+        """ URL access rule condition args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors.
+        """
+        validate = partial(validate_argument, args=args)
+        if args["source_address"] == ArgumentValues.ENABLE.value:
+            validate(key_="source_address_type")
+            if args["source_address_type"] == ArgumentValues.SOURCE_ADDRESS_IP.value:
+                validate(key_="ip_range")
+
+            if args["source_address_type"] == ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value:
+                validate(key_="ip")
+                validate(key_="ip_type")
+
+            if args["source_address_type"] == ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value:
+                validate(key_="source_domain")
+                validate(key_="source_domain_type")
+
     @abstractmethod
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -2143,6 +2523,85 @@ class Client(BaseClient):
 
     @abstractmethod
     def certificate_intermediate_group_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_group_create_request(
+        self,
+        name: str,
+        action: str,
+        trigger_policy: str | None,
+        severity: str | None,
+        host_status: str,
+        host: str | None,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_group_update_request(
+        self,
+        name: str,
+        action: str | None,
+        trigger_policy: str | None,
+        severity: str | None,
+        host_status: str | None,
+        host: str | None,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_group_delete_request(self, name: str) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_group_list_request(self, **kwargs) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_condition_create_request(
+        self,
+        group_name: str,
+        url_type: str,
+        url_pattern: str,
+        meet_this_condition_if: str,
+        source_address: str,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_condition_update_request(
+        self,
+        group_name: str,
+        condition_id: str,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_condition_delete_request(
+        self, group_name: str, member_id: str
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def url_access_rule_condition_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
         pass
 
 
@@ -3416,6 +3875,314 @@ class ClientV1(Client):
         return self._http_request(
             method="GET", url_suffix="System/Certificates/InterCAGroupList"
         )
+
+    def url_access_rule_group_create_request(
+        self,
+        name: str,
+        action: str,
+        trigger_policy: str | None,
+        severity: str | None,
+        host_status: str,
+        host: str | None,
+    ) -> dict[str, Any]:
+        """Create a URL access rule group.
+
+        Args:
+            name (str): URL access rule group name.
+            action (str): Which action the FortiWeb appliance will take when a request matches the URL access rule.
+            trigger_policy (str | None): Trigger Policy Name.
+            severity (str | None): Severity level.
+            host_status (str): Whether to require host name.
+            host (str | None): A name of protected host.
+
+        Returns:
+            dict[str, Any]: API response from FortiwebVM V1
+        """
+        data = remove_empty_elements(
+            {
+                "name": name,
+                "action": self.parser.url_action_user_to_api_mapper[action],
+                "triggerPolicy": trigger_policy,
+                "severity": self.parser.severity_user_to_api_mapper.get(severity)
+                if severity and action == "Alert & Deny"
+                else None,
+                "hostStatus": self.parser.boolean_user_to_api_mapper[host_status],
+                "host": host if host_status == ArgumentValues.ENABLE.value else None,
+            }
+        )
+        return self._http_request(
+            method="POST",
+            url_suffix="WebProtection/Access/URLAccessRule",
+            json_data=data,
+        )
+
+    def url_access_rule_group_update_request(
+        self,
+        name: str,
+        action: str | None,
+        trigger_policy: str | None,
+        severity: str | None,
+        host_status: str | None,
+        host: str | None,
+    ) -> dict[str, Any]:
+        """Update an URL access rule group.
+
+        Args:
+            name (str): URL access rule group name.
+            action (str | None): Which action the FortiWeb appliance will take when a request matches
+            the URL access rule.
+            trigger_policy (str | None): Trigger Policy Name.
+            severity (str | None): Severity level.
+            host_status (str | None): Whether to require host name.
+            host (str | None): A name of protected host.
+
+        Returns:
+            dict[str, Any]: API response from FortiwebVM V1
+        """
+        data = remove_empty_elements(
+            {
+                "name": name,
+                "action": self.parser.url_action_user_to_api_mapper.get(action) if action else None,
+                "triggerPolicy": trigger_policy,
+                "severity": self.parser.severity_user_to_api_mapper.get(severity)
+                if severity else None,
+                "hostStatus": self.parser.boolean_user_to_api_mapper.get(host_status) if host_status else None,
+                "host": host if host_status == ArgumentValues.ENABLE.value else None,
+            }
+        )
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"WebProtection/Access/URLAccessRule/{name}",
+            json_data=data,
+        )
+
+    def url_access_rule_group_delete_request(self, name: str) -> dict[str, Any]:
+        """Delete an URL access rule group.
+
+        Args:
+            name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"WebProtection/Access/URLAccessRule/{name}",
+        )
+
+    def url_access_rule_group_list_request(self, **kwargs) -> dict[str, Any]:
+        """List URL access rule groups.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="WebProtection/Access/URLAccessRule",
+        )
+
+    def build_url_access_rule_condition(
+        self,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        """Build URL access rule condition object for Fortiwev V1.
+
+        Args:
+            url_type (str | None): URL type.
+            url_pattern (str | None): URL pattern.
+            meet_this_condition_if (str | None): Meet this condition value.
+            source_address (str | None): Whether to enable source address.
+            source_address_type (str | None): The source address type.
+            ip_range (str | None): IPv4/IPv6/IP range.
+            ip_type (str | None): IP type.
+            ip (str | None): IP resolved by specified domain.
+            source_domain_type (str | None): Source domain type.
+            source_domain (str | None): Source Domain.
+
+        Returns:
+            dict[str, Any]: URL access rule condition object for Fortiwev V1.
+        """
+        source_address_type = (
+            source_address_type if source_address == ArgumentValues.ENABLE.value else None
+        )
+        match source_address_type:
+            case ArgumentValues.SOURCE_ADDRESS_IP.value:
+                ip_type = None
+                ip = None
+                source_domain_type = None
+                source_domain = None
+            case ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value:
+                ip_range = None
+                source_domain_type = None
+                source_domain = None
+            case ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value:
+                ip_range = None
+                ip_type = None
+                ip = None
+
+        return remove_empty_elements(
+            {
+                "urlType": url_type and self.parser.url_type_user_to_api_mapper.get(url_type),
+                "urlPattern": url_pattern,
+                "meetThisConditionIf": meet_this_condition_if and self.parser.meet_condition_user_to_api_mapper.get(
+                    meet_this_condition_if
+                ),
+                "sourceAddress": source_address and self.parser.boolean_user_to_api_mapper.get(
+                    source_address
+                ),
+                "sourceAddressType": source_address_type and self.parser.source_address_type_user_to_api_mapper.get(
+                    source_address_type
+                ),
+                "iPv4IPv6": ip_range,
+                "type": self.parser.ip_type_user_to_api_mapper.get(ip_type) if ip_type else None,
+                "domain": ip,
+                "source_domain_type": source_domain_type and self.parser.request_type_user_to_api_mapper.get(
+                    source_domain_type
+                ),
+                "source_domain": source_domain,
+            }
+        )
+
+    def url_access_rule_condition_create_request(
+        self,
+        group_name: str,
+        url_type: str,
+        url_pattern: str,
+        meet_this_condition_if: str,
+        source_address: str,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        """Create an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            url_type (str): URL type.
+            url_pattern (str): URL pattern.
+            meet_this_condition_if (str): Meet this condition value.
+            source_address (str): Whether to enable source address.
+            source_address_type (str | None): The source address type.
+            ip_range (str | None): IPv4/IPv6/IP range.
+            ip_type (str | None): IP type.
+            ip (str | None): IP resolved by specified domain.
+            source_domain_type (str | None): Source domain type.
+            source_domain (str | None): Source Domain.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        data = self.build_url_access_rule_condition(
+            url_type=url_type,
+            url_pattern=url_pattern,
+            meet_this_condition_if=meet_this_condition_if,
+            source_address=source_address,
+            source_address_type=source_address_type,
+            ip_range=ip_range,
+            ip_type=ip_type,
+            ip=ip,
+            source_domain_type=source_domain_type,
+            source_domain=source_domain,
+        )
+        return self._http_request(
+            method="POST",
+            url_suffix=f"WebProtection/Access/URLAccessRule/{group_name}/URLAccessRuleNewURLAccessCondition",
+            json_data=data,
+        )
+
+    def url_access_rule_condition_update_request(
+        self,
+        group_name: str,
+        condition_id: str,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        """Create an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+            url_type (str | None): URL type.
+            url_pattern (str | None): URL pattern.
+            meet_this_condition_if (str | None): Meet this condition value.
+            source_address (str | None): Whether to enable source address.
+            source_address_type (str | None): The source address type.
+            ip_range (str | None): IPv4/IPv6/IP range.
+            ip_type (str | None): IP type.
+            ip (str | None): IP resolved by specified domain.
+            source_domain_type (str | None): Source domain type.
+            source_domain (str | None): Source Domain.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        data = self.build_url_access_rule_condition(
+            url_type=url_type,
+            url_pattern=url_pattern,
+            meet_this_condition_if=meet_this_condition_if,
+            source_address=source_address,
+            source_address_type=source_address_type,
+            ip_range=ip_range,
+            ip_type=ip_type,
+            ip=ip,
+            source_domain_type=source_domain_type,
+            source_domain=source_domain,
+        )
+        url = f"WebProtection/Access/URLAccessRule/{group_name}/URLAccessRuleNewURLAccessCondition/{condition_id}"
+        return self._http_request(
+            method="PUT",
+            url_suffix=url,
+            json_data=data,
+        )
+
+    def url_access_rule_condition_delete_request(
+        self, group_name: str, condition_id: str
+    ) -> dict[str, Any]:
+        """Delete an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        endpoint = f"WebProtection/Access/URLAccessRule/{group_name}/URLAccessRuleNewURLAccessCondition/{condition_id}"
+        return self._http_request(method="DELETE", url_suffix=endpoint)
+
+    def url_access_rule_condition_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        """List URL access rule conditions.
+
+        Args:
+            group_name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        endpoint = f"WebProtection/Access/URLAccessRule/{group_name}/URLAccessRuleNewURLAccessCondition"
+        return self._http_request(method="GET", url_suffix=endpoint)
 
 
 class ClientV2(Client):
@@ -4802,6 +5569,340 @@ class ClientV2(Client):
             method="PUT",
             url_suffix="cmdb/server-policy/policy",
             json_data=data,
+            params=params,
+        )
+
+    def url_access_rule_group_create_request(
+        self,
+        name: str,
+        action: str,
+        trigger_policy: str | None,
+        severity: str | None,
+        host_status: str,
+        host: str | None,
+    ) -> dict[str, Any]:
+        """Create a URL access rule group.
+
+        Args:
+            name (str): URL access rule group name.
+            action (str): Which action the FortiWeb appliance will take when a request matches the URL access rule.
+            trigger_policy (str | None): Trigger Policy Name.
+            severity (str | None): Severity level.
+            host_status (str): Whether to require host name.
+            host (str | None): A name of protected host.
+
+        Returns:
+            dict[str, Any]: API response from FortiwebVM V2
+        """
+        data = {
+            "data": remove_empty_elements(
+                {
+                    "name": name,
+                    "action": self.parser.url_action_user_to_api_mapper.get(action),
+                    "trigger": trigger_policy,
+                    "severity": self.parser.severity_user_to_api_mapper.get(severity) if severity else None,
+                    "host-status": host_status,
+                    "host": host,
+                }
+            )
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="cmdb/waf/url-access.url-access-rule",
+            json_data=data,
+        )
+
+    def url_access_rule_group_update_request(
+        self,
+        name: str,
+        action: str | None,
+        trigger_policy: str | None,
+        severity: str | None,
+        host_status: str | None,
+        host: str | None,
+    ) -> dict[str, Any]:
+        """Update an URL access rule group.
+
+        Args:
+            name (str): URL access rule group name.
+            action (str | None): Which action the FortiWeb appliance will take when a request matches
+            the URL access rule.
+            trigger_policy (str | None): Trigger Policy Name.
+            severity (str | None): Severity level.
+            host_status (str | None): Whether to require host name.
+            host (str | None): A name of protected host.
+
+        Returns:
+            dict[str, Any]: API response from FortiwebVM V2
+        """
+        params = {"mkey": name}
+        data = {
+            "data": remove_empty_elements(
+                {
+                    "name": name,
+                    "action": self.parser.url_action_user_to_api_mapper.get(action) if action else None,
+                    "trigger": trigger_policy,
+                    "severity": self.parser.severity_user_to_api_mapper.get(severity) if severity else None,
+                    "host-status": host_status,
+                    "host": host,
+                }
+            )
+        }
+        return self._http_request(
+            method="PUT",
+            url_suffix="cmdb/waf/url-access.url-access-rule",
+            json_data=data,
+            params=params,
+        )
+
+    def url_access_rule_group_delete_request(self, name: str) -> dict[str, Any]:
+        """Delete an URL access rule group.
+
+        Args:
+            name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        params = {"mkey": name}
+        return self._http_request(
+            method="DELETE",
+            url_suffix="cmdb/waf/url-access.url-access-rule",
+            params=params,
+        )
+
+    def url_access_rule_group_list_request(self, **kwargs) -> dict[str, Any]:
+        """List URL access rule groups.
+
+        Args:
+
+            kwargs: name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
+        params = remove_empty_elements({"mkey": kwargs.get("name")})
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/waf/url-access.url-access-rule",
+            params=params,
+        )
+
+    def build_url_access_rule_condition(
+        self,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        """Build URL access rule condition object for Fortiwev V2.
+
+        Args:
+            url_type (str | None): URL type.
+            url_pattern (str | None): URL pattern.
+            meet_this_condition_if (str | None): Meet this condition value.
+            source_address (str | None): Whether to enable source address.
+            source_address_type (str | None): The source address type.
+            ip_range (str | None): IPv4/IPv6/IP range.
+            ip_type (str | None): IP type.
+            ip (str | None): IP resolved by specified domain.
+            source_domain_type (str | None): Source domain type.
+            source_domain (str | None): Source Domain.
+
+        Returns:
+            dict[str, Any]: URL access rule condition object for Fortiwev V2.
+        """
+        source_address_type = (
+            source_address_type if source_address == ArgumentValues.ENABLE.value else None
+        )
+
+        match source_address_type:
+            case ArgumentValues.SOURCE_ADDRESS_IP.value:
+                ip_type = None
+                ip = None
+                source_domain_type = None
+                source_domain = None
+            case ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value:
+                ip_range = None
+                source_domain_type = None
+                source_domain = None
+            case ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value:
+                ip_range = None
+                ip_type = None
+                ip = None
+
+        return {
+            "data": remove_empty_elements(
+                {
+                    "type": self.parser.url_type_user_to_api_mapper.get(url_type) if url_type else None,
+                    "sip-address-check": source_address,
+                    "sip-address-type": source_address_type and self.parser.source_address_type_user_to_api_mapper.get(
+                        source_address_type
+                    ),
+                    "sip-address-value": ip_range,
+                    "sdomain-type": ip_type and self.parser.ip_type_user_to_api_mapper.get(
+                        ip_type
+                    ),
+                    "source-domain-type": source_domain_type and self.parser.url_type_user_to_api_mapper.get(
+                        source_domain_type
+                    ),
+                    "sip-address-domain": ip,
+                    "source-domain": source_domain,
+                    "reg-exp": url_pattern,
+                    "reverse-match": meet_this_condition_if and self.parser.meet_condition_user_to_api_mapper.get(
+                        meet_this_condition_if
+                    ),
+                }
+            )
+        }
+
+    def url_access_rule_condition_create_request(
+        self,
+        group_name: str,
+        url_type: str,
+        url_pattern: str,
+        meet_this_condition_if: str,
+        source_address: str,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        """Create an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            url_type (str): URL type.
+            url_pattern (str): URL pattern.
+            meet_this_condition_if (str): Meet this condition value.
+            source_address (str): Whether to enable source address.
+            source_address_type (str | None): The source address type.
+            ip_range (str | None): IPv4/IPv6/IP range.
+            ip_type (str | None): IP type.
+            ip (str | None): IP resolved by specified domain.
+            source_domain_type (str | None): Source domain type.
+            source_domain (str | None): Source Domain.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
+        data = self.build_url_access_rule_condition(
+            url_type=url_type,
+            url_pattern=url_pattern,
+            meet_this_condition_if=meet_this_condition_if,
+            source_address=source_address,
+            source_address_type=source_address_type,
+            ip_range=ip_range,
+            ip_type=ip_type,
+            ip=ip,
+            source_domain_type=source_domain_type,
+            source_domain=source_domain,
+        )
+        params = {"mkey": group_name}
+        return self._http_request(
+            method="POST",
+            url_suffix="cmdb/waf/url-access.url-access-rule/match-condition",
+            json_data=data,
+            params=params,
+        )
+
+    def url_access_rule_condition_update_request(
+        self,
+        group_name: str,
+        condition_id: str,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
+        source_address_type: str | None,
+        ip_range: str | None,
+        ip_type: str | None,
+        ip: str | None,
+        source_domain_type: str | None,
+        source_domain: str | None,
+    ) -> dict[str, Any]:
+        """Update an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+            url_type (str | None): URL type.
+            url_pattern (str | None): URL pattern.
+            meet_this_condition_if (str | None): Meet this condition value.
+            source_address (str | None): Whether to enable source address.
+            source_address_type (str | None): The source address type.
+            ip_range (str | None): IPv4/IPv6/IP range.
+            ip_type (str | None): IP type.
+            ip (str | None): IP resolved by specified domain.
+            source_domain_type (str | None): Source domain type.
+            source_domain (str | None): Source Domain.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
+        params = {"mkey": group_name, "sub_mkey": condition_id}
+        data = self.build_url_access_rule_condition(
+            url_type=url_type,
+            url_pattern=url_pattern,
+            meet_this_condition_if=meet_this_condition_if,
+            source_address=source_address,
+            source_address_type=source_address_type,
+            ip_range=ip_range,
+            ip_type=ip_type,
+            ip=ip,
+            source_domain_type=source_domain_type,
+            source_domain=source_domain,
+        )
+        return self._http_request(
+            method="PUT",
+            url_suffix="cmdb/waf/url-access.url-access-rule/match-condition",
+            json_data=data,
+            params=params,
+        )
+
+    def url_access_rule_condition_delete_request(
+        self, group_name: str, member_id: str
+    ) -> dict[str, Any]:
+        """Delete an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        params = {"mkey": group_name, "sub_mkey": member_id}
+        return self._http_request(
+            method="DELETE",
+            url_suffix="cmdb/waf/url-access.url-access-rule/match-condition",
+            params=params,
+        )
+
+    def url_access_rule_condition_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        """List URL access rule conditions.
+
+        Args:
+            group_name (str): URL access rule group name.
+            kwargs: condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        params = {"mkey": group_name, "sub_mkey": kwargs.get("condition_id")}
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/waf/url-access.url-access-rule/match-condition",
             params=params,
         )
 
@@ -6637,6 +7738,318 @@ def certificate_intermediate_group_list_command(
     return command_results
 
 
+def url_access_rule_group_create_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Create an URL access rule group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_url_access_group(args=args)
+    name = args["name"]
+    response = client.url_access_rule_group_create_request(
+        name=name,
+        action=args["action"],
+        trigger_policy=args.get("trigger_policy"),
+        severity=args.get("severity"),
+        host_status=args["host_status"],
+        host=args.get("host"),
+    )
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.URL_ACCESS_RULE_GROUP.value,
+        object_name=name,
+        action=OutputTitle.CREATED.value,
+        response=response,
+    )
+    return command_results
+
+
+def url_access_rule_group_update_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Update an URL access rule group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_url_access_group(args=args)
+    name = args["name"]
+    response = client.url_access_rule_group_update_request(
+        name=name,
+        action=args.get("action"),
+        trigger_policy=args.get("trigger_policy"),
+        severity=args.get("severity"),
+        host_status=args.get("host_status"),
+        host=args.get("host"),
+    )
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.URL_ACCESS_RULE_GROUP.value,
+        object_name=name,
+        action=OutputTitle.UPDATED.value,
+        response=response,
+    )
+    return command_results
+
+
+def url_access_rule_group_delete_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Delete an URL access rule group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    name = args["name"]
+    response = client.url_access_rule_group_delete_request(name)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.URL_ACCESS_RULE_GROUP.value,
+        object_name=name,
+        action=OutputTitle.DELETED.value,
+        response=response,
+    )
+    return command_results
+
+
+def url_access_rule_group_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List URL access rule groups.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    name = args.get("name")
+    response = client.url_access_rule_group_list_request(name=name)
+    parsed_data, pagination_message, _formatted_response = list_response_handler(
+        client=client,
+        response=response,
+        data_parser=client.parser.parse_url_access_rule_group,
+        args=args,
+        sub_object_id=name,
+        sub_object_key=client.parser.sub_object_id_key,
+    )
+    headers = client.parser.create_output_headers(
+        client.version,
+        ["id", "action", "host", "severity", "count"],
+        [],
+        [],
+    )
+    readable_output = tableToMarkdown(
+        name=OutputTitle.URL_ACCESS_RULE_GROUP.value,
+        metadata=pagination_message,
+        t=parsed_data,
+        headers=headers,
+        headerTransform=string_to_table_header,
+    )
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="FortiwebVM.URLAccessRuleGroup",
+        outputs_key_field="id",
+        outputs=parsed_data,
+        raw_response=response,
+    )
+    return command_results
+
+
+def url_access_rule_condition_create_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Create an URL access rule condition.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_url_access_rule_condition(args)
+    group_name = args["group_name"]
+    url_pattern = args["url_pattern"]
+    response = client.url_access_rule_condition_create_request(
+        group_name=group_name,
+        url_type=args["url_type"],
+        url_pattern=url_pattern,
+        meet_this_condition_if=args["meet_this_condition_if"],
+        source_address=args["source_address"],
+        source_address_type=args.get("source_address_type"),
+        ip_range=args.get("ip_range"),
+        ip_type=args.get("ip_type"),
+        ip=args.get("ip"),
+        source_domain_type=args.get("source_domain_type"),
+        source_domain=args.get("source_domain"),
+    )
+    member_id = client.get_object_id(
+        response,
+        "urlPattern",
+        url_pattern,
+        client.url_access_rule_condition_list_request,
+        group_name,
+    )
+    outputs = {"id": group_name, "Condition": {"id": member_id}}
+    command_results = generate_simple_context_data_command_results(
+        "id",
+        None,
+        response,
+        OutputTitle.URL_ACCESS_RULE_CONDITION.value,
+        "FortiwebVM.URLAccessRuleGroup",
+        readable_outputs=outputs["Condition"],
+        outputs=outputs
+    )
+    return command_results
+
+
+def url_access_rule_condition_update_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Update an URL access rule condition.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_protected_hostname_member(args=args)
+    group_name = args["group_name"]
+    condition_id = args["condition_id"]
+    # Get exist settings
+    args = get_object_data_before_update(
+        client=client,
+        value=condition_id,
+        get_request=client.url_access_rule_condition_list_request,
+        args=args,
+        _parser=client.parser.parse_url_access_rule_condition,
+        requested_version=client.version,
+        object_id=group_name,
+    )
+    response = client.url_access_rule_condition_update_request(
+        group_name=group_name,
+        condition_id=condition_id,
+        url_type=args.get("url_type"),
+        url_pattern=args.get("url_pattern"),
+        meet_this_condition_if=args.get("meet_this_condition_if"),
+        source_address=args["source_address"],
+        source_address_type=args.get("source_address_type"),
+        ip_range=args.get("ip_range"),
+        ip_type=args.get("ip_type"),
+        ip=args.get("ip"),
+        source_domain_type=args.get("source_domain_type"),
+        source_domain=args.get("source_domain"),
+    )
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.URL_ACCESS_RULE_CONDITION.value,
+        object_name=condition_id,
+        action=OutputTitle.UPDATED.value,
+        response=response,
+    )
+
+    return command_results
+
+
+def url_access_rule_condition_delete_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Delete an URL access rule condition.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+
+    group_name = args["group_name"]
+    condition_id = args["condition_id"]
+    response = client.url_access_rule_condition_delete_request(group_name, condition_id)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.URL_ACCESS_RULE_CONDITION.value,
+        object_name=condition_id,
+        action=OutputTitle.DELETED.value,
+        response=response,
+    )
+    return command_results
+
+
+def url_access_rule_condition_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List URL access rule conditions.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_name = args["group_name"]
+    condition_id = args.get("condition_id")
+    response = client.url_access_rule_condition_list_request(
+        group_name, condition_id=condition_id
+    )
+    parsed_data, pagination_message, _formatted_response = list_response_handler(
+        client,
+        response,
+        client.parser.parse_url_access_rule_condition,
+        args,
+        condition_id,
+        sub_object_key='id'
+    )
+    outputs = {"id": group_name, "Condition": parsed_data}
+    headers = client.parser.create_output_headers(
+        client.version,
+        [
+            "id",
+            "url_type",
+            "url_pattern",
+            "meet_this_condition_if",
+            "source_address_type",
+            "ip_range",
+            "domian_type",
+            "domain",
+            "source_domain_type",
+            "source_domain",
+        ],
+        [],
+        [],
+    )
+    readable_output = tableToMarkdown(
+        name=OutputTitle.URL_ACCESS_RULE_CONDITION.value,
+        metadata=pagination_message,
+        t=outputs["Condition"],
+        headers=headers,
+        headerTransform=string_to_table_header,
+    )
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="FortiwebVM.URLAccessRuleGroup",
+        outputs_key_field="id",
+        outputs=outputs,
+        raw_response=response,
+    )
+    return command_results
+
+
 def read_json_policy(json_template_id: str, name: str) -> dict[str, Any]:
     """Read JSON file by json id.
 
@@ -7588,23 +9001,26 @@ def generate_simple_command_results(
 
 
 def generate_simple_context_data_command_results(
-    key: str, value: str, response: dict[str, Any], message: str, outputs_prefix: str
+    key: str, value: str | None, response: dict[str, Any], message: str, outputs_prefix: str,
+    readable_outputs: dict[str, Any] | None = None, outputs: dict[str, Any] | None = None,
 ) -> CommandResults:
     """Genarte a simple command result with output (with context data).
 
     Args:
         key (str): Output key.
-        value (str): Output value.
+        value (str | None): Output value.
         response (Dict[str, Any]): Response dictionary from Fortiweb VM
         message (str): Output message.
         outputs_prefix (str): Command result outputs prefix.
+        outputs_prefix (str): Command result outputs prefix.
+        readable_outputs(dict[str, Any]): Optional to add unique readable outputs. Defaults to None.
 
     Returns:
         CommandResults: CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    outputs = {key: value}
+    outputs = outputs or {key: value}
     readable_output = tableToMarkdown(
-        message, outputs, headerTransform=string_to_table_header
+        message, readable_outputs or outputs, headerTransform=string_to_table_header
     )
     command_results = CommandResults(
         readable_output=readable_output,
@@ -7615,6 +9031,23 @@ def generate_simple_context_data_command_results(
     )
 
     return command_results
+
+
+def validate_argument(args: dict[str, Any], key_: str, values: List[str] | None = None):
+    """
+    Validate for XSOAR input arguments.
+    Args:
+        args (dict[str, Any]): XSOAR arguments.
+        key_ (str): The key of the argument.
+        values (List[str]): Optional values.
+    Raises:
+        ValueError: In case that the input is wrong.
+    """
+    if values:
+        if args.get(key_) and args[key_] not in values:
+            raise ValueError(ErrorMessage.ARGUMENT.value.format(key_, values))
+    elif not args.get(key_):
+        raise ValueError(ErrorMessage.INSERT_VALUE.value.format(key_))
 
 
 def main() -> None:
@@ -7683,6 +9116,14 @@ def main() -> None:
         "fortiwebvm-custom-predefined-whitelist-list": custom_predifined_whitelist_list_command,
         "fortiwebvm-custom-predefined-whitelist-update": custom_predifined_whitelist_update_command,
         "fortiwebvm-certificate-intermediate-group-list": certificate_intermediate_group_list_command,
+        "fortiwebvm-url-access-rule-group-create": url_access_rule_group_create_command,
+        "fortiwebvm-url-access-rule-group-update": url_access_rule_group_update_command,
+        "fortiwebvm-url-access-rule-group-delete": url_access_rule_group_delete_command,
+        "fortiwebvm-url-access-rule-group-list": url_access_rule_group_list_command,
+        "fortiwebvm-url-access-rule-condition-create": url_access_rule_condition_create_command,
+        "fortiwebvm-url-access-rule-condition-update": url_access_rule_condition_update_command,
+        "fortiwebvm-url-access-rule-condition-delete": url_access_rule_condition_delete_command,
+        "fortiwebvm-url-access-rule-condition-list": url_access_rule_condition_list_command,
     }
     try:
         client_class = {"V1": ClientV1, "V2": ClientV2}[version]

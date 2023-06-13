@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 import pytest
 from CommonServerPython import *
-from FortinetFortiwebVM import Client, ClientV1, ClientV2, ErrorMessage, OutputTitle
+from FortinetFortiwebVM import Client, ClientV1, ClientV2, ErrorMessage, OutputTitle, ArgumentValues
 
 JSON_MIME_TYPE = "application/json"
 
@@ -6154,3 +6154,606 @@ def test_certificate_intermediate_group_list_command(
     requests_mock.get(url=url, json=json_response)
     result = certificate_intermediate_group_list_command(mock_client, {})
     assert result.outputs_prefix == "FortiwebVM.CertificateIntermediateGroup"
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "disable", "severity": "High"},
+            "v1_create_update_group.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "disable", "severity": "High"},
+            "url_access_rule_group/v2_create.json",
+        ),
+    ),
+)
+def test_url_access_rule_group_create_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+):
+    """
+    Scenario: Create an URL access rule group.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-url-access-rule-group-create called.
+    Then:
+     - Ensure that URL access rule group created.
+    """
+    from FortinetFortiwebVM import url_access_rule_group_create_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = url_access_rule_group_create_command(mock_client, args)
+    output = f'{OutputTitle.URL_ACCESS_RULE_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "error_msg"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule",
+            {"name": "check", "action": "test", "host_status": "disable"},
+            ErrorMessage.ARGUMENT.value.format('action', ArgumentValues.URL_ACTION.value),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "test"},
+            ErrorMessage.ARGUMENT.value.format('host_status', ArgumentValues.ENABLE_DISABLE.value),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "disable", "severity": "test"},
+            ErrorMessage.ARGUMENT.value.format('severity', ArgumentValues.SEVERITY.value),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "enable"},
+            ErrorMessage.INSERT_VALUE.value.format('host'),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule",
+            {"name": "check", "action": "Alert & Desdny", "host_status": "disable"},
+            ErrorMessage.ARGUMENT.value.format('action', ArgumentValues.URL_ACTION.value),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "test"},
+            ErrorMessage.ARGUMENT.value.format('host_status', ArgumentValues.ENABLE_DISABLE.value),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "disable", "severity": "test"},
+            ErrorMessage.ARGUMENT.value.format('severity', ArgumentValues.SEVERITY.value),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule",
+            {"name": "check", "action": "Alert & Deny", "host_status": "enable"},
+            ErrorMessage.INSERT_VALUE.value.format('host'),
+        ),
+    ),
+)
+def test_input_fail_url_access_rule_group_create_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    error_msg: str,
+):
+    """
+    Scenario: Create an URL access rule group.
+    Given:
+     - User has provided wrong parameters.
+    When:
+     - fortiwebvm-protected-hostname-group-create called.
+    Then:
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import url_access_rule_group_create_command
+
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(
+        url=url,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
+    )
+    with pytest.raises(ValueError) as error_info:
+        url_access_rule_group_create_command(mock_client, args)
+    assert error_msg == str(error_info.value)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check",
+            {"name": "check", "action": "Alert & Deny", "host_status": "disable"},
+            "v1_create_update_group.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule?mkey=check",
+            {"name": "check", "action": "Alert & Deny", "host_status": "disable"},
+            "url_access_rule_group/v2_update.json",
+        ),
+    ),
+)
+def test_url_access_rule_group_update_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+):
+    """
+    Scenario: Update an URL access rule group.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-url-access-rule-group-update called.
+    Then:
+     - Ensure that URL access rule group updated.
+    """
+    from FortinetFortiwebVM import url_access_rule_group_update_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = url_access_rule_group_update_command(mock_client, args)
+    output = f'{OutputTitle.URL_ACCESS_RULE_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check",
+            {"name": "check"},
+            "v1_delete.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule?mkey=check",
+            {"name": "check"},
+            "v2_delete.json",
+        ),
+    ),
+)
+def test_url_access_rule_group_delete_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+):
+    """
+    Scenario: Delete an URL access rule group.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-url-access-rule-group-delete called.
+    Then:
+     - Ensure that URL access rule group deleted.
+    """
+    from FortinetFortiwebVM import url_access_rule_group_delete_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = url_access_rule_group_delete_command(mock_client, args)
+    output = f'{OutputTitle.URL_ACCESS_RULE_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath", "expected"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule",
+            {"page": "1", "page_size": 3},
+            "url_access_rule_group/v1_list.json",
+            1,
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule",
+            {"page": "1", "page_size": 3},
+            "url_access_rule_group/v2_list.json",
+            1,
+        ),
+    ),
+)
+def test_url_access_rule_group_list_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+    expected,
+):
+    """
+    Scenario: List URL access rule groups.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-protected-hostname-group-list called.
+    Then:
+     - Ensure that protected hostname listed.
+    """
+    from FortinetFortiwebVM import url_access_rule_group_list_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = url_access_rule_group_list_command(mock_client, args)
+    if isinstance(result.outputs, list):
+        assert len(result.outputs) == expected
+    assert result.outputs_prefix == "FortiwebVM.URLAccessRuleGroup"
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath", "expected_value"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "test", "url_type": "Simple String", "url_pattern": "test",
+             "meet_this_condition_if": "Object matches the URL Pattern", "source_address": "disable"},
+            "url_access_rule_condition/v1_create.json",
+            "2",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=test",
+            {
+                "group_name": "test",
+                "url_type": "Simple String",
+                "url_pattern": "test", "meet_this_condition_if": "Object matches the URL Pattern",
+                "source_address": "disable",
+            },
+            "url_access_rule_condition/v2_create.json",
+            "1",
+        ),
+    ),
+)
+def test_url_access_rule_condition_create_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+    expected_value: str,
+):
+    """
+    Scenario: Create an URL access rule condition.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-url-access-rule-condition-create called.
+    Then:
+     - Ensure that URL access rule condition created.
+    """
+    from FortinetFortiwebVM import url_access_rule_condition_create_command
+
+    json_response = load_mock_response(jsonpath)
+    json_response_get = load_mock_response(
+        "url_access_rule_condition/v1_list.json"
+    )
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response)
+    requests_mock.get(url=url, json=json_response_get, status_code=200)
+    result = url_access_rule_condition_create_command(mock_client, args)
+    assert result.outputs_prefix == "FortiwebVM.URLAccessRuleGroup"
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["id"] == "test"
+    assert result.outputs["Condition"]["id"] == expected_value
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "error_msg"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test"},
+            ErrorMessage.INSERT_VALUE.value.format('source_address_type'),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test"},
+            ErrorMessage.INSERT_VALUE.value.format('source_address_type'),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": "IP"},
+            ErrorMessage.INSERT_VALUE.value.format('ip_range'),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": "IP"},
+            ErrorMessage.INSERT_VALUE.value.format('ip_range'),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value},
+            ErrorMessage.INSERT_VALUE.value.format('ip'),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value},
+            ErrorMessage.INSERT_VALUE.value.format('ip'),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value, "ip": "0.0.0.0"},
+            ErrorMessage.INSERT_VALUE.value.format('ip_type'),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value, "ip": "0.0.0.0"},
+            ErrorMessage.INSERT_VALUE.value.format('ip_type'),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value},
+            ErrorMessage.INSERT_VALUE.value.format('source_domain'),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value},
+            ErrorMessage.INSERT_VALUE.value.format('source_domain'),
+        ),
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/check/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value, "source_domain": "0.0.0.0"},
+            ErrorMessage.INSERT_VALUE.value.format('source_domain_type'),
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=check",
+            {"group_name": "check", "url_type": "Simple String", "source_address": "enable", "url_pattern": "test",
+             "source_address_type": ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value, "source_domain": "0.0.0.0"},
+            ErrorMessage.INSERT_VALUE.value.format('source_domain_type'),
+        ),
+    ),
+)
+def test_input_fail_url_access_rule_condition_create_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    error_msg: str,
+):
+    """
+    Scenario: Create an URL access rule condition.
+    Given:
+     - User has provided wrong parameters.
+    When:
+     - fortiwebvm-url-access-rule-condition-create called.
+    Then:
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import url_access_rule_condition_create_command
+
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(
+        url=url,
+        status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        headers={"Content-Type": JSON_MIME_TYPE},
+    )
+    with pytest.raises(ValueError) as error_info:
+        url_access_rule_condition_create_command(mock_client, args)
+    assert error_msg == str(error_info.value)
+
+
+@pytest.mark.parametrize(
+    (
+        "version",
+        "put_endpoint",
+        "get_endpoint",
+        "args",
+        "put_jsonpath",
+        "get_jsonpath",
+    ),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition/1",
+            "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "test", "condition_id": "1", "url_type": "Simple String", "url_pattern": "test",
+             "meet_this_condition_if": "Object matches the URL Pattern", "source_address": "disable"},
+            "url_access_rule_condition/v1_create.json",
+            "url_access_rule_condition/v1_list.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=test&sub_mkey=1",
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=test",
+            {
+                "group_name": "test", "condition_id": "1",
+                "url_type": "Simple String",
+                "url_pattern": "test", "meet_this_condition_if": "Object matches the URL Pattern",
+                "source_address": "disable",
+            },
+            "url_access_rule_condition/v2_create.json",
+            "url_access_rule_condition/v2_get.json",
+        ),
+    ),
+)
+def test_url_access_rule_condition_update_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    put_endpoint: str,
+    get_endpoint: str,
+    args: Dict[str, Any],
+    put_jsonpath: str,
+    get_jsonpath: str,
+):
+    """
+    Scenario: Update an URL access rule condition.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-protected-hostname-member-create called.
+    Then:
+     - Ensure that URL access rule condition updated.
+    """
+    from FortinetFortiwebVM import url_access_rule_condition_update_command
+
+    json_response = load_mock_response(put_jsonpath)
+    json_response_get = load_mock_response(get_jsonpath)
+    put_url = urljoin(mock_client.base_url, put_endpoint)
+    get_url = urljoin(mock_client.base_url, get_endpoint)
+    requests_mock.put(url=put_url, json=json_response)
+    requests_mock.get(url=get_url, json=json_response_get, status_code=200)
+    result = url_access_rule_condition_update_command(mock_client, args)
+    output = f'{OutputTitle.URL_ACCESS_RULE_CONDITION.value} {args["condition_id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath", "expected_value"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition/1",
+            {"group_name": "test", "condition_id": "1"},
+            "v1_delete.json",
+            "2",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=test&sub_mkey=1",
+            {
+                "group_name": "test",
+                "condition_id": "1",
+            },
+            "v2_delete.json",
+            "1",
+        ),
+    ),
+)
+def test_url_access_rule_condition_delete_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+    expected_value: str,
+):
+    """
+    Scenario: Delete an URL access rule condition
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-url-access-rule-condition-delete called.
+    Then:
+     - Ensure that URL access rule condition deleted.
+    """
+    from FortinetFortiwebVM import url_access_rule_condition_delete_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response)
+    result = url_access_rule_condition_delete_command(mock_client, args)
+    output = f'{OutputTitle.URL_ACCESS_RULE_CONDITION.value} {args["condition_id"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath", "expected"),
+    (
+        (
+            ClientV1.API_VER,
+            "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition",
+            {"group_name": "test", "page": "1", "page_size": 3},
+            "url_access_rule_condition/v1_list.json",
+            3,
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/waf/url-access.url-access-rule/match-condition?mkey=test",
+            {"group_name": "test", "page": "1", "page_size": 3},
+            "url_access_rule_condition/v2_list.json",
+            3,
+        ),
+    ),
+)
+def test_url_access_rule_condition_list_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+    expected,
+):
+    """
+    Scenario: List URL access rule conditions.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-url-access-rule-condition-list called.
+    Then:
+     - Ensure that URL access rule conditions listed.
+    """
+    from FortinetFortiwebVM import url_access_rule_condition_list_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = url_access_rule_condition_list_command(mock_client, args)
+    if isinstance(result.outputs, list):
+        assert len(result.outputs) == expected
+    assert result.outputs_prefix == "FortiwebVM.URLAccessRuleGroup"

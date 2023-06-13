@@ -1,0 +1,16 @@
+[
+    {
+        "_id": "fhgfhfg",
+        "id": 1,
+        "name": "fhgfhfg",
+        "ngid": 602,
+        "count": 0,
+        "action": 2,
+        "disaction": "Alert & Deny",
+        "host": "",
+        "hostStatus": true,
+        "severity": 3,
+        "triggerPolicy": "",
+        "can_delete": true
+    }
+]
