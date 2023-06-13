@@ -1,8 +1,8 @@
 # Ivanti Pulse Secure VTM
 This pack includes Cortex XSIAM content. 
+<~XSIAM>
 ## Configuration on Server Side
 You need to configure the Virtual Traffic Manager (VTM) to forward Syslog messages.
-
 
 Open the VTM UI; 
 
@@ -28,8 +28,6 @@ Setup for forwarding requests logging per Virtual Server (VS):
          ``` 
 4. Under the **Apply Changes** section, press on **Update** once you are done. 
     
-
-
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
@@ -38,9 +36,9 @@ To create or configure the Broker VM, use the information described [here](https
 
 You can configure the specific vendor and product for this instance.
 
-
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** > **Configure**.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - ivanti
    - product as product - vtm
+</~XSIAM>
