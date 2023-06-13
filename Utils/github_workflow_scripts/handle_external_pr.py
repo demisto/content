@@ -106,21 +106,22 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
     Returns:
         highest support level of the packs that were changed, empty string in case no packs were changed.
     """
-    pack_dirs_to_check_support_labels = set()
+    pack_dirs_to_check_support_levels_labels = set()
 
     for file_path in file_paths:
         try:
             if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
-                pack_dirs_to_check_support_labels.add(f'Packs/{pack_name}')
+                pack_dirs_to_check_support_levels_labels.add(f'Packs/{pack_name}')
         except Exception as err:
             print(f'Could not retrieve pack name from file {file_path}, {err=}')
 
-    print(f'{pack_dirs_to_check_support_labels=}')
+    print(f'{pack_dirs_to_check_support_levels_labels=}')
 
-    # we need to check out to the contributor branch in order to retrieve the files cause workflow runs on demisto master
+    # # we need to check out to the contributor branch in his forked repo in order to retrieve the files cause workflow
+    # runs on demisto master while the contributions changes are on the contributors branch
     print(
         f'Trying to checkout to forked branch {external_pr_branch} '
-        f'to retrieve support level of {pack_dirs_to_check_support_labels}'
+        f'to retrieve support level of {pack_dirs_to_check_support_levels_labels}'
     )
     try:
         with Checkout(
@@ -128,7 +129,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
             branch_to_checkout=external_pr_branch,
             fork_owner=os.getenv('GITHUB_ACTOR')
         ):
-            packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_labels)
+            packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
         print(f'Received error when trying to checkout to {external_pr_branch} forked content repo\n{error=}')
 

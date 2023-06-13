@@ -92,21 +92,22 @@ class Checkout:  # pragma: no cover
     previously current branch.
     """
 
-    def __init__(self, repo: Repo, branch_to_checkout: str, fork_owner: Optional[str] = None):
+    def __init__(self, repo: Repo, branch_to_checkout: str, fork_owner: Optional[str] = None, repo_name: str = 'content'):
         """Initializes instance attributes.
         Arguments:
             repo: git repo object
             branch_to_checkout: The branch or commit hash to check out.
             fork_owner (str): The owner of the forked repository.
                 Leave it as None if the branch is in the same repository.
+            repo_name (str): the name of the forked repo (without the owner)
         """
         self.repo = repo
 
         if fork_owner:
-            forked_remote_name = f'{fork_owner}_{branch_to_checkout}_remote'
-            url = f"https://github.com/{fork_owner}/content"
+            forked_remote_name = f'{fork_owner}_{repo_name}_{branch_to_checkout}_remote'
+            url = f"https://github.com/{fork_owner}/{repo_name}"
             try:
-                self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{fork_owner}/content")
+                self.repo.create_remote(name=forked_remote_name, url=url)
             except Exception as error:
                 print(f'could not create remote from {url}, {error=}')
                 # handle the case where the name of the forked repo is not content
@@ -116,6 +117,7 @@ class Checkout:  # pragma: no cover
                     except ValueError:
                         print(f'failed to load GITHUB_EVENT_PATH')
                         raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the owner {fork_owner}')
+                    # forked repo name includes fork_owner + repo name, for example foo/content.
                     forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
                     self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{forked_repo_name}")
                 else:
