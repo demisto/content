@@ -402,7 +402,7 @@ def install_packs(client: demisto_client,
             logging.debug(f"failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
     except Exception as e:
-        logging.exception(f'The request to install packs {packs_to_install} has failed. Additional info: {str(e)}')
+        logging.exception(f'The request to install packs: {packs_to_install} has failed. Additional info: {str(e)}')
         SUCCESS_FLAG = False
 
     finally:
