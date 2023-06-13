@@ -1,0 +1,265 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Darktrace Event Collector
+  version: -1
+configuration:
+- name: base_url
+  display: Server URL (e.g. https://example.cloud.darktrace.com)
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: 'REST API Endpoint of Darktrace server.'
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: Public token obtained by creating an API token pair on the /config configuration page
+  displaypassword: Public API Token (Recommended)
+  hiddenusername: true
+  name: public_creds
+  required: false
+  type: 9
+  section: Connect
+- additionalinfo: Private token obtained by creating an API token pair on the /config configuration page
+  displaypassword: Private API Token (Recommended)
+  hiddenusername: true
+  name: private_creds
+  required: false
+  type: 9
+  section: Connect
+- additionalinfo: Maximum number of Darktrace model breaches to fetch at a time
+  defaultvalue: '1000'
+  display: Max events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- additionalinfo: Time to start fetching the first incidents.
+  defaultvalue: 3 day ago
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+description: fill
+display: Darktrace Event Collector
+name: Darktrace Event Collector
+script:
+  commands:
+  - name: darktrace-get-model-breach
+    arguments:
+    - default: false
+      description: Darktrace model breach unique identifier
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch details about a specific Model Breach
+    execution: false
+    outputs:
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+    - contextPath: Darktrace.ModelBreach.time
+      description: Model breach generated time.
+      type: Date
+    - contextPath: Darktrace.ModelBreach.commentCount
+      description: Number of comments on the model breach
+      type: Number
+    - contextPath: Darktrace.ModelBreach.score
+      description: Score of Darktrace model breach (0 to 1)
+      type: Number
+    - contextPath: Darktrace.ModelBreach.device.did
+      description: Darktrace device ID of Device that breached the model
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.macaddress
+      description: MAC address of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.vendor
+      description: Vendor of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.ip
+      description: IP of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.hostname
+      description: Hostname of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.devicelabel
+      description: Device label of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.model.name
+      description: Darktrace model that was breached
+      type: String
+    - contextPath: Darktrace.ModelBreach.model.pid
+      description: Model ID of the model that was breached
+      type: Number
+    - contextPath: Darktrace.ModelBreach.model.uuid
+      description: Model UUID of the model that was breached
+      type: String
+    - contextPath: Darktrace.ModelBreach.model.tags
+      description: List of model tags for the model that was breached
+      type: Unknown
+    - contextPath: Darktrace.ModelBreach.model.priority
+      description: Priority of the model that was breached (0 to 5)
+      type: Number
+    - contextPath: Darktrace.ModelBreach.model.description
+      description: Darktrace model description
+      type: String
+  - name: darktrace-get-model-breach-comments
+    arguments:
+    - default: false
+      description: Darktrace model breach unique identifier
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch all comments for a given model brach
+    execution: false
+    outputs:
+    - contextPath: Darktrace.ModelBreach.Comment.message
+      description: comments on Model Breach
+      type: Unknown
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach identifier
+      type: Unknown
+    - contextPath: Darktrace.ModelBreach.Comment.username
+      description: Commenting user
+      type: Unknown
+    - contextPath: Darktrace.ModelBreach.Comment.time
+      description: Comment timestamp
+      type: Unknown
+  - name: darktrace-acknowledge-model-breach
+    arguments:
+    - default: false
+      description: Acknowledge a given model breach
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Acknowledge a model breach as specified by Model Breach ID
+    execution: false
+    outputs:
+    - contextPath: Darktrace.ModelBreach.acknowledged
+      description: Whether the model breach is acknowledged in Darktrace
+      type: String
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+    - contextPath: Darktrace.ModelBreach.acknowledged.response
+      description: Message response from acknowledge action
+      type: String
+  - name: darktrace-post-comment-to-model-breach
+    arguments:
+    - default: false
+      description: Darktrace model breach unique identifier
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    - default: false
+      description: Comment message
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: Post a comment to a model breach
+    execution: false
+    outputs:
+    - contextPath: Darktrace.ModelBreach.commented
+      description: Whether the model breach is commented in Darktrace
+      type: String
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+    - contextPath: Darktrace.ModelBreach.message
+      description: Comment content
+      type: String
+    - contextPath: Darktrace.ModelBreach.response
+      description: Message response from comment action
+      type: String
+  - name: darktrace-unacknowledge-model-breach
+    arguments:
+    - default: false
+      description: Darktrace model breach unique identifier
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Unacknowledge a given model breach
+    execution: false
+    outputs:
+    - contextPath: Darktrace.ModelBreach.acknowledged
+      description: Whether the model breach is acknowledged in Darktrace
+      type: String
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+    - contextPath: Darktrace.ModelBreach.acknowledged.response
+      description: Message response from acknowledge action
+      type: Number
+  - name: darktrace-get-model-breach-connections
+    arguments:
+    - name: pbid
+      required: true
+      description: Darktrace model breach unique identifier
+    - name: endtime
+      description: End time of data to return in millisecond format, relative to midnight January 1st 1970 UTC
+    - name: count
+      defaultValue: "100"
+      description: Specifies the maximum number of items to return. Default 100
+    - name: offset
+      defaultValue: "0"
+      description: Offset of starting point for fetching details of the modelbreach
+    description: Retrieve connections relevant to a specified model breach
+    outputs:
+    - contextPath: Darktrace.ModelBreach
+      description: List of events from the modelbreach and their details. Each event might have different keys. It is recommended to run the command once to check the relevant outputs in context
+      type: Unknown
+  - name: darktrace-get-model
+    arguments:
+    - name: uuid
+      required: true
+      description: Unique model identifier
+    description: Fetch the configuration details behind a specified model.
+    outputs:
+    - contextPath: Darktrace.Model
+      description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
+      type: Unknown
+  - name: darktrace-get-model-component
+    arguments:
+    - name: cid
+      required: true
+      description: Unique component identifier
+    description: Get details of a component
+    outputs:
+    - contextPath: Darktrace.Model.Component
+      description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
+      type: Unknown
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.10.11.61265
+  feed: false
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
