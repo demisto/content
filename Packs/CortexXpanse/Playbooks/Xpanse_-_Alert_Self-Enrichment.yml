@@ -44,7 +44,7 @@ tasks:
       id: b2ac05c6-d58d-41ca-89af-f53212b9609f
       version: -1
       name: Is Cortex Xpanse enabled and IP present?
-      description: Determines if the "Cortex Xpanse" integration instance is configured and IP present to continue with cloud enrichment.
+      description: Determines if the "Cortex Xpanse" integration instance is configured and an IP is present to continue with cloud enrichment.
       type: condition
       iscommand: false
       brand: ""
