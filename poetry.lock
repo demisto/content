@@ -385,18 +385,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.151"
+version = "1.26.152"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.151-py3-none-any.whl", hash = "sha256:20b88a8145845e4923d438f5f89fdbdac5bae4011e706cd0974ac69c41f258b4"},
-    {file = "boto3-1.26.151.tar.gz", hash = "sha256:81bff32c96a6b4b203beb63826214d8cf24ca1a86e81d43bbb688a21c5d79e2a"},
+    {file = "boto3-1.26.152-py3-none-any.whl", hash = "sha256:a2778c5729d3dc0b3688c9f0d103543d7ec5ff44a4fd0e84d0d542e2dff05e62"},
+    {file = "boto3-1.26.152.tar.gz", hash = "sha256:ee0b8f8d238d4e1cf50fa6a185e4e066955b6105e9838a80b1b6582cd327dfdf"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.151,<1.30.0"
+botocore = ">=1.29.152,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -405,14 +405,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.151"
+version = "1.29.152"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.151-py3-none-any.whl", hash = "sha256:0790bf5d25ad6f2db3450797251a78fbcb7b72cdeeb2fd0b82c2668a41d9f41c"},
-    {file = "botocore-1.29.151.tar.gz", hash = "sha256:fdaaa34ea5f09666f17d24d2f4179f7ec81dd6f831ef6b785d4552f919291cab"},
+    {file = "botocore-1.29.152-py3-none-any.whl", hash = "sha256:02a3205cc8579d4be6d537e63d72aebbf3f70f3aedcf40b3cae9dc2e24c774d0"},
+    {file = "botocore-1.29.152.tar.gz", hash = "sha256:f6319ecdbe3d325878f837cac2874e461b4d90691bb2d2186f980bce3b3cfcc8"},
 ]
 
 [package.dependencies]
@@ -1121,8 +1121,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "8965b37927e76ec6090c0f9afb6d7055917f98e4"
-resolved_reference = "8965b37927e76ec6090c0f9afb6d7055917f98e4"
+reference = "fbebbf90173ff2e1f5fb4cfedac54367b3e6c854"
+resolved_reference = "fbebbf90173ff2e1f5fb4cfedac54367b3e6c854"
 
 [[package]]
 name = "deprecated"
@@ -1403,14 +1403,14 @@ sspi = ["requests-negotiate-sspi"]
 
 [[package]]
 name = "filelock"
-version = "3.12.1"
+version = "3.12.2"
 description = "A platform independent file lock."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "filelock-3.12.1-py3-none-any.whl", hash = "sha256:42f1e4ff2b497311213d61ad7aac5fed9050608e5309573f101eefa94143134a"},
-    {file = "filelock-3.12.1.tar.gz", hash = "sha256:82b1f7da46f0ae42abf1bc78e548667f484ac59d2bcec38c713cee7e2eb51e83"},
+    {file = "filelock-3.12.2-py3-none-any.whl", hash = "sha256:cbb791cdea2a72f23da6ac5b5269ab0a0d161e9ef0100e653b69049a7706d1ec"},
+    {file = "filelock-3.12.2.tar.gz", hash = "sha256:002740518d8aa59a26b0c76e10fb8c6e15eae825d34b6fdf670333fd7b938d81"},
 ]
 
 [package.extras]
@@ -1882,22 +1882,22 @@ requests = ["requests (>=2.18.0,<3.0.0dev)"]
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.59.0"
+version = "1.59.1"
 description = "Common protobufs used in Google APIs"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "googleapis-common-protos-1.59.0.tar.gz", hash = "sha256:4168fcb568a826a52f23510412da405abd93f4d23ba544bb68d943b14ba3cb44"},
-    {file = "googleapis_common_protos-1.59.0-py2.py3-none-any.whl", hash = "sha256:b287dc48449d1d41af0c69f4ea26242b5ae4c3d7249a38b0984c86a4caffff1f"},
+    {file = "googleapis-common-protos-1.59.1.tar.gz", hash = "sha256:b35d530fe825fb4227857bc47ad84c33c809ac96f312e13182bdeaa2abe1178a"},
+    {file = "googleapis_common_protos-1.59.1-py2.py3-none-any.whl", hash = "sha256:0cbedb6fb68f1c07e18eb4c48256320777707e7d0c55063ae56c15db3224a61e"},
 ]
 
 [package.dependencies]
-grpcio = {version = ">=1.44.0,<2.0.0dev", optional = true, markers = "extra == \"grpc\""}
-protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
+grpcio = {version = ">=1.44.0,<2.0.0.dev0", optional = true, markers = "extra == \"grpc\""}
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0.dev0"
 
 [package.extras]
-grpc = ["grpcio (>=1.44.0,<2.0.0dev)"]
+grpc = ["grpcio (>=1.44.0,<2.0.0.dev0)"]
 
 [[package]]
 name = "graphviz"
@@ -6560,4 +6560,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "92aefcb87ebad0cf44170847b3be31a89aaa5a1d3e34249af67c64fc8b67f7aa"
+content-hash = "b5577e0bbbc186feb914cec85d1310dd44f7e998225dda90eed0ae6fb4fa83de"
