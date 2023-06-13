@@ -2315,7 +2315,7 @@ Creates a policy rule.
 | service | A comma-separated list of service object names for the rule. | Optional | 
 | disable | Whether to disable the rule. Can be "Yes" or "No" (default is "No"). | Optional | 
 | application | A comma-separated list of application object names for the rule. | Optional | 
-| source_user | Source user for the rule to create. | Optional | 
+| source_user | A comma-separated list of source users for the rule to create. | Optional | 
 | pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 
 | log_forwarding | Log forwarding profile. | Optional | 

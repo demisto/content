@@ -627,14 +627,14 @@ def set_xpath_network(template: str | None = None) -> Tuple[str, Optional[str]]:
     return xpath_network, template
 
 
-def prepare_security_rule_params(api_action: str | None = None, rulename: str | None = None, source: Any | None = None,
-                                 destination: Any | None = None, negate_source: str | None = None,
-                                 negate_destination: str | None = None, action: str | None = None, service: List[str] | None = None,
-                                 disable: str | None = None, application: List[str] | None = None, source_user: str | None = None,
-                                 category: List[str] | None = None, from_: str | None = None, to: str | None = None, description: str | None = None,
-                                 target: str | None = None, log_forwarding: str | None = None,
-                                 disable_server_response_inspection: str | None = None, tags: List[str] | None = None,
-                                 profile_setting: str | None = None, where: str = 'bottom', dst: str | None = None) -> Dict:
+def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
+                                 destination: Any = None, negate_source: str = None,
+                                 negate_destination: str = None, action: str = None, service: List[str] = None,
+                                 disable: str = None, application: List[str] = None, source_user: List[str] = None,
+                                 category: List[str] = None, from_: str = None, to: str = None, description: str = None,
+                                 target: str = None, log_forwarding: str = None,
+                                 disable_server_response_inspection: str = None, tags: List[str] = None,
+                                 profile_setting: str = None, where: str = 'bottom', dst: str = None) -> Dict:
     if application is None or len(application) == 0:
         # application always must be specified and the default should be any
         application = ['any']
@@ -653,7 +653,7 @@ def prepare_security_rule_params(api_action: str | None = None, rulename: str | 
         + add_argument_list(destination, 'destination', True, True)
         + add_argument_list(application, 'application', True)
         + add_argument_list(category, 'category', True)
-        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(source_user, 'source-user', True)
         + add_argument_list(from_, 'from', True, True)  # default from will always be any
         + add_argument_list(to, 'to', True, True)  # default to will always be any
         + add_argument_list(service, 'service', True, True)
@@ -3699,7 +3699,7 @@ def panorama_create_rule_command(args: dict):
     disable = args.get('disable')
     categories = argToList(args.get('category'))
     application = argToList(args.get('application'))
-    source_user = args.get('source_user')
+    source_user = argToList(args.get('source_user'))
     disable_server_response_inspection = args.get('disable_server_response_inspection')
     description = args.get('description')
     target = args.get('target')
