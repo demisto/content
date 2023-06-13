@@ -3655,10 +3655,10 @@ script:
       defaultValue: '600'
       hidden: true
     - name: hide_polling_output
+      deprecated: true
       description: ''
       required: false
-      hidden: true
-      defaultValue: true
+      isArray: false
     description: Retrieve ODS scan details.
     name: cs-falcon-ods-query-scan
     polling: true
