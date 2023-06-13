@@ -1274,11 +1274,42 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
     return response
 
 
+def get_alerts_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True):
+    get_incidents_endpoint = ' /alerts/queries/alerts/v1'
+    params = {
+        'sort': 'start.asc',
+        'offset': offset,
+    }
+    if has_limit:
+        params['limit'] = INCIDENTS_PER_FETCH
+
+    if filter_arg:
+        params['filter'] = filter_arg
+    elif last_created_timestamp:
+        params['filter'] = "start:>'{0}'".format(last_created_timestamp)
+    elif last_updated_timestamp:
+        params['filter'] = "modified_timestamp:>'{0}'".format(last_updated_timestamp)
+
+    response = http_request('GET', get_incidents_endpoint, params)
+
+    return response
+
+
 def get_incidents_entities(incidents_ids: List):
     ids_json = {'ids': incidents_ids}
     response = http_request(
         'POST',
         '/incidents/entities/incidents/GET/v1',
+        data=json.dumps(ids_json)
+    )
+    return response
+
+
+def get_alerts_entities(incidents_ids: List):
+    ids_json = {'ids': incidents_ids}
+    response = http_request(
+        'POST',
+        'https://api.crowdstrike.com/alerts/entities/alerts/v1',
         data=json.dumps(ids_json)
     )
     return response
@@ -2271,27 +2302,29 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
 def fetch_incidents():
     incidents = []  # type:List
     detections = []  # type:List
+    idp_detections = []
 
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
-        last_run = [{}, {}]
+        last_run = [{}, {}, {}]
     if not isinstance(last_run, list):
         last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
+    current_fetch_info_idp_detections: dict = last_run[2]
     fetch_incidents_or_detections = PARAMS.get('fetch_incidents_or_detections')
     look_back = int(PARAMS.get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
+                                                                first_fetch=FETCH_TIME,
+                                                                look_back=look_back)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
-    if 'Detections' in fetch_incidents_or_detections:
-        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
-                                                                    first_fetch=FETCH_TIME,
-                                                                    look_back=look_back)
 
+    if 'Detections' in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
         incident_type = 'detection'
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
+        last_fetch_time, offset, _, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
 
         fetch_query = PARAMS.get('fetch_query')
         if fetch_query:
@@ -2330,14 +2363,10 @@ def fetch_incidents():
                                               created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
             current_fetch_info_detections.update(last_run)
 
-    if 'Incidents' in fetch_incidents_or_detections:
-        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
-                                                                    first_fetch=FETCH_TIME,
-                                                                    look_back=look_back)
-
+    if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         incident_type = 'incident'
 
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_incidents)
+        last_fetch_time, offset, _, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_incidents)
         last_incident_fetched = current_fetch_info_incidents.get('last_fetched_incident')
         new_last_incident_fetched = ''
 
@@ -2390,10 +2419,61 @@ def fetch_incidents():
                                               created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
             current_fetch_info_incidents.update(last_run)
 
+    if "IDP Detection" in fetch_incidents_or_detections:
+        incident_type = 'IDP detection'
+
+        last_fetch_time, offset, _, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_idp_detections)
+        fetch_query = PARAMS.get('idp_detections_fetch_query')
+
+        if fetch_query:
+            fetch_query = f"updated_timestamp:>'{last_fetch_time}'+{fetch_query}"
+            idp_detections_ids = demisto.get(get_alerts_ids(filter_arg=fetch_query, offset=offset), 'resources')
+        else:
+            idp_detections_ids = demisto.get(get_alerts_ids(last_created_timestamp=last_fetch_time, offset=offset), 'resources')
+
+        if idp_detections_ids:
+            raw_res = get_alerts_entities(idp_detections_ids)
+        #     if "resources" in raw_res:
+        #         for incident in demisto.get(raw_res, "resources"):
+        #             incident['incident_type'] = incident_type
+        #             incident_to_context = incident_to_incident_context(incident)
+        #             incident_date = incident_to_context['occurred']
+
+        #             incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
+
+        #             # Update last run and add incident if the incident is newer than last fetch
+        #             if incident_date_timestamp > last_fetch_timestamp:
+        #                 last_fetch_timestamp = incident_date_timestamp
+        #                 new_last_incident_fetched = incident.get('incident_id')
+
+        #             if last_incident_fetched != incident.get('incident_id'):
+        #                 idp_detections.append(incident_to_context)
+
+        #     if len(idp_detections) == INCIDENTS_PER_FETCH:
+        #         current_fetch_info_idp_detections['offset'] = offset + INCIDENTS_PER_FETCH
+        #         current_fetch_info_idp_detections['last_fetched_incident'] = new_last_incident_fetched
+        #     else:
+        #         current_fetch_info_idp_detections['offset'] = 0
+        #         current_fetch_info_idp_detections['last_fetched_incident'] = new_last_incident_fetched
+
+        #     idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_idp_detections,
+        #                                                          fetch_limit=fetch_limit, id_field='name')
+        #     for incident in incidents:
+        #         occurred = dateparser.parse(incident["occurred"])
+        #         if occurred:
+        #             incident["occurred"] = occurred.strftime(DATE_FORMAT)
+
+        #     last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=incidents,
+        #                                       fetch_limit=fetch_limit,
+        #                                       start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+        #                                       look_back=look_back,
+        #                                       created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+        #     current_fetch_info_idp_detections.update(last_run)
+
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
-    demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents])
-    return incidents + detections
+    demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections])
+    return incidents + detections, idp_detections
 
 
 def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
@@ -4706,18 +4786,18 @@ def list_identity_entities_command(args: dict) -> CommandResults:
                 ...
                 on
                 UserEntity{
-                    emailAddresses            
+                    emailAddresses
                 }
                 riskScore
                 riskScoreSeverity
                 riskFactors{
                     type
-                    severity            
-                }        
-            }    
+                    severity
+                }
+            }
         }
     }
-""") 
+""")
     identity_entities_ls = []
     next_token = args.get("next_token", "")
     limit = int(args.get("limit", "50"))
@@ -4750,7 +4830,6 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
             limit -= 1000
-    print(identity_entities_ls)
     mapped_identity_entities_ls = [
         {
             "Primary Display Name": identity_entity.get("primaryDisplayName", ""),
@@ -4762,15 +4841,15 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             "Risk Score": identity_entity.get("riskScore", ""),
             "Risk Score Severity": identity_entity.get("riskScoreSeverity", ""),
             "riskFactors": identity_entity.get("riskFactors", "")
-        }        
-    for identity_entity in identity_entities_ls]
+        }
+        for identity_entity in identity_entities_ls]
     headers = ["Primary Display Name", "Secondary Display Name", "Is Human", "Is Programmatic", "Is Admin", "Email Addresses",
                "Risk Score", "Risk Score Severity", "riskFactors"]
-        
+
     return CommandResults(
         outputs_prefix='CrowdStrike.IDPEntity',
         outputs=createContext(response_to_context(identity_entities_ls), removeNull=True),
-        readable_output=tableToMarkdown("Identity entities:", mapped_identity_entities_ls,headers=headers,removeNull=True),
+        readable_output=tableToMarkdown("Identity entities:", mapped_identity_entities_ls, headers=headers, removeNull=True),
         raw_response=res,
     )
 

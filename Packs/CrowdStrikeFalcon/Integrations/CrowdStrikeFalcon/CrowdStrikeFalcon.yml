@@ -71,6 +71,12 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+- display: IDP Detections fetch query
+  name: idp_detections_fetch_query
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
@@ -136,6 +142,20 @@ configuration:
   - Endpoint Detection
   section: Collect
   advanced: true
+# - additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
+#   defaultvalue: 'Detections'
+#   display: 'Fetch types'
+#   name: fetch_incidents_or_detections
+#   required: false
+#   type: 16
+#   options:
+#   - Detections
+#   - Incidents
+#   - IDP Detection
+#   - Endpoint Incident
+#   - Endpoint Detection
+#   section: Collect
+#   advanced: true
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
