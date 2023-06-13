@@ -1314,7 +1314,6 @@ tests:
 - pyEWS_Test
 - EWS V2 Send Mail Test
 - EWS V2 Send Mail Test 2
-- EWSv2_empty_attachment_testt
 - EWS Public Folders Test
 defaultmapperin: EWS v2-mapper
 defaultclassifier: EWS v2

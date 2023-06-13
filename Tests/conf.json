@@ -1751,10 +1751,6 @@
             "instance_names": "ews_mail_sender_labdemisto"
         },
         {
-            "integrations": "EWS v2",
-            "playbookID": "EWSv2_empty_attachment_testt"
-        },
-        {
             "integrations": "Symantec Endpoint Protection V2",
             "playbookID": "SymantecEndpointProtection_Test"
         },
