@@ -19,8 +19,8 @@ Setup for forwarding requests logging per Virtual Server (VS):
 3. Under **Remote Request Logging**, make sure to preform the following;
     3.1. Mark the checkbox for **syslog!enabled** as **Yes**.
     3.2. In the **syslog!ipendpoint** section, fill the remote IP and Port of your syslog collector.
- 3.3. At the **syslog!msg_len_ limit** section, set the limit for a syslog message to **2048**.
- 3.4. At the **syslog!format** section, set the relevant syslog format.
+    3.3. In the **syslog!msg_len_ limit** section, set the limit for a syslog message to **2048**.
+    3.4. At the **syslog!format** section, set the relevant syslog format.
 * For HTTPS traffic inspection based VSs, select the **Simple connection log** format.
 * For HTTP traffic inspection based VSs, select the **custom** format, input-
    ```bash
