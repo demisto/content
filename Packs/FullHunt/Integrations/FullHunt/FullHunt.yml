@@ -182,7 +182,7 @@ script:
       name: domain
       required: true
     description: Get details about one specified domain
-    name: domain
+    name: fullhunt-domain
     outputs:
     - contextPath: FullHunt.Domain.domain
       description: Domain
