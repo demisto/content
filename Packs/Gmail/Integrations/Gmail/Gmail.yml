@@ -370,7 +370,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Enables partial responses to be retrieved, separated by commas. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+      description: 'Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: 
+        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Format, Subject, From, To, Body, Cc, Bcc,
+        Date, Html, Attachment Names'
       isArray: false
       name: fields
       required: false
@@ -542,7 +544,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+      description: 'Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: 
+        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Format, Subject, From, To, Body, Cc, Bcc,
+        Date, Html, Attachment Names'
       isArray: false
       name: fields
       required: false
