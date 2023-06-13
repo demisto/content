@@ -2387,7 +2387,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: comma-separated list of Key:Value tags objects.
+      description: A comma-separated list of Key:Value tag objects.
       isArray: true
       name: tags
       required: true
@@ -2404,7 +2404,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: comma-separated list of Key:Value tags objects.
+      description: A comma-separated list of Key:Value tag objects.
       isArray: true
       name: tags
       required: true
@@ -2421,7 +2421,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: comma-separated list of tags keys.
+      description: A comma-separated list of tag keys.
       isArray: true
       name: tagKeys
       required: true
@@ -2438,7 +2438,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: comma-separated list of tags keys.
+      description: A comma-separated list of tag keys.
       isArray: true
       name: tagKeys
       required: true
@@ -2455,7 +2455,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and Region that were specified in the last request made with that key.
+    description: Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and region that were specified in the last request made with that key.
     execution: false
     name: aws-iam-get-access-key-last-used
     outputs:
@@ -2466,13 +2466,13 @@ script:
       description: The username owning the given access key.
       type: string
     - contextPath: AWS.IAM.AccessKey.LastUsedServiceName
-      description: The name of the service last used the given access key.
+      description: The name of the service that last used the given access key.
       type: string
     - contextPath: AWS.IAM.AccessKey.LastUsedRegion
       description: The name of the region where the given access key was last used in.
       type: string
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
-      description: The date when the given access key was last used at.
+      description: The date when the given access key was last used.
       type: string
   dockerimage: demisto/boto3py3:1.0.0.63082
   feed: false

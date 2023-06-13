@@ -1780,7 +1780,7 @@ Adds one or more tags to an IAM role. The role can be a regular role or a servic
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | roleName | The name of the IAM role to which you want to add tags. | Required | 
-| tags | comma-separated list of Key:Value tags objects. | Required | 
+| tags | A comma-separated list of Key:Value tag objects. | Required | 
 
 #### Context Output
 
@@ -1807,7 +1807,7 @@ Adds one or more tags to an IAM user. If a tag with the same key name already ex
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | The name of the IAM user to which you want to add tags. | Required | 
-| tags | comma-separated list of Key:Value tags objects. | Required | 
+| tags | A comma-separated list of Key:Value tag objects. | Required | 
 
 #### Context Output
 
@@ -1834,7 +1834,7 @@ Removes the specified tags from the user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | The name of the IAM role to which you want to untag. | Required | 
-| tagKeys | comma-separated list of tags keys. | Required | 
+| tagKeys | A comma-separated list of tag keys. | Required | 
 
 #### Context Output
 
@@ -1861,7 +1861,7 @@ Removes the specified tags from the role.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | roleName | The name of the IAM role to which you want to untag. | Required | 
-| tagKeys | comma-separated list of tags keys. | Required | 
+| tagKeys | A comma-separated list of tag keys. | Required | 
 
 #### Context Output
 
@@ -1877,7 +1877,7 @@ There is no context output for this command.
 ### aws-iam-get-access-key-last-used
 
 ***
-Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and Region that were specified in the last request made with that key.
+Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and region that were specified in the last request made with that key.
 
 #### Base Command
 
@@ -1895,9 +1895,9 @@ Retrieves information about when the specified access key was last used. The inf
 | --- | --- | --- |
 | AWS.IAM.AccessKey.ID | string | The access key ID. | 
 | AWS.IAM.AccessKey.UserName | string | The username owning the given access key. | 
-| AWS.IAM.AccessKey.LastUsedServiceName | string | The name of the service last used the given access key. | 
-| AWS.IAM.AccessKey.LastUsedRegion | string | The name of the region where the given access key was last used in. | 
-| AWS.IAM.AccessKey.LastUsedDate | string | The date when the given access key was last used at. | 
+| AWS.IAM.AccessKey.LastUsedServiceName | string | The name of the service that last used the given access key. | 
+| AWS.IAM.AccessKey.LastUsedRegion | string | The name of the region where the given access key was last used. | 
+| AWS.IAM.AccessKey.LastUsedDate | string | The date when the given access key was last used. | 
 
 #### Human Readable Output
 
