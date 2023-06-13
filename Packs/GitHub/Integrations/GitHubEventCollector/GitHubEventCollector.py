@@ -79,7 +79,6 @@ class GithubGetEvents(IntegrationGetEvents):
         """
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
-
         last_timestamp = events[-1]['@timestamp']
         last_time = last_timestamp / 1000
         next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
@@ -117,7 +116,9 @@ def main():
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.setLastRun(GithubGetEvents.get_last_run(events))
+                if events:
+                    # we need to set the last run only if we have events
+                    demisto.setLastRun(GithubGetEvents.get_last_run(events))
 
             elif command == 'github-get-events':
                 command_results = CommandResults(
