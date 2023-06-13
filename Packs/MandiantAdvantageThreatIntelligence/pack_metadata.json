@@ -2,9 +2,9 @@
     "name": "Mandiant Advantage Threat Intelligence",
     "description": "Integrate your Mandiant Advantage Threat Intelligence data with Cortex XSOAR",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.3",
     "author": "Mandiant",
-    "hidden": true,
+    "hidden": false,
     "url": "https://www.mandiant.com/support",
     "email": "customersupport@mandiant.com",
     "categories": [

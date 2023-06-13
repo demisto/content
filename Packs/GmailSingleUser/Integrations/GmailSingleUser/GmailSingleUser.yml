@@ -252,6 +252,10 @@ script:
       name: renderBody
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Replies to a mail using Gmail.
     execution: false
@@ -476,7 +480,7 @@ script:
     description: Retrieves attachments from a sent Gmail message.
     execution: false
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.55175
+  dockerimage: demisto/google-api-py3:1.0.0.58017
   isfetch: true
   longRunning: false
   longRunningPort: false

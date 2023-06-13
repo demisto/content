@@ -804,7 +804,7 @@ def update_user_query(user_query: str) -> str:
 
 
 def insert_to_updated_context(context_data: dict,
-                              offense_ids: list = None,
+                              offense_ids: list | None = None,
                               should_update_last_fetch: bool = False,
                               should_update_last_mirror: bool = False,
                               should_add_reset_key: bool = False,
@@ -852,7 +852,7 @@ def insert_to_updated_context(context_data: dict,
 def safely_update_context_data(
     context_data: dict,
     version: Any,
-    offense_ids: list = None,
+    offense_ids: list | None = None,
     should_update_last_fetch: bool = False,
     should_update_last_mirror: bool = False,
     should_add_reset_key: bool = False,
@@ -1611,7 +1611,8 @@ def test_module_command(client: Client, params: Dict) -> str:
                 last_highest_id=last_highest_id,
                 incident_type=params.get('incident_type'),
                 mirror_direction=mirror_direction,
-                first_fetch=params.get('first_fetch', '3 days')
+                first_fetch=params.get('first_fetch', '3 days'),
+                mirror_options=params.get('mirror_options', '')
             )
         else:
             client.offenses_list(range_="items=0-0")
@@ -1820,8 +1821,15 @@ def get_current_concurrent_searches(context_data: dict) -> int:
         int: number of concurrent searches
     """
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
+    # we need offenses which we have a search_id for it in QRadar
     return len([offense_id for offense_id, status in waiting_for_update.items()
-               if status not in {QueryStatus.WAIT.value, QueryStatus.ERROR.value}])
+               if status not in list(QueryStatus)])
+
+
+def delete_offense_from_context(offense_id: str, context_data: dict, context_version: Any):
+    for key in (MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY):
+        context_data[key].pop(offense_id, None)
+    safely_update_context_data(context_data, context_version, offense_ids=[offense_id])
 
 
 def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str, events_limit: int, events: list[dict]) -> bool:
@@ -1851,7 +1859,7 @@ def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
                                          last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
-                                         first_fetch: str) \
+                                         first_fetch: str, mirror_options: str) \
         -> Tuple[Optional[List[Dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
@@ -1911,7 +1919,8 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
             ))
         offenses_with_metadata = [future.result() for future in futures]
         offenses = [offense for offense, _ in offenses_with_metadata]
-        prepare_context_for_events(offenses_with_metadata)
+        if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+            prepare_context_for_events(offenses_with_metadata)
     else:
         offenses = raw_offenses
     if is_reset_triggered():
@@ -1997,7 +2006,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
-                              first_fetch: str):
+                              first_fetch: str, mirror_options: str):
     is_reset_triggered()
     context_data, _ = get_integration_context_with_version()
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
@@ -2014,6 +2023,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         incident_type=incident_type,
         mirror_direction=mirror_direction,
         first_fetch=first_fetch,
+        mirror_options=mirror_options,
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
@@ -2058,6 +2068,7 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
+    mirror_options = params.get('mirror_options', '')
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
     while True:
@@ -2074,6 +2085,7 @@ def long_running_execution_command(client: Client, params: Dict):
                 incident_type=incident_type,
                 mirror_direction=mirror_direction,
                 first_fetch=first_fetch,
+                mirror_options=mirror_options,
             )
             demisto.updateModuleHealth('')
 
@@ -2555,8 +2567,11 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
     if query_expression or saved_search_id:
         try:
             response = client.search_create(query_expression, saved_search_id)
-        except Exception:
-            raise DemistoException(f'Could not create search for offense_id: {offense_id}')
+        except Exception as e:
+            if query_expression:
+                raise DemistoException(f'Could not create search for query: {query_expression}.') from e
+            if saved_search_id:
+                raise DemistoException(f'Could not create search for saved_search_id: {saved_search_id}.') from e
     else:
         response = create_events_search(client,
                                         fetch_mode,
@@ -2566,7 +2581,7 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
                                         start_time,
                                         return_raw_response=True)
         if response == QueryStatus.ERROR.value:
-            raise DemistoException(f'Could not create events search for offense_id: {offense_id}')
+            raise DemistoException(f'Could not create events search for offense_id: {offense_id}.')
 
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     return CommandResults(
@@ -3457,6 +3472,8 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             print_debug_msg(f'Events were already fetched {num_events} for offense {offense_id}, '
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')
+            # delete the offense from the queue
+            delete_offense_from_context(offense_id, context_data, context_version)
         else:
             events, status = get_remote_events(client,
                                                offense_id,
@@ -3577,18 +3594,19 @@ def create_events_search(client: Client,
                          events_columns: str,
                          events_limit: int,
                          offense_id: int,
-                         offense_start_time: str = None,
+                         offense_start_time: str | None = None,
                          return_raw_response: bool = False,
                          ) -> str:
-    additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
-        if fetch_mode == FetchMode.correlations_events_only.value else ''
+    additional_where = ''
+    if fetch_mode == FetchMode.correlations_events_only.value:
+        additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' '''
     try:
         # Get all the events starting from one hour after epoch
         if not offense_start_time:
             offense = client.offenses_list(offense_id=offense_id)
             offense_start_time = offense['start_time']
         query_expression = (
-            f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
+            f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '  # noqa: S608, E501
             f'START {offense_start_time}'
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
@@ -4214,9 +4232,9 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
     # Log exceptions and return errors
-    except Exception as e:
+    except Exception:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}')
 
 
 ''' ENTRY POINT '''

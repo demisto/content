@@ -111,6 +111,12 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+- display: The header of an external form hyperlink.
+  name: external_form_url_header
+  required: false
+  type: 0
+  section: Connect
+  defaultvalue: Microsoft Teams Form
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -158,6 +164,10 @@ script:
       name: adaptive_card
     - description: The team member to which to send the message.
       name: to
+    - description: The header of an external form hyperlink.
+      required: false
+      defaultValue: "Microsoft Teams Form"
+      name: external_form_url_header
     description: |-
       Sends a message to the specified teams.
       To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
@@ -254,7 +264,6 @@ script:
       - 'true'
       - 'false'
       required: false
-      defaultValue: false
     description: Adds a member (user) to a private/shared channel.
     name: microsoft-teams-add-user-to-channel
   - arguments:
@@ -738,7 +747,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.55061
+  dockerimage: demisto/teams:1.0.0.58918
   feed: false
   isfetch: false
   longRunning: true

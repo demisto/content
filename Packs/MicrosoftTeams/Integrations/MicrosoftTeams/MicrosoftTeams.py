@@ -21,6 +21,7 @@ from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
 ''' GLOBAL VARIABLES'''
+EXTERNAL_FORM_URL_DEFAULT_HEADER = 'Microsoft Teams Form'
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('credentials', {}).get('identifier', '') or PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('credentials', {}).get('password', '') or PARAMS.get('bot_password', '')
@@ -285,22 +286,20 @@ def is_investigation_mirrored(investigation_id: str, mirrored_channels: list) ->
     return -1
 
 
-def urlify_hyperlinks(message: str) -> str:
+def urlify_hyperlinks(message: str, url_header: str | None = EXTERNAL_FORM_URL_DEFAULT_HEADER) -> str:
     """
     Turns URL to markdown hyper-link
     e.g. https://www.demisto.com -> [https://www.demisto.com](https://www.demisto.com)
     :param message: Message to look for URLs in
     :return: Formatted message with hyper-links
     """
+    url_header = url_header or EXTERNAL_FORM_URL_DEFAULT_HEADER
     formatted_message: str = message
     # URLify markdown hyperlinks
     urls = re.findall(URL_REGEX, message)
     for url in urls:
         # is the url is a survey link coming from Data Collection task
-        if EXTERNAL_FORM in url:
-            formatted_message = formatted_message.replace(url, f'[Microsoft Teams Form]({url})')
-        else:
-            formatted_message = formatted_message.replace(url, f'[{url}]({url})')
+        formatted_message = formatted_message.replace(url, f'[{url_header if EXTERNAL_FORM in url else url}]({url})')
     return formatted_message
 
 
@@ -1908,6 +1907,8 @@ def send_message():
     message_type: str = demisto.args().get('messageType', '')
     original_message: str = demisto.args().get('originalMessage', '')
     message: str = demisto.args().get('message', '')
+    external_form_url_header: str | None = demisto.args().get(
+        'external_form_url_header') or demisto.params().get('external_form_url_header')
     demisto.debug("Send message")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
@@ -1979,7 +1980,7 @@ def send_message():
             }
         else:
             # Sending regular message
-            formatted_message: str = urlify_hyperlinks(message)
+            formatted_message: str = urlify_hyperlinks(message, external_form_url_header)
             mentioned_users, formatted_message_with_mentions = process_mentioned_users_in_message(formatted_message)
             entities = mentioned_users_to_entities(mentioned_users, integration_context)
             demisto.info(f'msg: {formatted_message_with_mentions}, ent: {entities}')
@@ -2019,7 +2020,7 @@ def get_channel_id_for_send_notification(channel_name: str, message_type: str):
         investigation_id = investigation.get('id', '')
     channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
     if get_channel_type(channel_id, team_aad_id) != 'standard':
-        raise ValueError('Posting a message or adaptive card to a private\shared channel is currently '
+        raise ValueError('Posting a message or adaptive card to a private/shared channel is currently '
                          'not supported.')
     return channel_id
 

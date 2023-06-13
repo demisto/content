@@ -136,6 +136,41 @@ service_record_expected_output = [
      'title': 'Cannot connect to a Wi-Fi network'},
     {'Modify time': '03/20/2022 11:08:56 AM', 'Service Record Type': 'Incident', 'Status': 'New', 'id': '33',
      'title': 'Try Test'}]
+service_record_expected_response_output = [
+    {'alertID': 'green', 'id': '25', 'impact': 'Low', 'insert_time': '03/07/2022 08:56:35 AM', 'sr_type': 'Incident',
+     'status': 'New', 'title': 'Cannot access email - Test ', 'update_time': '03/15/2022 04:53:20 AM',
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '25', 'info': [
+         {'key': 'impact', 'keyCaption': 'Impact', 'value': 4, 'valueCaption': 'Low', 'valueClass': ''},
+         {'key': 'alertID', 'keyCaption': 'Alert', 'value': 25, 'valueCaption': 'green', 'valueClass': ''},
+         {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+         {'key': 'insert_time', 'keyCaption': 'Request time', 'value': 1646661395760, 'valueCaption': '03/07/2022 08:56:35 AM',
+             'valueClass': ''},
+         {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot access email - Test ',
+             'valueCaption': 'Cannot access email - Test ', 'valueClass': ''},
+         {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987, 'valueCaption': '03/15/2022 04:53:20 AM',
+             'valueClass': ''},
+         {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}]},
+    {'description': 'I test this', 'id': '28', 'sr_type': 'Incident', 'status': 'New',
+     'title': 'Cannot connect to a Wi-Fi network', 'update_time': '03/07/2022 09:08:01 AM',
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '28', 'info': [
+         {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+         {'key': 'description', 'keyCaption': 'Description', 'value': 'I test this', 'valueCaption': 'I test this',
+             'valueClass': ''},
+         {'key': 'title', 'keyCaption': 'Title', 'value': 'Cannot connect to a Wi-Fi network',
+             'valueCaption': 'Cannot connect to a Wi-Fi network', 'valueClass': ''},
+         {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662081400, 'valueCaption': '03/07/2022 09:08:01 AM',
+             'valueClass': ''},
+         {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}]},
+    {'priority': 'Normal', 'source': 'Administrator Portal', 'sr_type': 'Incident', 'status': 'New',
+     'title': 'Try Test', 'update_time': '03/20/2022 11:08:56 AM',
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '33', 'info': [
+         {'key': 'source', 'keyCaption': 'Source', 'value': 1, 'valueCaption': 'Administrator Portal', 'valueClass': ''},
+         {'key': 'priority', 'keyCaption': 'Priority', 'value': 4, 'valueCaption': 'Normal', 'valueClass': ''},
+         {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
+         {'key': 'title', 'keyCaption': 'Title', 'value': 'Try Test', 'valueCaption': 'Try Test', 'valueClass': ''},
+         {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647792536563, 'valueCaption': '03/20/2022 11:08:56 AM',
+             'valueClass': ''},
+         {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}]}]
 
 # custom_fields_keys, custom_fields_values, expected_output
 extract_filters_no_args = (argToList(None), argToList(None), {})
@@ -279,117 +314,117 @@ fetch_request_args = [('all', False, '1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32
 
 # service_records, fetch_start_datetime, expected_result
 keep_all_alerts = ([
-                       {'id': '25',
-                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                  'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                       {'id': '31',
-                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                  'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                       {'id': '30',
-                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                  'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                   ],
-                   datetime.datetime(2022, 2, 28, 10, 0, 0),
-                   [
-                       {'id': '25',
-                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                  'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                       {'id': '31',
-                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                  'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                       {'id': '30',
-                        'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                  'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                   ])
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+],
+    datetime.datetime(2022, 2, 28, 10, 0, 0),
+    [
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+])
 keep_some_alerts = ([
-                        {'id': '25',
-                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                   'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                        {'id': '31',
-                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                   'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]},
-                        {'id': '30',
-                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                   'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                    ],
-                    datetime.datetime(2022, 3, 7, 10, 0, 0),
-                    [
-                        {'id': '25',
-                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                   'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                        {'id': '31',
-                         'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                   'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]}
-                    ])
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+],
+    datetime.datetime(2022, 3, 7, 10, 0, 0),
+    [
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]}
+])
 keep_alert_same_time = ([
-                            {'id': '25',
-                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                            {'id': '31',
-                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                       'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]},
-                            {'id': '30',
-                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                       'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                        ],
-                        datetime.datetime(2022, 3, 15, 4, 53, 20),
-                        [
-                            {'id': '25',
-                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
-                        ])
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/08/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+],
+    datetime.datetime(2022, 3, 15, 4, 53, 20),
+    [
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+])
 
 filter_service_records_by_time_input = [keep_all_alerts, keep_some_alerts, keep_alert_same_time]
 
 # service_records, fetch_start_datetime, last_id_fetched, expected_result
 keep_all_service_records_first_fetch = ([
-                                            {'id': '25',
-                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                                            {'id': '31',
-                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                                       'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                                            {'id': '30',
-                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                                       'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                                        ],
-                                        datetime.datetime(2022, 2, 28, 10, 0, 0),
-                                        '-1',
-                                        [
-                                            {'id': '25',
-                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                                       'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                                            {'id': '31',
-                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                                       'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                                            {'id': '30',
-                                             'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                                       'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                                        ])
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+],
+    datetime.datetime(2022, 2, 28, 10, 0, 0),
+    '-1',
+    [
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+])
 keep_all_service_records_not_first = ([
-                                          {'id': '25',
-                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                                     'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                                          {'id': '31',
-                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                                     'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                                          {'id': '30',
-                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                                     'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                                      ],
-                                      datetime.datetime(2022, 2, 28, 10, 0, 0),
-                                      '31',
-                                      [
-                                          {'id': '25',
-                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                                                     'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
-                                          {'id': '31',
-                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                                                     'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                                          {'id': '30',
-                                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                                                     'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
-                                      ])
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+],
+    datetime.datetime(2022, 2, 28, 10, 0, 0),
+    '31',
+    [
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]}
+])
 keep_one_service_record_greater_id_same_time = ([{'id': '25',
                                                   'info': [
                                                       {'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
@@ -410,63 +445,63 @@ keep_one_service_record_greater_id_same_time = ([{'id': '25',
                                                      'info': [{'key': 'update_time', 'keyCaption': 'Modify time',
                                                                'value': 1647338000987,
                                                                'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
-                                                ])
+])
 
 filter_service_records_by_id_input = [keep_all_service_records_first_fetch, keep_all_service_records_not_first,
                                       keep_one_service_record_greater_id_same_time]
 
 # service_records, limit, last_fetch, last_id_fetched, returned_last_fetch, returned_last_id_fetched, returned_service_records
 keep_all_incidents = ([
-                          {'id': '30',
-                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
                                      'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
-                          {'id': '31',
-                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
                                      'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                          {'id': '25',
-                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
                                      'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
-                      ],
-                      100,
-                      datetime.datetime(2022, 2, 28, 10, 0, 0),
-                      '-1',
-                      datetime.datetime(2022, 3, 15, 4, 53, 20),
-                      '25',
-                      [
-                          {'id': '30',
-                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+],
+    100,
+    datetime.datetime(2022, 2, 28, 10, 0, 0),
+    '-1',
+    datetime.datetime(2022, 3, 15, 4, 53, 20),
+    '25',
+    [
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
                                      'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
-                          {'id': '31',
-                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
                                      'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                          {'id': '25',
-                           'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
                                      'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
-                      ])
+])
 limit_to_two = ([
-                    {'id': '30',
-                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
-                    {'id': '31',
-                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
-                    {'id': '25',
-                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
-                               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
-                ],
-                2,
-                datetime.datetime(2022, 2, 28, 10, 0, 0),
-                '31',
-                datetime.datetime(2022, 3, 7, 9, 13, 39),
-                '31',
-                [
-                    {'id': '30',
-                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
-                               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
-                    {'id': '31',
-                     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
-                               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]}
-                ])
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]},
+    {'id': '25',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1647338000987,
+               'valueCaption': '03/15/2022 04:53:20 AM', 'valueClass': ''}]}
+],
+    2,
+    datetime.datetime(2022, 2, 28, 10, 0, 0),
+    '31',
+    datetime.datetime(2022, 3, 7, 9, 13, 39),
+    '31',
+    [
+    {'id': '30',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662345657,
+               'valueCaption': '03/07/2022 09:12:25 AM', 'valueClass': ''}]},
+    {'id': '31',
+     'info': [{'key': 'update_time', 'keyCaption': 'Modify time', 'value': 1646662419673,
+               'valueCaption': '03/07/2022 09:13:39 AM', 'valueClass': ''}]}
+])
 no_alerts = ([],
              150,
              datetime.datetime(2022, 1, 16, 10, 0, 3),

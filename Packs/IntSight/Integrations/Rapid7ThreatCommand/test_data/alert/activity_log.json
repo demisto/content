@@ -1,0 +1,523 @@
+[
+    {
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "AlertRead",
+        "SubTypes": [],
+        "Initiator": "629743dd54d546efdbbedacf",
+        "CreatedDate": "2022-06-01T11:56:10.005Z",
+        "UpdateDate": "2022-06-01T11:56:10.005Z",
+        "ReadBy": [
+            "629743dd54d546efdbbedacf",
+            "631ef479b675f72ec9309785",
+            "610a95e7f636fd0007df8e3d",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "629753da2686446a8107c59f"
+    },
+    {
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            },
+            "TagNames": [
+                "Example tag"
+            ],
+            "TagIDs": [
+                "63c41eda6c99c9ef2d802816"
+            ]
+        },
+        "Type": "AddTag",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-15T15:42:18.980Z",
+        "UpdateDate": "2023-01-15T15:42:18.980Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "610a95e7f636fd0007df8e3d",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63c41eda6c99c9ef2d802815"
+    },
+    {
+        "AdditionalInformation": {
+            "Mail": {
+                "NoteId": "63c41f936c99c9ef2d803154",
+                "Question": "API Question",
+                "Replies": [
+                    {
+                        "Email": "me@domain.com",
+                        "Token": "d74d00e0996b3aa0f4e4f556",
+                        "Date": "2023-01-15T15:45:24.384Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    },
+                    {
+                        "Email": "you@domain.com",
+                        "Token": "c0606ba4c29511f2d19dde62",
+                        "Date": "2023-01-15T15:45:24.384Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    }
+                ]
+            },
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "Mail",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-15T15:45:24.384Z",
+        "UpdateDate": "2023-01-15T15:45:24.384Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "610a95e7f636fd0007df8e3d",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63c41f936c99c9ef2d803155"
+    },
+    {
+        "AdditionalInformation": {
+            "AskTheAnalyst": {
+                "Messages": [
+                    {
+                        "Initiator": {
+                            "_id": "API",
+                            "IsSupport": false
+                        },
+                        "Date": "2023-01-15T15:46:11.180Z",
+                        "Content": "API Question"
+                    },
+                    {
+                        "Initiator": {
+                            "IsSupport": true
+                        },
+                        "Date": "2023-01-15T17:14:34.916Z",
+                        "Content": "Hi Team,\r\n\r\nCould you elaborate on your query ?"
+                    },
+                    {
+                        "Initiator": {
+                            "_id": "API",
+                            "IsSupport": false
+                        },
+                        "Date": "2023-01-26T08:25:36.717Z",
+                        "Content": "API Question"
+                    },
+                    {
+                        "Initiator": {
+                            "IsSupport": true
+                        },
+                        "Date": "2023-01-26T09:02:53.831Z",
+                        "Content": "Hi Team,\r\n\r\nKindly update us if you require assistance or information on this topic."
+                    }
+                ]
+            },
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "AskTheAnalystRequest",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-15T15:46:11.180Z",
+        "UpdateDate": "2023-01-26T09:02:53.831Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "610a95e7f636fd0007df8e3d",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63c41fc3e674044018bea0fe"
+    },
+    {
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "AskTheAnalystQuestion",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-15T15:46:11.189Z",
+        "UpdateDate": "2023-01-15T15:46:11.189Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "610a95e7f636fd0007df8e3d",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63c41fc3e674044018bea100"
+    },
+    {
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "AskTheAnalystAnswer",
+        "SubTypes": [],
+        "Initiator": "System",
+        "CreatedDate": "2023-01-15T17:14:34.919Z",
+        "UpdateDate": "2023-01-15T17:14:34.919Z",
+        "ReadBy": [
+            null,
+            "631ef479b675f72ec9309785",
+            "610a95e7f636fd0007df8e3d",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63c4347a31063e47df43c2dc"
+    },
+    {
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "AlertRead",
+        "SubTypes": [],
+        "Initiator": "631ef479b675f72ec9309785",
+        "CreatedDate": "2023-01-16T13:57:22.845Z",
+        "UpdateDate": "2023-01-16T13:57:22.845Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "610a95e7f636fd0007df8e3d",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63c557c2aa33fd0ec1cce083"
+    },
+    {
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            },
+            "TagNames": [
+                "Example tags"
+            ],
+            "TagIDs": [
+                "63d238e9e26d749a81bd9c08"
+            ]
+        },
+        "Type": "AddTag",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-26T08:25:13.112Z",
+        "UpdateDate": "2023-01-26T08:25:13.112Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63d238e9e26d749a81bd9c07"
+    },
+    {
+        "AdditionalInformation": {
+            "Mail": {
+                "NoteId": "63d238fa4b32b85c1504eee7",
+                "Question": "API Question",
+                "Replies": [
+                    {
+                        "Email": "me@domain.com",
+                        "Token": "2ef5faaec417e6a0a7927f83",
+                        "Date": "2023-01-26T08:25:30.763Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    },
+                    {
+                        "Email": "you@domain.com",
+                        "Token": "2c1e2df0eec210a4bc8459fc",
+                        "Date": "2023-01-26T08:25:30.763Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    }
+                ]
+            },
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "Mail",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-26T08:25:30.763Z",
+        "UpdateDate": "2023-01-26T08:25:30.763Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63d238fa4b32b85c1504eee8"
+    },
+    {
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "Type": "AskTheAnalystQuestion",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-26T08:25:36.719Z",
+        "UpdateDate": "2023-01-26T08:25:36.719Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "_id": "63d2390092c1d6a141ade339"
+    },
+    {
+        "Type": "AskTheAnalystAnswer",
+        "SubTypes": [],
+        "Initiator": "System",
+        "CreatedDate": "2023-01-26T09:02:53.833Z",
+        "UpdateDate": "2023-01-26T09:02:53.833Z",
+        "ReadBy": [
+            null,
+            "631ef479b675f72ec9309785",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "63d241bdb4872933a669cb09"
+    },
+    {
+        "Type": "Assign",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-29T07:11:08.030Z",
+        "UpdateDate": "2023-01-29T07:11:08.030Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "AdditionalInformation": {
+            "Assignee": "59490cd818a3b902664b4ed7",
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "63d61c0cd828d14956e926c5"
+    },
+    {
+        "Type": "AlertClosed",
+        "SubTypes": [],
+        "Initiator": "631ef479b675f72ec9309785",
+        "CreatedDate": "2023-01-29T07:16:33.930Z",
+        "UpdateDate": "2023-01-29T07:16:33.930Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785",
+            "62d95789f5e36897b56dc8bf"
+        ],
+        "AdditionalInformation": {
+            "Closed": {
+                "IsClosed": true
+            }
+        },
+        "_id": "63d61d51c5dd1fdce67c9c6b"
+    },
+    {
+        "Type": "AlertReopened",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-01-29T07:16:39.046Z",
+        "UpdateDate": "2023-01-29T07:16:39.046Z",
+        "ReadBy": [
+            "62d95789f5e36897b56dc8bf",
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Closed": {
+                "IsClosed": false
+            }
+        },
+        "_id": "63d61d57df4f84d02c0dc913"
+    },
+    {
+        "Type": "AlertRead",
+        "SubTypes": [],
+        "Initiator": "62d95789f5e36897b56dc8bf",
+        "CreatedDate": "2023-01-29T07:19:53.777Z",
+        "UpdateDate": "2023-01-29T07:19:53.777Z",
+        "ReadBy": [
+            "62d95789f5e36897b56dc8bf",
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "63d61e1985c4d3ea4930da68"
+    },
+    {
+        "Type": "WriteComment",
+        "SubTypes": [],
+        "Initiator": "631ef479b675f72ec9309785",
+        "CreatedDate": "2023-02-07T01:19:51.179Z",
+        "UpdateDate": "2023-02-07T01:19:51.179Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Status": {
+                "Rate": 0
+            },
+            "Comment": "ljkjljkjk"
+        },
+        "_id": "63e1a73752f753fffc1dd6f2"
+    },
+    {
+        "Type": "Assign",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-02-07T09:44:25.722Z",
+        "UpdateDate": "2023-02-07T09:44:25.722Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Assignee": "59490cd818a3b902664b4ed7",
+            "PreviousAssignee": "59490cd818a3b902664b4ed7",
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "63e21d7989d2f8a54a0aa7cd"
+    },
+    {
+        "Type": "Assign",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-03-08T11:15:01.246Z",
+        "UpdateDate": "2023-03-08T11:15:01.246Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Assignee": "59490cd818a3b902664b4ed7",
+            "PreviousAssignee": "59490cd818a3b902664b4ed7",
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "64086e3501e79c4c3490a460"
+    },
+    {
+        "Type": "Mail",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-03-08T11:54:02.435Z",
+        "UpdateDate": "2023-03-08T11:54:02.435Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Mail": {
+                "NoteId": "6408775a53a1187985da1ba0",
+                "Question": "API Question",
+                "Replies": [
+                    {
+                        "Email": "me@domain.com",
+                        "Token": "d0a2735d97d51e1e1166e57a",
+                        "Date": "2023-03-08T11:54:02.435Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    },
+                    {
+                        "Email": "you@domain.com",
+                        "Token": "32c4f714a846c20234d3042c",
+                        "Date": "2023-03-08T11:54:02.435Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    }
+                ]
+            },
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "6408775a53a1187985da1ba1"
+    },
+    {
+        "Type": "Mail",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-03-08T11:56:25.695Z",
+        "UpdateDate": "2023-03-08T11:56:25.695Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Mail": {
+                "NoteId": "640877e9908a72e7d5acea11",
+                "Question": "API Question",
+                "Replies": [
+                    {
+                        "Email": "test@test.com",
+                        "Token": "c13331148eb0608f8faac5fa",
+                        "Date": "2023-03-08T11:56:25.695Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    }
+                ]
+            },
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "640877e9908a72e7d5acea12"
+    },
+    {
+        "Type": "Mail",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-03-08T11:56:34.767Z",
+        "UpdateDate": "2023-03-08T11:56:34.767Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "Mail": {
+                "NoteId": "640877f253a1187985da1fb0",
+                "Question": "API Question",
+                "Replies": [
+                    {
+                        "Email": "test@test.com",
+                        "Token": "59703dcc81839f240485b1e5",
+                        "Date": "2023-03-08T11:56:34.767Z",
+                        "ReadBy": [],
+                        "IsTokenValid": true
+                    }
+                ]
+            },
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "640877f253a1187985da1fb1"
+    },
+    {
+        "Type": "AddTag",
+        "SubTypes": [],
+        "Initiator": "API",
+        "CreatedDate": "2023-03-08T13:54:57.168Z",
+        "UpdateDate": "2023-03-08T13:54:57.168Z",
+        "ReadBy": [
+            "631ef479b675f72ec9309785"
+        ],
+        "AdditionalInformation": {
+            "TagNames": [
+                "dExample tag"
+            ],
+            "TagIDs": [
+                "640893b10a61db94a53c00a0"
+            ],
+            "Status": {
+                "Rate": 0
+            }
+        },
+        "_id": "640893b10a61db94a53c009f"
+    }
+]

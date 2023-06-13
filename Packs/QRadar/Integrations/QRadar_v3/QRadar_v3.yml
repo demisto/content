@@ -98,6 +98,8 @@ configuration:
   advanced: true
   defaultvalue: No Mirroring
   display: Mirroring Options
+  hidden:
+  - marketplacev2
   name: mirror_options
   options:
   - No Mirroring
@@ -112,6 +114,8 @@ configuration:
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
+  hidden:
+  - marketplacev2
   section: Collect
   type: 8
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
@@ -124,7 +128,9 @@ configuration:
   type: 0
 - additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   advanced: true
-  display: Advanced Parameters
+  hidden:
+  - marketplacev2
+- display: Advanced Parameters
   name: adv_params
   required: false
   section: Collect
@@ -2288,6 +2294,7 @@ script:
     - description: 'Range of results to return. e.g.: 0-20'
       name: range
     description: Get Source IPs
+    execution: false
     name: qradar-ips-source-get
     outputs:
     - contextPath: QRadar.SourceIP.ID
@@ -2331,6 +2338,7 @@ script:
     - description: 'Range of results to return. e.g.: 0-20'
       name: range
     description: Get Source IPs
+    execution: false
     name: qradar-ips-local-destination-get
     outputs:
     - contextPath: QRadar.LocalDestinationIP.ID
@@ -2539,7 +2547,7 @@ script:
     - contextPath: QRadar.deploy.status
       description: The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE).
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
   isFetchSamples: true
   ismappable: true
   isremotesyncin: true

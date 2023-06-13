@@ -10,30 +10,36 @@ The playbook executes the following:
 The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - First SSO Access - Set Verdict
+
 * TIM - Indicator Relationships Analysis
 * Account Enrichment - Generic v2.1
+* Cortex XDR - First SSO Access - Set Verdict
 * User Investigation - Generic
 * Block Account - Generic v2
 
 ### Integrations
-* XDR_iocs
+
 * XQLQueryingEngine
+* XDR_iocs
 * CortexXDRIR
 
 ### Scripts
+
 * Set
 
 ### Commands
-* ad-expire-password
-* ip
+
 * setIncident
 * xdr-endpoint-isolate
+* okta-clear-user-sessions
+* ip
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -45,7 +51,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | EndpointID | XDR Endpoint ID. |  | Optional |
 | Username | User name. |  | Optional |
 | IPAddress | IP Address from the XDR Alert. |  | Optional |
-| AlertID | Alert ID. |  | Optional |
 | LoginCountry | The country from which the user logged in. |  | Optional |
 | AutomaticallyBlockAccount | Whether to block the account automatically. | False | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country. | False | Optional |
@@ -62,12 +67,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
 | XDRUsernameField | Cortex XDR User name Field. | actor_effective_username | Optional |
-| AutomaticallyResetPassword | Whether to reset the account password automatically. | False | Optional |
+| AutomaticallyClearSessions | Whether to clear all the user sessions automatically. | False | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - First SSO Access](../doc_files/Cortex_XDR_-_First_SSO_Access.png)

@@ -1154,6 +1154,10 @@ script:
       name: renderBody
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true
       name: replyTo
@@ -1401,7 +1405,7 @@ script:
       - Read
       - Unread
     description: Update the status of an email to read / unread.
-  dockerimage: demisto/crypto:1.0.0.55191
+  dockerimage: demisto/crypto:1.0.0.62834
   feed: false
   isfetch: true
   longRunning: false

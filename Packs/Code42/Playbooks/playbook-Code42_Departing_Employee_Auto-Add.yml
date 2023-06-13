@@ -1,0 +1,500 @@
+id: Departing Employee Auto-Add
+version: -1
+fromversion: "6.8.0"
+name: Departing Employee Auto-Add
+description: Queries stand-down tickets from a ticketing system and passes relevant
+  employee data to the Add Employees to Departing Employee Watchlist playbook. Intended
+  to be run as a scheduled job.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a1f43b65-4db4-41e7-8d22-4e53863759e8
+    type: start
+    task:
+      id: a1f43b65-4db4-41e7-8d22-4e53863759e8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 00984293-7eb3-4b45-88c3-2d1c7471fadf
+    type: title
+    task:
+      id: 00984293-7eb3-4b45-88c3-2d1c7471fadf
+      version: -1
+      name: Playbook Complete
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a5b8fc4d-44c2-4d32-89d3-ef800d8170ea
+    type: regular
+    task:
+      id: a5b8fc4d-44c2-4d32-89d3-ef800d8170ea
+      version: -1
+      name: Query Stand-Down Tickets
+      description: |-
+        This task is meant to be edited/replaced with one that makes a query to a ticketing or HR system for new
+        departing employees. 
+        
+        For example, if your company's employee lifecycle process includes creating a new Jira
+        ticket when an employee gives notice, you would set this task to query Jira tickets for the relevant project or
+        subject and extract appropriate fields from the ticket.
+        
+        If the query returns any results, it should set a list of `Ticket` objects in the context,
+        with one required property `Ticket.username` (the email address that matches the Code42 user account), and an 
+        optional `Ticket.departure_date` property (in YYYY-MM-DD format).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: jira-v2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: Ticket
+      value:
+        simple: Replace this task with input from a ticketing system and direct the
+          output to a key called Ticket. See "Details" tab for more information.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6e980a2f-aa3b-4a8f-81d0-6d1336b712ea
+    type: regular
+    task:
+      id: 6e980a2f-aa3b-4a8f-81d0-6d1336b712ea
+      version: -1
+      name: Delete All Context Except Log
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Code42,Ticket,ticket_count
+      keysToKeep:
+        simple: Log
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 54a8ca8a-46d7-45df-87b4-31420729caab
+    type: condition
+    task:
+      id: 54a8ca8a-46d7-45df-87b4-31420729caab
+      version: -1
+      name: Are There Open Tickets?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Ticket
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f8f4b21e-0148-42c8-8a85-86d8278750ff
+    type: regular
+    task:
+      id: f8f4b21e-0148-42c8-8a85-86d8278750ff
+      version: -1
+      name: Set "No Tickets" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Found no open tickets.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f39fa59b-3826-4330-8ee3-628caeef9f20
+    type: regular
+    task:
+      id: f39fa59b-3826-4330-8ee3-628caeef9f20
+      version: -1
+      name: Write Log to Incident War Room
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${Log}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 696e5ea9-e83b-4523-80d7-2cbb32177a3a
+    type: regular
+    task:
+      id: 696e5ea9-e83b-4523-80d7-2cbb32177a3a
+      version: -1
+      name: Set "Retrieved Ticket(s)" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Retrieved stand-down ticket(s).
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 1cf3d48a-e795-41cd-818e-6625ef954b4b
+    type: regular
+    task:
+      id: 1cf3d48a-e795-41cd-818e-6625ef954b4b
+      version: -1
+      name: Set "Job Complete" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Finished Departing Employee Auto-Add Job.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a54a0f62-1110-40cd-8afa-de98c4a3b03d
+    type: playbook
+    task:
+      id: a54a0f62-1110-40cd-8afa-de98c4a3b03d
+      version: -1
+      name: Add Employees to Departing Employee Watchlist
+      description: Loops through stand-down tickets provided by the Departing Employee
+        Auto-Add playbook and adds employees to the Departing Employee watchlist in
+        Code42 Incydr.
+      playbookName: Add Employees to Departing Employee Watchlist
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ticket_departure_date:
+        simple: ${Ticket.departure_date}
+      ticket_key:
+        simple: ${Ticket.key}
+      ticket_username:
+        simple: ${Ticket.username}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: f7e9f911-e3a5-4a33-8768-b10a17bacfc1
+    type: regular
+    task:
+      id: f7e9f911-e3a5-4a33-8768-b10a17bacfc1
+      version: -1
+      name: Set "Job Starting" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Beginning Departing Employee Auto-Add Job.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bbc522c1-0b59-48e9-8a0c-441763b39761
+    type: regular
+    task:
+      id: bbc522c1-0b59-48e9-8a0c-441763b39761
+      version: -1
+      name: Query Departing Employee Watchlist
+      description: List all users who have been explicitly added to a given watchlist.
+      script: Code42|||code42-watchlists-list-included-users
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      watchlist:
+        simple: DEPARTING_EMPLOYEE
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1760,
+        "width": 930,
+        "x": -220,
+        "y": -760
+      }
+    }
+  }
+inputs: []
+outputs: []

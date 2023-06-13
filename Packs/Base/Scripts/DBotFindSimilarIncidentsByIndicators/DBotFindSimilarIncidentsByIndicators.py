@@ -263,7 +263,7 @@ def enriched_incidents(df, fields_incident_to_display, from_date: str):
     if is_error(res):
         return_error(res)
     if not json.loads(res[0]['Contents']):
-        return df
+        return []
     else:
         incidents = json.loads(res[0]['Contents'])
         incidents_dict = {incident['id']: incident for incident in incidents}
