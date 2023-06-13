@@ -15,6 +15,7 @@ urllib3.disable_warnings()
 VENDOR = 'Have I Been Pwned? V2'
 MAX_RETRY_ALLOWED = demisto.params().get('max_retry_time', -1)
 API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
+print(API_KEY)
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = 'https://haveibeenpwned.com/api/v3'
 HEADERS = {
@@ -343,6 +344,7 @@ try:
         'pwned-domain': pwned_domain_command,
         'pwned-username': pwned_username_command
     }
+    print(API_KEY)
     if not API_KEY:
         raise DemistoException('API key must be provided.')
     if command in commands:

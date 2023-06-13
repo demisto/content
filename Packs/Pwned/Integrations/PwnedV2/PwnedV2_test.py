@@ -88,7 +88,7 @@ domain_req = [
 
 args1 = {
     'username': "jondon",
-    'domain': "adobe.com",
+    'domain': "adobe.com"
 }
 
 
@@ -110,11 +110,12 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     """
     PwnedV2.API_KEY = 'test'
     mocker.patch.object(demisto, 'params', return_value={
-                        'integrationReliability': 'A - Completely reliable'})
+                        'integrationReliability': 'A - Completely reliable',
+                        'credentials_api_key': {"password": "test"}})
     mocker.patch('PwnedV2.http_request', return_value=response)
     md_list, ec_list, api_email_res_list = command(args)
     for hr, outputs, raw in zip(md_list, ec_list, api_email_res_list):
-        assert expected_result == outputs  # entry context is found in the 2nd place in the result of the command
+            assert expected_result == outputs  # entry context is found in the 2nd place in the result of the command
 
 
 def test_rate_limited(mocker, requests_mock):
