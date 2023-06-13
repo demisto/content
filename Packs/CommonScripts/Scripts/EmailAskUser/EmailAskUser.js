@@ -1,16 +1,14 @@
 // email body type
-var bodyType = 'text';
-if (args.bodyType === 'html') {
-    bodyType = 'html';
-}
+var bodyType = args.bodyType === 'html' ? 'html' : 'text';
 
 // Get entitlement
 var entitlement;
 var retries = parseInt(args.retries) || 10;
-for (i = 0 ; i < retries; i++) {
+let res;
+for (i = 0; i < retries; i++) {
     res = executeCommand('addEntitlement', {'persistent': args.persistent, 'replyEntriesTag': args.replyEntriesTag})
     if (isError(res[0])) {
-        if (res[0].Contents.contains('[investigations] [investigation] (15)')) {
+        if (res[0].Contents.includes('[investigations] [investigation] (15)')) {
             wait(1);
             continue;
         }
@@ -84,32 +82,20 @@ if (!renderBody) {
 }
 
 if (addresses.length > 0) {
-    // prepare args and run send-mail
-    emailArgs = {
-        to: addresses.join(','),
-        subject: subject,
-        bodyType: bodyType,
-        renderBody: renderBody,
-    };
-    if (bodyType === 'html') {
-        emailArgs.htmlBody = message;
-    } else {
-        emailArgs.body = message;
-    }
-    if (args.attachIds) {
-        emailArgs.attachIDs = args.attachIds;
-    }
-    if (reply) {
-        emailArgs.replyTo = reply;
-    }
-    if (args.cc) {
-        emailArgs.cc = args.cc;
-    }
-    if (args.bcc) {
-        emailArgs.bcc = args.bcc;
-    }
+  const emailArgs = {
+    to: addresses.join(','),
+    subject,
+    bodyType,
+    renderBody,
+    ...(bodyType === 'html' ? { htmlBody: message } : { body: message }),
+    ...(args.attachIds && { attachIDs: args.attachIds }),
+    ...(reply && { replyTo: reply }),
+    ...(args.cc && { cc: args.cc }),
+    ...(args.bcc && { bcc: args.bcc }),
+    ...(args.usingSender && { using: args.usingSender })
+  };
 
-    return executeCommand('send-mail', emailArgs);
+  return executeCommand('send-mail', emailArgs);
 
 } else {
     return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
