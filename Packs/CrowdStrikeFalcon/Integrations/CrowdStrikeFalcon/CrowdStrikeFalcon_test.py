@@ -5168,7 +5168,7 @@ def test_map_malicious_file_resource_to_UI(mocker):
     (
         ({'quarantine': 'false', 'schedule_interval': 'every other week',
           'schedule_start_timestamp': 'tomorrow'}, True, {'quarantine': False}),
-        ({'cpu_priority': 'Low', 'max_duration': 1}, False, {'cpu_priority': 2, 'max_duration': 3600}),
+        ({'cpu_priority': 'Low', 'max_duration': 1}, False, {'cpu_priority': 2, 'max_duration': 1}),
     )
 )
 def test_make_create_scan_request_body(args, is_scheduled, expected_result):
@@ -5229,6 +5229,36 @@ def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
         assert str(error_info.value) == expected_error_info
     else:
         ODS_verify_create_scan_command(args)
+
+
+def test_cs_falcon_ods_create_scan_command(mocker):
+    """
+    Test cs_falcon_ods_create_scan_command.
+
+    Given
+        - Arguments to create a scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
+
+    Then
+        - Create an ODS scan.
+    """
+
+    from CrowdStrikeFalcon import cs_falcon_ods_create_scan_command
+
+    mocker.patch('CrowdStrikeFalcon.ods_create_scan', return_value={'id': 'random_id'})
+    query_scans_command = mocker.patch('CrowdStrikeFalcon.cs_falcon_ODS_query_scans_command')
+
+    cs_falcon_ods_create_scan_command({'interval_in_seconds': 1, 'timeout_in_seconds': 1})
+
+    query_scans_command.assert_called_with({
+        'ids': 'random_id',
+        'wait_for_result': True,
+        'interval_in_seconds': 1,
+        'timeout_in_seconds': 1,
+        'hide_polling_output': True,
+    })
 
 
 def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
