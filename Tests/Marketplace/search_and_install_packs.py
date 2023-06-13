@@ -32,20 +32,6 @@ PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH
 SUCCESS_FLAG = True
 
 
-def is_pack_deprecated(pack_path: str) -> bool:
-    """Checks whether the pack is deprecated.
-    Tests are not being collected for deprecated packs and the pack is not installed in the build process.
-    Args:
-        pack_path (str): The pack path
-    Returns:
-        True if the pack is deprecated, False otherwise
-    """
-    pack_metadata_path = Path(pack_path) / PACK_METADATA_FILENAME
-    if not pack_metadata_path.is_file():
-        return True
-    return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
-
-
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
     """
         Gets the id of the pack from the pack's path in GCP that is mentioned in the error msg.
@@ -112,7 +98,8 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
             if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
                 dependencies_data.append({
                     'id': dependency.get('id'),
-                    'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion')
+                    'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion'),
+                    'deprecated': dependency.get('extras', {}).get('pack', {}).get('deprecated'),
                 })
                 next_call_dependants_ids.append(dependency.get('id'))
                 checked_packs.append(dependency.get('id'))
@@ -122,7 +109,8 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
 
 
 def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
-    """ Get the pack's required dependencies.
+    """
+    Get the pack's required dependencies.
 
     Args:
         client (demisto_client): The configured client to use.
@@ -416,8 +404,9 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      one_pack_and_its_dependencies_in_batch: bool = False,
                                      batch_packs_install_request_body: list = None,
                                      ):
-    """ Searches for the pack of the specified file path, as well as its dependencies,
-        and updates the list of packs to be installed accordingly.
+    """
+    Searches for the pack of the specified file path, as well as its dependencies,
+    and updates the list of packs to be installed accordingly.
 
     Args:
         client (demisto_client): The configured client to use.
@@ -440,7 +429,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
         if pack_data is None:
             pack_data = {
                 'id': pack_id,
-                'version': '1.0.0'
+                'version': '1.0.0',
+                'deprecated': False,
             }
 
     if pack_data:
@@ -450,10 +440,9 @@ def search_pack_and_its_dependencies(client: demisto_client,
         if dependencies:
             # Check that the dependencies don't include a deprecated pack:
             for dependency in dependencies:
-                pack_path = os.path.join(PACKS_FOLDER, dependency.get('id'))
-                if is_pack_deprecated(pack_path):
-                    logging.critical(f'Pack {pack_id} depends on pack {dependency.get("id")} which is a deprecated '
-                                     f'pack.')
+                if dependency.get("deprecated"):
+                    logging.critical(f'Pack {pack_id} depends on pack {dependency.get("id")} '
+                                     f'which is a deprecated pack.')
                     global SUCCESS_FLAG
                     SUCCESS_FLAG = False
                 else:
