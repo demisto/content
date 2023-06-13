@@ -139,7 +139,7 @@ tasks:
       id: 5e18d026-6149-4f5c-858f-c7995a5b3550
       version: -1
       name: Search external service information
-      description: Get a list of all your external services filtered by the remote IP of the alert
+      description: Get a list of all your external services filtered by the remote IP of the alert.
       script: '|||asm-list-external-service'
       type: regular
       iscommand: true
