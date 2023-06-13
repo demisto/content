@@ -18,7 +18,7 @@ The Cisco Email Security Appliance is an email security gateway product. It is d
 2. Click Add Log Subscription.
 3. Select a log type and enter the log name (for the log directory) as well as the name for the log file itself.
 4. Specify the maximum file size before AsyncOS rolls over the log file as well as a time interval between
-rollovers. See Rolling Over Log Subscriptions, page 39-48 for more information on rolling over log files.
+rollovers.
 5. Select the log level. The available options are Critical, Warning, Information, Debug, or Trace.
 6. Configure the log retrieval method.
 7. Submit and commit your changes.
