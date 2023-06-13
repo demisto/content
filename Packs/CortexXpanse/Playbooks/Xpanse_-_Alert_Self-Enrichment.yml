@@ -307,7 +307,7 @@ tasks:
       id: b546bba5-63c9-4f60-8481-b8f9f265e70d
       version: -1
       name: Service ID exists?
-      description: Determines if service ID was passed back from the last command.
+      description: Determines if a service ID was passed back from the last command.
       type: condition
       iscommand: false
       brand: ""
