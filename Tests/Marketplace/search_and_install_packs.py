@@ -98,8 +98,8 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
             if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
                 dependencies_data.append({
                     'id': dependency.get('id'),
-                    'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion'),
-                    'deprecated': dependency.get('extras', {}).get('pack', {}).get('deprecated'),
+                    'version': demisto.get(dependency, 'extras.pack.currentVersion'),
+                    'deprecated': demisto.get(dependency, 'extras.pack.deprecated'),
                 })
                 next_call_dependants_ids.append(dependency.get('id'))
                 checked_packs.append(dependency.get('id'))
