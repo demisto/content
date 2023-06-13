@@ -2070,16 +2070,17 @@ def get_passive_dns(client: Client, value, all_results=None, type=DBotScoreType.
 
 def import_ioc_with_approval(client: Client, import_type, import_value, confidence="50", classification="Private",
                              threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
-                             url_mapping=None, email_mapping=None, md5_mapping=None, tags=None):
+                             url_mapping=None, email_mapping=None, md5_mapping=None, tags=None,
+                             source_confidence_weight=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    # prepare
     data = assign_params(
         classification=classification,
         confidence=int(confidence),
+        source_confidence_weight=arg_to_number(source_confidence_weight) if source_confidence_weight else None,
         ip_mapping=ip_mapping,
         domain_mapping=domain_mapping,
         url_mapping=url_mapping,
