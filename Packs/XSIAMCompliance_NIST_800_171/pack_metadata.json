@@ -1,6 +1,6 @@
 {
-    "name": "Palo Alto Networks Cortex XSIAM - NIST 800-171 Dashboards and Reports",
-    "description": "Pack for generating NIST 800-171 reports and dashboards. Dashboards and reports utilize XQL queries which refrence XDM, allowing queries to refrence data across multiple datasets.",
+    "name": "NIST 800-171 Compliance",
+    "description": "Ensure your organization is following NIST 800-171 guidelines with the relevant dashboard and report evidence.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSIAM",
