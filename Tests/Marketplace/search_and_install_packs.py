@@ -33,7 +33,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
                                      r'+\.zip$')
 SUCCESS_FLAG = True
-TEST_MODELING_RULE_ERROR_CODE = 101704
+INSTALL_MODELING_RULE_ERROR_CODE = 101704
 
 
 def is_pack_deprecated(pack_path: str) -> bool:
@@ -240,7 +240,7 @@ def find_malformed_pack_id(body: str) -> List:
             if error_info := response_info.get('error'):
                 errors_info = [error_info]
             else:
-                # the error is returned as a list of error
+                # the errors are returned as a list of error
                 errors_info = response_info.get('errors', [])
             for error in errors_info:
                 if 'pack id: ' in error:
@@ -335,16 +335,16 @@ def install_packs(client: demisto_client,
         client (demisto_client): The configured client to use.
         host (str): The server URL.
         packs_to_install (list): A list of the packs to install.
-        request_timeout (int): Timeout settings for the installation request.
+        request_timeout (int): Timeout setting, in seconds, for the installation request.
         attempts_count (int): The number of attempts to install the packs.
-        sleep_interval (int): The sleep interval between install attempts.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
     """
     global SUCCESS_FLAG
     try:
         for attempt in range(attempts_count - 1, -1, -1):
             try:
                 logging.info(f"Installing packs {', '.join([p.get('id') for p in packs_to_install])} on server {host}. "
-                             f"Attempt:{attempts_count - attempt}/{attempts_count}")
+                             f"Attempt: {attempts_count - attempt}/{attempts_count}")
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path='/contentpacks/marketplace/install',
                                                                                      method='POST',
@@ -361,7 +361,7 @@ def install_packs(client: demisto_client,
                     break
 
                 if not attempt:
-                    raise Exception(f"Got bad status code: {status_code}, headers:{headers}")
+                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
 
                 logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
 
@@ -369,16 +369,16 @@ def install_packs(client: demisto_client,
                 if malformed_ids := find_malformed_pack_id(ex.body):
                     handle_malformed_pack_ids(malformed_ids, packs_to_install)
                     if not attempt:
-                        raise Exception(f"malformed packs:{malformed_ids}") from ex
+                        raise Exception(f"malformed packs: {malformed_ids}") from ex
 
                     # We've more attempts, retrying without tho malformed packs.
                     SUCCESS_FLAG = False
-                    logging.error(f"Unable to install malformed packs:{malformed_ids}, retrying without them.")
+                    logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
                     packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
 
                 if (error_ids := get_error_ids(ex.body)) and TEST_MODELING_RULE_ERROR_CODE in error_ids:
                     # If we got this error code, it means that the modeling rules are not valid, exiting install flow.
-                    raise Exception("Test modeling rules for pack are not valid") from ex
+                    raise Exception(f"Test modeling rules for packs {packs_to_install} are not valid") from ex
 
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     if 'timeout awaiting response' in ex.body:
@@ -399,10 +399,10 @@ def install_packs(client: demisto_client,
                     raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to install pack, sleeping for {sleep_interval} seconds.")
+            logging.debug(f"failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
     except Exception as e:
-        logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
+        logging.exception(f'The request to install packs {packs_to_install} has failed. Additional info: {str(e)}')
         SUCCESS_FLAG = False
 
     finally:
