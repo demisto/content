@@ -4,3 +4,6 @@ ignore=RM102
 [file:ImpervaWAF.yml]
 ignore=IN136,BA124
 
+[file:Imperva_WAF.yml]
+ignore=MR108
+

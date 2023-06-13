@@ -49,7 +49,6 @@ script:
     - name: from
       description: Phone number of SMS sender (e.g. +123456789101)
     description: send an SMS
-hidden: false
 fromversion: 5.0.0
 tests:
 - no test

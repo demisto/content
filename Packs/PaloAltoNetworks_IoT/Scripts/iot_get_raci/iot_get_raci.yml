@@ -46,7 +46,6 @@ comment: IoT RACI model script
 commonfields:
   id: iot-security-get-raci
   version: -1
-enabled: false
 name: iot-security-get-raci
 outputs:
 - contextPath: PaloAltoNetworksIoT.RACI
