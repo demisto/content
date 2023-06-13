@@ -33,6 +33,4 @@ filter  EventType not in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "
     xdm.target.resource_before.type = OldLicenseType,
     xdm.target.resource.sub_type = MobileAppType,
     xdm.session_context_id = coalesce(JobUniqueId, SessionId),
-	xdm.event.type=EventType,
-    xdm.observer.vendor=_vendor,
-    xdm.observer.product=_product;
+	xdm.event.type=EventType;
