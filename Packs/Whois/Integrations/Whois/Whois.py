@@ -8663,14 +8663,14 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
 
-def test_command():
+def test_command() -> str:
     test_domain = 'google.co.uk'
     demisto.debug(f"Testing module using domain '{test_domain}'...")
     whois_result = get_whois(test_domain)
 
     try:
         if whois_result['nameservers'][0] == 'ns1.google.com':
-            return_results('ok')
+            return 'ok'
     except Exception as e:
         raise WhoisException(f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}")
 
@@ -8755,7 +8755,7 @@ def main():
             org_socket = socket.socket
             setup_proxy()
             if command == 'test-module':
-                test_command()
+                results = test_command()
             elif command == 'whois':
                 results.extend(whois_command(
                     reliability=reliability,
