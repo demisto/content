@@ -18,6 +18,7 @@ DEFAULT_MAX_LIMIT = 1000
 DEFAULT_URL = 'https://api.xdr.trendmicro.com'
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
+DAYS_IN_YEAR = 365
 
 
 class LastRunLogsTimeFields(Enum):
@@ -370,7 +371,7 @@ def get_datetime_range(
     if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
-        one_year_from_last_run_time = last_run_time_datetime + timedelta(days=365)  # type: ignore[operator]
+        one_year_from_last_run_time = last_run_time_datetime + timedelta(days=DAYS_IN_YEAR)  # type: ignore[operator]
         if one_year_from_last_run_time > now:
             end_time_datetime = now
         else:
@@ -444,15 +445,15 @@ def get_workbench_logs(
     Returns:
         Tuple[List[Dict], str]: workbench logs & latest time of the workbench log that was created.
     """
-    def parse_workbench_logs():
-        for _log in workbench_logs:
+    def parse_workbench_logs(_workbench_logs):
+        for _log in _workbench_logs:
             for _entity in (_log.get('impactScope') or {}).get('entities') or []:
-                if (related_entities := _entity.get('relatedEntities') or []) and isinstance(related_entities, list):
+                if (related_entities := _entity.get('relatedEntities')) and isinstance(related_entities, list):
                     _entity['relatedEntities'] = ','.join(related_entities)
-                if (provenance := _entity.get('provenance') or []) and isinstance(provenance, list):
+                if (provenance := _entity.get('provenance')) and isinstance(provenance, list):
                     _entity['provenance'] = ','.join(provenance)
-                if (entity_value := _entity.get('entityValue') or {}) and isinstance(entity_value, dict):
-                    if (_ips := entity_value.get('ips') or []) and isinstance(_ips, list):
+                if (entity_value := _entity.get('entityValue')) and isinstance(entity_value, dict):
+                    if (_ips := entity_value.get('ips')) and isinstance(_ips, list):
                         _ips = ','.join(_ips)
 
     start_time, end_time = get_datetime_range(
@@ -462,7 +463,7 @@ def get_workbench_logs(
         date_format=date_format
     )
     workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
-    parse_workbench_logs()
+    parse_workbench_logs(workbench_logs)
 
     latest_workbench_log_time = get_latest_log_created_time(
         logs=workbench_logs,
@@ -496,14 +497,14 @@ def get_observed_attack_techniques_logs(
     Returns:
         Tuple[List[Dict], str]: observed attack techniques logs & latest time of the technique log that was created.
     """
-    def parse_observed_attack_techniques_logs():
-        for log in observed_attack_techniques_logs:
+    def parse_observed_attack_techniques_logs(_observed_attack_techniques_logs):
+        for log in _observed_attack_techniques_logs:
             if filters := log.get('filters') or []:
                 for _filter in filters:
-                    if (mitre_tactic_ids := _filter.get('mitreTacticIds') or []) and isinstance(mitre_tactic_ids, list):
+                    if (mitre_tactic_ids := _filter.get('mitreTacticIds')) and isinstance(mitre_tactic_ids, list):
                         _filter['mitreTacticIds'] = ','.join(mitre_tactic_ids)
                     if (
-                        mitre_technique_ids := _filter.get('mitreTechniqueIds') or []
+                        mitre_technique_ids := _filter.get('mitreTechniqueIds')
                     ) and isinstance(mitre_technique_ids, list):
                         _filter['mitreTechniqueIds'] = ','.join(mitre_technique_ids)
 
@@ -516,7 +517,7 @@ def get_observed_attack_techniques_logs(
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
         detected_start_datetime=start_time, detected_end_datetime=end_time, limit=limit
     )
-    parse_observed_attack_techniques_logs()
+    parse_observed_attack_techniques_logs(observed_attack_techniques_logs)
 
     latest_observed_attack_technique_log_time = get_latest_log_created_time(
         logs=observed_attack_techniques_logs,
@@ -797,7 +798,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
 def main() -> None:
     params = demisto.params()
 
-    base_url = params.get('url') or 'https://api.xdr.trendmicro.com'
+    base_url = params.get('url') or DEFAULT_URL
     api_key = params.get('credentials', {}).get('password')
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
