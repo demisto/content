@@ -150,6 +150,7 @@ tasks:
     task:
       id: 7c757eec-7fe1-46c4-86b0-673004f532ba
       version: -1
+      description: ""
       name: Check Deletion Status
       type: condition
       iscommand: false
@@ -403,3 +404,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+marketplaces:
+- xsoar
