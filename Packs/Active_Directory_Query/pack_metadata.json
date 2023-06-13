@@ -16,10 +16,6 @@
         "Active Directory"
     ],
     "dependencies": {
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "Gmail": {
             "mandatory": false,
             "display_name": "Gmail"
