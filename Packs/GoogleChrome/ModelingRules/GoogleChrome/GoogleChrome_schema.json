@@ -1,0 +1,12 @@
+{
+    "google_chrome_raw": {
+        "events": {
+          "type": "string",
+          "is_array": true
+        },
+        "ipAddress": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+}
