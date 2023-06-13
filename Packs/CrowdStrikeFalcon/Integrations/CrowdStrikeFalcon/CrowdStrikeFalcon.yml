@@ -3672,13 +3672,12 @@ script:
     - description: Default is 1. The page number.
       name: page
       required: false
-      defaultValue: 1
     - description: The maximum identity entities to list.
       name: limit
       required: false
     description: List identity entities.
     name: cs-falcon-list-identity-entities
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/gql:1.0.0.60508
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -11,21 +11,23 @@ from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import requests
 from dateutil.parser import parse
+from gql import Client, gql
+from gql.transport.requests import RequestsHTTPTransport
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
-''' GLOBALS/PARAMS '''
 
+''' GLOBALS/PARAMS '''
+PARAMS = demisto.params()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
-CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
-SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
+CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
+SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-    demisto.params()['url']
+SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
 # Should we use SSL
-USE_SSL = not demisto.params().get('insecure', False)
+USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+FETCH_TIME = PARAMS.get('fetch_time', '3 days')
 BYTE_CREDS = '{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')
 # Headers to be sent in requests
 HEADERS = {
@@ -35,7 +37,7 @@ HEADERS = {
 }
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
-INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
+INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -254,7 +256,7 @@ class IncidentType(Enum):
     DETECTION = 'ldt'
 
 
-MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
+MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(PARAMS.get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 ''' HELPER FUNCTIONS '''
@@ -1992,7 +1994,7 @@ def get_remote_detection_data(remote_incident_id: str):
 
 
 def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
-    if demisto.params().get('close_incident'):
+    if PARAMS.get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
         elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}):
@@ -2000,7 +2002,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
 
 
 def set_xsoar_detection_entries(updated_object: Dict[str, Any], entries: List, remote_detection_id: str):
-    if demisto.params().get('close_incident'):
+    if PARAMS.get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
         elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
@@ -2147,7 +2149,7 @@ def close_in_cs_falcon(delta: Dict[str, Any]) -> bool:
     incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
     """
     closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
-    return demisto.params().get('close_in_cs_falcon') and any(field in delta for field in closing_fields)
+    return PARAMS.get('close_in_cs_falcon') and any(field in delta for field in closing_fields)
 
 
 def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
@@ -2278,8 +2280,8 @@ def fetch_incidents():
         last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
-    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
-    look_back = int(demisto.params().get('look_back', 0))
+    fetch_incidents_or_detections = PARAMS.get('fetch_incidents_or_detections')
+    look_back = int(PARAMS.get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
@@ -2291,7 +2293,7 @@ def fetch_incidents():
         incident_type = 'detection'
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
 
-        fetch_query = demisto.params().get('fetch_query')
+        fetch_query = PARAMS.get('fetch_query')
         if fetch_query:
             fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
@@ -2339,7 +2341,7 @@ def fetch_incidents():
         last_incident_fetched = current_fetch_info_incidents.get('last_fetched_incident')
         new_last_incident_fetched = ''
 
-        fetch_query = demisto.params().get('incidents_fetch_query')
+        fetch_query = PARAMS.get('incidents_fetch_query')
 
         if fetch_query:
             fetch_query = "start:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
@@ -3869,7 +3871,7 @@ def test_module():
         get_token(new_token=True)
     except ValueError:
         return 'Connection Error: The URL or The API key you entered is probably incorrect, please try again.'
-    if demisto.params().get('isFetch'):
+    if PARAMS.get('isFetch'):
         try:
             fetch_incidents()
         except ValueError:
@@ -4674,13 +4676,48 @@ def list_identity_entities_command(args: dict) -> CommandResults:
     Returns:
         The command result object.
     """
-    filters_mapper_dict = {'sort_key': 'sortKey', 'sort_order': 'sortOrder', 'entity_id': 'entityIds', "enabled": "enabled",
-                           'primary_display_name': 'primaryDisplayNames', 'secondary_display_name': 'secondaryDisplayNames',
-                           'max_risk_score_severity': 'maxRiskScoreSeverity', "min_risk_score_severity": "minRiskScoreSeverity",
-                           'email': 'emailAddresses'}
-    mapped_filters_string = [f"types: [{args.get('type')}]"] + [f"{value}: {args.get(key)}" for key,
-                                                                value in filters_mapper_dict.items() if args.get(key)]
-    filters_string = ", ".join((mapped_filters_string))
+    client = create_gql_client()
+    args_keys_ls = ["sort_key", "sort_order", "max_risk_score_severity", "min_risk_score_severity", "enabled"]
+    ls_args_keys_ls = ["type", "entity_id", "primary_display_name", "secondary_display_name", "email"]
+    variables = {}
+    for key in args_keys_ls:
+        if key in args:
+            variables[key] = args.get(key)
+    for key in ls_args_keys_ls:
+        if key in args:
+            variables[key] = args.get(key).split(",")
+    idp_query = gql("""
+    query ($sort_key: EntitySortKey, $type: [EntityType!], $sort_order: SortOrder, $entity_id: [UUID!],
+           $primary_display_name: [String!], $secondary_display_name: [String!], $max_risk_score_severity: ScoreSeverity,
+           $min_risk_score_severity: ScoreSeverity, $enabled: Boolean, $email: [String!], $first: Int) {
+        entities(types: $type, sortKey: $sort_key, sortOrder: $sort_order, entityIds: $entity_id, enabled: $enabled,
+                 primaryDisplayNames: $primary_display_name, secondaryDisplayNames: $secondary_display_name,
+                 maxRiskScoreSeverity: $max_risk_score_severity, minRiskScoreSeverity: $min_risk_score_severity,
+                 emailAddresses: $email, first: $first) {
+            pageInfo{
+                hasNextPage
+                endCursor
+            }
+            nodes{
+                primaryDisplayName
+                secondaryDisplayName
+                isHuman:hasRole(type: HumanUserAccountRole)
+                isProgrammatic:hasRole(type: ProgrammaticUserAccountRole)
+                ...
+                on
+                UserEntity{
+                    emailAddresses            
+                }
+                riskScore
+                riskScoreSeverity
+                riskFactors{
+                    type
+                    severity            
+                }        
+            }    
+        }
+    }
+""") 
     identity_entities_ls = []
     next_token = args.get("next_token", "")
     limit = int(args.get("limit", "50"))
@@ -4689,40 +4726,72 @@ def list_identity_entities_command(args: dict) -> CommandResults:
     res_ls = []
     has_next_page = True
     if page:
-        filters_string += f", first: {page_size}"
+        variables["first"] = page_size
         while has_next_page and page:
-            res = send_list_entities_request(next_token, filters_string)
+            res = client.execute(idp_query, variable_values=variables)
             res_ls.append(res)
             page -= 1
-            pageInfo = res.get("data", {}).get("entities", {}).get("pageInfo", {})
+            pageInfo = res.get("entities", {}).get("pageInfo", {})
             has_next_page = pageInfo.get("hasNextPage", False)
+            if page == 0:
+                identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
-        if not page:
-            identity_entities_ls = res.get("data", {}).get("nodes", [])
     else:
-        while limit > 0:
-            first = min(1000, limit)
-            res = send_list_entities_request(next_token, f"{filters_string}, first: {first}")
+        while has_next_page and limit > 0:
+            variables["first"] = min(1000, limit)
+            if next_token:
+                variables["after"] = next_token
+            res = client.execute(idp_query, variable_values=variables)
             res_ls.append(res)
-            pageInfo = res.get("data", {}).get("entities", {}).get("pageInfo", {})
+            pageInfo = res.get("entities", {}).get("pageInfo", {})
             has_next_page = pageInfo.get("hasNextPage", False)
-            identity_entities_ls.append(res.get("data", {}).get("nodes", []))
+            identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
-            else:
-                break
             limit -= 1000
-    if identity_entities_ls:
-        pass
-    # return CommandResults(
-    #     outputs_prefix='CrowdStrike.IDPIncident',
-    #     outputs_key_field='ID',
-    #     outputs=createContext(response_to_context(data), removeNull=True),
-    #     readable_output=f"Incident {id} comment was added successfully",
-    #     raw_response=res,
-    # )
+    print(identity_entities_ls)
+    mapped_identity_entities_ls = [
+        {
+            "Primary Display Name": identity_entity.get("primaryDisplayName", ""),
+            "Secondary Display Name": identity_entity.get("secondaryDisplayName", ""),
+            "Is Human": identity_entity.get("isHuman", ""),
+            "Is Programmatic": identity_entity.get("isProgrammatic", ""),
+            "Is Admin": identity_entity.get("isAdmin", ""),
+            "Email Addresses": identity_entity.get("emailAddresses", ""),
+            "Risk Score": identity_entity.get("riskScore", ""),
+            "Risk Score Severity": identity_entity.get("riskScoreSeverity", ""),
+            "riskFactors": identity_entity.get("riskFactors", "")
+        }        
+    for identity_entity in identity_entities_ls]
+    headers = ["Primary Display Name", "Secondary Display Name", "Is Human", "Is Programmatic", "Is Admin", "Email Addresses",
+               "Risk Score", "Risk Score Severity", "riskFactors"]
+        
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IDPEntity',
+        outputs=createContext(response_to_context(identity_entities_ls), removeNull=True),
+        readable_output=tableToMarkdown("Identity entities:", mapped_identity_entities_ls,headers=headers,removeNull=True),
+        raw_response=res,
+    )
 
+
+def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
+    url_suffix = url_suffix['url'][1:] if url_suffix.startswith('/') else url_suffix
+    kwargs = {
+        'url': f"{SERVER}/{url_suffix}",
+        'verify': USE_SSL,
+        'retries': 3,
+        'headers': {'Authorization': f'Bearer {get_token()}',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"}
+    }
+    transport = RequestsHTTPTransport(**kwargs)
+    handle_proxy()
+    client = Client(
+        transport=transport,
+        fetch_schema_from_transport=True,
+    )
+    return client
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
