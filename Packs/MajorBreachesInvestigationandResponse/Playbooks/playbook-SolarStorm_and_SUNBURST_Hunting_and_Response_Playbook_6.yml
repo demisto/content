@@ -2649,7 +2649,34 @@ tasks:
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
-        simple: "True"
+        simple: "False"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      device-group:
+        complex:
+          root: inputs.DeviceGroup
     separatecontext: true
     continueonerrortype: ""
     loop:
