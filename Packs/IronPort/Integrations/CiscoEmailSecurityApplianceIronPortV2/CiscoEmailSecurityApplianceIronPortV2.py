@@ -1735,7 +1735,7 @@ def fetch_incidents(
     )
     end_date = format_datetime("now")
     quarantine_type = QUARANTINE_TYPE
-    offset = 0
+    offset = last_run.pop('offset', 0)
     order_by = "date"
     order_dir = "asc"
 
@@ -1754,6 +1754,7 @@ def fetch_incidents(
         order_dir=order_dir,
     ).get("data", [])
 
+    data_length = len(quarantine_messages)
     incidents: List[Dict[str, Any]] = []
     last_minute_incident_ids = last_run.get("last_minute_incident_ids", [])
     for incident in quarantine_messages:
@@ -1790,7 +1791,9 @@ def fetch_incidents(
             for incident in incidents
             if incident.get("occurred") == start_time
         ]
-
+    # In case that all the incidents where dropped
+    if data_length != 0 and not incidents:
+        last_run["offset"] = offset + max_fetch
     return incidents, last_run
 
 
