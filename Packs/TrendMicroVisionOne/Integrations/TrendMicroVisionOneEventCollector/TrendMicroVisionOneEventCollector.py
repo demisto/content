@@ -173,7 +173,7 @@ class Client(BaseClient):
         Get the workbench logs.
 
         docs:
-        https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get
+        https://automation.trendmicro.com/xdr/api-v3#tag/Workbench
 
         Args:
             start_datetime (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the start
@@ -188,12 +188,10 @@ class Client(BaseClient):
             List[Dict]: The workbench events that were found.
         """
         # will retrieve all the events that are more or equal to start_datetime, does not support miliseconds
-        params = {'startDateTime': start_datetime}
+        params = {'startDateTime': start_datetime, 'orderBy': order_by or 'createdDateTime asc'}
 
         if end_datetime:
             params['endDateTime'] = end_datetime
-        if order_by:
-            params['orderBy'] = order_by
 
         return self.get_events(
             url_suffix=UrlSuffixes.WORKBENCH.value,
@@ -230,6 +228,7 @@ class Client(BaseClient):
             List[Dict]: The observe attack techniques that were found.
         """
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
+        # returns in descending order by default and cannot be changed
         # The data retrieval time range cannot be greater than 365 days.
         return self.get_events(
             url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value,
@@ -281,7 +280,7 @@ class Client(BaseClient):
         self,
         start_datetime: str,
         end_datetime: str | None = None,
-        order_by: str | None = None,
+        order_by: str = 'loggedDateTime asc',
         top: int = 200,
         limit: int = DEFAULT_MAX_LIMIT
     ) -> List[Dict]:
@@ -309,13 +308,10 @@ class Client(BaseClient):
         """
         # will retrieve all the events that are only more than detected_start_datetime, does not support miliseconds
         # start_datetime can be maximum 180 days ago
-        params = {'startDateTime': start_datetime, 'top': top}
+        params = {'startDateTime': start_datetime, 'top': top, 'orderBy': order_by}
 
         if end_datetime:
             params['endDateTime'] = end_datetime
-
-        if order_by:
-            params['orderBy'] = order_by
 
         return self.get_events(
             url_suffix=UrlSuffixes.AUDIT.value,
