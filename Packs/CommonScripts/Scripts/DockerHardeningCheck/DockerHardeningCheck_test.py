@@ -60,4 +60,4 @@ def test_podman(mocker):
 
     DockerHardeningCheck.main()
 
-    mock_return_error.assert_called_once_with("This script only works in Docker containers, and does not support podman")
+    mock_return_error.assert_called_once_with("This script only works in Docker containers. Podman is not supported")

@@ -202,7 +202,7 @@ def check_network(network_check: str) -> str:
 
 def main():
     if os.getenv("container") == "podman":
-        return_error("This script only works in Docker containers, and does not support podman")
+        return_error("This script only works in Docker containers. Podman is not supported")
         return
 
     mem = demisto.args().get('memory', "1g")
