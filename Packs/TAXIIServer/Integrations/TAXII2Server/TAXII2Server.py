@@ -16,7 +16,7 @@ HTTP_200_OK = 200
 HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
 HTTP_404_NOT_FOUND = 404
-HTTP_406_NOT_ACCEPABLE = 406
+HTTP_406_NOT_ACCEPTABLE = 406
 HTTP_416_RANGE_NOT_SATISFIABLE = 416
 INTEGRATION_NAME: str = 'TAXII2 Server'
 API_ROOT = 'threatintel'
@@ -28,7 +28,6 @@ MEDIA_TYPE_TAXII_V21 = 'application/taxii+json;version=2.1'
 MEDIA_TYPE_STIX_V21 = 'application/stix+json;version=2.1'
 MEDIA_TYPE_TAXII_V20 = 'application/vnd.oasis.taxii+json; version=2.0'
 MEDIA_TYPE_STIX_V20 = 'application/vnd.oasis.stix+json; version=2.0'
-ACCEPT_TYPE_ALL = '*/*'
 TAXII_VER_2_0 = '2.0'
 TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
@@ -62,7 +61,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
     ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
-    ThreatIntel.ObjectsNames.INTRUSION_SET: 'instruction-set',
+    ThreatIntel.ObjectsNames.INTRUSION_SET: 'intrusion-set',
     ThreatIntel.ObjectsNames.REPORT: 'report',
     ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
     ThreatIntel.ObjectsNames.TOOL: 'tool',
@@ -139,7 +138,7 @@ class TAXII2Server:
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
         self.version = version
-        if not (version == TAXII_VER_2_0 or version == TAXII_VER_2_1):
+        if version not in [TAXII_VER_2_0, TAXII_VER_2_1]:
             raise Exception(f'Wrong TAXII 2 Server version: {version}. '
                             f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
         self._collections_resource: list = []
@@ -396,14 +395,28 @@ def get_limited_extensions(limited_iocs, extensions):
     return limited_extensions
 
 
+def remove_spaces_from_header(header: str | list) -> str | list:
+    """ Remove spaces from a header or list of headers.
+
+    Args:
+        header (str | list): A single header or a list of headers to remove spaces from.
+
+    Returns:
+        str | list: The header or list of headers without spaces.
+    """
+    if isinstance(header, list):
+        return [value.replace(' ', '') for value in header]
+    return header.replace(' ', '')
+
+
 def taxii_validate_request_headers(f: Callable) -> Callable:
     @functools.wraps(f)
     def validate_request_headers(*args, **kwargs):
         """
         function for HTTP requests to validate authentication and Accept headers.
         """
-        accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_TAXII_V21,
-                          MEDIA_TYPE_STIX_V20, ACCEPT_TYPE_ALL]
+        accept_headers = [MEDIA_TYPE_TAXII_ANY, MEDIA_TYPE_TAXII_V20,
+                          MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V21, MEDIA_TYPE_STIX_V21]
         credentials = request.authorization
 
         if SERVER.auth:
@@ -419,15 +432,23 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
                 return handle_response(HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
 
         request_headers = request.headers
-        if (accept_header := request_headers.get('Accept')) not in accept_headers:
-            return handle_response(HTTP_406_NOT_ACCEPABLE,
+
+        # v2.0 headers has a space while v2.1 does not,
+        # this caused confusion with platforms sometimes sending a header with or without space.
+        # to avoid issues the Accept header is stripped from the spaces before validation.
+        accept_header = request_headers.get('Accept')
+
+        if (not accept_header) or (remove_spaces_from_header(accept_header) not in remove_spaces_from_header(accept_headers)):
+            return handle_response(HTTP_406_NOT_ACCEPTABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
                                                    f'please use one ot the following Accept headers: '
                                                    f'{accept_headers}'})
 
-        if SERVER.version == TAXII_VER_2_1 and accept_header in {MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20}:
-            return handle_response(HTTP_406_NOT_ACCEPABLE, {
+        possible_v20_headers = [MEDIA_TYPE_TAXII_V20, MEDIA_TYPE_STIX_V20] + list(remove_spaces_from_header([MEDIA_TYPE_TAXII_V20,
+                                                                                                            MEDIA_TYPE_STIX_V20]))
+        if SERVER.version == TAXII_VER_2_1 and accept_header in possible_v20_headers:
+            return handle_response(HTTP_406_NOT_ACCEPTABLE, {
                 'title': 'Invalid TAXII Header',
                 'description': 'The media type (version=2.0) provided in the Accept header'
                                ' is not supported on TAXII v2.1.'

@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Correlate Alerts
-description: Search alerts in Prisma Cloud for a specific asset ID and, if present
+description: Deprecated. Use Prisma Cloud Correlate Alerts v2 instead. Search alerts in Prisma Cloud for a specific asset ID and, if present
   in XSOAR, link them.
 starttaskid: "0"
 tasks:
@@ -551,5 +551,6 @@ outputs:
   description: Prisma Cloud Alert
   type: unknown
 tests:
-- No tests
+- No tests (deprecated)
 fromversion: 6.0.0
+deprecated: true

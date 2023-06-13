@@ -1,6 +1,8 @@
 id: EWS search-mailbox test
 version: -1
 name: EWS search-mailbox test
+deprecated: true
+description: Deprecated. Playbook is broken.
 starttaskid: "0"
 tasks:
   "0":

@@ -2111,6 +2111,26 @@ def handle_general_result(raw_response: requests.Response, command_name: str) ->
 
 
 @logger
+def handle_report_list_result(raw_response: requests.Response, command_name: str) -> object:
+    """
+    Handles report list command, parses, validates and finally returns the response parsed .
+    Args:
+        raw_response (requests.Response): the raw result received from Qualys API command
+        command_name (str): name of the command to handle
+    Returns:
+        CommandResults with the report metadata
+    Raises:
+        DemistoException: can be raised if there is no report for given id
+    """
+    response_requested_value = handle_general_result(raw_response, command_name)
+
+    if is_empty_result(response_requested_value) and (report_id := demisto.args().get('id')):
+        raise DemistoException(f'No report exist for the id {report_id}')
+
+    return response_requested_value
+
+
+@logger
 def handle_fetch_result(raw_response: Union[bytes, requests.Response], command_name: str) -> dict:
     """
     Handles fetch file commands
@@ -2626,7 +2646,7 @@ def main():  # pragma: no cover
         },
         # *** Commands which need parsing with multiple values ***
         "qualys-report-list": {
-            "result_handler": handle_general_result,
+            "result_handler": handle_report_list_result,
             "output_builder": build_multiple_values_parsed_output,
         },
         "qualys-vm-scan-list": {

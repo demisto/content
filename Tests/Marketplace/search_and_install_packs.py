@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 from functools import lru_cache
 import glob
@@ -9,6 +8,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Lock
+from time import sleep
 from typing import List
 
 import demisto_client
@@ -134,45 +134,31 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
     pack_id = pack_data['id']
     logging.debug(f'Getting dependencies for pack {pack_id}')
     try:
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(
-                client,
-                path='/contentpacks/marketplace/search/dependencies',
-                method='POST',
-                body=[pack_data],
-                accept='application/json',
-                _request_timeout=None,
-                response_type='object'
-            )
-        except ApiException as ex:
-            try:
-                logging.exception(f'Exception trying to get pack {pack_id} dependencies.'
-                                  f' Exception: {ex.status}, {ex.body}')
-            except Exception:
-                logging.error(f'An error occurred while parsing the dependencies result.'
-                              f' Rrror: {str(ex)}')
-                raise ex
-        except Exception as ex:
-            logging.exception(f'Exception trying to get pack {pack_id} dependencies.'
-                              f'  Exception: {ex}')
-
+        response_data, status_code, _ = demisto_client.generic_request_func(
+            client,
+            path='/contentpacks/marketplace/search/dependencies',
+            method='POST',
+            body=[pack_data],
+            accept='application/json',
+            _request_timeout=None,
+            response_type='object'
+        )
         if 200 <= status_code < 300:
             dependencies_data: list = []
             dependants_ids = [pack_id]
             response_data = response_data.get('dependencies', [])
             create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, dependants_ids)
-            dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
             if dependencies_data:
+                dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
                 logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
             return dependencies_data
         if status_code == 400:
             logging.error(f'Unable to find dependencies for {pack_id}.')
             return []
-        else:
-            msg = response_data.get('message', '')
-            raise Exception(f'Failed to get pack {pack_id} dependencies - with status code {status_code}\n{msg}\n')
-    except Exception:
-        logging.exception(f'The request to get pack {pack_id} dependencies has failed. {status_code=}.')
+        msg = response_data.get('message', '')
+        raise Exception(f'status code {status_code}\n{msg}\n')
+    except Exception as ex:
+        logging.exception(f'The request to get pack {pack_id} dependencies has failed. {ex}.')
 
         lock.acquire()
         global SUCCESS_FLAG
@@ -196,51 +182,38 @@ def search_pack(client: demisto_client,
     """
 
     try:
-        # make the search request
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path=f'/contentpacks/marketplace/{pack_id}',
-                                                                                method='GET',
-                                                                                accept='application/json',
-                                                                                _request_timeout=None,
-                                                                                response_type='object')
-        except ApiException as ex:
-            try:
-                logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
-                                  f' Exception: {ex.status}, {ex.body}')
-            except Exception:
-                logging.error(f'An error occurred while parsing the marketplace error: {str(ex)}')
-                raise ex
-        except Exception as ex:
-            logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
-                              f' Exception: {ex}')
-
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path=f'/contentpacks/marketplace/{pack_id}',
+                                                                            method='GET',
+                                                                            accept='application/json',
+                                                                            _request_timeout=None,
+                                                                            response_type='object')
         if 200 <= status_code < 300:
-
             if response_data and response_data.get('currentVersion'):
                 logging.debug(f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!')
-
-                pack_data = {
+                return {
                     'id': response_data.get('id'),
-                    'version': response_data.get('currentVersion')
+                    'version': response_data.get('currentVersion'),
                 }
-                return pack_data
-
             else:
                 raise Exception(f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.')
         else:
-            msg = response_data.get('message', '')
             err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
-                      f'{status_code}\n{msg}'
+                      f'{status_code}\n{response_data.get("message", "")}'
             raise Exception(err_msg)
-    except Exception:
-        logging.exception(f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed.')
 
-        lock.acquire()
-        global SUCCESS_FLAG
-        SUCCESS_FLAG = False
-        lock.release()
-        return {}
+    except ApiException as ex:
+        logging.exception(f'API Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
+                          f' Exception: {ex.status}, {ex.body}')
+    except Exception as ex:
+        logging.exception(f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. '
+                          f'Exception: {str(ex)}')
+
+    lock.acquire()
+    global SUCCESS_FLAG
+    SUCCESS_FLAG = False
+    lock.release()
+    return {}
 
 
 def find_malformed_pack_id(body: str) -> List:
@@ -275,7 +248,7 @@ def find_malformed_pack_id(body: str) -> List:
 
 def handle_malformed_pack_ids(malformed_pack_ids, packs_to_install):
     """
-    Handles the case where the malformed id failed the installation but it was not a part of the initial installaion.
+    Handles the case where the malformed id failed the installation, but it was not a part of the initial installation.
     This is in order to prevent an infinite loop for this such edge case.
     Args:
         malformed_pack_ids: the ids found from the error msg
@@ -297,7 +270,7 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
 
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
-    :param test_pack_path: Path the the test pack directory.
+    :param test_pack_path: Path to the test pack directory.
     :param pack_ids_to_install: List of pack IDs to install.
     :return: None. Call to server waits until a successful response.
     """
@@ -347,6 +320,7 @@ def install_packs(client: demisto_client,
         packs_to_install (list): A list of the packs to install.
         request_timeout (int): Timeout settings for the installation request.
     """
+    global SUCCESS_FLAG
 
     class GCPTimeOutException(ApiException):
         def __init__(self, error):
@@ -365,41 +339,43 @@ def install_packs(client: demisto_client,
             super().__init__()
 
     def call_install_packs_request(packs, attempts_count=1):
-        try:
-            logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
-                         f'Attempts left on failure: {attempts_count}.')
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path='/contentpacks/marketplace/install',
-                                                                                method='POST',
-                                                                                body={'packs': packs,
-                                                                                      'ignoreWarnings': True},
-                                                                                accept='application/json',
-                                                                                _request_timeout=request_timeout,
-                                                                                response_type='object')
-
-            if status_code in range(200, 300) and status_code != 204:
-                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
-                logging.success(f'Packs were successfully installed on server {host}')
-                logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
-
-        except ApiException as ex:
+        for attempt in range(attempts_count):
             try:
-                if ex.status in [502, 599]:
-                    if attempts_count <= 1:
-                        raise ex
+                logging.info(f'Installing packs {", ".join([p.get("id") for p in packs_to_install])} on server {host}. '
+                             f'Attempts left on failure: {attempts_count - attempt - 1}.')
+                response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                    path='/contentpacks/marketplace/install',
+                                                                                    method='POST',
+                                                                                    body={'packs': packs,
+                                                                                          'ignoreWarnings': True},
+                                                                                    accept='application/json',
+                                                                                    _request_timeout=request_timeout,
+                                                                                    response_type='object')
+
+                if status_code in range(200, 300) and status_code != 204:
+                    packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
+                    logging.success(f'Packs were successfully installed on server {host}')
+                    logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
+                    break
+
+            except ApiException as ex:
+                try:
+                    if ex.status in [502, 599]:
+                        # 502 - Bad Gateway, 599 - Connection timed out
+                        # In case of a timeout, sleep retry the request
+                        logging.info("Got 502, 599 from server, retrying the request. Sleeping for 60 seconds.")
+                        sleep(60)
+                    elif 'timeout awaiting response' in ex.body:
+                        raise GCPTimeOutException(ex.body)
+                    elif malformed_ids := find_malformed_pack_id(ex.body):
+                        raise MalformedPackException(malformed_ids)
+                    elif 'Item not found' in ex.body:
+                        raise GeneralItemNotFoundError(ex.body)
                     else:
-                        call_install_packs_request(packs, attempts_count - 1)
-                elif 'timeout awaiting response' in ex.body:
-                    raise GCPTimeOutException(ex.body)
-                elif malformed_ids := find_malformed_pack_id(ex.body):
-                    raise MalformedPackException(malformed_ids)
-                elif 'Item not found' in ex.body:
-                    raise GeneralItemNotFoundError(ex.body)
-                else:
+                        raise ex
+                except Exception:
+                    logging.debug(f'An error occurred during parsing the install error: {str(ex)}')
                     raise ex
-            except Exception:
-                logging.debug(f'An error occurred during parsing the install error: {str(ex)}')
-                raise ex
     try:
         try:
             call_install_packs_request(packs_to_install, attempts_count=3)
@@ -425,7 +401,6 @@ def install_packs(client: demisto_client,
 
     except Exception as e:
         logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
-        global SUCCESS_FLAG
         SUCCESS_FLAG = False
 
     finally:
@@ -437,6 +412,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      packs_to_install: list,
                                      installation_request_body: list,
                                      lock: Lock,
+                                     packs_in_the_list_to_install: list,
                                      one_pack_and_its_dependencies_in_batch: bool = False,
                                      batch_packs_install_request_body: list = None,
                                      ):
@@ -449,6 +425,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
+        packs_in_the_list_to_install (list): list of packs that are already in the list to install
         one_pack_and_its_dependencies_in_batch(bool): Whether to install packs in small batches.
             If false - install all packs in one batch.
         batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
@@ -480,12 +457,15 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     global SUCCESS_FLAG
                     SUCCESS_FLAG = False
                 else:
-                    current_packs_to_install.extend(dependencies)
+                    current_packs_to_install.append(dependency)
 
         lock.acquire()
         if one_pack_and_its_dependencies_in_batch:
-            pack_and_its_dependencies = {p['id']: p for p in current_packs_to_install}
-            batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))  # type:ignore[union-attr]
+            pack_and_its_dependencies = \
+                {p['id']: p for p in current_packs_to_install if p['id'] not in packs_in_the_list_to_install}
+            if pack_and_its_dependencies:
+                packs_in_the_list_to_install += pack_and_its_dependencies
+                batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))  # type:ignore[union-attr]
         else:
             for pack in current_packs_to_install:
                 if pack['id'] not in packs_to_install:
@@ -519,18 +499,16 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
 
     logging.debug(f'Found the following zips for {pack_id} pack: {pack_versions}')
     if pack_versions:
-        pack_latest_version = str(max(pack_versions))
-        return pack_latest_version
-    else:
-        logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')
-        return ''
+        return str(max(pack_versions))
+    logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')
+    return ''
 
 
 def get_pack_installation_request_data(pack_id: str, pack_version: str):
     """
     Returns the installation request data of a given pack and its version. The request must have the ID and Version.
 
-    :param pack_id: Id of the pack to add.
+    :param pack_id: ID of the pack to add.
     :param pack_version: Version of the pack to add.
     :return: The request data part of the pack
     """
@@ -673,7 +651,7 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client, hostname: str = '',
+                                                    client: demisto_client, hostname: str | None = None,
                                                     install_packs_one_by_one=False):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
@@ -688,7 +666,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
     """
-    host = hostname if hostname else client.api_client.configuration.host
+    host = hostname or client.api_client.configuration.host
 
     logging.info(f'Starting to search and install packs in server: {host}')
 
@@ -696,20 +674,29 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     installation_request_body: list = []  # the packs to install, in the request format
     batch_packs_install_request_body: list = []    # list of lists of packs to install if install packs one by one.
     # Each list contain one pack and its dependencies.
+    packs_in_the_list_to_install: list = []    # list of packs that are already in the list to install.
 
     lock = Lock()
 
-    with ThreadPoolExecutor(max_workers=130) as pool:
+    if install_packs_one_by_one:
         for pack_id in pack_ids:
             if is_pack_hidden(pack_id):
                 logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
                 continue
-            pool.submit(search_pack_and_its_dependencies,
-                        client, pack_id, packs_to_install, installation_request_body, lock,
-                        install_packs_one_by_one,
-                        batch_packs_install_request_body)
-
-    if not install_packs_one_by_one:
+            search_pack_and_its_dependencies(
+                client, pack_id, packs_to_install, installation_request_body, lock,
+                packs_in_the_list_to_install, install_packs_one_by_one,
+                batch_packs_install_request_body)
+    else:
+        with ThreadPoolExecutor(max_workers=130) as pool:
+            for pack_id in pack_ids:
+                if is_pack_hidden(pack_id):
+                    logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
+                    continue
+                pool.submit(search_pack_and_its_dependencies,
+                            client, pack_id, packs_to_install, installation_request_body, lock,
+                            packs_in_the_list_to_install, install_packs_one_by_one,
+                            batch_packs_install_request_body)
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:

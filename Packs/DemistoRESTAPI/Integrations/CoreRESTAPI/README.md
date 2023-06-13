@@ -1,4 +1,3 @@
-Use Core REST APIs
 
 ## Configure Core REST API on Cortex XSIAM/XSOAR
 

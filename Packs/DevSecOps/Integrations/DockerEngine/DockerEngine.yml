@@ -8,12 +8,10 @@ configuration:
   required: true
   type: 0
 - display: Docker Client Certificate
-  hidden: false
   name: client_certificate
   required: true
   type: 12
 - displaypassword: Docker Client Private Key
-  hidden: false
   name: client_key
   required: true
   type: 9
@@ -22,7 +20,6 @@ configuration:
   name: ca_certificate
   required: false
   type: 12
-  hidden: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -1978,12 +1975,12 @@ script:
     deprecated: false
     description: Tag an image so that it becomes part of a repository.
     execution: false
-    
+
     outputs:
     - contextPath: Docker.ImageTag.Status Code
       description: Image Tag Result
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: false
   longRunning: false

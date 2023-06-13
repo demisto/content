@@ -128,8 +128,8 @@ def main():
             return_results('ok')
 
         elif command == 'fetch-events':
-            demisto.setLastRun({'last_run': last_run})
             send_events_to_xsiam(threats, VENDOR, PRODUCT)
+            demisto.setLastRun({'last_run': last_run})
 
         elif command == 'abnormal-security-event-collector-get-events':
             command_results = CommandResults(

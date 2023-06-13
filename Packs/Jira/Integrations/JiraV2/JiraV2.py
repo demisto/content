@@ -1,9 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
-from CommonServerPython import *
+
 import urllib3
 urllib3.disable_warnings()
 
@@ -547,9 +551,10 @@ def get_project_id(project_key='', project_name=''):
         result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
     except DemistoException as de:
 
-        if de.message != 'Status code: 404\nMessage: Issue Does Not Exist':
+        if 'Status code: 404' not in de.message:
             raise de
 
+        demisto.debug('Exception after first api call: {de.message}')
         demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
                       f'Trying another endpoint: {BASE_URL}/api/latest/project.')
 
@@ -1022,6 +1027,18 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Issue deleted successfully.')
     else:
         demisto.results('Failed to delete issue.')
+
+
+def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
+    if assignee:  # for jira server
+        body = {"name": assignee}
+    elif assignee_id:  # for jira cloud
+        body = {"accountId": assignee_id}
+    else:
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
+    url = f'rest/api/latest/issue/{issue_id}/assignee'
+    jira_req('PUT', url, json.dumps(body))
+    return get_issue(issue_id, is_update=True)
 
 
 def test_module() -> str:
@@ -1500,6 +1517,10 @@ def main():
             return_results(list_transitions_command(demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
+
+        elif demisto.command() == 'jira-issue-assign':
+            human_readable, outputs, raw_response = update_issue_assignee_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 

@@ -2,7 +2,6 @@
 from typing import Union, List, Dict
 from urllib.parse import urlparse
 import urllib3
-
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
 from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
@@ -549,13 +548,14 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         new_event (MISPEvent): When this function was called from create event command, the attrubite will be added to
         that existing event.
     """
+    value = demisto_args.get('value')
     attributes_args = {
         'id': demisto_args.get('event_id'),  # misp event id
         'type': demisto_args.get('type', 'other'),
         'category': demisto_args.get('category', 'External analysis'),
         'to_ids': argToBoolean(demisto_args.get('to_ids', True)),
         'comment': demisto_args.get('comment'),
-        'value': demisto_args.get('value')
+        'value': argToList(value)
     }
     event_id = event_id if event_id else arg_to_number(demisto_args.get('event_id'), "event_id")
     attributes_args.update({'id': event_id}) if event_id else None

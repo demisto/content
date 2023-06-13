@@ -8,6 +8,7 @@
 #=================================
 #   Main Execution Point
 #==================================
+set -e
 
 touch CloudEnvVariables
 
@@ -17,7 +18,7 @@ export NUM_OF_TEST_MACHINES=`sed -n '$=' $TEST_MACHINES_LIST`	# reads num of lin
 TEST_MACHINES_LIST_STRING=`cat $TEST_MACHINES_LIST`
 echo "All existing machines: $TEST_MACHINES_LIST_STRING"
 
-if [ -z $TEST_MACHINES_LIST_STRING ];
+if [[ -z $TEST_MACHINES_LIST_STRING ]];
 then
   echo "No machines in Test Machines List."
   exit 1

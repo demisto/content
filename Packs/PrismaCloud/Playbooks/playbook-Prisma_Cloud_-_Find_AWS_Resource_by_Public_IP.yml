@@ -1,4 +1,5 @@
 description: |
+  Deprecated. Use Prisma Cloud - Find AWS Resource by Public IP v2 instead.
   Find AWS resources by Public IP using Prisma Cloud inventory.
   Supported services: EC2, Network Load Balancer, ECS, Route53.
 id: Prisma Cloud - Find AWS Resource by Public IP
@@ -494,4 +495,5 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

@@ -1,0 +1,777 @@
+{
+    "items": [
+        {
+            "id": "b4f92c03-0fc2-4a40-9d34-8f2b05dd240c",
+            "file": {
+                "name": "bad_file.exe",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "link": null
+            },
+            "scan_init": {
+                "id": "64186d76f8dd0701d53c035f"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "emotet",
+                        "synonyms": [
+                            "geodo"
+                        ],
+                        "descriptions": [
+                            {
+                                "description": "While Emotet historically was a banking malware organized in a botnet, nowadays Emotet is mostly seen as infrastructure as a service for content delivery. For example, since mid 2018 it is used by Trickbot for installs, which may also lead to ransomware attacks using Ryuk, a combination observed several times against high-profile targets.\r\nIt is always stealing information from victims but what the criminal gang behind it did, was to open up another business channel by selling their infrastructure delivering additional malicious software. From malware analysts it has been classified into epochs depending on command and control, payloads, and delivery solutions which change over time.",
+                                "cluster": {
+                                    "type": "malpedia",
+                                    "authors": [
+                                        "Davide Arcuri",
+                                        "Alexandre Dulaunoy",
+                                        "Steffen Enders",
+                                        "Andrea Garavaglia",
+                                        "Andras Iklody",
+                                        "Daniel Plohmann",
+                                        "Christophe Vandeplas"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/20/2023, 14:28:09",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "sha256": [
+                            {
+                                "value": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/20/2023, 14:28:26"
+        },
+        {
+            "id": "ed0d76de-2638-4599-9e19-74bef9776ce5",
+            "file": {
+                "name": "bad_file.exe",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "link": null
+            },
+            "scan_init": {
+                "id": "641615d1b236355850d6b85a"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "emotet",
+                        "synonyms": [
+                            "geodo"
+                        ],
+                        "descriptions": [
+                            {
+                                "description": "While Emotet historically was a banking malware organized in a botnet, nowadays Emotet is mostly seen as infrastructure as a service for content delivery. For example, since mid 2018 it is used by Trickbot for installs, which may also lead to ransomware attacks using Ryuk, a combination observed several times against high-profile targets.\r\nIt is always stealing information from victims but what the criminal gang behind it did, was to open up another business channel by selling their infrastructure delivering additional malicious software. From malware analysts it has been classified into epochs depending on command and control, payloads, and delivery solutions which change over time.",
+                                "cluster": {
+                                    "type": "malpedia",
+                                    "authors": [
+                                        "Davide Arcuri",
+                                        "Alexandre Dulaunoy",
+                                        "Steffen Enders",
+                                        "Andrea Garavaglia",
+                                        "Andras Iklody",
+                                        "Daniel Plohmann",
+                                        "Christophe Vandeplas"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/18/2023, 19:49:42",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "sha256": [
+                            {
+                                "value": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/18/2023, 19:50:00"
+        },
+        {
+            "id": "2fdf1cb0-b415-4a88-8fe2-7abddb391907",
+            "file": {
+                "name": "bad_file.exe",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "link": null
+            },
+            "scan_init": {
+                "id": "6415c2efda1bbe29caf8f213"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "emotet",
+                        "synonyms": [
+                            "geodo"
+                        ],
+                        "descriptions": [
+                            {
+                                "description": "While Emotet historically was a banking malware organized in a botnet, nowadays Emotet is mostly seen as infrastructure as a service for content delivery. For example, since mid 2018 it is used by Trickbot for installs, which may also lead to ransomware attacks using Ryuk, a combination observed several times against high-profile targets.\r\nIt is always stealing information from victims but what the criminal gang behind it did, was to open up another business channel by selling their infrastructure delivering additional malicious software. From malware analysts it has been classified into epochs depending on command and control, payloads, and delivery solutions which change over time.",
+                                "cluster": {
+                                    "type": "malpedia",
+                                    "authors": [
+                                        "Davide Arcuri",
+                                        "Alexandre Dulaunoy",
+                                        "Steffen Enders",
+                                        "Andrea Garavaglia",
+                                        "Andras Iklody",
+                                        "Daniel Plohmann",
+                                        "Christophe Vandeplas"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/18/2023, 13:56:04",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "sha256": [
+                            {
+                                "value": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/18/2023, 13:56:21"
+        },
+        {
+            "id": "fb40719b-a207-4878-aa96-be5944573bf6",
+            "file": {
+                "name": "bad_file.exe",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "link": null
+            },
+            "scan_init": {
+                "id": "6415bd4bc60b3295f52bb9a6"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "emotet",
+                        "synonyms": [
+                            "geodo"
+                        ],
+                        "descriptions": [
+                            {
+                                "description": "While Emotet historically was a banking malware organized in a botnet, nowadays Emotet is mostly seen as infrastructure as a service for content delivery. For example, since mid 2018 it is used by Trickbot for installs, which may also lead to ransomware attacks using Ryuk, a combination observed several times against high-profile targets.\r\nIt is always stealing information from victims but what the criminal gang behind it did, was to open up another business channel by selling their infrastructure delivering additional malicious software. From malware analysts it has been classified into epochs depending on command and control, payloads, and delivery solutions which change over time.",
+                                "cluster": {
+                                    "type": "malpedia",
+                                    "authors": [
+                                        "Davide Arcuri",
+                                        "Alexandre Dulaunoy",
+                                        "Steffen Enders",
+                                        "Andrea Garavaglia",
+                                        "Andras Iklody",
+                                        "Daniel Plohmann",
+                                        "Christophe Vandeplas"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/18/2023, 13:32:00",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "sha256": [
+                            {
+                                "value": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/18/2023, 13:32:16"
+        },
+        {
+            "id": "13ddf6e8-002d-4aa1-8d08-b1053cd8cd7d",
+            "file": {
+                "name": "bad_file.exe",
+                "mime_type": "application/x-msdownload",
+                "short_type": "peexe",
+                "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                "link": null
+            },
+            "scan_init": {
+                "id": "6415b06906ce46e2c4374aef"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "emotet",
+                        "synonyms": [
+                            "geodo"
+                        ],
+                        "descriptions": [
+                            {
+                                "description": "While Emotet historically was a banking malware organized in a botnet, nowadays Emotet is mostly seen as infrastructure as a service for content delivery. For example, since mid 2018 it is used by Trickbot for installs, which may also lead to ransomware attacks using Ryuk, a combination observed several times against high-profile targets.\r\nIt is always stealing information from victims but what the criminal gang behind it did, was to open up another business channel by selling their infrastructure delivering additional malicious software. From malware analysts it has been classified into epochs depending on command and control, payloads, and delivery solutions which change over time.",
+                                "cluster": {
+                                    "type": "malpedia",
+                                    "authors": [
+                                        "Davide Arcuri",
+                                        "Alexandre Dulaunoy",
+                                        "Steffen Enders",
+                                        "Andrea Garavaglia",
+                                        "Andras Iklody",
+                                        "Daniel Plohmann",
+                                        "Christophe Vandeplas"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "03/18/2023, 12:37:02",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "sha256": [
+                            {
+                                "value": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "03/18/2023, 12:37:19"
+        },
+        {
+            "id": "d953e49a-4386-4778-a1bd-2bb1ddbeae3f",
+            "file": {
+                "name": "sample.zip",
+                "mime_type": "application/octet-stream",
+                "short_type": "peexe",
+                "sha256": "81e36d6f2f6485798e37bf2658375f87cc0faf5bec959446bccfa12b316b6fa3",
+                "link": null
+            },
+            "scan_init": {
+                "id": "63eed2ed32202401b14cb0cf"
+            },
+            "state": "success",
+            "verdict": "malicious",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "peexe",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "INFORMATIONAL",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "OSINT_LOOKUP",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "tag": {
+                        "name": "emotet",
+                        "synonyms": [
+                            "geodo"
+                        ],
+                        "descriptions": [
+                            {
+                                "description": "While Emotet historically was a banking malware organized in a botnet, nowadays Emotet is mostly seen as infrastructure as a service for content delivery. For example, since mid 2018 it is used by Trickbot for installs, which may also lead to ransomware attacks using Ryuk, a combination observed several times against high-profile targets.\r\nIt is always stealing information from victims but what the criminal gang behind it did, was to open up another business channel by selling their infrastructure delivering additional malicious software. From malware analysts it has been classified into epochs depending on command and control, payloads, and delivery solutions which change over time.",
+                                "cluster": {
+                                    "type": "malpedia",
+                                    "authors": [
+                                        "Davide Arcuri",
+                                        "Alexandre Dulaunoy",
+                                        "Steffen Enders",
+                                        "Andrea Garavaglia",
+                                        "Andras Iklody",
+                                        "Daniel Plohmann",
+                                        "Christophe Vandeplas"
+                                    ]
+                                }
+                            }
+                        ],
+                        "verdict": {
+                            "verdict": "LIKELY_MALICIOUS",
+                            "threatLevel": 0.75,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "YARA_RULE",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "pup",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "packed",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "SUSPICIOUS",
+                            "threatLevel": 0.5,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "date": "02/17/2023, 01:24:42",
+            "matches": [
+                {
+                    "origin": {
+                        "sha256": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc",
+                        "filetype": "peexe",
+                        "mime_type": "application/x-msdownload",
+                        "relation": "source"
+                    },
+                    "matches": {
+                        "sha256": [
+                            {
+                                "value": "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "updated_date": "02/18/2023, 04:03:18",
+            "retry_count": 1,
+            "is_source_archive": true
+        }
+    ],
+    "count": 6,
+    "count_search_params": 1,
+    "method": "and"
+}

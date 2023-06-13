@@ -171,6 +171,7 @@ parseyaml
 parses
 yaml
 indexerror
+gTLD
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
@@ -246,4 +247,19 @@ ignore=BA124
 
 [file:EditServerConfig.yml]
 ignore=BA124
+
+[tests_require_network]
+Ping
+GetDockerImageLatestTag
+GetDuplicatesMlv2
+DockerHardeningCheck
+
+[file:IPNetwork.yml]
+ignore=RM109
+
+[file:IsInternalDomainName.yml]
+ignore=RM109
+
+[file:IsUrlPartOfDomain.yml]
+ignore=RM109
 

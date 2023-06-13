@@ -25,7 +25,6 @@ configuration:
   section: Connect
 - additionalinfo: G Suite domain administrator's email ID that acts on behalf of the end-user
   display: Admin Email
-  hidden: false
   name: admin_email
   required: true
   type: 0
@@ -51,7 +50,6 @@ configuration:
     Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty.
     Note: If type is present in the Filter parameter this value will be overwritten.
   display: Alert Type
-  hidden: false
   name: alert_type
   options:
   - Customer takeout initiated
@@ -85,7 +83,6 @@ configuration:
     For example: source:"Google" AND type="Suspicious login".
     Note: This value takes precedence over any filter arguments. To fetch alerts using createTime, use the first fetch time interval parameter.
   display: Filter
-  hidden: false
   name: filter
   required: false
   type: 12
@@ -93,7 +90,6 @@ configuration:
   advanced: true
 - additionalinfo: Fetches the latest type of feedback for each alert.
   display: Fetch feedback
-  hidden: false
   name: fetch_feedback
   required: false
   type: 8
@@ -811,7 +807,7 @@ script:
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
       description: Status of the failed alert recovery.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.54895
+  dockerimage: demisto/googleapi-python3:1.0.0.62140
   feed: false
   isfetch: true
   longRunning: false
