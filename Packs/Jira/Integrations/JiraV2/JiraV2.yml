@@ -91,9 +91,9 @@ configuration:
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
   display: Comment entry tag
-  name: comment_tag
   hidden:
   - marketplacev2
+  name: comment_tag
   required: false
   type: 0
 - additionalinfo: Fetch comments for a Jira ticket.
