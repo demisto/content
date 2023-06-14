@@ -769,33 +769,15 @@ def test_parse_date_isoformat_server():
 
 
 @pytest.mark.parametrize(
-    'fields, expected_result',
+    "fields, expected_result",
     [
-        (
-            None,
-            None
-        ),
-        (
-            'test',
-            None
-        ),
-        (
-            'test,test',
-            None
-        ),
-        (
-            'id',
-            None
-        ),
-        (
-            'subject',
-            ['Subject', 'ID']
-        ),
-        (
-            'subject,html',
-            ['Subject', 'Html', 'ID']
-        )
-    ]
+        (None, None),
+        ("test", None),
+        ("test,test", None),
+        ("id", None),
+        ("subject", ["Subject", "ID"]),
+        ("subject,html", ["Subject", "Html", "ID"]),
+    ],
 )
 def test_format_fields_argument(fields: str | None, expected_result: list[str] | None):
     """
@@ -804,7 +786,7 @@ def test_format_fields_argument(fields: str | None, expected_result: list[str] |
 
     When:
         - `format_fields_argument` is called with the fields.
-    
+
     Then:
         Ensure:
         - When given None returns None
@@ -813,42 +795,45 @@ def test_format_fields_argument(fields: str | None, expected_result: list[str] |
         - When valid fields are given, the ID field will always be included in the list
     """
     from Gmail import format_fields_argument
+
     assert format_fields_argument(argToList(fields)) == expected_result
 
 
 @pytest.mark.parametrize(
-    'full_mail, filter_fields, expected_result',
+    "full_mail, filter_fields, expected_result",
     [
         (
             {
-                'Type': 'Gmail',
-                'Mailbox': 'test',
-                'ID': 'id',
-                'ThreadId': 'test',
-                'Labels': 'test',
-                'Headers': 'test',
-                'Attachments': 'test',
-                'RawData': 'test',
-                'Format': 'test',
-                'Subject': 'test',
-                'From': 'test',
-                'To': 'test',
-                'Body': 'test',
-                'Cc': 'test',
-                'Bcc': 'test',
-                'Date': 'test',
-                'Html': 'test',
+                "Type": "Gmail",
+                "Mailbox": "test",
+                "ID": "id",
+                "ThreadId": "test",
+                "Labels": "test",
+                "Headers": "test",
+                "Attachments": "test",
+                "RawData": "test",
+                "Format": "test",
+                "Subject": "test",
+                "From": "test",
+                "To": "test",
+                "Body": "test",
+                "Cc": "test",
+                "Bcc": "test",
+                "Date": "test",
+                "Html": "test",
             },
-            ['ID', 'Labels', 'From'],
+            ["ID", "Labels", "From"],
             {
-                'ID': 'id',
-                'Labels': 'test',
-                'From': 'test',
-            }
+                "ID": "id",
+                "Labels": "test",
+                "From": "test",
+            },
         )
-    ]
+    ],
 )
-def test_filter_by_fields(full_mail, filter_fields, expected_result):
+def test_filter_by_fields(
+    full_mail: dict[str, str], filter_fields: list[str], expected_result: dict[str, str]
+):
     """
     Given:
         - A full mail object, a list of filter fields.
@@ -858,4 +843,5 @@ def test_filter_by_fields(full_mail, filter_fields, expected_result):
         - Ensure the email is filtered by the fields that given.
     """
     from Gmail import filter_by_fields
+
     assert filter_by_fields(full_mail, filter_fields) == expected_result

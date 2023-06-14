@@ -192,8 +192,11 @@ def parse_mail_parts(parts):
 
 
 def format_fields_argument(fields: list[str]) -> list[str] | None:
-
-    full_fields = [
+    """
+    Checks if the filter fields are valid, if so returns the valid fields,
+    otherwise returns `None`, when given an empty list returns `None`.
+    """
+    all_valid_fields = (
         "Type",
         "Mailbox",
         "ThreadId",
@@ -211,23 +214,16 @@ def format_fields_argument(fields: list[str]) -> list[str] | None:
         "Date",
         "Html",
         "Attachment Names",
-    ]
-    if valid_fields := list(
-        filter(
-            lambda field: field.lower() in [field.lower() for field in fields],
-            full_fields,
-        )
-    ):
+    )
+    lower_filter_fields = {field.lower() for field in fields}
+    if valid_fields := [field for field in all_valid_fields if field.lower() in lower_filter_fields]:
         valid_fields.append('ID')
         return valid_fields
     return None
 
 
 def filter_by_fields(full_mail: dict[str, Any], filter_fields: list[str]) -> dict:
-    filtered_mail: dict[str, Any] = {}
-    for field in filter_fields:
-        filtered_mail[field] = full_mail.get(field)
-    return filtered_mail
+    return {field: full_mail.get(field) for field in filter_fields}
 
 
 def parse_privileges(raw_privileges):
@@ -481,7 +477,7 @@ def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     return command_results
 
 
-def emails_to_entry(title, raw_emails, format_data, mailbox, fields=None):
+def emails_to_entry(title, raw_emails, format_data, mailbox, fields: list[str] = None):
     gmail_emails = []
     emails = []
     for email_data in raw_emails:

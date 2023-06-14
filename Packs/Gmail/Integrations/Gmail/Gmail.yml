@@ -371,9 +371,9 @@ script:
       secret: false
     - default: false
       description: 'Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: 
-        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Format, Subject, From, To, Body, Cc, Bcc,
+        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc,
         Date, Html, Attachment Names'
-      isArray: false
+      isArray: true
       name: fields
       required: false
       secret: false
@@ -545,9 +545,9 @@ script:
       secret: false
     - default: false
       description: 'Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: 
-        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Format, Subject, From, To, Body, Cc, Bcc,
+        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc,
         Date, Html, Attachment Names'
-      isArray: false
+      isArray: true
       name: fields
       required: false
       secret: false
@@ -2320,7 +2320,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.61016
+  dockerimage: demisto/google-api-py3:1.0.0.62754
   isfetch: true
   longRunning: false
   longRunningPort: false
