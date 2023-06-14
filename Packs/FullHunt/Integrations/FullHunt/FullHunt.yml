@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://fullhunt.io
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+  display: Server URL
   name: url
   required: true
   section: Connect

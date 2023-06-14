@@ -8,7 +8,7 @@ FullHunt is the attack surface database of the entire Internet. FullHunt enables
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://soar.monstersofhack.com) | True |
+    | Server URL | True |
     | API Key | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
