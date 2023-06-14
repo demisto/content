@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama
+  id: Panorama - dev
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -214,8 +214,8 @@ configuration:
   type: 13
   section: Connect
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS - dev
+name: Panorama - dev
 script:
   commands:
   - arguments:
@@ -6879,6 +6879,33 @@ script:
       required: false
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
+  - arguments:
+    - description: The security profile type.
+      name: profile_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+    - description: The rule name to apply.
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      description: The location of the rules. Mandatory for Panorama instances.
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group for which to apply security profiles.
+      name: device-group
+      required: false
+    description: Removes a security profile to specific rules or rules with a specific tag.
+    name: pan-os-remove-security-profile
   - arguments:
     - description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
