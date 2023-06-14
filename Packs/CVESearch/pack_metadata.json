@@ -1,6 +1,6 @@
 {
-    "name": "CVE Search",
-    "description": "Searches for CVE information using circl.lu.",
+    "name": "CVE Search (Deprecated)",
+    "description": "Deprecated. Use CIRCL instead.",
     "support": "xsoar",
     "currentVersion": "1.0.20",
     "author": "Cortex XSOAR",
