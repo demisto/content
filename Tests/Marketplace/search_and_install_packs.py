@@ -703,7 +703,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     for packs_to_install_body in batch_packs_install_request_body:
         # install_packs(client, host, packs_to_install_body)
         packs_to_install_together.extend(packs_to_install_body)
-        if len(packs_to_install_together) > 20:
+        if len(packs_to_install_together) > 100:
             install_packs(client, host, packs_to_install_together)
             packs_to_install_together = []
     return packs_to_install, SUCCESS_FLAG
