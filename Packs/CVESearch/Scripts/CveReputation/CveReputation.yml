@@ -21,4 +21,5 @@ dependson:
 timeout: 2.4µs
 runonce: false
 fromversion: 5.0.0
+toversion: 6.4.9
 deprecated: true
