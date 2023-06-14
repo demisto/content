@@ -254,7 +254,7 @@ class Client(BaseClient):
         self,
         start_datetime: str,
         end_datetime: str | None = None,
-        order_by: str | None = None,
+        order_by: str = 'createdDateTime asc',
         limit: int = DEFAULT_MAX_LIMIT
     ) -> List[Dict]:
         """
@@ -276,7 +276,7 @@ class Client(BaseClient):
             List[Dict]: The workbench events that were found.
         """
         # will retrieve all the events that are more or equal to start_datetime, does not support miliseconds
-        params = {'startDateTime': start_datetime, 'orderBy': order_by or 'createdDateTime asc'}
+        params = {'startDateTime': start_datetime, 'orderBy': order_by}
 
         if end_datetime:
             params['endDateTime'] = end_datetime
