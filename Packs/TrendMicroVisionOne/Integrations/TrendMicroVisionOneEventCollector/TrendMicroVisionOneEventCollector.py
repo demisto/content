@@ -203,6 +203,7 @@ class Client(BaseClient):
         events.reverse()
         start_time_event_index = 0
 
+        # take the first event that is equal or bigger than start time of the query
         for start_time_event_index, event in enumerate(events):
             if event_time := event.get(created_time_field):
                 if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS.value:
