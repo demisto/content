@@ -759,6 +759,7 @@ def get_audit_logs(
     )
 
     for log in audit_logs:
+        # since there isn't real uuid in audit logs, we hash the entire audit log to create a unique id
         encoded_audit_log = json.dumps(log, sort_keys=True).encode()
         log['id'] = hashlib.sha256(encoded_audit_log).hexdigest()
 
@@ -780,7 +781,8 @@ def get_audit_logs(
     latest_audit_log_time = latest_log_time or end_time
 
     for log in audit_logs:
-        log.pop('id')
+        # pop all the hashes used to find duplicates
+        log.pop('id', None)
 
     audit_updated_last_run = {
         audit_log_last_run_time: latest_audit_log_time,
