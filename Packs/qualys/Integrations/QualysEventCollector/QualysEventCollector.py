@@ -299,7 +299,7 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
     demisto.debug(f'Starting to fetch host list events: {last_run=}')
 
     host_list_detections = client.get_host_list_detection(since_datetime=last_run, max_fetch=max_fetch)
-    host_list_events = handle_host_list_detection_result(host_list_detections) or {}
+    host_list_events = handle_host_list_detection_result(host_list_detections) or []
     next_run = host_list_events[0].get('LAST_VM_SCANNED_DATE') if host_list_events else last_run
 
     edited_host_detections = get_detections_from_hosts(host_list_events)
@@ -359,7 +359,7 @@ def get_activity_logs_events_command(client, args, first_fetch_time):
         last_run=last_run,
         max_fetch=0,
     )
-    limited_activity_logs_events = activity_logs_events[offset:limit + offset]
+    limited_activity_logs_events = activity_logs_events[offset:limit + offset]  # type: ignore[index,operator]
     activity_logs_hr = tableToMarkdown(name='Activity Logs', t=limited_activity_logs_events)
     results = CommandResults(
         readable_output=activity_logs_hr,
@@ -388,7 +388,7 @@ def get_host_list_detections_events_command(client, args, first_fetch_time):
         last_run=last_run,
         max_fetch=0,
     )
-    limited_host_list_detection_events = host_list_detection_events[offset:limit + offset]
+    limited_host_list_detection_events = host_list_detection_events[offset:limit + offset]  # type: ignore[index,operator]
     host_list_detection_hr = tableToMarkdown(name='Host List Detection', t=limited_host_list_detection_events)
     results = CommandResults(
         readable_output=host_list_detection_hr,
