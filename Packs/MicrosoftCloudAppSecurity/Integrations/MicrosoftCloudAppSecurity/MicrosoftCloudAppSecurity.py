@@ -780,7 +780,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     return last_run, incidents
 
 
-def params_to_filter(severity: List[str], resolution_status: str):
+def params_to_filter(severity: List[str], resolution_status: List[str]):
     filters: Dict[str, Any] = {}
     if len(severity) == 1:
         filters['severity'] = {'eq': SEVERITY_OPTIONS[severity[0]]}
