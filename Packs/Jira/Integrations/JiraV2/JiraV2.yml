@@ -553,6 +553,37 @@ script:
   - arguments: []
     description: Lists all the organizations.
     name: jira-get-organizations
+  - arguments:
+    - description: The ID of the issue to edit.
+      name: issueId
+      required: true
+    - description: The name of the assignee. Relevant for Jira Server only, If you are using Jira Cloud, provide the assignee_id argument instead.
+      name: assignee
+      required: false
+    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+      required: false
+    description: Edit the assignee of an existing issue.
+    name: jira-issue-assign
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
   dockerimage: demisto/oauthlib:1.0.0.62974
   isfetch: true
   ismappable: true
