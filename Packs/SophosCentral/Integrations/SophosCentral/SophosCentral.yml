@@ -623,6 +623,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
+      defaultValue: false
       description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
       isArray: false
       name: get_password
@@ -664,6 +665,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
+      defaultValue: false
       description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
       isArray: false
       name: get_password

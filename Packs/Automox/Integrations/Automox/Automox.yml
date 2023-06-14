@@ -846,6 +846,7 @@ script:
       type: Boolean
       isArray: false
       required: true
+      defaultValue: false
       default: false
       secret: false
     - name: server_group_id

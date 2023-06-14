@@ -246,6 +246,7 @@ script:
       name: add-to-context
       required: false
       secret: false
+      defaultValue: false
     - default: false
       description: Raw JSON file event query to be used for search.
       isArray: false

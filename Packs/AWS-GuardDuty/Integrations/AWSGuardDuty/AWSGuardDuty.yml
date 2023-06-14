@@ -1144,6 +1144,7 @@ script:
       predefined:
       - 'true'
       - 'false'
+      defaultValue: false
     deprecated: false
     description: Describes Amazon GuardDuty findings specified by finding IDs.
     execution: false

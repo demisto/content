@@ -36,6 +36,7 @@ script:
       secret: false
     - default: false
       description: Should polling be enable for this command
+      defaultValue: false
       isArray: false
       name: wait_for_result
       required: false
@@ -80,6 +81,7 @@ script:
       secret: false
     - default: false
       description: Should polling be enable for this command
+      defaultValue: false
       isArray: false
       name: wait_for_result
       required: false
@@ -182,6 +184,7 @@ script:
       secret: false
     - default: false
       description: Should polling be enable for this command
+      defaultValue: false
       isArray: false
       name: wait_for_result
       required: false
