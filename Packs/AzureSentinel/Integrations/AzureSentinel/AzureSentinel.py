@@ -84,7 +84,7 @@ class AzureSentinelClient:
                  resource_group_name: str, workspace_name: str, certificate_thumbprint: Optional[str],
                  private_key: Optional[str], verify: bool = True, proxy: bool = False,
                  managed_identities_client_id: Optional[str] = None,
-                 azure_cloud: Optional[AzureCloud] = AZURE_WORLDWIDE_CLOUD):
+                 azure_cloud: Optional[AzureCloud] = None):
         """
         AzureSentinelClient class that make use client credentials for authorization with Azure.
 
@@ -1899,15 +1899,13 @@ def get_azure_cloud(params):
     azure_cloud_arg = params.get('azure_cloud')
     if azure_cloud_arg is None or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
         # Backward compatibility before the azure cloud settings.
-        server_url = params.get('server_url') or 'https://management.azure.com/'
+        server_url = params.get('server_url')
         azure_cloud = create_custom_azure_cloud('AzureSentinel', defaults=AZURE_WORLDWIDE_CLOUD,
                                                 endpoints={'resource_manager': server_url})
     else:
-        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg)
-        if azure_cloud_name is None:
-            raise DemistoException(f"Unknown AzureCloud name:{azure_cloud_name}")
-        azure_cloud = get_azure_cloud_or_default(azure_cloud_name)
-    LOG(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
+        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg]
+        azure_cloud = AZURE_CLOUDS[azure_cloud_name]
+    demisto.log(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
     return azure_cloud
 
 

@@ -22,16 +22,16 @@ Microsoft 365 Defender event collector integration for Cortex XSIAM.
 
 4. Endpoint Type options
 
-    | Endpoint Type    | Description                                                                                  |
-    |------------------|----------------------------------------------------------------------------------------------|
-    | Worldwide        | The publicly accessible Microsoft Defender for Endpoint                                      |
-    | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
-    | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.                |
-    | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point  for the US customers.               |
-    | US GCC           | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)                 |
-    | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High)       |
-    | DoD              | Microsoft Defender for Endpoint for the USA Department of Defense (DoD)                      |
-    | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint. See note below. |
+    | Endpoint Type    | Description                                                                            |
+    |------------------|----------------------------------------------------------------------------------------|
+    | Worldwide        | The publicly accessible Microsoft Defender for Endpoint                                |
+    | EU Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.          |
+    | UK Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point for the UK customers.          |
+    | US Geo Proximity | Microsoft Defender for Endpoint Geo proximity end point  for the US customers.         |
+    | US GCC           | Microsoft Defender for Endpoint for the USA Government Cloud Community (GCC)           |
+    | US GCC-High      | Microsoft Defender for Endpoint for the USA Government Cloud Community High (GCC-High) |
+    | DoD              | Microsoft Defender for Endpoint for the USA Department of Defense (DoD)                |
+    | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint. See note below.  |
    
    - Note: In most cases setting Endpoint type is preferred to setting Server URL. Only use it in cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
 

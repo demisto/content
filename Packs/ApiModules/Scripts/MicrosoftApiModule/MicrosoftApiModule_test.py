@@ -127,10 +127,8 @@ def test_page_not_found_error(mocker):
     mocker.patch.object(BaseClient, '_http_request', return_value=error_404)
     mocker.patch.object(client, 'get_access_token')
 
-    with pytest.raises(Exception) as e:
+    with pytest.raises(NotFoundError):
         client.http_request()
-        # Validate that a `NotFoundError` was raised
-        assert type(e).__name__ == 'NotFoundError'
 
 
 def test_epoch_seconds(mocker):
@@ -409,7 +407,7 @@ def test_national_endpoints(mocker, azure_cloud_name):
     enc_key = ENC_KEY
     app_name = APP_NAME
     ok_codes = OK_CODES
-    azure_cloud = get_azure_cloud_or_default(azure_cloud_name)
+    azure_cloud = AZURE_CLOUDS[azure_cloud_name]
     client = MicrosoftClient(self_deployed=True, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                              tenant_id=tenant_id, verify=True, proxy=False, ok_codes=ok_codes,
                              azure_cloud=azure_cloud)
@@ -483,9 +481,8 @@ def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
     mocker.patch.object(sys, 'exit')
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
 
-    with pytest.raises(DemistoException) as err:
+    with pytest.raises(DemistoException, match=r'Rate limit reached!'):
         client.http_request(method='GET', url_suffix='test_id')
-        assert 'Rate limit reached!' in err.args[0]['content']
 
 
 def test_rate_limit_when_retry_is_false(requests_mock):
@@ -508,9 +505,8 @@ def test_rate_limit_when_retry_is_false(requests_mock):
         json={'content': "Rate limit reached!"}
     )
 
-    with pytest.raises(DemistoException) as err:
+    with pytest.raises(DemistoException, match="Error in API call \[429\]"):
         client.http_request(method='GET', url_suffix='test_id')
-        assert 'Error in API call [429]' in err.args[0]
 
 
 @pytest.mark.parametrize('response, result', [

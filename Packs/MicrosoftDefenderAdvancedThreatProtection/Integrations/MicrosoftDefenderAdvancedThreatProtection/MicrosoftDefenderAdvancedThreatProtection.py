@@ -5471,24 +5471,7 @@ def main():  # pragma: no cover
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed = self_deployed or managed_identities_client_id is not None
 
-    # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
-    if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or params_endpoint_type is None:
-        endpoint_type = "com"  # Default to "com"
-        if is_gcc is not None and is_gcc:  # Backward compatible.
-            endpoint_type = "gcc"
-            params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
-
-        if params_url is None:
-            if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
-                raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
-            raise DemistoException("Endpoint type is not set and no URL was provided.")
-
-    else:
-        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params_endpoint_type)  # type: ignore[assignment]
-        if endpoint_type is None:
-            raise DemistoException(f"Endpoint type is not valid:{params_endpoint_type}")
-
-        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+    endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(is_gcc, params_endpoint_type, params_url)
 
     base_url: str = urljoin(params_url, '/api')
 

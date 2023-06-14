@@ -1395,7 +1395,8 @@ class TestHappyPath:
             'use_managed_identities': 'True',
             'subscriptionID': 'test_subscription_id',
             'resourceGroupName': 'test_resource_group',
-            'tenant_id': 'test_tenant_id'
+            'tenant_id': 'test_tenant_id',
+            'azure_cloud': 'Worldwide',
         }
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'command', return_value='test-module')

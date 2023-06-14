@@ -207,14 +207,12 @@ def get_azure_cloud(params):
         # Backward compatibility before the azure cloud settings.
         server_url = params.get('azure_ad_endpoint') or 'https://login.microsoftonline.com'
         azure_cloud = create_custom_azure_cloud('AzureSentinel', defaults=AZURE_WORLDWIDE_CLOUD,
-                                                endpoints={'resource_manager': server_url})
+                                                endpoints={'active_directory': server_url})
     else:
-        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg)
-        if azure_cloud_name is None:
-            raise DemistoException(f"Unknown AzureCloud name:{azure_cloud_name}")
-        azure_cloud = get_azure_cloud_or_default(azure_cloud_name)
+        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg]
+        azure_cloud = AZURE_CLOUDS[azure_cloud_name]
 
-    LOG(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
+    demisto.log(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
     return azure_cloud
 
 

@@ -560,10 +560,6 @@ def create_custom_azure_cloud(origin: str,
         ))
 
 
-def get_azure_cloud_or_default(azure_cloud_name: str) -> AzureCloud:
-    return AZURE_CLOUDS.get(azure_cloud_name, AZURE_WORLDWIDE_CLOUD)
-
-
 def url_trim_end_slash(url):
     """
         Will trim the end "/" from a URL.
@@ -578,7 +574,27 @@ def url_trim_end_slash(url):
         :return: trimmed url
         :rtype: ``string``
     """
-    return url[:-1] if url.endswith("/") else url
+    return url.rstrip("/")
+
+
+def microsoft_defender_for_endpoint_get_base_url(is_gcc, params_endpoint_type, params_url):
+    # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
+    if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or params_endpoint_type is None:
+        # When the integration was configured before our Azure Cloud support, the value will be None.
+        endpoint_type = "com"  # Default to "com"
+        if is_gcc is not None and is_gcc:  # Backward compatible.
+            endpoint_type = "gcc"
+            params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+
+        if params_url is None:
+            if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+                raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
+            raise DemistoException("Endpoint type is not set and no URL was provided.")
+
+    else:
+        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE[params_endpoint_type]  # type: ignore[assignment]
+        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+    return endpoint_type, params_url
 
 
 class MicrosoftClient(BaseClient):
@@ -607,7 +623,7 @@ class MicrosoftClient(BaseClient):
                  private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None,
                  managed_identities_resource_uri: Optional[str] = None,
-                 base_url: Optional[str] = None,  # Deprecated, use azure_cloud instead
+                 base_url: Optional[str] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -625,19 +641,23 @@ class MicrosoftClient(BaseClient):
             resources: Resources of the application (for multi-resource mode)
             verify: Demisto insecure parameter
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
+            timeout: Connection timeout
+            azure_ad_endpoint: Custom endpoint to Azure Active Directory URL
+            azure_cloud: Azure Cloud.
             certificate_thumbprint: Certificate's thumbprint that's associated to the app
             private_key: Private key of the certificate
             managed_identities_client_id: The Azure Managed Identities client id
             managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
             retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
                                  retry the request using a scheduled command.
+            base_url: Optionally override the calculated Azure endpoint, used for self-deployed and backward-compatibility with
+                      integration that supported national cloud before the *azure_cloud* parameter.
         """
         if endpoint != "__NA__":
             # Backward compatible.
             self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
         else:
             self.azure_cloud = azure_cloud
-        # base_url = base_url or self.azure_cloud.endpoints.resource_manager
 
         super().__init__(*args, verify=verify, base_url=base_url, **kwargs)  # type: ignore[misc]
 

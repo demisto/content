@@ -25,8 +25,8 @@ class KeyVaultClient:
                  subscription_id: str, resource_group_name: str,
                  verify: bool, proxy: bool, certificate_thumbprint: Optional[str], private_key: Optional[str],
                  managed_identities_client_id: Optional[str] = None,
-                 azure_cloud: Optional[AzureCloud] = AZURE_WORLDWIDE_CLOUD):
-        self.azure_cloud = azure_cloud
+                 azure_cloud: Optional[AzureCloud] = None):
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=client_id,
@@ -1276,15 +1276,12 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
 
 def get_azure_cloud(params):
     azure_cloud_arg = params.get('azure_cloud', 'Worldwide')
-    if azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
-        raise DemistoException(f"AzureCloud name:{azure_cloud_arg} isn't supported for this integration")
-    else:
-        # There is no need for backward compatibility support, as the integration didn't support it to begin with.
-        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg)
-        if azure_cloud_name is None:
-            raise DemistoException(f"Unknown AzureCloud name:{azure_cloud_name}")
-        azure_cloud = get_azure_cloud_or_default(azure_cloud_name)
-    LOG(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
+    # There is no need for backward compatibility support, as the integration didn't support it to begin with.
+    azure_cloud_name = AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg)
+    if azure_cloud_name is None:
+        raise DemistoException(f"Unknown AzureCloud name:{azure_cloud_name}")
+    azure_cloud = AZURE_CLOUDS[azure_cloud_name]
+    demisto.log(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
     return azure_cloud
 
 
