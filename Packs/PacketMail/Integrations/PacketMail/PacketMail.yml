@@ -46,7 +46,6 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason for the vendor to make the decision
     description: Get intel from PacketMail.net on IPs
-hidden: false
 tests:
 - no test
 fromversion: 5.0.0

@@ -9,7 +9,6 @@ comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and 
 commonfields:
   id: CreateIndicatorsFromSTIX
   version: -1
-enabled: false
 name: CreateIndicatorsFromSTIX
 script: '-'
 subtype: python3

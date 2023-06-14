@@ -57,7 +57,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: demisto/python3:3.10.11.61265
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.5.0

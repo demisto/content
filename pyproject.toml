@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto_sdk = "1.14.5"
+demisto_sdk = "1.15.5"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -374,7 +374,6 @@ select = [
     "YTT303", # sys-version-slice
 ]
 ignore = [
-    "E501", # line too long
     "E402", # module-import-not-at-top-of-file	
 
     "F403", # undefined-local-with-import-star
@@ -388,7 +387,7 @@ extend-exclude = ["CommonServerPython", "test_data"]
 # fixable = []
 # unfixable = []
 
-line-length = 120
+line-length = 130
 target-version = "py310"
 src = [
     "Packs/Base/Scripts/CommonServerPython",
@@ -418,6 +417,9 @@ exclude = [
     "CommonServerPython.py",
     "demistomock.py",
 ]
+
+[tool.autopep8]
+max_line_length = 130
 
 [tool.pytest]
 junit_family = "xunit1"
