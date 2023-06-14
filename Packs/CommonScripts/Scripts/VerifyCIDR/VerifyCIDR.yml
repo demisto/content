@@ -9,7 +9,6 @@ comment: Verify that the CIDRs are valid.
 commonfields:
   id: VerifyCIDR
   version: -1
-enabled: false
 name: VerifyCIDR
 script: '-'
 system: false

@@ -9,7 +9,6 @@ comment: This script is an example script of how to query incidents from Cherwel
 commonfields:
   id: CherwellQueryIncidents
   version: -1
-enabled: false
 name: CherwellQueryIncidents
 tags: [Cherwell]
 dependson:
