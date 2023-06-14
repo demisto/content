@@ -6,7 +6,7 @@ description: |-
 
   ## Cloud Token Theft Response Playbook
 
-  The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
+The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
 
   **Cloud Enrichment:**
   - Enriches the involved resources
@@ -118,7 +118,7 @@ tasks:
       id: 17724863-d960-46ad-8a11-8f42cbf47f0e
       version: -1
       name: Load alert JSON
-      description: Loads a json from string input, and returns a json object result
+      description: Loads a JSON from a string input, and returns a JSON object result.
       scriptName: LoadJSON
       type: regular
       iscommand: false
@@ -299,7 +299,7 @@ tasks:
       id: 99b32157-a4b5-4ad2-8949-3664187f3f1a
       version: -1
       name: Check verdict resolution
-      description: Checks which verdict recieved by the Cloud Token Theft - Set Verdict playbook.
+      description: Checks which verdict was received by the Cloud Token Theft - Set Verdict playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -504,7 +504,7 @@ tasks:
       id: 89ca3353-c319-48a6-82ab-3c18ad78136e
       version: -1
       name: Enrich IoCs
-      description: This script will extract indicators from given AWS CloudTrail, GCP Logging or Azure Log Analytics event data.
+      description: This script will extract indicators from the given AWS CloudTrail, GCP Logging, or Azure Log Analytics event data.
       type: title
       iscommand: false
       brand: ""
@@ -567,7 +567,7 @@ tasks:
       id: 866c90ea-1631-4f35-8c08-dbca5e72b8e8
       version: -1
       name: Persistence activity or suspicious IoCs found?
-      description: Checks if one of the extract indicators is suspicious or malicious, or if there are any results from the Cloud Threat Hunting - Persistence playbook.
+      description: Checks if one of the extracted indicators is suspicious or malicious, or if there are any results from the Cloud Threat Hunting - Persistence playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -858,7 +858,7 @@ tasks:
       id: f7b26e88-099c-4859-8a0e-629596e6b090
       version: -1
       name: Should eradicate the threats?
-      description: Whether to eradicate the threats. This playbook should be treated with care as it's actions are irreversible.
+      description: Whether to eradicate the threats. This playbook should be treated with care as its actions are irreversible.
       type: condition
       iscommand: false
       brand: ""
@@ -1048,8 +1048,8 @@ tasks:
     task:
       id: 6c84bcd2-0d5c-4cf5-8c7a-8e29a87073b3
       version: -1
-      name: Cloud Token Theft  - Set Verdict
-      playbookName: Cloud Token Theft  - Set Verdict
+      name: Cloud Token Theft - Set Verdict
+      playbookName: Cloud Token Theft - Set Verdict
       type: playbook
       iscommand: false
       brand: ""
@@ -1619,7 +1619,7 @@ inputs:
   required: false
   description: |-
     Whether to execute early containment.
-    This action allows you to respond rapidly but have higher probability for False Positive.
+    This action allows you to respond rapidly but have higher probability for false positives.
   playbookInputQuery:
 outputs: []
 tests:

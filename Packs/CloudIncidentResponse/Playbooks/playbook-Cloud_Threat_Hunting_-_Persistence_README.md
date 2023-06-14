@@ -53,8 +53,8 @@ This playbook does not use any integrations.
 | username | The username that initiated the API call. |  | Optional |
 | region | The region to search for events in. |  | Optional |
 | AzureTimespan | The timespan to limit by the hunting query.<br/>e.g.<br/>Use 2d for timespan of 2 days<br/>Use 1.5h for timespan of 1.5 hour<br/>Use 30m for timespan of 30 minutes |  | Optional |
-| AWSTimespan | Date and time in the following format.<br/>e.g.<br/>2022-05-29T12:00:00<br/>2021-01-01T12:00:00 |  | Optional |
-| GCPTimespan | Date in ISO.<br/>e.g.<br/>2022-05-29T12:00:00.123Z<br/>2021-01-01T12:00:00.234Z |  | Optional |
+| AWSTimespan | Date and time in the following format - yyyy-mm-ddThh:mm:ss<br/>e.g.,<br/>2022-05-29T12:00:00<br/>2021-01-01T12:00:00 |  | Optional |
+| GCPTimespan | Date in ISO<br/>e.g.,<br/>2022-05-29T12:00:00.123Z<br/>2021-01-01T12:00:00.234Z |  | Optional |
 | projectName | The GCP project name. |  | Optional |
 
 ## Playbook Outputs
