@@ -60,12 +60,12 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Worldwide   | The publicly accessible Azure Cloud                                      |
     | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
     | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
-    | DoD         | Azure cloud for the USA Department of Defence (DoD)                      |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
     | Germany     | Azure cloud for the German Government                                    |
     | China       | Azure cloud for the Chinese Government                                   |
     | Custom      | Custom endpoint configuration to the Azure cloud, please see note below. |
 
-   - Note: In most cases setting Azure cloud is preferred to setting Server URL, only use it cases where a custom proxy URL is required for accessing a national cloud.
+   - Note: In most cases setting Azure cloud is preferred to setting Server URL. Only use it in cases where a custom proxy URL is required for accessing a national cloud.
 
 5. Click **Test** to validate the URLs, token, and connection.
 
@@ -1041,7 +1041,7 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | limit | The maximum number of related entities to return. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 | entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
-| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: <https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter>. | Optional | 
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
 | subscription_id | The subscription ID. | Optional |
 | resource_group_name | The resource group name. | Optional |
 
@@ -2225,7 +2225,7 @@ Creates a new alert rule.
 | AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource.                                                              | 
 | AzureSentinel.AlertRule.name | String | The name of the resource.                                                                                  | 
 | AzureSentinel.AlertRule.etag | String | ETag of the Azure resource.                                                                                | 
-| AzureSentinel.AlertRule.type | String | The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
+| AzureSentinel.AlertRule.type | String | The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" | 
 | AzureSentinel.AlertRule.kind | String | The alert rule kind.                                                                                       | 
 | AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule.                                                    | 
 | AzureSentinel.AlertRule.properties.description | String | The description of the alert rule.                                                                         | 
@@ -2334,7 +2334,7 @@ Updates an alert rule.
 | AzureSentinel.AlertRule.id | String | Fully qualified resource ID for the resource.                                                               | 
 | AzureSentinel.AlertRule.name | String | The name of the resource.                                                                                   | 
 | AzureSentinel.AlertRule.etag | String | ETag of the Azure resource.                                                                                 | 
-| AzureSentinel.AlertRule.type | String | The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"  | 
+| AzureSentinel.AlertRule.type | String | The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"  | 
 | AzureSentinel.AlertRule.kind | String | The alert rule kind.                                                                                        | 
 | AzureSentinel.AlertRule.properties.displayName | String | The display name for alerts created by this alert rule.                                                     | 
 | AzureSentinel.AlertRule.properties.description | String | The description of the alert rule.                                                                          | 

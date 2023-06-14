@@ -49,19 +49,19 @@ At end of the process you'll see a message that you've logged in successfully.
 
     | **Parameter**                      | **Description**                                                                                                | **Required** |
     |------------------------------------|----------------------------------------------------------------------------------------------------------------|--------------|
-    | Azure Cloud                        | Azure Cloud the K8S cluster resides in, see table below.                                                       | False        |
+    | Azure Cloud                        | Azure Cloud the K8S cluster resides in. See table below.                                                       | False        |
     | app_id                             | Application ID                                                                                                 | False        |
     | subscription_id                    | Subscription ID                                                                                                | True         |
     | resource_group_name                | Resource Group Name                                                                                            | True         |
-    | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud, Please see note below.                                     | False        |
+    | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud. See note below.                                     | False        |
     | insecure                           | Trust any certificate \(not secure\)                                                                           | False        |
     | proxy                              | Use system proxy settings                                                                                      | False        |
     | Tenant ID (for User Auth mode)     | Tenant ID                                                                                                      | False        |
     | Client Secret (for User Auth mode) | Encryption key given by the admin                                                                              | False        |
     | Authentication Type                | The request authentication type for the instance                                                               | False        |
-    | Authorization code                 | as received from the authorization step                                                                        | False        |
-    | Application redirect URI           | the redirect URI entered in the Azure portal                                                                   | False        |
-    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False        |
+    | Authorization code                 | Received from the authorization step                                                                        | False        |
+    | Application redirect URI           | The redirect URI entered in the Azure portal                                                                   | False        |
+    | Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM. | False        |
 
 4. Azure cloud options
 
@@ -70,12 +70,12 @@ At end of the process you'll see a message that you've logged in successfully.
     | Worldwide   | The publicly accessible Azure Cloud                                      |
     | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
     | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
-    | DoD         | Azure cloud for the USA Department of Defence (DoD)                      |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
     | Germany     | Azure cloud for the German Government                                    |
     | China       | Azure cloud for the Chinese Government                                   |
-    | Custom      | Custom endpoint configuration to the Azure cloud, please see note below. |
+    | Custom      | Custom endpoint configuration to the Azure cloud. See note below. |
 
-   * Note: In most cases setting Azure cloud is preferred to setting Azure AD endpoint, only use it cases where a custom proxy URL is required for accessing a national cloud.
+   * Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom proxy URL is required for accessing a national cloud.
 
 5. Click **Test** to validate the URLs, token, and connection.
 
@@ -363,7 +363,7 @@ There is no context output for this command.
 
 >### Authorization instructions
 >
->1. Click on the [login URL](https://login.microsoftonline.com) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+>1. Click the [login URL](https://login.microsoftonline.com) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 `REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE`
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)

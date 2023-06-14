@@ -21,7 +21,7 @@ configuration:
   - Custom
   section: Connect
   advanced: true
-  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled, More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - name: creds_tenant_id
   required: false
   type: 9
@@ -131,7 +131,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint, More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -2676,7 +2676,7 @@ script:
       description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts".
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.
@@ -2954,7 +2954,7 @@ script:
       description: ETag of the Azure resource.
       type: String
     - contextPath: AzureSentinel.AlertRule.type
-      description: The type of the resource. e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      description: The type of the resource, e.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts".
       type: String
     - contextPath: AzureSentinel.AlertRule.kind
       description: The alert rule kind.

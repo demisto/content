@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: |-
-    When selecting the Custom option, the Server URL parameter must be filled, More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+    When selecting the Custom option, the Server URL parameter must be filled. More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
   defaultvalue: Worldwide
   display: Endpoint Type
   name: endpoint_type

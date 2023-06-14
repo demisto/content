@@ -29,7 +29,7 @@ configuration:
   name: auth_type
   required: true
   type: 15
-  additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
+  additionalinfo: Type of authentication. Can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   defaultvalue: Device Code
   options:
   - Authorization Code
@@ -49,7 +49,7 @@ configuration:
   name: redirect_uri
   required: false
   type: 0
-- additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
+- additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section
   displaypassword: Authorization code
   name: auth_code
   required: false
@@ -59,7 +59,7 @@ configuration:
 - name: managed_identities_client_id
   required: false
   type: 9
-  additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  additionalinfo: The Managed Identities client ID for authentication. Relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
 - display: Subscription ID
@@ -84,7 +84,7 @@ configuration:
   required: false
   type: 0
   advanced: true
-  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint, More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services

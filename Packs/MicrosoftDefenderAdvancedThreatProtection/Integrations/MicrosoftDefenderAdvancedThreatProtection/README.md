@@ -100,7 +100,7 @@ Please add the following permissions to the app registration. Choose application
     | DoD              | Microsoft Defender for Endpoint for the USA Department of Defence (DoD)                      |
     | Custom           | Custom endpoint configuration to the Microsoft Defender for Endpoint, please see note below. |
    
-   - Note: In most cases setting Endpoint type is preferred to setting Host URL, only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
+   - Note: In most cases setting Endpoint type is preferred to setting Server URL, only use it cases where a custom URL is required for accessing a national cloud or for cases of self-deployment.
 
 5. Click **Test** to validate the URLs, token, and connection.
 
