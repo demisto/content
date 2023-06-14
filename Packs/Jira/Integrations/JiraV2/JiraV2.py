@@ -698,10 +698,6 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
             issue['fields']['reporter'] = {}
         issue['fields']['reporter']['name'] = issue_args['reporter']
 
-    if customFields := issue_args.get('customFields'):
-        for field, value in json.loads(customFields).items():
-            issue['fields'][field] = value
-
     demisto.debug(f'The issue after updating relevant fields: {issue}')
     return issue
 
