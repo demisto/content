@@ -1,12 +1,17 @@
 var sendRequest = function(method, url, body) {
+    var username = (params.credentials_token!== undefined)? params.credentials_token.identifier : params.sid;
+    var password = (params.credentials_token!== undefined)? params.credentials_token.password : params.token;
+    if (!(username && password)){
+        throw('API key and Auth token must be provided.');
+    }
     var res = http(
         params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
         {
             Method: method,
             Body: body,
             Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
-            Username: params.sid,
-            Password: params.token
+            Username: username,
+            Password: password
         },
         params.insecure,
         params.proxy
