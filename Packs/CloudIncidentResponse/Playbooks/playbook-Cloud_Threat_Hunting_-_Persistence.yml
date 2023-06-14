@@ -317,7 +317,7 @@ tasks:
       id: 69fca908-df76-4c2e-8b27-bf2b5f023472
       version: -1
       name: Hunt for IAM persistence activity
-      description: Executes an Analytics query for data.
+      description: Executes an analytics query for data.
       tags:
       - PersistenceHunting
       script: '|||azure-log-analytics-execute-query'
