@@ -375,3 +375,15 @@ ATTACHMENTS = {
         "content": "https://localhost/secure/attachment/18447/filename"
     }
 }
+
+
+ORGANIZATIONS = [
+    {
+        "id": "23",
+        "name": "TestXDR"
+    },
+    {
+        "id": "33",
+        "name": "XSOAR"
+    }
+]

@@ -1588,3 +1588,14 @@ def test_test_update_issue_assignee_command_no_assignees():
 
     with pytest.raises(DemistoException):
         update_issue_assignee_command(issue_id='19141', assignee=None, assignee_id=None)
+
+
+def test_get_organizations():
+    from test_data.raw_response import ORGANIZATIONS
+    from JiraV2 import get_organizations_command
+    mocker.patch.object(demisto, "results")
+    mocker.patch("JiraV2.jira_req", return_value=ORGANIZATIONS)
+    get_organizations_command()
+    assert demisto.results.call_count == 1
+
+
