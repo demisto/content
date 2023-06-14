@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Install poetry
-      run: pipx install poetry
+      uses: Gr1N/setup-poetry@v8
 
     - name: Checkout
       uses: actions/checkout@v3
