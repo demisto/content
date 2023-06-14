@@ -1366,6 +1366,7 @@ script:
     - name: only_stats
       description: Print only Sigma analysis summary stats.
       required: false
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
