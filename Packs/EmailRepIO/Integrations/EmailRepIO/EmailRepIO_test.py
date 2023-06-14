@@ -9,6 +9,7 @@ import io
 TEST_EMAIL_ADDRESS_1 = 'test@example.com'
 TEST_EMAIL_ADDRESS_2 = 'example@example.com'
 INTEGRATION_NAME = 'EmailRepIO'
+DEFAULT_RELIABILITY = 'B - Usually reliable'
 
 
 @pytest.fixture(autouse=True)
@@ -217,7 +218,7 @@ def test_email(requests_mock):
     args = {
         'email': f'{TEST_EMAIL_ADDRESS_1}'
     }
-    response = email_command(client, args)[0]
+    response = email_command(client, args, reliability=DEFAULT_RELIABILITY)[0]
 
     assert response.outputs_prefix == f'{INTEGRATION_NAME}.Email'
     assert response.outputs_key_field == 'id'
@@ -261,6 +262,38 @@ def test_email(requests_mock):
     assert response.indicator.dbot_score.indicator_type == DBotScoreType.ACCOUNT
     assert response.indicator.dbot_score.integration_name == INTEGRATION_NAME
     assert response.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
+    assert response.indicator.dbot_score.reliability == DEFAULT_RELIABILITY
+
+
+@pytest.mark.parametrize("reliability",
+                         ["A+ - 3rd party enrichment",
+                          "A - Completely reliable",
+                          "B - Usually reliable",
+                          "C - Fairly reliable",
+                          "D - Not usually reliable",
+                          "E - Unreliable",
+                          "F - Reliability cannot be judged"])
+def test_email_different_reliability(requests_mock, reliability):
+    """
+    Given:
+        - Different source reliability param
+    When:
+        - Running email command
+    Then:
+        - Ensure the reliability specified is returned.
+    """
+    from EmailRepIO import email_command
+
+    mock_response = util_load_json('test_data/reputation_get_results.json')
+    requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
+
+    client = emailrep_client()
+    args = {
+        'email': f'{TEST_EMAIL_ADDRESS_1}'
+    }
+    response = email_command(client, args, reliability=reliability)[0]
+
+    assert response.indicator.dbot_score.reliability == reliability
 
 
 def test_email_multiple(requests_mock):
@@ -282,7 +315,7 @@ def test_email_multiple(requests_mock):
     args = {
         'email': f'{TEST_EMAIL_ADDRESS_1},{TEST_EMAIL_ADDRESS_2}'
     }
-    response = email_command(client, args)
+    response = email_command(client, args, reliability=DEFAULT_RELIABILITY)
 
     for resp in response:
         assert resp.outputs_prefix == f'{INTEGRATION_NAME}.Email'
@@ -308,7 +341,7 @@ def test_email_score_good(requests_mock):
     }
     mock_response["suspicious"] = False
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
-    response = email_command(client, args)[0]
+    response = email_command(client, args, reliability=DEFAULT_RELIABILITY)[0]
     assert response.indicator.dbot_score.score == Common.DBotScore.GOOD
 
 
@@ -336,7 +369,7 @@ def test_email_score_suspicious(requests_mock):
     mock_response["details.credentials_leaked_recent"] = False
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
-    response = email_command(client, args)[0]
+    response = email_command(client, args, reliability=DEFAULT_RELIABILITY)[0]
     assert response.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
 
 
@@ -364,7 +397,7 @@ def test_email_score_bad_malicious_activity_recent(requests_mock):
     mock_response["details.credentials_leaked_recent"] = False
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
-    response = email_command(client, args)[0]
+    response = email_command(client, args, reliability=DEFAULT_RELIABILITY)[0]
     assert response.indicator.dbot_score.score == Common.DBotScore.BAD
     assert response.indicator.dbot_score.malicious_description == 'EmailRepIO returned malicious_activity_recent'
 
@@ -393,7 +426,7 @@ def test_email_score_bad_credentials_leaked_recent(requests_mock):
     mock_response["details.credentials_leaked_recent"] = True
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
-    response = email_command(client, args)[0]
+    response = email_command(client, args, reliability=DEFAULT_RELIABILITY)[0]
     assert response.indicator.dbot_score.score == Common.DBotScore.BAD
     assert response.indicator.dbot_score.malicious_description == 'EmailRepIO returned credentials_leaked_recent'
 
@@ -422,7 +455,7 @@ def test_email_score_bad_malicious_activity_and_credentials_leaked_recent(reques
     mock_response["details.credentials_leaked_recent"] = True
 
     requests_mock.get(f'https://emailrep.io/{TEST_EMAIL_ADDRESS_1}', json=mock_response)
-    response = email_command(client, args)[0]
+    response = email_command(client, args, reliability=DEFAULT_RELIABILITY)[0]
     assert response.indicator.dbot_score.score == Common.DBotScore.BAD
     assert response.indicator.dbot_score.malicious_description == \
         'EmailRepIO returned malicious_activity_recent credentials_leaked_recent'
@@ -441,5 +474,5 @@ def test_input_email():
 
     client = emailrep_client()
     with pytest.raises(ValueError) as error_info:
-        email_command(client, {})
+        email_command(client, {}, reliability=DEFAULT_RELIABILITY)
     assert 'Email(s) not specified' in str(error_info.value)

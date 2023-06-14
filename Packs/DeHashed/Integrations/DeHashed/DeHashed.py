@@ -166,12 +166,13 @@ def arg_to_int(arg_val: Optional[str], arg_name: Optional[str]) -> Optional[int]
         )
 
 
-def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
+def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score, reliability):
     return {
         'Indicator': indicator_value,
         'Type': indicator_type,
         'Vendor': INTEGRATION_CONTEXT_BRAND,
-        'Score': dbot_score
+        'Score': dbot_score,
+        'Reliability': reliability
     }
 
 
@@ -237,12 +238,13 @@ def dehashed_search_command(client: Client, args: Dict[str, str]) -> tuple:
         )
 
 
-def email_command(client: Client, args: Dict[str, str]) -> tuple:
+def email_command(client: Client, args: Dict[str, str], reliability: str) -> tuple:
     """
     This command returns data regarding a compromised email address
     :param client: Demisto client
     :param args:
     - email: the email address that should be checked
+    :param reliability: The reliability of the intelligence source.
     :return: Demisto outputs
     """
     email_address = argToList(args.get('email'))
@@ -258,7 +260,8 @@ def email_command(client: Client, args: Dict[str, str]) -> tuple:
                     'Indicator': email_address[0],
                     'Type': 'email',
                     'Vendor': INTEGRATION_CONTEXT_BRAND,
-                    'Score': 0
+                    'Score': 0,
+                    'Reliability': reliability
                 }
         }
         return "No matching results found", context, None
@@ -273,7 +276,7 @@ def email_command(client: Client, args: Dict[str, str]) -> tuple:
         dbot_score = default_dbot_score_email if len(sources) > 0 else 0
         context = {
             f'{INTEGRATION_CONTEXT_BRAND}.Search(val.Id==obj.Id)': query_entries,
-            'DBotScore': create_dbot_score_dictionary(email_address[0], 'email', dbot_score)
+            'DBotScore': create_dbot_score_dictionary(email_address[0], 'email', dbot_score, reliability)
         }
         return hr, context, query_data
 
@@ -282,12 +285,14 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    email = demisto.params().get("credentials", {}).get('identifier', '')
-    api_key = demisto.params().get("credentials", {}).get('password', '')
+    demisto_params = demisto.params()
+    email = demisto_params.get("credentials", {}).get('identifier', '')
+    api_key = demisto_params.get("credentials", {}).get('password', '')
     base_url = BASE_URL
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
-    email_dbot_score = demisto.params().get('email_dbot_score', 'SUSPICIOUS')
+    verify_certificate = not demisto_params.get("insecure", False)
+    proxy = demisto_params.get("proxy", False)
+    email_dbot_score = demisto_params.get('email_dbot_score', 'SUSPICIOUS')
+    reliability = demisto_params.get('integration_reliability', '')
 
     LOG(f"Command being called is {demisto.command()}")
     try:
@@ -309,7 +314,7 @@ def main():
         elif demisto.command() == "dehashed-search":
             return_outputs(*dehashed_search_command(client, demisto.args()))
         elif demisto.command() == "email":
-            return_outputs(*email_command(client, demisto.args()))
+            return_outputs(*email_command(client, demisto.args(), reliability))
         else:
             return_error('Command not found.')
     # Log exceptions

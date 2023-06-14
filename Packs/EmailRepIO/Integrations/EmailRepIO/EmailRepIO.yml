@@ -29,6 +29,20 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: Provides email address reputation and reports.
 display: EmailRep.io
 name: EmailRepIO
@@ -150,6 +164,9 @@ script:
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: EmailRepIO.Email.email
       type: String
@@ -281,7 +298,7 @@ script:
     description: Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
     execution: false
     name: emailrepio-email-address-report
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: false
   longRunning: false

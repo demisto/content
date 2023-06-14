@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import urllib3
 from typing import Any, Dict, List, Optional
+import requests
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -63,14 +64,14 @@ def test_module(client: Client) -> str:
     try:
         client.get_email_address_reputation(email="test@example.com")
     except DemistoException as e:
-        if 'invalid api key' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+        #if 'invalid api key' in str(e):
+        #    return 'Authorization Error: make sure API Key is correctly set'
+        #else:
+        raise e
     return 'ok'
 
 
-def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def email_command(client: Client, args: Dict[str, Any], reliability: str) -> List[CommandResults]:
     """Get email address reputation from EmailRepIO and calculate DBotScore.
 
     DBot score:
@@ -109,7 +110,8 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             indicator_type=DBotScoreType.ACCOUNT,
             integration_name=INTEGRATION_NAME,
             score=score,
-            malicious_description=description
+            malicious_description=description,
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         )
 
         account_context = Common.Account(
@@ -197,13 +199,14 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
 
 def main() -> None:
     """main function, parses params and runs command functions"""
-
-    api_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
+    demisto_params = demisto.params()
+    api_key = demisto_params.get('credentials', {}).get('password') or demisto_params.get('apikey')
 
     # get the service API url
-    base_url = demisto.params()['url']
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    base_url = demisto_params.get('url', '')
+    verify_certificate = not demisto_params.get('insecure', False)
+    proxy = demisto_params.get('proxy', False)
+    reliability = demisto_params.get('integration_reliability', '')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -221,7 +224,7 @@ def main() -> None:
             return_results(email_reputation_command(client, demisto.args()))
 
         elif demisto.command() == 'email':
-            return_results(email_command(client, demisto.args()))
+            return_results(email_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'emailrepio-email-address-report':
             return_results(report_email_address_command(client, demisto.args()))
@@ -229,6 +232,9 @@ def main() -> None:
         elif demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
+
+        else:
+            raise NotImplementedError(f"Command {demisto.command()} was not found in {INTEGRATION_NAME} commands")
 
     # Log exceptions and return errors
     except Exception as e:
