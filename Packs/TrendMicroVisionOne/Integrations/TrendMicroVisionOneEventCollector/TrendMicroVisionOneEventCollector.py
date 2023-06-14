@@ -28,6 +28,20 @@ class LastRunLogsTimeFields(Enum):
     AUDIT = 'audit_logs_time'
 
 
+class LastRunTimeCacheTimeFieldNames(Enum):
+    OBSERVED_ATTACK_TECHNIQUES = 'found_oat_logs'
+    WORKBENCH = 'found_workbench_logs'
+    SEARCH_DETECTIONS = 'found_search_detection_logs'
+    AUDIT = 'found_audit_logs'
+
+
+class LastRunTimeLogsLimitFieldNames(Enum):
+    OBSERVED_ATTACK_TECHNIQUES = 'oat_limit'
+    WORKBENCH = 'workbench_limit'
+    SEARCH_DETECTIONS = 'search_detection_limit'
+    AUDIT = 'audit_limit'
+
+
 class LogTypes(Enum):
     OBSERVED_ATTACK_TECHNIQUES = 'observed_attack_techniques'
     WORKBENCH = 'workbench'
@@ -327,7 +341,8 @@ def get_datetime_range(
     last_run_time: str | None,
     first_fetch: str,
     log_type_time_field_name: str,
-    date_format: str = DATE_FORMAT
+    date_format: str = DATE_FORMAT,
+    look_back: int = 0
 ) -> Tuple[str, str]:
     """
     Get a datetime range for any log type.
@@ -337,6 +352,7 @@ def get_datetime_range(
         first_fetch (str): First fetch time.
         log_type_time_field_name (str): the name of the field in the last run for a specific log type.
         date_format (str): The date format.
+        look_back (int): The time to look back in fetch in seconds
 
     Returns:
         Tuple[str, str]: start time and end time
@@ -351,6 +367,9 @@ def get_datetime_range(
         last_run_time_datetime = dateparser.parse(  # type: ignore[no-redef]
             first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
         )
+
+    if look_back > 0:
+        last_run_time_datetime = last_run_time_datetime - timedelta(seconds=look_back)
 
     last_run_time_before_parse = last_run_time_datetime.strftime(date_format)  # type: ignore[union-attr]
     demisto.info(f'{last_run_time_before_parse=}')
@@ -421,10 +440,46 @@ def get_latest_log_created_time(
     return ''
 
 
+def filter_logs_by_cache(
+    logs: List[Dict],
+    last_run: Dict,
+    limit: int,
+    id_field_name: str,
+    log_cache_last_run_name_field_name: str,
+    log_type: str
+):
+    """
+    Get the latest occurred time of a log from a list of logs.
+
+    Args:
+        logs (list[dict]): a list of logs.
+        last_run (dict): The last run time object.
+        limit (int): the maximum limit to fetch events
+        id_field_name (str): the id field of the event
+        log_cache_last_run_name_field_name (bool): the name of the field saved in last run for caching the logs
+        log_type (str): the log type
+
+    Returns:
+        str: new logs that are not in the cache.
+    """
+    found_logs = last_run.get(log_cache_last_run_name_field_name) or []
+
+    num_of_logs, log_ids = len(logs), [log.get(id_field_name) for log in logs]
+    demisto.info(f'before filtering: {num_of_logs=}, {log_ids=} for {log_type=}')
+
+    new_logs = [log for log in logs if log.get(id_field_name) not in found_logs]
+
+    num_of_logs, log_ids = len(new_logs), [log.get(id_field_name) for log in new_logs]
+    demisto.info(f'after filtering: {num_of_logs=}, {log_ids=} for {log_type=}')
+
+    return new_logs[:limit]
+
+
 def get_workbench_logs(
     client: Client,
     workbench_log_last_run_time: str | None,
     first_fetch: str,
+    last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
 ) -> Tuple[List[Dict], str]:
@@ -435,6 +490,7 @@ def get_workbench_logs(
         client (Client): the client object.
         workbench_log_last_run_time (str): The time of the workbench log from the last run.
         first_fetch (str): the first fetch time.
+        last_run (dict): the last run object
         limit (int): the maximum number of workbench logs to return.
         date_format (str): the date format.
 
@@ -458,7 +514,22 @@ def get_workbench_logs(
         log_type_time_field_name=LastRunLogsTimeFields.WORKBENCH.value,
         date_format=date_format
     )
-    workbench_logs = client.get_workbench_logs(start_datetime=start_time, limit=limit)
+    workbench_logs = client.get_workbench_logs(
+        start_datetime=start_time,
+        limit=last_run.get(LastRunTimeLogsLimitFieldNames.WORKBENCH.value) or limit
+    )
+
+    workbench_logs = filter_logs_by_cache(
+        logs=workbench_logs,
+        last_run=last_run,
+        limit=limit,
+        id_field_name="id",
+        log_cache_last_run_name_field_name=LastRunTimeCacheTimeFieldNames.WORKBENCH.value,
+        log_type=LogTypes.WORKBENCH.value
+    )
+
+
+
     parse_workbench_logs(workbench_logs)
 
     latest_workbench_log_time = get_latest_log_created_time(
