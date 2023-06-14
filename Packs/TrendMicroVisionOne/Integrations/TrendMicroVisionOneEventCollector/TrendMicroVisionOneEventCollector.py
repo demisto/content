@@ -517,7 +517,7 @@ def get_workbench_logs(
         date_format (str): the date format.
 
     Returns:
-        Tuple[List[Dict], str]: workbench logs & latest time of the workbench log that was created.
+        Tuple[List[Dict], Dict]: workbench logs & updated last run
     """
     def parse_workbench_logs(_workbench_logs):
         for _log in _workbench_logs:
@@ -540,9 +540,6 @@ def get_workbench_logs(
         log_type_time_field_name=workbench_log_time_field,
         date_format=date_format,
     )
-
-    workbench_cache_time_field_name = LastRunTimeCacheTimeFieldNames.WORKBENCH.value
-    workbench_log_type = LogTypes.WORKBENCH.value
 
     workbench_logs = client.get_workbench_logs(
         start_datetime=start_time,
@@ -580,9 +577,10 @@ def get_observed_attack_techniques_logs(
     client: Client,
     observed_attack_technique_log_last_run_time: str | None,
     first_fetch: str,
+    last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT
-) -> Tuple[List[Dict], str]:
+) -> Tuple[List[Dict], Dict]:
     """
     Get the observed attack techniques logs.
 
@@ -591,11 +589,12 @@ def get_observed_attack_techniques_logs(
         observed_attack_technique_log_last_run_time (str): The time of the observed attack technique log
                                                            from the last run.
         first_fetch (str): the first fetch time
+        last_run (dict): last run time object
         limit (int): the maximum number of observed attack techniques logs to return.
         date_format (str): the date format.
 
     Returns:
-        Tuple[List[Dict], str]: observed attack techniques logs & latest time of the technique log that was created.
+        Tuple[List[Dict], Dict]: observed attack techniques logs & updated last run.
     """
     def parse_observed_attack_techniques_logs(_observed_attack_techniques_logs):
         for log in _observed_attack_techniques_logs:
@@ -608,26 +607,50 @@ def get_observed_attack_techniques_logs(
                     ) and isinstance(mitre_technique_ids, list):
                         _filter['mitreTechniqueIds'] = ','.join(mitre_technique_ids)
 
+    oat_cache_time_field_name = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES.value
+    oat_log_type = LogTypes.OBSERVED_ATTACK_TECHNIQUES.value
+    oat_log_time_field = LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
+
     start_time, end_time = get_datetime_range(
         last_run_time=observed_attack_technique_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
+        log_type_time_field_name=oat_log_time_field,
         date_format=date_format
     )
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
         detected_start_datetime=start_time, detected_end_datetime=end_time, limit=limit
     )
+
+    observed_attack_techniques_logs = dedup_fetched_logs(
+        logs=observed_attack_techniques_logs,
+        last_run=last_run,
+        log_id_field_name='uuid',
+        log_cache_last_run_name_field_name=oat_cache_time_field_name,
+        log_type=oat_log_type
+    )
+
+    latest_occurred_observed_attack_techniques_logs, latest_log_time = get_all_latest_time_logs_ids(
+        logs=observed_attack_techniques_logs,
+        log_type=oat_log_type,
+        log_id_field_name='uuid',
+        date_format=DATE_FORMAT
+    )
+
     parse_observed_attack_techniques_logs(observed_attack_techniques_logs)
 
-    latest_observed_attack_technique_log_time = get_latest_log_created_time(
-        logs=observed_attack_techniques_logs,
-        log_type=LogTypes.OBSERVED_ATTACK_TECHNIQUES.value,
-        date_format=date_format,
-        increase_latest_log=True
-    ) or end_time
+    latest_observed_attack_technique_log_time = latest_log_time or end_time
 
-    demisto.info(f'{observed_attack_techniques_logs=}, {latest_observed_attack_technique_log_time=}')
-    return observed_attack_techniques_logs, latest_observed_attack_technique_log_time
+    observed_attack_techniques_updated_last_run = {
+        oat_log_time_field: latest_observed_attack_technique_log_time,
+        oat_cache_time_field_name: latest_occurred_observed_attack_techniques_logs
+    }
+
+    demisto.info(
+        f'{observed_attack_techniques_logs=}, '
+        f'{latest_observed_attack_technique_log_time=}, '
+        f'{observed_attack_techniques_updated_last_run=}'
+    )
+    return observed_attack_techniques_logs, observed_attack_techniques_updated_last_run
 
 
 def get_search_detection_logs(
