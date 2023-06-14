@@ -898,8 +898,7 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-operations-cancel": gcloud_operations_cancel_command,
     }
     try:
-        client: ClusterManagerClient = google_client_setup(json_configuration=demisto.params().get(
-            'credentials_json_creds', {}).get('password') or demisto.params().get('credentials_json'))
+        client: ClusterManagerClient = google_client_setup(json_configuration=demisto.getParam('credentials_json'))
         command_arguments = handle_default_configuration()
         readable_output, context_entry, raw_response = commands[command](client=client, **command_arguments)
 
