@@ -3,18 +3,17 @@ commonfields:
   id: GoogleKubernetesEngine
   version: -1
 configuration:
-- additionalinfo: The content of the generated `credentials.json` file. (Read the
-    docs for further information)
+- additionalinfo: The content of the generated `credentials.json` file. (Read the docs for further information)
   display: JSON credentials
-  hidden: true
   name: credentials_json
   required: false
   type: 4
-- displaypassword: JSON credentials
-  hiddenusername: true
-  name: credentials_json_creds
+  hidden: true
+- name: credentials_json_creds
   required: false
   type: 9
+  displaypassword: JSON credentials
+  hiddenusername: true
 - additionalinfo: Can be overwriten in commands execution.
   display: Default project
   name: default_project
@@ -1185,7 +1184,7 @@ script:
     description: Cancel operation by operation name.
     execution: false
     name: gcloud-operations-cancel
-  dockerimage: demisto/google-k8s-engine:1.0.0.9467
+  dockerimage: demisto/google-k8s-engine:1.0.0.63207
   feed: false
   isfetch: false
   longRunning: false
