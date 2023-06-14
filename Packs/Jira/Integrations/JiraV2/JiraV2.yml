@@ -61,6 +61,8 @@ configuration:
   type: 8
 - defaultvalue: 'false'
   display: Mirror incoming incidents
+  hidden:
+  - marketplacev2
   name: incoming_mirror
   required: false
   type: 8
@@ -73,12 +75,16 @@ configuration:
   required: false
   type: 8
 - display: Mirror outgoing incidents
+  hidden:
+  - marketplacev2
   name: outgoing_mirror
   required: false
   type: 8
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
   defaultvalue: attachment
   display: File entry tag
+  hidden:
+  - marketplacev2
   name: file_tag
   required: false
   type: 0
