@@ -100,12 +100,14 @@ filter _raw_log not contains "|" AND _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
     get_old_value = arraystring(regextract(details_with_pipe, "\bOLDVAL=([^|]+)"), ""),
     get_new_resource = if(details_with_pipe ~= "\bFILE=([^|]+)", arraystring(regextract(details_with_pipe, "\bFILE=([^|]+)"), ""), null),
     get_old_resource = arraystring(regextract(details_with_pipe, "\bOLDFILE=([^|]+)"), ""),
-    get_change_user = arraystring(regextract(details_with_pipe, "\bMODUSER=([^|]+)"), ""),
-    get_change_group = arraystring(regextract(details_with_pipe, "\bMODGROUP=([^|]+)"), "")
+    get_change_user = if(details_with_pipe ~= "\bMODUSER=([^|]+)", arraystring(regextract(details_with_pipe, "\bMODUSER=([^|]+)"), ""), null),
+    get_change_group = if(details_with_pipe ~= "\bMODGROUP=([^|]+)", arraystring(regextract(details_with_pipe, "\bMODGROUP=([^|]+)"), ""), null)
 | alter
     src_ip_v4 = if(get_ip !~= ":", get_ip, null),
     src_ip_v6 = if(get_ip ~= ":", get_ip, null),
     modified_user_group = arraystring(arraycreate("MODUSR: " + get_change_user, "MODGROUP: " + get_change_group), " | ")
+| alter
+    check_user_group = if(get_change_user = null AND get_change_group = null, null, arraystring(arraycreate("MODUSR: " + get_change_user, "MODGROUP: " + get_change_group), " | ")) 
 | alter
     xdm.event.log_level = if(extract_event_log ~= "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, extract_event_log ~= "WAR|WARN", XDM_CONST.LOG_LEVEL_WARNING, extract_event_log ~= "SERIOUS|CRIT", XDM_CONST.LOG_LEVEL_CRITICAL, extract_event_log ~= "FATAL|EMERGENCY", XDM_CONST.LOG_LEVEL_EMERGENCY, extract_event_log ~= "ALE", XDM_CONST.LOG_LEVEL_ALERT, extract_event_log ~= "ERR", XDM_CONST.LOG_LEVEL_ERROR, extract_event_log ~= "NOTI", XDM_CONST.LOG_LEVEL_NOTICE, extract_event_log ~= "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, extract_event_log = null, null, to_string(extract_event_log)),
     xdm.event.original_event_type = extract_event_group,
@@ -121,6 +123,6 @@ filter _raw_log not contains "|" AND _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
     xdm.observer.action = get_key,
     xdm.target.resource.value = get_new_value,
     xdm.target.resource_before.value = get_old_value,
-    xdm.target.resource.name = coalesce(get_new_resource, modified_user_group),
+    xdm.target.resource.name = coalesce(get_new_resource, check_user_group),
     xdm.target.resource_before.name = get_old_resource,
     xdm.observer.type = extract_agentapp_name;
