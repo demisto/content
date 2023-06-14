@@ -1,0 +1,6 @@
+[file:SonicWallNSvParsingRules.yml]
+ignore=PR101
+
+[file:SonicWallNSv_1_3.yml]
+ignore=MR108
+

@@ -60,7 +60,6 @@ configuration:
 - additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
   defaultvalue: None
   display: SSL Version
-  hidden: false
   name: ssl_version
   options:
   - None
@@ -825,7 +824,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.52351
+  dockerimage: demisto/py3-tools:1.0.0.61931
   runonce: false
   ismappable: true
   isremotesyncout: true

@@ -1,0 +1,155 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "Data_Value",
+        "Type": "IpAddresses",
+        "Sources": [
+            {
+                "Name": "Dan.me.uk Tor List",
+                "ConfidenceLevel": 1
+            },
+            {
+                "Name": "TOR Project official exit nodes",
+                "ConfidenceLevel": 3
+            },
+            {
+                "Name": "Cyware",
+                "ConfidenceLevel": 2
+            }
+        ],
+        "SystemTags": [],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Low",
+            "Score": 10,
+            "Origin": "system"
+        },
+        "IpDetails": {
+            "Country": "SE",
+            "ASN": 60567,
+            "ASDescription": "DataClub S.A."
+        },
+        "Whois": {
+            "NetworkDetails": {
+                "IPRange": "",
+                "Statuses": [
+                    "ASSIGNED",
+                    "PA"
+                ],
+                "CreatedDate": "Data_Whois_NetworkDetails_CreatedDate",
+                "UpdatedDate": "Data_Whois_NetworkDetails_UpdatedDate"
+            },
+            "RegistrantDetails": [
+                {
+                    "Organization": "DataClub S.A.",
+                    "Name": "DataClub S.A.",
+                    "Email": "Data_Whois_RegistrantDetails[0]_Email",
+                    "Telephone": "34634908981",
+                    "Fax": "34964784906",
+                    "City": "Beliza City",
+                    "State": "",
+                    "Country": "BELIZE",
+                    "Address": "99 Albert Street,",
+                    "PostalCode": "",
+                    "CountryCode": "BZ"
+                }
+            ]
+        },
+        "RelatedHashes": {
+            "downloaded": [],
+            "communicating": [
+                "c0d4ed18766d80a6c9e1e299760519bc3bcdd04beb2cbc3ebe37240ffb05c9b4"
+            ],
+            "referencing": []
+        },
+        "Resolutions": [
+            {
+                "ResolvedDomain": "sicherheitservice.net",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedDomain": "paypal-secureservice.com",
+                "FirstResolved": "Data_Resolutions[1]_FirstResolved",
+                "LastResolved": "Data_Resolutions[1]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedDomain": "meine-deutschebank.net",
+                "FirstResolved": "Data_Resolutions[2]_FirstResolved",
+                "LastResolved": "Data_Resolutions[2]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedDomain": "www.meine-deutschebank.net",
+                "FirstResolved": "Data_Resolutions[3]_FirstResolved",
+                "LastResolved": "Data_Resolutions[3]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "sat2.dynns.com",
+                "FirstResolved": "Data_Resolutions[4]_FirstResolved",
+                "LastResolved": "Data_Resolutions[4]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "wwww.paypal.de.index.php.sicherheitservice.net",
+                "FirstResolved": "Data_Resolutions[5]_FirstResolved",
+                "LastResolved": "Data_Resolutions[5]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedDomain": "paypal.sicherheitservice.net",
+                "FirstResolved": "Data_Resolutions[6]_FirstResolved",
+                "LastResolved": "Data_Resolutions[6]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedDomain": "www.sicherheitservice.net",
+                "FirstResolved": "Data_Resolutions[7]_FirstResolved",
+                "LastResolved": "Data_Resolutions[7]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedDomain": "cascading-tv.com",
+                "FirstResolved": "Data_Resolutions[8]_FirstResolved",
+                "LastResolved": "Data_Resolutions[8]_LastResolved",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            }
+        ]
+    }
+}
