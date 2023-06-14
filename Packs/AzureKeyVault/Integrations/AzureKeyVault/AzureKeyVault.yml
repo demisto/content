@@ -48,7 +48,7 @@ configuration:
 - name: managed_identities_client_id
   required: false
   type: 9
-  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  additionalinfo: The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
 - display: Subscription ID
@@ -267,7 +267,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be accordingly to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property.
+      description: The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be according to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network ACL property.
       isArray: false
       name: default_action
       predefined:
