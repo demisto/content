@@ -807,7 +807,33 @@ def endpoint_isolation_remove_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def fetch_incidents(client: Client) -> list:
+def fetch_alerts_related_incident(client: Client, incident_id: str):
+    """
+    returns the alerts that are associated with an incident
+
+    """
+    has_next = True
+    page_number = 0
+    alerts = []  # type: list
+
+    while has_next:
+        # call get_alerts_request(), given user arguments
+        # returns the response body on success
+        # raises an exception on failed request
+        LOG('Requesting for page {}'.format(page_number))
+        response_body = client.incident_list_alerts_request(
+            page_number=str(page_number),
+            id_=incident_id,
+            page_size=None
+        )
+        alerts.extend(response_body.get('items'))
+        has_next = response_body.get('hasNext')
+        page_number += 1
+
+    return alerts
+
+
+def fetch_incidents(client: Client, params) -> list:
     total_items, last_fetched_ids, timestamp = client.get_incidents()
     incidents: List[Dict] = []
     new_ids = []
@@ -815,6 +841,10 @@ def fetch_incidents(client: Client) -> list:
         inc_id = item.get('id')
         new_ids.append(inc_id)
         item['incident_url'] = client.get_incident_url(inc_id)
+
+        # add to incident object an array of all related alerts
+        if params.get('import_alerts', False):  # need to check if is true always
+            item['alerts'] = fetch_alerts_related_incident(client, item.get('id'))
         incident = {"name": f"RSA NetWitness 11.5 {item.get('id')} - {item.get('title')}",
                     "occurred": item.get('created'),
                     "rawJSON": json.dumps(item)}
@@ -1176,7 +1206,7 @@ def main() -> None:
         if command == 'test-module':
             test_module(client, params)
         elif command == 'fetch-incidents':
-            incidents = fetch_incidents(client)
+            incidents = fetch_incidents(client, params)
             demisto.incidents(incidents)
         elif command in commands:
             return_results(commands[command](client, args))

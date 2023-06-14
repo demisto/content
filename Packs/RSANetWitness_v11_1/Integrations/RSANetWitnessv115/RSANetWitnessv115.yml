@@ -36,6 +36,11 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: On 'Fetch incidents' import all alerts related to the incident
+  name: import_alerts
+  required: false
+  type: 8
 - defaultvalue: NetWitness Incident
   display: Incident type
   name: incidentType
