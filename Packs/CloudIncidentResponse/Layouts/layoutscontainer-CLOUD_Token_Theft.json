@@ -532,7 +532,10 @@
                             "categories": [
                                 "tags"
                             ],
-                            "preDefinedFilters": true
+                            "preDefinedFilters": true,
+                            "tags": [
+                                "PersistenceHunting"
+                            ]
                         },
                         "queryType": "warRoomFilter",
                         "static": false,
