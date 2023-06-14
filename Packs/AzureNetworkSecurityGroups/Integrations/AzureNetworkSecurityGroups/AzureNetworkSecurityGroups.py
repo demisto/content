@@ -75,8 +75,10 @@ class AzureNSGClient:
                                            resp_type=resp_type)
 
     @logger
-    def list_network_security_groups(self):
-        return self.http_request('GET', '')
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
+        return self.http_request('GET',
+                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers\
+/Microsoft.Network/networkSecurityGroups?api-version={API_VERSION}')
 
     @logger
     def list_rules(self, security_group: str):
@@ -133,17 +135,21 @@ def format_rule(rule_json: Union[dict, List], security_rule_name: str):
 
 
 @logger
-def list_groups_command(client: AzureNSGClient) -> CommandResults:
+def list_groups_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
 
     Args:
         client: The MSClient
-        args: args dictionary. Should be empty for this command.
+        params: configuration parameters
+        args: args dictionary.
 
     Returns:
         A detailed list of all network security groups
     """
-    network_groups = client.list_network_security_groups()
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
+    network_groups = client.list_network_security_groups(subscription_id=subscription_id,
+                                                         resource_group_name=resource_group_name)
     network_groups = network_groups.get('value', [])
 
     # The property value holds all the rules under the security group. This will be returned in a different command.
@@ -402,13 +408,15 @@ def main() -> None:
             redirect_uri=params.get('redirect_uri'),
             managed_identities_client_id=get_azure_managed_identities_client_id(params)
         )
-        commands = {
+        commands_with_params_and_args = {
             'azure-nsg-security-groups-list': list_groups_command,
             'azure-nsg-security-rules-list': list_rules_command,
             'azure-nsg-security-rule-delete': delete_rule_command,
             'azure-nsg-security-rule-create': create_rule_command,
             'azure-nsg-security-rule-update': update_rule_command,
-            'azure-nsg-security-rule-get': get_rule_command,
+            'azure-nsg-security-rule-get': get_rule_command
+        }
+        commands_without_args = {
             'azure-nsg-auth-start': start_auth,
             'azure-nsg-auth-complete': complete_auth,
             'azure-nsg-auth-reset': reset_auth,
@@ -420,8 +428,10 @@ def main() -> None:
             return_results(test_connection(client, params))
         elif command == 'azure-nsg-generate-login-url':
             return_results(generate_login_url(client.ms_client))
-        else:
-            return_results(commands[command](client, **args))
+        elif command in commands_without_args:
+            return_results(commands_without_args[command](client))
+        elif command in commands_with_params_and_args:
+            return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
 
     # Log exceptions and return errors
     except Exception as e:

@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Azure Kubernetes Services Dev
+  id: Azure Kubernetes Services
   version: -1
 configuration:
 - defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
@@ -95,8 +95,8 @@ configuration:
   section: Connect
   advanced: true
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
-display: Azure Kubernetes Services Dev
-name: Azure Kubernetes Services Dev
+display: Azure Kubernetes Services
+name: Azure Kubernetes Services
 script:
   commands:
   - deprecated: false
