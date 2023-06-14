@@ -3771,8 +3771,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     if element_to_change == 'profile-setting':
         params['action'] = 'set'
         params['element'] = '<profile-setting><group/></profile-setting>'
-        demisto.debug(f"{params=}")
-        result = http_request(URL, 'POST', body=params)
+        http_request(URL, 'POST', body=params)
+        return_results(f'Rule edited successfully.')
 
     else:
         params["xpath"] = f'{params["xpath"]}/{element_to_change}'
@@ -3788,24 +3788,23 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
         params['element'] = add_argument_list(values, element_to_change, True)
         result = http_request(URL, 'POST', body=params)
 
-    rule_output = {
-        'Name': rulename,
-        # SECURITY_RULE_ARGS[element_to_change]: values
-        SECURITY_RULE_ARGS[element_to_change]: []
-    }
-    if DEVICE_GROUP:
-        rule_output['DeviceGroup'] = DEVICE_GROUP
-
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Rule edited successfully.',
-        'EntryContext': {
-            "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
+        rule_output = {
+            'Name': rulename,
+            SECURITY_RULE_ARGS[element_to_change]: values
         }
-    })
+        if DEVICE_GROUP:
+            rule_output['DeviceGroup'] = DEVICE_GROUP
+
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Rule edited successfully.',
+            'EntryContext': {
+                "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
+            }
+        })
 
 
 def build_audit_comment_params(
@@ -3837,6 +3836,8 @@ def panorama_edit_rule_command(args: dict):
         raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
     behaviour = args.get('behaviour') if 'behaviour' in args else 'replace'
+    # in this case of profile-setting add is the same as replace
+    behaviour = 'replace' if element_to_change == 'profile-setting' and behaviour == 'add' else behaviour
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
