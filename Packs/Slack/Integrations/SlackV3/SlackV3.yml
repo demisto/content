@@ -463,6 +463,7 @@ script:
       name: team_id
     - description: Show reactions made by this user. Defaults to the authed user.
       name: user
+    description: List emoji reactions on a specific message
     name: slack-list-reactions
   - arguments:
     - description: Reaction (emoji) name.
@@ -476,6 +477,7 @@ script:
       name: file_comment
     - description: Timestamp of the message to remove reaction from.
       name: timestamp
+    description: Remove emoji reactions from a specific message
     name: slack-remove-reactions
   dockerimage: demisto/slackv3:1.0.0.48936
   longRunning: true
