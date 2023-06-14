@@ -785,28 +785,26 @@ def fetch_events(
     demisto.info(f'last run in the start of the fetch: {last_run}')
 
     demisto.info(f'starting to fetch {LogTypes.WORKBENCH} logs')
-    workbench_logs, latest_workbench_log_time = get_workbench_logs(
+    workbench_logs, updated_workbench_last_run = get_workbench_logs(
         client=client,
-        workbench_log_last_run_time=last_run.get(LastRunLogsTimeFields.WORKBENCH.value),
         first_fetch=first_fetch,
+        last_run=last_run,
         limit=limit
     )
 
     demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
-    observed_attack_techniques_logs, latest_observed_attack_technique_log_time = get_observed_attack_techniques_logs(
+    observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
         client=client,
-        observed_attack_technique_log_last_run_time=last_run.get(
-            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
-        ),
         first_fetch=first_fetch,
+        last_run=last_run,
         limit=limit
     )
 
     demisto.info(f'starting to fetch {LogTypes.SEARCH_DETECTIONS} logs')
-    search_detection_logs, latest_search_detection_log_time = get_search_detection_logs(
+    search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
         client=client,
-        search_detection_log_last_run_time=last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS.value),
         first_fetch=first_fetch,
+        last_run=last_run,
         limit=limit
     )
 
@@ -820,13 +818,14 @@ def fetch_events(
 
     events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
-    updated_last_run = {
-        LastRunLogsTimeFields.WORKBENCH.value: latest_workbench_log_time,
-        LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value: latest_observed_attack_technique_log_time,
-        LastRunLogsTimeFields.SEARCH_DETECTIONS.value: latest_search_detection_log_time,
-        LastRunLogsTimeFields.AUDIT.value: latest_audit_log_time
-    }
-    demisto.info(f'{updated_last_run=}')
+    for updated_last_run in [
+        updated_workbench_last_run,
+        updated_observed_attack_technique_last_run,
+        updated_search_detection_last_run
+    ]:
+        last_run.update(updated_last_run)
+
+    demisto.info(f'last run after fetching all logs: {last_run}')
 
     return events, updated_last_run
 
