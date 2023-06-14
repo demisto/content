@@ -92,6 +92,8 @@ configuration:
   defaultvalue: comment
   display: Comment entry tag
   name: comment_tag
+  hidden:
+  - marketplacev2
   required: false
   type: 0
 - additionalinfo: Fetch comments for a Jira ticket.
