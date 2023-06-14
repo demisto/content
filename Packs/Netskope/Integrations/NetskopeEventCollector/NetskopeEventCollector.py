@@ -14,6 +14,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ALL_SUPPORTED_EVENT_TYPES = ['audit', 'page', 'network', 'application', 'alert']
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
+EVENT_LOGGER = {}
 
 ''' CLIENT CLASS '''
 
@@ -74,18 +75,13 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=url_suffix, json_data=body, retries=3)
         return response
 
-    def get_events_request_v2(self, event_type: str, last_run: dict, skip: int = None,
-                              limit: int = None, is_command: bool = False) -> Dict:  # pragma: no cover
-
-        url_suffix = f'events/data/{event_type}'
+    def perform_data_export(self, endpoint, _type, index_name, operation):
+        url_suffix = f'events/dataexport/{endpoint}/{_type}'
         params = {
-            'starttime': last_run.get(event_type),
-            'endtime': int(datetime.now().timestamp()),
-            'limit': limit if is_command else MAX_EVENTS_PAGE_SIZE,
-            'skip': skip
+            'index': index_name,
+            'operation': operation
         }
-        response = self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers,
-                                      params=params, retries=3)
+        response = self._http_request(method='GET', url_suffix=url_suffix, params=params)
         return response
 
 
@@ -153,12 +149,11 @@ def dedup_by_id(last_run: dict, results: list, event_type: str, limit: int):
 
 
 def test_module(client: Client, api_version: str, last_run: dict, max_fetch: int) -> str:
-
     fetch_events_command(client, api_version, last_run, max_fetch=max_fetch, is_command=True)
     return 'ok'
 
 
-def get_all_events(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> Tuple[list, dict]:
+def get_all_events_v1(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> Tuple[list, dict]:
     """
     This Function is doing a pagination to get all events within the given start and end time.
     Maximum events to get per a fetch call is 50,000 (MAX_SKIP)
@@ -179,23 +174,15 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
         events = []
         skip = 0
         while True:
-            if api_version == 'v1':
-                if event_type == 'alert':
-                    response = client.get_alerts_request_v1(last_run, skip, limit, is_command)
-                else:
-                    response = client.get_events_request_v1(event_type, last_run, skip, limit, is_command)
+            if event_type == 'alert':
+                response = client.get_alerts_request_v1(last_run, skip, limit, is_command)
+            else:
+                response = client.get_events_request_v1(event_type, last_run, skip, limit, is_command)
 
-                if response.get('status') != 'success':  # type: ignore
-                    break
+            if response.get('status') != 'success':  # type: ignore
+                break
 
-                results = response.get('data', [])  # type: ignore
-
-            else:  # API version == v2
-                response = client.get_events_request_v2(event_type, last_run, skip, limit, is_command)
-                if response.get('ok') != 1:
-                    break
-
-                results = response.get('result', [])
+            results = response.get('data', [])  # type: ignore
 
             demisto.debug(f'The number of received events - {len(results)}')
             events.extend(results)
@@ -218,14 +205,52 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
                 populate_parsing_rule_fields(event, event_type)
             events_result.extend(final_events)
 
+    #     EVENT_LOGGER[event_type] = len([event for event in final_events if 1686648600 < int(event.get('timestamp')) < 1686649200])
+    # demisto.error(f'Events fetched this round: \n {json.dumps(EVENT_LOGGER)}')
     return events_result, new_last_run
+
+
+def get_all_events_v2(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> Tuple[list, dict]:
+    if limit is None:
+        limit = MAX_EVENTS_PAGE_SIZE
+    all_types_events_result = []
+    operation = last_run.get('v2').get('operation')
+    for event_type in ALL_SUPPORTED_EVENT_TYPES:
+        events = []
+        while events < limit:
+            index_name = f'xsoar_collector{event_type}'
+
+            if event_type == 'alert':
+                response = client.perform_data_export('alerts', event_type, index_name, operation)
+            else:
+                response = client.perform_data_export('events', event_type, index_name, operation)
+
+            results = response.get('result', [])
+            wait_time = arg_to_number(response.get('wait_time', 5))
+
+            demisto.debug(f'The number of received events - {len(results)}')
+            operation = 'next'
+            last_run['v2']['operation'] = 'next'
+
+            if results:
+                events.extend(results)
+
+                # The API responds with the time we should wait between requests
+                time.sleep(wait_time)
+            else:
+                break
+
+        for event in events:
+            populate_parsing_rule_fields(event, event_type)
+        all_types_events_result.extend(events)
+
+    return all_types_events_result, last_run
 
 
 def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api_version: str,
                        is_command: bool) -> Tuple[CommandResults, list]:
-
     limit = arg_to_number(args.get('limit')) or 50
-    events, _ = get_all_events(client, last_run, api_version=api_version, limit=limit, is_command=is_command)
+    events, _ = get_all_events_v1(client, last_run, api_version=api_version, limit=limit, is_command=is_command)
 
     for event in events:
         event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
@@ -245,8 +270,12 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api
 
 
 def fetch_events_command(client, api_version, last_run, max_fetch, is_command):  # pragma: no cover
-    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch, api_version=api_version,
-                                          is_command=is_command)
+    if api_version == 'v1':
+        events, new_last_run = get_all_events_v1(client, last_run=last_run, limit=max_fetch, api_version=api_version,
+                                                 is_command=is_command)
+    else:
+        events, new_last_run = get_all_events_v2(client, last_run=last_run, limit=max_fetch, api_version=api_version,
+                                                 is_command=is_command)
 
     return events, new_last_run
 
@@ -270,21 +299,25 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(base_url, token, api_version, verify_certificate, proxy)
+        first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
 
         last_run = demisto.getLastRun()
         demisto.debug(f'Running with the following last_run - {last_run}')
-        for event_type in ALL_SUPPORTED_EVENT_TYPES:
-            # First Fetch
-            if not last_run.get(event_type):
-                first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
-                last_run_id_key = f'{event_type}-ids'
-                last_run[event_type] = first_fetch
-                last_run[last_run_id_key] = last_run.get(last_run_id_key, [])
-                demisto.debug(f'First Fetch - Initialize last run - {last_run}')
+        if api_version == 'v1':
+            for event_type in ALL_SUPPORTED_EVENT_TYPES:
+                # First Fetch
+                if not last_run.get(event_type):
+                    last_run_id_key = f'{event_type}-ids'
+                    last_run[event_type] = first_fetch
+                    last_run[last_run_id_key] = last_run.get(last_run_id_key, [])
+                    demisto.debug(f'First Fetch - Initialize last run - {last_run}')
+        else:
+            if not last_run.get('v2').get('operation'):
+                last_run['v2']['operation'] = first_fetch
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, api_version, last_run, max_fetch)   # type: ignore[arg-type]
+            result = test_module(client, api_version, last_run, max_fetch)  # type: ignore[arg-type]
             return_results(result)
 
         elif demisto.command() == 'netskope-get-events':
