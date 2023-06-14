@@ -1327,7 +1327,7 @@ inputs:
   required: false
   description: |-
     The timespan to limit by the hunting query.
-    e.g.
+    e.g.,
     Use 2d for timespan of 2 days
     Use 1.5h for timespan of 1.5 hour
     Use 30m for timespan of 30 minutes
