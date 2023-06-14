@@ -52,8 +52,8 @@ There is no context output for this command.
 >### Activity Logs
 >|Action|Date|Details|Module| User IP | User Name |User Role|_time|event_type|
 >|---|---|---|---|---------|-----------|---|---|---|
->| request | 2023-06-11T08:30:49Z | API: /api/2.0/fo/activity_log/index.php | auth | 1.1.1.1 | demisto   | Manager | 2023-06-11T08:30:49Z | activity_log |
->| request | 2023-06-11T08:30:47Z | API: /api/2.0/fo/asset/host/vm/detection/index.php | auth | 2.2.2.2 | demisto  | Manager | 2023-06-11T08:30:47Z | activity_log |
+>| request | 2023-06-11T08:30:49Z | API: /api/2.0/fo/activity_log/index.php | auth | 1.1.1.1 | User   | Manager | 2023-06-11T08:30:49Z | activity_log |
+>| request | 2023-06-11T08:30:47Z | API: /api/2.0/fo/asset/host/vm/detection/index.php | auth | 2.2.2.2 | User  | Manager | 2023-06-11T08:30:47Z | activity_log |
 
 
 ### qualys-get-host-detections
