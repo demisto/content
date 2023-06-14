@@ -20,7 +20,7 @@ DEFAULT_MAX_LIMIT = 1000
 DEFAULT_URL = 'https://api.xdr.trendmicro.com'
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
-DAYS_IN_YEAR = 365
+ONE_HOUR = 1
 
 
 class LastRunLogsTimeFields(Enum):
@@ -136,7 +136,8 @@ class Client(BaseClient):
         method: str = 'GET',
         params: Dict | None = None,
         headers: Dict | None = None,
-        limit: int = DEFAULT_MAX_LIMIT
+        limit: int = DEFAULT_MAX_LIMIT,
+        should_finish_pagination: bool = False
     ) -> List[Dict]:
         """
         Implements a generic method with pagination to retrieve logs from trend micro vision one.
@@ -147,6 +148,7 @@ class Client(BaseClient):
             params (dict): query parameters for the api request.
             headers (dict): any custom headers for the api request.
             limit (str): the maximum number of events to retrieve.
+            should_finish_pagination (bool): whether to finish pagination until there isn't anything else to fetch
 
         Returns:
             List[Dict]: a list of the requested logs.
@@ -158,23 +160,89 @@ class Client(BaseClient):
         demisto.info(f'Received {current_items=} with {url_suffix=} and {params=}')
         events.extend(current_items)
 
-        while (next_link := response.get('nextLink')) and len(events) < limit:
+        while (next_link := response.get('nextLink')) and (len(events) < limit or should_finish_pagination):
             response = self.http_request(method=method, headers=headers, next_link=next_link)
             current_items = response.get('items') or []
             demisto.info(f'Received {current_items=} with {next_link=}')
             events.extend(current_items)
 
-        event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
-        events = events[:limit]
+        return events
 
+    def get_events_fetched_by_descending_order(
+        self,
+        url_suffix: str,
+        start_time_field_name: str,
+        method: str = 'GET',
+        params: Dict | None = None,
+        headers: Dict | None = None,
+        limit: int = DEFAULT_MAX_LIMIT,
+    ):
+        """
+        Implements a generic method with pagination to retrieve logs from trend micro vision one that can be fetched in
+        descending order.
+
+        Args:
+            url_suffix (str): the URL suffix for the api endpoint.
+            start_time_field_name (str): the name of the start date time field from params.
+            method (str): the method of the api endpoint.
+            params (dict): query parameters for the api request.
+            headers (dict): any custom headers for the api request.
+            limit (str): the maximum number of events to retrieve.
+
+        Returns:
+            List[Dict]: a list of the requested logs in ascending order
+        """
+        events: List[Dict] = self.get_events(
+            url_suffix=url_suffix, method=method, params=params, headers=headers, limit=limit, should_finish_pagination=True
+        )
+
+        start_time_datetime = dateparser.parse(params.get(start_time_field_name))
+        event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
+
+        # because events are returned in descending order, we need to reverse them to get the ascending order
+        events.reverse()
+        start_time_event_index = 0
+
+        for start_time_event_index, event in enumerate(events):
+            if dateparser.parse(event.get(created_time_field)) >= start_time_datetime:
+                break
+
+        events = events[start_time_event_index: limit + start_time_event_index]
+        add_custom_fields_to_events(events=events, event_type=event_type, created_time_field=created_time_field)
+
+        return events
+
+    def get_events_fetched_by_ascending_order(
+        self,
+        url_suffix: str,
+        method: str = 'GET',
+        params: Dict | None = None,
+        headers: Dict | None = None,
+        limit: int = DEFAULT_MAX_LIMIT,
+    ) -> List[Dict]:
+        """
+        Implements a generic method with pagination to retrieve logs from trend micro vision one that can be fetched in
+        ascending order.
+
+        Args:
+            url_suffix (str): the URL suffix for the api endpoint.
+            method (str): the method of the api endpoint.
+            params (dict): query parameters for the api request.
+            headers (dict): any custom headers for the api request.
+            limit (str): the maximum number of events to retrieve.
+
+        Returns:
+            List[Dict]: a list of the requested logs.
+        """
+        events: List[Dict] = self.get_events(
+            url_suffix=url_suffix, method=method, params=params, headers=headers, limit=limit
+        )
+
+        event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
+
+        events = events[:limit]
         # add event time and event type for modeling rules
-        for event in events:
-            event['event_type'] = event_type
-            if event_time := event.get(created_time_field):
-                if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS.value:
-                    event['_time'] = timestamp_to_datestring(timestamp=event_time, date_format=DATE_FORMAT, is_utc=True)
-                else:
-                    event['_time'] = event_time
+        add_custom_fields_to_events(events=events, event_type=event_type, created_time_field=created_time_field)
 
         return events
 
@@ -209,7 +277,7 @@ class Client(BaseClient):
         if end_datetime:
             params['endDateTime'] = end_datetime
 
-        return self.get_events(
+        return self.get_events_fetched_by_ascending_order(
             url_suffix=UrlSuffixes.WORKBENCH.value,
             params=params,
             limit=limit
@@ -219,7 +287,7 @@ class Client(BaseClient):
         self,
         detected_start_datetime: str,
         detected_end_datetime: str,
-        top: int = 200,
+        top: int = 1000,
         limit: int = DEFAULT_MAX_LIMIT
     ) -> List[Dict]:
         """
@@ -246,8 +314,9 @@ class Client(BaseClient):
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # returns in descending order by default and cannot be changed
         # The data retrieval time range cannot be greater than 365 days.
-        return self.get_events(
+        return self.get_events_fetched_by_descending_order(
             url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value,
+            start_time_field_name='detectedStartDateTime',
             params={
                 'detectedStartDateTime': detected_start_datetime,
                 'detectedEndDateTime': detected_end_datetime,
@@ -285,8 +354,9 @@ class Client(BaseClient):
         if end_datetime:
             params['endDateTime'] = end_datetime
 
-        return self.get_events(
+        return self.get_events_fetched_by_descending_order(
             url_suffix=UrlSuffixes.SEARCH_DETECTIONS.value,
+            start_time_field_name='startDateTime',
             params=params,
             limit=limit,
             headers={'TMV1-Query': '*', "Authorization": f"Bearer {self.api_key}"}
@@ -329,7 +399,7 @@ class Client(BaseClient):
         if end_datetime:
             params['endDateTime'] = end_datetime
 
-        return self.get_events(
+        return self.get_events_fetched_by_ascending_order(
             url_suffix=UrlSuffixes.AUDIT.value,
             params=params,
             limit=limit
@@ -337,6 +407,25 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def add_custom_fields_to_events(events: List[Dict], event_type: str, created_time_field: str):
+    """
+    Add the _time and event_type custom fields to the events.
+
+    Args:
+        events (list): fetched events
+        event_type (str): the type of the event
+        created_time_field (str): the created time field of the event
+    """
+    # add event time and event type for modeling rules
+    for event in events:
+        event['event_type'] = event_type
+        if event_time := event.get(created_time_field):
+            if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS.value:
+                event['_time'] = timestamp_to_datestring(timestamp=event_time, date_format=DATE_FORMAT, is_utc=True)
+            else:
+                event['_time'] = event_time
 
 
 def get_datetime_range(
@@ -383,7 +472,7 @@ def get_datetime_range(
     if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
-        one_year_from_last_run_time = last_run_time_datetime + timedelta(days=DAYS_IN_YEAR)  # type: ignore[operator]
+        one_year_from_last_run_time = last_run_time_datetime + timedelta(hours=ONE_HOUR)  # type: ignore[operator]
         if one_year_from_last_run_time > now:
             end_time_datetime = now
         else:
