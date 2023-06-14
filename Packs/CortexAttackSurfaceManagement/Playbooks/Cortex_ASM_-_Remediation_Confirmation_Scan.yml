@@ -1,15 +1,17 @@
 id: Cortex ASM - Remediation Confirmation Scan
 version: -1
 name: Cortex ASM - Remediation Confirmation Scan
-description: Playbook for RCS Scan creation and polling.
+description: |-
+  Playbook for Remediation Confirmation Scan
+  (RCS) creation and polling.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5785981e-18ef-498c-8bf8-b6b2ea8c48c8
+    taskid: c91da617-ab92-438e-8b39-a557180305bb
     type: start
     task:
-      id: 5785981e-18ef-498c-8bf8-b6b2ea8c48c8
+      id: c91da617-ab92-438e-8b39-a557180305bb
       version: -1
       name: ""
       iscommand: false
@@ -17,14 +19,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -10
+          "y": -110
         }
       }
     note: false
@@ -36,14 +38,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 18683d7a-546e-4904-892f-338f2b8aae2f
+    taskid: 0536c203-ca10-4b73-882b-44788ff0ed47
     type: regular
     task:
-      id: 18683d7a-546e-4904-892f-338f2b8aae2f
+      id: 0536c203-ca10-4b73-882b-44788ff0ed47
       version: -1
       name: Start Remediation Confirmation Scan
       description: Starts a new Remediation Confirmation Scan or gets an existing scan ID
-      script: '|||asm-start-remediation_confirmation_scan'
+      script: '|||asm-start-remediation-confirmation-scan'
       type: regular
       iscommand: true
       brand: ""
@@ -52,18 +54,25 @@ tasks:
       - "2"
     scriptarguments:
       alert_internal_id:
-        simple: ${alert.id}
+        complex:
+          root: alert
+          accessor: id
       attack_surface_rule_id:
-        simple: ${alert.asmattacksurfaceruleid}
+        complex:
+          root: alert
+          accessor: asmattacksurfaceruleid
       service_id:
-        simple: ${alert.asmserviceid}
+        complex:
+          root: alert
+          accessor: asmserviceid
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 130
+          "y": 320
         }
       }
     note: false
@@ -75,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 398add1d-8d75-4ebe-8b81-5748caa68ddd
+    taskid: 86d60282-43f2-4024-81f7-a1cbed90484d
     type: condition
     task:
-      id: 398add1d-8d75-4ebe-8b81-5748caa68ddd
+      id: 86d60282-43f2-4024-81f7-a1cbed90484d
       version: -1
       name: Did the Remediation Confirmation Scan successfully start?
       description: Conditional check for if the Remediation Confirmation Scan was successfully started or not.
@@ -87,9 +96,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "15"
+      - "18"
       "Yes":
-      - "3"
+      - "16"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -119,64 +128,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: d7c32370-abfd-421f-8d1a-8515d7322de0
-    type: playbook
-    task:
-      id: d7c32370-abfd-421f-8d1a-8515d7322de0
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      Ids:
-        simple: ${ASM.RemediationScan.scanId}
-      Interval:
-        simple: "10"
-      PollingCommandArgName:
-        simple: scan_id
-      PollingCommandName:
-        simple: asm-get-remediation-confirmation-scan-status
-      Timeout:
-        simple: "180"
-      dt:
-        simple: ASM.RemediationScan(val.status !== ‘SUCCESS’)
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": 560
+          "y": 510
         }
       }
     note: false
@@ -188,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e397b3da-c37b-4d9b-84ee-59b1b92b6b73
+    taskid: 5ae2a264-019a-4b92-8faa-9307071fcb86
     type: title
     task:
-      id: e397b3da-c37b-4d9b-84ee-59b1b92b6b73
+      id: 5ae2a264-019a-4b92-8faa-9307071fcb86
       version: -1
       name: Done
       type: title
@@ -214,49 +166,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 28a3a05d-b196-4ee1-8e39-897acc71ff4c
-    type: regular
-    task:
-      id: 28a3a05d-b196-4ee1-8e39-897acc71ff4c
-      version: -1
-      name: Retrieve Remediation Information from RCS
-      description: Get status of an existing remediation confirmation scan.
-      script: '|||asm-get-remediation-confirmation-scan-status'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      scan_id:
-        complex:
-          root: ASM.RemediationScan
-          accessor: scanId
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 34efe486-7034-49ae-8d27-e2cea521db18
+    taskid: 84eb0203-16c6-4e78-8cec-3221d2bbd29f
     type: condition
     task:
-      id: 34efe486-7034-49ae-8d27-e2cea521db18
+      id: 84eb0203-16c6-4e78-8cec-3221d2bbd29f
       version: -1
       name: Did the Remediation Confirmation Scan complete?
       description: Conditional check for if the Remediation Confirmation Scan was successful or not.
@@ -264,12 +179,14 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "15"
       Complete:
-      - "10"
+      - "9"
       Failure:
-      - "12"
+      - "11"
       Timeout:
-      - "14"
+      - "13"
     separatecontext: false
     conditions:
     - label: Complete
@@ -323,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 900
+          "y": 895
         }
       }
     note: false
@@ -335,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: c8367bc0-3138-4d78-8f86-e0b119956e1f
+    taskid: 0e09a874-f500-44a2-83c8-93356bbb6f4e
     type: regular
     task:
-      id: c8367bc0-3138-4d78-8f86-e0b119956e1f
+      id: 0e09a874-f500-44a2-83c8-93356bbb6f4e
       version: -1
       name: Set service detection grid field
       description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
@@ -373,10 +290,7 @@ tasks:
           root: ASM.RemediationScan
           accessor: result
       val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
+        simple: TIMESTAMP
       val5:
         complex:
           root: ASM.RemediationScan
@@ -386,41 +300,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 9382be1b-2982-48a6-80ca-3c46c388baab
-    type: regular
-    task:
-      id: 9382be1b-2982-48a6-80ca-3c46c388baab
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -220,
-          "y": 1140
+          "x": -40,
+          "y": 1195
         }
       }
     note: false
@@ -432,10 +313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: bd505ca5-af63-437a-809f-acd63386e388
+    taskid: 889bc552-55a5-49ee-8446-2053eb4dcdef
     type: regular
     task:
-      id: bd505ca5-af63-437a-809f-acd63386e388
+      id: 889bc552-55a5-49ee-8446-2053eb4dcdef
       version: -1
       name: Set service detection grid field
       description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
@@ -460,10 +341,7 @@ tasks:
       val3:
         simple: N/A
       val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
+        simple: TIMESTAMP
       val5:
         complex:
           root: ASM.RemediationScan
@@ -474,40 +352,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 5cc9a40c-623c-4c09-83e4-498834efdb2e
-    type: regular
-    task:
-      id: 5cc9a40c-623c-4c09-83e4-498834efdb2e
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": 1145
+          "y": 1440
         }
       }
     note: false
@@ -519,10 +364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ebc5acc6-9ef6-451e-8956-b21a9fc569f0
+    taskid: 1ac9bd98-f085-472c-8e72-a35c9aba7511
     type: regular
     task:
-      id: ebc5acc6-9ef6-451e-8956-b21a9fc569f0
+      id: 1ac9bd98-f085-472c-8e72-a35c9aba7511
       version: -1
       name: Set service detection grid field
       description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
@@ -547,10 +392,7 @@ tasks:
       val3:
         simple: N/A
       val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
+        simple: TIMESTAMP
       val5:
         complex:
           root: ASM.RemediationScan
@@ -560,41 +402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 1320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 0cdf3670-da85-4f66-84e7-f3c8d6a24307
-    type: regular
-    task:
-      id: 0cdf3670-da85-4f66-84e7-f3c8d6a24307
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 1140
+          "x": 510,
+          "y": 1290
         }
       }
     note: false
@@ -606,10 +415,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: cb6dffe7-a4c2-4af1-878c-10eb16603709
+    taskid: d8b56878-93bd-4b31-83ee-c7408342ad49
     type: title
     task:
-      id: cb6dffe7-a4c2-4af1-878c-10eb16603709
+      id: d8b56878-93bd-4b31-83ee-c7408342ad49
       version: -1
       name: Scan Not Available
       type: title
@@ -624,8 +433,160 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 1130
+          "x": 910,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1ef7b368-c9f9-49d1-8c42-69712310a67c
+    type: regular
+    task:
+      id: 1ef7b368-c9f9-49d1-8c42-69712310a67c
+      version: -1
+      name: Poll for status from Remediation Confirmation Scan
+      description: Get status of an existing remediation confirmation scan.
+      script: Cortex Attack Surface Management - RCS|||asm-get-remediation-confirmation-scan-status
+      type: regular
+      iscommand: true
+      brand: Cortex Attack Surface Management - RCS
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hide_polling_output:
+        simple: "true"
+      interval_in_seconds:
+        simple: "600"
+      scan_id:
+        complex:
+          root: ASM.RemediationScan
+          accessor: scanId
+      timeout_in_seconds:
+        simple: "12600"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b974de4f-f047-4b3b-87a5-4bd2b243ff96
+    type: condition
+    task:
+      id: b974de4f-f047-4b3b-87a5-4bd2b243ff96
+      version: -1
+      name: Is Cortex ASM enabled?
+      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to pull Remediation Path Rules.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Attack Surface Management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 975abb60-5eae-4507-844c-0f8a7cbf3b42
+    type: regular
+    task:
+      id: 975abb60-5eae-4507-844c-0f8a7cbf3b42
+      version: -1
+      name: Set service detection grid field
+      description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      gridfield:
+        simple: asmservicedetection
+      keys:
+        simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
+      val1:
+        simple: N/A
+      val2:
+        simple: "false"
+      val3:
+        simple: N/A
+      val4:
+        simple: TIMESTAMP
+      val5:
+        simple: N/A
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 895
         }
       }
     note: false
@@ -638,14 +599,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "2_3_Yes": 0.38
+      "17_15_#default#": 0.16,
+      "17_1_yes": 0.72,
+      "7_15_#default#": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 1775,
-        "width": 1710,
-        "x": -220,
-        "y": -10
+        "height": 1875,
+        "width": 1330,
+        "x": -40,
+        "y": -110
       }
     }
   }
