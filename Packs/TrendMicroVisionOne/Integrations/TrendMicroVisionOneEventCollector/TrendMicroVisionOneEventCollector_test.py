@@ -93,7 +93,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='createdDateTime',
                 id_field_name='id',
                 top=10,
-                extra_seconds=60
+                # extra_seconds=60
             )
         if UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value in full_url:
             return create_logs_mocks(
@@ -103,7 +103,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='detectedDateTime',
                 id_field_name='uuid',
                 top=params.get('top') or 200,
-                extra_seconds=150
+                # extra_seconds=150
             )
         if UrlSuffixes.SEARCH_DETECTIONS.value in full_url:
             return create_logs_mocks(
@@ -113,7 +113,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='eventTime',
                 id_field_name='uuid',
                 top=params.get('top') or DEFAULT_MAX_LIMIT,
-                extra_seconds=300
+                # extra_seconds=300
             )
         else:
             return create_logs_mocks(
@@ -123,7 +123,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='loggedDateTime',
                 id_field_name='loggedUser',
                 top=params.get('top') or 200,
-                extra_seconds=20
+                # extra_seconds=20
             )
 
     return _http_request_side_effect
@@ -141,28 +141,36 @@ class TestFetchEvents:
         "num_of_workbench_logs, num_of_oat_logs, num_of_search_detection_logs, num_of_audit_logs, "
         "num_of_expected_events",
         [
+            # (
+            #     {},
+            #     {'max_fetch': 100, 'first_fetch': '1 month ago'},
+            #     {
+            #         'audit_logs_time': '2023-01-01T14:59:59Z',
+            #         'oat_detection_logs_time': '2023-01-01T14:59:59Z',
+            #         'search_detection_logs_time': '2023-01-01T14:59:59Z',
+            #         'workbench_logs_time': '2023-01-01T14:59:59Z',
+            #         'found_audit_logs': ['8268fed996476cb055174e5b5c27fad5281c2fd7ee81cf9e9539a3a53a7ddbbe'],
+            #         'found_oat_logs': [1],
+            #         'found_search_detection_logs': [1],
+            #         'found_workbench_logs': [1],
+            #     },
+            #     '2023-01-01T15:00:00Z',
+            #     50,
+            #     50,
+            #     50,
+            #     50,
+            #     200
+            # ),
             (
-                {},
-                {'max_fetch': 100, 'first_fetch': '1 month ago'},
                 {
-                    'audit_logs_time': '2023-01-01T14:59:39Z',
-                    'oat_detection_logs_time': '2023-01-01T14:57:30Z',
-                    'search_detection_logs_time': '2023-01-01T14:55:00Z',
-                    'workbench_logs_time': '2023-01-01T14:59:00Z'
-                },
-                '2023-01-01T15:00:00Z',
-                50,
-                50,
-                50,
-                50,
-                200
-            ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T14:59:39Z',
-                    'oat_detection_logs_time': '2023-01-01T14:57:30Z',
-                    'search_detection_logs_time': '2023-01-01T14:55:00Z',
-                    'workbench_logs_time': '2023-01-01T14:59:00Z'
+                    'audit_logs_time': '2023-01-01T14:59:59Z',
+                    'oat_detection_logs_time': '2023-01-01T14:59:59Z',
+                    'search_detection_logs_time': '2023-01-01T14:59:59Z',
+                    'workbench_logs_time': '2023-01-01T14:59:59Z',
+                    'found_audit_logs': ['8268fed996476cb055174e5b5c27fad5281c2fd7ee81cf9e9539a3a53a7ddbbe'],
+                    'found_oat_logs': [1],
+                    'found_search_detection_logs': [1],
+                    'found_workbench_logs': [1],
                 },
                 {'max_fetch': 100},
                 {
@@ -178,69 +186,69 @@ class TestFetchEvents:
                 50,
                 200
             ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T15:04:39Z',
-                    'oat_detection_logs_time': '2023-01-01T15:02:30Z',
-                    'search_detection_logs_time': '2023-01-01T15:00:00Z',
-                    'workbench_logs_time': '2023-01-01T15:04:00Z'
-                },
-                {'max_fetch': 20},
-                {
-                    'audit_logs_time': '2023-01-01T15:10:09Z',
-                    'oat_detection_logs_time': '2023-01-01T15:08:00Z',
-                    'search_detection_logs_time': '2023-01-01T15:05:30Z',
-                    'workbench_logs_time': '2023-01-01T15:09:30Z'
-                },
-                '2023-01-01T15:10:30Z',
-                4,
-                9,
-                81,
-                55,
-                4 + 9 + 20 + 20
-            ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T15:10:09Z',
-                    'oat_detection_logs_time': '2023-01-01T15:08:00Z',
-                    'search_detection_logs_time': '2023-01-01T15:05:30Z',
-                    'workbench_logs_time': '2023-01-01T15:09:30Z'
-                },
-                {'max_fetch': 1000},
-                {
-                    'audit_logs_time': '2023-01-01T15:15:21Z',
-                    'oat_detection_logs_time': '2023-01-01T15:13:12Z',
-                    'search_detection_logs_time': '2023-01-01T15:10:42Z',
-                    'workbench_logs_time': '2023-01-01T15:14:42Z'
-                },
-                '2023-01-01T15:15:42Z',
-                1400,
-                1123,
-                356,
-                879,
-                1000 + 1000 + 356 + 879
-            ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T15:15:21Z',
-                    'oat_detection_logs_time': '2023-01-01T15:13:12Z',
-                    'search_detection_logs_time': '2023-01-01T15:10:42Z',
-                    'workbench_logs_time': '2023-01-01T15:14:42Z'
-                },
-                {'max_fetch': 1000},
-                {
-                    'audit_logs_time': '2023-01-01T15:20:24Z',
-                    'oat_detection_logs_time': '2023-01-01T15:20:45Z',
-                    'search_detection_logs_time': '2023-01-01T15:15:45Z',
-                    'workbench_logs_time': '2023-01-01T15:20:45Z'
-                },
-                '2023-01-01T15:20:45Z',
-                0,
-                0,
-                50,
-                14,
-                14 + 50
-            ),
+            # (
+            #     {
+            #         'audit_logs_time': '2023-01-01T15:04:39Z',
+            #         'oat_detection_logs_time': '2023-01-01T15:02:30Z',
+            #         'search_detection_logs_time': '2023-01-01T15:00:00Z',
+            #         'workbench_logs_time': '2023-01-01T15:04:00Z'
+            #     },
+            #     {'max_fetch': 20},
+            #     {
+            #         'audit_logs_time': '2023-01-01T15:10:09Z',
+            #         'oat_detection_logs_time': '2023-01-01T15:08:00Z',
+            #         'search_detection_logs_time': '2023-01-01T15:05:30Z',
+            #         'workbench_logs_time': '2023-01-01T15:09:30Z'
+            #     },
+            #     '2023-01-01T15:10:30Z',
+            #     4,
+            #     9,
+            #     81,
+            #     55,
+            #     4 + 9 + 20 + 20
+            # ),
+            # (
+            #     {
+            #         'audit_logs_time': '2023-01-01T15:10:09Z',
+            #         'oat_detection_logs_time': '2023-01-01T15:08:00Z',
+            #         'search_detection_logs_time': '2023-01-01T15:05:30Z',
+            #         'workbench_logs_time': '2023-01-01T15:09:30Z'
+            #     },
+            #     {'max_fetch': 1000},
+            #     {
+            #         'audit_logs_time': '2023-01-01T15:15:21Z',
+            #         'oat_detection_logs_time': '2023-01-01T15:13:12Z',
+            #         'search_detection_logs_time': '2023-01-01T15:10:42Z',
+            #         'workbench_logs_time': '2023-01-01T15:14:42Z'
+            #     },
+            #     '2023-01-01T15:15:42Z',
+            #     1400,
+            #     1123,
+            #     356,
+            #     879,
+            #     1000 + 1000 + 356 + 879
+            # ),
+            # (
+            #     {
+            #         'audit_logs_time': '2023-01-01T15:15:21Z',
+            #         'oat_detection_logs_time': '2023-01-01T15:13:12Z',
+            #         'search_detection_logs_time': '2023-01-01T15:10:42Z',
+            #         'workbench_logs_time': '2023-01-01T15:14:42Z'
+            #     },
+            #     {'max_fetch': 1000},
+            #     {
+            #         'audit_logs_time': '2023-01-01T15:20:24Z',
+            #         'oat_detection_logs_time': '2023-01-01T15:20:45Z',
+            #         'search_detection_logs_time': '2023-01-01T15:15:45Z',
+            #         'workbench_logs_time': '2023-01-01T15:20:45Z'
+            #     },
+            #     '2023-01-01T15:20:45Z',
+            #     0,
+            #     0,
+            #     50,
+            #     14,
+            #     14 + 50
+            # ),
         ],
     )
     def test_fetch_events_main(

@@ -943,17 +943,17 @@ def fetch_events(
 
     events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
-    for updated_last_run in [
+    for logs_last_run in [
         updated_workbench_last_run,
         updated_observed_attack_technique_last_run,
         updated_search_detection_last_run,
         updated_audit_last_run
     ]:
-        last_run.update(updated_last_run)
+        last_run.update(logs_last_run)
 
     demisto.info(f'last run after fetching all logs: {last_run}')
 
-    return events, updated_last_run
+    return events, last_run
 
 
 def test_module(client: Client, first_fetch: str) -> str:
@@ -1079,7 +1079,7 @@ def main() -> None:
     api_key = params.get('credentials', {}).get('password')
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
-    first_fetch = params.get('first_fetch')
+    first_fetch = params.get('first_fetch') or '3 days'
     limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_LIMIT
 
     command = demisto.command()
