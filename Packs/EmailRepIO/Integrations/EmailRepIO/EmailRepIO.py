@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 import urllib3
 from typing import Any, Dict, List, Optional
-import requests
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -64,9 +63,9 @@ def test_module(client: Client) -> str:
     try:
         client.get_email_address_reputation(email="test@example.com")
     except DemistoException as e:
-        #if 'invalid api key' in str(e):
-        #    return 'Authorization Error: make sure API Key is correctly set'
-        #else:
+        if 'invalid api key' in str(e):
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
         raise e
     return 'ok'
 
