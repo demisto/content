@@ -1,5 +1,6 @@
 id: SkyhighSecureWebGatewayOnPrem_Test
-version: -1
+version: 12
+vcShouldKeepItemLegacyProdMachine: false
 name: SkyhighSecureWebGatewayOnPrem_Test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -110,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 414a75fe-6294-4c56-8c76-2ebe43ecfc3a
+    taskid: 132e7456-5c5f-4d86-84ad-6cea69c3664d
     type: condition
     task:
-      id: 414a75fe-6294-4c56-8c76-2ebe43ecfc3a
+      id: 132e7456-5c5f-4d86-84ad-6cea69c3664d
       version: -1
       name: Assert swg-get-available-lists
       type: condition
@@ -129,7 +129,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: SWG.Lists.Title
+              simple: SWG.List.Title
             iscontext: true
           right:
             value:
@@ -405,7 +405,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4220
         }
       }
     note: false
@@ -454,10 +454,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 1845d9fa-9035-4bf2-82f5-58a8bf00a154
+    taskid: e50f1f37-59d0-4db3-8084-6b4ed8d69d52
     type: condition
     task:
-      id: 1845d9fa-9035-4bf2-82f5-58a8bf00a154
+      id: e50f1f37-59d0-4db3-8084-6b4ed8d69d52
       version: -1
       name: Assert swg-modify-list
       type: condition
@@ -478,6 +478,14 @@ tasks:
           right:
             value:
               simple: Demistotest
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ListEntries.Name}
+            iscontext: true
+          right:
+            value:
+              simple: http*://evil.corp/*
     continueonerrortype: ""
     view: |-
       {
@@ -495,10 +503,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 2403233c-03bd-43b7-819e-89d1fcbb8c63
+    taskid: db9aeae7-8d14-4a48-8bb0-be9b29eb3681
     type: condition
     task:
-      id: 2403233c-03bd-43b7-819e-89d1fcbb8c63
+      id: db9aeae7-8d14-4a48-8bb0-be9b29eb3681
       version: -1
       name: Assert swg-get-list
       type: condition
@@ -519,6 +527,14 @@ tasks:
           right:
             value:
               simple: Demistotest
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ListEntries.Name}
+            iscontext: true
+          right:
+            value:
+              simple: http*://evil.corp/*
     continueonerrortype: ""
     view: |-
       {
@@ -693,10 +709,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 081d8a94-9f26-4691-82e4-2e47ccb8c49b
+    taskid: 4845c3d0-1370-440f-8691-e13884459721
     type: condition
     task:
-      id: 081d8a94-9f26-4691-82e4-2e47ccb8c49b
+      id: 4845c3d0-1370-440f-8691-e13884459721
       version: -1
       name: Assert swg-get-list-entry
       type: condition
@@ -712,7 +728,15 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${SWG.ListEntries.Name}
+              simple: ${SWG.List.ID}
+            iscontext: true
+          right:
+            value:
+              simple: ${Testdata.list_id}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ListEntries.Name}
             iscontext: true
           right:
             value:
@@ -775,10 +799,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 3a2b9c06-ff80-4311-857e-00af757bfcb4
+    taskid: 503863bb-925d-4915-8826-c8da8e9d1c93
     type: condition
     task:
-      id: 3a2b9c06-ff80-4311-857e-00af757bfcb4
+      id: 503863bb-925d-4915-8826-c8da8e9d1c93
       version: -1
       name: Assert swg-insert-list-entry
       type: condition
@@ -794,11 +818,19 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${SWG.ListEntries.Name}
+              simple: ${SWG.List.ListEntries.Name}
             iscontext: true
           right:
             value:
               simple: http*://test.evil/*
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SWG.List.ID}
+            iscontext: true
+          right:
+            value:
+              simple: ${Testdata.list_id}
     continueonerrortype: ""
     view: |-
       {
@@ -869,7 +901,7 @@ tasks:
       brand: Skyhigh Secure Web Gateway (On Prem)
     nexttasks:
       '#none#':
-      - "24"
+      - "26"
     scriptarguments:
       entry_pos:
         simple: "0"
@@ -882,47 +914,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 6690da68-ab61-4b72-8d81-78742a4f3121
-    type: condition
-    task:
-      id: 6690da68-ab61-4b72-8d81-78742a4f3121
-      version: -1
-      name: Assert swg-delete-list-entry
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${SWG.ListEntries.Name}
-            iscontext: true
-          right:
-            value:
-              simple: http*://test.evil/*
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3870
         }
       }
     note: false
@@ -962,7 +953,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4045
         }
       }
     note: false
@@ -987,7 +978,7 @@ tasks:
       brand: Skyhigh Secure Web Gateway (On Prem)
     nexttasks:
       '#none#':
-      - "28"
+      - "25"
     scriptarguments:
       list_id:
         simple: ${Testdata.list_id}
@@ -997,88 +988,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: c6dc47ca-2a89-49b7-80ba-6ace6ab71991
-    type: regular
-    task:
-      id: c6dc47ca-2a89-49b7-80ba-6ace6ab71991
-      version: -1
-      name: DeleteContext
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      key:
-        simple: SWG
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: cf83aced-2871-44e8-8f1c-ffe95869789d
-    type: condition
-    task:
-      id: cf83aced-2871-44e8-8f1c-ffe95869789d
-      version: -1
-      name: Assert swg-delete-list
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: SWG.List.Title
-            iscontext: true
-          right:
-            value:
-              simple: Demistotest
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4395
+          "y": 3870
         }
       }
     note: false
@@ -1092,12 +1002,11 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_15_yes": 0.83,
-      "24_27_yes": 0.89,
       "3_6_yes": 0.79
     },
     "paper": {
       "dimensions": {
-        "height": 4790,
+        "height": 4265,
         "width": 380,
         "x": 50,
         "y": 50
@@ -1107,4 +1016,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.8.0
-description: Test all SWG commands

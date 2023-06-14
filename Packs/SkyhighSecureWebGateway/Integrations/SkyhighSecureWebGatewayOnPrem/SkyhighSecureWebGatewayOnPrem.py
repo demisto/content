@@ -163,7 +163,7 @@ def get_lists_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(title, res, headers=["Title", "ID", "Type"]),
-        outputs_prefix="SWG.Lists",
+        outputs_prefix="SWG.List",
         outputs_key_field="ID",
         outputs=res,
         raw_response=result
@@ -207,7 +207,7 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | s
         resEntries.append(
             {
                 "ListID": list_id,
-                "Position": pos,
+                "Position": str(pos),
                 "Name": entry.get("entry", ""),
                 "Description": description,
             }
@@ -216,14 +216,14 @@ def get_list_command(client: Client, args: Dict[str, Any]) -> CommandResults | s
     hr = tableToMarkdown(
         "List Properties", res, headers=["Title", "ID", "Description", "Type"]
     )
-    res = {"List": res, "ListEntries": resEntries}
+    res["ListEntries"] = resEntries
 
     return CommandResults(
         readable_output=hr
         + tableToMarkdown(
             title, resEntries, headers=["Position", "Name", "Description"]
         ),
-        outputs_prefix="SWG",
+        outputs_prefix="SWG.List",
         outputs_key_field=["ID"],
         outputs=res,
         raw_response=config
@@ -256,18 +256,23 @@ def get_list_entry_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if not description:
         description = ""
     res = {
-        "ListID": list_id,
-        "Position": int(entry_pos),
-        "Name": entry.get("entry", ""),
-        "Description": description,
+        "ID": list_id,
+        "ListEntries": [
+            {
+                "ListID": list_id,
+                "Position": entry_pos,
+                "Name": entry.get("entry", ""),
+                "Description": description,
+            }
+        ]
     }
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            title, res, headers=["ListID", "Position", "Name", "Description"]
+            title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]
         ),
-        outputs_prefix="SWG.ListEntries",
-        outputs_key_field=["ListID", "Position"],
+        outputs_prefix="SWG.List",
+        outputs_key_field=["ID"],
         outputs=res,
         raw_response=result
     )
@@ -287,6 +292,7 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
                         that contains the list details and content.
     """
+    resEntries = []
     list_id: str = args.get("list_id", "")
     conf: str = args.get("config", "")
 
@@ -307,9 +313,31 @@ def modify_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
         "Description": description,
     }
 
+    entries = demisto.get(data, "entry.content.list.content.listEntry", [])
+    if isinstance(entries, dict):
+        entries = [entries]
+    for pos, entry in enumerate(entries):
+        description = entry.get("description")
+        if not description:
+            description = ""
+        resEntries.append(
+            {
+                "ListID": list_id,
+                "Position": str(pos),
+                "Name": entry.get("entry", ""),
+                "Description": description,
+            }
+        )
+
+    hr = tableToMarkdown(
+        'List Properties', res, headers=["Title", "ID", "Description", "Type"]
+    )
+    res["ListEntries"] = resEntries
+
     return CommandResults(
-        readable_output=tableToMarkdown(
-            f'Modified {title}', res, headers=["Title", "ID", "Description", "Type"]
+        readable_output=hr
+        + tableToMarkdown(
+            title, resEntries, headers=["Position", "Name", "Description"]
         ),
         outputs_prefix="SWG.List",
         outputs_key_field=["ID"],
@@ -350,18 +378,23 @@ def insert_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if not description:
         description = ""
     res = {
-        "ListID": list_id,
-        "Position": entry_pos,
-        "Name": entry.get("entry", ""),
-        "Description": description,
+        "ID": list_id,
+        "ListEntries": [
+            {
+                "ListID": list_id,
+                "Position": entry_pos,
+                "Name": entry.get("entry", ""),
+                "Description": description,
+            }
+        ]
     }
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            title, res, headers=["ListID", "Position", "Name", "Description"]
+            title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]
         ),
-        outputs_prefix="SWG.ListEntries",
-        outputs_key_field=["ListID", "Position"],
+        outputs_prefix="SWG.List",
+        outputs_key_field=["ID"],
         outputs=res,
         raw_response=result
     )
@@ -394,19 +427,21 @@ def delete_entry_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if not description:
         description = ""
     res = {
-        "ListID": list_id,
-        "Position": entry_pos,
-        "Name": entry.get("entry", ""),
-        "Description": description,
+        "ID": list_id,
+        "ListEntries": [
+            {
+                "ListID": list_id,
+                "Position": entry_pos,
+                "Name": entry.get("entry", ""),
+                "Description": description,
+            }
+        ]
     }
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            title, res, headers=["ListID", "Position", "Name", "Description"]
+            title, res["ListEntries"], headers=["ListID", "Position", "Name", "Description"]
         ),
-        outputs_prefix="SWG.ListEntries",
-        outputs_key_field=["ListID", "Position"],
-        outputs=res,
         raw_response=result
     )
 
@@ -494,9 +529,6 @@ def delete_list_command(client: Client, args: Dict[str, Any]) -> CommandResults 
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="SWG.List",
-        outputs_key_field=["ID"],
-        outputs=res,
         raw_response=result
     )
 

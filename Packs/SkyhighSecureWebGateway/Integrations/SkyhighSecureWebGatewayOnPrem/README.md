@@ -41,9 +41,9 @@ Get all available lists.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.Lists.ID | Unknown | List ID. |
-| SWG.Lists.Title | Unknown | List title. | 
-| SWG.Lists.Type | Unknown | List type. | 
+| SWG.List.ID | Unknown | List ID. |
+| SWG.List.Title | Unknown | List title. | 
+| SWG.List.Type | Unknown | List type. | 
 
 #### Command example
 ```!swg-get-available-lists name=blocklist```
@@ -51,7 +51,7 @@ Get all available lists.
 ```json
 {
     "SWG": {
-        "Lists": {
+        "List": {
             "ID": "com.scur.type.regex.386",
             "Title": "blocklist",
             "Type": "regex"
@@ -89,10 +89,10 @@ Retrieve a specific list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.ListEntries.ListID | Unknown | List ID of the entry's list. |
-| SWG.ListEntries.Name | Unknown | Entry name. | 
-| SWG.ListEntries.Description | Unknown | Entry description. | 
-| SWG.ListEntries.Position | Unknown | Entry position in list. | 
+| SWG.List.ListEntries.ListID | Unknown | List ID of the entry's list. |
+| SWG.List.ListEntries.Name | Unknown | Entry name. | 
+| SWG.List.ListEntries.Description | Unknown | Entry description. | 
+| SWG.List.ListEntries.Position | Unknown | Entry position in list. | 
 | SWG.List.ID | Unknown | List ID. | 
 | SWG.List.Title | Unknown | List title. | 
 | SWG.List.Type | Unknown | List Type | 
@@ -108,22 +108,22 @@ Retrieve a specific list.
             "Description": "blocklist",
             "ID": "com.scur.type.regex.386",
             "Title": "blocklist",
-            "Type": "regex"
-        },
-        "ListEntries": [
-            {
-                "Description": "this is really evil",
-                "ListID": "com.scur.type.regex.386",
-                "Name": "http*://test.evil/*",
-                "Position": 0
-            },
-            {
-                "Description": "this is really evil",
-                "ListID": "com.scur.type.regex.386",
-                "Name": "http*://test-more.evil/*",
-                "Position": 1
-            }
-        ]
+            "Type": "regex",
+            "ListEntries": [
+                {
+                    "Description": "this is really evil",
+                    "ListID": "com.scur.type.regex.386",
+                    "Name": "http*://test.evil/*",
+                    "Position": 0
+                },
+                {
+                    "Description": "this is really evil",
+                    "ListID": "com.scur.type.regex.386",
+                    "Name": "http*://test-more.evil/*",
+                    "Position": 1
+                }
+            ]
+        }
     }
 }
 ```
@@ -160,10 +160,11 @@ Retrieve a specific entry from a list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.ListEntries.ListID | Unknown | List ID of the entry's list. | 
-| SWG.ListEntries.Name | Unknown | Entry name. | 
-| SWG.ListEntries.Position | Unknown | Entry position in the list. | 
-| SWG.ListEntries.Description | Unknown | Entry description. | 
+| SWG.List.ID | Unknown | List ID of the entry's list. | 
+| SWG.List.ListEntries.ListID | Unknown | List ID of the entry's list. | 
+| SWG.List.ListEntries.Name | Unknown | Entry name. | 
+| SWG.List.ListEntries.Position | Unknown | Entry position in the list. | 
+| SWG.List.ListEntries.Description | Unknown | Entry description. | 
 
 #### Command example
 ```!swg-get-list-entry list_id=com.scur.type.regex.386 entry_pos=0```
@@ -171,11 +172,14 @@ Retrieve a specific entry from a list.
 ```json
 {
     "SWG": {
-        "ListEntries": {
-            "Description": "this is really evil",
-            "ListID": "com.scur.type.regex.386",
-            "Name": "http*://test.evil/*",
-            "Position": "0"
+        "List": {
+            "ID": "com.scur.type.regex.386",
+            "ListEntries": {
+                "Description": "this is really evil",
+                "ListID": "com.scur.type.regex.386",
+                "Name": "http*://test.evil/*",
+                "Position": "0"
+            }
         }
     }
 }
@@ -210,10 +214,11 @@ Insert a new entry to a list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SWG.ListEntries.ListID | Unknown | List ID of the entry's list. | 
-| SWG.ListEntries.Name | Unknown | Entry name. | 
-| SWG.ListEntries.Position | Unknown | Entry position in the list. | 
-| SWG.ListEntries.Description | Unknown | Entry description. | 
+| SWG.List.ID | Unknown | List ID of the entry's list. | 
+| SWG.List.ListEntries.ListID | Unknown | List ID of the entry's list. | 
+| SWG.List.ListEntries.Name | Unknown | Entry name. | 
+| SWG.List.ListEntries.Position | Unknown | Entry position in the list. | 
+| SWG.List.ListEntries.Description | Unknown | Entry description. | 
 
 #### Command example
 ```!swg-insert-entry list_id=com.scur.type.regex.386 entry_pos=0 name="http*://evil.corp/*" description="ticket #1: This is an evil domain"```
@@ -221,11 +226,14 @@ Insert a new entry to a list.
 ```json
 {
     "SWG": {
-        "ListEntries": {
-            "Description": "ticket #1: This is an evil domain",
-            "ListID": "com.scur.type.regex.386",
-            "Name": "http*://evil.corp/*",
-            "Position": "0"
+        "List": {
+            "ID": "com.scur.type.regex.386",
+            "ListEntries": {
+                "Description": "ticket #1: This is an evil domain",
+                "ListID": "com.scur.type.regex.386",
+                "Name": "http*://evil.corp/*",
+                "Position": "0"
+            }
         }
     }
 }
@@ -288,6 +296,10 @@ Overwrites the complete XML configuration of a list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| SWG.List.ListEntries.ListID | Unknown | List ID of the entry's list. |
+| SWG.List.ListEntries.Name | Unknown | Entry name. | 
+| SWG.List.ListEntries.Description | Unknown | Entry description. | 
+| SWG.List.ListEntries.Position | Unknown | Entry position in list. | 
 | SWG.List.ID | Unknown | List ID. | 
 | SWG.List.Title | Unknown | List title. |
 | SWG.List.Type | Unknown | List type. | 
@@ -303,7 +315,15 @@ Overwrites the complete XML configuration of a list.
             "Description": "blocklist",
             "ID": "com.scur.type.regex.386",
             "Title": "blocklist",
-            "Type": "regex"
+            "Type": "regex",
+            "ListEntries": [
+                {
+                    "Description": "ticket #1: This is an evil domain",
+                    "ListID": "com.scur.type.regex.386",
+                    "Name": "http*://evil.corp/*",
+                    "Position": 0
+                }
+            ]
         }
     }
 }
@@ -383,29 +403,9 @@ Delete a list.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| SWG.List.ID | Unknown | List ID. |  
-| SWG.List.Title | Unknown | List title. |
-| SWG.List.Type | Unknown | List type. | 
-| SWG.List.Description | Unknown | List description. | 
-
+There is no context output for this command.
 #### Command example
 ```!swg-delete-list list_id=com.scur.type.regex.460```
-#### Context Example
-```json
-{
-    "SWG": {
-        "List": {
-            "Description": "",
-            "ID": "com.scur.type.regex.386",
-            "Title": "blocklist",
-            "Type": "regex"
-        }
-    }
-}
-```
-
 #### Human Readable Output
 
 >### Deleted List Properties

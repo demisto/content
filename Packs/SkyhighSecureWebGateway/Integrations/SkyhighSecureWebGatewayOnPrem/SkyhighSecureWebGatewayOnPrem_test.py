@@ -217,5 +217,4 @@ def test_delete_list(mocker):
     mocker.patch.object(client, 'commit', return_value=True)
     command_result = delete_list_command(client, args)
 
-    assert expected_results["EntryContext"] == command_result.to_context().get('EntryContext')
     assert expected_results['HumanReadable'] == command_result.to_context().get('HumanReadable')

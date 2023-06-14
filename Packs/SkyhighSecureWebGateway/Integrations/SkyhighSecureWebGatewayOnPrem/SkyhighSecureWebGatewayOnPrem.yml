@@ -43,13 +43,13 @@ script:
     execution: false
     name: swg-get-available-lists
     outputs:
-    - contextPath: SWG.Lists.ID
+    - contextPath: SWG.List.ID
       description: List ID.
       type: Unknown
-    - contextPath: SWG.Lists.Title
+    - contextPath: SWG.List.Title
       description: List title.
       type: Unknown
-    - contextPath: SWG.Lists.Type
+    - contextPath: SWG.List.Type
       description: List type.
       type: Unknown
   - arguments:
@@ -61,16 +61,16 @@ script:
     execution: false
     name: swg-get-list
     outputs:
-    - contextPath: SWG.ListEntries.ListID
+    - contextPath: SWG.List.ListEntries.ListID
       description: List ID of the entry's list.
       type: Unknown
-    - contextPath: SWG.ListEntries.Name
+    - contextPath: SWG.List.ListEntries.Name
       description: Entry name.
       type: Unknown
-    - contextPath: SWG.ListEntries.Description
+    - contextPath: SWG.List.ListEntries.Description
       description: Entry description.
       type: Unknown
-    - contextPath: SWG.ListEntries.Position
+    - contextPath: SWG.List.ListEntries.Position
       description: Entry position in the list.
       type: Unknown
     - contextPath: SWG.List.ID
@@ -97,16 +97,19 @@ script:
     execution: false
     name: swg-get-list-entry
     outputs:
-    - contextPath: SWG.ListEntries.ListID
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.ListID
       description: List ID of the entry's list.
       type: Unknown
-    - contextPath: SWG.ListEntries.Name
+    - contextPath: SWG.List.ListEntries.Name
       description: Entry name.
       type: Unknown
-    - contextPath: SWG.ListEntries.Position
+    - contextPath: SWG.List.ListEntries.Position
       description: Entry position in the list.
       type: Unknown
-    - contextPath: SWG.ListEntries.Description
+    - contextPath: SWG.List.ListEntries.Description
       description: Entry description.
       type: Unknown
   - arguments:
@@ -127,16 +130,19 @@ script:
     execution: false
     name: swg-insert-entry
     outputs:
-    - contextPath: SWG.ListEntries.ListID
+    - contextPath: SWG.List.ID
+      description: List ID.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.ListID
       description: List ID of the entry's list.
       type: Unknown
-    - contextPath: SWG.ListEntries.Name
+    - contextPath: SWG.List.ListEntries.Name
       description: Entry name.
       type: Unknown
-    - contextPath: SWG.ListEntries.Position
+    - contextPath: SWG.List.ListEntries.Position
       description: Entry position in the list.
       type: Unknown
-    - contextPath: SWG.ListEntries.Description
+    - contextPath: SWG.List.ListEntries.Description
       description: Entry description.
       type: Unknown
   - arguments:
@@ -147,7 +153,7 @@ script:
     - description: Entry position in the table.
       name: entry_pos
       required: true
-    description: Insert a new entry to a list.
+    description: Delete entry to from a list.
     execution: false
     name: swg-delete-entry
   - arguments:
@@ -173,6 +179,18 @@ script:
       type: Unknown
     - contextPath: SWG.List.Description
       description: List description.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.ListID
+      description: List ID of the entry's list.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Name
+      description: Entry name.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Description
+      description: Entry description.
+      type: Unknown
+    - contextPath: SWG.List.ListEntries.Position
+      description: Entry position in the list.
       type: Unknown
   - arguments:
     - description: Name for the list to be created.
@@ -216,19 +234,6 @@ script:
     description: Delete a list.
     execution: false
     name: swg-delete-list
-    outputs:
-    - contextPath: SWG.List.ID
-      description: List ID.
-      type: Unknown
-    - contextPath: SWG.List.Title
-      description: List title.
-      type: Unknown
-    - contextPath: SWG.List.Type
-      description: List type.
-      type: Unknown
-    - contextPath: SWG.List.Description
-      description: List description.
-      type: Unknown
   isfetch: false
   runonce: false
   script: '-'
