@@ -1315,7 +1315,7 @@ inputs:
 - key: username
   value: {}
   required: false
-  description: The username initiated the API call.
+  description: The username that initiated the API call.
   playbookInputQuery:
 - key: region
   value: {}
