@@ -307,7 +307,7 @@ tasks:
       id: b14d1b34-a5d1-40c5-8055-27b3eb16a0e5
       version: -1
       name: Check ASN & Agent IP popularity
-      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
