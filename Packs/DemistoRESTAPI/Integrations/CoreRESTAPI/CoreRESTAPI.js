@@ -334,11 +334,11 @@ var uploadFile= function(incident_id, file_content, file_name) {
             value: [file_content],
             options: {
                 filename: [file_name],
-                contentType: 'application/json'
+                contentType: 'multipart/form-data'
             }
         },
     };
-    var res = sendRequest('POST', `/entry/upload/${incident_id}`, JSON.stringify(body));
+    var res = httpMultipart(`/entry/upload/${incident_id}`,file_content ,body);
     if (isError(res[0])) {
         throw res[0].Contents;
     }
@@ -428,9 +428,13 @@ Returns:
     CommandResults -- Readable output
 Note:
     You can give either the entryID or file_name.
-"""
+""" 
  */
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
+    incident_id = (incident_id === 'undefined')? investigation.id: incident_id;
+    if (incident_id!=investigation.id){
+        log(`Note that the file would be uploaded to ${incident_id} from incident ${investigation.id}`);
+    }
     if ((!file_name) && (!entryID)) {
         throw 'Either file_name or entry_id argument must be provided.';
     }

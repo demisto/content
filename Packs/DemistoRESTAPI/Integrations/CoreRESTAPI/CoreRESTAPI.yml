@@ -257,7 +257,7 @@ script:
   - name: core-api-file-upload
     arguments:
     - name: incident_id
-      required: true
+      required: false
       description: The incident's ID.
     - name: file_name
       required: false
