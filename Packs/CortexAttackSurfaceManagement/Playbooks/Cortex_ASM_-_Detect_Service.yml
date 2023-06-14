@@ -1,29 +1,20 @@
-id: f4e4988f-236e-4fea-88c8-325b9c3929d3
-version: 9
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cortex Attack Surface Management
-    itemVersion: 1.6.3
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+id: Cortex ASM - Detect Service
+version: -1
 name: Cortex ASM - Detect Service
 description: Playbook that looks to see if a service ID exists and choose to start a Remediation Confirmation Scan.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0572001c-322b-438d-8bec-667b631d18a8
+    taskid: a84d8c8c-5937-4da3-86aa-bf8c30e4adc7
     type: start
     task:
-      id: 0572001c-322b-438d-8bec-667b631d18a8
+      id: a84d8c8c-5937-4da3-86aa-bf8c30e4adc7
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -45,15 +36,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e227705c-072b-4c39-8f0a-fabcd441c509
+    taskid: 4b9d0bb7-dd62-4ef4-8d94-7b18f53e7e11
     type: title
     task:
-      id: e227705c-072b-4c39-8f0a-fabcd441c509
+      id: 4b9d0bb7-dd62-4ef4-8d94-7b18f53e7e11
       version: -1
       name: Complete
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -72,15 +64,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: c7c170aa-4424-429b-8efd-c37b4104c6d2
+    taskid: 4656b3de-e239-4651-8cd3-734e37a83017
     type: title
     task:
-      id: c7c170aa-4424-429b-8efd-c37b4104c6d2
+      id: 4656b3de-e239-4651-8cd3-734e37a83017
       version: -1
       name: Non-Service Based Alert
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -102,14 +95,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: f8e5dec9-9a30-4dc7-87d4-09f323d87a91
+    taskid: bb84f3c8-ee66-4569-89df-e1066a0d0b86
     type: condition
     task:
-      id: f8e5dec9-9a30-4dc7-87d4-09f323d87a91
+      id: bb84f3c8-ee66-4569-89df-e1066a0d0b86
       version: -1
       name: Is there a ASM service ID?
-      description: Conditional task to check for an existing ASM service ID. The Remediation
-        Confirmation Scan can only be used to scan existing service IDs found by Xpanse.
+      description: Conditional task to check for an existing ASM service ID. The Remediation Confirmation Scan can only be used to scan existing service IDs found by Xpanse.
       type: condition
       iscommand: false
       brand: ""
@@ -148,16 +140,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: f4497855-c82f-494e-8e5c-700bba179753
+    taskid: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
     type: playbook
     task:
-      id: f4497855-c82f-494e-8e5c-700bba179753
+      id: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
       version: -1
       name: 'Cortex ASM - Remediation Confirmation Scan'
       playbookName: Cortex ASM - Remediation Confirmation Scan
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -193,4 +186,8 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Cortex ASM - Detect Service
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
