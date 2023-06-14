@@ -1,3 +1,5 @@
+import hashlib
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -546,7 +548,7 @@ def get_workbench_logs(
     workbench_log_last_run_time = LastRunLogsTimeFields.WORKBENCH.value
 
     start_time, end_time = get_datetime_range(
-        last_run_time=workbench_log_last_run_time,
+        last_run_time=last_run.get(workbench_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=workbench_log_last_run_time,
         date_format=date_format,
@@ -620,7 +622,7 @@ def get_observed_attack_techniques_logs(
     observed_attack_technique_log_last_run_time = LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
 
     start_time, end_time = get_datetime_range(
-        last_run_time=observed_attack_technique_log_last_run_time,
+        last_run_time=last_run.get(observed_attack_technique_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=observed_attack_technique_log_last_run_time,
         date_format=date_format
@@ -688,7 +690,7 @@ def get_search_detection_logs(
     search_detection_log_last_run_time = LastRunLogsTimeFields.SEARCH_DETECTIONS.value
 
     start_time, end_time = get_datetime_range(
-        last_run_time=search_detection_log_last_run_time,
+        last_run_time=last_run.get(search_detection_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS.value,
         date_format=date_format
@@ -724,42 +726,69 @@ def get_search_detection_logs(
 
 def get_audit_logs(
     client: Client,
-    audit_log_last_run_time: str | None,
     first_fetch: str,
+    last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-) -> Tuple[List[Dict], str]:
+) -> Tuple[List[Dict], Dict]:
     """
     Get the audit logs.
 
     Args:
         client (Client): the client object
-        audit_log_last_run_time (dict): The time of the audit log from the last run.
         first_fetch (str): the first fetch time
+        last_run (dict): the last run object
         limit (int): the maximum number of search detection logs to return.
         date_format (str): the date format.
 
     Returns:
-        Tuple[List[Dict], str]: audit logs & latest time of the audit log that was created.
+        Tuple[List[Dict], Dict]: audit logs & last updated run
     """
+    audit_cache_time_field_name = LastRunTimeCacheTimeFieldNames.AUDIT.value
+    audit_log_type = LogTypes.AUDIT.value
+    audit_log_last_run_time = LastRunLogsTimeFields.AUDIT.value
+
     start_time, end_time = get_datetime_range(
-        last_run_time=audit_log_last_run_time,
+        last_run_time=last_run.get(audit_log_last_run_time),
         first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsTimeFields.AUDIT.value,
+        log_type_time_field_name=audit_log_last_run_time,
         date_format=date_format
     )
     audit_logs = client.get_audit_logs(
         start_datetime=start_time, end_datetime=end_time, limit=limit
     )
 
-    latest_audit_log_time = get_latest_log_created_time(
-        logs=audit_logs,
-        log_type=LogTypes.AUDIT.value,
-        date_format=date_format,
-    ) or end_time
+    for log in audit_logs:
+        encoded_audit_log = json.dumps(log, sort_keys=True).encode()
+        log['id'] = hashlib.sha256(encoded_audit_log).hexdigest()
 
-    demisto.info(f'{audit_logs=}, {latest_audit_log_time=}')
-    return audit_logs, latest_audit_log_time
+    audit_logs = dedup_fetched_logs(
+        logs=audit_logs,
+        last_run=last_run,
+        log_id_field_name='id',
+        log_cache_last_run_name_field_name=audit_cache_time_field_name,
+        log_type=audit_log_type
+    )
+
+    latest_audit_logs, latest_log_time = get_all_latest_time_logs_ids(
+        logs=audit_logs,
+        log_type=audit_log_type,
+        log_id_field_name='id',
+        date_format=DATE_FORMAT
+    )
+
+    latest_audit_log_time = latest_log_time or end_time
+
+    for log in audit_logs:
+        log.pop('id')
+
+    audit_updated_last_run = {
+        audit_log_last_run_time: latest_audit_log_time,
+        audit_cache_time_field_name: latest_audit_logs
+    }
+
+    demisto.info(f'{audit_logs=}, {latest_audit_log_time=}, {audit_updated_last_run=}')
+    return audit_logs, audit_updated_last_run
 
 
 ''' COMMAND FUNCTIONS '''
@@ -809,10 +838,10 @@ def fetch_events(
     )
 
     demisto.info(f'starting to fetch {LogTypes.AUDIT} logs')
-    audit_logs, latest_audit_log_time = get_audit_logs(
+    audit_logs, updated_audit_last_run = get_audit_logs(
         client=client,
-        audit_log_last_run_time=last_run.get(LastRunLogsTimeFields.AUDIT.value),
         first_fetch=first_fetch,
+        last_run=last_run,
         limit=limit
     )
 
@@ -821,7 +850,8 @@ def fetch_events(
     for updated_last_run in [
         updated_workbench_last_run,
         updated_observed_attack_technique_last_run,
-        updated_search_detection_last_run
+        updated_search_detection_last_run,
+        updated_audit_last_run
     ]:
         last_run.update(updated_last_run)
 
