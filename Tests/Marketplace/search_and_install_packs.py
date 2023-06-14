@@ -166,9 +166,8 @@ def search_pack(client: demisto_client,
         pack_id (string): The pack ID.
         lock (Lock): A lock object.
     Returns:
-        (dict): Returns the pack data if found, or empty dict otherwise.
+        (dict): Returns a dict containing pack's ID and version if found, or an empty dict if not.
     """
-
     try:
         response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                             path=f'/contentpacks/marketplace/{pack_id}',
@@ -421,22 +420,24 @@ def search_pack_and_its_dependencies(client: demisto_client,
             Each list contain one pack and its dependencies.
 
     """
-    pack_data = {}
+    api_post_data = {}  # This is the data that will be sent as a query for '/contentpacks/marketplace/search/dependencies'
+
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
+
         if pack_display_name:
-            pack_data = search_pack(client, pack_display_name, pack_id, lock)
-        if pack_data is None:
-            pack_data = {
+            api_post_data = search_pack(client, pack_display_name, pack_id, lock)
+
+        if api_post_data is None:
+            api_post_data = {
                 'id': pack_id,
                 'version': '1.0.0',
-                'deprecated': False,
             }
 
-    if pack_data:
-        dependencies = get_pack_dependencies(client, pack_data, lock)
+    if api_post_data:
+        dependencies = get_pack_dependencies(client, api_post_data, lock)
+        current_packs_to_install = [api_post_data]
 
-        current_packs_to_install = [pack_data]
         if dependencies:
             # Check that the dependencies don't include a deprecated pack:
             for dependency in dependencies:
@@ -642,8 +643,10 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
                                                     client: demisto_client, hostname: str | None = None,
                                                     install_packs_one_by_one=False):
-    """ Searches for the packs from the specified list, searches their dependencies, and then
+    """
+    Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
+
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
