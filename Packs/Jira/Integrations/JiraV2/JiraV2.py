@@ -1569,6 +1569,9 @@ def main():
             return_results(list_transitions_command(demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
+        elif demisto.command() == 'jira-issue-assign':
+            human_readable, outputs, raw_response = update_issue_assignee_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 
