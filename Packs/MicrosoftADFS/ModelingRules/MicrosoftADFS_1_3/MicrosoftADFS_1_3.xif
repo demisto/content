@@ -60,6 +60,7 @@ filter event_id in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206
     xdm.event.id = to_string(event_id),
     xdm.event.type = event_type_connection,
     xdm.session_context_id = to_string(record_id),
+    xdm.observer.type=provider_name,
     xdm.source.user.username = coalesce(userName ,accountName),
     xdm.source.host.hostname = coalesce(host_name,Host),
     xdm.alert.severity = coalesce(opcode, log_level),
