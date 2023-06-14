@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -100
+          "y": -270
         }
       }
     note: false
@@ -197,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 49c37fa5-9f5f-44e0-87db-2ed6c13c9501
+    taskid: 86a0e7eb-c183-4441-832f-7a814860a718
     type: condition
     task:
-      id: 49c37fa5-9f5f-44e0-87db-2ed6c13c9501
+      id: 86a0e7eb-c183-4441-832f-7a814860a718
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -219,11 +219,6 @@ tasks:
             value:
               simple: PaloAltoNetworksXDR.Incident.incident_id
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.manual_severity
-            iscontext: true
       - - operator: isNotEmpty
           left:
             value:
@@ -232,32 +227,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksXDR.Incident.xdr_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: PaloAltoNetworksXDR.Incident.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.SHA256
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1990,7 +1960,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 360
         }
       }
     note: false
@@ -2164,7 +2134,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 45
+          "y": -135
         }
       }
     note: false
@@ -2780,7 +2750,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "82"
     scriptarguments:
       alert_source:
         simple: correlation
@@ -2790,7 +2760,47 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 205
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: c8603613-0ee9-4615-8b2c-0cc37400e027
+    type: condition
+    task:
+      id: c8603613-0ee9-4615-8b2c-0cc37400e027
+      version: -1
+      name: check if have any correlation alerts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.internal_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 190
         }
       }
     note: false
@@ -2805,14 +2815,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11705,
+        "height": 11875,
         "width": 922.5,
         "x": 50,
-        "y": -100
+        "y": -270
       }
     }
   }
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''
