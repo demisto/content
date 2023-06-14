@@ -3769,7 +3769,9 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
     if element_to_change == 'profile-setting':
+        params['action'] = 'set'
         params['element'] = '<profile-setting><group/></profile-setting>'
+        demisto.debug(f"{params=}")
         result = http_request(URL, 'POST', body=params)
 
     else:
@@ -3788,7 +3790,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
     rule_output = {
         'Name': rulename,
-        SECURITY_RULE_ARGS[element_to_change]: values
+        # SECURITY_RULE_ARGS[element_to_change]: values
+        SECURITY_RULE_ARGS[element_to_change]: []
     }
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
