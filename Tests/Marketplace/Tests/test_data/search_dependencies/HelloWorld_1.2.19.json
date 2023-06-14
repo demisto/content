@@ -1095,6 +1095,20 @@
 					"modules": []
 				}
 			}
-		}
+		},
+        {
+            "id": "TestPack",
+            "currentVersion": "",
+            "dependants": {
+                "HelloWorld": {
+                    "level": "required"
+                }
+            },
+            "extras": {
+                "pack": {
+                    "currentVersion": "1.0.0"
+                }
+            }
+        }
 	]
 }

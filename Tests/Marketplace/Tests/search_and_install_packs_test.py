@@ -48,37 +48,14 @@ MOCK_PACKS_INSTALLATION_RESULT = [
     }
 ]
 
-MOCK_PACKS_DEPENDENCIES_RESULT = {
-    "dependencies": [
-        {
-            "id": "TestPack",
-            "currentVersion": "",
-            "dependants": {
-                "HelloWorld": {
-                    "level": "required"
-                }
-            },
-            "extras": {
-                "pack": {
-                    "currentVersion": "1.0.0"
-                }
-            }
-        }
-    ]
-}
-
 PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
 def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None, response_type='object'):
-    if path == '/contentpacks/marketplace/HelloWorld':
+    if body and body[0].get('id') == 'HelloWorld':
         return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
-    if path == '/contentpacks/marketplace/AzureSentinel':
+    elif body and body[0].get('id') == 'AzureSentinel':
         return MOCK_AZURESENTINEL_SEARCH_RESULTS, 200, None
-    elif path == '/contentpacks/marketplace/install':
-        return MOCK_PACKS_INSTALLATION_RESULT, 200, None
-    elif path == '/contentpacks/marketplace/search/dependencies':
-        return MOCK_PACKS_DEPENDENCIES_RESULT, 200, None
     return None, None, None
 
 
@@ -135,11 +112,8 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
 
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
-    mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
 
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
-                                                                                      client=client,
-                                                                                      install_packs_one_by_one=True)
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids, client=client)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
@@ -170,64 +144,6 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
                                                                                       client)
     assert success is False
-
-
-def test_search_pack_with_id(mocker):
-    """
-   Given
-   - Pack with a new name (different from its ID)
-   When
-   - Searching the pack in the Demsito instance.
-   Then
-   - Ensure the pack is found using its ID
-   """
-    client = MockClient()
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
-    expected_response = {
-        'id': 'HelloWorld',
-        'version': '1.1.10'
-    }
-    assert expected_response == script.search_pack(client, "New Hello World", 'HelloWorld', None)
-
-
-def test_search_pack_with_failure(mocker):
-    """
-   Given
-   - Error when searching for pack
-   - Response with missing data
-   When
-   - Searching the pack in the Demsito instance for installation.
-   Then
-   - Ensure error is raised.
-   """
-    client = MockClient()
-    lock = MockLock()
-
-    # Error when searching for pack
-    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
-    script.search_pack(client, "New Hello World", 'HelloWorld', lock)
-    assert not script.SUCCESS_FLAG
-
-    # Response with missing data
-    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('{"id": "HelloWorld"}', 200, None))
-    script.search_pack(client, "New Hello World", 'HelloWorld', lock)
-    assert not script.SUCCESS_FLAG
-
-
-ERROR_MESSAGE = """
-(400)
-Reason: Bad Request
-HTTP response headers: HTTPHeaderDict({'Content-Type': 'application/json',
-'Set-Cookie': 'S=A4Nj75P0P3UcPLb2eJByVpv311AEzeVsjIjLpKyFjNRJHjBHcJaj3LHskUp9Sdceu5BFhw38bX5+xs//0s/JL8/mig6kkm5/
-atpS7Rt5gyd3PKaVz0Mh9tvFuZ4JdhA3tIeq5gy9O+8ADlMT0JjLuCl7jqJmlH7ENX9JEJ6chadow3ah78loM3roczVSPiZPLg9hHDtwiq8tB5SNis5K;
-Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600; HttpOnly; Secure; SameSite=Lax,
-S-Expiration=MDIgTm92IDIwIDExOjIzICswMDAw; Path=/; Expires=Mon, 02 Nov 2020 11:23:10 GMT; Max-Age=3600;
-Secure; SameSite=Lax', 'Strict-Transport-Security': 'max-age=10886400000000000; includeSubDomains',
-'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'X-Xss-Protection': '1; mode=block',
-'Date': 'Mon, 02 Nov 2020 10:23:10 GMT', 'Content-Length': '218'})
-HTTP response body: {"id":"bad_request","status":400,"title":"Bad request","detail":"Request body is not well-formed.
-It must be JSON.","error":"invalid version 1.2.0 for pack with ID AutoFocus (35000)","encrypted":false,"multires":null}
-"""
 
 
 @timeout_decorator.timeout(3)
