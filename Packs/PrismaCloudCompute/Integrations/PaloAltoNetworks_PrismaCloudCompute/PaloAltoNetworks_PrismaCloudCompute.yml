@@ -1,7 +1,4 @@
 category: Network Security
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: PaloAltoNetworks_PrismaCloudCompute
   version: -1
@@ -12,7 +9,8 @@ configuration:
   type: 8
   section: Collect
 - name: address
-  display: Prisma Cloud Compute Console URL and Port
+  display: |-
+    Prisma Cloud Compute Console URL and Port
   required: true
   type: 0
   additionalinfo: URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, for example https://example.net:1234
@@ -45,7 +43,6 @@ configuration:
   type: 9
   additionalinfo: Prisma Cloud Compute login credentials.
   displaypassword: ""
-  hiddenusername: false
   section: Connect
 - name: certificate
   display: Prisma Cloud Compute CA Certificate
@@ -63,7 +60,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -2058,3 +2055,6 @@ script:
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect

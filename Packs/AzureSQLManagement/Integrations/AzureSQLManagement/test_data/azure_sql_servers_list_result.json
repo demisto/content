@@ -8,7 +8,8 @@
                 "state": "Ready",
                 "fullyQualifiedDomainName": "sql.database.windows.net",
                 "privateEndpointConnections": [],
-                "publicNetworkAccess": "Enabled"
+                "publicNetworkAccess": "Enabled",
+                "restrictOutboundNetworkAccess": "Disabled"
             },
             "location": "eastus",
             "tags": {},

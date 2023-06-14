@@ -2101,7 +2101,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '119'
+      - '137'
     note: false
     quietmode: 0
     scriptarguments:
@@ -2152,8 +2152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 5830
+          "x": 695,
+          "y": 7290
         }
       }
     continueonerrortype: ""
@@ -2185,6 +2185,749 @@ tasks:
         "position": {
           "x": 1120,
           "y": 3470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 22de8d80-056a-4fa2-8170-1bc45c1774a0
+    type: title
+    task:
+      id: 22de8d80-056a-4fa2-8170-1bc45c1774a0
+      version: -1
+      name: Tags
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 57c8aa57-6230-499a-888b-75f96e9bdee5
+    type: regular
+    task:
+      id: 57c8aa57-6230-499a-888b-75f96e9bdee5
+      version: -1
+      name: Create tag
+      description: Creates a new tag.
+      script: Panorama|||pan-os-create-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      comment:
+        simple: some comment
+      disable_override:
+        simple: "true"
+      name:
+        simple: test-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 4993a8cc-68ed-40d2-883e-06e41e3eceb7
+    type: regular
+    task:
+      id: 4993a8cc-68ed-40d2-883e-06e41e3eceb7
+      version: -1
+      name: pan-os-list-tag
+      description: Returns a list of tags.
+      script: Panorama|||pan-os-list-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "124"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 0af41bbd-dadb-4a89-8272-c4b5da7e6ebd
+    type: condition
+    task:
+      id: 0af41bbd-dadb-4a89-8272-c4b5da7e6ebd
+      version: -1
+      name: Check new tag exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "125"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: test-tag
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Tag.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test-tag
+                accessor: comments
+            iscontext: true
+          right:
+            value:
+              simple: some comment
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Tag.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test-tag
+                accessor: disable-override
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 716745be-ef04-460a-837d-9a0f5efbd371
+    type: regular
+    task:
+      id: 716745be-ef04-460a-837d-9a0f5efbd371
+      version: -1
+      name: pan-os-edit-tag
+      description: Edits a tag in panorama.
+      script: Panorama|||pan-os-edit-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "126"
+    scriptarguments:
+      comment:
+        simple: other comment
+      name:
+        simple: test-tag
+      new_name:
+        simple: new-test-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: 484ab27d-5ace-4c5a-8dd0-95bca93d90aa
+    type: regular
+    task:
+      id: 484ab27d-5ace-4c5a-8dd0-95bca93d90aa
+      version: -1
+      name: pan-os-list-tag
+      description: Returns a list of tags.
+      script: Panorama|||pan-os-list-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "127"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 7320e2ed-ed76-42b1-84f2-38129a6a4a88
+    type: condition
+    task:
+      id: 7320e2ed-ed76-42b1-84f2-38129a6a4a88
+      version: -1
+      name: Check edited tag exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "128"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.Tag.name
+            iscontext: true
+          right:
+            value:
+              simple: new-test-tag
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Tag.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new-test-tag
+                accessor: comments
+            iscontext: true
+          right:
+            value:
+              simple: other comment
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Tag.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new-test-tag
+                accessor: disable-override
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 540bbabc-d588-4bda-86aa-be52d743bae7
+    type: regular
+    task:
+      id: 540bbabc-d588-4bda-86aa-be52d743bae7
+      version: -1
+      name: pan-os-delete-tag
+      description: Deletes a tag from panorama.
+      script: Panorama|||pan-os-delete-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      name:
+        simple: new-test-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 1a0d7e55-ff12-4aa7-8288-a804f2c258fc
+    type: title
+    task:
+      id: 1a0d7e55-ff12-4aa7-8288-a804f2c258fc
+      version: -1
+      name: Shared tags
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "130"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: bcbbe822-4142-4e4a-8473-425a5445fec0
+    type: regular
+    task:
+      id: bcbbe822-4142-4e4a-8473-425a5445fec0
+      version: -1
+      name: Create tag
+      description: Creates a new tag.
+      script: Panorama|||pan-os-create-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      comment:
+        simple: some shared comment
+      is_shared:
+        simple: "true"
+      name:
+        simple: test-shared-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: a0d83c01-2700-42e6-806f-3198271f52a9
+    type: regular
+    task:
+      id: a0d83c01-2700-42e6-806f-3198271f52a9
+      version: -1
+      name: pan-os-list-tag
+      description: Returns a list of tags.
+      script: Panorama|||pan-os-list-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      include_shared_tags:
+        simple: "Yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 9ddd7865-7f72-41a2-85e7-05b4d76c3e48
+    type: condition
+    task:
+      id: 9ddd7865-7f72-41a2-85e7-05b4d76c3e48
+      version: -1
+      name: Check new tag exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "133"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: test-shared-tag
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Tag.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test-shared-tag
+                accessor: comments
+            iscontext: true
+          right:
+            value:
+              simple: some shared comment
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 6b3b83b3-6804-4568-8173-e5603c0cf636
+    type: regular
+    task:
+      id: 6b3b83b3-6804-4568-8173-e5603c0cf636
+      version: -1
+      name: pan-os-edit-tag
+      description: Edits a tag in panorama.
+      script: Panorama|||pan-os-edit-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      comment:
+        simple: other shared comment
+      name:
+        simple: test-shared-tag
+      new_name:
+        simple: new-test-shared-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: 581ab5bd-dd32-4844-8d0c-aabb0d764803
+    type: regular
+    task:
+      id: 581ab5bd-dd32-4844-8d0c-aabb0d764803
+      version: -1
+      name: pan-os-list-tag
+      description: Returns a list of tags.
+      script: Panorama|||pan-os-list-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "135"
+    scriptarguments:
+      include_shared_tags:
+        simple: "Yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: fca8a9b4-b0f8-4295-8140-148ad0f05e69
+    type: condition
+    task:
+      id: fca8a9b4-b0f8-4295-8140-148ad0f05e69
+      version: -1
+      name: Check edited tag exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.Tag.name
+            iscontext: true
+          right:
+            value:
+              simple: new-test-shared-tag
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Tag
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Tag.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new-test-shared-tag
+                accessor: comments
+            iscontext: true
+          right:
+            value:
+              simple: other shared comment
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: e72e56a7-7a23-4242-8d17-3c2679a0ba3b
+    type: regular
+    task:
+      id: e72e56a7-7a23-4242-8d17-3c2679a0ba3b
+      version: -1
+      name: pan-os-delete-tag
+      description: Deletes a tag from panorama.
+      script: Panorama|||pan-os-delete-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      name:
+        simple: new-test-shared-tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 7080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: f7479d12-1312-4732-8420-29e2e21bc29a
+    type: regular
+    task:
+      id: f7479d12-1312-4732-8420-29e2e21bc29a
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+      - "121"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 5830
         }
       }
     note: false

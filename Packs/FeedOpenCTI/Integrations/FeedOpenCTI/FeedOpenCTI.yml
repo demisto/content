@@ -4,12 +4,10 @@ commonfields:
   version: -1
 configuration:
 - display: API Key
-  hidden: false
   name: apikey
   required: true
   type: 4
 - display: Base URL
-  hidden: false
   name: base_url
   required: true
   type: 0
@@ -34,7 +32,6 @@ configuration:
   type: 16
 - defaultvalue: '500'
   display: Max. indicators per fetch (default is 500)
-  hidden: false
   name: max_indicator_to_fetch
   required: false
   type: 0
@@ -43,8 +40,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -101,9 +97,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -125,8 +119,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of indicators to return per fetch. The default
-        value is "50".
+      description: The maximum number of indicators to return per fetch. The default value is "50".
       isArray: false
       name: limit
       required: false

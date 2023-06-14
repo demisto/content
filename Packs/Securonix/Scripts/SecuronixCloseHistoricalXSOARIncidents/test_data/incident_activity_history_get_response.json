@@ -1,0 +1,53 @@
+[
+    {
+        "caseid": "2849604490",
+        "actiontaken": "COMMENTS_ADDED",
+        "status": "Open",
+        "comment": [
+            {
+                "Comments": "Incident created while executing playbook - Create Security Incident"
+            }
+        ],
+        "eventTime": "Jan 12, 2023 7:25:38 AM",
+        "username": "Admin Admin",
+        "currentassignee": "API_TEST_SS",
+        "commentType": [
+            "text"
+        ],
+        "currWorkflow": "SOCTeamReview",
+        "isPlayBookOutAvailable": false,
+        "creator": "admin"
+    },
+    {
+        "caseid": "2849604490",
+        "actiontaken": "In Progress",
+        "status": "In Progress",
+        "comment": [],
+        "eventTime": "Jan 12, 2023 8:16:22 AM",
+        "lastStatus": "Open",
+        "username": "Test User",
+        "currentassignee": "API_TEST_SS",
+        "pastassignee": "API_TEST_SS",
+        "commentType": [],
+        "prevWorkflow": "Test_XSOAR",
+        "currWorkflow": "Test_XSOAR",
+        "isPlayBookOutAvailable": false,
+        "creator": "test_user"
+    },
+    {
+        "caseid": "2849604490",
+        "actiontaken": "Closed",
+        "status": "Completed",
+        "comment": [],
+        "eventTime": "Jan 12, 2023 8:16:48 AM",
+        "lastStatus": "In Progress",
+        "username": "Test User",
+        "currentassignee": "API_TEST_SS",
+        "pastassignee": "API_TEST_SS",
+        "commentType": [],
+        "prevWorkflow": "Test_XSOAR",
+        "currWorkflow": "Test_XSOAR",
+        "isPlayBookOutAvailable": false,
+        "creator": "test_user"
+    }
+]

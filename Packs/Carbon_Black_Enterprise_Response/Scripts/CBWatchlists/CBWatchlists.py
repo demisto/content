@@ -6,8 +6,8 @@ def main():
     # args: id - Optional - only show the watchlist with this specific ID
     cols = ['name', 'search_query', 'id', 'enabled', 'search_timestamp', 'last_hit', 'last_hit_count', 'total_hits']
     res = []
-    resCmd1 = demisto.executeCommand("cb-watchlist-get",
-                                     {"watchlist-id": demisto.args()["id"]} if "id" in demisto.args() else {})
+    resCmd1 = demisto.executeCommand("cb-edr-watchlists-list",
+                                     {"id": demisto.args()["id"]} if "id" in demisto.args() else {})
     for entry in resCmd1:
         if isError(entry):
             res.append(entry)

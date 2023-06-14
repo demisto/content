@@ -6,7 +6,7 @@ import json
 import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
 
 ''' GLOBALS/PARAMS '''
 
@@ -44,17 +44,17 @@ def login():
         'secretkey': PASSWORD,
         'ajax': 1
     }
-    response = session.post(SERVER + url_suffix, data=params, verify=USE_SSL)  # type: ignore
+    response = session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
     # check for the csrf token in cookies we got, add it to headers of session,
     # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
-        if cookie.name == 'ccsrftoken':  # type: ignore
-            csrftoken = cookie.value[1:-1]  # type: ignore
+        if cookie.name.startswith('ccsrftoken'):
+            csrftoken = cookie.value[1:-1]  # type: ignore[index]
             session.headers.update({'X-CSRFTOKEN': csrftoken})
     if "logindisclaimer" in response.text:
         params = {'confirm': '1'}
         url_suffix = '/logindisclaimer'
-        session.post(SERVER + url_suffix, data=params, verify=USE_SSL)  # type: ignore
+        session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
     return session
 
 

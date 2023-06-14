@@ -1807,7 +1807,115 @@ script:
       description: The ID of the quick scan question
       type: Number
     description: Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration.
-  dockerimage: demisto/lxml:1.0.0.54477
+  - arguments:
+    - description: Offset to start getting response actions (default is '0')
+      name: offset
+    - description: Max number of response actions to return (default is '50')
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: Specify whether to sort by column in ascending or descending order (default is 'desc')
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+    - description: Filter on a partial computer name
+      name: partial_computer_name
+    - description: Filter on status
+      name: status
+    - description: Filter on type
+      name: type
+    description: Returns the Response Actions matching the specified filters
+    name: tanium-tr-get-response-actions
+    outputs:
+    - contextPath: Tanium.ResponseActions.id
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.type
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.status
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.computerName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userId
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.taskIds
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.actionIds
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.snapshotName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results.uuid
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.expirationTime
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.createdAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.updatedAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.eid
+      description: ''
+      type: String
+  - arguments:
+    - description: Target computer name
+      name: computer_name
+      required: true
+    - description: Time unit to specify how long a snapshot should persist (i.e. "7 days", "1 month". Default is "7 days").
+      name: expiration_time
+    description: Creates a "gatherSnapshot" Response Action for the specified host
+    name: tanium-tr-response-action-gather-snapshot
+    outputs:
+    - contextPath: Tanium.ResponseActions.type
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.computerName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.options
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.status
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userId
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.userName
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.results
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.expirationTime
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.createdAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.updatedAt
+      description: ''
+      type: Date
+    - contextPath: Tanium.ResponseActions.id
+      description: ''
+      type: String
+    - contextPath: Tanium.ResponseActions.eid
+      description: ''
+      type: String
+  dockerimage: demisto/lxml:1.0.0.61498
   isfetch: true
   runonce: false
   script: ''

@@ -1,0 +1,70 @@
+{
+    "content": [
+        {
+            "ID": "57b974da5b0a195300b6bc7b",
+            "Value": "OpUSA",
+            "Type": "Campaign",
+            "Severity": "High",
+            "Aliases": [],
+            "Origins": [
+                "Global"
+            ],
+            "TargetCountries": [
+                "United States"
+            ],
+            "TargetSectors": [
+                "Financial Services",
+                "Government"
+            ],
+            "CreatedDate": "content[0]_CreatedDate",
+            "UpdatedDate": "content[0]_UpdatedDate",
+            "TTPs": [
+                "DDoS",
+                "Defacement",
+                "SQL Injection"
+            ],
+            "Overview": "OpUSA was a campaign that was launched by Anonymous hacktivists and various Arab and Muslim hacking groups on May 7, 2013. The campaign was launched in response to the American government\u2019s involvement in wars around the world, specifically in Iraq and Afghanistan. By the end of the campaign, dozens of American websites and servers had been hacked, hundreds of emails were leaked and thousands of social media accounts were hijacked.",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "AnonGhost",
+                "AnonSec",
+                "Anonymous",
+                "Mauritania Attacker",
+                "Ungku",
+                "ZCompany Hacking Crew"
+            ],
+            "RelatedCampaigns": [],
+            "MitreAttack": []
+        },
+        {
+            "ID": "6220ea495c879c2c4d36c124",
+            "Value": "El Patron",
+            "Type": "ThreatActor",
+            "Severity": "Medium",
+            "Aliases": [],
+            "Origins": [],
+            "TargetCountries": [
+                "Russian Federation"
+            ],
+            "TargetSectors": [
+                "Media"
+            ],
+            "CreatedDate": "content[1]_CreatedDate",
+            "UpdatedDate": "content[1]_UpdatedDate",
+            "TTPs": [],
+            "Overview": "El Patron is a member of the Anonymous hacking group, operating under the moniker \"El_patron_real.\"     \n\nOn March 3, 2022, El Patron and other Anonymous affiliates took down the Russian news website lenta.ru.",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "Anonymous"
+            ],
+            "RelatedCampaigns": [
+                "OpRussia 2022-2023",
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        }
+    ],
+    "nextOffset": "nextOffset"
+}
