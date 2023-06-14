@@ -1,7 +1,8 @@
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
-from pathlib import Path
 
+from pathlib import Path
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 from multiprocessing import Process
 from gevent.pywsgi import WSGIServer

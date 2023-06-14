@@ -244,10 +244,6 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL
@@ -529,7 +525,7 @@ script:
   longRunning: true
   longRunningPort: true
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:
