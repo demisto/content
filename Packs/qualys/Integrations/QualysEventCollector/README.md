@@ -1,4 +1,4 @@
-Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+Qualys Event Collector fetches Activity Logs and host vulnerabilities.
 This integration was integrated and tested with version 3.15.2.0-1 of Qualys.
 
 ## Configure Qualys Event Collector on Cortex XSOAR

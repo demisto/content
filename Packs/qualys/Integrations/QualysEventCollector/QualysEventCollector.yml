@@ -31,15 +31,25 @@ configuration:
   section: Collect
   display: First fetch time
   name: first_fetch
+  additionalinfo: if "First Fetch Time" set for long time ago, it may cause performance issues.
   required: true
   type: 0
-- display: Host Detections Fetch Interval
-  additionalinfo: Time between fetches of host detections (for example 12 hours, 60 minutes, etc).
+- display: Vulnerability Fetch Interval
+  additionalinfo: Time between fetches of vulnerabilities (for example 12 hours, 60 minutes, etc).
   name: host_detections_fetch_interval
   required: true
+  section: Collect
   defaultvalue: 12 hours
   type: 0
-description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+- section: Collect
+  advanced: true
+  display: Activity Logs Fetch Interval
+  additionalinfo: Time between fetches of activity logs.
+  name: eventFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+description: Qualys Event Collector fetches Activity Logs (Audit Logs) and Host Vulnerabilities.
 display: Qualys Event Collector
 name: QualysEventCollector
 script:
