@@ -9,6 +9,15 @@ To connect to Microsoft Graph Identity & Access using either Cortex XSOAR Graph 
 
 At the end of the process you'll see a message that you've logged in successfully.
 
+### Client Credentials Flow
+___
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration.
+2. Enter your Client/Application ID in the ***Application ID*** parameter. 
+3. Enter your Client Secret in the ***Client Secret*** parameter.
+4. Enter your Tenant ID in the ***Tenant ID*** parameter.
+
 #### Cortex XSOAR Graph App
 
 To use the Cortex XSOAR Azure application, use the default application ID (597c0375-766f-4e6d-ad2a-f48117044ac5).  
