@@ -9,8 +9,6 @@ from dateparser import parse
 from datetime import timedelta
 
 import urllib3
-
-
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
@@ -556,6 +554,7 @@ def get_project_id(project_key='', project_name=''):
         if 'Status code: 404' not in de.message:
             raise de
 
+        demisto.debug('Exception after first api call: {de.message}')
         demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
                       f'Trying another endpoint: {BASE_URL}/api/latest/project.')
 
