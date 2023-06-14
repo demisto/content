@@ -62,11 +62,9 @@ class AzureNSGClient:
     @logger
     def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = None,
                      data: dict = None, resp_type: str = 'json') -> requests.Response:
-        if not params:
-            params = {}
-        if not full_url:
-            params['api-version'] = API_VERSION
 
+        params = params or {}
+        params['api-version'] = API_VERSION
         return self.ms_client.http_request(method=method,
                                            url_suffix=url_suffix,
                                            full_url=full_url,
@@ -78,7 +76,7 @@ class AzureNSGClient:
     def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
         return self.http_request('GET',
                                  full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers\
-/Microsoft.Network/networkSecurityGroups?api-version={API_VERSION}')
+/Microsoft.Network/networkSecurityGroups?')
 
     @logger
     def list_rules(self, security_group: str):
