@@ -11,15 +11,23 @@ SCRIPT_NAME = 'DeleteContent'
 CORE_PACKS_LIST_URL = "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_list.json"
 
 
-def verify_search_response_in_list(response: Any, id: str):
+def verify_search_response_in_list(response: Any, id: str) -> str:
+    """
+    Return:
+        The id if it is in the response, else return empty string
+    """
     ids = [entity.get('id', '') for entity in response] if isinstance(response, list) else []
-    return False if id not in ids else id
+    return '' if id not in ids else id
 
 
-def verify_search_response_in_dict(response: dict | str | list):
+def verify_search_response_in_dict(response: dict | str | list) -> str:
+    """
+    Return:
+        The id if it is in the response, else return empty string
+    """
     if isinstance(response, dict) and response.get("id"):
-        return response.get("id")
-    return False
+        return response.get("id", "")
+    return ''
 
 
 def get_the_name_of_specific_id(response: dict | str | list, id: str) -> str:
@@ -37,89 +45,89 @@ class EntityAPI(ABC):
     name = ''
 
     @abstractmethod
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         pass
 
     @abstractmethod
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         pass
 
     @abstractmethod
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         pass
 
     @abstractmethod
-    def verify_specific_search_response(self, response: Union[dict, str], id: str):
+    def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         pass
 
     @abstractmethod
-    def get_name_by_id(self, response: Union[dict, str], id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         pass
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response) -> list:
         return [entity.get('id', '') for entity in response] if isinstance(response, list) else []
 
 
 class PlaybookAPI(EntityAPI):
     name = 'playbook'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/playbook/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/playbook/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/playbook/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str, id: str):
+    def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response: dict | str | list) -> list:
         return [entity.get('id', '') for entity in response.get('playbooks', [])] if type(response) is dict else []
 
 
 class IntegrationAPI(EntityAPI):
     name = 'integration'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/settings/integration/search',
                                 'body': {'page': 0, 'size': 100, 'query': f'name:"{specific_id}"'}},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/settings/integration/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/settings/integration-conf/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str | list, id: str):
+    def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         integrations = response.get('configurations', []) if isinstance(response, dict) else response
         return verify_search_response_in_list(integrations, id)
 
-    def get_name_by_id(self, response: dict | str | list, id: str):
+    def get_name_by_id(self, response: dict | str | list, id: str) -> str:
         integrations = response.get('configurations', []) if isinstance(response, dict) else response
         return get_the_name_of_specific_id(integrations, id)
 
-    def parse_all_entities_response(self, response: dict | str | list):
+    def parse_all_entities_response(self, response: dict | str | list) -> list:
         integrations = response.get('configurations', []) if isinstance(response, dict) else response
         return [entity.get('id') for entity in integrations] if type(integrations) is list else []
 
@@ -128,111 +136,111 @@ class ScriptAPI(EntityAPI):
     name = 'script'
     always_excluded = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer', SCRIPT_NAME]
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/automation/search',
                                 'body': {'page': 0, 'size': 1, 'query': f'id:"{specific_id}"'}},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/automation/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/automation/delete',
                                 'body': {'script': {'id': specific_id}}},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str | list, id: str):
+    def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         scripts = response.get('scripts') if isinstance(response, dict) else response
         return verify_search_response_in_list(scripts, id)
 
-    def get_name_by_id(self, response: dict | str | list, id: str):
+    def get_name_by_id(self, response: dict | str | list, id: str) -> str:
         scripts = response.get('scripts', []) if isinstance(response, dict) else response
         return get_the_name_of_specific_id(scripts, id)
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response: dict | str | list) -> list:
         return [entity.get('id', '') for entity in response.get('scripts', [])] if type(response) is dict else []
 
 
-class IncidentFieldAPI(EntityAPI):  # checked and works
+class IncidentFieldAPI(EntityAPI):
     name = 'incidentfield'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/incidentfields'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/incidentfields'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/incidentfield/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str, id: str):
+    def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_list(response, id)
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
 
-class PreProcessingRuleAPI(EntityAPI):  # checked and works
+class PreProcessingRuleAPI(EntityAPI):
     name = 'pre-process-rule'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/preprocess/rules'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/preprocess/rules'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/preprocess/rule/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str | list, id: str):
+    def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_list(response, id)
 
-    def get_name_by_id(self, response: dict | str | list, id: str):
+    def get_name_by_id(self, response: dict | str | list, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
 
 class WidgetAPI(EntityAPI):
     name = 'widget'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/widgets/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/widgets'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/widgets/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str, id: str):
+    def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response: dict | str | list) -> list:
         if type(response) is dict:
             return list(response.keys())
         return [entity.get('id', '') for entity in response] if type(response) is list else []
@@ -241,28 +249,28 @@ class WidgetAPI(EntityAPI):
 class DashboardAPI(EntityAPI):
     name = 'dashboard'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/dashboards/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/dashboards'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/dashboards/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str, id: str):
+    def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response: dict | str | list) -> list:
         if type(response) is dict:
             return list(response.keys())
         return [entity.get('id', '') for entity in response] if type(response) is list else []
@@ -271,80 +279,80 @@ class DashboardAPI(EntityAPI):
 class ReportAPI(EntityAPI):
     name = 'report'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/reports/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/reports'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/report/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str, id: str):
+    def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         return verify_search_response_in_dict(response)
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
 
-class IncidentTypeAPI(EntityAPI):  # checked and works
+class IncidentTypeAPI(EntityAPI):
     name = 'incidenttype'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/incidenttypes/export'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/incidenttypes/export'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/incidenttype/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str | list, id: str):
+    def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_list(response, id)
 
-    def get_name_by_id(self, response: dict | str | list, id: str):
+    def get_name_by_id(self, response: dict | str | list, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
 
 class ClassifierAPI(EntityAPI):
     name = 'classifier'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/classifier/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/classifier/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/classifier/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str | list, id: str):
+    def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_dict(response)
 
-    def get_name_by_id(self, response: dict | str | list, id: str):
+    def get_name_by_id(self, response: dict | str | list, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response: dict | str | list) -> list:
         classifiers = response.get('classifiers', []) if type(response) is dict else []
         return [entity.get('id', '') for entity in classifiers] if type(classifiers) is list else []
 
@@ -356,119 +364,119 @@ class MapperAPI(ClassifierAPI):
 class ReputationAPI(EntityAPI):
     name = 'reputation'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/reputation/export'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/reputation/export'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/reputation/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str | list, id: str):
+    def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_list(response, id)
 
-    def get_name_by_id(self, response: dict | str | list, id: str):
+    def get_name_by_id(self, response: dict | str | list, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
 
 class LayoutAPI(EntityAPI):
     name = 'layoutscontainer'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/layout/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/layouts'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': f'/layout/{specific_id}/remove',
                                 'body': {}},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str | list, id: str):
+    def verify_specific_search_response(self, response: dict | str | list, id: str) -> str:
         return verify_search_response_in_dict(response)
 
-    def get_name_by_id(self, response: dict | str | list, id: str):
+    def get_name_by_id(self, response: dict | str | list, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
 
 class JobAPI(EntityAPI):
     name = 'job'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/jobs/search',
                                 'body': {'page': 0, 'size': 1, 'query': f'name:"{specific_id}"'}},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/jobs/search',
                                 'body': {'page': 0, 'size': 100}},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'jobs/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: dict | str, id: str):
+    def verify_specific_search_response(self, response: dict | str, id: str) -> str:
         job_params = {}
         if isinstance(response, dict):
             if search_results := response.get('data'):
                 job_params = search_results[0]
 
-        return job_params.get("id") if job_params and job_params.get("id") else False
+        return job_params.get("id", '') if job_params and job_params.get("id") else ''
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         job_params = {}
         if isinstance(response, dict):
             if search_results := response.get('data'):
                 job_params = search_results[0]
         return get_the_name_of_specific_id(job_params, id)
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response: dict | str | list) -> list:
         return [entity.get('name', '') for entity in response.get('data', [])] if type(response) is dict else []
 
 
 class ListAPI(EntityAPI):
     name = 'list'
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/lists/download/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/lists/names'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-post',
                                {'uri': '/lists/delete',
                                 'body': {'id': specific_id}},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: Union[dict, str], id: str):
-        return id if response else False
+    def verify_specific_search_response(self, response: Union[dict, str], id: str) -> str:
+        return id if response else ''
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         return id
 
-    def parse_all_entities_response(self, response: Union[dict, str, list]):
+    def parse_all_entities_response(self, response: list) -> list:
         return response
 
 
@@ -482,25 +490,25 @@ class InstalledPackAPI(EntityAPI):
         core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=verify)
         self.always_excluded = json.loads(core_packs_response.text).get("core_packs_list") + self.always_excluded
 
-    def search_specific_id(self, specific_id: str):
+    def search_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': f'/contentpacks/installed/{specific_id}'},
                                fail_on_error=False)
 
-    def search_all(self):
+    def search_all(self) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-get',
                                {'uri': '/contentpacks/installed-expired'},
                                fail_on_error=False)
 
-    def delete_specific_id(self, specific_id: str):
+    def delete_specific_id(self, specific_id: str) -> Tuple[bool, dict | str]:
         return execute_command('demisto-api-delete',
                                {'uri': f'/contentpacks/installed/{specific_id}'},
                                fail_on_error=False)
 
-    def verify_specific_search_response(self, response: Union[dict, str], id: str):
+    def verify_specific_search_response(self, response: Union[dict, str], id: str) -> str:
         return verify_search_response_in_dict(response)
 
-    def get_name_by_id(self, response: dict | str, id: str):
+    def get_name_by_id(self, response: dict | str, id: str) -> str:
         return get_the_name_of_specific_id(response, id)
 
 
@@ -521,8 +529,8 @@ def search_and_delete_existing_entity(id: str, entity_api: EntityAPI, dry_run: b
         demisto.debug(f'Could not find {entity_api.name} with id {id} - Response:\n{res}')
         return False, id
 
-    specific_id = entity_api.verify_specific_search_response(res.get('response'), id)
-    specific_name = entity_api.get_name_by_id(res.get('response'), id)
+    specific_id = entity_api.verify_specific_search_response(res.get('response', {}), id)  # type: ignore[union-attr]
+    specific_name = entity_api.get_name_by_id(res.get('response', {}), id)  # type: ignore[union-attr]
 
     if not specific_id:
         return False, id
@@ -532,7 +540,6 @@ def search_and_delete_existing_entity(id: str, entity_api: EntityAPI, dry_run: b
     else:
         demisto.debug(f'DRY RUN - Not deleting {entity_api.name} with id "{id}" and name "{specific_name}".')
         status = True
-        res = True
 
     if not status:
         demisto.debug(f'Could not delete {entity_api.name} with id "{id}" and name "{specific_name}" - Response:\n{res}')
@@ -557,13 +564,11 @@ def search_for_all_entities(entity_api: EntityAPI) -> list:
         demisto.debug(error_message)
         raise Exception(error_message)
 
-    entity_ids = entity_api.parse_all_entities_response(res.get('response', {}))
-
-    return entity_ids
+    return entity_api.parse_all_entities_response(res.get('response', {}))  # type: ignore[union-attr]
 
 
-def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], included_ids: list = [],
-                            dry_run: bool = True) -> Tuple[list[dict], list[dict], list]:
+def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], included_ids: list = [], dry_run: bool = True
+                            ) -> Tuple[list[dict], list[dict], list]:
     """Search and delete entities with provided EntityAPI.
 
     Args:
@@ -663,9 +668,7 @@ def handle_content_entity(entity_api: EntityAPI,
 
 
 def handle_input_json(input_dict: Any) -> Any:
-    if type(input_dict) == str:
-        return json.loads(input_dict)
-    return input_dict
+    return json.loads(input_dict) if isinstance(input_dict, str) else input_dict
 
 
 def get_and_delete_needed_ids(args: dict) -> CommandResults:

@@ -42,26 +42,24 @@ def get_content_details(tar_file_handler: Any, member_file: Any) -> Tuple[str, d
         file_name = update_file_prefix(member_file.name.strip('/'))
         file_path = os.path.join(tmp_dir_name, file_name)
         with open(file_path, 'w') as file_desc:
-            extracted_file = tar_file_handler.extractfile(member_file)
-            if extracted_file:
+            if extracted_file := tar_file_handler.extractfile(member_file):
                 file_desc.write(extracted_file.read().decode('utf-8'))
             else:
                 raise Exception(f'Could not extract file {file_name} from tar: {file_path}')
 
-        if os.path.isfile(file_path):
-            file_type = find_type(path=file_path)
-            file_type_str = file_type.value if file_type else ''
-            if file_type_str == 'automation':
-                file_type_str = 'script'
-
-            file_type_str = 'list' if not file_type_str and file_name.startswith('list-') else file_type_str
-            file_dict = get_file(file_path, Path(file_name).suffix[1:])
-            file_id = _get_file_id(file_type_str, file_dict)
-            file_id = file_id if file_id else file_dict.get('id')
-            file_name = get_file_displayed_name(file_path)
-
-        else:
+        if not os.path.isfile(file_path):
             raise Exception(f"Could not create file {file_path}")
+
+        file_type = find_type(path=file_path)
+        file_type_str = file_type.value if file_type else ''
+        if file_type_str == 'automation':
+            file_type_str = 'script'
+
+        file_type_str = 'list' if not file_type_str and file_name.startswith('list-') else file_type_str
+        file_dict = get_file(file_path, Path(file_name).suffix[1:])
+        file_id = _get_file_id(file_type_str, file_dict)
+        file_id = file_id if file_id else file_dict.get('id')
+        file_name = get_file_displayed_name(file_path)
 
     file_id_name = {"id": file_id, "name": file_name}
     return file_type_str, file_id_name
@@ -97,7 +95,7 @@ def get_custom_content_ids(file_entry_id: Any) -> dict:
 ''' COMMAND FUNCTION '''
 
 
-def filter_lists(include: list, exclude: list):
+def filter_lists(include: list, exclude: list) -> list:
     return [item for item in include if item.get('id') not in exclude]
 
 
@@ -135,7 +133,7 @@ def get_included_ids_command(args: Dict[str, Any]) -> CommandResults:
                                                                     exclude=excluded_ids.get(custom_entity, []))
 
         # Remove included entities from excluded dict
-        for entity in included_custom_ids_names.keys():
+        for entity in included_custom_ids_names:
             if entity in excluded_ids.keys():
                 excluded_ids.pop(entity)
 
