@@ -2,7 +2,7 @@
     "fromVersion": "8.3.0",
     "templates_data": [
         {
-            "report_name": "XSIAM Compliance: HIPAA Overview",
+            "report_name": "HIPAA Compliance Report",
             "report_description": "Use this report to monitor HIPAA controls and produce evidence for audits.",
             "layout": [
                 {
@@ -11,7 +11,7 @@
                         {
                             "key": "header",
                             "data": {
-                                "name": "XSIAM Compliance: HIPAA Overview",
+                                "name": "HIPAA Report",
                                 "type": "",
                                 "width": 100,
                                 "height": 140,
