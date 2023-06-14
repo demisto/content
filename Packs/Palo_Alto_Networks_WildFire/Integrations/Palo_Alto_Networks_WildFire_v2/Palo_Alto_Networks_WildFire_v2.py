@@ -1300,7 +1300,8 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             )
 
             report = res_maec.get('result')
-            report_str = json.dumps(report)
+            # report_str = json.dumps(report)
+            report_str = report
 
             file_name = 'wildfire_report_maec_' + file_hash + '.json'
             file_type = entryTypes['entryInfoFile']
@@ -1308,7 +1309,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             result = fileResult(file_name, report_str, file_type)  # will be saved under 'InfoFile' in the context.
             demisto.results(result)
             human_readable = tableToMarkdown('WildFire File Report - MAEC format', prettify_report_entry(file_info))
-            outputs['maec_report'] = report
+            outputs['maec_report'] = json.loads(report)
 
         except Exception as exc:
             demisto.error(f'Report MAEC Exception. Error: {exc}')
