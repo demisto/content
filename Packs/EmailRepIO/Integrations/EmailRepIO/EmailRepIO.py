@@ -66,7 +66,7 @@ def test_module(client: Client) -> str:
         if 'invalid api key' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
-        raise e
+            raise e
     return 'ok'
 
 
