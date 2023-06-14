@@ -1917,7 +1917,7 @@ tasks:
       password:
         simple: test
       role_id:
-        simple: "4"
+        simple: "Vulnerability Analyst"
       user_name:
         simple: test_user_${TimeNow}
     separatecontext: false
