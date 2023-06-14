@@ -1504,6 +1504,7 @@ def main():
             incidents = fetch_incidents(fetch_query, id_offset, fetch_attachments, fetch_comments, incoming_mirror,
                                         outgoing_mirror, comment_tag, attachment_tag, fetch_by_created)
             demisto.incidents(incidents)
+
         elif demisto.command() == 'jira-get-issue':
             human_readable, outputs, raw_response = get_issue(**snakify(demisto.args()))
             return_outputs(human_readable, outputs, raw_response)
@@ -1563,12 +1564,16 @@ def main():
 
         elif demisto.command() == 'jira-get-id-by-attribute':
             return_results(get_account_id_from_attribute(**demisto.args()))
+
         elif demisto.command() == 'jira-get-organizations':
             return_results(get_organizations_command())
+
         elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
+
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
+
         elif demisto.command() == 'jira-issue-assign':
             human_readable, outputs, raw_response = update_issue_assignee_command(**snakify(demisto.args()))
             return_outputs(human_readable, outputs, raw_response)
