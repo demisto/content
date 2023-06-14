@@ -3556,11 +3556,15 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
 
 
 def fetch_incidents(client: MsClient, last_run, fetch_evidence):
+
+    demisto.debug("Microsoft-ATP - Start fetching")
+
     first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
                                         settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
     demisto.debug(f'First fetch time: {first_fetch_time}')
 
     if last_run:
+        demisto.debug(f"Microsoft-ATP - Last run: {json.dumps(last_run)}")
         last_fetch_time = last_run.get('last_alert_fetched_time')
         last_fetch_time = datetime.strftime(parse_date_string(last_fetch_time) + timedelta(milliseconds=1), TIME_FORMAT)
         # handling old version of time format:
@@ -3569,13 +3573,14 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
     else:
         last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)  # type: ignore
+        demisto.debug(f"Microsoft-ATP - Last run: {last_fetch_time}")
 
     latest_created_time = dateparser.parse(last_fetch_time,
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
     demisto.debug(f'latest_created_time: {latest_created_time}')
 
     params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
-    demisto.debug(f'getting alerts using {params=}')
+    demisto.debug(f"Microsoft-ATP - Query sent to the server: {params}")
     incidents = []
     # get_alerts:
     try:
@@ -3590,6 +3595,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
                 f'Try using a lower limit.')
         demisto.debug(f'Query crashed API. Params sent to query: {params}')
         raise err
+    skipped_incidents = 0
 
     for alert in alerts:
         alert_time = dateparser.parse(alert['alertCreationTime'],
@@ -3599,8 +3605,9 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
             demisto.debug(f'Checking alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
             if alert_time <= parsed:  # type: ignore
-                demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
-                              f' Skipping.')
+                skipped_incidents += 1
+                demisto.debug(f'Microsoft - ATP - Skipping incident with id={alert["id"]} with time {alert_time} because its'
+                              ' creation time is smaller than the last fetch.')
                 continue
         demisto.debug(f'Adding alert {alert["id"]}')
         incidents.append({
@@ -3616,7 +3623,10 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
-    demisto.debug(f'got {len(incidents)} incidents from the API.')
+    demisto.debug(f'Microsoft-ATP - Next run after incidents fetching: {latest_created_time}')
+    demisto.debug(f"Microsoft-ATP - Number of incidents before filtering: {len(alerts)}")
+    demisto.debug(f"Microsoft-ATP - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"Microsoft-ATP - Number of incidents skipped: {skipped_incidents}")
     last_run['last_alert_fetched_time'] = datetime.strftime(latest_created_time, TIME_FORMAT)  # type: ignore
     return incidents, last_run
 
