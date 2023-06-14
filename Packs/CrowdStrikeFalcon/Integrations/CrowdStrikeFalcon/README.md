@@ -5346,7 +5346,7 @@ Retrieve ODS scan details.
 
 #### Command example
 
-```!cs-falcon-ods-query-scan```
+```!cs-falcon-ods-query-scan  initiated_from=some_admin_name severity=high scan_started_on=2023-02-27T09:51:33.91608286Z```
 
 #### Context Example
 
@@ -5370,7 +5370,7 @@ Retrieve ODS scan details.
                     "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
                 ],
                 "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "initiated_from": "falcon_adhoc",
+                "initiated_from": "some_admin_name",
                 "last_updated": "2023-05-03T08:45:43.348230927Z",
                 "max_duration": 0,
                 "max_file_size": 60,
@@ -5419,7 +5419,7 @@ Retrieve ODS scan details.
                 "scan_inclusions": [
                     "**\\Downloads\\**"
                 ],
-                "scan_started_on": "2023-05-03T08:45:43.069273028Z",
+                "scan_started_on": "2023-02-27T09:51:33.91608286Z",
                 "sensor_ml_level_detection": 4,
                 "sensor_ml_level_prevention": 4,
                 "status": "completed"
@@ -5437,7 +5437,7 @@ Retrieve ODS scan details.
                     "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
                 ],
                 "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "initiated_from": "falcon_adhoc",
+                "initiated_from": "some_admin_name",
                 "last_updated": "2023-04-05T16:56:14.972317443Z",
                 "max_duration": 2,
                 "max_file_size": 60,
@@ -5455,7 +5455,7 @@ Retrieve ODS scan details.
                         "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                         "last_updated": "2023-03-12T14:57:37.338585331Z",
                         "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                        "started_on": "2023-03-12T14:54:45.210172175Z",
+                        "started_on": "2023-02-27T09:51:33.91608286Z",
                         "status": "completed"
                     }
                 ],
@@ -5494,8 +5494,8 @@ Retrieve ODS scan details.
 
 >|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
 >|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518464 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-03-15T15:57:37.59543591Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-03-13T14:47:44.674818897Z | <someone@email.com> |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518464 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-02-27T09:51:33.91608286Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-02-27T09:51:33.91608286Z | <someone@email.com> |
 
 ### cs-falcon-ods-query-scheduled-scan
 
@@ -5555,7 +5555,7 @@ Retrieve ODS scheduled scan details.
 
 #### Command example
 
-```!cs-falcon-ods-query-scheduled-scan```
+```!cs-falcon-ods-query-scheduled-scan ids=123456789```
 
 #### Context Example
 
@@ -5574,7 +5574,7 @@ Retrieve ODS scheduled scan details.
             "host_groups": [
                 "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
             ],
-            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "id": "123456789",
             "initiated_from": "cloud_scheduled",
             "last_updated": "2023-05-08T09:22:48.408487143Z",
             "max_duration": 2,
@@ -5649,7 +5649,7 @@ Retrieve ODS scheduled scan details.
 
 >|ID|Hosts targeted|Description|Host groups|Start time|Created by|
 >|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-20T06:49 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>|  123456789 | 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-20T06:49 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 ### cs-falcon-ods-query-scan-host
 
@@ -5695,7 +5695,7 @@ Retrieve ODS scan host details.
 
 #### Command example
 
-```!cs-falcon-ods-query-scan-host```
+```!cs-falcon-ods-query-scan-host filter="scan_id:[\"123456789\",\"987654321\"]"```
 
 #### Context Example
 
@@ -5707,7 +5707,7 @@ Retrieve ODS scan host details.
                 "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "filecount": {},
                 "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "123456789",
                 "last_updated": "2022-11-27T17:15:50.056840267Z",
                 "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
@@ -5725,7 +5725,7 @@ Retrieve ODS scan host details.
                 },
                 "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "987654321",
                 "last_updated": "2023-05-07T08:28:56.856575358Z",
                 "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
                 "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
@@ -5743,8 +5743,8 @@ Retrieve ODS scan host details.
 
 >|ID|Scan ID|Host ID|Filecount|Status|Severity|Started on|
 >|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | pending |  |  |
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524581 | completed |  | 2023-05-07T08:25:48.336234188Z |
+>| 123456789 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | pending |  |  |
+>| 987654321 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524581 | completed |  | 2023-05-07T08:25:48.336234188Z |
 
 ### cs-falcon-ods-query-malicious-files
 
@@ -6123,7 +6123,7 @@ There is no context output for this command.
 
 #### Command example
 
-```!cs-falcon-ods-delete-scheduled-scan ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
+```!cs-falcon-ods-delete-scheduled-scan  ids=9acf0c069d3d4a5b82badb170966e77c```
 
 #### Human Readable Output
 
@@ -6131,4 +6131,4 @@ There is no context output for this command.
 
 >|Scan ID|
 >|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| 9acf0c069d3d4a5b82badb170966e77c |
