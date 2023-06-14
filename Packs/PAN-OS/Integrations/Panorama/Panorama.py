@@ -3486,7 +3486,7 @@ def prettify_rule(rule: dict):
         'SecurityProfileGroup': rule_get(['profile-setting', 'group', 'member']),
         'SecurityProfile': {
             key: value.get('member')
-            for key, value in profiles.items()
+            for key, value in profiles.items()   # pylint: disable=E0601 - profiles is assigned in the if statement bellow.
             if isinstance(value, dict)
         }
         if (profiles := rule_get(['profile-setting', 'profiles'], return_type=dict, default_return_value={}))
