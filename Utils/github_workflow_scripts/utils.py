@@ -115,7 +115,7 @@ class Checkout:  # pragma: no cover
                     try:
                         payload = json.loads(github_event_path)
                     except ValueError:
-                        print(f'failed to load GITHUB_EVENT_PATH')
+                        print('failed to load GITHUB_EVENT_PATH')
                         raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the owner {fork_owner}')
                     # forked repo name includes fork_owner + repo name, for example foo/content.
                     forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
@@ -139,6 +139,7 @@ class Checkout:  # pragma: no cover
         """Checks out the given branch"""
         self.repo.git.checkout(self.branch_to_checkout)
         print(f'Checked out to branch {self.branch_to_checkout}')
+        return self
 
     def __exit__(self, *args):
         """Checks out the previous branch"""
