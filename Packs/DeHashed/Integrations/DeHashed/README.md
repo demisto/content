@@ -87,24 +87,24 @@ Checks if an email address was compromised.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| DeHashed.Search.Id | String | ID of the object. | 
-| DeHashed.Search.Email | String | Email address of the object. | 
-| DeHashed.Search.Username | String | Username of the object. | 
-| DeHashed.Search.Password | String | Password of the object. | 
-| DeHashed.Search.HashedPassword | String | Hashed password of the object. | 
-| DeHashed.Search.Name | String | Name of the object. | 
-| DeHashed.Search.Vin | Number | Vehicle identification of the object. | 
-| DeHashed.Search.Address | String | Address of the object. | 
-| DeHashed.Search.IpDddress | Number | IP address of the object. | 
-| DeHashed.Search.Phone | Number | Phone number of the object. | 
-| DeHashed.Search.ObtainedFrom | String | Source of the object. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data.                                                                                                                                                                    | 
+| **Path** | **Type** | **Description**                                             |
+| --- | --- |-------------------------------------------------------------|
+| DeHashed.Search.Id | String | ID of the object.                                           | 
+| DeHashed.Search.Email | String | Email address of the object.                                | 
+| DeHashed.Search.Username | String | Username of the object.                                     | 
+| DeHashed.Search.Password | String | Password of the object.                                     | 
+| DeHashed.Search.HashedPassword | String | Hashed password of the object.                              | 
+| DeHashed.Search.Name | String | Name of the object.                                         | 
+| DeHashed.Search.Vin | Number | Vehicle identification of the object.                       | 
+| DeHashed.Search.Address | String | Address of the object.                                      | 
+| DeHashed.Search.IpDddress | Number | IP address of the object.                                   | 
+| DeHashed.Search.Phone | Number | Phone number of the object.                                 | 
+| DeHashed.Search.ObtainedFrom | String | Source of the object.                                       | 
+| DBotScore.Indicator | String | The indicator that was tested.                              | 
+| DBotScore.Type | String | The indicator type.                                         | 
+| DBotScore.Vendor | String | The vendor used to calculate the score.                     | 
+| DBotScore.Score | Number | The actual score.                                           | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data.  | 
 
 
 
