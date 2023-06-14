@@ -1,9 +1,4 @@
 {
-    "cacheVersn": 0,
-    "close": null,
-    "definitionId": "",
-    "description": "",
-    "detached": false,
     "details": {
         "sections": [
             {
@@ -286,7 +281,6 @@
         ]
     },
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -889,21 +883,14 @@
             }
         ]
     },
-    "fromServerVersion": "",
     "group": "incident",
     "id": "Mandiant Advantage ASM Vulnerable Item",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "3.2.34",
-    "locked": false,
-    "mobile": null,
     "name": "Mandiant Advantage ASM Vulnerable Item",
-    "packID": "",
-    "packName": "",
-    "propagationLabels": [],
-    "quickView": null,
-    "quickViewV2": null,
     "system": false,
-    "toServerVersion": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }
