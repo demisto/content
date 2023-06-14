@@ -1,0 +1,1 @@
+/home/ennozdd/content/.venv/lib/python3.10/site-packages/demisto_sdk/commands/lint/resources/pylint_plugins/base_checker.py

@@ -832,7 +832,7 @@ def _update_fields(issue_id, new_data):
 
 def get_organizations_command():
     url = '/rest/servicedeskapi/organization'
-    res = jira_req('GET', url).json().get('values')
+    res = jira_req('GET', url, resp_type='json').get('values')
     [org.pop('_links') for org in res]
     return CommandResults(outputs=res, outputs_prefix='Jira.Organizations')
 

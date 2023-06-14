@@ -377,13 +377,30 @@ ATTACHMENTS = {
 }
 
 
-ORGANIZATIONS = [
-    {
-        "id": "23",
-        "name": "TestXDR"
+ORGANIZATIONS = {
+    "_links": {
+        "base": "https://demistodev.atlassian.net",
+        "context": "",
+        "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization"
     },
-    {
-        "id": "33",
-        "name": "XSOAR"
-    }
-]
+    "isLastPage": True,
+    "limit": 50,
+    "size": 2,
+    "start": 0,
+    "values": [
+        {
+            "_links": {
+                "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization/23"
+            },
+            "id": "23",
+            "name": "TEST"
+        },
+        {
+            "_links": {
+                "self": "https://demistodev.atlassian.net/rest/servicedeskapi/organization/4"
+            },
+            "id": "4",
+            "name": "XSOAR"
+        }
+    ]
+}
