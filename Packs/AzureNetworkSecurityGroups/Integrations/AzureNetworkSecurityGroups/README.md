@@ -8,8 +8,8 @@ Azure network security groups are used to filter network traffic to and from Azu
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Subscription ID |  | True |
-    | Resource Group Name |  | True |
+    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value. | False |
+    | Default Resource Group Name |There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.  | False |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
