@@ -21,7 +21,7 @@ def test_get_activity_logs_events_command(requests_mock):
     with open('./test_data/activity_logs.csv', 'r') as f:
         logs = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/activity_log/'
-                      f'?action=list&truncation_limit=50&since_datetime=2023-03-01T00%3A00%3A00Z', text=logs)
+                      f'?action=list&truncation_limit=0&since_datetime=2023-03-01T00%3A00%3A00Z', text=logs)
     client = Client(base_url=base_url,
                     verify=True,
                     headers={},
@@ -50,7 +50,7 @@ def test_get_host_list_detections_events_command(requests_mock):
     with open('./test_data/host_list_detections_raw.xml', 'r') as f:
         logs = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
-                      f'?action=list&truncation_limit=50&vm_scan_date_after=2023-03-01T00%3A00%3A00Z', text=logs)
+                      f'?action=list&truncation_limit=0&vm_scan_date_after=2023-03-01T00%3A00%3A00Z', text=logs)
     client = Client(base_url=base_url,
                     verify=True,
                     headers={},
