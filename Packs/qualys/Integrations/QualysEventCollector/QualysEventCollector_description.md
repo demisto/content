@@ -17,4 +17,4 @@ You can adjust the fetch interval using the *Activity Logs Fetch Interval* and *
 
 - **Note**: We recommend setting "First Fetch Time" to fetch logs from no more than the last 3 days for each fetch. Using a greater fetch time, may cause performance issues.
 
-- Vulnerabilities in the dataset has event_type = "host_list_detections".
+- Vulnerabilities in the dataset have event_type = "host_list_detections".
