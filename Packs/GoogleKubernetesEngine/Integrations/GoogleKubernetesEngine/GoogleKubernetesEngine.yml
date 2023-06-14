@@ -3,11 +3,18 @@ commonfields:
   id: GoogleKubernetesEngine
   version: -1
 configuration:
-- additionalinfo: The content of the generated `credentials.json` file. (Read the docs for further information)
+- additionalinfo: The content of the generated `credentials.json` file. (Read the
+    docs for further information)
   display: JSON credentials
+  hidden: true
   name: credentials_json
-  required: true
+  required: false
   type: 4
+- displaypassword: JSON credentials
+  hiddenusername: true
+  name: credentials_json_creds
+  required: false
+  type: 9
 - additionalinfo: Can be overwriten in commands execution.
   display: Default project
   name: default_project
@@ -18,6 +25,7 @@ configuration:
   name: default_zone
   required: true
   type: 0
+
 description: |-
   The Google Kubernetes Engine integration is used for building and managing container based
   applications in Google Cloud Platform (GCP), powered by the open source Kubernetes technology.
