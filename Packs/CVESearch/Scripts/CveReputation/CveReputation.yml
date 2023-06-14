@@ -7,7 +7,7 @@ type: javascript
 tags:
 - cve
 - reputation
-comment: Deprecated. Use CveReputation instead.
+comment: Deprecated. Use CveReputation (in CommonScripts) instead.
 enabled: true
 args:
 - name: input
