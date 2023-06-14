@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import hashlib
 import io
 import json
@@ -5,14 +8,14 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto
+
 import pytz
 import requests
 import splunklib.client as client
 import splunklib.results as results
 from splunklib.data import Record
 import urllib3
-from CommonServerPython import *  # noqa: F401
+
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 urllib3.disable_warnings()
@@ -2614,7 +2617,7 @@ def get_connection_args() -> dict:
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-
+    print("TEST")
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command()
         sys.exit(0)
