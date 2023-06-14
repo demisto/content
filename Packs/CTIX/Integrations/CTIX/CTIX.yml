@@ -800,7 +800,7 @@ script:
     - contextPath: CTIX.Intel.status
       description: Status code returned from the api.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
   runonce: false
   subtype: python3
 tests:
