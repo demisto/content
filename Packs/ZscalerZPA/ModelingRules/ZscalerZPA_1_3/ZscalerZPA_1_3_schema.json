@@ -101,7 +101,7 @@
           "is_array": false
         },
         "proto": {
-          "type": "string",
+          "type": "int",
           "is_array": false
         },
         "srcBytes": {
