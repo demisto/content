@@ -553,58 +553,6 @@ script:
   - arguments: []
     description: Lists all the organizations.
     name: jira-get-organizations
-  - arguments:
-    - description: The ID of the issue to edit.
-      name: issueId
-      required: true
-    - description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037": "field_value"}}.'
-      name: issueJson
-    - description: The issue summary.
-      name: summary
-    - description: The issue description.
-      name: description
-    - description: A CSV list of labels.
-      name: labels
-    - description: 'The issue priority, for example: High, Medium.'
-      name: priority
-    - description: The due date for the issue (in the format yyyy-mm-dd).
-      name: dueDate
-    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead.
-      name: assignee
-    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
-      name: assignee_id
-    - description: The issue status.
-      name: status
-    - description: The issue transition.
-      name: transition
-    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
-      name: environment
-    - description: The security level name of the issue. For example security="Anyone".
-      name: security
-    - description: The component names of the issue. For example components="component1,component2".
-      isArray: true
-      name: components
-    description: Modifies an issue in Jira.
-    name: jira-edit-issue
-    outputs:
-    - contextPath: Ticket.Id
-      description: The ticket ID.
-      type: String
-    - contextPath: Ticket.Key
-      description: The ticket key.
-      type: String
-    - contextPath: Ticket.Assignee
-      description: The user assigned to the ticket.
-      type: String
-    - contextPath: Ticket.Creator
-      description: The user who created the ticket.
-      type: String
-    - contextPath: Ticket.Summary
-      description: The ticket summary.
-      type: String
-    - contextPath: Ticket.Status
-      description: The ticket status.
-      type: String
   dockerimage: demisto/oauthlib:1.0.0.62974
   isfetch: true
   ismappable: true
