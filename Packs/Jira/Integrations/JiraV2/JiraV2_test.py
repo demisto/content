@@ -1594,6 +1594,16 @@ def test_get_organizations(mocker):
     from test_data.raw_response import ORGANIZATIONS
     from JiraV2 import get_organizations_command
     mocker.patch.object(demisto, "results")
+    organizations = [
+        {
+            "id": "23",
+            "name": "TEST"
+        },
+        {
+            "id": "4",
+            "name": "XSOAR"
+        }
+    ]
     mocker.patch("JiraV2.jira_req", return_value=ORGANIZATIONS)
-    get_organizations_command()
-    assert demisto.results.call_count == 1
+    result = get_organizations_command()
+    assert result.raw_response == organizations
