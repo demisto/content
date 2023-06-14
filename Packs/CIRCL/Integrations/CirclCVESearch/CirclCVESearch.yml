@@ -78,7 +78,7 @@ script:
     - default: true
       description: 'The CVE ID. For example: CVE-2014-1234.'
       isArray: true
-      name: cve_id
+      name: cve
       required: true
       secret: false
     deprecated: false

@@ -114,7 +114,7 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
     Returns:
         CVE details containing ID, CVSS, modified date, published date and description.
     """
-    cve_id = args.get('cve_id', '')
+    cve_id = args.get('cve', '')
     cve_ids = argToList(cve_id)
     command_results: List[CommandResults] = []
 
