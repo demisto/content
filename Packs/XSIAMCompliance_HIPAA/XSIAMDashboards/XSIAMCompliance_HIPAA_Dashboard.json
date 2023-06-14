@@ -2,7 +2,7 @@
     "fromVersion": "8.3.0",
     "dashboards_data": [
         {
-            "name": "XSIAM Compliance: HIPAA Overview",
+            "name": "HIPAA Compliance Dashboard",
             "description": "Use this dashboard to monitor HIPAA controls and produce evidence for audits.",
             "status": "ENABLED",
             "layout": [
@@ -12,7 +12,7 @@
                         {
                             "key": "title",
                             "data": {
-                                "text": "HIPAA Overview",
+                                "text": "HIPAA Compliance",
                                 "type": "Text",
                                 "style": {
                                     "bgColor": "#ffffff",
