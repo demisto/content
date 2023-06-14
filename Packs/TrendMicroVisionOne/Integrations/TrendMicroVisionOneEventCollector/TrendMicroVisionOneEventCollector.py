@@ -441,14 +441,25 @@ def get_all_latest_time_logs_ids(
     log_id_field_name: str,
     log_created_time_field_name: str = '_time',
     date_format: str = DATE_FORMAT
-):
+) -> Tuple[List[str], str]:
     """
-    Get all the logs that their time is equal to the last log that occurred
+    Get all the logs that their time is equal to the last log that occurred.
+
+    Args:
+        logs (list): a list of logs.
+        log_type (str): the log type
+        log_id_field_name (str): the id field name of the log type
+        log_created_time_field_name (str): the created time field of the log
+        date_format (str): the date format of the logs
+
+    Returns: all the logs their created time is equal to the latest created time log & latest log time
+
     """
     latest_occurred_log = get_latest_log_created_time(
         logs=logs, log_type=log_type, created_time_field=log_created_time_field_name, date_format=date_format
     )
 
+    # if there aren't any new logs, no need to cache anything
     if not latest_occurred_log:
         return [], latest_occurred_log
 
@@ -470,7 +481,7 @@ def dedup_fetched_logs(
     log_id_field_name: str,
     log_cache_last_run_name_field_name: str,
     log_type: str
-):
+) -> List[Dict]:
     """
     Retrieve a list of all the logs that were not fetched yet.
 
@@ -480,6 +491,8 @@ def dedup_fetched_logs(
         log_id_field_name (str): the id field name of the log type
         log_cache_last_run_name_field_name (str): the name of the field that saves IDs of the logs in the last run
         log_type (str): the log type
+
+    Returns: all the logs that were not fetched yet (which are not in the cache of the last run)
     """
     last_run_found_logs = set(last_run.get(log_cache_last_run_name_field_name) or [])
 
@@ -613,7 +626,9 @@ def get_observed_attack_techniques_logs(
         date_format=date_format
     )
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
-        detected_start_datetime=start_time, detected_end_datetime=end_time, limit=limit
+        detected_start_datetime=start_time,
+        detected_end_datetime=end_time,
+        limit=limit + len(last_run.get(observed_attack_technique_cache_time_field_name, []))
     )
 
     observed_attack_techniques_logs = dedup_fetched_logs(
@@ -678,7 +693,8 @@ def get_search_detection_logs(
         log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS.value,
         date_format=date_format
     )
-    search_detection_logs = client.get_search_detection_logs(start_datetime=start_time, top=limit, limit=limit)
+    search_detection_logs = client.get_search_detection_logs(
+        start_datetime=start_time, top=limit, limit=limit + len(last_run.get(search_detections_cache_time_field_name, [])))
 
     search_detection_logs = dedup_fetched_logs(
         logs=search_detection_logs,
