@@ -1,0 +1,21 @@
+{
+    "name": "IBM QRadar new",
+    "description": "Test old pack",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "dans t",
+    "url": "",
+    "email": "",
+    "created": "2023-06-14T12:18:42Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "dansterenson"
+    ]
+}
