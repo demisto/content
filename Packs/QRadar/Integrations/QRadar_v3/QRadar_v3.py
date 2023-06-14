@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import concurrent.futures
 import secrets
 from enum import Enum
@@ -8,9 +11,7 @@ import dateparser
 
 import pytz
 import urllib3
-from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -2552,7 +2553,7 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
     if query_expression or saved_search_id:
         try:
             response = client.search_create(query_expression, saved_search_id)
-        except Exception:
+        except Exception as e:
             raise DemistoException(f'Could not create search for offense_id: {offense_id}')
     else:
         response = create_events_search(client,
@@ -4045,7 +4046,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-
+    print("TEST")
     # handle allowed advanced parameters
     adv_params = params.get('adv_params')
     if adv_params:
