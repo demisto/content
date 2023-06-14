@@ -342,7 +342,6 @@ def get_datetime_range(
     first_fetch: str,
     log_type_time_field_name: str,
     date_format: str = DATE_FORMAT,
-    look_back: int = 0
 ) -> Tuple[str, str]:
     """
     Get a datetime range for any log type.
@@ -352,7 +351,6 @@ def get_datetime_range(
         first_fetch (str): First fetch time.
         log_type_time_field_name (str): the name of the field in the last run for a specific log type.
         date_format (str): The date format.
-        look_back (int): The time to look back in fetch in seconds
 
     Returns:
         Tuple[str, str]: start time and end time
@@ -367,9 +365,6 @@ def get_datetime_range(
         last_run_time_datetime = dateparser.parse(  # type: ignore[no-redef]
             first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
         )
-
-    if look_back > 0:
-        last_run_time_datetime = last_run_time_datetime - timedelta(seconds=look_back)
 
     last_run_time_before_parse = last_run_time_datetime.strftime(date_format)  # type: ignore[union-attr]
     demisto.info(f'{last_run_time_before_parse=}')
@@ -440,39 +435,66 @@ def get_latest_log_created_time(
     return ''
 
 
-def filter_logs_by_cache(
+def get_all_latest_time_logs_ids(
+    logs: List[Dict],
+    log_type: str,
+    log_id_field_name: str,
+    log_created_time_field_name: str = '_time',
+    date_format: str = DATE_FORMAT
+):
+    """
+    Get all the logs that their time is equal to the last log that occurred
+    """
+    latest_occurred_log = get_latest_log_created_time(
+        logs=logs, log_type=log_type, created_time_field=log_created_time_field_name, date_format=date_format
+    )
+
+    if not latest_occurred_log:
+        return [], latest_occurred_log
+
+    latest_occurred_time_log_ids = set()
+
+    for log in logs:
+        if log.get(log_created_time_field_name) == latest_occurred_log:
+            log_id = log.get(log_id_field_name)
+            demisto.info(f'adding log with ID {log_id} to latest occurred time logs')
+            latest_occurred_time_log_ids.add(log_id)
+
+    demisto.info(f'{latest_occurred_time_log_ids=}')
+    return list(latest_occurred_time_log_ids), latest_occurred_log
+
+
+def dedup_fetched_logs(
     logs: List[Dict],
     last_run: Dict,
-    limit: int,
-    id_field_name: str,
+    log_id_field_name: str,
     log_cache_last_run_name_field_name: str,
     log_type: str
 ):
     """
-    Get the latest occurred time of a log from a list of logs.
+    Retrieve a list of all the logs that were not fetched yet.
 
     Args:
-        logs (list[dict]): a list of logs.
-        last_run (dict): The last run time object.
-        limit (int): the maximum limit to fetch events
-        id_field_name (str): the id field of the event
-        log_cache_last_run_name_field_name (bool): the name of the field saved in last run for caching the logs
+        logs (list): a list of logs.
+        last_run (dict): the last run object.
+        log_id_field_name (str): the id field name of the log type
+        log_cache_last_run_name_field_name (str): the name of the field that saves IDs of the logs in the last run
         log_type (str): the log type
-
-    Returns:
-        str: new logs that are not in the cache.
     """
-    found_logs = last_run.get(log_cache_last_run_name_field_name) or []
+    last_run_found_logs = set(last_run.get(log_cache_last_run_name_field_name) or [])
 
-    num_of_logs, log_ids = len(logs), [log.get(id_field_name) for log in logs]
-    demisto.info(f'before filtering: {num_of_logs=}, {log_ids=} for {log_type=}')
+    un_fetched_logs = []
 
-    new_logs = [log for log in logs if log.get(id_field_name) not in found_logs]
+    for log in logs:
+        log_id = log.get(log_id_field_name)
+        if log_id not in last_run_found_logs:
+            demisto.info(f'log with ID {log_id} for {log_type=} has not been fetched.')
+            un_fetched_logs.append(log)
+        else:
+            demisto.info(f'log with ID {log_id} for {log_type=} has been fetched')
 
-    num_of_logs, log_ids = len(new_logs), [log.get(id_field_name) for log in new_logs]
-    demisto.info(f'after filtering: {num_of_logs=}, {log_ids=} for {log_type=}')
-
-    return new_logs[:limit]
+    demisto.info(f'{un_fetched_logs=}')
+    return un_fetched_logs
 
 
 def get_workbench_logs(
@@ -482,7 +504,7 @@ def get_workbench_logs(
     last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-) -> Tuple[List[Dict], str]:
+) -> Tuple[List[Dict], Dict]:
     """
     Get the workbench logs.
 
@@ -508,39 +530,50 @@ def get_workbench_logs(
                     if (_ips := entity_value.get('ips')) and isinstance(_ips, list):
                         _ips = ','.join(_ips)
 
+    workbench_cache_time_field_name = LastRunTimeCacheTimeFieldNames.WORKBENCH.value
+    workbench_log_type = LogTypes.WORKBENCH.value
+    workbench_log_time_field = LastRunLogsTimeFields.WORKBENCH.value
+
     start_time, end_time = get_datetime_range(
         last_run_time=workbench_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsTimeFields.WORKBENCH.value,
-        date_format=date_format
+        log_type_time_field_name=workbench_log_time_field,
+        date_format=date_format,
     )
+
+    workbench_cache_time_field_name = LastRunTimeCacheTimeFieldNames.WORKBENCH.value
+    workbench_log_type = LogTypes.WORKBENCH.value
+
     workbench_logs = client.get_workbench_logs(
         start_datetime=start_time,
-        limit=last_run.get(LastRunTimeLogsLimitFieldNames.WORKBENCH.value) or limit
+        limit=limit + len(last_run.get(workbench_cache_time_field_name, []))
     )
 
-    workbench_logs = filter_logs_by_cache(
+    workbench_logs = dedup_fetched_logs(
         logs=workbench_logs,
         last_run=last_run,
-        limit=limit,
-        id_field_name="id",
-        log_cache_last_run_name_field_name=LastRunTimeCacheTimeFieldNames.WORKBENCH.value,
-        log_type=LogTypes.WORKBENCH.value
+        log_id_field_name='id',
+        log_cache_last_run_name_field_name=workbench_cache_time_field_name,
+        log_type=workbench_log_type
     )
 
-
-
+    latest_occurred_workbench_logs, latest_log_time = get_all_latest_time_logs_ids(
+        logs=workbench_logs,
+        log_type=workbench_log_type,
+        log_id_field_name='id',
+        date_format=DATE_FORMAT
+    )
     parse_workbench_logs(workbench_logs)
 
-    latest_workbench_log_time = get_latest_log_created_time(
-        logs=workbench_logs,
-        log_type=LogTypes.WORKBENCH.value,
-        date_format=date_format,
-        increase_latest_log=True
-    ) or end_time
+    latest_workbench_log_time = latest_log_time or end_time
 
-    demisto.info(f'{workbench_logs=}, {latest_workbench_log_time=}')
-    return workbench_logs, latest_workbench_log_time
+    workbench_updated_last_run = {
+        workbench_log_time_field: latest_workbench_log_time,
+        workbench_cache_time_field_name: latest_occurred_workbench_logs
+    }
+
+    demisto.info(f'{workbench_logs=}, {latest_workbench_log_time=}, {workbench_updated_last_run=}')
+    return workbench_logs, workbench_updated_last_run
 
 
 def get_observed_attack_techniques_logs(
