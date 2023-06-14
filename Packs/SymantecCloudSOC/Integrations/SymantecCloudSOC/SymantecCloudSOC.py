@@ -231,7 +231,7 @@ def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, l
         log_type (str): The log type.
         last_run (Dict): last run object.
         first_fetch_time (str): The timestamp on when to start fetching events.
-        first_fetch_time_investigate (str): The timestamp on when to start fetching events for investigate.        
+        first_fetch_time_investigate (str): The timestamp on when to start fetching events for investigate.
     Returns:
         Client: Client class to interact with Symantec Cloud SOC service API.
     """
