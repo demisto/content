@@ -841,13 +841,6 @@ def get_organizations_command():
     return CommandResults(outputs=res, outputs_prefix='Jira.Organizations')
 
 
-def get_user_by_email_command(email):
-    url = f'rest/api/latest/user/search?query={email}'
-    res = jira_req('GET', url).json()
-    [user.pop('avatarUrls') for user in res]
-    return CommandResults(outputs=res, outputs_prefix='Jira.User')
-
-
 def get_field_command(issue_id, field):
     fields = argToList(field)
     return get_issue(issue_id, extra_fields=fields, is_update=False)
@@ -1572,8 +1565,6 @@ def main():
             return_results(get_account_id_from_attribute(**demisto.args()))
         elif demisto.command() == 'jira-get-organizations':
             return_results(get_organizations_command())
-        elif demisto.command() == 'jira-get-user-by-email':
-            return_results(get_user_by_email_command(**demisto.args()))
         elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
