@@ -314,6 +314,9 @@ script:
     - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
+    - description: A comma-separated list of account IDs for watching the issue. Use the jira-get-id-by-attribute command to get the user's account ID.
+      isArray: true
+      name: watchers
     description: Creates a new issue in Jira.
     name: jira-create-issue
     outputs:
