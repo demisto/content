@@ -292,6 +292,27 @@ script:
     - contextPath: MANDIANTTI.FILE.fields.sha1
       description: The SHA1 Hash associated with the File indicator
       type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file submitted for analysis.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
   - name: ip
     arguments:
     - default: true
@@ -310,6 +331,21 @@ script:
     - contextPath: MANDIANTTI.IP.fields.ip
       description: The IP address of the IP indicator
       type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
   - name: url
     arguments:
     - default: true
@@ -328,6 +364,21 @@ script:
     - contextPath: MANDIANTTI.URL.fields.url
       description: The URL value for the Domain indicator
       type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
   - name: domain
     arguments:
     - default: true
@@ -349,6 +400,21 @@ script:
     - contextPath: MANDIANTTI.DOMAIN.fields.domain
       description: The domain name for the Domain indicator
       type: String
+    - contextPath: Domain.Name
+      description: The Domain being checked
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
   - name: cve
     arguments:
     - default: true
@@ -379,6 +445,18 @@ script:
     - contextPath: MANDIANTTI.CVE.fields.cvss2.values
       description: The values of the CVSS metric
       type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
   - name: mati-get-campaign
     arguments:
     - default: true
@@ -454,7 +532,7 @@ script:
     deprecated: false
     description: Get Mandiant Indicators.
     execution: false
-  dockerimage: demisto/python3:3.10.11.55362
+  dockerimage: demisto/python3:3.10.11.61265
   feed: true
   isfetch: false
   longRunning: false

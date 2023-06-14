@@ -142,3 +142,20 @@ def test_get_vulnerabilities(requests_mock, response_to_use_status, expected_res
         assert res.readable_output == 'Fetching Results:'
     else:  # error
         assert res.readable_output == 'Export job failed'
+
+
+def test_test_module(requests_mock):
+    """
+    Given:
+        - The client object.
+    When:
+        - Running the test_module function.
+    Then:
+        - Verify the result is ok as expected.
+    """
+    from TenableioEventCollector import test_module
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=10', json=MOCK_AUDIT_LOGS)
+    result = test_module(client)
+
+    assert result == 'ok'

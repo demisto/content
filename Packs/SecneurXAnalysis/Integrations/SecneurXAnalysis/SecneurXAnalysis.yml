@@ -12,7 +12,6 @@ configuration:
 - display: API Key
   name: apiKey
   required: true
-  hidden: false
   additionalinfo: Input the API key to access the sandbox.
   type: 4
 - display: Trust any certificate (not secure)
@@ -307,7 +306,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.11.58411
 fromversion: 6.5.0
 tests:
 - Detonate File - SecneurX Analysis - Test
