@@ -836,8 +836,6 @@ def _update_fields(issue_id, new_data):
 
 def get_organizations_command():
     url = '/rest/servicedeskapi/organization'
-    # return CommandResults(raw_response=transitions_names, readable_output=readable_output,
-    #                      outputs_prefix="Ticket.Transitions", outputs_key_field="ticketId", outputs=outputs)
     res = jira_req('GET', url).json().get('values')
     [org.pop('_links') for org in res]
     return CommandResults(outputs=res, outputs_prefix='Jira.Organizations')
