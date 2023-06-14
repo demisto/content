@@ -66,7 +66,7 @@ tasks:
       id: 9e581115-9afa-473a-81e8-23b0a8268515
       version: -1
       name: Check caller IP reputation
-      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
