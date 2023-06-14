@@ -135,6 +135,7 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 | interval_in_seconds | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10. Default is 10. | Optional |
 | timeout_in_seconds | Indicates the time in seconds until the polling sequence timeouts. Default is 60. Default is 60. | Optional |
 | sample_id | The uploaded sample ID. | Optional |
+| private | Whether to mark the sample as private. | Optional |
 | hide_polling_output | Whether to hide the polling result (automatically filled by polling). | Optional |
 
 
@@ -153,7 +154,7 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 | ThreatGrid.Sample.submitted_at | String | The sample submission time |
 
 #### Command example
-```!threat-grid-sample-upload url=http://domain_example:80/```
+```!threat-grid-sample-upload url=http://domain_example:80/ private=True```
 #### Human Readable Output
 
 >Upload sample is executing

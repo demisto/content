@@ -1,4 +1,3 @@
-enabled: false
 name: ExpanseAggregateAttributionCI
 comment: Aggregate entries from ServiceNow CMDB into AttributionCI
 commonfields:

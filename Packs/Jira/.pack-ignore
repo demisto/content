@@ -24,4 +24,17 @@ jiracreateissue
 jiracreateissueexample
 customfields
 ssl
+subtask
+onprem
+subtasks
+issuejson
+
+[file:JiraParsingRules.yml]
+ignore=PR101
+
+[file:JiraEventCollector.yml]
+ignore=MR108
+
+[file:JiraEventCollector_1_3.yml]
+ignore=MR108
 

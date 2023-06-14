@@ -28,7 +28,11 @@ jobs:
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           python3 -m pip install demisto-sdk
-
+      
+      - name: set pythonpath
+        run: |
+            echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+  
       - name: Review Release Notes
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
