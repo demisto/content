@@ -11,7 +11,8 @@ The **Cloud Enrichment - Generic Playbook** is designed to unify all the relevan
    Enriches information related to Identity and Access Management (IAM) in the cloud.
 
 2. **Cloud Compute Enrichment - Generic**
-   - Enriches information related to cloud compute resources.
+   
+   Enriches information related to cloud compute resources.
 
 ---
 
