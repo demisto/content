@@ -499,7 +499,6 @@ def dedup_fetched_logs(
 
 def get_workbench_logs(
     client: Client,
-    workbench_log_last_run_time: str | None,
     first_fetch: str,
     last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
@@ -510,7 +509,6 @@ def get_workbench_logs(
 
     Args:
         client (Client): the client object.
-        workbench_log_last_run_time (str): The time of the workbench log from the last run.
         first_fetch (str): the first fetch time.
         last_run (dict): the last run object
         limit (int): the maximum number of workbench logs to return.
@@ -532,12 +530,12 @@ def get_workbench_logs(
 
     workbench_cache_time_field_name = LastRunTimeCacheTimeFieldNames.WORKBENCH.value
     workbench_log_type = LogTypes.WORKBENCH.value
-    workbench_log_time_field = LastRunLogsTimeFields.WORKBENCH.value
+    workbench_log_last_run_time = LastRunLogsTimeFields.WORKBENCH.value
 
     start_time, end_time = get_datetime_range(
         last_run_time=workbench_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=workbench_log_time_field,
+        log_type_time_field_name=workbench_log_last_run_time,
         date_format=date_format,
     )
 
@@ -565,7 +563,7 @@ def get_workbench_logs(
     latest_workbench_log_time = latest_log_time or end_time
 
     workbench_updated_last_run = {
-        workbench_log_time_field: latest_workbench_log_time,
+        workbench_log_last_run_time: latest_workbench_log_time,
         workbench_cache_time_field_name: latest_occurred_workbench_logs
     }
 
@@ -575,7 +573,6 @@ def get_workbench_logs(
 
 def get_observed_attack_techniques_logs(
     client: Client,
-    observed_attack_technique_log_last_run_time: str | None,
     first_fetch: str,
     last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
@@ -586,8 +583,6 @@ def get_observed_attack_techniques_logs(
 
     Args:
         client (Client): the client object
-        observed_attack_technique_log_last_run_time (str): The time of the observed attack technique log
-                                                           from the last run.
         first_fetch (str): the first fetch time
         last_run (dict): last run time object
         limit (int): the maximum number of observed attack techniques logs to return.
@@ -607,14 +602,14 @@ def get_observed_attack_techniques_logs(
                     ) and isinstance(mitre_technique_ids, list):
                         _filter['mitreTechniqueIds'] = ','.join(mitre_technique_ids)
 
-    oat_cache_time_field_name = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES.value
-    oat_log_type = LogTypes.OBSERVED_ATTACK_TECHNIQUES.value
-    oat_log_time_field = LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
+    observed_attack_technique_cache_time_field_name = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES.value
+    observed_attack_technique_log_type = LogTypes.OBSERVED_ATTACK_TECHNIQUES.value
+    observed_attack_technique_log_last_run_time = LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
 
     start_time, end_time = get_datetime_range(
         last_run_time=observed_attack_technique_log_last_run_time,
         first_fetch=first_fetch,
-        log_type_time_field_name=oat_log_time_field,
+        log_type_time_field_name=observed_attack_technique_log_last_run_time,
         date_format=date_format
     )
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
@@ -625,13 +620,13 @@ def get_observed_attack_techniques_logs(
         logs=observed_attack_techniques_logs,
         last_run=last_run,
         log_id_field_name='uuid',
-        log_cache_last_run_name_field_name=oat_cache_time_field_name,
-        log_type=oat_log_type
+        log_cache_last_run_name_field_name=observed_attack_technique_cache_time_field_name,
+        log_type=observed_attack_technique_log_type
     )
 
     latest_occurred_observed_attack_techniques_logs, latest_log_time = get_all_latest_time_logs_ids(
         logs=observed_attack_techniques_logs,
-        log_type=oat_log_type,
+        log_type=observed_attack_technique_log_type,
         log_id_field_name='uuid',
         date_format=DATE_FORMAT
     )
@@ -641,8 +636,8 @@ def get_observed_attack_techniques_logs(
     latest_observed_attack_technique_log_time = latest_log_time or end_time
 
     observed_attack_techniques_updated_last_run = {
-        oat_log_time_field: latest_observed_attack_technique_log_time,
-        oat_cache_time_field_name: latest_occurred_observed_attack_techniques_logs
+        observed_attack_technique_log_last_run_time: latest_observed_attack_technique_log_time,
+        observed_attack_technique_cache_time_field_name: latest_occurred_observed_attack_techniques_logs
     }
 
     demisto.info(
@@ -655,24 +650,28 @@ def get_observed_attack_techniques_logs(
 
 def get_search_detection_logs(
     client: Client,
-    search_detection_log_last_run_time: str | None,
     first_fetch: str,
+    last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-) -> Tuple[List[Dict], str]:
+) -> Tuple[List[Dict], Dict]:
     """
     Get the search detection logs.
 
     Args:
         client (Client): the client object
-        search_detection_log_last_run_time (dict): The time of the search detection log from the last run.
         first_fetch (str): the first fetch time
+        last_run (dict): last run time object
         limit (int): the maximum number of search detection logs to return.
         date_format (str): the date format.
 
     Returns:
-        Tuple[List[Dict], str]: search detection logs & latest time of the search detection log that was created.
+        Tuple[List[Dict], Dict]: search detection logs & updated last run time
     """
+    search_detections_cache_time_field_name = LastRunTimeCacheTimeFieldNames.SEARCH_DETECTIONS.value
+    search_detections_log_type = LogTypes.SEARCH_DETECTIONS.value
+    search_detection_log_last_run_time = LastRunLogsTimeFields.SEARCH_DETECTIONS.value
+
     start_time, end_time = get_datetime_range(
         last_run_time=search_detection_log_last_run_time,
         first_fetch=first_fetch,
@@ -681,15 +680,30 @@ def get_search_detection_logs(
     )
     search_detection_logs = client.get_search_detection_logs(start_datetime=start_time, top=limit, limit=limit)
 
-    latest_search_detection_log_time = get_latest_log_created_time(
+    search_detection_logs = dedup_fetched_logs(
         logs=search_detection_logs,
-        log_type=LogTypes.SEARCH_DETECTIONS.value,
-        date_format=date_format,
-        increase_latest_log=True
-    ) or end_time
+        last_run=last_run,
+        log_id_field_name='uuid',
+        log_cache_last_run_name_field_name=search_detections_cache_time_field_name,
+        log_type=search_detections_log_type
+    )
 
-    demisto.info(f'{search_detection_logs=}, {latest_search_detection_log_time=}')
-    return search_detection_logs, latest_search_detection_log_time
+    latest_occurred_search_detection_logs, latest_log_time = get_all_latest_time_logs_ids(
+        logs=search_detection_logs,
+        log_type=search_detections_log_type,
+        log_id_field_name='uuid',
+        date_format=DATE_FORMAT
+    )
+
+    latest_search_detection_log_time = latest_log_time or end_time
+
+    search_detections_updated_last_run = {
+        search_detection_log_last_run_time: latest_search_detection_log_time,
+        search_detections_cache_time_field_name: latest_occurred_search_detection_logs
+    }
+
+    demisto.info(f'{search_detection_logs=}, {latest_search_detection_log_time=}, {search_detections_updated_last_run=}')
+    return search_detection_logs, search_detections_updated_last_run
 
 
 def get_audit_logs(
