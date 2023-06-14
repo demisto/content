@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import concurrent.futures
 import secrets
 from enum import Enum
@@ -8,9 +11,7 @@ import dateparser
 
 import pytz
 import urllib3
-from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -4063,6 +4064,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
+    print('test')
 
     # handle allowed advanced parameters
     adv_params = params.get('adv_params')
