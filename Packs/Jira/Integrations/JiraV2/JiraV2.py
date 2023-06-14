@@ -1031,18 +1031,6 @@ def get_file(entry_id):
     return file_name, file_bytes
 
 
-def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
-    if assignee:  # for jira server
-        body = {"name": assignee}
-    elif assignee_id:  # for jira cloud
-        body = {"accountId": assignee_id}
-    else:
-        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
-    url = f'rest/api/latest/issue/{issue_id}/assignee'
-    jira_req('PUT', url, json.dumps(body))
-    return get_issue(issue_id, is_update=True)
-
-
 def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None,
                      application_type=None, application_name=None):
     req_url = f'rest/api/latest/issue/{issue_id}/remotelink'
@@ -1091,6 +1079,18 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Issue deleted successfully.')
     else:
         demisto.results('Failed to delete issue.')
+
+
+def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
+    if assignee:  # for jira server
+        body = {"name": assignee}
+    elif assignee_id:  # for jira cloud
+        body = {"accountId": assignee_id}
+    else:
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
+    url = f'rest/api/latest/issue/{issue_id}/assignee'
+    jira_req('PUT', url, json.dumps(body))
+    return get_issue(issue_id, is_update=True)
 
 
 def test_module() -> str:
