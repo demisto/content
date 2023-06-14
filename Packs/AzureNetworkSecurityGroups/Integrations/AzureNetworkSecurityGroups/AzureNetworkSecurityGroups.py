@@ -79,8 +79,11 @@ class AzureNSGClient:
 /Microsoft.Network/networkSecurityGroups?')
 
     @logger
-    def list_rules(self, security_group: str):
-        return self.http_request('GET', f'{security_group}/securityRules')
+    def list_rules(self, subscription_id: str, resource_group_name: str, security_group: str):
+        return self.http_request('GET',
+                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/\
+resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules?'
+                                 )
 
     @logger
     def delete_rule(self, security_group: str, rule_name: str):
@@ -162,31 +165,33 @@ def list_groups_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
 
 
 @logger
-def list_rules_command(client: AzureNSGClient, security_group_name: str, limit: str = '50', offset: str = '1')\
-        -> CommandResults:
+def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
 
     Args:
         client: The MSclient
-        security_group_name: a comma-seperated list of security group names
-        limit: The maximum number of rules to display
-        offset: The index of the first rule to display
+        params: configuration parameters
+        args: args dictionary.
 
     Returns:
         a list of  rules for the security group
     """
-    security_groups = argToList(security_group_name)
-    rules_limit = int(limit)
-    rules_offset = int(offset) - 1  # As offset will start at 1
-    rules: List = list()
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
+    security_groups = argToList(args.get('security_group_name'))
+    rules_limit = int(args.get('limit', '50'))
+    rules_offset = int(args.get('offset', '1')) - 1  # As offset will start at 1
+    rules: List = []
     for group in security_groups:
-        rules_returned = client.list_rules(group)
+        rules_returned = client.list_rules(subscription_id=subscription_id,
+                                           resource_group_name=resource_group_name,
+                                           security_group=group)
         rules.extend(rules_returned.get('value', []))
     rules = rules[rules_offset:rules_offset + rules_limit]
-    return format_rule(rules, f"in {security_group_name}")
+    return format_rule(rules, f"in {security_groups}")
 
 
-@logger
+@ logger
 def delete_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str) -> str:
     """
 
@@ -206,7 +211,7 @@ def delete_rule_command(client: AzureNSGClient, security_group_name: str, securi
         return f"Rule {security_rule_name} was not deleted. Got back the following result:\n{rule_deleted.content}"
 
 
-@logger
+@ logger
 def create_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str, direction: str,
                         action: str = 'Allow', protocol: str = 'Any', source: str = 'Any', source_ports: str = '*',
                         destination: str = 'Any', destination_ports: str = '*', priority: str = '4096',
@@ -250,7 +255,7 @@ def create_rule_command(client: AzureNSGClient, security_group_name: str, securi
     return format_rule(rule, security_rule_name)
 
 
-@logger
+@ logger
 def update_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str, direction: str = None,
                         action: str = None, protocol: str = None, source: str = None, source_ports: str = None,
                         destination: str = None, destination_ports: str = None, priority: str = None,
@@ -321,7 +326,7 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
     return format_rule(rule, security_rule_name)
 
 
-@logger
+@ logger
 def get_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str):
     rules = []
     rule_list = argToList(security_rule_name)
@@ -330,25 +335,25 @@ def get_rule_command(client: AzureNSGClient, security_group_name: str, security_
     return format_rule(rules, security_rule_name)
 
 
-@logger
+@ logger
 def test_connection(client: AzureNSGClient, params: dict) -> str:
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return '✅ Success!'
 
 
-@logger
+@ logger
 def start_auth(client: AzureNSGClient) -> CommandResults:
     result = client.ms_client.start_auth('!azure-nsg-auth-complete')
     return CommandResults(readable_output=result)
 
 
-@logger
+@ logger
 def complete_auth(client: AzureNSGClient):
     client.ms_client.get_access_token()
     return '✅ Authorization completed successfully.'
 
 
-@logger
+@ logger
 def reset_auth(client: AzureNSGClient):
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
@@ -427,7 +432,7 @@ def main() -> None:
         elif command == 'azure-nsg-generate-login-url':
             return_results(generate_login_url(client.ms_client))
         elif command in commands_without_args:
-            return_results(commands_without_args[command](client))
+            return_results(commands_without_args[command](client, **args))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
 

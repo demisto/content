@@ -88,6 +88,8 @@ List all rules of the specified security groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | A comma-separated list of the names of the security groups. | Required | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'. | Optional | 
 | limit | The maximum number of rules to display. Default is 50. | Optional | 
 | offset | The index of the first rule to display. Used for pagination. Default is 0. | Optional | 
 
