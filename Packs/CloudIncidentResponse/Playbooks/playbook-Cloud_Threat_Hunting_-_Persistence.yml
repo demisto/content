@@ -225,7 +225,7 @@ tasks:
       id: 75e423b7-0a3b-4857-8546-dfdd66e7ea3d
       version: -1
       name: Hunt for Compute Instance persistence activity
-      description: Executes an Analytics query for data.
+      description: Executes an analytics query for data.
       tags:
       - PersistenceHunting
       script: '|||azure-log-analytics-execute-query'
