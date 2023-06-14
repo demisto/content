@@ -336,7 +336,6 @@ def pwned_username(username_list):
 def main():
     if not API_KEY:
         raise DemistoException('API key must be provided.')
-    print(API_KEY)
     command = demisto.command()
     LOG(f'Command being called is: {command}')
     try:
