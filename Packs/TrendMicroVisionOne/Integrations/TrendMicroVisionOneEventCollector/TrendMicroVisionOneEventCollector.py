@@ -267,7 +267,7 @@ class Client(BaseClient):
         Get the search detection logs.
 
         docs:
-        https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get
+        https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1detections/get
 
         Args:
             start_datetime (str): Timestamp in ISO 8601 format that indicates the start of the data retrieval range.
@@ -627,6 +627,7 @@ def get_observed_attack_techniques_logs(
         log_type_time_field_name=observed_attack_technique_log_last_run_time,
         date_format=date_format
     )
+
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
         detected_start_datetime=start_time,
         detected_end_datetime=end_time,

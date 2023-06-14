@@ -143,7 +143,7 @@ class TestFetchEvents:
         [
             (
                 {},
-                {'limit': 100, 'first_fetch': '1 month ago'},
+                {'max_fetch': 100, 'first_fetch': '1 month ago'},
                 {
                     'audit_logs_time': '2023-01-01T14:59:39Z',
                     'oat_detection_logs_time': '2023-01-01T14:57:30Z',
@@ -164,7 +164,7 @@ class TestFetchEvents:
                     'search_detection_logs_time': '2023-01-01T14:55:00Z',
                     'workbench_logs_time': '2023-01-01T14:59:00Z'
                 },
-                {'limit': 100},
+                {'max_fetch': 100},
                 {
                     'audit_logs_time': '2023-01-01T15:04:39Z',
                     'oat_detection_logs_time': '2023-01-01T15:02:30Z',
