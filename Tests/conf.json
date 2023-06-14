@@ -1078,13 +1078,7 @@
         },
         {
             "integrations": "Tenable.sc",
-            "playbookID": "tenable.sc_test_secman_username_and_password",
-            "instance_names": "Tenable_SC_secman_username_and_password",
-            "timeout": 240
-        },
-        {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable.sc_test_secman_api_key",
+            "playbookID": "tenable-sc-test",
             "instance_names": "Tenable_SC_secman_api_key",
             "timeout": 240
         },
