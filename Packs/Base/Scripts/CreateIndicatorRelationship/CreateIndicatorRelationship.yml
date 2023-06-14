@@ -285,7 +285,6 @@ comment: This automation creates a relationship between indicator objects.
 commonfields:
   id: CreateIndicatorRelationship
   version: -1
-enabled: false
 name: CreateIndicatorRelationship
 script: '-'
 system: false

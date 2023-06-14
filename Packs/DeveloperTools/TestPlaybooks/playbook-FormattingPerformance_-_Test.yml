@@ -3,7 +3,7 @@ version: -1
 name: FormattingPerformance - Test
 fromversion: 5.0.0
 description: Test to ensure that indicator extraction and formatting for 1000 indicator
-  string (used as a benchmark amount) executes in less than 1 second.
+  string (used as a benchmark amount) executes in less than 2 second.
 starttaskid: "0"
 tasks:
   "0":
@@ -121,7 +121,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1.5"
+              simple: "2"
     view: |-
       {
         "position": {

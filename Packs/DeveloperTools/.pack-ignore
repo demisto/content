@@ -36,15 +36,17 @@ ignore=auto-test
 
 [known_words]
 powershell
+GetIncidentTasksByState
+DemistoGetIncidentTasksByState
 
 [file:FetchFromInstance.yml]
 ignore=BA124
 
 [file:VerifyIntegrationHealth.yml]
-ignore=BA124
+ignore=BA124,CJ105
 
 [file:GetInstanceName.yml]
-ignore=BA124
+ignore=BA124,CJ105
 
 [file:VerifyEnoughIndicators.yml]
 ignore=BA124

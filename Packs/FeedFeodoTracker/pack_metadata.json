@@ -11,7 +11,9 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence Management"
+        "Threat Intelligence Management",
+        "Free Feed",
+        "Plug & Fetch"
     ],
     "useCases": [],
     "keywords": [

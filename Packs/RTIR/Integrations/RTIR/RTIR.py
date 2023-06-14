@@ -5,6 +5,7 @@ import requests
 import json
 import re
 import urllib3
+import urllib
 
 urllib3.disable_warnings()
 
@@ -855,12 +856,10 @@ def add_reply_request(ticket_id, encoded):
 def add_reply():
     ticket_id = demisto.args().get('ticket-id')
     content = 'Action: comment\n'
-    text = demisto.args().get('text')
-    if text:
-        content += '\nText: ' + text.encode('utf-8')
-    cc = demisto.args().get('cc')
-    if cc:
-        content += '\nCc: ' + cc
+    if (text := demisto.args().get('text')):
+        content += f'\nText: {text}'
+    if (cc := demisto.args().get('cc')):
+        content += f'\nCc: {cc}'
     try:
         encoded = "content=" + urllib.parse.quote_plus(content)
         added_reply = add_reply_request(ticket_id, encoded)
@@ -918,8 +917,8 @@ def main():
     global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
     SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
         '/') else params.get('server', '')
-    USERNAME = params.get('credentials').get('identifier', '')
-    PASSWORD = params.get('credentials').get('password', '')
+    USERNAME = params.get('credentials', {}).get('identifier', '')
+    PASSWORD = params.get('credentials', {}).get('password', '')
     BASE_URL = urljoin(SERVER, '/REST/1.0/')
     USE_SSL = not params.get('unsecure', False)
     FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1

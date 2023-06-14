@@ -10,7 +10,13 @@ configuration:
   name: google_service_creds
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
+  name:  credentials_google_service
+  required: false
+  hiddenusername: true
+  type: 9
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'
@@ -103,7 +109,7 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.42718
+  dockerimage: demisto/bigquery:1.0.0.61798
   subtype: python3
   isfetch: true
   runonce: false
