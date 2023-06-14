@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Optional, Union
+from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
