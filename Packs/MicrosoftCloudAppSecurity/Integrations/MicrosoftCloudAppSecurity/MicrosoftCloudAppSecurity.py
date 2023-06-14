@@ -227,22 +227,24 @@ class Client:
 
 
 @logger
-def start_auth(client: Client, args: dict) -> CommandResults:
+def start_auth(client: Client,
+               args: dict  # noqa
+               ) -> CommandResults:
     result = client.ms_client.start_auth('!microsoft-cas-auth-complete')  # type: ignore[attr-defined]
     return CommandResults(readable_output=result)
 
 
 @logger
 def complete_auth(client: Client,
-                  args: dict
+                  args: dict  # noqa
                   ) -> CommandResults:
     client.ms_client.get_access_token()  # type: ignore[attr-defined]
     return CommandResults(readable_output='✅ Authorization completed successfully.')
 
 
 @logger
-def reset_auth(client: Client,
-               args: dict
+def reset_auth(client: Client,  # noqa
+               args: dict  # noqa
                ) -> CommandResults:
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
@@ -251,7 +253,7 @@ def reset_auth(client: Client,
 
 @logger
 def connection_test(client: Client,
-                    args: dict
+                    args: dict  # noqa
                     ) -> CommandResults:
     client.ms_client.get_access_token()  # type: ignore[attr-defined]
     # If fails, MicrosoftApiModule returns an error
@@ -501,6 +503,7 @@ def list_alerts_command(client: Client, args: dict):
 
 
 def bulk_dismiss_alert_command(client: Client, args: dict):  # pragma: no cover
+    # sourcery skip: raise-from-previous-error
     """
     Deprecated: use close_false_positive_command instead.
     """
