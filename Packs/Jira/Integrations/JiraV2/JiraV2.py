@@ -1,12 +1,15 @@
-from datetime import timedelta
-from typing import Optional, Union
-
-import urllib3
-from dateparser import parse
-from requests_oauthlib import OAuth1
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
+from typing import Optional, Union
+
+from requests_oauthlib import OAuth1
+from dateparser import parse
+from datetime import timedelta
+
+import urllib3
+
 
 urllib3.disable_warnings()
 
