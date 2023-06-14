@@ -18,7 +18,7 @@ description: |-
 
   ### Indicator Extraction
 
-  If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
+If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
 
   ---
 starttaskid: "0"
