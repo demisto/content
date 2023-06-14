@@ -545,11 +545,11 @@ script:
     description: Gets the information related to the role, including users assigned.
     name: jira-get-project-role
   - arguments:
-    - description: User's email address
+    - description: User's email address.
       name: user_email
-    - description: Project key
+    - description: Project key.
       name: project_key
-    - description: Role name to assign the user to
+    - description: Role name to assign the user.
       name: role_name
     description: Adds the user to a project.
     name: jira-add-user-to-project
