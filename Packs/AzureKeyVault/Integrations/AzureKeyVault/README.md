@@ -20,8 +20,8 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
     | Subscription ID                                                             | True         |
     | Resource Group Name                                                         | True         |
     | Fetches credentials                                                         | False        |
-    | Key Vault names - comma seperated list of Key Vaults to fetch secrets from. | False        |
-    | Secret names - comma seperated list of secrets to fetch.                    | False        |
+    | Key Vault names - comma-separated list of Key Vaults to fetch secrets from. | False        |
+    | Secret names - comma-separated list of secrets to fetch.                    | False        |
     | Trust any certificate (not secure)                                          | False        |
     | Use system proxy settings                                                   | False        |
 
@@ -32,7 +32,7 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
     | Worldwide   | The publicly accessible Azure Cloud                                      |
     | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
     | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
-    | DoD         | Azure cloud for the USA Department of Defence (DoD)                      |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
     | Germany     | Azure cloud for the German Government                                    |
     | China       | Azure cloud for the Chinese Government                                   |
 
@@ -68,7 +68,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 | enabled_for_deployment | Specifies whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional | 
 | enabled_for_disk_encryption | Specifies whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional | 
 | enabled_for_template_deployment | Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional | 
-| default_action | The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be accordingly to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property. Possible values are: Allow, Deny. | Optional | 
+| default_action | The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be according to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property. Possible values are: Allow, Deny. | Optional | 
 | bypass | Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. For example, use 'AzureServices' if you wish to give azure services access to key vault, although the default action is 'Deny' or the access for a specific IP address. Network acl property. Default value is 'AzureServices'. Possible values are: AzureServices, None. | Optional | 
 | vnet_subnet_id | Allow accessibility of a vault from a specific virtual network. This argument must be the full resource ID of a virtual network subnet. For example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1", you allow access to the Key Vault from subnet1. Network acl property. | Optional | 
 | ignore_missing_vnet_service_endpoint | Specifies whether the Network Resource Provider will ignore the check if parent subnet has serviceEndpoints configured.  This allows the configuration for the Key Vault to complete without error before the configuration to the virtual network's subnet is complete. Once the subnet configuration is complete, the Cosmos account will then be accessible through the configured subnet. Network Acl property. Possible values are: . Default is True. | Optional | 
