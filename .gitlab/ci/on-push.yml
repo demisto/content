@@ -288,6 +288,15 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
+test_playbooks_report:
+  stage: xsoar test playbooks results
+  needs:
+    - job: .test_content_on_xsoar_server_instances_base
+      optional: true
+  script:
+    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+
+
 xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
