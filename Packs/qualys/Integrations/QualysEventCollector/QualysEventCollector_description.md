@@ -11,7 +11,7 @@
 ### Fetch Information
 
 - There are two event types that are fetched for the Event Collector: 
-* Activity logs.
+    * Activity logs.
 * Hosts Vulnerability.
 You can adjust fetch interval using **Activity Logs Fetch Interval** and **Vulnerability Fetch Interval** arguments.
 
