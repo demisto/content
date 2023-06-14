@@ -98,7 +98,7 @@ filter _raw_log not contains "|" AND _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
     get_key = arraystring(regextract(details_with_pipe, "\bKEY=([^|]+)"), ""),
     get_new_value = arraystring(regextract(details_with_pipe, "\bVALUE=([^|]+)"), ""),
     get_old_value = arraystring(regextract(details_with_pipe, "\bOLDVAL=([^|]+)"), ""),
-    get_new_resource = arraystring(regextract(details_with_pipe, "\bFILE=([^|]+)"), ""),
+    get_new_resource = if(details_with_pipe ~= "\bFILE=([^|]+)", arraystring(regextract(details_with_pipe, "\bFILE=([^|]+)"), ""), null),
     get_old_resource = arraystring(regextract(details_with_pipe, "\bOLDFILE=([^|]+)"), ""),
     get_change_user = arraystring(regextract(details_with_pipe, "\bMODUSER=([^|]+)"), ""),
     get_change_group = arraystring(regextract(details_with_pipe, "\bMODGROUP=([^|]+)"), "")
