@@ -1,3 +1,5 @@
+import json
+
 import demisto_client
 import pytest
 import timeout_decorator
@@ -5,19 +7,20 @@ import Tests.Marketplace.search_and_install_packs as script
 from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
-import json
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
 
-MOCK_HELLOWORLD_SEARCH_RESULTS = {
-    "id": "HelloWorld",
-    "currentVersion": "1.1.10"
-}
-MOCK_AZURESENTINEL_SEARCH_RESULTS = {
-    "id": "AzureSentinel",
-    "currentVersion": "1.0.2"
-}
+
+def load_json_file(file_path: str):
+    with open("test_data/" + file_path, 'r') as json_file:
+        json_data = json.load(json_file)
+    return json_data
+
+
+MOCK_HELLOWORLD_SEARCH_RESULTS = load_json_file("search_dependencies/HelloWorld_1.2.19.json")
+MOCK_AZURESENTINEL_SEARCH_RESULTS = load_json_file("search_dependencies/AzureSentinel_1.5.8.json")
+
 MOCK_PACKS_INSTALLATION_RESULT = [
     {
         "id": "HelloWorld",
@@ -83,7 +86,7 @@ def mocked_get_pack_display_name(pack_id):
     if pack_id == 'HelloWorld':
         return 'HelloWorld'
     elif pack_id == 'AzureSentinel':
-        return 'AzureSentinel'
+        return 'Microsoft Sentinel'
     return ''
 
 
@@ -133,10 +136,10 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
-    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)
 
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                                      client)
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
+                                                                                      client=client,
+                                                                                      install_packs_one_by_one=True)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs

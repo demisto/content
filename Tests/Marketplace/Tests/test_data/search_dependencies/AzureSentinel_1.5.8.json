@@ -1,0 +1,1311 @@
+{
+	"packs": [
+		{
+			"type": "contentpack",
+			"kind": "type",
+			"id": "AzureSentinel",
+			"name": "Microsoft Sentinel",
+			"currentVersion": "",
+			"minVersion": "",
+			"extras": {
+				"pack": {
+					"id": "AzureSentinel",
+					"version": 5,
+					"cacheVersn": 0,
+					"modified": "2023-06-14T09:37:14.335416+03:00",
+					"packID": "",
+					"packName": "",
+					"itemVersion": "",
+					"fromServerVersion": "",
+					"toServerVersion": "",
+					"definitionId": "",
+					"vcShouldIgnore": false,
+					"vcShouldKeepItemLegacyProdMachine": false,
+					"commitMessage": "",
+					"shouldCommit": false,
+					"currentVersion": "1.5.8",
+					"name": "Microsoft Sentinel",
+					"description": "Microsoft Sentinel is a cloud-native security information and event manager (SIEM) platform that uses built-in AI to help analyze large volumes of data across an enterprise.",
+					"updated": "2023-06-12T22:29:48+03:00",
+					"created": "2020-09-07T09:05:48+03:00",
+					"support": "xsoar",
+					"author": "Cortex XSOAR",
+					"authorImage": "content/packs/Base/Author_image.png",
+					"supportDetails": {
+						"url": "https://www.paloaltonetworks.com/cortex",
+						"email": ""
+					},
+					"beta": false,
+					"deprecated": false,
+					"certification": "certified",
+					"serverMinVersion": "5.0.0",
+					"serverMaxVersion": "",
+					"general": [
+						"generalFieldCertified",
+						"generalFieldByCortexXSOAR",
+						"generalFieldFree",
+						"generalFieldSupportIncluded",
+						"generalFieldNotInstalled"
+					],
+					"tags": [],
+					"rawTags": [],
+					"categories": [
+						"Analytics \u0026 SIEM"
+					],
+					"contentItems": {
+						"integration": [
+							{
+								"name": "Microsoft Sentinel",
+								"description": "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR).",
+								"category": "Analytics \u0026 SIEM",
+								"commands": [
+									{
+										"name": "azure-sentinel-get-incident-by-id",
+										"description": "Gets a single incident from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-list-incidents",
+										"description": "Gets a list of incidents from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-list-watchlists",
+										"description": "Gets a list of watchlists from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-delete-watchlist",
+										"description": "Delete a watchlist from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-watchlist-create-update",
+										"description": "Create or update a watchlist in Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-update-incident",
+										"description": "Updates a single incident in Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-delete-incident",
+										"description": "Deletes a single incident in Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-list-incident-comments",
+										"description": "Gets the comments of an incident from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-incident-add-comment",
+										"description": "Adds a comment to an incident in Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-incident-delete-comment",
+										"description": "Deletes a comment from incident in Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-list-incident-relations",
+										"description": "Gets a list of an incident's related entities from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-list-incident-entities",
+										"description": "Gets a list of an incident's entities from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-list-incident-alerts",
+										"description": "Gets a list of an incident's alerts from Azure Sentinel."
+									},
+									{
+										"name": "azure-sentinel-list-watchlist-items",
+										"description": "Get a single watchlist item or list of watchlist items."
+									},
+									{
+										"name": "azure-sentinel-delete-watchlist-item",
+										"description": "Delete a watchlist item."
+									},
+									{
+										"name": "azure-sentinel-create-update-watchlist-item",
+										"description": "Create or update a watchlist item."
+									},
+									{
+										"name": "azure-sentinel-threat-indicator-list",
+										"description": "Returns a list of threat indicators."
+									},
+									{
+										"name": "azure-sentinel-threat-indicator-query",
+										"description": "Returns a list of threat indicators with specific entities."
+									},
+									{
+										"name": "azure-sentinel-threat-indicator-create",
+										"description": "Creates a new threat indicator."
+									},
+									{
+										"name": "azure-sentinel-threat-indicator-update",
+										"description": "Updates an existing threat indicator."
+									},
+									{
+										"name": "azure-sentinel-threat-indicator-delete",
+										"description": "Deletes an existing threat indicator."
+									},
+									{
+										"name": "azure-sentinel-threat-indicator-tags-append",
+										"description": "Appends new tags to an existing indicator."
+									},
+									{
+										"name": "azure-sentinel-threat-indicator-tags-replace",
+										"description": "Replaces the tags of a given indicator."
+									},
+									{
+										"name": "get-modified-remote-data",
+										"description": "Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes."
+									},
+									{
+										"name": "get-remote-data",
+										"description": "Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only."
+									},
+									{
+										"name": "get-mapping-fields",
+										"description": "Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes."
+									},
+									{
+										"name": "update-remote-system",
+										"description": "Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident."
+									},
+									{
+										"name": "azure-sentinel-list-alert-rule",
+										"description": "Gets a list of all alert rules."
+									},
+									{
+										"name": "azure-sentinel-list-alert-rule-template",
+										"description": "Gets a list of all alert rule templates."
+									},
+									{
+										"name": "azure-sentinel-delete-alert-rule",
+										"description": "Deletes the specified alert rule."
+									},
+									{
+										"name": "azure-sentinel-create-alert-rule",
+										"description": "Creates a new alert rule."
+									},
+									{
+										"name": "azure-sentinel-update-alert-rule",
+										"description": "Updates an alert rule."
+									}
+								]
+							}
+						],
+						"automation": [
+							{
+								"name": "MicrosoftSentinelConvertEntitiesToTable",
+								"description": "This script is used to convert entities to a table.",
+								"tags": [
+									"dynamic-section"
+								]
+							},
+							{
+								"name": "MicrosoftSentinelConvertRelationsToTable",
+								"description": "This script is used to convert relations to a table.",
+								"tags": [
+									"dynamic-section"
+								]
+							},
+							{
+								"name": "MicrosoftSentinelConvertCommentsToTable",
+								"description": "This script is used to convert comments to a table.",
+								"tags": [
+									"dynamic-section"
+								]
+							},
+							{
+								"name": "MicrosoftSentinelConvertAlertsToTable",
+								"description": "This script is used to convert alerts to a table.",
+								"tags": [
+									"dynamic-section"
+								]
+							}
+						],
+						"incidentfield": [
+							{
+								"name": "Microsoft Sentinel Owner",
+								"type": "grid",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Rule Id",
+								"type": "multiSelect",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Comments",
+								"type": "longText",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Alert Count",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Incident Number",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Alerts",
+								"type": "longText",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Relations",
+								"type": "longText",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Classification Comment",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel Entities",
+								"type": "longText",
+								"description": ""
+							}
+						],
+						"incidenttype": [
+							{
+								"name": "Microsoft Sentinel Incident",
+								"playbook": "",
+								"closureScript": "",
+								"hours": 0,
+								"days": 0,
+								"weeks": 0
+							}
+						],
+						"indicatorfield": null,
+						"reputation": null,
+						"report": null,
+						"dashboard": null,
+						"playbook": null,
+						"classifier": [
+							{
+								"name": "Microsoft Sentinel - Outgoing Mapper",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel - Classifier",
+								"description": ""
+							},
+							{
+								"name": "Microsoft Sentinel - Incoming Mapper",
+								"description": ""
+							}
+						],
+						"layoutscontainer": [
+							{
+								"name": "Microsoft Sentinel - default layout",
+								"description": "This is the default layout for Microsoft Sentinel incidents."
+							}
+						],
+						"widget": null,
+						"list": null,
+						"generictype": null,
+						"genericfield": null,
+						"wizard": null,
+						"correlationrule": null,
+						"modelingrule": null,
+						"parsingrule": null,
+						"xsiamreport": null,
+						"xsiamdashboard": null
+					},
+					"contentItemTypes": [
+						"integration",
+						"automation",
+						"incidentfield",
+						"incidenttype",
+						"classifier",
+						"layoutscontainer"
+					],
+					"integrations": [
+						{
+							"name": "Microsoft Sentinel",
+							"imagePath": "content/packs/AzureSentinel/AzureSentinel_image.png"
+						}
+					],
+					"useCases": [],
+					"rawUseCases": [],
+					"keywords": [],
+					"rawKeywords": [],
+					"dependencies": {
+						"Base": {
+							"mandatory": true,
+							"minVersion": "1.32.13",
+							"name": "Base",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"CommonTypes": {
+							"mandatory": false,
+							"minVersion": "3.3.74",
+							"name": "Common Types",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"FiltersAndTransformers": {
+							"mandatory": true,
+							"minVersion": "1.2.20",
+							"name": "Filters And Transformers",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						}
+					},
+					"readme": "Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.\n​\n## What does this pack do?\n- Gets a single incident or a list of incidents from Azure Sentinel.\n- Gets a list of watchlists from Azure Sentinel.\n- Creates, updates, or deletes a watchlist in Azure Sentinel.\n- Updates or deletes a single incident in Azure Sentinel.\n- Gets, adds, or deletes the comments of an incident from Azure Sentinel.\n- Gets a list of an incident's related entities from Azure Sentinel.\n- Gets a list of an incident's entities from Azure Sentinel.\n- Gets a list of an incident's alerts from Azure Sentinel.\n- Get a single watchlist item or list of watchlist items.\n- Creates, updates, deletes a watchlist item.\n- Returns a list of threat indicators.\n- Returns a list of threat indicators with specific entities.\n- Creates, updates, or deletes a threat indicator.\n- Appends new tags to an existing indicator.\n- Replaces the tags of a given indicator.",
+					"legacy": true,
+					"price": 0,
+					"premium": false,
+					"installMessage": "",
+					"versionInfo": "5517995",
+					"eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+					"previewOnly": false,
+					"downloads": 6960,
+					"searchRank": 10,
+					"videos": []
+				}
+			}
+		}
+	],
+	"dependencies": [
+		{
+			"type": "contentpack",
+			"kind": "type",
+			"id": "AzureKubernetesServices",
+			"name": "Azure Kubernetes Services",
+			"dependants": {
+				"PrismaCloud": {
+					"level": "optional",
+					"type": "contentpack",
+					"id": "PrismaCloud",
+					"name": "Prisma Cloud by Palo Alto Networks",
+					"minVersion": "1.1.12",
+					"maxVersion": ""
+				}
+			},
+			"currentVersion": "",
+			"minVersion": "1.1.12",
+			"extras": {
+				"pack": {
+					"id": "AzureKubernetesServices",
+					"version": 5,
+					"cacheVersn": 0,
+					"modified": "2023-06-14T09:37:11.554671+03:00",
+					"packID": "",
+					"packName": "",
+					"itemVersion": "",
+					"fromServerVersion": "",
+					"toServerVersion": "",
+					"definitionId": "",
+					"vcShouldIgnore": false,
+					"vcShouldKeepItemLegacyProdMachine": false,
+					"commitMessage": "",
+					"shouldCommit": false,
+					"currentVersion": "1.1.12",
+					"name": "Azure Kubernetes Services",
+					"description": "Deploy and manage containerized applications with a fully managed Kubernetes service.",
+					"updated": "2023-06-05T22:39:23+03:00",
+					"created": "2021-02-03T00:44:20+02:00",
+					"support": "xsoar",
+					"author": "Cortex XSOAR",
+					"authorImage": "content/packs/Base/Author_image.png",
+					"supportDetails": {
+						"url": "https://www.paloaltonetworks.com/cortex",
+						"email": ""
+					},
+					"beta": false,
+					"deprecated": false,
+					"certification": "certified",
+					"serverMinVersion": "5.0.0",
+					"serverMaxVersion": "",
+					"general": [
+						"generalFieldCertified",
+						"generalFieldByCortexXSOAR",
+						"generalFieldFree",
+						"generalFieldSupportIncluded",
+						"generalFieldNotInstalled"
+					],
+					"tags": [],
+					"rawTags": [],
+					"categories": [
+						"Cloud Services"
+					],
+					"contentItems": {
+						"integration": [
+							{
+								"name": "Azure Kubernetes Services",
+								"description": "Deploy and manage containerized applications with a fully managed Kubernetes service.",
+								"category": "IT Services",
+								"commands": [
+									{
+										"name": "azure-ks-auth-test",
+										"description": "Tests the connectivity to Azure."
+									},
+									{
+										"name": "azure-ks-auth-start",
+										"description": "Run this command to start the authorization process and follow the instructions in the command results."
+									},
+									{
+										"name": "azure-ks-auth-complete",
+										"description": "Run this command to complete the authorization process. Should be used after running the azure-ks-auth-start command."
+									},
+									{
+										"name": "azure-ks-auth-reset",
+										"description": "Run this command if for some reason you need to rerun the authentication process."
+									},
+									{
+										"name": "azure-ks-clusters-list",
+										"description": "Gets a list of managed clusters in the specified subscription."
+									},
+									{
+										"name": "azure-ks-cluster-addon-update",
+										"description": "Updates a managed cluster with the specified configuration."
+									},
+									{
+										"name": "azure-ks-generate-login-url",
+										"description": "Generate the login url used for Authorization code flow."
+									}
+								]
+							}
+						],
+						"automation": null,
+						"incidentfield": null,
+						"incidenttype": null,
+						"indicatorfield": null,
+						"reputation": null,
+						"report": null,
+						"dashboard": null,
+						"playbook": null,
+						"classifier": null,
+						"layoutscontainer": null,
+						"widget": null,
+						"list": null,
+						"generictype": null,
+						"genericfield": null,
+						"wizard": null,
+						"correlationrule": null,
+						"modelingrule": null,
+						"parsingrule": null,
+						"xsiamreport": null,
+						"xsiamdashboard": null
+					},
+					"contentItemTypes": [
+						"integration"
+					],
+					"integrations": [
+						{
+							"name": "Azure Kubernetes Services",
+							"imagePath": "content/packs/AzureKubernetesServices/AzureKubernetesServices_image.png"
+						}
+					],
+					"useCases": [],
+					"rawUseCases": [],
+					"keywords": [],
+					"rawKeywords": [],
+					"dependencies": {
+						"Base": {
+							"mandatory": true,
+							"minVersion": "1.32.13",
+							"name": "Base",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						}
+					},
+					"legacy": true,
+					"price": 0,
+					"premium": false,
+					"installMessage": "",
+					"versionInfo": "5517995",
+					"eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+					"previewOnly": false,
+					"downloads": 2847,
+					"searchRank": 10,
+					"videos": []
+				}
+			}
+		},
+		{
+			"type": "contentpack",
+			"kind": "type",
+			"id": "PasswordResetViaChatbot",
+			"name": "Password Reset via Chatbot",
+			"dependants": {
+				"CommonTypes": {
+					"level": "optional",
+					"type": "contentpack",
+					"id": "CommonTypes",
+					"name": "Common Types",
+					"minVersion": "1.0.0",
+					"maxVersion": ""
+				},
+				"Slack": {
+					"level": "optional",
+					"type": "contentpack",
+					"id": "Slack",
+					"name": "Slack",
+					"minVersion": "1.0.0",
+					"maxVersion": ""
+				}
+			},
+			"currentVersion": "",
+			"minVersion": "1.0.0",
+			"extras": {
+				"pack": {
+					"id": "PasswordResetViaChatbot",
+					"version": 5,
+					"cacheVersn": 0,
+					"modified": "2023-06-14T09:37:10.399977+03:00",
+					"packID": "",
+					"packName": "",
+					"itemVersion": "",
+					"fromServerVersion": "",
+					"toServerVersion": "",
+					"definitionId": "",
+					"vcShouldIgnore": false,
+					"vcShouldKeepItemLegacyProdMachine": false,
+					"commitMessage": "",
+					"shouldCommit": false,
+					"currentVersion": "1.0.0",
+					"name": "Password Reset via Chatbot",
+					"description": "Automates the process of resetting user passwords through a Slack or Teams message request to a chatbot.",
+					"updated": "2023-04-19T22:25:33+03:00",
+					"created": "2023-04-19T22:25:33+03:00",
+					"support": "xsoar",
+					"author": "Cortex XSOAR",
+					"authorImage": "content/packs/Base/Author_image.png",
+					"supportDetails": {
+						"url": "https://www.paloaltonetworks.com/cortex",
+						"email": ""
+					},
+					"beta": false,
+					"deprecated": false,
+					"certification": "certified",
+					"serverMinVersion": "6.8.0",
+					"serverMaxVersion": "",
+					"general": [
+						"generalFieldCertified",
+						"generalFieldByCortexXSOAR",
+						"generalFieldFree",
+						"generalFieldSupportIncluded",
+						"generalFieldNotInstalled"
+					],
+					"tags": [
+						"Trending"
+					],
+					"rawTags": [
+						"Trending"
+					],
+					"categories": [
+						"IT Services"
+					],
+					"contentItems": {
+						"integration": null,
+						"automation": null,
+						"incidentfield": null,
+						"incidenttype": [
+							{
+								"name": "Password Reset via Chatbot",
+								"playbook": "Reset User Password via Chatbot",
+								"closureScript": "",
+								"hours": 0,
+								"days": 0,
+								"weeks": 0
+							}
+						],
+						"indicatorfield": null,
+						"reputation": null,
+						"report": null,
+						"dashboard": null,
+						"playbook": [
+							{
+								"name": "Reset User Password via Chatbot",
+								"description": "This playbook resets the password of an Active Directory or Okta user. The process is as follows:\n1. A user requests a password reset using a chatbot in Slack or in Microsoft Teams.\n2. The playbook optionally seeks approval to reset the user's password from the relevant stakeholder, or from the user's manager. The request will be available for approval/disapproval for 1 hour. If not processed within that time, it will be disapproved.\n3. If the reset was approved, the playbook optionally verifies the user using 2-factor authentication, from the user's available 2FA methods on Okta.\n4. If the reset is verified, a new password will be created while meeting the complexity requirements of the organization.\n5. The user's password will be reset and set to the newly generated password. The user will be forced to change their password on next login.\n6. The new user's password will be placed inside a password-protected ZIP (protected by a different password).\n7. The encrypted ZIP file that contains the new password for the user will be sent to the user via email. \n8. The password for the ZIP file that contains the new user's password, will be sent to the requesting user through Slack or Teams.\n\nThis playbook is intended for use with Slack or Teams. In order to use it, please make sure that you have a classifier and mapper in place. The classifier should create a Password Reset via Chatbot incident, while the mapper should map the email of the user to the Reporter Email Address field.\nThis playbook assumes that the user requesting the password reset has the same email in Slack / Teams, and in Active Directory / Okta."
+							}
+						],
+						"classifier": null,
+						"layoutscontainer": [
+							{
+								"name": "Password Reset via Chatbot",
+								"description": ""
+							}
+						],
+						"widget": null,
+						"list": null,
+						"generictype": null,
+						"genericfield": null,
+						"wizard": null,
+						"correlationrule": null,
+						"modelingrule": null,
+						"parsingrule": null,
+						"xsiamreport": null,
+						"xsiamdashboard": null
+					},
+					"contentItemTypes": [
+						"incidenttype",
+						"playbook",
+						"layoutscontainer"
+					],
+					"integrations": [
+						{
+							"name": "Active Directory Query v2",
+							"imagePath": "content/packs/Active_Directory_Query/ActiveDirectoryQueryv2_image.png"
+						},
+						{
+							"name": "Okta IAM",
+							"imagePath": "content/packs/Okta/OktaIAM_image.png"
+						},
+						{
+							"name": "Okta v2",
+							"imagePath": "content/packs/Okta/Oktav2_image.png"
+						},
+						{
+							"name": "okta (Deprecated)",
+							"imagePath": "content/packs/Okta/okta_image.png"
+						}
+					],
+					"useCases": [],
+					"rawUseCases": [],
+					"keywords": [],
+					"rawKeywords": [],
+					"dependencies": {
+						"Active_Directory_Query": {
+							"mandatory": true,
+							"minVersion": "1.6.15",
+							"name": "Active Directory Query",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"Base": {
+							"mandatory": true,
+							"minVersion": "1.32.13",
+							"name": "Base",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"CommonScripts": {
+							"mandatory": true,
+							"minVersion": "1.11.85",
+							"name": "Common Scripts",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"CommonTypes": {
+							"mandatory": false,
+							"minVersion": "3.3.74",
+							"name": "Common Types",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"FiltersAndTransformers": {
+							"mandatory": true,
+							"minVersion": "1.2.20",
+							"name": "Filters And Transformers",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"Okta": {
+							"mandatory": false,
+							"minVersion": "3.1.19",
+							"name": "Okta",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						}
+					},
+					"readme": "\nRemember that time when you couldn't log in to your system because you forgot your password? Ever needed the help of IT just after they left for lunch?\nDoes a Slack channel full of messages asking to reset passwords sound familiar?\n\nWell, this pack provides you with the perfect solution - resetting passwords automatically using a chatbot.\nResetting passwords through chatbots and automation can provide numerous benefits to organizations. \nFirst, it can reduce the workload on IT departments by allowing users to reset their passwords quickly and easily without needing assistance. This can improve efficiency and reduce costs. \nAdditionally, using chatbots and automation for password resets can enhance the security of the organization by allowing for multifactor authentication and real-time monitoring of login attempts. \nFurthermore, it can improve the user experience by providing a simple and intuitive interface for resetting passwords, which can help to reduce frustration and improve productivity. \nBy automating password resets, organizations can also ensure that password policies are consistently enforced, reducing the risk of security breaches. \n\n##### What does this pack do?\n1. Ingests an incident created by a user message on Slack or Microsoft Teams to reset their password.\n2. Seeks approval for password resets from the relevant stakeholder.\n3. Verifies the user using 2-factor authentication.\n4. Creates a new password for the user, meeting the password complexity criteria of the organization.\n5. Sets the new password for the user, requiring the user to change their password on next login.\n6. Sends the new password to the user in a protected ZIP file, by email.\n7. Sends the password to the ZIP file, containing the user's new password, to the user through Slack or Teams.\n\nAs part of this pack, you will also get an out-of-the-box layout to monitor and track the password resets in your organization.\n\n",
+					"legacy": true,
+					"price": 0,
+					"premium": false,
+					"installMessage": "",
+					"versionInfo": "5517995",
+					"eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+					"previewOnly": false,
+					"downloads": 13,
+					"searchRank": 10,
+					"videos": []
+				}
+			}
+		},
+		{
+			"type": "contentpack",
+			"kind": "type",
+			"id": "TaniumThreatResponse",
+			"name": "Tanium Threat Response",
+			"dependants": {
+				"CommonTypes": {
+					"level": "optional",
+					"type": "contentpack",
+					"id": "CommonTypes",
+					"name": "Common Types",
+					"minVersion": "2.2.1",
+					"maxVersion": ""
+				}
+			},
+			"currentVersion": "",
+			"minVersion": "2.2.1",
+			"extras": {
+				"pack": {
+					"id": "TaniumThreatResponse",
+					"version": 5,
+					"cacheVersn": 0,
+					"modified": "2023-06-14T09:37:13.942837+03:00",
+					"packID": "",
+					"packName": "",
+					"itemVersion": "",
+					"fromServerVersion": "",
+					"toServerVersion": "",
+					"definitionId": "",
+					"vcShouldIgnore": false,
+					"vcShouldKeepItemLegacyProdMachine": false,
+					"commitMessage": "",
+					"shouldCommit": false,
+					"currentVersion": "2.2.1",
+					"name": "Tanium Threat Response",
+					"description": "Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections.",
+					"updated": "2023-06-05T22:33:24+03:00",
+					"created": "2020-09-23T21:08:21+03:00",
+					"support": "xsoar",
+					"author": "Cortex XSOAR",
+					"authorImage": "content/packs/Base/Author_image.png",
+					"supportDetails": {
+						"url": "https://www.paloaltonetworks.com/cortex",
+						"email": ""
+					},
+					"beta": false,
+					"deprecated": false,
+					"certification": "certified",
+					"serverMinVersion": "5.0.0",
+					"serverMaxVersion": "",
+					"general": [
+						"generalFieldCertified",
+						"generalFieldByCortexXSOAR",
+						"generalFieldFree",
+						"generalFieldSupportIncluded",
+						"generalFieldNotInstalled"
+					],
+					"tags": [],
+					"rawTags": [],
+					"categories": [
+						"Endpoint"
+					],
+					"contentItems": {
+						"integration": [
+							{
+								"name": "Tanium Threat Response v2",
+								"description": "Use the Tanium Threat Response integration to manage endpoint processes, evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.",
+								"category": "Endpoint",
+								"commands": [
+									{
+										"name": "tanium-tr-get-intel-doc-by-id",
+										"description": "Returns an intel document object based on ID."
+									},
+									{
+										"name": "tanium-tr-list-intel-docs",
+										"description": "Returns a comma-separated list of all intel documents."
+									},
+									{
+										"name": "tanium-tr-list-alerts",
+										"description": "Returns a comma-separated list of all alerts."
+									},
+									{
+										"name": "tanium-tr-get-alert-by-id",
+										"description": "Returns an alert object based on alert ID."
+									},
+									{
+										"name": "tanium-tr-alert-update-state",
+										"description": "Updates the state of the specified alerts."
+									},
+									{
+										"name": "tanium-tr-create-snapshot",
+										"description": "Captures a new snapshot by connection ID."
+									},
+									{
+										"name": "tanium-tr-delete-snapshot",
+										"description": "Deletes a snapshot by connection name and snapshot ID."
+									},
+									{
+										"name": "tanium-tr-list-snapshots",
+										"description": "Returns all local snapshots of a single connection."
+									},
+									{
+										"name": "tanium-tr-delete-local-snapshot",
+										"description": "Deletes a local snapshot by connection ID."
+									},
+									{
+										"name": "tanium-tr-list-connections",
+										"description": "Returns a list of all connections."
+									},
+									{
+										"name": "tanium-tr-create-connection",
+										"description": "Creates a local or remote connection."
+									},
+									{
+										"name": "tanium-tr-delete-connection",
+										"description": "Deletes a connection by connection ID."
+									},
+									{
+										"name": "tanium-tr-close-connection",
+										"description": "Closes a connection by connection ID."
+									},
+									{
+										"name": "tanium-tr-list-labels",
+										"description": "Returns all available labels in the system."
+									},
+									{
+										"name": "tanium-tr-get-label-by-id",
+										"description": "Returns a label object based on label ID."
+									},
+									{
+										"name": "tanium-tr-list-file-downloads",
+										"description": "Returns all downloaded files in the system."
+									},
+									{
+										"name": "tanium-tr-get-downloaded-file",
+										"description": "Gets the actual content of a downloaded file by file ID. Downloaded file password: `infected`."
+									},
+									{
+										"name": "tanium-tr-list-events-by-connection",
+										"description": "Queries events for a connection."
+									},
+									{
+										"name": "tanium-tr-get-file-download-info",
+										"description": "Gets the metadata of a file download."
+									},
+									{
+										"name": "tanium-tr-get-process-info",
+										"description": "Get information for a process."
+									},
+									{
+										"name": "tanium-tr-get-events-by-process",
+										"description": "Gets the events for a process."
+									},
+									{
+										"name": "tanium-tr-get-process-children",
+										"description": "Gets the children of this process instance."
+									},
+									{
+										"name": "tanium-tr-get-parent-process",
+										"description": "Gets information for the parent process."
+									},
+									{
+										"name": "tanium-tr-get-process-tree",
+										"description": "Gets the process tree for the process instance."
+									},
+									{
+										"name": "tanium-tr-event-evidence-list",
+										"description": "Returns a list of all available event evidences in the system."
+									},
+									{
+										"name": "tanium-tr-event-evidence-get-properties",
+										"description": "Returns event evidence properties for IOC generation."
+									},
+									{
+										"name": "tanium-tr-get-evidence-by-id",
+										"description": "Gets event evidence by evidence ID."
+									},
+									{
+										"name": "tanium-tr-create-evidence",
+										"description": "Creates event evidence from process."
+									},
+									{
+										"name": "tanium-tr-delete-evidence",
+										"description": "Deletes event evidences from Tanium."
+									},
+									{
+										"name": "tanium-tr-request-file-download",
+										"description": "Requests a new file download."
+									},
+									{
+										"name": "tanium-tr-delete-file-download",
+										"description": "Deletes a file download."
+									},
+									{
+										"name": "tanium-tr-list-files-in-directory",
+										"description": "Gets a list of files in the given directory."
+									},
+									{
+										"name": "tanium-tr-get-file-info",
+										"description": "Gets information about a file from a remote connection."
+									},
+									{
+										"name": "tanium-tr-delete-file-from-endpoint",
+										"description": "Deletes a file from the given endpoint."
+									},
+									{
+										"name": "tanium-tr-intel-docs-labels-list",
+										"description": "List all labels for the identified intel document."
+									},
+									{
+										"name": "tanium-tr-intel-docs-add-label",
+										"description": "Create a new label association for the identified intel document."
+									},
+									{
+										"name": "tanium-tr-intel-docs-remove-label",
+										"description": "Delete a label association for the identified intel document."
+									},
+									{
+										"name": "tanium-tr-intel-doc-create",
+										"description": "Add a new intel document to the system by providing its document contents."
+									},
+									{
+										"name": "tanium-tr-intel-doc-update",
+										"description": "Update the contents of an existing intel document by providing the document contents."
+									},
+									{
+										"name": "tanium-tr-intel-deploy",
+										"description": "Deploys intel using the service account context."
+									},
+									{
+										"name": "tanium-tr-intel-deploy-status",
+										"description": "Displays status of last intel deployment."
+									},
+									{
+										"name": "tanium-tr-get-task-by-id",
+										"description": "Get task by ID."
+									},
+									{
+										"name": "tanium-tr-get-system-status",
+										"description": "Gets system status, including connections, client IDs, hostnames, and IPs."
+									},
+									{
+										"name": "tanium-tr-intel-doc-delete",
+										"description": "Remove an intel document from the system by providing its ID"
+									},
+									{
+										"name": "tanium-tr-start-quick-scan",
+										"description": "Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -\u003e Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration."
+									},
+									{
+										"name": "tanium-tr-get-response-actions",
+										"description": "Returns the Response Actions matching the specified filters"
+									},
+									{
+										"name": "tanium-tr-response-action-gather-snapshot",
+										"description": "Creates a \"gatherSnapshot\" Response Action for the specified host"
+									}
+								]
+							},
+							{
+								"name": "Tanium Threat Response",
+								"description": "Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections. This Integration works with Tanium Threat Response version below 3.0.159. In order to use Tanium Threat Response version 3.0.159 and above, use Tanium Threat Response V2 Integration.",
+								"category": "Endpoint",
+								"commands": [
+									{
+										"name": "tanium-tr-get-intel-doc-by-id",
+										"description": "Returns an intel document object based on ID."
+									},
+									{
+										"name": "tanium-tr-list-intel-docs",
+										"description": "Returns a list of all intel documents."
+									},
+									{
+										"name": "tanium-tr-list-alerts",
+										"description": "Returns a list of all alerts."
+									},
+									{
+										"name": "tanium-tr-get-alert-by-id",
+										"description": "Returns an alert object based on alert ID."
+									},
+									{
+										"name": "tanium-tr-alert-update-state",
+										"description": "Updates the state of a single alert."
+									},
+									{
+										"name": "tanium-tr-list-snapshots-by-connection",
+										"description": "Returns all snapshots of a single connection."
+									},
+									{
+										"name": "tanium-tr-create-snapshot",
+										"description": "Captures a new snapshot by connection name."
+									},
+									{
+										"name": "tanium-tr-delete-snapshot",
+										"description": "Deletes a snapshot by connection name and snapshot ID."
+									},
+									{
+										"name": "tanium-tr-list-local-snapshots-by-connection",
+										"description": "Returns all local snapshots of a single connection."
+									},
+									{
+										"name": "tanium-tr-delete-local-snapshot",
+										"description": "Deletes a local snapshot by connection name and file name."
+									},
+									{
+										"name": "tanium-tr-list-connections",
+										"description": "Returns all connections."
+									},
+									{
+										"name": "tanium-tr-get-connection-by-name",
+										"description": "Returns a connection object based on connection name."
+									},
+									{
+										"name": "tanium-tr-create-connection",
+										"description": "Creates a local or remote connection."
+									},
+									{
+										"name": "tanium-tr-delete-connection",
+										"description": "Deletes a connection by connection name."
+									},
+									{
+										"name": "tanium-tr-list-labels",
+										"description": "Returns all available labels in the system."
+									},
+									{
+										"name": "tanium-tr-get-label-by-id",
+										"description": "Returns a label object based on label ID."
+									},
+									{
+										"name": "tanium-tr-list-file-downloads",
+										"description": "Returns all downloaded files in the system."
+									},
+									{
+										"name": "tanium-tr-get-downloaded-file",
+										"description": "Gets the actual content of a downloaded file by file ID."
+									},
+									{
+										"name": "tanium-tr-list-events-by-connection",
+										"description": "Queries events for a connection."
+									},
+									{
+										"name": "tanium-tr-get-file-download-info",
+										"description": "Gets the metadata of a file download. You must supply either the `path` or `id` agument for the command to run successfully."
+									},
+									{
+										"name": "tanium-tr-get-process-info",
+										"description": "Get information for a process."
+									},
+									{
+										"name": "tanium-tr-get-events-by-process",
+										"description": "Gets the events for a process."
+									},
+									{
+										"name": "tanium-tr-get-process-children",
+										"description": "Gets the children of this process instance."
+									},
+									{
+										"name": "tanium-tr-get-parent-process",
+										"description": "Gets information for the parent process."
+									},
+									{
+										"name": "tanium-tr-get-parent-process-tree",
+										"description": "Gets the parent process tree for the process instance."
+									},
+									{
+										"name": "tanium-tr-get-process-tree",
+										"description": "Gets the process tree for the process instance."
+									},
+									{
+										"name": "tanium-tr-list-evidence",
+										"description": "Returns a list of all available evidence in the system."
+									},
+									{
+										"name": "tanium-tr-get-evidence-by-id",
+										"description": "Gets evidence by evidence ID."
+									},
+									{
+										"name": "tanium-tr-create-evidence",
+										"description": "Creates an evidence."
+									},
+									{
+										"name": "tanium-tr-delete-evidence",
+										"description": "Deletes an evidence."
+									},
+									{
+										"name": "tanium-tr-request-file-download",
+										"description": "Requests a new file download."
+									},
+									{
+										"name": "tanium-tr-delete-file-download",
+										"description": "Deletes a file download."
+									},
+									{
+										"name": "tanium-tr-list-files-in-directory",
+										"description": "Gets a list of files in the given directory."
+									},
+									{
+										"name": "tanium-tr-get-file-info",
+										"description": "Gets information about a file from a remote connection."
+									},
+									{
+										"name": "tanium-tr-delete-file-from-endpoint",
+										"description": "Deletes a file from the given endpoint."
+									},
+									{
+										"name": "tanium-tr-get-process-timeline",
+										"description": "Gets the process timeline."
+									},
+									{
+										"name": "tanium-tr-get-download-file-request-status",
+										"description": "Gets the status of the download file request."
+									},
+									{
+										"name": "tanium-tr-intel-doc-create",
+										"description": "Add a new intel document to the system by providing its document contents."
+									},
+									{
+										"name": "tanium-tr-start-quick-scan",
+										"description": "Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -\u003e Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration."
+									}
+								]
+							}
+						],
+						"automation": null,
+						"incidentfield": [
+							{
+								"name": "Tanium Threat Response Intel Doc Id",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Tanium Threat Response GUID",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Tanium Threat Response Scan Config Revision Id",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Tanium Threat Response Type",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Tanium Threat Response Event Id",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Tanium Threat Response Intel Doc Revision Id",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Tanium Threat Response Scan Config Id",
+								"type": "shortText",
+								"description": ""
+							},
+							{
+								"name": "Tanium Threat Response Priority",
+								"type": "shortText",
+								"description": ""
+							}
+						],
+						"incidenttype": [
+							{
+								"name": "Tanium TR Incident",
+								"playbook": "",
+								"closureScript": "",
+								"hours": 0,
+								"days": 0,
+								"weeks": 0
+							}
+						],
+						"indicatorfield": null,
+						"reputation": null,
+						"report": null,
+						"dashboard": null,
+						"playbook": [
+							{
+								"name": "Tanium Threat Response - Create Connection v2",
+								"description": "Creates a connection to a remote destination from Tanium Threat Response v2 v2"
+							},
+							{
+								"name": "Tanium Threat Response - Create Connection",
+								"description": "Creates a connection to a remote destination from Tanium Threat Response."
+							},
+							{
+								"name": "Tanium Threat Response - Request File Download",
+								"description": "Request file download from Tanium Threat Response."
+							},
+							{
+								"name": "Tanium Threat Response - Request File Download v2",
+								"description": "Request file download from Tanium Threat Response v2."
+							}
+						],
+						"classifier": [
+							{
+								"name": "Tanium Threat Response",
+								"description": ""
+							}
+						],
+						"layoutscontainer": [
+							{
+								"name": "Tanium Threat Response",
+								"description": ""
+							}
+						],
+						"widget": null,
+						"list": null,
+						"generictype": null,
+						"genericfield": null,
+						"wizard": null,
+						"correlationrule": null,
+						"modelingrule": null,
+						"parsingrule": null,
+						"xsiamreport": null,
+						"xsiamdashboard": null
+					},
+					"contentItemTypes": [
+						"integration",
+						"incidentfield",
+						"incidenttype",
+						"playbook",
+						"classifier",
+						"layoutscontainer"
+					],
+					"integrations": [
+						{
+							"name": "Tanium Threat Response",
+							"imagePath": "content/packs/TaniumThreatResponse/TaniumThreatResponse_image.png"
+						},
+						{
+							"name": "Tanium Threat Response v2",
+							"imagePath": "content/packs/TaniumThreatResponse/TaniumThreatResponsev2_image.png"
+						}
+					],
+					"useCases": [],
+					"rawUseCases": [],
+					"keywords": [],
+					"rawKeywords": [],
+					"dependencies": {
+						"Base": {
+							"mandatory": true,
+							"minVersion": "1.32.13",
+							"name": "Base",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"CommonPlaybooks": {
+							"mandatory": true,
+							"minVersion": "2.3.73",
+							"name": "Common Playbooks",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						},
+						"CommonTypes": {
+							"mandatory": false,
+							"minVersion": "3.3.74",
+							"name": "Common Types",
+							"certification": "certified",
+							"author": "Cortex XSOAR"
+						}
+					},
+					"readme": "# Tanium Threat Response\nThis pack includes Cortex XSIAM content.\n\n\n## Configuration on Server Side\nYou need to configure a Socket Receiver on the Tanium side. \n\nPerform the following steps to configure the Socket Receiver:\n1. Go to **Modules** \u003e **Connect**.\n2. Enter a name and description for the connection.\n3. From the **Source** dropdown, select **Event**.\n4. From the **Event Group** dropdown, select **Tanium Threat Response**.\n5. Select **Match Alerts Raw**.\n6. From the **Destination** dropdown, select **Socket Receiver**.\n7. Specify a unique name for the **Destination Name**.\n8. Under **Host**, fill in the name or the IP address of the SIEM.\n9. Specify the port number under **Port**.\n10. elect **JSON** from the dropdown under **Format**.\n11. Click the **Listen for this Event** checkbox.\n12. Click **Save**.\n\nMore information can be found [here](https://docs.tanium.com/threat_response/threat_response/overview.html#Integrat)\n\n\u003cu\u003e**Note:**\u003c/u\u003e\nMake sure to send the log in UTC time. \nDon't modify the value type of the \"Timestamp\" field. This field is set to UTC by default.\n\n## Collect Events from Vendor\nIn order to use the collector, use the [Broker VM](#broker-vm) option.\n\n\n### Broker VM\nTo create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).\n\nYou can configure the specific vendor and product for this instance.\n\n1. Navigate to **Settings** \u003e **Configuration** \u003e **Data Broker** \u003e **Broker VMs**. \n2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.\n3. Click **Add New**.\n4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**:\n   - vendor as vendor - tanium\n   - product as product - threat_response",
+					"legacy": true,
+					"price": 0,
+					"premium": false,
+					"installMessage": "",
+					"versionInfo": "5517995",
+					"eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+					"previewOnly": false,
+					"downloads": 3221,
+					"searchRank": 10,
+					"videos": []
+				}
+			}
+		}
+	]
+}
