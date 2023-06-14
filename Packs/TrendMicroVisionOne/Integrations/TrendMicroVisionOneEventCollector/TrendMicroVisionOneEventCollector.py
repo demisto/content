@@ -20,7 +20,7 @@ DEFAULT_MAX_LIMIT = 1000
 DEFAULT_URL = 'https://api.xdr.trendmicro.com'
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
-ONE_HOUR = 1
+ONE_DAY = 1
 
 
 class LastRunLogsTimeFields(Enum):
@@ -204,8 +204,11 @@ class Client(BaseClient):
         start_time_event_index = 0
 
         for start_time_event_index, event in enumerate(events):
-            if dateparser.parse(event.get(created_time_field)) >= start_time_datetime:
-                break
+            if event_time := event.get(created_time_field):
+                if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS.value:
+                    event_time = timestamp_to_datestring(timestamp=event_time, date_format=DATE_FORMAT, is_utc=True)
+                if dateparser.parse(event_time) >= start_time_datetime:
+                    break
 
         events = events[start_time_event_index: limit + start_time_event_index]
         add_custom_fields_to_events(events=events, event_type=event_type, created_time_field=created_time_field)
@@ -472,11 +475,11 @@ def get_datetime_range(
     if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value:
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
-        one_year_from_last_run_time = last_run_time_datetime + timedelta(hours=ONE_HOUR)  # type: ignore[operator]
-        if one_year_from_last_run_time > now:
+        one_day_from_last_run_time = last_run_time_datetime + timedelta(days=ONE_DAY)  # type: ignore[operator]
+        if one_day_from_last_run_time > now:
             end_time_datetime = now
         else:
-            end_time_datetime = one_year_from_last_run_time
+            end_time_datetime = one_day_from_last_run_time
     else:
         end_time_datetime = now
 
