@@ -36,6 +36,8 @@ jobs:
 
     - name: run pre-commit
       run: |
+        pip uninstall -y demisto-sdk
+        pip install demisto-sdk==1.15.5
         npm install
         poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --sdk-ref v1.15.5
 
