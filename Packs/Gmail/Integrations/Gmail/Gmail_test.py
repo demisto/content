@@ -2,7 +2,6 @@ import demistomock as demisto
 import pytest
 from test_data import input_data
 import datetime
-from CommonServerPython import *
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -795,7 +794,7 @@ def test_format_fields_argument(fields: str | None, expected_result: list[str] |
         - When valid fields are given, the ID field will always be included in the list
     """
     from Gmail import format_fields_argument
-
+    from CommonServerPython import argToList
     assert format_fields_argument(argToList(fields)) == expected_result
 
 
