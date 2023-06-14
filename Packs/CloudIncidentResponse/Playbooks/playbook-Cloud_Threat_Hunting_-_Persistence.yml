@@ -1336,7 +1336,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Date and time in the following format.
+    Date and time in the following format - yyyy-mm-ddThh:mm:ss
     e.g.,
     2022-05-29T12:00:00
     2021-01-01T12:00:00
