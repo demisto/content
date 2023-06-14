@@ -2616,9 +2616,9 @@ def uptycs_post_new_lookuptable():
     api_call = '/lookupTables'
 
     name = demisto.args().get('name')
-    idField = demisto.args().get('idField')
+    id_field = demisto.args().get('id_field')
 
-    post_data = {"name": name, "idField": idField}
+    post_data = {"name": name, "idField": id_field}
 
     if demisto.args().get('description') is not None:
         post_data["description"] = demisto.args().get('description')

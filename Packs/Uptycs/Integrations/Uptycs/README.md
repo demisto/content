@@ -2594,7 +2594,7 @@ There is no context output for this command.
 
 ### 34. uptycs-get-carves
 ---
-Get the list of file carves
+Get the list of carves file from a specific path.
 ##### Base Command
 
 `uptycs-get-carves`
@@ -2663,7 +2663,7 @@ Get the url of a carved file using uuid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| carve_id | retrieve carved file url | Required |
+| carve_id | uuid of a specific carved file. | Required |
 
 
 ##### Context Output
@@ -2699,7 +2699,7 @@ Download a carved file using uuid
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| carve_id | uuid of carved file download | Required |
+| carve_id | uuid of a specific carved file to download. | Required |
 
 
 ##### Context Output
@@ -2722,7 +2722,7 @@ There is no context output for this command.
 
 ### 37. uptycs-get-asset-with-id
 ---
-Return asset details enrolled with Uptycs
+Get an Uptycs asset details.
 ##### Base Command
 
 `uptycs-get-asset-with-id`
@@ -2730,7 +2730,7 @@ Return asset details enrolled with Uptycs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Only return the asset with this unique asset id | Required |
+| asset_id | Uptycs asset_id | Required |
 
 
 ##### Context Output
@@ -2820,7 +2820,7 @@ Return Uptycs asset tag details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | Only return the tag with this unique tag id | Required |
+| tag_id | Uptycs tag id | Required |
 
 
 ##### Context Output
@@ -2891,7 +2891,7 @@ Return Uptycs asset tag details
 
 ### 39. uptycs-get-tags
 ---
-Return list of Uptycs asset tags with details
+Return a list of Uptycs asset tags with details.
 ##### Base Command
 
 `uptycs-get-tags`
@@ -2899,8 +2899,8 @@ Return list of Uptycs asset tags with details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | Only return the tag matching this key | Optional |
-| value | Only return the tag matching this value | Optional |
+| key | Uptycs tag key | Optional |
+| value | Uptycs tag value | Optional |
 
 
 ##### Context Output
@@ -2979,7 +2979,7 @@ Delete an Uptycs asset tag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | delete the tag matching this id | Required |
+| tag_id | Delete the tag matching this id. | Required |
 
 
 ##### Context Output
@@ -3000,7 +3000,7 @@ Uptycs Deleted tag
 
 ### 41. uptycs-create-lookuptable
 ---
-Create an Uptycs lookup table
+Create a new Uptycs lookup table.
 ##### Base Command
 
 `uptycs-create-lookuptable`
@@ -3008,9 +3008,9 @@ Create an Uptycs lookup table
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | name of the table | Required |
-| idField | id field for the table | Required |
-| description | description for the table | Optional |
+| name | name of a lookup table | Required |
+| id_field | id field for the table | Required |
+| description | Description of a lookup table. | Optional |
 | filename | The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI. | Required |
 
 ##### Context Output
@@ -3021,7 +3021,7 @@ Create an Uptycs lookup table
 | Uptycs.lookuptable.name | string | name of lookup table |
 
 ##### Command Example
-`uptycs-delete-tag name="test_table" idField="remote_address" description="look up table with remote address"`
+`uptycs-create-lookuptable name="test_table" id_field="remote_address" description="look up table with remote address"`
 
 ##### Context Example
 ```
@@ -3044,7 +3044,7 @@ Create an Uptycs lookup table
 
 ### 42. uptycs-post-lookuptable-data
 ---
-Post data for lookup table
+Update csv data for a look up table.
 ##### Base Command
 
 `uptycs-post-lookuptable-data`
@@ -3052,7 +3052,7 @@ Post data for lookup table
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | table_id for the lookup table | Required |
+| table_id | Look up table id. | Required |
 | filename | The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.| Required |
 
 
@@ -3081,10 +3081,10 @@ Edit an Uptycs lookup table
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | id of the table | Required |
-| name | name of the table | Optional |
-| description | description for the table | Optional |
-| active | enable or disable the table with boolean flag true or false | Optional |
+| table_id | Look up table id. | Required |
+| name | Name of a lookup table. | Optional |
+| description | A lookup table description. | Optional |
+| active | Enable or disable the table with boolean flag true or false | Optional |
 
 ##### Context Output
 
@@ -3135,7 +3135,7 @@ Get an Uptycs lookup table details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | id of the table | Required |
+| table_id | table id | Required |
 
 ##### Context Output
 
@@ -3176,7 +3176,7 @@ There is no context output for this command.
 |TRUE|2023-04-21T08:27:20.888Z|f976bda8-d5dc-468f-8283-20d5368352e2|b1c3b08c-eedd-4b94-8ba0-9ca322401016|null|null|SELECT id_field_value,data FROM upt_lookup_rows WHERE lookup_table_id = '3fdb051b-b38b-4792-9daa-0a88ba4fae53'|TRUE|3fdb051b-b38b-4792-9daa-0a88ba4fae53|remote_address|Test 1|24|null|2023-04-25T04:11:04.664Z|f976bda8-d5dc-468f-8283-20d5368352e2|
 
 
-### 44. uptycs-get-lookuptables
+### 45. uptycs-get-lookuptables
 ---
 Get List of Uptycs lookup table details
 ##### Base Command
@@ -3235,7 +3235,7 @@ Delete an Uptycs lookup table
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | delete the lookup table matching this id | Required |
+| table_id | table id | Required |
 
 
 ##### Context Output
@@ -3264,8 +3264,8 @@ Disassociate an asset with a tag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | disassociate the tag matching this id | Required |
-| asset_id | disassociate the asset matching this asset id | Required |
+| tag_id | Disassociate the tag matching this id with the given asset_id | Required |
+| asset_id | Disassociate the asset matching this asset id with the given tag_id | Required |
 
 
 ##### Context Output

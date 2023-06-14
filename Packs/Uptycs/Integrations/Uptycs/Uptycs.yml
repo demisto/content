@@ -1806,7 +1806,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get the list of file carves.
+    description: Get the list of carves file from a specific path.
     execution: false
     name: uptycs-get-carves
     outputs:
@@ -1845,13 +1845,13 @@ script:
       type: date
   - arguments:
     - default: false
-      description: uuid of specific carved file
+      description: uuid of a specific carved file.
       isArray: false
       name: carve_id
       required: true
       secret: false
     deprecated: false
-    description: Get link for a carved file.
+    description: Get the url of a carved file using uuid.
     execution: false
     name: uptycs-get-carves-link
     outputs:
@@ -1860,23 +1860,23 @@ script:
       type: string
   - arguments:
     - default: false
-      description: uuid of specific carved file
+      description: uuid of a specific carved file to download.
       isArray: false
       name: carve_id
       required: true
       secret: false
     deprecated: false
-    description: Download a carved file.
+    description: Download a carved file using uuid.
     execution: false
     name: uptycs-get-carves-download-file
   - name: uptycs-get-asset-with-id
     deprecated: false
-    description: get an Uptycs asset details
+    description: Get an Uptycs asset details.
     execution: false
     arguments:
     - name: asset_id
       required: true
-      description: uptycs asset_id
+      description: Uptycs asset_id
       isArray: false
       secret: false
       default: false
@@ -1954,7 +1954,7 @@ script:
       description: live status
       type: boolean
   - name: uptycs-get-tag
-    description: get tag with id
+    description: Return Uptycs asset tag details.
     deprecated: false
     execution: false
     arguments:
@@ -2026,7 +2026,7 @@ script:
       description: tagRuleId
       type: string
   - name: uptycs-get-tags
-    description: get list of tags
+    description: Return a list of Uptycs asset tags with details.
     deprecated: false
     execution: false
     arguments:
@@ -2107,13 +2107,13 @@ script:
       description: tagRuleId
       type: string
   - name: uptycs-delete-tag
-    description: delete an existing tag
+    description: Delete an Uptycs asset tag.
     deprecated: false
     execution: false
     arguments:
     - name: tag_id
       required: true
-      description: id of tag
+      description: Delete the tag matching this id.
       isArray: false
       secret: false
       default: false
@@ -2166,7 +2166,7 @@ script:
       description: fetchRowsquery
       type: string
   - name: uptycs-get-lookuptable
-    description: get details of a lookuptable
+    description: Get an Uptycs lookup table details.
     deprecated: false
     execution: false
     arguments:
@@ -2217,17 +2217,17 @@ script:
       description: fetchRowsquery
       type: string
   - name: uptycs-create-lookuptable
-    description: create new lookup table
+    description: Create a new Uptycs lookup table.
     deprecated: false
     execution: false
     arguments:
     - name: name
       required: true
-      description: Name of lookup table
+      description: Name of a lookup table.
       isArray: false
       secret: false
       default: false
-    - name: idField
+    - name: id_field
       required: true
       description: Id field
       isArray: false
@@ -2235,13 +2235,13 @@ script:
       default: false
     - name: description
       required: false
-      description: description of lookup table
+      description: Description of a lookup table
       isArray: false
       secret: false
       default: false
     - name: filename
       required: true
-      description: csv file path
+      description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
       isArray: false
       secret: false
       default: false
@@ -2253,40 +2253,45 @@ script:
       description: table name
       type: string
   - name: uptycs-edit-lookuptable
-    description: uptycs edit lookuptable
+    description: Edit an Uptycs lookup table.
     deprecated: false
     execution: false
     arguments:
     - name: table_id
       required: true
-      description: table id
+      description: Look up table id.
       isArray: false
       secret: false
       default: false
     - name: name
       required: false
-      description: name
+      description: Name of a lookup table.
       isArray: false
       secret: false
       default: false
     - name: description
       required: false
-      description: description
+      description: A lookup table description.
       isArray: false
       secret: false
       default: false
     - name: active
+      auto: PREDEFINED
+      defaultValue: true
       required: false
-      description: active - true or false
+      description: Enable or disable the table with boolean flag true or false
       isArray: false
       secret: false
       default: false
+      predefined:
+        - 'true'
+        - 'false'
     outputs:
     - contextPath: Uptycs.lookuptable
       description: response
       type: string
   - name: uptycs-delete-lookuptable
-    description: uptycs delete lookuptable
+    description: Delete an Uptycs lookup table.
     deprecated: false
     execution: false
     arguments:
@@ -2297,36 +2302,36 @@ script:
       secret: false
       default: false
   - name: uptycs-delete-assets-tag
-    description: disassociate an asset with a tag
+    description: Disassociate an asset with a tag.
     deprecated: false
     execution: false
     arguments:
     - name: asset_id
       required: true
-      description: asset id
+      description: Disassociate the asset matching this asset id with the given tag_id
       isArray: false
       secret: false
       default: false
     - name: tag_id
       required: true
-      description: tag id
+      description: Disassociate the tag matching this id with the given asset_id
       isArray: false
       secret: false
       default: false
   - name: uptycs-post-lookuptable-data
-    description: update csv data for look up table
+    description: Update csv data for a look up table.
     deprecated: false
     execution: false
     arguments:
     - name: table_id
       required: true
-      description: look up table id
+      description: Look up table id.
       isArray: false
       secret: false
       default: false
     - name: filename
       required: true
-      description: csv file path
+      description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
       isArray: false
       secret: false
       default: false
