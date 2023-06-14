@@ -1,10 +1,12 @@
 Use the Atlassian Jira v2 integration to manage Jira issues and create Cortex XSOAR incidents from Jira projects.
 
 This integration was integrated and tested with: Jira Cloud, Jira v8.19.1.
-For more information about JQL syntax, go to https://www.atlassian.com/software/jira/guides/expand-jira/jql.
+For more information about JQL syntax, go to <https://www.atlassian.com/software/jira/guides/expand-jira/jql>.
 
 ## Use Cases
+
 ---
+
 1. Create, edit, delete, and query Jira issues.
 2. Get or add to the comments of an issue.
 3. Add a link or upload an attachment to an issue.
@@ -19,21 +21,21 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
     
         To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token. Authorizing the use of basic authentication requires:
     
-        * __Username__
-        * __Password (Deprecated)__
-        * __API token__
+        * **Username**
+        * **Password (Deprecated)**
+        * **API token**
         
     * ____________________ OAuth 1.0 __________________
            
       To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access token. Authorizing the use of OAuth1.0 requires:
 
-        * __ConsumerKey__
-        * __AccessToken__
-        * __PrivateKey__
+        * **ConsumerKey**
+        * **AccessToken**
+        * **PrivateKey**
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Jira URL, for example: https://demisto.atlassian.net/ |  | True |
+    | Jira URL, for example: <https://demisto.atlassian.net/> |  | True |
     | Username (API or Basic Authentication) |  | False |
     | Password (Deprecated - Use API token) |  | False |
     | API token |  | False |
@@ -57,15 +59,19 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
+
 ---
 When you enable incidents fetching, Cortex XSOAR fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Cortex XSOAR fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are fetched for each call. To fetch older Jira issues, use the query to fetch issues option.
 If `Fetch comments` is enabled, The fetched incident will include the comments in the Jira issue.
 If `Fetch attachments` is enabled, The fetched incident will include the attachments in the Jira issue.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### jira-issue-query
+
 ***
 Queries Jira issues.
 
@@ -73,6 +79,7 @@ Queries Jira issues.
 #### Base Command
 
 `jira-issue-query`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                     | **Required** |
@@ -104,9 +111,11 @@ Queries Jira issues.
 | Ticket.LastUpdate | Date | The last time the ticket was updated. | 
 
 #### Command Example
+
 ```!jira-issue-query query="status=done"```
 
 ##### Context Example
+
 ```
 {
     "Ticket": [
@@ -131,19 +140,22 @@ Queries Jira issues.
 ```
 
 #### Human Readable Output
+
 **jira-issue-query**
 |assignee|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| null(null) | 2019-05-04T02:45:09.909+0300 | {creator} | TypeofIssueIdList |  | 12658 | A task that needs to be done. | TES-25 |  | Medium | test1 | {creator} | Done | HelloBlocked11 | https://demistodev.atlassian.net/rest/api/latest/issue/12658 |
-| null(null) | 2019-01-27T15:59:03.134+0200 | {creator} |  |  | 10986 | jira.translation.issuetype.bug.name.desc | SOC-40 |  | Medium | SOC | {creator} | Done | Test2 | https://demistodev.atlassian.net/rest/api/latest/issue/10986 |
+| null(null) | 2019-05-04T02:45:09.909+0300 | {creator} | TypeofIssueIdList |  | 12658 | A task that needs to be done. | TES-25 |  | Medium | test1 | {creator} | Done | HelloBlocked11 | <https://demistodev.atlassian.net/rest/api/latest/issue/12658> |
+| null(null) | 2019-01-27T15:59:03.134+0200 | {creator} |  |  | 10986 | jira.translation.issuetype.bug.name.desc | SOC-40 |  | Medium | SOC | {creator} | Done | Test2 | <https://demistodev.atlassian.net/rest/api/latest/issue/10986> |
 
 ### jira-get-issue
+
 ***
 Fetches an issue from Jira.
 
 #### Base Command
 
 `jira-get-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -176,9 +188,11 @@ Fetches an issue from Jira.
 | Ticket.LastUpdate | Date | The last time the ticket was updated. | 
 
 ##### Command Example
+
 ```!jira-get-issue issueId=15572 getAttachments=true```
 
 ##### Context Example
+
 ```
 {
     "Ticket": [
@@ -196,13 +210,15 @@ Fetches an issue from Jira.
 ```
 
 #### Human Readable Output
+
 **jira-get-issue**
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| null(null) |  | 2020-01-19T12:34:13.784+0200 | {creator} | lala |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {assignee} | To Do | Test issue23 | https://demistodev.atlassian.net/rest/api/latest/issue/15572 |
+| null(null) |  | 2020-01-19T12:34:13.784+0200 | {creator} | lala |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {assignee} | To Do | Test issue23 | <https://demistodev.atlassian.net/rest/api/latest/issue/15572> |
 
 
 ### jira-create-issue
+
 ***
 Creates a new issue in Jira.
 
@@ -210,6 +226,7 @@ Creates a new issue in Jira.
 #### Base Command
 
 `jira-create-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -244,9 +261,11 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
+
 ```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=`{"fields":{"issuetype":{"name":"Request for Action"}}}` ```
 
 ##### Context Example
+
 ```
 {
     "Ticket": [
@@ -259,13 +278,15 @@ Creates a new issue in Jira.
 ```
 
 #### Human Readable Output
+
 **jira-create-issue**
 |id|key|projectKey|self|
 |---|---|---|---|
-| 15576 | DEM-5419 | DEM | https://demistodev.atlassian.net/rest/api/latest/issue/15576 |
+| 15576 | DEM-5419 | DEM | <https://demistodev.atlassian.net/rest/api/latest/issue/15576> |
 
 
 ### jira-issue-upload-file
+
 ***
 Uploads a file attachment to an issue.
 
@@ -273,6 +294,7 @@ Uploads a file attachment to an issue.
 #### Base Command
 
 `jira-issue-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -287,17 +309,20 @@ Uploads a file attachment to an issue.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!jira-issue-upload-file issueId=15572 upload=19@75```
 
 
 
 ##### Human Readable Output
+
 **jira-issue-upload-file**
 |attachment_link|attachment_name|id|issueId|
 |---|---|---|---|
-| https://demistodev.atlassian.net/rest/api/2/attachment/13456 | jira_v2_yml.yml | 13456 | 15572 |
+| <https://demistodev.atlassian.net/rest/api/2/attachment/13456> | jira_v2_yml.yml | 13456 | 15572 |
 
 ### jira-issue-add-comment
+
 ***
 Adds a new comment to an existing Jira issue.
 
@@ -305,6 +330,7 @@ Adds a new comment to an existing Jira issue.
 #### Base Command
 
 `jira-issue-add-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -319,17 +345,20 @@ Adds a new comment to an existing Jira issue.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!jira-issue-add-comment issueId=15572 comment="test comment"```
 
 
 ##### Human Readable Output
+
 **jira-issue-add-comment**
 |comment|id|key|ticket_link|
 |---|---|---|---|
-| test comment | 13779 | admin | https://demistodev.atlassian.net/rest/api/2/issue/15572/comment/13779 |
+| test comment | 13779 | admin | <https://demistodev.atlassian.net/rest/api/2/issue/15572/comment/13779> |
 
 
 ### jira-issue-add-link
+
 ***
 Creates (or updates) an issue link.
 
@@ -337,6 +366,7 @@ Creates (or updates) an issue link.
 #### Base Command
 
 `jira-issue-add-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -356,17 +386,20 @@ Creates (or updates) an issue link.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!jira-issue-add-link issueId=15572 title=test url=https://www.demisto.com/```
 
 
 
 ##### Human Readable Output
+
 **jira-issue-add-link**
 |id|ticket_link|
 |---|---|
-| 13722 | https://demistodev.atlassian.net/rest/api/latest/issue/DEM-5415/remotelink/13722 |
+| 13722 | <https://demistodev.atlassian.net/rest/api/latest/issue/DEM-5415/remotelink/13722> |
 
 ### jira-edit-issue
+
 ***
 Modifies an issue in Jira.
 
@@ -374,6 +407,7 @@ Modifies an issue in Jira.
 #### Base Command
 
 `jira-edit-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,9 +441,11 @@ Modifies an issue in Jira.
 
 
 #### Command Example
+
 ```!jira-edit-issue issueId=DEM-5415 issueJson=`{"fields":{"description":"testing3"}}` ```
 
 #### Context Example
+
 ```json
 {
     "Ticket": {
@@ -429,11 +465,12 @@ Modifies an issue in Jira.
 **jira-edit-issue**
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | https://somejira.atlassian.net/rest/api/latest/issue/10044 |
+| {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | <https://somejira.atlassian.net/rest/api/latest/issue/10044> |
 
 Issue #DEM-5415 was updated successfully
 
 ### jira-get-comments
+
 ***
 Returns the comments added to a ticket.
 
@@ -441,6 +478,7 @@ Returns the comments added to a ticket.
 #### Base Command
 
 `jira-get-comments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -458,9 +496,11 @@ Returns the comments added to a ticket.
 
 
 ##### Command Example
+
 ```!jira-get-comments issueId=15572```
 
 ##### Context Example
+
 ```
 {
     "Ticket": {
@@ -475,7 +515,9 @@ Returns the comments added to a ticket.
     }
 }
 ```
+
 ##### Human Readable Output
+
 **Comments**
 |Comment|Created|User|
 |---|---|---|
@@ -483,6 +525,7 @@ Returns the comments added to a ticket.
 
 
 ### jira-delete-issue
+
 ***
 Deletes an issue in Jira.
 
@@ -490,6 +533,7 @@ Deletes an issue in Jira.
 #### Base Command
 
 `jira-delete-issue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -502,13 +546,16 @@ Deletes an issue in Jira.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!jira-delete-issue issueIdOrKey=DEM-5415```
 
 ##### Human Readable Output
+
 Issue deleted successfully.
 
 
 ### jira-get-id-offset
+
 ***
 Returns the ID offset, for example, the first issue ID.
 
@@ -516,6 +563,7 @@ Returns the ID offset, for example, the first issue ID.
 #### Base Command
 
 `jira-get-id-offset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -528,24 +576,30 @@ There are no input arguments for this command.
 
 
 ##### Command Example
+
 ```!jira-get-id-offset```
 
 ##### Context Example
+
 ```
 {
     "Ticket.idOffSet": "10161"
 }
 ```
+
 ##### Human Readable Output
+
 ID Offset: 10161
 
 ### jira-get-id-by-attribute
+
 *** 
 Gets the Account ID for a given user's attribute.
 
 #### Base Command
 
 `jira-get-id-by-attribute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -564,9 +618,11 @@ Gets the Account ID for a given user's attribute.
 
 
 #### Command Example
+
 ```!jira-get-id-by-attribute attribute="XSOAR User"```
 
 #### Context Example
+
 ```json
 {
     "Jira": {
@@ -583,12 +639,14 @@ Gets the Account ID for a given user's attribute.
 Account ID for attribute: XSOAR User is: 5e4ds952052b790c97509a7c
 
 ### jira-list-transitions
+
 ***
 Lists all possible transitions for a given ticket.
 
 
 
 ### jira-append-to-field
+
 ***
 Modifies a specific field in an issue in Jira by appending to it instead of replacing its content. 
 Field must be either of type string (appending by using ',') or arrayd.
@@ -597,6 +655,7 @@ Field must be either of type string (appending by using ',') or arrayd.
 #### Base Command
 
 `jira-append-to-field`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -617,9 +676,11 @@ Field must be either of type string (appending by using ',') or arrayd.
 | Ticket.Status | Unknown | The ticket status. | 
 
 #### Command Example
+
 ```!jira-append-to-field issueId=CIAC-3597 fieldJson={\"customfield_16492\":\"example\"} ```
 
 #### Context Example
+
 ```json
 {
   "Ticket": {
@@ -703,6 +764,7 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 #### Base Command
 
 `jira-list-transitions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -719,9 +781,11 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 
 
 #### Command Example
+
 ```!jira-list-transitions issueId=18847 ```
 
 #### Context Example
+
 ```json
 {
     "Ticket": {
@@ -732,7 +796,9 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
     }
 }
 ```
+
 #### Human Readable Output
+
 **List Transitions:**
 |Transition Name|
 |---|
@@ -744,6 +810,7 @@ Gets specific fields from a Jira issue and adds it to context dynamically.
 | Build Broken |
 
 ### get-remote-data
+
 ***
 Gets remote data from a remote incident. This method is only used for debugging purposes and will not update the current incident.
 
@@ -751,6 +818,7 @@ Gets remote data from a remote incident. This method is only used for debugging 
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -765,6 +833,7 @@ There is no context output for this command.
 
 
 ### get-mapping-fields
+
 ***
 Returns the fields to map. This method is only used for debugging purposes.
 
@@ -772,6 +841,7 @@ Returns the fields to map. This method is only used for debugging purposes.
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 There are no input arguments for this command.
@@ -781,6 +851,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### update-remote-system
+
 ***
 Gets incident changes. This method is only used for debugging purposes and will not update the current incident.
 
@@ -788,6 +859,7 @@ Gets incident changes. This method is only used for debugging purposes and will 
 #### Base Command
 
 `update-remote-system`
+
 #### Input
 
 There are no input arguments for this command.
@@ -797,6 +869,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### get-modified-remote-data
+
 ***
 Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging purposes.
 
@@ -804,6 +877,7 @@ Available from Cortex XSOAR version 6.1.0. This command queries for incidents th
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 There are no input arguments for this command.
@@ -841,8 +915,11 @@ Edit the assignee of an existing issue.
 | Ticket.Status | String | The ticket status. | 
 
 #### Command example
+
 ```!jira-issue-assign issueId=21492 assignee_id=1234```
+
 #### Context Example
+
 ```json
 {
     "Ticket": {
@@ -868,12 +945,14 @@ Edit the assignee of an existing issue.
 #### Human Readable Output
 
 >### jira-issue-assign
+
 >|assignee| attachment  |created|creator|description|duedate|id|issueType| key |labels|priority| project |reporter|status|summary| ticket_link                                           |
 >|-------------|---|---|---|---|---|---|-----|---|---|---------|---|---|---|-------------------------------------------------------|---|
 >| assignee1(null) | attachments | 2023-03-01T14:05:49.037+0200 | assignee1(null) |  |  | 21492 | Task (Tasks track small, distinct pieces of work.) | key |  | Medium | test    | assignee1(null) | To Do | something something | https:<span>//</span>test/rest/api/latest/issue/21492 |
 >Issue #21492 was updated successfully
 
 ## Configure Incident Mirroring
+
 **This feature is compliant with Cortex XSOAR version 6.0 and above.**
 This part walks you through setting up the Jira integration to mirror incidents from Jira in Cortex XSOAR. 
 The instructions below include steps for configuring the integration and the incoming and outgoing mappers. However, not every option available in the integration, nor all classification and mapping features are covered. 
@@ -883,31 +962,35 @@ When mirroring incidents, you can make changes in Jira, which will be reflected 
 You can also attach files from either of the systems, which will then be available in the other system. 
 
 This is made possible by the addition of 3 new functions to the integration, which are applied with the following options:
-- External schema support
-- Can sync mirror in
-- Can sync mirror out
+
+* External schema support
+* Can sync mirror in
+* Can sync mirror out
 
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-configuration.png)
 
 #### STEP 1 - Modify the incoming mapper.
+
 1. Navigate to **Classification and Mapping** and click **classifier-mapper-incoming-JiraV2**.
 2. Under the Incident Type dropdown, select **Jira Incident**.
 3. Change the mapping according to your needs.
 4. Save your changes.
     
 ##### 5 fields have been added to support the mirroring feature:
-- **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both.
-    - You can choose the mirror direction when configuring the Jira instance using the **Incident Mirroring Direction** field.
 
-- **dbotMirrorId** - determines the incident ID in the 3rd party integration. In this case, the Jira ID field.
-- **dbotMirrorInstance** - determines the Jira instance with which to mirror.
-- **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
-- **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Jira.
-    - You can set the tags in the instance configuration, using **File Entry Tag**, and **Comment Entry Tag**.
+* **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both.
+  * You can choose the mirror direction when configuring the Jira instance using the **Incident Mirroring Direction** field.
+
+* **dbotMirrorId** - determines the incident ID in the 3rd party integration. In this case, the Jira ID field.
+* **dbotMirrorInstance** - determines the Jira instance with which to mirror.
+* **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
+* **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to Jira.
+  * You can set the tags in the instance configuration, using **File Entry Tag**, and **Comment Entry Tag**.
 
 ![image](https://raw.githubusercontent.com/demisto/content/1e428c782c1da1314bb6443ec472ad7c5d895e59/Packs/Jira/doc_files/mirror_incoming_mapper_fields.png)
 
 #### STEP 2 - Modify the outgoing mapper.
+
 1. Under **Classification and Mapping**, click **classifier-mapper-outgoing-Jira**.
 2. Under **Select Instance** dropdown, select the instance name you want to work with.
 The left side of the screen shows the Jira fields to map and the right side of the
@@ -924,6 +1007,7 @@ match.
 7. Save your changes.
 
 #### STEP 3 - Configure the following integration fields in order to customize the mirroring feature:
+
 1. **Mirror outgoing incidents**: If enabled, any incident data changed in existing fetched incidents will be reflected in the remote Jira server.
 2. **Mirror incoming incidents**: If enabled, any incident data changed in the remote Jira server will be reflected in existing fetched incidents.
 3. **Fetch incident**s: Should be enabled in order to mirror in and out new incidents.
@@ -936,6 +1020,7 @@ match.
 #### STEP 4 - Create an incident in Jira. For the purpose of this use case, it can be a very simple incident.
 
 #### STEP 5 - In Cortex XSOAR, the new ticket will be ingested in approximately one minute.
+
 1. Add a note to the incident. In the example below, we have written a comment from Cortex XSOAR to Jira.
 2. Click Actions -> Tags and add the **Comment Entry Tag** tag that you've selected before. If not already modified, the default is: "comment".
 3. Add a file to the incident and mark it with the **File Entry Tag** tag that you've selected before. If not already modified, the default is: "attachment".  
@@ -945,15 +1030,17 @@ match.
 6. Navigate back to the incident in Jira and within approximately one minute, the changes will be reflected there as well.
 7. Change a Jira field you've configured in the incoming mapper.
 8. Go back to Cortex XSOAR and within approximately one minute, the changes will be reflected there as well.
+
 * You can make additional changes like closing the incident or changing the description and those will be reflected in both systems.
 
 
 **Notes**
-- The final 'source of truth' of the incident for Cortex XSOAR are the values in Cortex XSOAR. 
+
+* The final 'source of truth' of the incident for Cortex XSOAR are the values in Cortex XSOAR. 
   Meaning, if you change the severity in Cortex XSOAR and then change it back in Jira, the final value that will be presented is the one in Cortex XSOAR.
   You can see a list of these fields for each incident under "Context Data" -> "dbotDirtyFields".
-- If you wish to mirror in and out Jira's custom fields, please see the 'Mirror In And Out Custom Fields' section below.
-- If you wish to change the status of a Jira incident using transitions, please see the 'Change Ticket's Status Using Transitions' section below.
+* If you wish to mirror in and out Jira's custom fields, please see the 'Mirror In And Out Custom Fields' section below.
+* If you wish to change the status of a Jira incident using transitions, please see the 'Change Ticket's Status Using Transitions' section below.
 
 
 ## Mirror In And Out Custom Fields:
@@ -963,6 +1050,7 @@ match.
 Add a new custom field and add it to the incident type&#39;s layout:
 
 1.Create a new incident field:
+
   1. Go to settings -> advanced -> fields -> new field
   2. Under "Basic Settings":
     a.provide a name
@@ -1040,6 +1128,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
 ![](https://raw.githubusercontent.com/demisto/content/906a19790e33e8c36a6de6cf141b6f88453ae551/Packs/Jira/doc_files/upload_json_11.png)
 
 ## Change Ticket's Status Using Transitions
+
 1. Make sure you've configured your instance as described in **'Configure Incident Mirroring'** above.
 2. Make sure you're using the 'Jira Incident Layout' for displaying the incident which status you want to change.
  The reason this is required is that this layout is structured in a way that both **'script-JiraChangeTransition'** and **'script-JiraListTransition'** scripts can work, which is crucial when you want to use transitions.

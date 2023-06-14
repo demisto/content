@@ -15,20 +15,20 @@ configuration:
   name: password
   required: false
   type: 4
-- display: ""
-  displaypassword: API token (Recommended)
-  hiddenusername: true
+- displaypassword: API token (Recommended)
   name: credentials
   required: false
   type: 9
-- additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
-  defaultvalue: OauthKey
+  hiddenusername: true
+  display: ''
+- defaultvalue: OauthKey
+  additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
-- additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
-  display: Access Token
+- display: Access Token
+  additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
   name: accessToken
   required: false
   type: 0
@@ -50,7 +50,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
@@ -59,7 +59,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Mirror incoming incidents
   name: incoming_mirror
   required: false
@@ -98,19 +98,19 @@ configuration:
   name: fetch_attachments
   required: false
   type: 8
-- additionalinfo: Use the "API Token (Recommended)" parameter instead.
-  display: API token (Deprecated)
+- display: API token (Deprecated)
   name: APItoken
   required: false
   type: 4
-- defaultvalue: "1"
+  additionalinfo: Use the "API Token (Recommended)" parameter instead.
+- defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
-name: jira-v2_copy
+name: jira-v2
 script:
   commands:
   - arguments:
@@ -175,14 +175,14 @@ script:
     - description: The user attribute value. Can be the username or email address. For OAuth 1.0, only the username works.
       name: attribute
       required: true
-    - auto: PREDEFINED
-      defaultValue: "false"
+    - predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       description: Whether the server is on prem and uses the REST v2 API.
       name: is_jirav2api
-      predefined:
-      - "true"
-      - "false"
-    - defaultValue: "50"
+      auto: PREDEFINED
+    - defaultValue: '50'
       description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
       name: max_results
     description: Gets the account ID for a given user attribute.
@@ -201,19 +201,19 @@ script:
     - description: Displays the headers in human readable format.
       name: headers
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: If "true", retrieves the issue attachments.
       name: getAttachments
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: If "true", expands the issue links.
       name: expandLinks
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: Fetches an issue from Jira.
     name: jira-get-issue
     outputs:
@@ -418,7 +418,9 @@ script:
     - description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}'
       name: field_json
       required: true
-    description: "Modifies a specific field in an issue in Jira by appending to it instead of replacing its content. \nField must be either of type string (appending by using ',') or array."
+    description: |-
+      Modifies a specific field in an issue in Jira by appending to it instead of replacing its content. 
+      Field must be either of type string (appending by using ',') or array.
     name: jira-append-to-field
     outputs:
     - contextPath: Ticket.Id
@@ -446,7 +448,8 @@ script:
     - description: The fields to retrieve from the issue. For example field="customfield_164,labels".
       isArray: true
       name: field
-    description: Gets specific fields from a Jira issue and adds it to context dynamically.
+    description: |-
+      Gets specific fields from a Jira issue and adds it to context dynamically.
     name: jira-get-specific-field
     outputs:
     - contextPath: Ticket.Id
@@ -489,28 +492,28 @@ script:
       required: true
     description: Deletes an issue in Jira.
     name: jira-delete-issue
-  - arguments: []
-    description: Returns the ID offset. For example the first issue ID.
+  - description: Returns the ID offset. For example the first issue ID.
     name: jira-get-id-offset
     outputs:
     - contextPath: Ticket.idOffSet
       description: The ID offset.
       type: string
+    arguments: []
   - arguments:
     - description: The remote incident ID (issue ID).
       name: id
       required: true
-    - defaultValue: "0"
+    - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
     description: Gets remote data from a remote incident. This method is only used for debugging and does not update the current incident.
     name: get-remote-data
-  - arguments: []
-    description: Returns the fields to map. This method is only used for debugging.
+  - description: Returns the fields to map. This method is only used for debugging.
     name: get-mapping-fields
-  - arguments: []
-    description: Gets incident changes. This method is only used for debugging and does not update the current incident.
+    arguments: []
+  - description: Gets incident changes. This method is only used for debugging and does not update the current incident.
     name: update-remote-system
+    arguments: []
   - arguments:
     - description: The issue ID.
       name: issueId
@@ -524,9 +527,9 @@ script:
     - contextPath: Ticket.Transitions.transitions
       description: A list of all possible transitions.
       type: Unknown
-  - arguments: []
-    description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
+  - description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
     name: get-modified-remote-data
+    arguments: []
   - arguments: []
     description: Gets the information related to the role, including users assigned.
     name: jira-get-project-role
@@ -542,7 +545,7 @@ script:
   - arguments: []
     description: Lists all the organizations.
     name: jira-get-organizations
-  dockerimage: demisto/oauthlib:1.0.0.48802
+  dockerimage: demisto/oauthlib:1.0.0.62974
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -551,4 +554,6 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: jira-v2
+tests:
+- Jira-v2-Test
+fromversion: 5.0.0
