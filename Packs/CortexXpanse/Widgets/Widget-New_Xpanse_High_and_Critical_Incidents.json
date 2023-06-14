@@ -1,0 +1,36 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "occurred(d)",
+            "severity"
+        ],
+        "hideLegend": false,
+        "referenceLine": {},
+        "showGraphValues": false,
+        "timeFrame": "days",
+        "valuesFormat": "abbreviated"
+    },
+    "query": "type:\"Xpanse Alert\" and severity:High or severity:Critical",
+    "modified": "2023-03-21T15:53:19.626350511Z",
+    "name": "New Xpanse High \u0026 Critical Incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 30,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "90712072-ecf3-4e25-8fc9-f5d11e84b6cb",
+    "widgetType": "column",
+    "fromVersion": "6.8.0",
+    "description": ""
+}
