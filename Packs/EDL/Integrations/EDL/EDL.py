@@ -478,7 +478,8 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
     if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') in ['IP', 'URL', 'Domain', 'DomainGlob']:
         stripped_indicator = url_handler(indicator_value, request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
-        indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')  # added manually to field indicator of type tag
+        # REMOVE COMMENT: proxysgcategory added manually to field indicator of type tag
+        indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')
         # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
