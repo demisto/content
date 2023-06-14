@@ -4705,42 +4705,6 @@ def test_cs_falcon_ODS_query_scans_command(mocker, command_args, query_result, e
         - Get a list of scans from CS Falcon and poll for results if wait_for_results is True.
     """
 
-# @polling_function(
-#     'cs-falcon-ods-query-scan',
-#     polling_arg_name='wait_for_result',
-#     interval=arg_to_number(dict_safe_get(demisto.args(), ['interval_in_seconds'], 0, (int, str))),
-#     timeout=arg_to_number(dict_safe_get(demisto.args(), ['timeout_in_seconds'], 0, (int, str))),
-# )
-# def cs_falcon_ODS_query_scans_command(args: dict) -> PollResult:
-#     # call the query api if no ids given
-#     ids = argToList(args.get('ids')) or get_ODS_scan_ids(args)
-
-#     if not ids:
-#         command_results = CommandResults(readable_output='No scans match the arguments/filter.')
-#         scan_in_progress = False
-
-#     else:
-#         response = ODS_get_scans_by_id_request(ids)
-#         resources = response.get('resources', [])
-
-#         scan_in_progress = (
-#             len(resources) == 1
-#             and dict_safe_get(resources, [0, 'status']) in ('pending', 'running')
-#         )
-
-#         human_readable = ODS_get_scan_resources_to_human_readable(resources)
-#         command_results = CommandResults(
-#             raw_response=response,
-#             outputs_prefix='CrowdStrike.ODSScan',
-#             outputs_key_field='id',
-#             outputs=resources,
-#             readable_output=human_readable,
-#         )
-
-#     return PollResult(response=command_results,
-#                       continue_to_poll=scan_in_progress,
-#                       args_for_next_run=args)
-
     from CrowdStrikeFalcon import cs_falcon_ODS_query_scans_command
 
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
