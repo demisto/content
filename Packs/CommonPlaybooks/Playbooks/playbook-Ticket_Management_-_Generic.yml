@@ -628,7 +628,7 @@ inputs:
 - key: serviceNowCategory
   value: {}
   required: false
-  description: The category of the ServiceNow Ticket.
+  description: The category of the ServiceNow ticket.
   playbookInputQuery:
 - key: serviceNowAssignmentGroup
   value: {}
@@ -684,7 +684,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: 'Possible values: True/False. Whether to append a new comment to the ticket for each endpoint in the incident.'
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: CommentToAdd
   value: {}
@@ -693,9 +693,9 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: ServiceNow.Ticket.ID
-  description: ServiceNow Ticket ID.
+  description: ServiceNow ticket ID.
 - contextPath: Zendesk.Ticket.id
-  description: The ticket ID.
+  description: Zendesk ticket ID.
 tests:
 - No tests (auto formatted)
 marketplaces:

@@ -42,7 +42,7 @@ tasks:
       id: a139f576-4872-473f-84e5-fad5ff68cc99
       version: -1
       name: Is Zendesk v2 integration enabled?
-      description: Checks if Zendesk v2 integration enabled.
+      description: Checks if the Zendesk v2 integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -99,7 +99,7 @@ tasks:
       id: 7d46973d-e0ae-4c86-8462-2b2c8768a520
       version: -1
       name: Is the comment defined on the input?
-      description: Checks if the comment defined on the input.
+      description: Checks if the comment is defined on the input.
       type: condition
       iscommand: false
       brand: ""
@@ -344,7 +344,7 @@ tasks:
       id: 2d9482fc-b16e-4f66-8ee6-aec802b1d1db
       version: -1
       name: Whether to append a new comment to the ticket for each alert?
-      description: Checks if need to append a new comment to the ticket for each alert.
+      description: Checks whether to append a new comment to the ticket for each alert.
       type: condition
       iscommand: false
       brand: ""
@@ -390,7 +390,7 @@ tasks:
       id: 07c30f07-9347-43e2-848e-bde0480b2ce9
       version: -1
       name: Are the required details for opening a ticket been provided?
-      description: Checks if the required details for opening a ticket been provided.
+      description: Checks if the required details for opening a ticket were provided.
       type: condition
       iscommand: false
       brand: ""
@@ -692,7 +692,7 @@ tasks:
       id: 05375988-f8c0-4c9b-8bcc-88245802470a
       version: -1
       name: whether to open a ticket for this incident?
-      description: Checks if open a new ticket or add a comment to the task.
+      description: Checks whether to open a new ticket or add a comment to the task.
       type: condition
       iscommand: false
       brand: ""
@@ -812,12 +812,12 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: 'Possible values: True/False. Whether to add a new comment to the ticket for each endpoint in the incident.'
+  description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: Action
   value: {}
   required: false
-  description: 'Possible values: NewTicket/AddComment. Whether to open a new ticket or to add a new comment.'
+  description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
   playbookInputQuery:
 outputs:
 - contextPath: Zendesk.Ticket.id

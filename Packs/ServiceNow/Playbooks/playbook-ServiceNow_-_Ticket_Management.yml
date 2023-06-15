@@ -41,8 +41,8 @@ tasks:
     task:
       id: 6891d374-18fa-4eb1-8dee-1bda2be25f6c
       version: -1
-      name: Is serviceNow v2 integration enabled?
-      description: Checks if serviceNow v2 integration enabled.
+      name: Is ServiceNow v2 integration enabled?
+      description: Checks if the ServiceNow v2 integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -166,7 +166,7 @@ tasks:
       id: c45fcc66-2992-470f-8810-2ac6f6fa4640
       version: -1
       name: whether to open a ticket for this incident?
-      description: Checks if open a new ticket or add a comment to the task.
+      description: Checks whether to open a new ticket or add a comment to the task.
       type: condition
       iscommand: false
       brand: ""
@@ -285,7 +285,7 @@ tasks:
       id: de59d3d7-4a62-445e-8a1c-8a2bb052435b
       version: -1
       name: Is the comment defined on the input?
-      description: Checks if the comment defined on the input.
+      description: Checks if the comment is defined on the input.
       type: condition
       iscommand: false
       brand: ""
@@ -395,7 +395,7 @@ tasks:
       id: d3c1b2c3-5732-457b-8c1e-fe3c8d43c328
       version: -1
       name: Whether to append a new comment to the ticket for each alert?
-      description: Checks if need to append a new comment to the ticket for each alert.
+      description: Checks whether to append a new comment to the ticket for each alert.
       type: condition
       iscommand: false
       brand: ""
@@ -441,7 +441,7 @@ tasks:
       id: 948539a3-e390-420e-8598-14318f04190a
       version: -1
       name: Are the required details for opening a ticket been provided?
-      description: Checks if the required details for opening a ticket been provided.
+      description: Checks if the required details for opening a ticket were provided.
       type: condition
       iscommand: false
       brand: ""
@@ -669,7 +669,7 @@ tasks:
       id: c7f798b6-9753-49da-82c0-d87f18b7c6e1
       version: -1
       name: Create a ticket for the incident
-      description: Creates new ServiceNow ticket.
+      description: Creates a new ServiceNow ticket.
       script: '|||servicenow-create-ticket'
       type: regular
       iscommand: true
@@ -784,7 +784,7 @@ inputs:
 - key: serviceNowCategory
   value: {}
   required: false
-  description: The category of the ServiceNow Ticket.
+  description: The category of the ServiceNow ticket.
   playbookInputQuery:
 - key: description
   value: {}
@@ -809,7 +809,7 @@ inputs:
 - key: CommentToAdd
   value: {}
   required: false
-  description: comment for the ticket.
+  description: Comment for the ticket.
   playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
@@ -820,7 +820,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: 'Possible values: True/False. Whether to add a new comment to the ticket for each Endpoint in the incident.'
+  description: 'Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: serviceNowShortDescription
   value: {}
@@ -830,7 +830,7 @@ inputs:
 - key: Action
   value: {}
   required: false
-  description: 'Possible values: NewTicket/AddComment. Whether to open a new ticket or to add a new comment.'
+  description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
   playbookInputQuery:
 outputs:
 - contextPath: ServiceNow.Ticket.ID

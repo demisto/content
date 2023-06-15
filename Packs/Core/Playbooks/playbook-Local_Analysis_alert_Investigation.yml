@@ -1958,7 +1958,7 @@ tasks:
       id: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
       version: -1
       name: Should open a ticket automatically in a ticketing system?
-      description: Checks if should open a ticket automatically in a ticketing system.
+      description: Checks whether to open a ticket automatically in a ticketing system.
       type: condition
       iscommand: false
       brand: ""
@@ -2271,7 +2271,7 @@ inputs:
 - key: serviceNowCategory
   value: {}
   required: false
-  description: The category of the ServiceNow Ticket.
+  description: The category of the ServiceNow ticket.
   playbookInputQuery:
 - key: serviceNowAssignmentGroup
   value: {}
@@ -2328,7 +2328,7 @@ inputs:
 - key: addCommentPerEndpoint
   value: {}
   required: false
-  description: 'Possible values: True/False. Whether to append a new comment to the ticket for each endpoint in the incident.'
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: CommentToAdd
   value: {}
