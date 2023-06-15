@@ -951,37 +951,7 @@ def setup_address(
     rule_body[address_direction] = {'kind': address_kind, key: address_value}
 
 
-def handle_address_in_rule_creation(
-    rule_body: dict[str, Any],
-    direction: str,
-    address_value: str,
-    address_kind: str = None,
-) -> None:
-    """
-    Handles the address kind and value in the rule creation.
-
-    Args:
-        rule_body (dict[str, Any]): The rule body to set up the address.
-        direction (str): The direction of the address, 'source' or 'destination'.
-        address_value (str): The value of the address.
-        address_kind (str, optional): The kind of the address.
-            Defaults to None.
-    """
-    address_direction = f'{direction}Address'
-
-    if address_kind and address_value:
-        setup_address(
-            rule_body=rule_body,
-            address_direction=address_direction,
-            address_value=address_value,
-            address_kind=address_kind,
-        )
-        return
-
-    set_up_ip_kind(rule_body, address_direction, address_value)
-
-
-def handle_address_in_rule_update(
+def handle_address_in_rule(
     rule_body: dict[str, Any],
     direction: str,
     address_value: str = None,
@@ -1162,7 +1132,7 @@ def handle_rule_configurations_setup(rule_body: dict[str, Any], args: dict[str, 
         rule_body['ruleLogging'] = {'logStatus': log_level}
     if permit := args.get('permit'):
         rule_body['permit'] = arg_to_optional_bool(permit)
-    if remarks := argToList(args.get('remarks'), ','):
+    if remarks := argToList(args.get('remarks')):
         rule_body['remarks'] = remarks
 
 
@@ -1193,12 +1163,12 @@ def list_rules_command(client: Client, args: dict[str, Any]) -> CommandResults:
     try:
         raw_rules = client.get_all_rules(interface, interface_type)  # demisto.getRules() #
         rules = raw_to_rules(raw_rules)
-        outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown("Rules:", rules, ["ID", "Source", "Dest", "Permit", "Interface", "InterfaceType",
                                                "IsActive", "Position", "SourceService", "DestService"])
         return CommandResults(
             readable_output=hr,
-            outputs=outputs,
+            outputs_prefix='Rules',
+            outputs=rules,
             raw_response=raw_rules,
         )
 
@@ -1280,14 +1250,13 @@ def rule_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     raw_rules = client.rule_action(rule_id, interface, interface_type, 'GET')
     rules = raw_to_rules([raw_rules])
-
-    outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
     hr = tableToMarkdown("Rule {}:".format(rule_id), rules, ["ID", "Source", "Dest", "Permit", "Interface",
                                                              "InterfaceType", "IsActive", "Position", "SourceService",
                                                              "DestService"])
     return CommandResults(
         readable_output=hr,
-        outputs=outputs,
+        outputs_prefix='Rules',
+        outputs=rules,
         raw_response=raw_rules,
     )
 
@@ -1321,13 +1290,13 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     rule_body = {}  # type: dict
 
     # setup the source and destination address
-    handle_address_in_rule_creation(
+    handle_address_in_rule(
         rule_body=rule_body,
         direction='source',
         address_value=args['source'],
         address_kind=args.get('source_kind'),
     )
-    handle_address_in_rule_creation(
+    handle_address_in_rule(
         rule_body=rule_body,
         direction='destination',
         address_value=args['destination'],
@@ -1341,7 +1310,6 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
         raw_rule = client.create_rule(interface_type, interface_name, rule_body)
         rules = raw_to_rules([raw_rule])
 
-        outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown(
             'Created new rule. ID: {}'.format(raw_rule.get('objectId'),),
             rules,
@@ -1361,7 +1329,8 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
         return CommandResults(
             readable_output=hr,
-            outputs=outputs,
+            outputs_prefix='Rules',
+            outputs=rules,
             raw_response=raw_rule,
         )
 
@@ -1437,13 +1406,13 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     rule_body = {}  # type: dict
 
     # setup the source and destination address
-    handle_address_in_rule_update(
+    handle_address_in_rule(
         rule_body=rule_body,
         direction='source',
         address_value=args.get('source'),
         address_kind=args.get('source_kind'),
     )
-    handle_address_in_rule_update(
+    handle_address_in_rule(
         rule_body=rule_body,
         direction='destination',
         address_value=args.get('destination'),
@@ -1463,7 +1432,6 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
         rules = raw_to_rules([raw_rule])
 
-        outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown(
             f'Edited rule {raw_rule.get("objectId")}',
             rules,
@@ -1483,7 +1451,8 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
         return CommandResults(
             readable_output=hr,
-            outputs=outputs,
+            outputs_prefix='Rules',
+            outputs=rules,
             raw_response=raw_rule,
         )
 
@@ -1520,12 +1489,12 @@ def list_objects_command(client: Client, args: dict[str, Any]) -> CommandResults
             formated_obj = camelize(object)
             formated_obj['ID'] = formated_obj.pop('Objectid')
             formated_objects.append(formated_obj)
-    ec = {'CiscoASA.NetworkObject(val.ID && val.ID == obj.ID)': formated_objects}
     hr = tableToMarkdown("Network Objects", formated_objects, headers=['ID', 'Name', 'Host', 'Description'])
 
     return CommandResults(
         readable_output=hr,
-        outputs=ec,
+        outputs_prefix='NetworkObject',
+        outputs=formated_objects,
         raw_response=formated_objects,
     )
 

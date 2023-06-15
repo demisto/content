@@ -109,8 +109,8 @@ def test_get_all_rules(requests_mock):
     command_results = list_rules_command(client, args)
 
     # Assert that the rules  are exported as expected (in the outputs)
-    assert '1090940913' == command_results.outputs.get('CiscoASA.Rules(val.ID && val.ID == obj.ID)')[0].get("ID")
-    assert '123456789' == command_results.outputs.get('CiscoASA.Rules(val.ID && val.ID == obj.ID)')[1].get("ID")
+    assert '1090940913' == command_results.outputs[0].get("ID")
+    assert '123456789' == command_results.outputs[1].get("ID")
 
     empty_mock = {
         "selfLink": "https://example.com/api/access/out",
@@ -126,7 +126,7 @@ def test_get_all_rules(requests_mock):
     command_results = list_rules_command(client, args)
 
     # Assert outputs is empty when there's no rule
-    assert [] == command_results.outputs.get('CiscoASA.Rules(val.ID && val.ID == obj.ID)')
+    assert [] == command_results.outputs
 
 
 def test_rule_by_id(requests_mock):
@@ -145,7 +145,7 @@ def test_rule_by_id(requests_mock):
     command_results = rule_by_id_command(client, args)
 
     # Assert that the rule is exported as expected (in the outputs)
-    assert '123456789' == command_results.outputs.get('CiscoASA.Rules(val.ID && val.ID == obj.ID)')[0].get("ID")
+    assert '123456789' == command_results.outputs[0].get("ID")
 
 
 def test_create_rule(requests_mock):
@@ -753,25 +753,24 @@ def test_rule_command(rule_id, rule_command, is_create, requests_mock, mock_clie
         )
         command_results: CommandResults = edit_rule_command(mock_client, args)
 
-    expected_outputs = {
-        'CiscoASA.Rules(val.ID && val.ID == obj.ID)': [
-            {
-                'Source': '8.8.8.8',
-                'SourceService': 'ip',
-                'Dest': 'any',
-                'DestService': 'ip',
-                'IsActive': True,
-                'Interface': '',
-                'InterfaceType': 'Global',
-                'Remarks': [],
-                'Position': 1,
-                'ID': '1090940913',
-                'Permit': True,
-                'SourceKind': 'IPv4Address',
-                'DestKind': 'AnyIPAddress',
-            }
-        ]
-    }
+    expected_outputs = [
+        {
+            'Source': '8.8.8.8',
+            'SourceService': 'ip',
+            'Dest': 'any',
+            'DestService': 'ip',
+            'IsActive': True,
+            'Interface': '',
+            'InterfaceType': 'Global',
+            'Remarks': [],
+            'Position': 1,
+            'ID': '1090940913',
+            'Permit': True,
+            'SourceKind': 'IPv4Address',
+            'DestKind': 'AnyIPAddress',
+        }
+    ]
+
     expected_raw_response = {
         'kind': 'object#ExtendedACE',
         'selfLink': 'https://example.com/api/access/global/rules/1090940913',
