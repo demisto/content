@@ -3462,7 +3462,7 @@ def prettify_rule(rule: dict):
 
     parse_pan_os_un_committed_data(rule, ['@admin', '@dirtyId', '@time'])
 
-    rule_get = partial(dict_safe_get, rule, return_type=(str, list), raise_return_type=False)
+    rule_get = partial(dict_safe_get, rule, default_return_value='', return_type=(str, list), raise_return_type=False)
 
     # get rule devices:
     entries = rule_get(['target', 'devices', 'entry'])
@@ -3475,17 +3475,17 @@ def prettify_rule(rule: dict):
     pretty_rule: Dict[str, Any] = {
 
         'DeviceGroup': DEVICE_GROUP,
-        'Location': rule.get('@loc'),
-        'NegateDestination': rule.get('negate-destination'),
-        'Disabled': rule.get('disabled'),
-        'ICMPUnreachable': rule.get('icmp-unreachable'),
-        'Description': rule.get('description'),
-        'GroupTag': rule.get('group-tag'),
-        'LogForwardingProfile': rule.get('log-setting'),
-        'NegateSource': rule.get('negate-source'),
+        'Location': rule.get('@loc', ''),
+        'NegateDestination': rule.get('negate-destination', ''),
+        'Disabled': rule.get('disabled', ''),
+        'ICMPUnreachable': rule.get('icmp-unreachable', ''),
+        'Description': rule.get('description', ''),
+        'GroupTag': rule.get('group-tag', ''),
+        'LogForwardingProfile': rule.get('log-setting', ''),
+        'NegateSource': rule.get('negate-source', ''),
         'SecurityProfileGroup': rule_get(['profile-setting', 'group', 'member']),
         'SecurityProfile': {
-            key: value.get('member')
+            key: value.get('member', '')
             for key, value in profiles.items()   # pylint: disable=E0601 - profiles is assigned in the if statement bellow.
             if isinstance(value, dict)
         }
@@ -3495,11 +3495,11 @@ def prettify_rule(rule: dict):
             'devices': rule_devices,
             'negate': rule_get(['target', 'negate']),
         },
-        'Name': rule.get('@name'),
-        'Type': rule.get('rule-type'),
+        'Name': rule.get('@name', ''),
+        'Type': rule.get('rule-type', ''),
         'From': rule_get(['from', 'member']),
         'DestinationDevice': rule_get(['destination-hip', 'member']),
-        'Action': rule.get('action'),
+        'Action': rule.get('action', ''),
         'SourceDevice': rule_get(['source-hip', 'member']),
         'Tags': rule_get(['tag', 'member']),
         'SourceUser': rule_get(['source-user', 'member']),
@@ -3510,9 +3510,9 @@ def prettify_rule(rule: dict):
         'CustomUrlCategory': rule_get(['category', 'member']),
         'Destination': rule_get(['destination', 'member']),
         'Options': {
-            'LogAtSessionStart': rule.get('log-start'),
-            'LogForwarding': rule.get('log-setting'),
-            'Schedule': rule.get('schedule'),
+            'LogAtSessionStart': rule.get('log-start', ''),
+            'LogForwarding': rule.get('log-setting', ''),
+            'Schedule': rule.get('schedule', ''),
             'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()), None),
             'DisableServerResponseInspection': rule_get(['option', 'disable-server-response-inspection']),
         }

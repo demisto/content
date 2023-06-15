@@ -1,12 +1,12 @@
 {
     "Location": "SA_FWs",
-    "NegateDestination": null,
-    "Disabled": null,
+    "NegateDestination": "",
+    "Disabled": "",
     "ICMPUnreachable": "yes",
     "Description": "bbbbbbbbbb",
     "GroupTag": "moishy tags",
     "LogForwardingProfile": "Log forwarding for SA",
-    "NegateSource": null,
+    "NegateSource": "",
     "SecurityProfileGroup": "Prince Security Profile Group",
     "SecurityProfile": {
         "spyware": "default",
