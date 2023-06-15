@@ -1130,6 +1130,7 @@ def main() -> None:
     :return:
     :rtype:
     """
+    
     try:
         command = demisto.command()
         demisto.debug(f"Reco Command being called is {command}")
