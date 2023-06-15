@@ -6,7 +6,7 @@ import socket
 import sys
 import socks
 import ipwhois
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type
 
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
@@ -7131,7 +7131,7 @@ dble_ext = dble_ext_str.split(",")
 
 # ipwhois exceptions to execution metrics attributes mapping
 # https://ipwhois.readthedocs.io/en/latest/ipwhois.html
-ipwhois_exception_mapping: Dict[type, str] = {
+ipwhois_exception_mapping: Dict[Type, str] = {
 
     # General Errors
     ipwhois.exceptions.WhoisLookupError: "general_error",
@@ -7196,8 +7196,9 @@ class WhoisWarningException(Exception):
 
 
 # whois domain exception to execution metrics attribute mapping
-whois_exception_mapping: Dict[type, str] = {
+whois_exception_mapping: Dict[Type, str] = {
     socket.error: "connection_error",
+    OSError: "connection_error",
     socket.timeout: "timeout_error",
     socket.herror: "connection_error",
     socket.gaierror: "connection_error",
@@ -7205,6 +7206,31 @@ whois_exception_mapping: Dict[type, str] = {
     WhoisEmptyResponse: "service_error",
     TypeError: "general_error"
 }
+
+
+def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, str], caught_exception: Type) -> ExecutionMetrics:
+    """
+    Helper method to increment the API execution metric according to the caught exception
+
+    Args:
+        - `execution_metrics` (``ExecutionMetrics``): The instance of the API execution metrics.
+        - `mapping` (``Dict[type, str]``): The exception type to execution metrics mapping.
+        - `caught_exception` (``Exception``): The exception caught.
+    """
+
+    demisto.debug(f"Exception of type '{caught_exception}' caught. Trying to find the matching Execution Metric attribute to increment...")
+    try:
+        metric_attribute = mapping[caught_exception]
+        execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
+    
+    # Treat any other exception as a ErrorTypes.GENERAL_ERROR
+    except Exception as e:
+        demisto.debug(f"Exception attempting to find and update execution metric attribute: {str(e)}. Defaulting to GENERAL_ERROR...")
+        execution_metrics.general_error += 1
+
+    finally:
+        demisto.debug(f"Returning updated execution_metrics")
+        return execution_metrics
 
 
 def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server_list=False,
@@ -8571,10 +8597,11 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
                 'raw': f"Query failed for {ip}: {e.__class__.__name__} {e}"
             }
 
-            # TODO handle case where exception is not available in dict
-            metric_attribute = ipwhois_exception_mapping[type(e)]
-            execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
-            output['reason'] = metric_attribute
+            execution = increment_metric(
+                execution_metrics=execution,
+                mapping=ipwhois_exception_mapping,
+                caught_exception=type(e)
+            )
 
             if should_error:
                 results.append(
@@ -8647,11 +8674,12 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
         except Exception as e:
             # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
             demisto.error(f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}'")
-
-            # TODO handle case where exception is not available in dict
-            metric_attribute = whois_exception_mapping[type(e)]
-            demisto.debug(f"Metric attribute to increment: {metric_attribute}")
-            execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
+            
+            execution_metrics = increment_metric(
+                execution_metrics=execution_metrics,
+                mapping=whois_exception_mapping,
+                caught_exception=type(e)
+            )
 
             output = ({
                 outputPaths['domain']: {

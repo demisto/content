@@ -7,11 +7,12 @@ import subprocess
 import time
 import tempfile
 import sys
-from typing import List, Dict, Type
+from typing import List, Dict, Type, Tuple
 
-from CommonServerPython import DBotScoreReliability, CommandResults, EntryType
-from Whois import has_rate_limited_result
+from CommonServerPython import DBotScoreReliability, CommandResults, EntryType, ExecutionMetrics, ErrorTypes
+from Whois import has_rate_limited_result, ipwhois_exception_mapping, whois_exception_mapping, increment_metric, WhoisInvalidDomain, WhoisEmptyResponse
 import ipwhois
+import socket
 
 import json
 
@@ -585,33 +586,92 @@ def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: En
     assert results[2].entry_type == entry_type
 
 
-@pytest.mark.parametrize('exception_caught,expcected_metric', [
-    (ipwhois.exceptions.WhoisLookupError, "general_error"),
-    (ipwhois.exceptions.BlacklistError, "service_error"),
-    (ipwhois.exceptions.NetError, "connection_error"),
-    (ipwhois.exceptions.WhoisRateLimitError, "quota_error")
-])
-def test_exception_type_to_metrics(exception_caught: Type, expcected_metric: str):
+@pytest.mark.parametrize(
+    'em,mapping,exception_caught,expected',
+    [
+        (ExecutionMetrics(success=100, general_error=6), ipwhois_exception_mapping, ipwhois.exceptions.WhoisLookupError,
+         (ErrorTypes.GENERAL_ERROR, 7)),
+        (ExecutionMetrics(service_error=12), ipwhois_exception_mapping, ipwhois.exceptions.BlacklistError,
+         (ErrorTypes.SERVICE_ERROR, 13)),
+        (ExecutionMetrics(success=100, general_error=6), ipwhois_exception_mapping, ipwhois.exceptions.NetError,
+         (ErrorTypes.CONNECTION_ERROR, 1)),
+        (ExecutionMetrics(), ipwhois_exception_mapping, BaseException,
+         (ErrorTypes.GENERAL_ERROR, 1)),
+        (ExecutionMetrics(), whois_exception_mapping, BaseException,
+         (ErrorTypes.GENERAL_ERROR, 1)),
+        (ExecutionMetrics(success=100, general_error=6), whois_exception_mapping, socket.error,
+         (ErrorTypes.CONNECTION_ERROR, 1)),
+        (ExecutionMetrics(), whois_exception_mapping, TypeError,
+         (ErrorTypes.GENERAL_ERROR, 1)),
+        (ExecutionMetrics(), whois_exception_mapping, WhoisInvalidDomain,
+         (ErrorTypes.GENERAL_ERROR, 1)),
+    ]
+)
+def test_exception_type_to_metrics(
+    em: ExecutionMetrics,
+    mapping: Dict[type, str],
+    exception_caught: Type,
+    expected: Tuple[str, int]
+):
     """
     Test whether the caught `ipwhois.exception` type results in the expected API execution metric being incremented.
 
     Given: The exception type and the expected metric.
 
     When:
-        - Case A: WhoisLookupError is provided
-        - Case B: BlacklistError is provided
-        - Case C: NetError is provided
-        - Case D: WhoisRateLimitError is provided
+        - Case A:
+            - ExecutionMetrics with success and general error set.
+            - `ipwhois` exception mapping provided.
+            - `WhoisLookupError` exception thrown.
+        - Case B:
+            - ExecutionMetrics with service error set.
+            - `ipwhois` exception mapping provided.
+            - `BlacklistError` exception thrown.
+        - Case C:
+            - ExecutionMetrics with success and general error set.
+            - `ipwhois` exception mapping provided.
+            - `NetError` exception thrown.
+        - Case D:
+            - Empty ExecutionMetrics.
+            - `ipwhois` exception mapping provided.
+            - `BaseException` thrown.
+        - Case E:
+            - Empty ExecutionMetrics.
+            - `whois` exception mapping provided.
+            - `BaseException` thrown.
+        - Case F:
+            - ExecutionMetrics with success and general error set.
+            - `whois` exception mapping provided.
+            - `socket.error|OSError` thrown.
+       - Case G:
+            - Empty ExecutionMetrics.
+            - `whois` exception mapping provided.
+            - `TypeError` thrown.
+        - Case H:
+            - Empty ExecutionMetrics.
+            - `whois` exception mapping provided.
+            - `WhoisInvalidDomain` thrown.
+
 
     Then:
-        - Case A: general_error is returned.
-        - Case B: service_error is returned.
-        - Case C: connection_error is returned.
-        - Case D: quota_error is returned.
+        - Case A: ErrorTypes.GENERAL_ERROR is incremented and equal to 7.
+        - Case B: ErrorTypes.SERVICE_ERROR is incremented and equal to 13.
+        - Case C: ErrorTypes.CONNECTION_ERROR is incremented and equal to 1.
+        - Cases D/E/G/H: ErrorTypes.GENERAL_ERROR is incremented and equal to 1.
+        - Case F: ErrorTypes.CONNECTION_ERROR is incremented and equal to 1.
 
     """
+    actual: ExecutionMetrics = increment_metric(
+        execution_metrics=em,
+        mapping=mapping,
+        caught_exception=exception_caught
+    )
 
-    from Whois import ipwhois_exception_mapping
+    for metrics in actual.metrics.execution_metrics:
+        if (metrics['Type'], metrics['APICallsCount']) == expected:
+            actual_type = metrics['Type']
+            actual_count = metrics['APICallsCount']
+            break
 
-    actual = ipwhois_exception_mapping[exception_caught]
-    assert actual == expcected_metric
+    assert actual_type == expected[0]
+    assert actual_count == expected[1]
