@@ -1,5 +1,5 @@
 [MODEL: dataset = microsoft_windows_raw]
-filter provider_name !="Microsoft-Windows-*" AND provider_name="AD FS Auditing"
+filter _collector_type="XDR Collector"
 // xml part
 | alter accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
