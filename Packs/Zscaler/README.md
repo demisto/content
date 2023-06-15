@@ -18,7 +18,7 @@ This pack includes Cortex XSIAM content.
    * Status: Enable or disable the status of the NSS server.
    * State: The health of the NSS server. This field is non-configurable.
 
-4. Click Save. The NSS server gets added to your ZIA Admin Portal.
+4. Click **Save.** The NSS server gets added to your ZIA Admin Portal.
 ![Add NSS Server](https://raw.githubusercontent.com/demisto/content/9dc21658443d25d7eaf62106b24a2d3c7e9d367d/Packs/Zscaler/doc_files/add_nss_server.png)
 
 **To download the SSL Certificate:**
