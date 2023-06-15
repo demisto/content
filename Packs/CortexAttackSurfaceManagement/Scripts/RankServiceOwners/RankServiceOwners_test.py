@@ -64,7 +64,7 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1,source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'Alice ', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
         ]
     ),
     # same email, no names
@@ -90,7 +90,7 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice@example.com'},
         ],
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1,source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
             {'Name': 'Alice', 'Email': 'bob@example.com', 'Source': 'source2', 'Timestamp': '2', 'Count': 1},
         ]
     ),
@@ -112,7 +112,7 @@ def test_canonicalize(owner, expected_out):
             {'name': 'alice', 'email': '', 'source': 'source2', 'timestamp': '2', 'Canonicalization': 'alice'},
         ],
         [
-            {'Name': 'alice', 'Email': '', 'Source': 'source1,source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'alice', 'Email': '', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
         ]
     ),
     # some emails present, others missing
@@ -128,8 +128,8 @@ def test_canonicalize(owner, expected_out):
              'Canonicalization': 'alice'},
         ],
         [
-            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1,source2', 'Timestamp': '2', 'Count': 2},
-            {'Name': 'alice', 'Email': '', 'Source': 'source3,source4', 'Timestamp': '4', 'Count': 2},
+            {'Name': 'Alice', 'Email': 'alice@example.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'alice', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
         ]
     ),
     # empty input
@@ -146,23 +146,23 @@ def test_aggregate(owners, expected_out):
     # equal counts
     (
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1,source2', 'Timestamp': '2', 'Count': 2},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3,source4', 'Timestamp': '4', 'Count': 2},
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Count': 2},
+            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
         ],
         [
-            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1,source2', 'Timestamp': '2', 'Ranking Score': 1.0},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3,source4', 'Timestamp': '4', 'Ranking Score': 1.0},
+            {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1 | source2', 'Timestamp': '2', 'Ranking Score': 1.0},
+            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Ranking Score': 1.0},
         ]
     ),
     # unequal counts
     (
         [
             {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2', 'Count': 1},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3,source4', 'Timestamp': '4', 'Count': 2},
+            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Count': 2},
         ],
         [
             {'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '2', 'Ranking Score': 0.5},
-            {'Name': 'aa', 'Email': '', 'Source': 'source3,source4', 'Timestamp': '4', 'Ranking Score': 1.0},
+            {'Name': 'aa', 'Email': '', 'Source': 'source3 | source4', 'Timestamp': '4', 'Ranking Score': 1.0},
         ]
     ),
     # empty owners
@@ -203,7 +203,7 @@ def test_score(deduplicated, expected_out):
         [
             {
                 'Name': 'aa', 'Email': 'email1@gmail.com', 'Source': 'source1', 'Timestamp': '1',
-                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 'val1,val2'
+                'Ranking Score': 1, 'Justification': 'source1', 'New Field': 'val1 | val2'
             },
         ]
     ),

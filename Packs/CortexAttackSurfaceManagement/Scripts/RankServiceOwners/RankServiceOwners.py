@@ -9,6 +9,8 @@ from typing import Dict, List, Any
 import traceback
 from itertools import groupby
 
+STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
+
 
 def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
@@ -98,7 +100,7 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         )
         name = names[0] if names else ''
         # aggregate Source by union
-        source = ','.join(sorted(
+        source = STRING_DELIMITER.join(sorted(
             set(owner.get('source', '') for owner in duplicates if owner.get('source', ''))
         ))
         # take max Timestamp if there's at least one; else empty string
@@ -124,7 +126,7 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         for other in other_keys:
             if keys_to_types[other] == str:
                 # union over strings
-                owner[other] = ',' .join(sorted(
+                owner[other] = STRING_DELIMITER.join(sorted(
                     set(owner.get(other, '') for owner in duplicates if owner.get(other, ''))
                 ))
             elif keys_to_types[other] in (int, float):
