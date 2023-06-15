@@ -701,37 +701,37 @@ script:
     - contextPath: AzureNSG.ResourceGroup.id
       description: 'The unique identifier of the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.name
+    - contextPath: AzureNSG.ResourceGroup.name
       description: 'The name of the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.type
+    - contextPath: AzureNSG.ResourceGroup.type
       description: 'The type of the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.location
+    - contextPath: AzureNSG.ResourceGroup.location
       description: 'The location of the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.properties.provisioningState
+    - contextPath: AzureNSG.ResourceGroup.properties.provisioningState
       description: 'The provisioning state of the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.tags.Owner
+    - contextPath: AzureNSG.ResourceGroup.tags.Owner
       description: 'The owner tag of the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.tags
+    - contextPath: AzureNSG.ResourceGroup.tags
       description: 'The tags associated with the Azure Network Security Groups resource group.'
       type: Unknown
-    - contextPath: AzureKS.ResourceGroup.tags.Name
+    - contextPath: AzureNSG.ResourceGroup.tags.Name
       description: 'The name tag of the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.managedBy
+    - contextPath: AzureNSG.ResourceGroup.managedBy
       description: 'The entity that manages the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-name
-      description: 'The AKS managed cluster name tag associated with the Azure Network Security Groups resource group.'
+    - contextPath: AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-name
+      description: 'The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-rg
-      description: 'The AKS managed cluster resource group tag associated with the Azure Network Security Groups resource group.'
+    - contextPath: AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-rg
+      description: 'The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group.'
       type: String
-    - contextPath: AzureKS.ResourceGroup.tags.type
+    - contextPath: AzureNSG.ResourceGroup.tags.type
       description: 'The type tag associated with the Azure Network Security Groups resource group.'
       type: String
   dockerimage: demisto/crypto:1.0.0.52480
