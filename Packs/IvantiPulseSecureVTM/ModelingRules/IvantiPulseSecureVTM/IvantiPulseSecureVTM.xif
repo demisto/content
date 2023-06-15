@@ -107,7 +107,7 @@ filter _raw_log not contains "|" AND _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
     src_ip_v6 = if(get_ip ~= ":", get_ip, null),
     modified_user_group = arraystring(arraycreate("MODUSR: " + get_change_user, "MODGROUP: " + get_change_group), " | ")
 | alter
-    check_user_group = if(get_change_user = null AND get_change_group = null, null, arraystring(arraycreate("MODUSR: " + get_change_user, "MODGROUP: " + get_change_group), " | ")) 
+    check_user_group = if(get_change_user = null AND get_change_group = null, null, modified_user_group) 
 | alter
     xdm.event.log_level = if(extract_event_log ~= "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, extract_event_log ~= "WAR|WARN", XDM_CONST.LOG_LEVEL_WARNING, extract_event_log ~= "SERIOUS|CRIT", XDM_CONST.LOG_LEVEL_CRITICAL, extract_event_log ~= "FATAL|EMERGENCY", XDM_CONST.LOG_LEVEL_EMERGENCY, extract_event_log ~= "ALE", XDM_CONST.LOG_LEVEL_ALERT, extract_event_log ~= "ERR", XDM_CONST.LOG_LEVEL_ERROR, extract_event_log ~= "NOTI", XDM_CONST.LOG_LEVEL_NOTICE, extract_event_log ~= "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, extract_event_log = null, null, to_string(extract_event_log)),
     xdm.event.original_event_type = extract_event_group,
