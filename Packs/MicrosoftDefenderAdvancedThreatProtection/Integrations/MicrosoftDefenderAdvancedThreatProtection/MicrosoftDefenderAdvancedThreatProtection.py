@@ -5450,7 +5450,7 @@ def main():  # pragma: no cover
     params: dict = demisto.params()
     params_endpoint_type = params.get('endpoint_type')
     params_url = params.get('url')
-    is_gcc = params.get('is_gcc')
+    is_gcc = params.get('is_gcc', False)
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     auth_id = params.get('_auth_id') or params.get('auth_id')
     enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')

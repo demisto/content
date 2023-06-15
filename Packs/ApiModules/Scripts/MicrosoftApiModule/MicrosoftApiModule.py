@@ -582,9 +582,9 @@ def microsoft_defender_for_endpoint_get_base_url(is_gcc, params_endpoint_type, p
     if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or params_endpoint_type is None:
         # When the integration was configured before our Azure Cloud support, the value will be None.
         endpoint_type = "com"  # Default to "com"
-        if is_gcc is not None and is_gcc:  # Backward compatible.
+        if is_gcc:  # Backward compatible.
             endpoint_type = "gcc"
-            params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
 
         if params_url is None:
             if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
