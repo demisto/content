@@ -4582,7 +4582,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
             "integrations": [
