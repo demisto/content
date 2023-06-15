@@ -1174,7 +1174,7 @@ def list_rules_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     except Exception as e:
         if "404" in str(e) and interface:
-            raise ValueError("Could not find interface")
+            raise ValueError("Could not find interface") from e
         else:
             raise e
 
@@ -1336,9 +1336,9 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     except Exception as e:
         if 'DUPLICATE' in str(e):
-            raise ValueError('You are trying to create a rule that already exists.')
+            raise ValueError('You are trying to create a rule that already exists.') from e
         if '[500]' in str(e):
-            raise ValueError('Could not find interface: {}.'.format(interface_name))
+            raise ValueError('Could not find interface: {}.'.format(interface_name)) from e
         else:
             raise ValueError(f'Could not create rule. Error {str(e)}')
 
@@ -1370,7 +1370,7 @@ def delete_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
         client.rule_action(rule_id, interface, interface_type, 'DELETE')
     except Exception as e:
         if 'Not Found' in str(e):
-            raise ValueError(f"Rule {rule_id} does not exist in interface {interface} of type {interface_type}.")
+            raise ValueError(f"Rule {rule_id} does not exist in interface {interface} of type {interface_type}.") from e
         else:
             raise ValueError(f"Could not delete rule. Error {str(e)}")
 
@@ -1458,10 +1458,10 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     except Exception as e:
         if 'DUPLICATE' in str(e):
-            raise ValueError('You are trying to create a rule that already exists.')
+            raise ValueError('You are trying to create a rule that already exists.') from e
 
         if '[500]' in str(e):
-            raise ValueError('Could not find interface: {}.'.format(interface_name))
+            raise ValueError('Could not find interface: {}.'.format(interface_name)) from e
 
         raise
 
