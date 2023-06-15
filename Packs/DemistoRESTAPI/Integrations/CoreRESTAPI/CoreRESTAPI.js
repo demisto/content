@@ -10,7 +10,7 @@ if (serverURL.slice(-1) === '/') {
 isHosted = function () {
     res = getDemistoVersion();
     platform = res.platform;
-    if  (((platform === "xsoar") && (isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION))) || platform === "x2") {
+    if  (((platform === "xsoar" || platform === "xsoar_hosted") && (isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION))) || platform === "x2") {
         return true
     }
     return false

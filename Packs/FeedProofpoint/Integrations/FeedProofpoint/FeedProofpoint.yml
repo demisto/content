@@ -10,9 +10,16 @@ configuration:
   defaultvalue: 'true'
 - display: Authorization Code
   name: auth_code
-  required: true
+  required: false
   type: 4
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  hidden: true
+- displaypassword: Authorization Code
+  name:  credentials_auth_code
+  required: false
+  hiddenusername: true
+  type: 9
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
