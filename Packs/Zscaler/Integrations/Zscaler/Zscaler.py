@@ -1008,8 +1008,12 @@ def activate_command():
 
 
 def test_module():
-    http_request("GET", "/status", None, DEFAULT_HEADERS)
-    return "ok"
+
+    response = http_request("GET", "/status", None, DEFAULT_HEADERS).json()
+    if 'status' in response:
+        return "ok"
+    else:
+        raise ValueError('Test failed, please check if URL is valid')
 
 
 def get_category_by_id(category_id):

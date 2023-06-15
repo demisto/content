@@ -674,3 +674,17 @@ def test_delete_ip_destination_groups(mocker):
                      response_path='test_data/responses/delete_ip_destination_group.json',
                      expected_result_path='test_data/results/delete_ip_destination_group.json',
                      mocker=mocker)
+
+
+def test_test_module_command(mocker):
+    from Zscaler import test_module
+    mocker.patch('Zscaler.http_request', return_value={'status': 'ACTIVE'})
+    assert test_module() == 'ok'
+
+
+def test_test_module_command_failure(mocker):
+    from Zscaler import test_module
+    mocker.patch('Zscaler.http_request', return_value={})
+    msg = 'Test failed, please check if URL is valid'
+    with pytest.raises(ValueError, match=msg):
+        test_module()
