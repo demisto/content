@@ -193,7 +193,9 @@ Delete a security rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | The name of the security group. | Required | 
-| security_rule_name | The name of the rule to be deleted. | Required | 
+| security_rule_name | The name of the rule to be deleted. | Required |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
