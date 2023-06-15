@@ -1,4 +1,3 @@
----
 
 ## Generic Cloud Enrichment Playbook
 
@@ -13,8 +12,6 @@ The **Cloud Enrichment - Generic Playbook** is designed to unify all the relevan
    - Enriches information related to cloud compute resources.
 
 The playbook supports a single CSP enrichment at a time.
-
----
 
 ## Dependencies
 

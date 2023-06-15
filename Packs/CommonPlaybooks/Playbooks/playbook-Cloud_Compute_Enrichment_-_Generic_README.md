@@ -18,9 +18,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* azure-vm-get-instance-details
-* gcp-compute-get-instance
 * aws-ec2-describe-instances
+* gcp-compute-get-instance
+* azure-vm-get-instance-details
 
 ## Playbook Inputs
 
