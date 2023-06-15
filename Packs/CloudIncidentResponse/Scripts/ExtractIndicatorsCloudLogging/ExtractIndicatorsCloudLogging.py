@@ -4,31 +4,31 @@ import json
 
 
 def extract_aws_info(event):
-    arn = event['userIdentity']['arn']
-    access_key_id = event['userIdentity']['accessKeyId']
-    resource_name = event['userIdentity'].get('instanceId', None)
-    source_ip = event['sourceIPAddress']
-    username = event['userIdentity']['sessionContext']['sessionIssuer']['userName']
-    event_name = event['eventName']
-    user_agent = event['userAgent']
+    arn = event.get('userIdentity', {}).get('arn')
+    access_key_id = event.get('userIdentity', {}).get('accessKeyId')
+    resource_name = event.get('userIdentity', {}).get('instanceId')
+    source_ip = event.get('sourceIPAddress')
+    username = event.get('userIdentity', {}).get('sessionContext', {}).get('sessionIssuer', {}).get('userName')
+    event_name = event.get('eventName')
+    user_agent = event.get('userAgent')
 
     return arn, access_key_id, resource_name, source_ip, username, event_name, user_agent
 
 
 def extract_gcp_info(event):
-    resource_name = event['protoPayload']['resourceName']
-    source_ip = event['protoPayload']['requestMetadata']['callerIp']
-    username = event['protoPayload']['authenticationInfo']['principalEmail']
-    event_name = event['protoPayload']['methodName']
-    user_agent = event['protoPayload']['requestMetadata']['callerSuppliedUserAgent']
+    resource_name = event.get('protoPayload', {}).get('resourceName')
+    source_ip = event.get('protoPayload', {}).get('requestMetadata', {}).get('callerIp')
+    username = event.get('protoPayload', {}).get('authenticationInfo', {}).get('principalEmail')
+    event_name = event.get('protoPayload', {}).get('methodName')
+    user_agent = event.get('protoPayload', {}).get('requestMetadata', {}).get('callerSuppliedUserAgent')
 
     return resource_name, source_ip, username, event_name, user_agent
 
 
 def extract_event_info(event):
-    if 'eventSource' in event and event['eventSource'] == 'cloudtrail.amazonaws.com':
+    if 'amazonaws.com' in event.get('eventSource'):
         return "AWS", extract_aws_info(event)
-    elif 'logName' in event and event['logName'].startswith('projects/'):
+    elif event.get('logName', '').startswith('projects/'):
         return "GCP", extract_gcp_info(event)
     else:
         raise ValueError("Unknown event type")
