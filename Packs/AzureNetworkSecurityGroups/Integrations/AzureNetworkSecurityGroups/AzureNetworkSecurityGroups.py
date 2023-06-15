@@ -221,6 +221,7 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
     warning_message = ''
     success_message = ''
     all_resource_groups_are_wrong = True
+
     for resource_group_name in resource_group_list:
         try:
             rule_deleted = client.delete_rule(security_group_name=security_group_name,
@@ -234,6 +235,7 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
             elif rule_deleted.status_code == 202:
                 success_message += (f"Rule '{security_rule_name}' with resource_group_name\
  '{resource_group_name}' was successfully deleted.\n\n")
+
         except Exception as e:
             # If at least one of the resource groups is correct, we don't want to raise an error
             # We want to continue to the next resource group and return the warning message for the wrong ones
@@ -248,7 +250,7 @@ The full error is:\n{e}\n\n")
 
 
 @ logger
-def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict):
+def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> List[CommandResults]:
     """
     Creates a rule in a security group
     Args:
@@ -303,14 +305,18 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict):
 
     if description:
         properties['description'] = description
+
     Warning_message = ''
     all_resource_groups_are_wrong = True
+    command_results_list = []
+
     for resource_group_name in resource_group_list:
         try:
             rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
                                       properties=properties, subscription_id=subscription_id,
                                       resource_group_name=resource_group_name)
             all_resource_groups_are_wrong = False
+            command_results_list.append(format_rule(rule, security_rule_name))
         except Exception as e:
             # If at least one of the resource groups is correct, we don't want to raise an error
             # We want to continue to the next resource group and return the warning message for the wrong ones
@@ -320,7 +326,7 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict):
             if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
                 raise
     return_warning(Warning_message) if Warning_message else None
-    return format_rule(rule, security_rule_name)
+    return command_results_list
 
 
 @ logger
