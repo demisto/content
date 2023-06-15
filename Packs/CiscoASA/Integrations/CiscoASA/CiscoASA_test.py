@@ -689,8 +689,8 @@ def test_write_memory_command(requests_mock, mock_client):
 @pytest.mark.parametrize(
     'rule_id, rule_command, is_create',
     [
-        ({}, create_rule_command, True),
-        ({'rule_id': '1090940913'}, edit_rule_command, False),
+        ({'active': True}, create_rule_command, True),
+        ({'rule_id': '1090940913', 'active': True}, edit_rule_command, False),
     ]
 )
 def test_rule_command(rule_id, rule_command, is_create, requests_mock, mock_client):
