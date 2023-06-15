@@ -288,14 +288,6 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
 
-test_playbooks_report:
-  stage: xsoar-test-playbooks-results
-  needs:
-    - job: .test_content_on_xsoar_server_instances_base
-      optional: true
-  script:
-    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
-
 
 xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
@@ -608,4 +600,10 @@ test-upload-flow:
     - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
+
+test_playbooks_report:
+  stage: xsoar-test-playbooks-results
+  needs: ["xsoar_server_6_6"]
+  script:
+    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
 
