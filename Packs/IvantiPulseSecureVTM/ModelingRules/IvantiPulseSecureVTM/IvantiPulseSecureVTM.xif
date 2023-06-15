@@ -75,7 +75,7 @@ filter _raw_log not contains "|" AND _raw_log not contains "=" AND _raw_log !~= 
     xdm.observer.type = extract_agentapp_name;
 
 
-filter _raw_log not contains "|" AND _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
+filter _raw_log ~= "INFO|WARN|SERIOUS|FATAL"
 | alter
     log_format_check = if(_raw_log ~= "\[\d+\/\S+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]", arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+\[[^\]]+\]\s+(\S+\s+\S+\s+[\s\S]+)"), ""), arraystring(regextract(_raw_log, "<\d+>[\S\s]+\s+\d+\.\d+.\d+\.\d+\s+\S+[\s\[]\d+[\]\:\s\-]+(\S+\s+\S+[\s\S]+)"), ""))
 | alter
