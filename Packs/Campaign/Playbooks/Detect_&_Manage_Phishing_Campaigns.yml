@@ -1182,11 +1182,11 @@ tasks:
       version: -1
       name: Get the status of the campaign incident
       description: |-
-        Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
+        Searches Cortex XSOAR incidents. A summarized version of this script is available with the summarizedversion argument.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -1564,7 +1564,7 @@ inputs:
   required: false
   description: |-
     Whether to automatically close the current incident when it's added to a campaign. Can be True or False.
-    Note: this will only close the current incident. When a campaign is detected, the first few incident/s will remain open, because they do not see themselves as part of the campaign (only newer incidents find the older ones). That number of incidents is the number that you specified in the "minIncidentsForCampaign" playbook input.
+    Note: This will only close the current incident. When a campaign is detected, the first few incident/s will remain open, because they do not see themselves as part of the campaign (only newer incidents find the older ones). That number of incidents is the number that you specified in the "minIncidentsForCampaign" playbook input.
   playbookInputQuery:
 - key: BehaviorForClosedCampaign
   value:
