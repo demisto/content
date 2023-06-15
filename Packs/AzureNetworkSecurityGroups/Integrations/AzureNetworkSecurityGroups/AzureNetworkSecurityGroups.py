@@ -86,8 +86,11 @@ resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurity
                                  )
 
     @logger
-    def delete_rule(self, security_group: str, rule_name: str):
-        return self.http_request('DELETE', f'/{security_group}/securityRules/{rule_name}', resp_type='response')
+    def delete_rule(self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
+        return self.http_request('DELETE',
+                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}\
+/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}/securityRules/{security_rule_name}?',
+                                 resp_type='response')
 
     @logger
     def create_rule(self, security_group: str, rule_name: str, properties: dict):
@@ -178,7 +181,8 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
-    security_groups = argToList(args.get('security_group_name'))
+    security_group_name = args.get('security_group_name')
+    security_groups = argToList(security_group_name)
     rules_limit = int(args.get('limit', '50'))
     rules_offset = int(args.get('offset', '1')) - 1  # As offset will start at 1
     rules: List = []
@@ -188,27 +192,48 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
                                            security_group=group)
         rules.extend(rules_returned.get('value', []))
     rules = rules[rules_offset:rules_offset + rules_limit]
-    return format_rule(rules, f"in {security_groups}")
+    return format_rule(rules, f"in {security_group_name}")
 
 
 @ logger
-def delete_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str) -> str:
+def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str:
     """
 
     Args:
         client: The MSClient
-        security_group_name: the name of the security group
-        security_rule_name: The name of the rule to delete
-
+        params: configuration parameters
+        args: args dictionary.
     """
+    security_group_name = args.get('security_group_name')
+    security_rule_name = args.get('security_rule_name')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
 
-    rule_deleted = client.delete_rule(security_group_name, security_rule_name)
-    if rule_deleted.status_code == 204:
-        return f"Rule {security_rule_name} not found."
-    if rule_deleted.status_code == 202:
-        return f"Rule {security_rule_name} deleted."
-    else:
-        return f"Rule {security_rule_name} was not deleted. Got back the following result:\n{rule_deleted.content}"
+    warning_message = ''
+    success_message = ''
+    all_resource_groups_are_wrong = True
+    for resource_group_name in resource_group_list:
+        try:
+            rule_deleted = client.delete_rule(security_group_name=security_group_name,
+                                              security_rule_name=security_rule_name,
+                                              subscription_id=subscription_id,
+                                              resource_group_name=resource_group_name)
+            all_resource_groups_are_wrong = False
+            if rule_deleted.status_code == 204:
+                warning_message += (f"Rule '{security_rule_name}' with resource_group_name\
+ '{resource_group_name}' was not found.\n\n")
+            elif rule_deleted.status_code == 202:
+                success_message += (f"Rule '{security_rule_name}' with resource_group_name\
+ '{resource_group_name}' was successfully deleted.\n\n")
+
+        except Exception as e:
+            warning_message += (f"Rule '{security_rule_name}' with resource_group_name\
+ '{resource_group_name}' was not deleted.\
+Got back the following result:\n{e}\n\n")
+            if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
+                raise
+    return_warning(warning_message) if warning_message else None
+    return success_message
 
 
 @ logger

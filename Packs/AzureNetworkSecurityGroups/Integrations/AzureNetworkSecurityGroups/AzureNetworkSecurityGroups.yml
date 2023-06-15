@@ -169,7 +169,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: '1'
       description: The index of the first rule to display. Used for pagination.
       isArray: false
       name: offset
@@ -230,6 +230,18 @@ script:
     execution: false
     name: azure-nsg-auth-test
   - arguments:
+    - default: false
+      name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - default: false
+      name: resource_group_name
+      description: "A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
     - default: false
       description: The name of the security group.
       isArray: false
