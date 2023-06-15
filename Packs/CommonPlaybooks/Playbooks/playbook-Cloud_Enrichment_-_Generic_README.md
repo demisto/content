@@ -83,4 +83,4 @@ This playbook does not use any commands.
 
 ---
 
-![Cloud Enrichment - Generic](../doc_files/Cloud_Enrichment_-_Generic.png)
+![Cloud Enrichment - Generic](https://raw.githubusercontent.com/demisto/content/581469643d7d7ef5b206855b89dc4ac119df1fca/Packs/CommonPlaybooks/doc_files/Cloud_Enrichment_-_Generic.png)

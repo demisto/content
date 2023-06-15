@@ -75,4 +75,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Cloud Threat Hunting - Persistence](../doc_files/Cloud_Threat_Hunting_-_Persistence.png)
+![Cloud Threat Hunting - Persistence](https://raw.githubusercontent.com/demisto/content/581469643d7d7ef5b206855b89dc4ac119df1fca/Packs/CloudIncidentResponse/doc_files/Cloud_Threat_Hunting_-_Persistence.png)

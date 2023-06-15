@@ -77,4 +77,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cloud Token Theft Response](../doc_files/Cloud_Token_Theft_Response.png)
+![Cloud Token Theft Response](https://raw.githubusercontent.com/demisto/content/581469643d7d7ef5b206855b89dc4ac119df1fca/Packs/CloudIncidentResponse/doc_files/Cloud_Token_Theft_Response.png)
