@@ -212,12 +212,15 @@ class Client(BaseClient):
             should_finish_pagination=True
         )
 
-        start_time_datetime = dateparser.parse(params.get(start_time_field_name))
+        start_time_datetime = dateparser.parse(params.get(start_time_field_name))  # type: ignore
         start_time_event_index = 0
 
         # take the first event that is equal or bigger than start time of the query
         for start_time_event_index, event in enumerate(events):
-            if (event_time := event.get(created_time_field)) and dateparser.parse(event_time) >= start_time_datetime:
+            # type: ignore[operator]
+            if (
+                event_time := event.get(created_time_field)
+            ) and dateparser.parse(event_time) >= start_time_datetime:  # type: ignore[operator]
                 break
 
         events = events[start_time_event_index: limit + start_time_event_index]
@@ -440,10 +443,7 @@ def add_custom_fields_to_events(events: List[Dict], event_type: str, created_tim
     for event in events:
         event['event_type'] = event_type
         if event_time := event.get(created_time_field):
-            if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS.value:
-                event['_time'] = timestamp_to_datestring(timestamp=event_time, date_format=DATE_FORMAT, is_utc=True)
-            else:
-                event['_time'] = event_time
+            event['_time'] = event_time
 
 
 def get_datetime_range(
@@ -570,13 +570,13 @@ def get_all_latest_time_logs_ids(
     if not latest_occurred_log:
         return [], latest_occurred_log
 
-    latest_occurred_time_log_ids = set()
+    latest_occurred_time_log_ids: Set[str] = set()
 
     for log in logs:
         if log.get(log_created_time_field_name) == latest_occurred_log:
-            log_id = log.get(log_id_field_name)
-            demisto.info(f'adding log with ID {log_id} to latest occurred time logs')
-            latest_occurred_time_log_ids.add(log_id)
+            if log_id := log.get(log_id_field_name):
+                demisto.info(f'adding log with ID {log_id} to latest occurred time logs')
+                latest_occurred_time_log_ids.add(log_id)
 
     demisto.info(f'{latest_occurred_time_log_ids=}')
     return list(latest_occurred_time_log_ids), latest_occurred_log
@@ -736,7 +736,7 @@ def get_observed_attack_techniques_logs(
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
         detected_start_datetime=start_time,
         detected_end_datetime=end_time,
-        limit=limit + len(last_run.get(observed_attack_technique_cache_time_field_name, []))
+        limit=limit
     )
 
     observed_attack_techniques_logs = dedup_fetched_logs(
@@ -802,7 +802,7 @@ def get_search_detection_logs(
         date_format=date_format
     )
     search_detection_logs = client.get_search_detection_logs(
-        start_datetime=start_time, top=limit, limit=limit + len(last_run.get(search_detections_cache_time_field_name, []))
+        start_datetime=start_time, top=limit, limit=limit
     )
 
     search_detection_logs = dedup_fetched_logs(
@@ -886,7 +886,7 @@ def get_audit_logs(
     )
     if latest_log_time:
         # decrease the last time of the audit in one second as the api works only on greater than and not greater equal
-        latest_log_time = (dateparser.parse(latest_log_time) - timedelta(seconds=1)).strftime(DATE_FORMAT)
+        latest_log_time = (dateparser.parse(latest_log_time) - timedelta(seconds=1)).strftime(DATE_FORMAT)  # type: ignore
 
     latest_audit_log_time = latest_log_time or end_time
 
@@ -1013,7 +1013,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         return [
             {
                 'Id': log.get('id'),
-                'Time': log.get('createdDateTime'),
+                'Time': log.get(CreatedTimeFields.WORKBENCH.value),
                 'Type': 'Workbench',
             } for log in workbench_logs
         ]
@@ -1028,7 +1028,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         return [
             {
                 'Id': log.get('uuid'),
-                'Time': log.get('detectedDateTime'),
+                'Time': log.get(CreatedTimeFields.OBSERVED_ATTACK_TECHNIQUES.value),
                 'Type': 'Observed Attack Technique'
             } for log in observed_attack_techniques_logs
         ]
@@ -1043,7 +1043,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         return [
             {
                 'Id': log.get('uuid'),
-                'Time': timestamp_to_datestring(timestamp=log.get('eventTime'), date_format=DATE_FORMAT, is_utc=True),
+                'Time': log.get(CreatedTimeFields.SEARCH_DETECTIONS.value),
                 'Type': 'Search Detection'
             } for log in search_detection_logs
         ]
@@ -1057,7 +1057,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
         return [
             {
                 'Id': log.get('loggedUser'),
-                'Time': log.get('loggedDateTime'),
+                'Time': log.get(CreatedTimeFields.AUDIT.value),
                 'Type': 'Audit'
             } for log in audit_logs
         ]

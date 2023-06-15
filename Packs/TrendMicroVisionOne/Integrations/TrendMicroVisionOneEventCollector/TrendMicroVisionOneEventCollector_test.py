@@ -36,22 +36,33 @@ def create_any_type_logs(
     end: int,
     created_time_field: str,
     id_field_name: str,
+    last_event_fetch_time: str | None,
     extra_seconds: int = 0,
-    should_reverse: bool = False
+    ascending_order: bool = False,
 ):
-    logs = [
+    last_event_fetch_time = last_event_fetch_time or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
+    if ascending_order:
+        return [
+            {
+                id_field_name: i,
+                created_time_field: (
+                    dateparser.parse(last_event_fetch_time) + timedelta(seconds=i + extra_seconds)
+                ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else int(
+                    (dateparser.parse(last_event_fetch_time) + timedelta(seconds=i + extra_seconds)).timestamp()
+                ) * 1000
+            } for i in range(start + 1, end + 1)
+        ]
+    # descending order
+    return [
         {
             id_field_name: end - i + 1,
             created_time_field: (
-                datetime.now(tz=pytz.utc) - timedelta(seconds=i + extra_seconds)
+                datetime.now(tz=pytz.utc) - timedelta(seconds=i + start + extra_seconds)
             ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else int(
-                (datetime.now(tz=pytz.utc) - timedelta(seconds=i + extra_seconds)).timestamp()
+                (datetime.now(tz=pytz.utc) - timedelta(seconds=i + start + extra_seconds)).timestamp()
             ) * 1000
         } for i in range(start + 1, end + 1)
     ]
-    if should_reverse:
-        return logs[::-1]
-    return logs
 
 
 def create_logs_mocks(
@@ -59,6 +70,7 @@ def create_logs_mocks(
     num_of_events: int,
     created_time_field: str,
     id_field_name: str,
+    last_event_fetch_time: str,
     url_suffix,
     top: int = 10,
     extra_seconds: int = 0,
@@ -76,8 +88,9 @@ def create_logs_mocks(
         end=min(fetched_amount_of_events + top, num_of_events),
         created_time_field=created_time_field,
         id_field_name=id_field_name,
+        last_event_fetch_time=last_event_fetch_time,
         extra_seconds=extra_seconds,
-        should_reverse=url_suffix in [UrlSuffixes.AUDIT.value, UrlSuffixes.WORKBENCH.value]
+        ascending_order=url_suffix in [UrlSuffixes.AUDIT.value, UrlSuffixes.WORKBENCH.value]
     )
     fetched_amount_of_events += len(logs)
 
@@ -88,6 +101,10 @@ def create_logs_mocks(
 
 
 def _http_request_side_effect_decorator(
+    last_workbench_time: str | None = None,
+    last_oat_time: str | None = None,
+    last_search_detection_logs: str | None = None,
+    last_audit_log_time: str | None = None,
     num_of_workbench_logs: int = 0,
     num_of_oat_logs: int = 0,
     num_of_search_detection_logs: int = 0,
@@ -104,6 +121,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='createdDateTime',
                 id_field_name='id',
                 top=10,
+                last_event_fetch_time=last_workbench_time
             )
         if UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value in full_url:
             return create_logs_mocks(
@@ -113,6 +131,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='detectedDateTime',
                 id_field_name='uuid',
                 top=params.get('top') or 200,
+                last_event_fetch_time=last_oat_time
             )
         if UrlSuffixes.SEARCH_DETECTIONS.value in full_url:
             return create_logs_mocks(
@@ -122,6 +141,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='eventTime',
                 id_field_name='uuid',
                 top=params.get('top') or DEFAULT_MAX_LIMIT,
+                last_event_fetch_time=last_search_detection_logs
             )
         else:
             return create_logs_mocks(
@@ -131,6 +151,7 @@ def _http_request_side_effect_decorator(
                 created_time_field='loggedDateTime',
                 id_field_name='loggedUser',
                 top=params.get('top') or 200,
+                last_event_fetch_time=last_audit_log_time
             )
 
     return _http_request_side_effect
@@ -148,126 +169,142 @@ class TestFetchEvents:
         "num_of_workbench_logs, num_of_oat_logs, num_of_search_detection_logs, num_of_audit_logs, "
         "num_of_expected_events",
         [
-            # (
-            #     {},
-            #     {'max_fetch': 100, 'first_fetch': '1 month ago'},
-            #     {
-            #         'audit_logs_time': '2023-01-01T14:59:58Z',
-            #         'oat_detection_logs_time': '2023-01-01T14:59:59Z',
-            #         'search_detection_logs_time': '2023-01-01T14:59:59Z',
-            #         'workbench_logs_time': '2023-01-01T14:59:59Z',
-            #         'found_audit_logs': ['8268fed996476cb055174e5b5c27fad5281c2fd7ee81cf9e9539a3a53a7ddbbe'],
-            #         'found_oat_logs': [1],
-            #         'found_search_detection_logs': [1],
-            #         'found_workbench_logs': [1],
-            #     },
-            #     '2023-01-01T15:00:00Z',
-            #     50,
-            #     50,
-            #     50,
-            #     50,
-            #     200
-            # ),
-            # (
-            #     {
-            #         'audit_logs_time': '2023-01-01T14:59:58Z',
-            #         'oat_detection_logs_time': '2023-01-01T14:59:59Z',
-            #         'search_detection_logs_time': '2023-01-01T14:59:59Z',
-            #         'workbench_logs_time': '2023-01-01T14:59:59Z',
-            #         'found_audit_logs': ['8268fed996476cb055174e5b5c27fad5281c2fd7ee81cf9e9539a3a53a7ddbbe'],
-            #         'found_oat_logs': [1, 2, 3],
-            #         'found_search_detection_logs': [1, 2],
-            #         'found_workbench_logs': [1],
-            #     },
-            #     {'max_fetch': 100},
-            #     {
-            #         'audit_logs_time': '2023-01-01T15:00:58Z',
-            #         'found_audit_logs': ['2fa12fc3dc7918f81f6cd1b6469535c7aaec12e174031b115768f54f3013a911'],
-            #         'found_oat_logs': [4],
-            #         'found_search_detection_logs': [3],
-            #         'found_workbench_logs': [2],
-            #         'oat_detection_logs_time': '2023-01-01T15:00:56Z',
-            #         'search_detection_logs_time': '2023-01-01T15:00:57Z',
-            #         'workbench_logs_time': '2023-01-01T15:00:58Z'
-            #     },
-            #     '2023-01-01T15:01:00Z',
-            #     50,
-            #     50,
-            #     50,
-            #     50,
-            #     194
-            # ),
+            (
+                {},
+                {'max_fetch': 100, 'first_fetch': '1 month ago'},
+                {
+                    'audit_logs_time': '2023-01-01T14:59:49Z',
+                    'oat_detection_logs_time': '2023-01-01T14:59:59Z',
+                    'search_detection_logs_time': '2023-01-01T14:59:59Z',
+                    'workbench_logs_time': '2023-01-01T14:59:50Z',
+                    'found_audit_logs': ['269308b9e721fbc755e03ce501642697db992274e035496577fcef470e3ea860'],
+                    'found_oat_logs': [50],
+                    'found_search_detection_logs': [50],
+                    'found_workbench_logs': [50],
+                },
+                '2023-01-01T15:00:00Z',
+                50,
+                50,
+                50,
+                50,
+                200
+            ),
+            (
+                {
+                    'audit_logs_time': '2023-01-01T14:59:58Z',
+                    'oat_detection_logs_time': '2023-01-01T14:59:59Z',
+                    'search_detection_logs_time': '2023-01-01T14:59:59Z',
+                    'workbench_logs_time': '2023-01-01T14:59:59Z',
+                    'found_audit_logs': ['8268fed996476cb055174e5b5c27fad5281c2fd7ee81cf9e9539a3a53a7ddbbe'],
+                    'found_oat_logs': [1, 2, 3],
+                    'found_search_detection_logs': [1, 2],
+                    'found_workbench_logs': [1],
+                },
+                {'max_fetch': 100},
+                {
+                    'audit_logs_time': '2023-01-01T15:00:47Z',
+                    'oat_detection_logs_time': '2023-01-01T15:00:59Z',
+                    'search_detection_logs_time': '2023-01-01T15:00:59Z',
+                    'workbench_logs_time': '2023-01-01T15:00:49Z',
+                    'found_audit_logs': ['bb5e99823e4c65cfe33692829d55a7b2df3795a0243ed4a6cc8383a04027b9a7'],
+                    'found_oat_logs': [50],
+                    'found_search_detection_logs': [50],
+                    'found_workbench_logs': [50],
+                },
+                '2023-01-01T15:01:00Z',
+                50,
+                50,
+                50,
+                50,
+                49 + 47 + 48 + 49
+            ),
             (
                 {
                     'audit_logs_time': '2023-01-01T15:00:58Z',
+                    'oat_detection_logs_time': '2023-01-01T15:00:56Z',
+                    'search_detection_logs_time': '2023-01-01T15:00:57Z',
+                    'workbench_logs_time': '2023-01-01T15:00:58Z',
                     'found_audit_logs': [],
                     'found_oat_logs': [1, 2, 3, 4],
                     'found_search_detection_logs': [1, 2, 3],
                     'found_workbench_logs': [1, 2],
-                    'oat_detection_logs_time': '2023-01-01T15:00:56Z',
-                    'search_detection_logs_time': '2023-01-01T15:00:57Z',
-                    'workbench_logs_time': '2023-01-01T15:00:58Z'
                 },
                 {'max_fetch': 20},
                 {
-                    'audit_logs_time': '2023-01-01T15:02:28Z',
-                    'oat_detection_logs_time': '2023-01-01T15:02:25Z',
-                    'search_detection_logs_time': '2023-01-01T15:01:31Z',
-                    'workbench_logs_time': '2023-01-01T15:02:27Z',
-                    'found_audit_logs': ['be35b351bbad7c6598e9176a94f6d1b55fc00826bd57af85e8a34961528aec42'],
-                    'found_oat_logs': [5],
-                    'found_search_detection_logs': [59],
-                    'found_workbench_logs': [3],
+                    'audit_logs_time': '2023-01-01T15:01:17Z',
+                    'oat_detection_logs_time': '2023-01-01T15:01:59Z',
+                    'search_detection_logs_time': '2023-01-01T15:01:19Z',
+                    'workbench_logs_time': '2023-01-01T15:01:02Z',
+                    'found_audit_logs': ['da4bdff56581a841c69eb8e9fddd558e7ff25edf9f213f333db2d25fdca432d6'],
+                    'found_oat_logs': [9],
+                    'found_search_detection_logs': [20],
+                    'found_workbench_logs': [4],
                 },
-                '2023-01-01T15:02:30Z',
+                '2023-01-01T15:02:00Z',
                 4,
                 9,
                 81,
                 55,
                 2 + 5 + 17 + 20
             ),
-            # (
-            #     {
-            #         'audit_logs_time': '2023-01-01T15:10:09Z',
-            #         'oat_detection_logs_time': '2023-01-01T15:08:00Z',
-            #         'search_detection_logs_time': '2023-01-01T15:05:30Z',
-            #         'workbench_logs_time': '2023-01-01T15:09:30Z'
-            #     },
-            #     {'max_fetch': 1000},
-            #     {
-            #         'audit_logs_time': '2023-01-01T15:15:21Z',
-            #         'oat_detection_logs_time': '2023-01-01T15:13:12Z',
-            #         'search_detection_logs_time': '2023-01-01T15:10:42Z',
-            #         'workbench_logs_time': '2023-01-01T15:14:42Z'
-            #     },
-            #     '2023-01-01T15:15:42Z',
-            #     1400,
-            #     1123,
-            #     356,
-            #     879,
-            #     1000 + 1000 + 356 + 879
-            # ),
-            # (
-            #     {
-            #         'audit_logs_time': '2023-01-01T15:15:21Z',
-            #         'oat_detection_logs_time': '2023-01-01T15:13:12Z',
-            #         'search_detection_logs_time': '2023-01-01T15:10:42Z',
-            #         'workbench_logs_time': '2023-01-01T15:14:42Z'
-            #     },
-            #     {'max_fetch': 1000},
-            #     {
-            #         'audit_logs_time': '2023-01-01T15:20:24Z',
-            #         'oat_detection_logs_time': '2023-01-01T15:20:45Z',
-            #         'search_detection_logs_time': '2023-01-01T15:15:45Z',
-            #         'workbench_logs_time': '2023-01-01T15:20:45Z'
-            #     },
-            #     '2023-01-01T15:20:45Z',
-            #     0,
-            #     0,
-            #     50,
-            #     14,
-            #     14 + 50
-            # ),
+            (
+                {
+                    'audit_logs_time': '2023-01-01T15:01:17Z',
+                    'oat_detection_logs_time': '2023-01-01T15:01:59Z',
+                    'search_detection_logs_time': '2023-01-01T15:01:19Z',
+                    'workbench_logs_time': '2023-01-01T15:01:02Z',
+                    'found_audit_logs': [],
+                    'found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'found_search_detection_logs': [1, 2, 3],
+                    'found_workbench_logs': [1, 2, 3, 4],
+                },
+                {'max_fetch': 1000},
+                {
+                    'audit_logs_time': '2023-01-01T15:15:55Z',
+                    'oat_detection_logs_time': '2023-01-01T15:19:59Z',
+                    'search_detection_logs_time': '2023-01-01T15:19:59Z',
+                    'workbench_logs_time': '2023-01-01T15:17:46Z',
+                    'found_audit_logs': ['83197a6e76a6cbf0da30bcb3e3a8a63ed1f0319c8b7d856c7f3f5f6b444ef0d9'],
+                    'found_oat_logs': [62],
+                    'found_search_detection_logs': [102],
+                    'found_workbench_logs': [1004],
+                },
+                '2023-01-01T15:20:00Z',
+                1400,
+                62,
+                102,
+                879,
+                1000 + 52 + 99 + 879
+            ),
+            (
+                {
+                    'audit_logs_time': '2023-01-01T15:01:00Z',
+                    'oat_detection_logs_time': '2023-01-01T15:01:00Z',
+                    'search_detection_logs_time': '2023-01-01T15:01:00Z',
+                    'workbench_logs_time': '2023-01-01T15:01:00Z',
+                    'found_audit_logs': [],
+                    'found_oat_logs': [1],
+                    'found_search_detection_logs': [1, 2, 3, 4],
+                    'found_workbench_logs': [1],
+                },
+                {'max_fetch': 1000},
+                {
+                    'audit_logs_time': '2023-01-01T15:01:13Z',
+                    'found_audit_logs': ['d6294890ed71d3399f2a5ab568738be6fe1fd5dca7d8dbcbf480d1095c7f3bb5'],
+                    'found_oat_logs': [],
+                    'found_search_detection_logs': [50],
+                    'found_workbench_logs': [],
+                    'oat_detection_logs_time': '2023-01-01T15:03:45Z',
+                    'search_detection_logs_time': '2023-01-01T15:03:44Z',
+                    'workbench_logs_time': '2023-01-01T15:03:45Z'
+                },
+                '2023-01-01T15:03:45Z',
+                0,
+                0,
+                50,
+                14,
+                14 + 46
+            )
         ],
     )
     def test_fetch_events_main(
@@ -309,6 +346,11 @@ class TestFetchEvents:
         from TrendMicroVisionOneEventCollector import main
 
         start_freeze_time(datetime_string_freeze_time)
+        workbench_last_fetch_time = last_run.get(LastRunLogsTimeFields.WORKBENCH.value)
+        oat_last_fetch_time = last_run.get(LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value)
+        search_detection_last_fetch_time = last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS.value)
+        audit_log_last_fetch_time = last_run.get(LastRunLogsTimeFields.AUDIT.value)
+
         mocker.patch.object(demisto, 'params', return_value=integration_params)
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
         mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
@@ -316,6 +358,10 @@ class TestFetchEvents:
             BaseClient,
             '_http_request',
             side_effect=_http_request_side_effect_decorator(
+                last_workbench_time=workbench_last_fetch_time,
+                last_oat_time=oat_last_fetch_time,
+                last_search_detection_logs=search_detection_last_fetch_time,
+                last_audit_log_time=audit_log_last_fetch_time,
                 num_of_workbench_logs=num_of_workbench_logs,
                 num_of_oat_logs=num_of_oat_logs,
                 num_of_search_detection_logs=num_of_search_detection_logs,
@@ -354,14 +400,14 @@ class TestFetchEvents:
             '3 years ago',
             LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
-            ('2020-01-01T15:20:45Z', '2020-12-31T15:20:45Z')
+            ('2020-01-01T15:20:45Z', '2020-01-02T15:20:45Z')
         ),
         (
             None,
             '1 month ago',
             LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
-            ('2022-12-01T15:20:45Z', '2023-01-01T15:20:45Z')
+            ('2022-12-01T15:20:45Z', '2022-12-02T15:20:45Z')
         ),
         (
             '2023-01-01T15:00:00Z',
@@ -455,17 +501,31 @@ def test_module_main_flow(mocker):
                             f'{LogTypes.OBSERVED_ATTACK_TECHNIQUES.value},{LogTypes.WORKBENCH.value}'
             },
             [
-                {'Id': 1, 'Time': '2023-01-01T15:19:44Z', 'Type': 'Workbench'},
-                {'Id': 1, 'Time': '2023-01-01T15:18:14Z', 'Type': 'Observed Attack Technique'},
-                {'Id': 1, 'Time': '2023-01-01T15:15:44Z', 'Type': 'Search Detection'},
-                {'Id': 1, 'Time': '2023-01-01T15:20:24Z', 'Type': 'Audit'}
+                {
+                    "Id": 1,
+                    "Time": "2023-01-01T15:19:46Z",
+                    "Type": "Workbench"
+                },
+                {
+                    "Id": 1,
+                    "Time": "2023-01-01T15:20:44Z",
+                    "Type": "Observed Attack Technique"
+                },
+                {
+                    "Id": 1,
+                    "Time": "2023-01-01T15:20:44Z",
+                    "Type": "Search Detection"
+                },
+                {
+                    "Id": 1,
+                    "Time": "2023-01-01T15:19:46Z",
+                    "Type": "Audit"
+                }
             ]
         ),
         (
             {'from_time': '2023-01-01T15:00:45Z', 'to_time': '2023-01-01T15:20:45Z', 'log_type': LogTypes.AUDIT.value},
-            [
-                {'Id': 1, 'Time': '2023-01-01T15:20:24Z', 'Type': 'Audit'}
-            ]
+            [{'Id': 1, 'Time': '2023-01-01T15:19:46Z', 'Type': 'Audit'}]
         ),
         (
             {
@@ -473,9 +533,7 @@ def test_module_main_flow(mocker):
                 'to_time': '2023-01-01T15:20:45Z',
                 'log_type': LogTypes.OBSERVED_ATTACK_TECHNIQUES.value
             },
-            [
-                {'Id': 1, 'Time': '2023-01-01T15:18:14Z', 'Type': 'Observed Attack Technique'},
-            ]
+            [{'Id': 1, 'Time': '2023-01-01T15:20:44Z', 'Type': 'Observed Attack Technique'}]
         ),
         (
             {
@@ -483,9 +541,7 @@ def test_module_main_flow(mocker):
                 'to_time': '2023-01-01T15:20:45Z',
                 'log_type': LogTypes.SEARCH_DETECTIONS.value
             },
-            [
-                {'Id': 1, 'Time': '2023-01-01T15:15:44Z', 'Type': 'Search Detection'},
-            ]
+            [{'Id': 1, 'Time': '2023-01-01T15:20:44Z', 'Type': 'Search Detection'}]
         ),
         (
             {
@@ -493,10 +549,8 @@ def test_module_main_flow(mocker):
                 'to_time': '2023-01-01T15:20:45Z',
                 'log_type': LogTypes.WORKBENCH.value
             },
-            [
-                {'Id': 1, 'Time': '2023-01-01T15:19:44Z', 'Type': 'Workbench'},
-            ]
-        ),
+            [{'Id': 1, 'Time': '2023-01-01T15:19:46Z', 'Type': 'Workbench'}]
+        )
     ],
 )
 def test_get_events_command_main_flow(mocker, args: Dict, expected_outputs: List[Dict]):
@@ -536,5 +590,4 @@ def test_get_events_command_main_flow(mocker, args: Dict, expected_outputs: List
     main()
 
     assert return_results_mocker.call_args.args[0].outputs == expected_outputs
-    args['log_type']
     assert "events for log_types=" in return_results_mocker.call_args.args[0].readable_output
