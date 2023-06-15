@@ -1567,8 +1567,6 @@ def test_command(client: Client, isASAv: bool) -> str:
         client.login(isASAv)
         client.test_command()
 
-    # except Exception as exc:
-    #     print('hello')
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code == HTTPStatus.UNAUTHORIZED:
             return 'Authorization Error: invalid username or password'
