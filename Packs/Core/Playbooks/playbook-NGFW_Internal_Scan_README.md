@@ -50,7 +50,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| scannerIP | The scanner IP address | alert.hostip | Optional |
+| scannerIP | The scanner IP address. | alert.hostip | Optional |
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user |  | Optional |
 | HostAutoContainment | Whether to execute endpoint isolation automatically or manually. |  | Optional |
@@ -60,7 +60,7 @@ This playbook does not use any scripts.
 | serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
 | serviceNowSeverity | The severity of the new ticket. Leave empty for ServiceNow default severity. |  | Optional |
 | serviceNowTicketType | The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
-| serviceNowCategory | The category of the ServiceNow Ticket. |  | Optional |
+| serviceNowCategory | The category of the ServiceNow ticket. |  | Optional |
 | serviceNowAssignmentGroup | The group to which to assign the new ticket. |  | Optional |
 | ZendeskPriority | The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low". |  | Optional |
 | ZendeskRequester | The user who requested this ticket. |  | Optional |
@@ -71,7 +71,7 @@ This playbook does not use any scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Possible values: True/False. Whether to append a new comment to the ticket for each endpoint in the incident. | True | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
 | CommentToAdd | Comment for the ticket. |  | Optional |
 
 ## Playbook Outputs

@@ -29,16 +29,16 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | serviceNowTicketID | The ticket ID. |  | Optional |
-| serviceNowCategory | The category of the ServiceNow Ticket. |  | Optional |
+| serviceNowCategory | The category of the ServiceNow ticket. |  | Optional |
 | description | Description of the ticket. |  | Optional |
 | serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
 | serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
 | serviceNowSeverity  | The severity of the new ticket. Leave empty for ServiceNow default severity. |  | Optional |
 | CommentToAdd | comment for the ticket. |  | Optional |
 | serviceNowTicketType | The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
-| addCommentPerEndpoint | Possible values: True/False. Whether to add a new comment to the ticket for each Endpoint in the incident. | True | Optional |
+| addCommentPerEndpoint | Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
 | serviceNowShortDescription | A short description of the ticket. |  | Optional |
-| Action | Possible values: NewTicket/AddComment. Whether to open a new ticket or to add a new comment. |  | Optional |
+| Action | Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.  |  | Optional |
 
 ## Playbook Outputs
 
@@ -46,7 +46,7 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| ServiceNow.Ticket.ID | ServiceNow Ticket ID. | unknown |
+| ServiceNow.Ticket.ID | ServiceNow ticket ID. | unknown |
 
 ## Playbook Image
 

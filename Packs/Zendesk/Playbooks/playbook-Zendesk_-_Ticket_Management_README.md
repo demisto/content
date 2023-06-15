@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Zendeskv2
+Zendeskv2
 
 ### Scripts
 
@@ -38,8 +38,8 @@ This playbook does not use any scripts.
 | ZendeskTags | The array of tags applied to this ticket. |  | Optional |
 | ZendeskType | The type of this ticket. Allowed values are "problem", "incident", "question", or "task". |  | Required |
 | CommentToAdd | Comment for the ticket. |  | Optional |
-| addCommentPerEndpoint | Possible values: True/False. Whether to add a new comment to the ticket for each endpoint in the incident. | True | Optional |
-| Action | Possible values: NewTicket/AddComment. Whether to open a new ticket or to add a new comment. |  | Optional |
+| addCommentPerEndpoint | Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
+| Action | Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.  |  | Optional |
 
 ## Playbook Outputs
 
