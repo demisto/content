@@ -1,0 +1,65 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import json
+
+
+def extract_aws_info(event):
+    arn = event['userIdentity']['arn']
+    access_key_id = event['userIdentity']['accessKeyId']
+    resource_name = event['userIdentity'].get('instanceId', None)
+    source_ip = event['sourceIPAddress']
+    username = event['userIdentity']['sessionContext']['sessionIssuer']['userName']
+    event_name = event['eventName']
+    user_agent = event['userAgent']
+
+    return arn, access_key_id, resource_name, source_ip, username, event_name, user_agent
+
+
+def extract_gcp_info(event):
+    resource_name = event['protoPayload']['resourceName']
+    source_ip = event['protoPayload']['requestMetadata']['callerIp']
+    username = event['protoPayload']['authenticationInfo']['principalEmail']
+    event_name = event['protoPayload']['methodName']
+    user_agent = event['protoPayload']['requestMetadata']['callerSuppliedUserAgent']
+
+    return resource_name, source_ip, username, event_name, user_agent
+
+
+def extract_event_info(event):
+    if 'eventSource' in event and event['eventSource'] == 'cloudtrail.amazonaws.com':
+        return "AWS", extract_aws_info(event)
+    elif 'logName' in event and event['logName'].startswith('projects/'):
+        return "GCP", extract_gcp_info(event)
+    else:
+        raise ValueError("Unknown event type")
+
+
+def main():
+    try:
+        args = demisto.args()
+        json_data = args.get("json_data")
+        data = json.loads(json_data) if isinstance(json_data, str) else json_data
+
+        # Extract information from AWS event
+        event_type, event_info = extract_event_info(data)
+        if event_type == "AWS":
+            return CommandResults(
+                outputs_prefix='CloudIndicators',
+                outputs={'arn': event_info[0], 'access_key_id': event_info[1], 'resource_name': event_info[2],
+                         'source_ip': event_info[3], 'username': event_info[4], 'event_name': event_info[5],
+                         'user_agent': event_info[6]}
+            )
+
+        # Extract information from GCP event
+        elif event_type == "GCP":
+            return CommandResults(
+                outputs_prefix='CloudIndicators',
+                outputs={'resource_name': event_info[0], 'source_ip': event_info[1], 'username': event_info[2],
+                         'event_name': event_info[3], 'user_agent': event_info[4]}
+            )
+
+    except Exception as e:
+        return_error(f"An error occurred: {str(e)}")
+
+
+return_results(main())
