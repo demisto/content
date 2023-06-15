@@ -164,7 +164,7 @@ script:
     - description: XML configuration to write to the list.
       name: config
       required: true
-    description: Overwrites the complete XML config of a list.
+    description: Overwrites the complete XML configuration of a list.
     execution: false
     name: swg-modify-list
     outputs:
