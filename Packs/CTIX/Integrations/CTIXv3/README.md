@@ -397,8 +397,8 @@ Saved Search listing api with pagination
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page. | Required |
-| page_size | page size. | Required |
+| page | page. Default is 1. | Optional |
+| page_size | page size. Default is 5. | Optional |
 
 #### Context Output
 
@@ -467,8 +467,8 @@ Source Collection listing api with pagination
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page. | Required |
-| page_size | page size. | Required |
+| page | page. Default is 1. | Optional |
+| page_size | page size. Default is 15. | Optional |
 
 #### Context Output
 
@@ -511,8 +511,8 @@ Enrichment tools listing API
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | page. | Required |
-| page_size | page size. | Required |
+| page | page. Default is 1. | Optional |
+| page_size | page size. Default is 15. | Optional |
 | object_type | object type. | Optional |
 | action_type | action type. | Optional |
 
@@ -839,9 +839,9 @@ Adding Tag to Indicator
 | page | page from where data will be taken. Default is 1. | Optional |
 | page_size | total number of results to be fetched. Default is 10. | Optional |
 | q | query. | Optional |
-| object_id | object id. | Required |
-| object_type | object type. | Required |
-| tag_id | tag id. | Required |
+| object_id | object id. Default is "". | Optional |
+| object_type | object type. Default is "" | Optional |
+| tag_id | tag id. Default is "" | Optional |
 
 #### Context Output
 
@@ -877,9 +877,9 @@ Remove Tag From Indicator
 | page | which page to bring the data from. Default is 1. | Optional |
 | page_size | number of pages to bring data from. Default is 10. | Optional |
 | q | query. | Optional |
-| object_id | object_id. | Required |
-| object_type | object_type. | Required |
-| tag_id | tag_id. | Required |
+| object_id | object_id. Default is "". | Optional |
+| object_type | object_type. Default is "". | Optional |
+| tag_id | tag_id. Default is "". | Optional |
 
 #### Context Output
 
@@ -961,8 +961,8 @@ Get Indicator Details
 | --- | --- | --- |
 | page | from where data has to be brought. Default is 1. | Optional |
 | page_size | total number of results. Default is 10. | Optional |
-| object_id | object id. | Required |
-| object_type | object type. | Required |
+| object_id | object id. Default is "". | Optional |
+| object_type | object type. Default is "". | Optional |
 
 #### Context Output
 
@@ -1039,8 +1039,8 @@ Get Indicator Tags
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_id | object id. | Required |
-| object_type | object type. | Required |
+| object_id | object id. Default is "". | Optional |
+| object_type | object type. Default is "". | Optional |
 | page | page. Default is 1. | Optional |
 | page_size | page size. Default is 10. | Optional |
 
@@ -1112,8 +1112,8 @@ Get Indicator Relations
 | --- | --- | --- |
 | page | page. Default is 1. | Optional |
 | page_size | page size. Default is 10. | Optional |
-| object_id | object id. | Required |
-| object_type | object type. | Required |
+| object_id | object id. Default is "". | Optional |
+| object_type | object type. Default is "". | Optional |
 
 #### Context Output
 
