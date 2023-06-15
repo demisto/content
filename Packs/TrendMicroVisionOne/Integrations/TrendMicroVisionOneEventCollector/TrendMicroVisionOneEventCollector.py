@@ -496,7 +496,7 @@ def get_latest_log_created_time(
     log_type: str,
     created_time_field: str = '_time',
     date_format: str = DATE_FORMAT,
-    increase_latest_log: bool = False
+    decrease_latest_log: bool = False
 ) -> str:
     """
     Get the latest occurred time of a log from a list of logs.
@@ -506,7 +506,7 @@ def get_latest_log_created_time(
         created_time_field (str): The created time field for the logs.
         log_type (str): the log type for debugging purposes.
         date_format (str): the date format.
-        increase_latest_log (bool): Whether to increase the latest time of the log by a single second.
+        decrease_latest_log (bool): whether to decrease the latest log time by one second
 
     Returns:
         str: latest occurred time of a log, empty string in case there aren't any logs.
@@ -519,8 +519,8 @@ def get_latest_log_created_time(
             if log_time > latest_log_time_datetime:
                 latest_log_time_datetime = log_time
 
-        if increase_latest_log:
-            latest_log_time_datetime = latest_log_time_datetime + timedelta(seconds=1)
+        if decrease_latest_log:
+            latest_log_time_datetime = latest_log_time_datetime - timedelta(seconds=1)
 
         latest_log_time = latest_log_time_datetime.strftime(date_format)
         demisto.info(f'{latest_log_time=} for {log_type=}')
@@ -551,7 +551,11 @@ def get_all_latest_time_logs_ids(
 
     """
     latest_occurred_log = get_latest_log_created_time(
-        logs=logs, log_type=log_type, created_time_field=log_created_time_field_name, date_format=date_format
+        logs=logs,
+        log_type=log_type,
+        created_time_field=log_created_time_field_name,
+        date_format=date_format,
+        decrease_latest_log=log_type == LogTypes.AUDIT.value  # decrease the latest log time by 1 second only if its audit
     )
 
     # if there aren't any new logs, no need to cache anything
@@ -790,7 +794,8 @@ def get_search_detection_logs(
         date_format=date_format
     )
     search_detection_logs = client.get_search_detection_logs(
-        start_datetime=start_time, top=limit, limit=limit + len(last_run.get(search_detections_cache_time_field_name, [])))
+        start_datetime=start_time, top=limit, limit=limit + len(last_run.get(search_detections_cache_time_field_name, []))
+    )
 
     search_detection_logs = dedup_fetched_logs(
         logs=search_detection_logs,
