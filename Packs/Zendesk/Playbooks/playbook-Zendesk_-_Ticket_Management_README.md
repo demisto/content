@@ -1,4 +1,4 @@
-`Zendesk - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook's tasks. 
+`Zendesk - Ticket Management` allows you to open a new ticket or comment on an existing ticket.
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Zendeskv2
+* Zendeskv2
 
 ### Scripts
 
@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* zendesk-ticket-create
 * zendesk-ticket-update
+* zendesk-ticket-create
 
 ## Playbook Inputs
 
@@ -38,8 +38,8 @@ This playbook does not use any scripts.
 | ZendeskTags | The array of tags applied to this ticket. |  | Optional |
 | ZendeskType | The type of this ticket. Allowed values are "problem", "incident", "question", or "task". |  | Required |
 | CommentToAdd | Comment for the ticket. |  | Optional |
-| addCommentPerEndpoint | Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| Action | Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.  |  | Optional |
+| addCommentPerEndpoint | Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| Action | Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment. |  | Optional |
 
 ## Playbook Outputs
 

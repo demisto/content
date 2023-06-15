@@ -220,7 +220,9 @@ tasks:
       id: 159abeff-fe4e-42fc-8be0-67f4ba0f245b
       version: -1
       name: Set Zendesk Ticket ID
-      description: commands.local.cmd.set.parent.incident.context
+      description: |-
+        Sets the `ZendeskTicketID` key to the incident's context.
+        If the output `Zendesk.Ticket.id` from sub-playbook `Zendesk - Ticket Management` is defined, set the ticket ID to the `ZendeskTicketID` key in the incident context else set the value of the `ZendeskTicketID` key as empty on the incident's context.
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
@@ -282,7 +284,9 @@ tasks:
       id: a27c8fa0-c258-41db-84e9-8b93a26c1623
       version: -1
       name: Set ServiceNow Ticket ID
-      description: commands.local.cmd.set.parent.incident.context
+      description: |-
+        Sets the `ServiceNowTicketID` key to the incident's context.
+        If the output `ServiceNow.Ticket.ID` from sub-playbook `ServiceNow - Ticket Management` is defined, set the ticket ID to the `ServiceNowTicketID` key in the incident context else set the value of the `ServiceNowTicketID` key as empty on the incident's context.
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
@@ -344,7 +348,9 @@ tasks:
       id: 4d9c9b8f-0747-4eb0-8474-99316ead7621
       version: -1
       name: 'Set Endpoint hostname from alerts '
-      description: commands.local.cmd.set.parent.incident.context
+      description: |-
+        Sets the `Endpoint` key to the incident's context.
+        If the alert.hostname  is defined on the alert context , set the hostname to the `Endpoint` key in the incident context else set the value `There is no hostname in the alert` to the incident's context.
       script: Builtin|||setParentIncidentContext
       type: regular
       iscommand: true
@@ -407,7 +413,7 @@ tasks:
     task:
       id: c8d353d1-1319-420f-8831-8d04cb40effd
       version: -1
-      name: Set key to open ticket
+      name: Set key to open a ticket
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -481,7 +487,7 @@ tasks:
     task:
       id: 0be81a91-6f8f-488c-8cdc-9df4684fe290
       version: -1
-      name: Untitled Task
+      name: Ticket Management
       type: title
       iscommand: false
       brand: ""
@@ -513,8 +519,8 @@ tasks:
     task:
       id: 043ae1ef-de8c-490b-8526-cb5fdd8f521b
       version: -1
-      name: Open a new ticket or add a comment
-      description: ""
+      name: Open a new ticket or comment on existing ticket
+      description: Whether to open a new ticket or comment on an existing ticket.
       type: condition
       iscommand: false
       brand: ""

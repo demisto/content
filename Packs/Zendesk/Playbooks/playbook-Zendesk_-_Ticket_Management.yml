@@ -1,7 +1,7 @@
 id: Zendesk - Ticket Management
 version: -1
 name: Zendesk - Ticket Management
-description: '`Zendesk - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook''s tasks. '
+description: '`Zendesk - Ticket Management` allows you to open a new ticket or comment on an existing ticket.'
 starttaskid: "0"
 tasks:
   "0":
@@ -98,8 +98,8 @@ tasks:
     task:
       id: 7d46973d-e0ae-4c86-8462-2b2c8768a520
       version: -1
-      name: Is the comment defined on the input?
-      description: Checks if the comment is defined on the input.
+      name: Was a comment provided in the input
+      description: Checks if the comment was provided in the input.
       type: condition
       iscommand: false
       brand: ""
@@ -344,7 +344,7 @@ tasks:
       id: 2d9482fc-b16e-4f66-8ee6-aec802b1d1db
       version: -1
       name: Whether to append a new comment to the ticket for each alert?
-      description: Checks whether to append a new comment to the ticket for each alert.
+      description: Checks if a new comment should be appended to the ticket for each alert.
       type: condition
       iscommand: false
       brand: ""
@@ -691,8 +691,8 @@ tasks:
     task:
       id: 05375988-f8c0-4c9b-8bcc-88245802470a
       version: -1
-      name: whether to open a ticket for this incident?
-      description: Checks whether to open a new ticket or add a comment to the task.
+      name: Whether to open a ticket for this incident?
+      description: Checks whether to open a new ticket or add a comment to an existing ticket.
       type: condition
       iscommand: false
       brand: ""

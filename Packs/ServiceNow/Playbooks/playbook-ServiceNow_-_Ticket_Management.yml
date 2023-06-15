@@ -1,7 +1,7 @@
 id: ServiceNow - Ticket Management
 version: -1
 name: ServiceNow - Ticket Management
-description: '`ServiceNow - Ticket Management` allows you to open new tickets or update comments to the existing ticket using the playbook''s tasks. '
+description: '`ServiceNow - Ticket Management` allows you to open a new ticket or comment on an existing ticket.'
 starttaskid: "0"
 tasks:
   "0":
@@ -165,8 +165,8 @@ tasks:
     task:
       id: c45fcc66-2992-470f-8810-2ac6f6fa4640
       version: -1
-      name: whether to open a ticket for this incident?
-      description: Checks whether to open a new ticket or add a comment to the task.
+      name: Whether to open a ticket for this incident?
+      description: Checks whether to open a new ticket or add a comment to an existing ticket.
       type: condition
       iscommand: false
       brand: ""
@@ -284,8 +284,8 @@ tasks:
     task:
       id: de59d3d7-4a62-445e-8a1c-8a2bb052435b
       version: -1
-      name: Is the comment defined on the input?
-      description: Checks if the comment is defined on the input.
+      name: Was a comment provided in the input
+      description: Checks if the comment was provided in the input.
       type: condition
       iscommand: false
       brand: ""
@@ -395,7 +395,7 @@ tasks:
       id: d3c1b2c3-5732-457b-8c1e-fe3c8d43c328
       version: -1
       name: Whether to append a new comment to the ticket for each alert?
-      description: Checks whether to append a new comment to the ticket for each alert.
+      description: Checks if a new comment should be appended to the ticket for each alert.
       type: condition
       iscommand: false
       brand: ""
