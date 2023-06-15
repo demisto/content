@@ -93,8 +93,11 @@ resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurity
                                  resp_type='response')
 
     @logger
-    def create_rule(self, security_group: str, rule_name: str, properties: dict):
-        return self.http_request('PUT', f'/{security_group}/securityRules/{rule_name}', data={"properties": properties})
+    def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
+        return self.http_request('PUT',
+                                 full_url=f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}\
+/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?',
+                                 data={"properties": properties})
 
     @logger
     def get_rule(self, security_group: str, rule_name: str):
@@ -198,7 +201,7 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
 @ logger
 def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str:
     """
-
+    Deletes a rule from a security group
     Args:
         client: The MSClient
         params: configuration parameters
@@ -225,11 +228,13 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
             elif rule_deleted.status_code == 202:
                 success_message += (f"Rule '{security_rule_name}' with resource_group_name\
  '{resource_group_name}' was successfully deleted.\n\n")
-
         except Exception as e:
+            # If at least one of the resource groups is correct, we don't want to raise an error
+            # We want to continue to the next resource group and return the warning message for the wrong ones
             warning_message += (f"Rule '{security_rule_name}' with resource_group_name\
  '{resource_group_name}' was not deleted.\
-Got back the following result:\n{e}\n\n")
+The full error is:\n{e}\n\n")
+            # If all resource groups are wrong, we want to raise an error
             if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
                 raise
     return_warning(warning_message) if warning_message else None
@@ -237,10 +242,27 @@ Got back the following result:\n{e}\n\n")
 
 
 @ logger
-def create_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str, direction: str,
-                        action: str = 'Allow', protocol: str = 'Any', source: str = 'Any', source_ports: str = '*',
-                        destination: str = 'Any', destination_ports: str = '*', priority: str = '4096',
-                        description: str = None):
+def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict):
+    """
+    Creates a rule in a security group
+    Args:
+        client: The MSClient
+        params: configuration parameters
+        args: args dictionary.
+    """
+    security_group_name = args.get('security_group_name', '')
+    security_rule_name = args.get('security_rule_name', '')
+    direction = args.get('direction', '')
+    action = args.get('action', 'Allow')
+    protocol = args.get('protocol', 'Any')
+    source = args.get('source', 'Any')
+    source_ports = args.get('source_ports', '*')
+    destination = args.get('destination', 'Any')
+    destination_ports = args.get('destination_ports', '*')
+    priority = args.get('priority', '4096')
+    description = args.get('description', '')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
 
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
@@ -275,8 +297,23 @@ def create_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
     if description:
         properties['description'] = description
-    rule = client.create_rule(security_group_name, security_rule_name, properties)
-
+    Warning_message = ''
+    all_resource_groups_are_wrong = True
+    for resource_group_name in resource_group_list:
+        try:
+            rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
+                                      properties=properties, subscription_id=subscription_id,
+                                      resource_group_name=resource_group_name)
+            all_resource_groups_are_wrong = False
+        except Exception as e:
+            # If at least one of the resource groups is correct, we don't want to raise an error
+            # We want to continue to the next resource group and return the warning message for the wrong ones
+            Warning_message += (f"Rule '{security_rule_name}' with resource_group_name\
+ '{resource_group_name}' was not created. The full error is:\n{e}\n\n")
+            # If all resource groups are wrong, we want to raise an error
+            if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
+                raise
+    return_warning(Warning_message) if Warning_message else None
     return format_rule(rule, security_rule_name)
 
 

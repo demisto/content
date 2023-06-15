@@ -260,6 +260,18 @@ script:
     name: azure-nsg-security-rule-delete
   - arguments:
     - default: false
+      name: resource_group_name
+      description: "A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
+    - default: false
+      description: The name of the security group.
+      isArray: false
+      name: security_group_name
+      required: true
+      secret: false
+    - default: false
       description: The name of the security group.
       isArray: false
       name: security_group_name
