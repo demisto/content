@@ -1,0 +1,22 @@
+ {
+    "name": "test",
+    "description": "test",
+    "support": "xsoar",
+    "currentVersion": "1.1.16",
+    "author": "Guy Afik",
+    "url": "",
+    "email": "",
+    "created": "2020-08-26T09:03:28Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [
+        "Threat Intelligence Management"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

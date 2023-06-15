@@ -1,7 +1,7 @@
 {
     "name": "Reco",
     "description": "Reco - detects and protects against sensitive data leakage",
-    "support": "partner",
+    "support": "community",
     "currentVersion": "1.1.2",
     "author": "Reco",
     "url": "https://reco.ai",
