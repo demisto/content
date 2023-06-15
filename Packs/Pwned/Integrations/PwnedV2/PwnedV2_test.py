@@ -115,7 +115,7 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     mocker.patch('PwnedV2.http_request', return_value=response)
     md_list, ec_list, api_email_res_list = command(args)
     for hr, outputs, raw in zip(md_list, ec_list, api_email_res_list):
-            assert expected_result == outputs  # entry context is found in the 2nd place in the result of the command
+        assert expected_result == outputs  # entry context is found in the 2nd place in the result of the command
 
 
 def test_rate_limited(mocker, requests_mock):
