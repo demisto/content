@@ -1,0 +1,155 @@
+category: Network Security
+commonfields:
+  id: Forcepoint_Security_Management_Center
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- defaultvalue: '8082'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'Will be added later'
+display: 'Forcepoint Security Management Center'
+name: Forcepoint Security Management Center
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of the IP List to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The list addresses to create.
+      isArray: false
+      name: addresses
+      required: false
+    - default: false
+      description: The comment to add to the IP List.
+      isArray: false
+      name: comment
+      required: false
+    description: 'Creates an IP List.'
+    execution: false
+    name: forcepoint-smc-address-create
+    outputs:
+    - contextPath: ForcepointSMC.Address.Name
+      description: 'The name of the IPList'
+      type: String
+    - contextPath: ForcepointSMC.Address.Addresses
+      description: 'The list of addresses in the IPList'
+      type: Unknown
+    - contextPath: ForcepointSMC.Address.Comment
+      description: 'The comment of the IPList'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the address.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The addresses to update.
+      isArray: true
+      name: addresses
+      required: false
+    - default: false
+      description: The comment to add to the address.
+      isArray: false
+      name: comment
+      required: false
+    - default: false
+      description: If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False.
+      isArray: false
+      name: is_overwrite
+      required: false
+      defaultvalue: false
+    description: 'Updates an IP List.'
+    execution: false
+    name: forcepoint-smc-address-update
+    outputs:
+    - contextPath: ForcepointSMC.Address.Name
+      description: 'The name of the IPList'
+      type: String
+    - contextPath: ForcepointSMC.Address.Addresses
+      description: 'The list of addresses in the IPList'
+      type: Unknown
+    - contextPath: ForcepointSMC.Address.Comment
+      description: 'The comment of the IPList'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of a specific IP List to fetch. If selected, returns only the specific 
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The limit on the returned IP Lists. Default value is 50.
+      isArray: false
+      name: limit
+      defaultvalue: 50
+      required: false
+    - default: false
+      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+      defaultvalue: false
+    description: 'Lists the IP Lists in the system.'
+    execution: false
+    name: forcepoint-smc-address-list
+    outputs:
+    - contextPath: ForcepointSMC.Address.Name
+      description: 'The name of the IPList'
+      type: String
+    - contextPath: ForcepointSMC.Address.Addresses
+      description: 'The list of addresses in the IPList'
+      type: Unknown
+    - contextPath: ForcepointSMC.Address.Comment
+      description: 'The comment of the IPList'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the IP List to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: 'Deletes an IP List.'
+    execution: false
+    name: forcepoint-smc-address-delete
+    outputs:
+    - contextPath: ForcepointSMC.Address.Name
+      description: 'The name of the IPList'
+      type: String
+    - contextPath: ForcepointSMC.Address.Deleted
+      description: 'Was the IP List deleted or not'
+      type: Boolean
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: devdemisto/fp-smc:1.0.22.63061
+fromversion: 6.5.0
