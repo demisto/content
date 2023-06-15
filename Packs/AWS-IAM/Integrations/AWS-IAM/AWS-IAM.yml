@@ -2387,7 +2387,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of Key:Value tag objects.
+      description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
       isArray: true
       name: tags
       required: true
@@ -2404,7 +2404,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of Key:Value tag objects.
+      description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
       isArray: true
       name: tags
       required: true

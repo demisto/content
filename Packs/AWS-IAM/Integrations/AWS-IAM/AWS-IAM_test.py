@@ -237,7 +237,7 @@ def test_get_limit(args, limit, is_manual, page_size):
 
 @pytest.mark.parametrize('args, mocked_res, expected_hr', [
     ({'policyDocument': "policy_doc", "policyName": "policy_name", "roleName": "role_name"},
-     {'ResponseMetadata': {'HTTPStatusCode': 200}}, '### Policy policy_name was added to role role_name')])
+     {'ResponseMetadata': {'HTTPStatusCode': 200}}, 'Policy policy_name was added to role role_name')])
 def test_put_role_policy_command(args, mocked_res, expected_hr, mocker):
     """
         Given:
@@ -258,7 +258,7 @@ def test_put_role_policy_command(args, mocked_res, expected_hr, mocker):
 
 @pytest.mark.parametrize('args, mocked_res, expected_hr', [
     ({'policyDocument': "policy_doc", "policyName": "policy_name", "userName": "user_name"},
-     {'ResponseMetadata': {'HTTPStatusCode': 200}}, '### Policy policy_name was added to user user_name')])
+     {'ResponseMetadata': {'HTTPStatusCode': 200}}, 'Policy policy_name was added to user user_name')])
 def test_put_user_policy_command(args, mocked_res, expected_hr, mocker):
     """
         Given:
@@ -279,7 +279,7 @@ def test_put_user_policy_command(args, mocked_res, expected_hr, mocker):
 
 @pytest.mark.parametrize('args, mocked_res, expected_hr', [
     ({'policyDocument': "policy_doc", "policyName": "policy_name", "groupName": "group_name"},
-     {'ResponseMetadata': {'HTTPStatusCode': 200}}, '### Policy policy_name was added to group group_name')])
+     {'ResponseMetadata': {'HTTPStatusCode': 200}}, 'Policy policy_name was added to group group_name')])
 def test_put_group_policy_command(args, mocked_res, expected_hr, mocker):
     """
         Given:

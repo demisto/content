@@ -211,7 +211,10 @@ def add_user_to_group(args, client):  # pragma: no cover
 
 
 def create_access_key(args, client):  # pragma: no cover
-    response = client.create_access_key(UserName=args.get('userName'))
+    kwargs = {}
+    if user_name := args.get('userName'):
+        kwargs["UserName"] = user_name
+    response = client.create_access_key(**kwargs)
     AccessKey = response['AccessKey']
     data = ({
         'UserName': AccessKey['UserName'],
@@ -226,11 +229,14 @@ def create_access_key(args, client):  # pragma: no cover
 
 
 def update_access_key(args, client):  # pragma: no cover
-    response = client.update_access_key(
-        UserName=args.get('userName'),
-        AccessKeyId=args.get('accessKeyId'),
-        Status=args.get('status')
-    )
+    kwargs = {
+        "AccessKeyId": args.get('accessKeyId'),
+        "Status": args.get('status')
+    }
+    if user_name := args.get('userName'):
+        kwargs["UserName"] = user_name
+
+    response = client.update_access_key(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
             "Access Key with ID {0} was set to status: {1}".format(args.get('accessKeyId'),
@@ -365,9 +371,10 @@ def remove_user_from_group(args, client):  # pragma: no cover
 
 def delete_access_key(args, client):  # pragma: no cover
     kwargs = {
-        'UserName': args.get('userName'),
         'AccessKeyId': args.get('AccessKeyId')
     }
+    if user_name := args.get('userName'):
+        kwargs['UserName'] = user_name
 
     response = client.delete_access_key(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -930,7 +937,7 @@ def put_role_policy_command(args, client):
 
     try:
         response = client.put_role_policy(**kwargs)
-        human_readable = tableToMarkdown(f"Policy {policy_name} was added to role {role_name}", {})
+        human_readable = f"Policy {policy_name} was added to role {role_name}"
         return CommandResults(
             raw_response=response,
             readable_output=human_readable
@@ -961,7 +968,7 @@ def put_user_policy_command(args, client):
 
     try:
         response = client.put_user_policy(**kwargs)
-        human_readable = tableToMarkdown(f"Policy {policy_name} was added to user {user_name}", {})
+        human_readable = f"Policy {policy_name} was added to user {user_name}"
         return CommandResults(
             raw_response=response,
             readable_output=human_readable
@@ -992,7 +999,7 @@ def put_group_policy_command(args, client):
 
     try:
         response = client.put_group_policy(**kwargs)
-        human_readable = tableToMarkdown(f"Policy {policy_name} was added to group {group_name}", {})
+        human_readable = f"Policy {policy_name} was added to group {group_name}"
         return CommandResults(
             raw_response=response,
             readable_output=human_readable
