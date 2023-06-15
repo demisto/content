@@ -9,7 +9,7 @@ This pack includes Cortex XSIAM content.
 
 [Add an NSS Server manual Website](https://help.zscaler.com/zia/adding-nss-servers)
 
-1. Go to Administration > Nanolog Streaming Service.
+1. Go to **Administration** > **Nanolog Streaming Service**.
 2. From the **NSS Servers** tab, click **Add NSS Server**.
 3. In the **Add NSS Server** window:
    * Name: Enter a name for the NSS server.
