@@ -133,6 +133,7 @@ class Client(BaseClient):
     def get_events(
         self,
         url_suffix: str,
+        created_time_field: str,
         method: str = 'GET',
         params: Dict | None = None,
         headers: Dict | None = None,
@@ -144,6 +145,7 @@ class Client(BaseClient):
 
         Args:
             url_suffix (str): the URL suffix for the api endpoint.
+            created_time_field (str): the created time field of the log.
             method (str): the method of the api endpoint.
             params (dict): query parameters for the api request.
             headers (dict): any custom headers for the api request.
@@ -151,7 +153,7 @@ class Client(BaseClient):
             should_finish_pagination (bool): whether to finish pagination until there isn't anything else to fetch
 
         Returns:
-            List[Dict]: a list of the requested logs.
+            List[Dict]: a list of the requested logs sorted in acesnding order
         """
         events: List[Dict] = []
 
@@ -159,14 +161,20 @@ class Client(BaseClient):
         current_items = response.get('items') or []
         demisto.info(f'Received {current_items=} with {url_suffix=} and {params=}')
         events.extend(current_items)
-
         while (next_link := response.get('nextLink')) and (len(events) < limit or should_finish_pagination):
             response = self.http_request(method=method, headers=headers, next_link=next_link)
             current_items = response.get('items') or []
             demisto.info(f'Received {current_items=} with {next_link=}')
             events.extend(current_items)
 
-        return events
+        if url_suffix == UrlSuffixes.SEARCH_DETECTIONS.value:
+            for event in events:
+                if event_time := event.get(created_time_field):
+                    event[created_time_field] = timestamp_to_datestring(
+                        timestamp=event_time, date_format=DATE_FORMAT, is_utc=True
+                    )
+
+        return sorted(events, key=lambda _event: _event[created_time_field])
 
     def get_events_fetched_by_descending_order(
         self,
@@ -192,24 +200,25 @@ class Client(BaseClient):
         Returns:
             List[Dict]: a list of the requested logs in ascending order
         """
+        event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
+
         events: List[Dict] = self.get_events(
-            url_suffix=url_suffix, method=method, params=params, headers=headers, limit=limit, should_finish_pagination=True
+            url_suffix=url_suffix,
+            created_time_field=created_time_field,
+            method=method,
+            params=params,
+            headers=headers,
+            limit=limit,
+            should_finish_pagination=True
         )
 
         start_time_datetime = dateparser.parse(params.get(start_time_field_name))
-        event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
-
-        # because events are returned in descending order, we need to reverse them to get the ascending order
-        events.reverse()
         start_time_event_index = 0
 
         # take the first event that is equal or bigger than start time of the query
         for start_time_event_index, event in enumerate(events):
-            if event_time := event.get(created_time_field):
-                if created_time_field == CreatedTimeFields.SEARCH_DETECTIONS.value:
-                    event_time = timestamp_to_datestring(timestamp=event_time, date_format=DATE_FORMAT, is_utc=True)
-                if dateparser.parse(event_time) >= start_time_datetime:
-                    break
+            if (event_time := event.get(created_time_field)) and dateparser.parse(event_time) >= start_time_datetime:
+                break
 
         events = events[start_time_event_index: limit + start_time_event_index]
         add_custom_fields_to_events(events=events, event_type=event_type, created_time_field=created_time_field)
@@ -238,11 +247,16 @@ class Client(BaseClient):
         Returns:
             List[Dict]: a list of the requested logs.
         """
-        events: List[Dict] = self.get_events(
-            url_suffix=url_suffix, method=method, params=params, headers=headers, limit=limit
-        )
-
         event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
+
+        events: List[Dict] = self.get_events(
+            url_suffix=url_suffix,
+            created_time_field=created_time_field,
+            method=method,
+            params=params,
+            headers=headers,
+            limit=limit
+        )
 
         events = events[:limit]
         # add event time and event type for modeling rules
