@@ -28,7 +28,7 @@ This pack includes Cortex XSIAM content.
 
 **Add NSS Feeds:**
 
-click the following link and do both of the manuals:
+Click and follow the instructions in each of the following links.:
 
 * [Web Logs](https://help.zscaler.com/zia/adding-nss-feeds-web-logs)
 * [SaaS Security Logs](https://help.zscaler.com/zia/adding-nss-feeds-saas-security-logs)
