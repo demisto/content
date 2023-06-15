@@ -381,7 +381,7 @@ script:
       name: alert_internal_id
       required: true
     description: Starts a new Remediation Confirmation Scan or gets an existing scan ID
-    name: asm-start-remediation_confirmation_scan
+    name: asm-start-remediation-confirmation-scan
     outputs:
     - contextPath: ASM.RemediationScan.scanId
       description: The ID returned for the created or existing scan.
@@ -393,6 +393,14 @@ script:
     - description: The ID of an existing remediation confirmation scan.
       name: scan_id
       required: true
+    - description: The interval is seconds to poll for scan results of an existing remediation confirmation scan.
+      name: interval_in_seconds
+      required: false
+      defaultValue: "600"
+    - description: The timeout is seconds for polling for scan results of an existing remediation confirmation scan.
+      name: timeout_in_seconds
+      required: false
+      defaultValue: "11000"
     - name: hide_polling_output
     - auto: PREDEFINED
       description: Whether to poll until there is at least one result.

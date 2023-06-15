@@ -679,7 +679,11 @@ def start_remediation_confirmation_scan_command(
     return command_results
 
 
-@polling_function(name=demisto.command(), interval=120, timeout=100)
+@polling_function(name=demisto.command(),
+                  interval=arg_to_number(demisto.args().get('interval_in_seconds', 600)),
+                  timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 11000)),
+                  requires_polling_arg=False  # This means it will always be default to poll, poll=true
+                  )
 def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], client: Client):
     """
     asm-get-remediation-confirmation-scan-status command: Polls for status of an existing remediation confirmation scan.
@@ -697,7 +701,18 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
     json_response = response.json()
     scan_status = json_response.get('reply').get('status')
 
-    if scan_status == "SUCCESS":
+    if scan_status == "IN_PROGRESS":
+        return PollResult(
+            response=None,
+            partial_result=CommandResults(
+                outputs_prefix="ASM.RemediationScan",
+                outputs_key_field="scan_id",
+                readable_output="Waiting for remediation confirmation scan to finish..."
+            ),
+            continue_to_poll=True,
+            args_for_next_run={"scan_id": scan_id, **args}
+        )
+    elif scan_status == "SUCCESS":
         formatted_outputs = json_response.get("reply", {})
         markdown = tableToMarkdown(
             "Status of Remediation Confirmation Scan",
@@ -712,27 +727,30 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
             raw_response=json_response,
             readable_output=markdown,
         )
-        return PollResult(command_results)
-    elif scan_status == "IN_PROGRESS":
         return PollResult(
-            response=None,
-            partial_result=CommandResults(
-                outputs_prefix="ASM.RemediationScan",
-                outputs_key_field="scan_id",
-                readable_output="Waiting for remediation confirmation scan to finish..."
-            ),
-            continue_to_poll=True,
-            args_for_next_run={"scan_id": scan_id, "status": scan_status, **args}
+            response=command_results,
+            continue_to_poll=False)
+    elif scan_status == "FAILED_TIMEOUT" or scan_status == "FAILED_ERROR":
+        formatted_outputs = json_response.get("reply", {})
+        command_results = CommandResults(
+            outputs_prefix="ASM.RemediationScan",
+            outputs_key_field="",
+            outputs=formatted_outputs,
+            raw_response=json_response,
+            readable_output="The remediation confirmation scan timed out or failed."
         )
+        return PollResult(response=command_results, continue_to_poll=False)
     else:
-        return PollResult(response="The remediation confirmation scan timed out or failed.",
-                          partial_result=CommandResults(
-                              outputs_prefix="ASM.RemediationScan",
-                              outputs_key_field="scan_id",
-                              readable_output=""
-                          ),
-                          continue_to_poll=True)
-
+        formatted_outputs = json_response.get("reply", {})
+        command_results = CommandResults(
+            outputs_prefix="ASM.RemediationScan",
+            outputs_key_field="",
+            outputs=formatted_outputs,
+            raw_response=json_response,
+            readable_output="The remediation confirmation scan timed out or failed."
+        )
+        return PollResult(response=command_results, continue_to_poll=False)
+        
     # elif scan_status == "FAILED_TIMEOUT":
     #     return PollResult(response="The remediation confirmation scan timed out after 3 hours.",
     #                       partial_result=CommandResults(
@@ -813,7 +831,7 @@ def main() -> None:
             "asm-list-asset-internet-exposure": list_asset_internet_exposure_command,
             "asm-get-asset-internet-exposure": get_asset_internet_exposure_command,
             "asm-list-remediation-rule": list_remediation_rule_command,
-            "asm-start-remediation_confirmation_scan": start_remediation_confirmation_scan_command,
+            "asm-start-remediation-confirmation-scan": start_remediation_confirmation_scan_command,
             "asm-get-remediation-confirmation-scan-status": get_remediation_confirmation_scan_status_command,
         }
 
