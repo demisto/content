@@ -1067,7 +1067,7 @@ tasks:
       description: |-
         ---
 
-        ## Cloud Token Theft  - Set Verdict Playbook
+        ## Cloud Token Theft - Set Verdict Playbook
 
         The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
 
@@ -1089,7 +1089,7 @@ tasks:
            - Impossible Traveler by cloud identity.
 
         ---
-      playbookName: Cloud Token Theft  - Set Verdict
+      playbookName: Cloud Token Theft - Set Verdict
       type: playbook
       iscommand: false
       brand: ""
