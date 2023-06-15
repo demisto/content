@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6d7b6e63-a98f-40b0-806f-2daeac03ea07
+    taskid: a98f69ca-7462-434d-850e-1ad13dc877b7
     type: start
     task:
-      id: 6d7b6e63-a98f-40b0-806f-2daeac03ea07
+      id: a98f69ca-7462-434d-850e-1ad13dc877b7
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a4d1f78a-45b0-4151-887d-11ee8cace454
+    taskid: dfc9a15d-a3fc-4745-818d-01f3ef74506d
     type: title
     task:
-      id: a4d1f78a-45b0-4151-887d-11ee8cace454
+      id: dfc9a15d-a3fc-4745-818d-01f3ef74506d
       version: -1
       name: Create a scan and delete it
       type: title
@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 860
+          "y": 1020
         }
       }
     note: false
@@ -66,10 +66,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: de1e8381-b99b-4e36-86d1-3572e54b9130
+    taskid: dfa01d5c-b019-4c7b-8267-b09449587cda
     type: regular
     task:
-      id: de1e8381-b99b-4e36-86d1-3572e54b9130
+      id: dfa01d5c-b019-4c7b-8267-b09449587cda
       version: -1
       name: Get manageable policies
       description: Get a list of Tenable.sc scan policies
@@ -89,7 +89,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1005
+          "y": 1165
         }
       }
     note: false
@@ -101,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 80d3b7f9-1dae-4490-8391-208698aef545
+    taskid: 7d6f38df-5d4a-4c52-853d-1a7e43add0ca
     type: regular
     task:
-      id: 80d3b7f9-1dae-4490-8391-208698aef545
+      id: 7d6f38df-5d4a-4c52-853d-1a7e43add0ca
       version: -1
       name: Get repositories
       description: Get a list of Tenable.sc scan repositories
@@ -121,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1180
+          "y": 1340
         }
       }
     note: false
@@ -133,10 +133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b6256c8f-4c4f-406c-885a-3939e5d193d2
+    taskid: 2ba8b27f-54ba-4f14-8104-04680c15948b
     type: regular
     task:
-      id: b6256c8f-4c4f-406c-885a-3939e5d193d2
+      id: 2ba8b27f-54ba-4f14-8104-04680c15948b
       version: -1
       name: Get zones
       description: Get a list of Tenable.sc scan zones
@@ -153,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1355
+          "y": 1515
         }
       }
     note: false
@@ -165,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a4a40261-4d0d-4f33-845d-de51c22891f5
+    taskid: 3b025ce1-b99f-4d68-8f86-11442dd63ad6
     type: regular
     task:
-      id: a4a40261-4d0d-4f33-845d-de51c22891f5
+      id: 3b025ce1-b99f-4d68-8f86-11442dd63ad6
       version: -1
       name: Get credentials
       description: Get a list of Tenable.sc credentials
@@ -185,7 +185,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1530
+          "y": 1690
         }
       }
     note: false
@@ -197,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3099831c-7aac-4f81-8872-96e0bf5a9f52
+    taskid: d44879c6-abd2-429b-8022-f93fd24d8dc5
     type: regular
     task:
-      id: 3099831c-7aac-4f81-8872-96e0bf5a9f52
+      id: d44879c6-abd2-429b-8022-f93fd24d8dc5
       version: -1
       name: Get current time for name
       description: |
@@ -218,7 +218,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1705
+          "y": 1865
         }
       }
     note: false
@@ -230,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4d6291a6-22e0-4a26-84dc-495180342be9
+    taskid: e5b96b75-0649-4865-8a98-067b2b6b5038
     type: regular
     task:
-      id: 4d6291a6-22e0-4a26-84dc-495180342be9
+      id: e5b96b75-0649-4865-8a98-067b2b6b5038
       version: -1
       name: Create scan
       description: Create a scan on Tenable.sc
@@ -329,7 +329,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2055
+          "y": 2215
         }
       }
     note: false
@@ -341,10 +341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d5779f57-ed71-4f9a-862f-ec2e5b496e93
+    taskid: 60829fad-d29f-490a-8962-f84625cb677d
     type: regular
     task:
-      id: d5779f57-ed71-4f9a-862f-ec2e5b496e93
+      id: 60829fad-d29f-490a-8962-f84625cb677d
       version: -1
       name: Get manageable report definitions
       description: Get a list of Tenable.sc report definitions
@@ -364,7 +364,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1880
+          "y": 2040
         }
       }
     note: false
@@ -376,10 +376,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: e165b8b5-48a0-4618-83f6-4bc1c50ae577
+    taskid: 93c16fdc-ab94-4cb4-8a36-74126641ba43
     type: regular
     task:
-      id: e165b8b5-48a0-4618-83f6-4bc1c50ae577
+      id: 93c16fdc-ab94-4cb4-8a36-74126641ba43
       version: -1
       name: Delete the scan
       description: Delete a scan in Tenable.sc
@@ -398,8 +398,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 3535
+          "x": 50,
+          "y": 3455
         }
       }
     note: false
@@ -411,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 62e3f64a-e853-4c5e-88f2-55553c1ce0b1
+    taskid: 5e7e9aad-4697-4060-8d6f-9c0863cad75e
     type: title
     task:
-      id: 62e3f64a-e853-4c5e-88f2-55553c1ce0b1
+      id: 5e7e9aad-4697-4060-8d6f-9c0863cad75e
       version: -1
       name: Launch scan
       type: title
@@ -429,7 +429,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3300
+          "y": 3120
         }
       }
     note: false
@@ -441,10 +441,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 02c5425c-9fbf-4268-89b8-92e7e10dc1a9
+    taskid: aaf672db-1307-4f43-8464-4771432e5ce1
     type: regular
     task:
-      id: 02c5425c-9fbf-4268-89b8-92e7e10dc1a9
+      id: aaf672db-1307-4f43-8464-4771432e5ce1
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -474,47 +474,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: c76704a7-622a-4f6f-8dfa-1d17b266073d
-    type: regular
-    task:
-      id: c76704a7-622a-4f6f-8dfa-1d17b266073d
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3125
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 9b07246f-6ad8-4130-880f-5dca072829da
+    taskid: 68f48391-8281-461f-8ec1-5eee813cc990
     type: regular
     task:
-      id: 9b07246f-6ad8-4130-880f-5dca072829da
+      id: 68f48391-8281-461f-8ec1-5eee813cc990
       version: -1
       name: List scans
       description: Get a list of Tenable.sc existing scans
@@ -546,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d79240d9-fa06-428f-8157-3ca509a1a688
+    taskid: 192c37f7-9e16-4384-875e-155e007d4264
     type: regular
     task:
-      id: d79240d9-fa06-428f-8157-3ca509a1a688
+      id: 192c37f7-9e16-4384-875e-155e007d4264
       version: -1
       name: Launch my_test_scan
       description: Launch an existing scan from Tenable.sc
@@ -571,7 +536,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3440
+          "y": 3260
         }
       }
     note: false
@@ -583,10 +548,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c7ce702c-721f-4db4-8f45-b37f841e050d
+    taskid: c5eb2b04-49a1-4809-8087-b71b3eff3f9a
     type: regular
     task:
-      id: c7ce702c-721f-4db4-8f45-b37f841e050d
+      id: c5eb2b04-49a1-4809-8087-b71b3eff3f9a
       version: -1
       name: Get scan status
       description: Get the status of a specific scan in Tenable.sc
@@ -618,10 +583,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 9102fd37-5cd1-4b23-8aaa-8ff5804afc64
+    taskid: 43d23c47-21d0-42fc-8481-8d3962357e2e
     type: regular
     task:
-      id: 9102fd37-5cd1-4b23-8aaa-8ff5804afc64
+      id: 43d23c47-21d0-42fc-8481-8d3962357e2e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -653,10 +618,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 1e79e7b6-b6d1-433a-826d-d2b091f01b51
+    taskid: 1fed7543-dffe-44ae-83c7-147a3d6d21c8
     type: title
     task:
-      id: 1e79e7b6-b6d1-433a-826d-d2b091f01b51
+      id: 1fed7543-dffe-44ae-83c7-147a3d6d21c8
       version: -1
       name: Get scan results
       type: title
@@ -683,10 +648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e4e0dc94-1c31-4b05-8828-6347323f69d9
+    taskid: 6ababb76-1ce4-45f9-87f7-322be0575cb1
     type: regular
     task:
-      id: e4e0dc94-1c31-4b05-8828-6347323f69d9
+      id: 6ababb76-1ce4-45f9-87f7-322be0575cb1
       version: -1
       name: Get report from a complete scan
       description: Get a report with a Tenable.sc scan results
@@ -741,10 +706,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 01d006b5-3ec8-4f65-8a8f-909f32ae63c2
+    taskid: 517b65cd-51da-48d4-8177-0c5da6653c4e
     type: regular
     task:
-      id: 01d006b5-3ec8-4f65-8a8f-909f32ae63c2
+      id: 517b65cd-51da-48d4-8177-0c5da6653c4e
       version: -1
       name: Get scan vulnerability
       description: 'Get details about a given vulnerability from a given Tenable.sc
@@ -804,10 +769,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: ba4dd94f-e7a3-4e67-8718-ee557e2ad738
+    taskid: 918df06f-0f1a-4e6c-8010-5ed665090a20
     type: condition
     task:
-      id: ba4dd94f-e7a3-4e67-8718-ee557e2ad738
+      id: 918df06f-0f1a-4e6c-8010-5ed665090a20
       version: -1
       name: Verify get vulnerability
       description: |-
@@ -850,10 +815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 1cf17bb5-718d-4009-8c2b-362d3f84d06c
+    taskid: 4c4b0ae6-f8f3-4f74-824d-b81c6744c66e
     type: regular
     task:
-      id: 1cf17bb5-718d-4009-8c2b-362d3f84d06c
+      id: 4c4b0ae6-f8f3-4f74-824d-b81c6744c66e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -885,10 +850,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: dac5aae1-1613-4584-8948-8b6f2e08db2f
+    taskid: 0f011df3-a0a8-4305-87ed-91206c028493
     type: title
     task:
-      id: dac5aae1-1613-4584-8948-8b6f2e08db2f
+      id: 0f011df3-a0a8-4305-87ed-91206c028493
       version: -1
       name: Create asset
       type: title
@@ -915,10 +880,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: aa344557-9b9b-4d8f-835f-fbaa4dbdad4f
+    taskid: 97b30104-113d-48ca-84c3-efce181f7801
     type: regular
     task:
-      id: aa344557-9b9b-4d8f-835f-fbaa4dbdad4f
+      id: 97b30104-113d-48ca-84c3-efce181f7801
       version: -1
       name: Get current time for name
       description: |
@@ -948,10 +913,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 94efed27-a06e-424a-8392-ec87036397d5
+    taskid: 402527bf-7c4a-4d09-8aab-0b90e845aea8
     type: regular
     task:
-      id: 94efed27-a06e-424a-8392-ec87036397d5
+      id: 402527bf-7c4a-4d09-8aab-0b90e845aea8
       version: -1
       name: Create asset
       description: Create an Asset in Tenable.sc with provided IP addresses
@@ -989,10 +954,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 3c64770c-124e-4406-8bcf-b3f2e6a00809
+    taskid: 989281a1-4552-449f-8b9d-db2b19fb3cdc
     type: regular
     task:
-      id: 3c64770c-124e-4406-8bcf-b3f2e6a00809
+      id: 989281a1-4552-449f-8b9d-db2b19fb3cdc
       version: -1
       name: Get user
       description: List users in Tenable.sc
@@ -1024,10 +989,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 67feff1c-10d7-45b2-8ae6-5319ec4cc3aa
+    taskid: 122466a4-99e3-44e5-8b17-a289c1608795
     type: regular
     task:
-      id: 67feff1c-10d7-45b2-8ae6-5319ec4cc3aa
+      id: 122466a4-99e3-44e5-8b17-a289c1608795
       version: -1
       name: Delete the asset
       description: Delete the Asset with the given ID from Tenable.sc
@@ -1037,7 +1002,7 @@ tasks:
       brand: Tenable.sc
     nexttasks:
       '#none#':
-      - "12"
+      - "10"
     scriptarguments:
       asset_id:
         simple: ${TenableSC.Asset.ID}
@@ -1047,7 +1012,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2950
+          "y": 2930
         }
       }
     note: false
@@ -1059,10 +1024,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 8db98577-36ed-4147-8858-517ec3d312fd
+    taskid: a7b0f749-fd3c-4cbd-86ff-3065212a0a6e
     type: title
     task:
-      id: 8db98577-36ed-4147-8858-517ec3d312fd
+      id: a7b0f749-fd3c-4cbd-86ff-3065212a0a6e
       version: -1
       name: Alerts
       type: title
@@ -1089,10 +1054,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: f9ff94ff-2dbf-4a81-89dd-aa397f57a617
+    taskid: dff7f655-a3be-475a-8f92-7822c93fbd10
     type: regular
     task:
-      id: f9ff94ff-2dbf-4a81-89dd-aa397f57a617
+      id: dff7f655-a3be-475a-8f92-7822c93fbd10
       version: -1
       name: Get manageable alerts
       description: List alerts from Tenable.sc
@@ -1124,10 +1089,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 6b8f5c5f-9380-4ec3-8c21-bb510a9f6462
+    taskid: 29191811-7938-422c-8bd3-10cde80b2c7a
     type: regular
     task:
-      id: 6b8f5c5f-9380-4ec3-8c21-bb510a9f6462
+      id: 29191811-7938-422c-8bd3-10cde80b2c7a
       version: -1
       name: Get alert
       description: Get information about a given alert in tenabel.sc
@@ -1159,10 +1124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 76fb6551-0464-4881-8581-b7f9b293a53e
+    taskid: 52b807ef-c341-47d3-84e3-f9566e3dcab2
     type: regular
     task:
-      id: 76fb6551-0464-4881-8581-b7f9b293a53e
+      id: 52b807ef-c341-47d3-84e3-f9566e3dcab2
       version: -1
       name: FetchFromInstance
       scriptName: FetchFromInstance
@@ -1212,10 +1177,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: aa036c4f-5a5e-422b-8625-6db308bc59ee
+    taskid: c3d71cea-4de8-4071-87ec-6c788911a079
     type: title
     task:
-      id: aa036c4f-5a5e-422b-8625-6db308bc59ee
+      id: c3d71cea-4de8-4071-87ec-6c788911a079
       version: -1
       name: List items
       type: title
@@ -1242,10 +1207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: f4f64e1d-5978-4e2d-8058-0e9cd054e361
+    taskid: fa6b3184-deed-4055-8882-80a37fa22c6d
     type: regular
     task:
-      id: f4f64e1d-5978-4e2d-8058-0e9cd054e361
+      id: fa6b3184-deed-4055-8882-80a37fa22c6d
       version: -1
       name: List assets
       description: Get a list of Tenable.sc Assets
@@ -1277,10 +1242,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: ebfd3c31-d9f0-4174-89dc-ce705abd154a
+    taskid: 3acae4b6-ee4c-4e64-853a-2613ec8798a7
     type: regular
     task:
-      id: ebfd3c31-d9f0-4174-89dc-ce705abd154a
+      id: 3acae4b6-ee4c-4e64-853a-2613ec8798a7
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1312,10 +1277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 87e78dcc-d7b5-4ab3-8629-2370a33120ac
+    taskid: 651b91c4-6c61-4c9d-8f6a-08ef4e49b108
     type: regular
     task:
-      id: 87e78dcc-d7b5-4ab3-8629-2370a33120ac
+      id: 651b91c4-6c61-4c9d-8f6a-08ef4e49b108
       version: -1
       name: Get device
       description: Gets the device information from the current user in Tenable.sc
@@ -1347,10 +1312,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 069fd62f-a89a-492b-8fdf-340c342be11c
+    taskid: 4c5479e1-b064-4109-8839-d4e9265689d6
     type: regular
     task:
-      id: 069fd62f-a89a-492b-8fdf-340c342be11c
+      id: 4c5479e1-b064-4109-8839-d4e9265689d6
       version: -1
       name: Get licensing
       description: Retrieve licensing information from Tenable.sc
@@ -1379,10 +1344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f17c2296-f04e-4507-8d91-bf420d6f535c
+    taskid: da4ea290-5156-4ca8-8d7f-a05052bbde21
     type: regular
     task:
-      id: f17c2296-f04e-4507-8d91-bf420d6f535c
+      id: da4ea290-5156-4ca8-8d7f-a05052bbde21
       version: -1
       name: Verify lists
       description: |-
@@ -1421,10 +1386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 978859ae-3512-4a5d-827d-1902181a26dc
+    taskid: 655f4e1b-8662-420f-894d-9a61963757c5
     type: regular
     task:
-      id: 978859ae-3512-4a5d-827d-1902181a26dc
+      id: 655f4e1b-8662-420f-894d-9a61963757c5
       version: -1
       name: Verify Endpoint
       description: |-
@@ -1463,10 +1428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: f6162da5-4007-4e85-88c5-8afcc5ad220b
+    taskid: 6e2814a6-dd58-4100-8f09-96762233f042
     type: regular
     task:
-      id: f6162da5-4007-4e85-88c5-8afcc5ad220b
+      id: 6e2814a6-dd58-4100-8f09-96762233f042
       version: -1
       name: Get the asset
       description: Get details for a given asset in Tenable.sc
@@ -1486,7 +1451,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2595
+          "y": 2575
         }
       }
     note: false
@@ -1498,10 +1463,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: c6a4a7f2-60f8-47af-8fa3-049d6f91b783
+    taskid: 76e87c67-0777-430f-8e71-a844beedb763
     type: regular
     task:
-      id: c6a4a7f2-60f8-47af-8fa3-049d6f91b783
+      id: 76e87c67-0777-430f-8e71-a844beedb763
       version: -1
       name: Verify Alert
       description: |-
@@ -1540,10 +1505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 4d9cd97f-1bc6-412c-8e44-5d3b134933a4
+    taskid: 72f168ed-a03f-4ff6-8b76-e9b80562800d
     type: title
     task:
-      id: 4d9cd97f-1bc6-412c-8e44-5d3b134933a4
+      id: 72f168ed-a03f-4ff6-8b76-e9b80562800d
       version: -1
       name: Done
       type: title
@@ -1567,10 +1532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 624721d5-34c0-4b97-8296-ecea982e7639
+    taskid: 77541733-7aae-4616-8bdb-4f70fddc5267
     type: regular
     task:
-      id: 624721d5-34c0-4b97-8296-ecea982e7639
+      id: 77541733-7aae-4616-8bdb-4f70fddc5267
       version: -1
       name: Get all scan results
       description: Get all scan results in Tenable.sc
@@ -1599,10 +1564,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 1cb46508-ccae-4720-8894-470ec0c257cf
+    taskid: 2708b66c-544e-4039-871f-589bcf109fbf
     type: regular
     task:
-      id: 1cb46508-ccae-4720-8894-470ec0c257cf
+      id: 2708b66c-544e-4039-871f-589bcf109fbf
       version: -1
       name: Update asset description
       description: Requires security manager role. Update an asset.
@@ -1624,7 +1589,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2390
         }
       }
     note: false
@@ -1636,10 +1601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 98c6e89a-03e0-4c7c-8f86-88c17fc46f27
+    taskid: b9817ce8-c544-4c92-8a3e-5c3cd7d43516
     type: condition
     task:
-      id: 98c6e89a-03e0-4c7c-8f86-88c17fc46f27
+      id: b9817ce8-c544-4c92-8a3e-5c3cd7d43516
       version: -1
       name: Verify update asset
       type: condition
@@ -1665,7 +1630,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2780
+          "y": 2760
         }
       }
     note: false
@@ -1677,10 +1642,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 1d51fc88-f726-4800-80f1-269f7676ef39
+    taskid: 8804eae9-b75d-406d-89ab-2427061b6844
     type: regular
     task:
-      id: 1d51fc88-f726-4800-80f1-269f7676ef39
+      id: 8804eae9-b75d-406d-89ab-2427061b6844
       version: -1
       name: List queries
       description: Requires security manager role. Lists queries.
@@ -1709,10 +1674,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 29ce3233-cd78-4e7d-8396-25fa889a561a
+    taskid: 46ad3c93-773f-4ab9-8be9-1929546420e5
     type: condition
     task:
-      id: 29ce3233-cd78-4e7d-8396-25fa889a561a
+      id: 46ad3c93-773f-4ab9-8be9-1929546420e5
       version: -1
       name: Verify list queries
       type: condition
@@ -1747,10 +1712,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 85140e28-1f6b-465f-8d92-04213328dcfa
+    taskid: d9049d6a-08cd-46d1-88b9-5523f778763e
     type: regular
     task:
-      id: 85140e28-1f6b-465f-8d92-04213328dcfa
+      id: d9049d6a-08cd-46d1-88b9-5523f778763e
       version: -1
       name: Create policy
       description: Requires security manager role. This command is prerequisite for
@@ -1787,10 +1752,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 47ee30bd-4ccb-4d0b-8529-7fbfc031c5da
+    taskid: 3a93ac82-4f0b-4242-8341-e14e1789d0ab
     type: condition
     task:
-      id: 47ee30bd-4ccb-4d0b-8529-7fbfc031c5da
+      id: 3a93ac82-4f0b-4242-8341-e14e1789d0ab
       version: -1
       name: Verify create policy
       type: condition
@@ -1825,10 +1790,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 8a5fe836-4146-411d-8e50-22c605b4aa1f
+    taskid: 3588ae90-dded-44cd-8c20-1a1c156a3c16
     type: regular
     task:
-      id: 8a5fe836-4146-411d-8e50-22c605b4aa1f
+      id: 3588ae90-dded-44cd-8c20-1a1c156a3c16
       version: -1
       name: List plugin family
       description: Requires security manager role. list plugin families / return information
@@ -1858,10 +1823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 0e2b92e9-1cf4-4040-8d5a-99184f84e926
+    taskid: 9892b496-4eb3-4fb7-8762-20c0b8947768
     type: condition
     task:
-      id: 0e2b92e9-1cf4-4040-8d5a-99184f84e926
+      id: 9892b496-4eb3-4fb7-8762-20c0b8947768
       version: -1
       name: Verify list plugin
       type: condition
@@ -1896,10 +1861,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 82b6d961-5c84-4f52-8f2c-ad97a75ae869
+    taskid: 0a309398-fdfa-49ee-8c8a-546596c82848
     type: regular
     task:
-      id: 82b6d961-5c84-4f52-8f2c-ad97a75ae869
+      id: 0a309398-fdfa-49ee-8c8a-546596c82848
       version: -1
       name: Create user
       description: This command can be executed with both roles (admin or security
@@ -1917,7 +1882,7 @@ tasks:
       password:
         simple: test
       role_id:
-        simple: "Vulnerability Analyst"
+        simple: Vulnerability Analyst
       user_name:
         simple: test_user_${TimeNow}
     separatecontext: false
@@ -1938,10 +1903,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: ad3f2a34-a8b0-4753-88ae-e851aeed622b
+    taskid: 0a1e64ca-ee07-4df8-896a-14a13537c0c7
     type: regular
     task:
-      id: ad3f2a34-a8b0-4753-88ae-e851aeed622b
+      id: 0a1e64ca-ee07-4df8-896a-14a13537c0c7
       version: -1
       name: Update user
       description: update user details by given user_id.
@@ -1975,10 +1940,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 27abd085-6f81-4757-8440-bb670a035be8
+    taskid: 288d1223-af07-463d-84bd-9b735790f430
     type: condition
     task:
-      id: 27abd085-6f81-4757-8440-bb670a035be8
+      id: 288d1223-af07-463d-84bd-9b735790f430
       version: -1
       name: Verify create and update user
       type: condition
@@ -2024,10 +1989,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: b5d42fc5-719a-4e5a-88a7-fb1bfcf35aa6
+    taskid: 56fc04e6-0465-4d1a-8350-2e2add86df71
     type: regular
     task:
-      id: b5d42fc5-719a-4e5a-88a7-fb1bfcf35aa6
+      id: 56fc04e6-0465-4d1a-8350-2e2add86df71
       version: -1
       name: Delete user
       description: This command can be executed with both roles (admin or security
@@ -2048,7 +2013,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 850
         }
       }
     note: false
@@ -2060,10 +2025,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 465cc62d-1a98-4b6c-80f4-9e77e0291602
+    taskid: 21e193b3-bf7b-4439-87ad-12745521e37b
     type: regular
     task:
-      id: 465cc62d-1a98-4b6c-80f4-9e77e0291602
+      id: 21e193b3-bf7b-4439-87ad-12745521e37b
       version: -1
       name: List groups
       description: Requires security manager role. list all groups.
@@ -2092,10 +2057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 6d56b3fc-ac11-49e8-8f58-0c0d7e5d0a29
+    taskid: d4a015fc-8631-467d-89dc-be2ba73e0415
     type: condition
     task:
-      id: 6d56b3fc-ac11-49e8-8f58-0c0d7e5d0a29
+      id: d4a015fc-8631-467d-89dc-be2ba73e0415
       version: -1
       name: Verify list groups
       type: condition
@@ -2130,10 +2095,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: c8f26835-0ea2-4017-856a-98a0d528532d
+    taskid: 495cd6b4-405e-49a4-8cb3-3e5a3d5b980c
     type: regular
     task:
-      id: c8f26835-0ea2-4017-856a-98a0d528532d
+      id: 495cd6b4-405e-49a4-8cb3-3e5a3d5b980c
       version: -1
       name: Sleep 15 seconds
       description: Sleep for X seconds
@@ -2152,8 +2117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 595
+          "x": 50,
+          "y": 675
         }
       }
     note: false
@@ -2169,7 +2134,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 9365,
-        "width": 940,
+        "width": 380,
         "x": 50,
         "y": -750
       }
