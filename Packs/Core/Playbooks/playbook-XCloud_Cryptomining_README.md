@@ -29,11 +29,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* XCloud Alert Enrichment
-* Ticket Management - Generic
-* Cloud Response - Generic
 * Handle False Positive Alerts
+* Cloud Response - Generic
+* Ticket Management - Generic
 * XCloud Cryptojacking - Set Verdict
+* XCloud Alert Enrichment
 
 ### Integrations
 
@@ -46,10 +46,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setParentIncidentField
 * closeInvestigation
-* send-mail
 * core-get-cloud-original-alerts
+* send-mail
+* setParentIncidentField
 
 ## Playbook Inputs
 
@@ -94,8 +94,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

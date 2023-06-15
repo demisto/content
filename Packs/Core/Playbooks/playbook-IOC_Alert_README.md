@@ -4,7 +4,7 @@ IOCs provide the ability to alert on known malicious objects on endpoints across
 The playbook will use several enrichment sources to determine the IOC verdict. Additionally, will use the Analytics module to run a prevalence check for the IOC.
 
 **Response Actions:**
-The playbook's first response action is a containment plan that is based on the playbook input. In that phase, the playbook will execute endpoint isolation.
+The playbook's first response action is a containment plan that is based on the playbook input. In that phase, the playbook will execute endpoint isolation
 
 **Investigative Actions:**
 When the playbook executes, it checks for additional abnormal activity using the Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.
@@ -28,13 +28,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Enrichment for Verdict
-* Endpoint Investigation Plan
-* Containment Plan
-* Recovery Plan
 * Handle False Positive Alerts
+* Endpoint Investigation Plan
+* Enrichment for Verdict
+* Recovery Plan
 * Ticket Management - Generic
 * Eradication Plan
+* Containment Plan
 
 ### Integrations
 
@@ -47,8 +47,8 @@ This playbook does not use any scripts.
 ### Commands
 
 * closeInvestigation
-* extractIndicators
 * setParentIncidentField
+* extractIndicators
 
 ## Playbook Inputs
 
@@ -81,8 +81,8 @@ This playbook does not use any scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the  ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

@@ -65,16 +65,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Account Enrichment - Generic v2.1
+* Eradication Plan
+* Ransomware Advanced Analysis
+* Ticket Management - Generic
+* Handle False Positive Alerts
+* Endpoint Investigation Plan
+* Ransomware Enrich and Contain
+* Recovery Plan
 * Containment Plan
 * Enrichment for Verdict
-* Endpoint Investigation Plan
-* Ransomware Advanced Analysis
-* Ransomware Enrich and Contain
-* Ticket Management - Generic
-* Eradication Plan
-* Recovery Plan
-* Account Enrichment - Generic v2.1
-* Handle False Positive Alerts
 
 ### Integrations
 
@@ -86,8 +86,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* closeInvestigation
 * setParentIncidentField
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -122,8 +122,8 @@ This playbook does not use any scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

@@ -1679,7 +1679,8 @@ inputs:
   description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
   playbookInputQuery:
 - key: CommentToAdd
-  value: {}
+  value:
+    simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
   playbookInputQuery:

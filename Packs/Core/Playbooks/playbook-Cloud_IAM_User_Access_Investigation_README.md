@@ -11,24 +11,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Enrichment for Verdict
-* Cloud Response - Generic
 * Cloud IAM Enrichment - Generic
-* Handle False Positive Alerts
+* Cloud Response - Generic
 * Ticket Management - Generic
+* Handle False Positive Alerts
 
 ### Integrations
 
-CortexCoreIR
+* CortexCoreIR
 
 ### Scripts
 
-LoadJSON
+* LoadJSON
 
 ### Commands
 
 * closeInvestigation
-* core-get-cloud-original-alerts
 * setParentIncidentField
+* core-get-cloud-original-alerts
 
 ## Playbook Inputs
 
@@ -62,8 +62,8 @@ LoadJSON
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

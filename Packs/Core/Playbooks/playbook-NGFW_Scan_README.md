@@ -41,12 +41,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * NGFW Internal Scan
-* Block IP - Generic v3
-* Recovery Plan
 * Endpoint Investigation Plan
-* Ticket Management - Generic
+* Recovery Plan
+* Block IP - Generic v3
 * Containment Plan
 * Handle False Positive Alerts
+* Ticket Management - Generic
 
 ### Integrations
 
@@ -59,11 +59,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* ip
-* abuseipdb-report-ip
 * send-mail
-* setParentIncidentField
+* abuseipdb-report-ip
+* ip
 * closeInvestigation
+* setParentIncidentField
 
 ## Playbook Inputs
 
@@ -96,8 +96,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

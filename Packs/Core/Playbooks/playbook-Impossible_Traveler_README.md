@@ -36,9 +36,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Impossible Traveler - Enrichment
 * Ticket Management - Generic
 * Containment Plan
+* Impossible Traveler - Enrichment
 
 ### Integrations
 
@@ -47,8 +47,8 @@ This playbook does not use any integrations.
 ### Scripts
 
 * Set
-* impossibleTravelerGetDistance
 * CreateArray
+* impossibleTravelerGetDistance
 
 ### Commands
 
@@ -87,8 +87,8 @@ This playbook does not use any integrations.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

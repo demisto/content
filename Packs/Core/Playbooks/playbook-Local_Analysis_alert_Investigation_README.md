@@ -41,14 +41,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan
-* Recovery Plan
 * Enrichment for Verdict
-* Eradication Plan
 * Ticket Management - Generic
 * Handle False Positive Alerts
-* Wildfire Detonate and Analyze File
+* Eradication Plan
+* Recovery Plan
 * Endpoint Investigation Plan
+* Containment Plan
+* Wildfire Detonate and Analyze File
 
 ### Integrations
 
@@ -61,12 +61,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setParentIncidentField
-* core-report-incorrect-wildfire
 * core-retrieve-file-details
-* internal-wildfire-get-report
 * closeInvestigation
+* internal-wildfire-get-report
+* core-report-incorrect-wildfire
 * core-retrieve-files
+* setParentIncidentField
 
 ## Playbook Inputs
 
@@ -102,8 +102,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  |  | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. |  | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

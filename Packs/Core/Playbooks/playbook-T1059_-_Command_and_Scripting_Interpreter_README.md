@@ -40,13 +40,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan
-* Ticket Management - Generic
-* Command-Line Analysis
-* Eradication Plan
+* Endpoint Investigation Plan
 * Handle False Positive Alerts
 * Recovery Plan
-* Endpoint Investigation Plan
+* Eradication Plan
+* Ticket Management - Generic
+* Containment Plan
+* Command-Line Analysis
 
 ### Integrations
 
@@ -61,8 +61,8 @@ This playbook does not use any scripts.
 
 * closeInvestigation
 * setParentIncidentField
-* core-get-cmd-analytics-prevalence
 * core-get-dynamic-analysis
+* core-get-cmd-analytics-prevalence
 
 ## Playbook Inputs
 
@@ -91,8 +91,8 @@ This playbook does not use any scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

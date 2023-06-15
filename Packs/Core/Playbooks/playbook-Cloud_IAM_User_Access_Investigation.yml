@@ -1178,7 +1178,8 @@ inputs:
     Possible values: True/False.'
   playbookInputQuery: null
 - key: CommentToAdd
-  value: {}
+  value:
+    simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
   playbookInputQuery: null

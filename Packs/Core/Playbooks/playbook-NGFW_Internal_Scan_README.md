@@ -25,11 +25,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Ticket Management - Generic
+* Containment Plan
 * Endpoint Investigation Plan
+* Ticket Management - Generic
 * Account Enrichment - Generic v2.1
 * Get endpoint details - Generic
-* Containment Plan
 
 ### Integrations
 
@@ -50,7 +50,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| scannerIP | The scanner IP address. | alert.hostip | Optional |
+| scannerIP | The scanner IP address | alert.hostip | Optional |
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user |  | Optional |
 | HostAutoContainment | Whether to execute endpoint isolation automatically or manually. |  | Optional |
@@ -71,8 +71,8 @@ This playbook does not use any scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.  | True | Optional |
-| CommentToAdd | Comment for the ticket. |  | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 
