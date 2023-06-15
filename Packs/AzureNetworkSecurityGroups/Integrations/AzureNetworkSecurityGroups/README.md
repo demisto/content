@@ -395,7 +395,9 @@ Get a specific rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | security_group_name | The name of the security group. | Optional | 
-| security_rule_name | A comma-separated list of the names of the rules to get. | Optional | 
+| security_rule_name | A comma-separated list of the names of the rules to get. | Optional |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output

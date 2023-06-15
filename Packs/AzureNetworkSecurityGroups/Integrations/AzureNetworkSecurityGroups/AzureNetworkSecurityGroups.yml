@@ -552,6 +552,18 @@ script:
       type: String
   - arguments:
     - default: false
+      name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - default: false
+      name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
+    - default: false
       description: The name of the security group.
       isArray: false
       name: security_group_name

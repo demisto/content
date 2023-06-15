@@ -100,12 +100,17 @@ resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurity
                                  data={"properties": properties})
 
     @logger
-    def get_rule(self, security_group: str, rule_name: str):
+    def get_rule(self, security_group: str, rule_name: str, subscription_id: str, resource_group_name: str):
         try:
-            return self.http_request('GET', f'/{security_group}/securityRules/{rule_name}')
+            return self.http_request('GET',
+                                     full_url=f'https://management.azure.com/subscriptions/{subscription_id}/\
+resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
+networkSecurityGroups/{security_group}/securityRules/{rule_name}?'
+                                     )
         except Exception as e:
             if '404' in str(e):
-                raise ValueError(f'Rule {rule_name} was not found.')
+                raise ValueError(f'Rule {rule_name} under subscription ID "{subscription_id}" \
+and resource group "{resource_group_name}" was not found.')
             raise
 
 
@@ -189,6 +194,7 @@ def list_rules_command(client: AzureNSGClient, params: Dict, args: Dict) -> Comm
     rules_limit = int(args.get('limit', '50'))
     rules_offset = int(args.get('offset', '1')) - 1  # As offset will start at 1
     rules: List = []
+
     for group in security_groups:
         rules_returned = client.list_rules(subscription_id=subscription_id,
                                            resource_group_name=resource_group_name,
@@ -318,7 +324,7 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict):
 
 
 @ logger
-def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
+def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> List[CommandResults]:
     """
     Update an existing rule.
 
@@ -347,61 +353,64 @@ def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
 
-    rule = client.get_rule(security_group_name, security_rule_name)
-    properties = rule.get('properties')
-
-    updated_properties = assign_params(protocol='*' if protocol == 'Any' else protocol,
-                                       access=action, priority=priority,
-                                       direction=direction, description=description)
-    if source_ports:
-        source_ports_list = argToList(source_ports)
-        if len(source_ports_list) > 1:
-            properties.pop("sourcePortRange", None)  # Can't supply both sourcePortRange and sourcePortRanges
-            updated_properties["sourcePortRanges"] = source_ports_list
-        else:
-            properties.pop("sourcePortRanges", None)  # Can't supply both sourcePortRange and sourcePortRanges
-            updated_properties["sourcePortRange"] = source_ports
-
-    if destination_ports:
-        dest_ports_list = argToList(destination_ports)
-        if len(dest_ports_list) > 1:
-            properties.pop("destinationPortRange", None)  # Can't supply both destinationPortRange,destinationPortRanges
-            updated_properties['destinationPortRanges'] = dest_ports_list
-        else:
-            properties.pop("destinationPortRanges", None)  # Can't supply destinationPortRange and destinationPortRanges
-            updated_properties['destinationPortRange'] = destination_ports
-
-    if destination:
-        dest_list = argToList(destination)
-        if len(dest_list) > 1:
-            properties.pop("destinationAddressPrefix", None)  # Can't supply both destinationAddressPrefix and
-            # destinationAddressPrefix
-            updated_properties['destinationAddressPrefixes'] = dest_list
-        else:
-            properties.pop("destinationAddressPrefixes", None)  # Can't supply both
-            # destinationAddressPrefixes, destinationAddressPrefixes
-            updated_properties['destinationAddressPrefix'] = '*' if destination == 'Any' else destination
-
-    if source:
-        source_list = argToList(source)
-        if len(source_list) > 1:
-            properties.pop("sourceAddressPrefix", None)  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
-            updated_properties['sourceAddressPrefixes'] = source_list
-        else:
-            properties.pop("sourceAddressPrefixes", None)  # Can't supply both sourceAddressPrefixes,sourceAddressPrefix
-            updated_properties['sourceAddressPrefix'] = '*' if source == 'Any' else source
-
-    properties.update(updated_properties)
-
     warning_message = ''
     all_resource_groups_are_wrong = True
+    command_results_list = []
 
     for resource_group_name in resource_group_list:
         try:
+            rule = client.get_rule(security_group=security_group_name, rule_name=security_rule_name,
+                                   subscription_id=subscription_id, resource_group_name=resource_group_name)
+            properties = rule.get('properties')
+
+            updated_properties = assign_params(protocol='*' if protocol == 'Any' else protocol,
+                                               access=action, priority=priority,
+                                               direction=direction, description=description)
+            if source_ports:
+                source_ports_list = argToList(source_ports)
+                if len(source_ports_list) > 1:
+                    properties.pop("sourcePortRange", None)  # Can't supply both sourcePortRange and sourcePortRanges
+                    updated_properties["sourcePortRanges"] = source_ports_list
+                else:
+                    properties.pop("sourcePortRanges", None)  # Can't supply both sourcePortRange and sourcePortRanges
+                    updated_properties["sourcePortRange"] = source_ports
+
+            if destination_ports:
+                dest_ports_list = argToList(destination_ports)
+                if len(dest_ports_list) > 1:
+                    properties.pop("destinationPortRange", None)  # Can't supply both destinationPortRange,destinationPortRanges
+                    updated_properties['destinationPortRanges'] = dest_ports_list
+                else:
+                    properties.pop("destinationPortRanges", None)  # Can't supply destinationPortRange and destinationPortRanges
+                    updated_properties['destinationPortRange'] = destination_ports
+
+            if destination:
+                dest_list = argToList(destination)
+                if len(dest_list) > 1:
+                    properties.pop("destinationAddressPrefix", None)  # Can't supply both destinationAddressPrefix and
+                    # destinationAddressPrefix
+                    updated_properties['destinationAddressPrefixes'] = dest_list
+                else:
+                    properties.pop("destinationAddressPrefixes", None)  # Can't supply both
+                    # destinationAddressPrefixes, destinationAddressPrefixes
+                    updated_properties['destinationAddressPrefix'] = '*' if destination == 'Any' else destination
+
+            if source:
+                source_list = argToList(source)
+                if len(source_list) > 1:
+                    properties.pop("sourceAddressPrefix", None)  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
+                    updated_properties['sourceAddressPrefixes'] = source_list
+                else:
+                    properties.pop("sourceAddressPrefixes", None)  # Can't supply both sourceAddressPrefixes,sourceAddressPrefix
+                    updated_properties['sourceAddressPrefix'] = '*' if source == 'Any' else source
+
+            properties.update(updated_properties)
+
             rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
                                       properties=properties, subscription_id=subscription_id,
                                       resource_group_name=resource_group_name)
             all_resource_groups_are_wrong = False
+            command_results_list.append(format_rule(rule, security_rule_name))
 
         except Exception as e:
             # If at least one of the resource groups is correct, we don't want to raise an error
@@ -414,15 +423,28 @@ def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Com
                 raise
 
     return_warning(warning_message) if warning_message else None
-    return format_rule(rule, security_rule_name)
+    return command_results_list
 
 
 @ logger
-def get_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str):
-    rules = []
+def get_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
+    """
+    Args:
+        client (AzureNSGClient): _description_
+        params (Dict): _description_
+        args (Dict): _description_
+
+    Returns:
+        CommandResults: The rule that was requested
+    """
+    security_group_name = args.get('security_group_name', '')
+    security_rule_name = args.get('security_rule_name', '')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
     rule_list = argToList(security_rule_name)
-    for rule in rule_list:
-        rules.append(client.get_rule(security_group_name, rule))
+
+    rules = [client.get_rule(security_group=security_group_name, rule_name=rule,
+                             subscription_id=subscription_id, resource_group_name=resource_group_name) for rule in rule_list]
     return format_rule(rules, security_rule_name)
 
 
