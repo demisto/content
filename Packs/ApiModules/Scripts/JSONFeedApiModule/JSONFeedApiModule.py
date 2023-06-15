@@ -111,11 +111,13 @@ class Client:
         url = feed.get('url', self.url)
 
         if is_demisto_version_ge('6.5.0'):
+            prefix_feed_name = get_formatted_feed_name(feed_name)  # Support for AWS feed
+
             # Set the If-None-Match and If-Modified-Since headers
             # if we have etag or last_modified values in the context, with server version higher than 6.5.0.
             last_run = demisto.getLastRun()
-            etag = demisto.get(last_run, f'{feed_name}.etag')
-            last_modified = demisto.get(last_run, f'{feed_name}.last_modified')
+            etag = last_run.get(prefix_feed_name, {}).get('etag') or last_run.get(feed_name, {}).get('etag')
+            last_modified = last_run.get(prefix_feed_name, {}).get('last_modified') or last_run.get(feed_name, {}).get('last_modified')  # noqa: E501
 
             if etag:
                 self.headers['If-None-Match'] = etag
@@ -147,6 +149,7 @@ class Client:
         try:
             r.raise_for_status()
             if r.content:
+                demisto.debug(f'JSON: found content for {feed_name}')
                 data = r.json()
                 result = jmespath.search(expression=feed.get('extractor'), data=data)
 
@@ -170,7 +173,6 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
         boolean with the value for noUpdate argument.
         The value should be False if the response was modified.
     """
-
     # HTTP status code 304 (Not Modified) set noUpdate to True.
     if response.status_code == 304:
         demisto.debug('No new indicators fetched, createIndicators will be executed with noUpdate=True.')
@@ -190,10 +192,24 @@ def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
         'etag': etag
     }
     demisto.setLastRun(last_run)
-
+    demisto.debug(f'JSON: The new last run is: {last_run}')
     demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
                   ' createIndicators will be executed with noUpdate=False.')
     return False
+
+
+def get_formatted_feed_name(feed_name: str):
+    """support for AWS Feed config name, that contains $$ in the name.
+        example: AMAZON$$CIDR
+    Args:
+        feed_name (str): The feed config name
+    """
+    prefix_feed_name = ''
+    if '$$' in feed_name:
+        prefix_feed_name = feed_name.split('$$')[0]
+        return prefix_feed_name
+
+    return feed_name
 
 
 def test_module(client: Client, limit) -> str:
@@ -241,6 +257,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         mapping_function = feed_config.get('mapping_function', indicator_mapping)
         handle_indicator_function = feed_config.get('handle_indicator_function', handle_indicator)
         create_relationships_function = feed_config.get('create_relations_function')
+        service_name = get_formatted_feed_name(service_name)
 
         for item in items:
             if isinstance(item, str):

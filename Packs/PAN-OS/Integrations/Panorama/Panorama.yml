@@ -1595,12 +1595,12 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object names for the rule. to create.
+      description: A comma-separated list of application object names for the rule to create.
       isArray: true
       name: application
-    - defaultValue: any
-      description: The source user for the rule to create.
+    - description: A comma-separated list of source users for the rule to create.
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -5027,12 +5027,12 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object names for the rule. to create.
+      description: A comma-separated list of application object names for the rule to create.
       isArray: true
       name: application
-    - defaultValue: any
-      description: The source user for the rule to create.
+    - description: A comma-separated list of source users for the rule to create.
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -9656,7 +9656,7 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  dockerimage: demisto/pan-os-python:1.0.0.61510
+  dockerimage: demisto/pan-os-python:1.0.0.62889
   feed: false
   isfetch: true
   longRunning: false

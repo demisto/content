@@ -14,7 +14,8 @@
     ],
     "useCases": [],
     "keywords": [
-        "Feed"
+        "Feed",
+        "Plug & Fetch"
     ],
     "marketplaces": [
         "xsoar",
