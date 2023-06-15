@@ -7,9 +7,9 @@ import subprocess
 import time
 import tempfile
 import sys
-from typing import List
+from typing import List, Dict
 
-from CommonServerPython import DBotScoreReliability, CommandResults, EntryType
+from CommonServerPython import DBotScoreReliability, CommandResults, EntryType, GetDemistoVersion
 from Whois import has_rate_limited_result
 
 import json
@@ -530,3 +530,53 @@ def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_r
     mocker.patch.object(demisto, 'params', return_value={param_key: param_value})
 
     assert expected_res == Whois.get_param_or_arg(param_key, arg_key)
+
+
+@pytest.mark.parametrize('args,demisto_version,expected_entries', [
+    ({"query": "google.com"}, '6.8.0', 2),
+    ({"query": "127.0.0.1"}, '6.8.0', 2),
+    ({"query": "google.com,amazon.com"}, '6.8.0', 3),
+    ({"query": "google.com"}, '6.5.0', 1)
+])
+def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, expected_entries: int, mocker):
+    """
+    Test whether the metrics entry is appended to the list of results according to the XSOAR version.
+    API Execution Metrics is only supported for 6.8+.
+
+    Given: Arguments passed to the `whois` command.
+
+    When:
+        - Case A: 1 valid domain is passed to 6.8.0.
+        - Case B: 1 invalid domain is passed to 6.8.0.
+        - Case C: 2 valid domains are passed to 6.8.0.
+        - Case D: 1 valid domain is passed to 6.5.0.
+
+    Then:
+        - Case A: 2 entries are expected (1 for query, 1 for execution metrics).
+        - Case B: 2 entries are expected (1 for query, 1 for execution metrics).
+        - Case C: 3 entries are expected (1 for query, 1 for execution metrics).
+        - Case D: 1 entries are expected (1 for query, no execution metrics since it's not supported).
+
+    """
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': demisto_version, 'buildNumber': '12345'})
+    mocker.patch.object(demisto, 'command', 'whois')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    results = Whois.whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
+    assert len(results) == expected_entries
+
+
+@pytest.mark.parametrize('args,with_error,entry_type', [
+    ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, True, EntryType.ERROR),
+    ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
+])
+def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: EntryType, mocker):
+
+    mocker.patch.object(demisto, 'command', 'whois')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    results = Whois.whois_command(
+        reliability=DBotScoreReliability.B,
+        query=args['query'],
+        is_recursive=False,
+        should_error=with_error
+    )
+    assert results[2].entry_type == entry_type
