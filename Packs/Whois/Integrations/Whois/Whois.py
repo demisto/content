@@ -7186,6 +7186,7 @@ class WhoisInvalidDomain(Exception):
 class WhoisEmptyResponse(Exception):
     pass
 
+
 class WhoisException(Exception):
     pass
 
@@ -8646,7 +8647,7 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
             results.append(result)
 
         except Exception as e:
-            # TODO Figure out why the caught exception is not Whois type (but TypeError/KEyError)
+            # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
             demisto.error(f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}'")
 
             for exception_type, metric_attribute in whois_exception_mapping.items():
