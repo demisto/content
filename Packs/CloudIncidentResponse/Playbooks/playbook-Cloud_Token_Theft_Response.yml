@@ -936,8 +936,8 @@ tasks:
     task:
       id: 876d7226-1120-4c0d-8df4-66b95ed0fd55
       version: -1
-      name: Should continue with the investigation?
-      description: Whether to continue with the investigation or close the alert.
+      name: Is manual investigation required to complete the resolution process?
+      description: Whether to continue with the investigation manually or close the alert.
       type: condition
       iscommand: false
       brand: ""
