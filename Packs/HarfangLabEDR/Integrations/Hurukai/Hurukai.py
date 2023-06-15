@@ -235,6 +235,9 @@ class Client(BaseClient):
             'binary': '/api/data/telemetry/Binary/',
             'network': '/api/data/telemetry/Network/',
             'eventlog': '/api/data/telemetry/FullEventLog/',
+            'dns': '/api/data/telemetry/DNSResolution/',
+            'windows_authentications': '/api/data/telemetry/authentication/AuthenticationWindows/',
+            'linux_authentications': '/api/data/telemetry/authentication/AuthenticationLinux/'
         }
 
         kwargs = {
@@ -259,10 +262,10 @@ class Client(BaseClient):
             url_suffix=f'/api/data/telemetry/Processes/{process_uuid}/graph/',
         )
 
-    def search_whitelist(self, keyword):
+    def search_whitelist(self, keyword, provided_by_hlab):
         return self._http_request(
             method='GET',
-            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/?offset=0&limit=100&search={keyword}&ordering=-last_update&provided_by_hlab=false',
+            url_suffix=f'/api/data/threat_intelligence/WhitelistRule/?offset=0&limit=100&search={keyword}&ordering=-last_update&provided_by_hlab={provided_by_hlab}',
         )
 
     def add_whitelist(self, comment, sigma_rule_id, target, field, case_insensitive, operator, value):
@@ -1786,8 +1789,9 @@ def get_process_graph(client, args):
 
 def search_whitelist(client, args):
     keyword = args.get('keyword', None)
+    provided_by_hlab = args.get('provided_by_hlab', None)
 
-    data = client.search_whitelist(keyword)
+    data = client.search_whitelist(keyword, provided_by_hlab)
 
     for wl in data['results']:
         criteria = []
@@ -2300,6 +2304,96 @@ class TelemetryProcesses(Telemetry):
         self._add_hash_parameters(binary_hash)
         return super().telemetry(client, args)
 
+class TelemetryDNSResolution(Telemetry):
+
+    def __init__(self):
+        super().__init__()
+
+        self.keys += [
+            ('requested_name', 'requested_name'),
+            ('query_type', 'query_type'),
+        ]
+        self.output_keys = [
+            ('create date', '@event_create_date'),
+            ('hostname', ['agent', 'hostname']),
+            ('agentid', ['agent', 'agentid']),
+            ('process image path', 'process_image_path'),
+            ('pid', 'pid'),
+            ('process unique id', 'process_unique_id'),
+            ('requested name', 'requested_name'),
+            ('query type', 'query_type'),
+            ('IP addresses', 'ip_addresses'),
+            ('tenant', 'tenant')
+        ]
+
+        self.title = 'DNS Resolutions'
+        self.telemetry_type = 'dns'
+
+    def telemetry(self, client, args):
+        return super().telemetry(client, args)
+
+class TelemetryWindowsAuthentication(Telemetry):
+
+    def __init__(self):
+        super().__init__()
+
+        self.keys += [
+            ('source_address', 'source_address'),
+            ('success', 'success'),
+            ('source_username', 'source_username'),
+            ('target_username', 'target_username'),
+            ('logon_title', 'logon_title'),
+        ]
+        self.output_keys = [
+            ('timestamp', '@timestamp'),
+            ('hostname', ['agent', 'hostname']),
+            ('agentid', ['agent', 'agentid']),
+            ('source address', 'source_address'),
+            ('source username', 'source_username'),
+            ('target username', 'target_username'),
+            ('success', 'success'),
+            ('event id', ['windows', 'event_id']),
+            ('event title', ['windows', 'event_title']),
+            ('logon process name', ['windows', 'logon_process_name']),
+            ('logon title', ['windows', 'logon_title']),
+            ('logon type', ['windows', 'logon_type']),
+            ('process name', 'process_name')
+        ]
+
+        self.title = 'Windows Authentications'
+        self.telemetry_type = 'windows_authentications'
+
+class TelemetryLinuxAuthentication(Telemetry):
+
+    def __init__(self):
+        super().__init__()
+
+        self.keys += [
+            ('source_address', 'source_address'),
+            ('success', 'success'),
+            ('source_username', 'source_username'),
+            ('target_username', 'target_username'),
+        ]
+        self.output_keys = [
+            ('timestamp', '@timestamp'),
+            ('hostname', ['agent', 'hostname']),
+            ('agentid', ['agent', 'agentid']),
+            ('source address', 'source_address'),
+            ('source username', 'source_username'),
+            ('target username', 'target_username'),
+            ('success', 'success'),
+            ('tty', ['linux', 'tty']),
+            ('target uid', ['linux', 'target_uid']),
+            ('target group', ['linux', 'target_group']),
+            ('target gid', ['linux', 'target_gid']),
+            ('process name', 'process_name'),
+            ('pid', 'pid')
+
+        ]
+
+        self.title = 'Linux Authentications'
+        self.telemetry_type = 'linux_authentications'
+
 
 class TelemetryNetwork(Telemetry):
 
@@ -2492,6 +2586,9 @@ def get_function_from_command_name(command):
         'harfanglab-telemetry-network': TelemetryNetwork().telemetry,
         'harfanglab-telemetry-eventlog': TelemetryEventLog().telemetry,
         'harfanglab-telemetry-binary': TelemetryBinary().telemetry,
+        'harfanglab-telemetry-dns': TelemetryDNSResolution().telemetry,
+        'harfanglab-telemetry-authentication-windows': TelemetryWindowsAuthentication().telemetry,
+        'harfanglab-telemetry-authentication-linux': TelemetryLinuxAuthentication().telemetry,
         'harfanglab-telemetry-process-graph': get_process_graph,
 
         'harfanglab-hunt-search-hash': hunt_search_hash,

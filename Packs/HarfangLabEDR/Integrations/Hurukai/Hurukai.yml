@@ -102,6 +102,10 @@ script:
   - arguments:
     - name: keyword
       description: Keyword to search whitelist
+    - name: provided_by_hlab
+      description: Boolean indicating whether to search in whitelists provided by HarfangLab or not
+      default: false
+      type: 8
     description: Search whitelists from a keyword
     name: harfanglab-whitelist-search
     outputs:
@@ -121,6 +125,7 @@ script:
     - name: case_insensitive
       description: Whether checking must be case sensitive or not
       default: true
+      type: 8
     - name: operator
       description: Operator used for the criterion (eq, contains, regex)
       default: 'eq'
@@ -141,6 +146,7 @@ script:
     - name: case_insensitive
       description: Whether checking must be case sensitive or not
       default: true
+      type: 8
     - name: operator
       description: Operator used for the criterion (eq, contains, regex)
       default: 'eq'
@@ -202,6 +208,79 @@ script:
     - contextPath: hashes.sha256
       description: 'DEPRECATED'
       type: string
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
+    - name: requested_name
+      description: Requested domain name
+    - name: query_type
+      description: 'DNS type (A, AAAA, TXT...)'
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch
+      defaultValue: 100
+    description: Search DNS resolutions
+    name: harfanglab-telemetry-dns
+    outputs:
+    - contextPath: Harfanglab.TelemetryDNS.resolutions
+      description: Provides a list of DNS resolutions
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
+    - name: source_address
+      description: Source IP address
+    - name: success
+      description: Whether authentication succeeded or not
+      type: 8
+    - name: source_username
+      description: Source username
+    - name: target_username
+      description: Target username
+    - name: logon_title
+      description: Logon title
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch
+      defaultValue: 100
+    description: Search Windows authentication telemetry
+    name: harfanglab-telemetry-authentication-windows
+    outputs:
+    - contextPath: Harfanglab.TelemetryWindowsAuthentications.authentications
+      description: Provides a list of Windows authentications
+
+  - arguments:
+    - name: hostname
+      description: Endpoint hostname
+    - name: source_address
+      description: Source IP address
+    - name: success
+      description: Whether authentication succeeded or not
+      type: 8
+    - name: source_username
+      description: Source username
+    - name: target_username
+      description: Target username
+    - description: 'Start date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: from_date
+    - description: 'End date (format: YYYY-MM-DDTHH:MM:SS)'
+      name: to_date
+    - name: limit
+      description: Maximum number of elements to fetch
+      defaultValue: 100
+    description: Search Linux authentication telemetry
+    name: harfanglab-telemetry-authentication-linux
+    outputs:
+    - contextPath: Harfanglab.TelemetryLinuxAuthentications.authentications
+      description: Provides a list of Linux authentications
+
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
