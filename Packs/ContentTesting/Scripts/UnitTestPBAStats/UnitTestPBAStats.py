@@ -1,9 +1,9 @@
-import traceback
-# Final Test: 6.10
-from typing import Dict, TypedDict
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# Final Test: 6.10
+from typing import Dict, TypedDict
+import traceback
+
 
 RED = "rgb(204, 57, 24)"
 ORANGE = "rgb(201, 176, 48)"
@@ -12,6 +12,7 @@ GREY = "rgb(197, 197, 197)"
 BLUE = "rgb(149, 188, 201)"
 
 FORMATS = ["bar", "pie"]
+#FORMATS = ["bar", "pie", "line", "duration", "number"]
 LAYOUTS = ["horizontal", "vertical"]
 
 
