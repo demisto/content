@@ -3082,8 +3082,13 @@ Returns a list of predefined Security Rules. (When passing a query, all other ar
 | Panorama.SecurityRule.LogForwardingProfile | String | The log forwarding profile applied to the security rule. | 
 | Panorama.SecurityRule.NegateSource | String | Indicates whether the source is negated in the security rule. | 
 | Panorama.SecurityRule.SecurityProfileGroup | String | The security profile group assigned to the security rule. | 
-| Panorama.SecurityRule.SecurityProfile | Unkown | The security profile settings applied to the security rule. | 
-| Panorama.SecurityRule.Target.devices | String | The devices targeted by the security rule. | 
+| Panorama.SecurityRule.SecurityProfile.url-filtering | String | The security profile setting for url-filtering in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.data-filtering | String | The security profile setting for data-filtering in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.file-blocking | String | The security profile setting for file-blocking in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.virus | String | The security profile setting for viruses in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.spyware | String | The security profile setting for spyware in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.vulnerability | String | The security profile setting for vulnerability in the security rule. |
+| Panorama.SecurityRule.SecurityProfile.wildfire-analysis | String | The security profile setting for wildfire-analysis in the security rule. || Panorama.SecurityRule.Target.devices | String | The devices targeted by the security rule. | 
 | Panorama.SecurityRule.Target.negate | String | Indicates whether the target is negated in the security rule. | 
 | Panorama.SecurityRule.Name | String | The name of the security rule. | 
 | Panorama.SecurityRule.From | String | The source zone of the security rule. | 
@@ -3117,21 +3122,29 @@ Returns a list of predefined Security Rules. (When passing a query, all other ar
             {
                 "DeviceGroup": "TestDevice",
                 "Location": "TestDevice",
-                "NegateDestination": null,
+                "NegateDestination": "",
                 "Disabled": "no",
-                "ICMPUnreachable": null,
-                "Description": null,
-                "GroupTag": null,
-                "LogForwardingProfile": null,
-                "NegateSource": null,
+                "ICMPUnreachable": "",
+                "Description": "",
+                "GroupTag": "",
+                "LogForwardingProfile": "",
+                "NegateSource": "",
                 "SecurityProfileGroup": "TestGroup",
-                "SecurityProfile": null,
+                "SecurityProfile": {
+                    "url-filtering": "",
+                    "data-filtering": "",
+                    "file-blocking": "",
+                    "vulnerability": "",
+                    "wildfire-analysis": "",
+                    "spyware": "",
+                    "virus": ""
+                },
                 "Target": {
                     "devices": "007051000185487",
                     "negate": "no"
                 },
                 "Name": "block rule",
-                "Type": null,
+                "Type": "",
                 "From": [
                     "TestName",
                     "TestName2"
@@ -3171,28 +3184,32 @@ Returns a list of predefined Security Rules. (When passing a query, all other ar
                     "8.8.8.8"
                 ],
                 "Options": {
-                    "LogAtSessionStart": null,
-                    "LogForwarding": null,
-                    "Schedule": null,
-                    "QoSMarking": null,
-                    "DisableServerResponseInspection": null
+                    "LogAtSessionStart": "",
+                    "LogForwarding": "",
+                    "Schedule": "",
+                    "QoSMarking": "",
+                    "DisableServerResponseInspection": ""
                 }
             },
             {
                 "DeviceGroup": "TestDevice",
                 "Location": "TestDevice",
-                "NegateDestination": null,
-                "Disabled": null,
+                "NegateDestination": "",
+                "Disabled": "",
                 "ICMPUnreachable": "yes",
                 "Description": "bbbbbbbbbb",
                 "GroupTag": "TestGroupTag",
                 "LogForwardingProfile": "Log forwarding for SA",
-                "NegateSource": null,
-                "SecurityProfileGroup": null,
+                "NegateSource": "",
+                "SecurityProfileGroup": "",
                 "SecurityProfile": {
                     "url-filtering": "default",
                     "spyware": "testing",
-                    "virus": "default"
+                    "virus": "default",
+                    "data-filtering": "",
+                    "file-blocking": "",
+                    "vulnerability": "",
+                    "wildfire-analysis": ""
                 },
                 "Target": {
                     "devices": [
@@ -3243,8 +3260,8 @@ Returns a list of predefined Security Rules. (When passing a query, all other ar
 ### Security Rules:
 |Name|Location|Tags|Type|Source Zone|Source Address|Source User|Source Device|Destination Zone|Destination Address|Destination Device|Application|Service|Url Category|Action|Profiles|Profile Group|Options|Target|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| block rule | TestDevice | TestTag1,<br>TestTag2,<br>TestTag3 |  | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.4.4,<br>8.8.8.8 | any | any | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.8.8 | any | cortex-xdr,<br>jira,<br>zoom | application-default | abortion,<br>adult,<br>alcohol-and-tobacco,<br>hacking | drop |  | TestGroup | LogAtSessionStart: null<br>LogForwarding: null<br>Schedule: null<br>QoSMarking: null<br>DisableServerResponseInspection: null | devices: 007051000185487<br>negate: no |
-| jl-test-1 | TestDevice | APIiiiiii,<br>test2shared | intrazone | internal | 1.1.1.1 | me | good name | internal | my_shared_address_object_test | bad nam | 8x8 | new group,<br>service-http,<br>service-https | alcohol-and-tobacco,<br>auctions | reset-server | url-filtering: default<br>spyware: testing<br>virus: default |  | LogAtSessionStart: yes<br>LogForwarding: Log forwarding for SA<br>Schedule: test-schedule<br>QoSMarking: ip-precedence<br>DisableServerResponseInspection: yes | devices: 007051000185487,<br>007051000188986<br>negate: no |
+| block rule | TestDevice | TestTag1,<br>TestTag2,<br>TestTag3 |  | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.4.4,<br>8.8.8.8 | any | any | TestName,<br>TestName2 | 1.1.1.1,<br>8.8.8.8 | any | cortex-xdr,<br>jira,<br>zoom | application-default | abortion,<br>adult,<br>alcohol-and-tobacco,<br>hacking | drop | url-filtering:<br>data-filtering:<br>file-blocking:<br>virus:<br>spyware:<br>vulnerability:<br>wildfire-analysis: | TestGroup | LogAtSessionStart: <br>LogForwarding:<br>Schedule:<br>QoSMarking:<br>DisableServerResponseInspection: | devices: 007051000185487<br>negate: no |
+| jl-test-1 | TestDevice | APIiiiiii,<br>test2shared | intrazone | internal | 1.1.1.1 | me | good name | internal | my_shared_address_object_test | bad nam | 8x8 | new group,<br>service-http,<br>service-https | alcohol-and-tobacco,<br>auctions | reset-server | url-filtering: default<br>data-filtering:<br>file-blocking:<br>virus: default<br>spyware: testing<br>vulnerability:<br>wildfire-analysis: |  | LogAtSessionStart: yes<br>LogForwarding: Log forwarding for SA<br>Schedule: test-schedule<br>QoSMarking: ip-precedence<br>DisableServerResponseInspection: yes | devices: 007051000185487,<br>007051000188986<br>negate: no |
 
 ### pan-os-query-logs
 ***

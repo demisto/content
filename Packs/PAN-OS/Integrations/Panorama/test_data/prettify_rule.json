@@ -9,6 +9,11 @@
     "NegateSource": "",
     "SecurityProfileGroup": "Prince Security Profile Group",
     "SecurityProfile": {
+        "url-filtering": "",
+        "data-filtering": "",
+        "file-blocking": "",
+        "vulnerability": "",
+        "wildfire-analysis": "",
         "spyware": "default",
         "virus": "default"
     },

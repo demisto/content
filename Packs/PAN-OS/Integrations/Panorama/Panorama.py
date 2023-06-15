@@ -3472,6 +3472,23 @@ def prettify_rule(rule: dict):
         entry.get('@name') for entry in entries if isinstance(entry, dict)
     ]
 
+    # get rule profiles:
+    profile_keys = (
+        'url-filtering',
+        'data-filtering',
+        'file-blocking',
+        'virus',
+        'spyware',
+        'vulnerability',
+        'wildfire-analysis',
+    )
+    profiles = rule_get(
+        ['profile-setting', 'profiles'], return_type=dict, default_return_value={})  # pylint: disable=E1124
+    rule_profiles = {
+        key: dict_safe_get(profiles, [key, 'member'], '')
+        for key in profile_keys
+    }
+
     pretty_rule: Dict[str, Any] = {
 
         'DeviceGroup': DEVICE_GROUP,
@@ -3484,13 +3501,7 @@ def prettify_rule(rule: dict):
         'LogForwardingProfile': rule.get('log-setting', ''),
         'NegateSource': rule.get('negate-source', ''),
         'SecurityProfileGroup': rule_get(['profile-setting', 'group', 'member']),
-        'SecurityProfile': {
-            key: value.get('member', '')
-            for key, value in profiles.items()   # pylint: disable=E0601 - profiles is assigned in the if statement bellow.
-            if isinstance(value, dict)
-        }
-        if (profiles := rule_get(['profile-setting', 'profiles'], return_type=dict, default_return_value={}))  # pylint: disable=E1124
-        else None,
+        'SecurityProfile': rule_profiles,
         'Target': {
             'devices': rule_devices,
             'negate': rule_get(['target', 'negate']),
