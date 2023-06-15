@@ -2368,7 +2368,7 @@ def submit_report(client: Client, submission_type, submission_value, import_indi
         'import_indicators': import_indicators
     }
     if detail:
-        data['detail'] = detail
+        data['report_radio-notes'] = detail
 
     uploaded_file = None
     files = None
