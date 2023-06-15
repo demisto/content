@@ -33,6 +33,7 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 - Real Time Response - Read and Write
 - Alerts - Read and Write
 - IOC Manager - Read and Write
+- IOCs - Read and Write
 - IOA Exclusions - Read and Write
 - Machine Learning Exclusions - Read and Write
 - Detections - Read and Write
