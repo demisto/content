@@ -318,10 +318,7 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict):
 
 
 @ logger
-def update_rule_command(client: AzureNSGClient, security_group_name: str, security_rule_name: str, direction: str = None,
-                        action: str = None, protocol: str = None, source: str = None, source_ports: str = None,
-                        destination: str = None, destination_ports: str = None, priority: str = None,
-                        description: str = None) -> CommandResults:
+def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Update an existing rule.
 
@@ -330,13 +327,25 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
     Args:
         client: The MS Client
-        security_group_name: the security group name
-        security_rule_name: The name of the rule to update
-        ... The rest of the arguments are described in the command yml
+        params: configuration parameters
+        args: args dictionary.
 
     Returns:
     an updated rule
     """
+    security_group_name = args.get('security_group_name', '')
+    security_rule_name = args.get('security_rule_name', '')
+    direction = args.get('direction', '')
+    action = args.get('action', '')
+    protocol = args.get('protocol', '')
+    source = args.get('source', '')
+    source_ports = args.get('source_ports', '')
+    destination = args.get('destination', '')
+    destination_ports = args.get('destination_ports', '')
+    priority = args.get('priority', '')
+    description = args.get('description', '')
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
+    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
 
     rule = client.get_rule(security_group_name, security_rule_name)
     properties = rule.get('properties')
@@ -384,7 +393,27 @@ def update_rule_command(client: AzureNSGClient, security_group_name: str, securi
 
     properties.update(updated_properties)
 
-    rule = client.create_rule(security_group_name, security_rule_name, properties)
+    warning_message = ''
+    all_resource_groups_are_wrong = True
+
+    for resource_group_name in resource_group_list:
+        try:
+            rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
+                                      properties=properties, subscription_id=subscription_id,
+                                      resource_group_name=resource_group_name)
+            all_resource_groups_are_wrong = False
+
+        except Exception as e:
+            # If at least one of the resource groups is correct, we don't want to raise an error
+            # We want to continue to the next resource group and return the warning message for the wrong ones
+            warning_message += (f"Rule '{security_rule_name}' with resource_group_name \
+'{resource_group_name}' was not updated. The full error is:\n{e}\n\n")
+
+            # If all resource groups are wrong, we want to raise an error
+            if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
+                raise
+
+    return_warning(warning_message) if warning_message else None
     return format_rule(rule, security_rule_name)
 
 

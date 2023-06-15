@@ -318,6 +318,8 @@ Update a security rule. If one does not exist, it will be created.
 | destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional | 
 | destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
 | description | A description to add to the rule. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output

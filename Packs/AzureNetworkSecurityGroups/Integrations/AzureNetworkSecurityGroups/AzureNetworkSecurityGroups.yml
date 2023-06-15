@@ -260,6 +260,12 @@ script:
     name: azure-nsg-security-rule-delete
   - arguments:
     - default: false
+      name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - default: false
       name: resource_group_name
       description: "A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
@@ -402,6 +408,18 @@ script:
       description: The rule's direction. Can be "Inbound" or "Outbound".
       type: String
   - arguments:
+    - default: false
+      name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - default: false
+      name: resource_group_name
+      description: "A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
     - default: false
       description: The name of the security group.
       isArray: false
