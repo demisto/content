@@ -80,9 +80,11 @@ time is missing this argument: recurrence_type."""
 MISSING_ARGUMENT = """Missing either a contact info or a channel id"""
 USER_NOT_FOUND = """ This user email can't be found """
 MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
-                    don't enter start_position or end_position or format_type or at_type
-                    or rt_start_position or rt_end_position or format_attr"""
+                    don't provide one of the following arguments: start_position, end_position, format_type, at_type, 
+                    rt_start_position, rt_end_position or format_attr"""
 MARKDOWN_EXTRA_FORMATS = """to many style in text. you can provide only one style type"""
+MARKDOWN_EXTRA_MENTIONS = """to many mentions in text. you can provide only one mention in each message"""
+
 
 '''CLIENT CLASS'''
 
@@ -1397,11 +1399,16 @@ def zoom_send_message_command(client, **args) -> CommandResults:
         res = client.zoom_upload_file(upload_file_url, file_info)
         zoom_file_id.append(res.get('id'))
 
+    # check if the text contain markdown to parse and also provide text style arguments
     if is_markdown and (start_position or end_position
                         or format_attr or format_type or rt_end_position or rt_start_position or at_type):
         raise DemistoException(MARKDOWN_AND_EXTRA_ARGUMENTS)
 
     if is_markdown:
+        # check if text have more then 1 mention
+        if message.count('@') > 1 and at_contact:
+            raise DemistoException(MARKDOWN_EXTRA_MENTIONS)
+
         message, json_data_all = parse_markdown_message(message, at_contact)
         json_data_all.update({"file_ids": zoom_file_id, "reply_main_message_id": reply_main_message_id, "to_channel": to_channel,
                               "to_contact": to_contact})
@@ -1525,63 +1532,6 @@ def zoom_get_user_id_by_email(client, email):
     return user_id
 
 
-def arg_to_datetime_str(arg):
-    """
-    Converts the provided argument to a datetime object.
-
-    :param arg: The argument to be converted. It can be a relative timestamp, "now", "today", or a datetime string
-                in the format "YYYY-MM-DDTHH:MM:SS".
-    :type arg: str
-
-    :return: The converted datetime object.
-    :rtype: datetime.datetime
-
-    :raises DemistoException: If the argument is an invalid datetime format.
-    """
-    if not arg:
-        return None
-
-    # Relative timestamp regex pattern
-    relative_timestamp_pattern = r'^(\d+)\s+(year|month|week|day|hour|minute)s?\s+ago$'
-    # Check if the argument is "now"
-    if arg == 'now':
-        return datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-
-    # Check if the argument is "today"
-    if arg == 'today':
-        now = datetime.now()
-        return datetime(now.year, now.month, now.day).strftime('%Y-%m-%dT%H:%M:%SZ')
-
-    # Check if the argument matches relative timestamp pattern
-    match = re.match(relative_timestamp_pattern, arg)
-    if match:
-        amount = int(match.group(1))
-        unit = match.group(2)
-        delta = None
-
-        if unit == 'year':
-            delta = timedelta(days=amount * 365)
-        elif unit == 'month':
-            delta = timedelta(days=amount * 30)
-        elif unit == 'week':
-            delta = timedelta(weeks=amount)
-        elif unit == 'day':
-            delta = timedelta(days=amount)
-        elif unit == 'hour':
-            delta = timedelta(hours=amount)
-        elif unit == 'minute':
-            delta = timedelta(minutes=amount)
-
-        if delta:
-            return (datetime.now() - delta).strftime('%Y-%m-%dT%H:%M:%SZ')
-    try:
-        dt = (datetime.strptime(arg, '%Y-%m-%dT%H:%M:%S')).strftime('%Y-%m-%dT%H:%M:%SZ')
-        return dt
-    except ValueError:
-        raise DemistoException(f"Invalid datetime format: {arg}")
-    # Transform the argument to the required format
-
-
 def zoom_list_messages_command(client, **args) -> CommandResults:
     """
     Lists messages from Zoom chat.
@@ -1593,9 +1543,12 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     user_id = args.get('user_id')
     to_contact = args.get('to_contact')
     to_channel = args.get('to_channel')
-    date_arg = arg_to_datetime_str(args.get('date'))
-    from_arg = arg_to_datetime_str(args.get('from'))
-    to_arg = arg_to_datetime_str(args.get('to'))
+    date_arg = arg_to_datetime(args.get('date'))
+    from_arg = arg_to_datetime(args.get('from'))
+    to_arg = arg_to_datetime(args.get('to'))
+    date_arg = date_arg.strftime('%Y-%m-%dT%H:%M:%SZ') if date_arg else None
+    from_arg = from_arg.strftime('%Y-%m-%dT%H:%M:%SZ') if from_arg else None
+    to_arg = to_arg.strftime('%Y-%m-%dT%H:%M:%SZ') if to_arg else None
     include_deleted_and_edited_message = args.get('include_deleted_and_edited_message')
     search_type = args.get('search_type')
     search_key = args.get('search_key')

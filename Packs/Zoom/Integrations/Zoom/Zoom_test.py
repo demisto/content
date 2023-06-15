@@ -3,7 +3,6 @@ import Zoom
 import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
-import datetime
 
 
 def test_zoom_list_users_command__limit(mocker):
@@ -1525,48 +1524,6 @@ def test_zoom_send_message_markdown_command(mocker):
     assert mock_send_chat_message.call_args[0][1] == expected_request_payload
 
 
-def test_arg_to_datetime_str():
-    """
-    Given -
-        client
-    When -
-        parse date string to datetime
-    Then -
-        Validate the results
-    """
-    # Test relative timestamps
-    now = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-    two_weeks_ago = (datetime.datetime.now() - datetime.timedelta(weeks=2)).strftime('%Y-%m-%dT%H:%M:%SZ')
-    five_hours_ago = (datetime.datetime.now() - datetime.timedelta(hours=5)).strftime('%Y-%m-%dT%H:%M:%SZ')
-    five_min_ago = (datetime.datetime.now() - datetime.timedelta(minutes=5)).strftime('%Y-%m-%dT%H:%M:%SZ')
-    today = (datetime.datetime.today().date()).strftime('%Y-%m-%dT%H:%M:%SZ')
-
-    from Zoom import arg_to_datetime_str
-
-    assert arg_to_datetime_str('now') == now
-    assert arg_to_datetime_str('2 weeks ago') == two_weeks_ago
-    assert arg_to_datetime_str('5 hours ago') == five_hours_ago
-    assert arg_to_datetime_str('5 minutes ago') == five_min_ago
-    assert arg_to_datetime_str('today') == today
-
-    # Test specific datetime format
-    dt_str = '2023-03-13T01:22:00'
-    dt = datetime.datetime(2023, 3, 13, 1, 22, 0).strftime('%Y-%m-%dT%H:%M:%SZ')
-    assert arg_to_datetime_str(dt_str) == dt
-
-    # Test error format
-
-    with pytest.raises(DemistoException) as e:
-        dt_str = '2023-30-80T01:22:00'
-        arg_to_datetime_str(dt_str)
-    assert e.value.message == f"Invalid datetime format: {dt_str}"
-
-    with pytest.raises(DemistoException) as e:
-        dt_str = '1 treek ago'
-        arg_to_datetime_str(dt_str)
-    assert e.value.message == f"Invalid datetime format: {dt_str}"
-
-
 def test_zoom_list_messages_command(mocker):
     """
     Given -
@@ -1622,7 +1579,7 @@ def test_zoom_list_messages_command(mocker):
         page_number=page_number,
         to_contact=to_contact,
         to_channel=to_channel,
-        date_arg=date_arg,
+        date=date_arg,
         include_deleted_and_edited_message=include_deleted_and_edited_message,
         search_type=search_type,
         search_key=search_key,
@@ -1738,8 +1695,7 @@ def test_zoom_get_user_id_by_email(mocker):
     expected_user_id = "user_id"
     expected_response = {"id": expected_user_id}
 
-    mock_zoom_list_users = mocker.MagicMock(return_value=expected_response)
-    client.zoom_list_users = mock_zoom_list_users
+    mock_zoom_list_users = mocker.patch.object(client, 'zoom_list_users', return_value=expected_response)
     from Zoom import zoom_get_user_id_by_email
     result = zoom_get_user_id_by_email(client, email)
     mock_zoom_list_users.assert_called_with(page_size=50, url_suffix=f'users/{email}')
