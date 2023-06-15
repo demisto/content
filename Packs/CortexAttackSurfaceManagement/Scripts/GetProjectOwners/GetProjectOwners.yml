@@ -8,7 +8,7 @@ comment: Parse a GCP service account email for the project name, then lookup pro
 commonfields:
   id: GetProjectOwners
   version: -1
-dockerimage: demisto/python3:3.10.11.61265
+dockerimage: demisto/python3:3.10.12.62631
 enabled: true
 name: GetProjectOwners
 runas: DBotWeakRole
