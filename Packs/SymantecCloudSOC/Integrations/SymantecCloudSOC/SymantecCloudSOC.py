@@ -37,7 +37,8 @@ class Client(BaseClient):
         """ Retrieve information about events.
             Args:
                 max_fetch (int): Limit number of returned records.
-                params (dict): URL parameters to specify the query (app and subtype).
+                subtype (str): The subtype (URL parameters to specify the query)
+                app (str): The app type (URL parameters to specify the query).
                 next_url (Optional[str]): The token to the next page.
                 created_timestamp (str): The created timestamp.
             Returns:
@@ -47,7 +48,7 @@ class Client(BaseClient):
         """
         response = {}
         # max limit for the API is 1000
-        max_fetch = min(max_fetch, 1000) if max_fetch else 1000
+        max_fetch = min(max_fetch, MAX_LIMIT_PER_CALL) if max_fetch else MAX_LIMIT_PER_CALL
         if next_url:
             demisto.debug(f'SymantecEventCollector: Get events request full_url: {next_url}')
             response = self._http_request(method='GET', full_url=next_url, headers=self._headers)
@@ -90,6 +91,7 @@ def test_module(client: Client) -> str:
                 client.get_events_request(max_fetch=1, app=app, subtype=url_params.get("subtype"))
 
     except Exception as e:
+        demisto.debug(f'SymantecEventCollector: {str(e)}')
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
@@ -117,7 +119,7 @@ def get_events_command(client: Client, first_fetch_time: str,
 
     events: list[dict] = []
     hr = ""
-    for log_type, _ in LOG_TYPES.items():
+    for log_type in LOG_TYPES.keys():
         header_log_type = string_to_table_header(log_type)
         log_events, _ = get_all_events_for_log_type(
             client=client,
@@ -133,7 +135,7 @@ def get_events_command(client: Client, first_fetch_time: str,
             events.extend(log_events)
         else:
             hr += f"No events found for {header_log_type}.\n"
-    return events, CommandResults(readable_output=hr)
+    return events, CommandResults(readable_output=hr, raw_response=events)
 
 
 def add_fields_to_event(event: dict, log_type: str) -> None:
@@ -171,7 +173,6 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
         - The new last_run timestamps.
     """
     last_run_ids = dict_safe_get(last_run, [f'{log_type}-ids'], default_return_value=[])
-    set_last_run_ids = set(last_run_ids)
     last_run_time = dict_safe_get(last_run, ["last_run"]) or last_fetch
     new_events: list = []
     new_events_ids = []
@@ -187,11 +188,10 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
                 event_id = event.get('_id')
                 # The event we are looking at has the same timestamp as previously fetched events
                 if event_timestamp == last_run_time:
-                    if event_id not in set_last_run_ids:
+                    if event_id not in set(last_run_ids):
                         add_fields_to_event(event, log_type)
                         new_events.append(event)
                         last_run_ids.append(event_id)
-                        set_last_run_ids.add(event_id)
                 # The event has a timestamp we have not yet fetched meaning it is a new event
                 else:
                     add_fields_to_event(event, log_type)
@@ -201,8 +201,11 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
                     # current event time
                     new_last_run_time_date = datetime.strptime(new_last_run_time, DATE_FORMAT_SYMANTEC)
                     event_timestamp_date = datetime.strptime(event_timestamp, DATE_FORMAT_SYMANTEC)
-                    if new_last_run_time and (new_last_run_time_date < event_timestamp_date):
+                    if new_last_run_time_date < event_timestamp_date:
                         new_last_run_time = event_timestamp
+                    else:
+                        demisto.debug(f'SymantecEventCollector: new_last_run_time is {new_last_run_time}'
+                                      f'event_timestamp is {event_timestamp}')
 
         # If we have received events with a newer time (new_event_ids list) we save them,
         # otherwise we save the list that include the old ids together with the new event ids (last_run_ids).
@@ -213,6 +216,7 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
         else:
             new_events_ids.extend(last_run_ids)
             new_last_run[f'{log_type}-ids'] = new_events_ids
+        # new last_run is new_last_run_time if exists else last_run_time
         new_last_run["last_run"] = new_last_run_time or last_run_time
     # If we dont have any events last_run is still the last run time
     elif last_run_time:
@@ -284,7 +288,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, dic
     # Initialize an empty next_run object to return
     next_run: dict[str, dict] = {}
     new_last_run: dict = {}
-    for log_type, _ in LOG_TYPES.items():
+    for log_type in LOG_TYPES.keys():
         log_events, next_run = get_all_events_for_log_type(
             client=client,
             log_type=log_type,
@@ -328,17 +332,17 @@ def create_client_with_authorization(base_url: str, verify_certificate: bool,
                   proxy=proxy)
 
 
-def get_first_fetch_time(first_fetch_from_params: str = None) -> tuple[str, str]:
+def get_first_fetch_time(params: dict) -> tuple[str, str]:
     """
     Gets a first_fetch_time arg for investigate logs and detect incidents logs.
     Args:
-        first_fetch_from_params (str): first_fetch parameter from XSIAM.
+        params (dict): Parameters from XSIAM.
     Returns:
         first_fetch_str (str): first fetch.
         first_fetch_time_investigate_str (str): first fetch for investigate log type.
     """
     # How much time before the first fetch to retrieve events
-    first_fetch = first_fetch_from_params or '3 days'
+    first_fetch = params.get('first_fetch', '3 days')
     first_fetch_time: datetime = arg_to_datetime(arg=first_fetch,
                                                  arg_name='First fetch time',
                                                  required=True)  # type: ignore[assignment]
@@ -349,7 +353,6 @@ def get_first_fetch_time(first_fetch_from_params: str = None) -> tuple[str, str]
     first_fetch_time_investigate: datetime = first_fetch_time
     if six_month_ago and first_fetch_time_investigate <= six_month_ago:
         first_fetch_time_investigate = dateparser.parse('180 day', settings={'TIMEZONE': 'UTC'})  # type: ignore[assignment]
-        first_fetch_time_investigate += timedelta(minutes=5)
     first_fetch_time_investigate_str = first_fetch_time_investigate.strftime(DATE_FORMAT_SYMANTEC)
     return first_fetch_str, first_fetch_time_investigate_str
 
@@ -362,7 +365,7 @@ def main() -> None:
     main function, parses params and runs command functions
     """
 
-    params = demisto.params()
+    params: dict = demisto.params()
     args = demisto.args()
     command = demisto.command()
     key_id = params.get('credentials', {}).get('identifier')
@@ -370,7 +373,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
-    first_fetch_time, first_fetch_time_investigate = get_first_fetch_time(params.get('first_fetch'))
+    first_fetch_time, first_fetch_time_investigate = get_first_fetch_time(params)
     # get the service API url
     base_url = urljoin(params.get('url'), '/api/admin/v1/logs/get/')
     demisto.debug(

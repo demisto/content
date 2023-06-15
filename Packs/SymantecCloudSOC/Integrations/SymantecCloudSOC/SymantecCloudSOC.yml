@@ -44,6 +44,7 @@ script:
       - 'false'
       required: true
     - default: false
+      defaultValue: 1000
       description: Maximum results to return.
       isArray: false
       name: limit

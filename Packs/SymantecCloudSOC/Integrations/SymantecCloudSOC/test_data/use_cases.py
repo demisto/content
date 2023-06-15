@@ -71,10 +71,10 @@ dedup_by_id_test_case: list = [
      [{'_id': '_id2', '_time': '2023-01-02T23:22:59', 'incident_start_time': '2023-01-02T23:22:59', 'type': 'Detect incident'}]),
 ]
 
-get_first_fetch_time_params = [("7 months", "2022-06-01T23:23:59", "2022-07-05T23:28:59"),
-                               ("5 months", "2022-08-01T23:23:59", "2022-08-01T23:23:59")]
+get_first_fetch_time_params = [({'first_fetch': "7 months"}, "2022-06-01T23:23:59", "2022-07-05T23:23:59"),
+                               ({'first_fetch': "5 months"}, "2022-08-01T23:23:59", "2022-08-01T23:23:59")]
 
-get_all_events_for_log_type_test_case: list = [
+get_all_events_for_log_type_test_case_with_pagination: list = [
     (1500, "Incident_logs", {}, "2021-06-01T00:00:00", "2021-06-01T00:00:00",
      response_pagination_incident["expected_event_list"][:1500], {
      'Incident_logs-ids': response_pagination_incident["expected_ids_list"][:1500], 'last_run': '2021-06-01T00:00:00'}),
@@ -84,6 +84,9 @@ get_all_events_for_log_type_test_case: list = [
     (1574, "Investigate_logs", {}, "2021-06-01T00:00:00", "2021-06-01T00:00:00",
      response_pagination_investigate["expected_event_list"][:1574], {
      'Investigate_logs-ids': response_pagination_investigate["expected_ids_list"][1504:1574], 'last_run': '2021-07-02T09:07:43'}),
+]
+
+get_all_events_for_log_type_test_case_without_pagination: list = [
     (3, "Investigate_logs", {}, "2021-06-01T00:00:00", "2021-06-01T00:00:00",
      response_pagination_investigate["expected_event_list"][0:3], {
      'Investigate_logs-ids': response_pagination_investigate["expected_ids_list"][0:3], 'last_run': '2021-06-01T00:00:00'}),

@@ -55,6 +55,14 @@
       "devices": {
         "type": "string",
         "is_array": false
+      },
+      "host": {
+        "type": "string",
+        "is_array": false
+      },
+      "hosts": {
+        "type": "string",
+        "is_array": false
       }
     }
   }
