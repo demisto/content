@@ -459,7 +459,7 @@ tasks:
         complex:
           root: alert.username
           accessor: '[0]'
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -844,7 +844,7 @@ tasks:
         complex:
           root: CloudIndicators
           accessor: username
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1079,7 +1079,7 @@ tasks:
         complex:
           root: alert
           accessor: hostip
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1255,7 +1255,7 @@ tasks:
         complex:
           root: alert
           accessor: username
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -1583,7 +1583,7 @@ tasks:
         complex:
           root: CloudIndicators
           accessor: username
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
