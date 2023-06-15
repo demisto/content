@@ -1209,7 +1209,7 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CommandResults: A CommandResults object containing the results of the created rule.
     """
     interface_name = args.get('interface_name')
-    interface_type = args['interface_type']
+    interface_type = args.get('interface_type')
 
     if interface_type == 'Global':
         interface_name = ''
@@ -1222,13 +1222,13 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     handle_address_in_rule(
         rule_body=rule_body,
         direction='source',
-        address_value=args['source'],
+        address_value=args.get('source'),
         address_kind=args.get('source_kind'),
     )
     handle_address_in_rule(
         rule_body=rule_body,
         direction='destination',
-        address_value=args['destination'],
+        address_value=args.get('destination'),
         address_kind=args.get('destination_kind'),
     )
 
@@ -1323,8 +1323,8 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the results of the edited rule.
     """
-    rule_id = args['rule_id']
-    interface_type = args['interface_type']
+    rule_id = args.get('rule_id', '')
+    interface_type = args.get('interface_type')
     interface_name = args.get('interface_name')
 
     if interface_type == 'Global':
@@ -1532,7 +1532,7 @@ def list_object_command(
     # GET arguments
     object_id = args.get('object_id', '')
     # LIST arguments
-    limit = arg_to_number(args['limit'], required=False)
+    limit = arg_to_number(args.get('limit'), required=False)
     page = arg_to_number(args.get('page'), required=False)
     page_size = arg_to_number(args.get('page_size'), required=False)
 
@@ -1772,7 +1772,7 @@ def main():
     proxy = params.get('proxy', False)
     isASAv = params.get('isASAv', False)
     # Remove trailing slash to prevent wrong URL path to service
-    server_url = params['server'].rstrip('/')
+    server_url = params.get('server', '').rstrip('/')
 
     commands = {
         f'{INTEGRATION_COMMAND}-list-rules': list_rules_command,
