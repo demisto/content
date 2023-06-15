@@ -14,14 +14,12 @@ from typing import List
 
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
-from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
 from google.cloud.storage import Bucket
 from packaging.version import Version
 from urllib3.exceptions import HTTPWarning, HTTPError
 
 from Tests.Marketplace.marketplace_constants import (IGNORED_FILES,
-                                                     PACKS_FOLDER,
                                                      PACKS_FULL_PATH,
                                                      GCPConfig, Metadata)
 from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
@@ -385,7 +383,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         get_pack_installation_request_data(pack_id=pack_id,
                                            pack_version=pack_data['extras']['pack']['currentVersion'])
     ]
-    dependencies_data = []
+    dependencies_data: list[dict] = []
 
     create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
                                        dependants_ids=[pack_id],
@@ -408,6 +406,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
     lock.acquire()
 
     if one_pack_and_its_dependencies_in_batch:
+        if batch_packs_install_request_body is None:
+            batch_packs_install_request_body = []
         pack_and_its_dependencies = \
             {p['id']: p for p in current_packs_to_install if p['id'] not in packs_in_the_list_to_install}
         if pack_and_its_dependencies:
