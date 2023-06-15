@@ -424,10 +424,10 @@ class Client(BaseClient):
         if interface_type == "Global":
             res = self._http_request("POST", '/api/access/global/rules', json_data=rule_body, resp_type="response")
         if interface_type == 'In':
-            res = self._http_request("POST", '/api/access/in/{}/rules'.format(interface_name), json_data=rule_body,
+            res = self._http_request("POST", f'/api/access/in/{interface_name}/rules', json_data=rule_body,
                                      resp_type="response")
         if interface_type == 'Out':
-            res = self._http_request("POST", '/api/access/out/{}/rules'.format(interface_name), json_data=rule_body,
+            res = self._http_request("POST", f'/api/access/out/{interface_name}/rules', json_data=rule_body,
                                      resp_type="response")
         loc = res.headers.get("Location", "")
         rule = self._http_request('GET', loc[loc.find('/api'):])
@@ -1250,9 +1250,9 @@ def rule_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     raw_rules = client.rule_action(rule_id, interface, interface_type, 'GET')
     rules = raw_to_rules([raw_rules])
-    hr = tableToMarkdown("Rule {}:".format(rule_id), rules, ["ID", "Source", "Dest", "Permit", "Interface",
-                                                             "InterfaceType", "IsActive", "Position", "SourceService",
-                                                             "DestService"])
+    hr = tableToMarkdown(f"Rule {rule_id}:", rules, ["ID", "Source", "Dest", "Permit", "Interface",
+                                                     "InterfaceType", "IsActive", "Position", "SourceService",
+                                                     "DestService"])
     return CommandResults(
         readable_output=hr,
         outputs_prefix='Rules',
@@ -1311,7 +1311,7 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
         rules = raw_to_rules([raw_rule])
 
         hr = tableToMarkdown(
-            'Created new rule. ID: {}'.format(raw_rule.get('objectId'),),
+            f'Created new rule. ID: {raw_rule.get("objectId")}',
             rules,
             [
                 'ID',
@@ -1338,7 +1338,7 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
         if 'DUPLICATE' in str(e):
             raise ValueError('You are trying to create a rule that already exists.') from e
         if '[500]' in str(e):
-            raise ValueError('Could not find interface: {}.'.format(interface_name)) from e
+            raise ValueError(f'Could not find interface: {interface_name}') from e
         else:
             raise ValueError(f'Could not create rule. Error {str(e)}')
 
@@ -1461,7 +1461,7 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
             raise ValueError('You are trying to create a rule that already exists.') from e
 
         if '[500]' in str(e):
-            raise ValueError('Could not find interface: {}.'.format(interface_name)) from e
+            raise ValueError(f'Could not find interface: {interface_name}.') from e
 
         raise
 
