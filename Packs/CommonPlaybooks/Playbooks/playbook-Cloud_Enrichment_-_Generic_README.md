@@ -7,13 +7,12 @@ The **Cloud Enrichment - Generic Playbook** is designed to unify all the relevan
 ### Supported Blocks
 
 1. **Cloud IAM Enrichment - Generic**
-   
-   Enriches information related to Identity and Access Management (IAM) in the cloud.
+   - Enriches information related to Identity and Access Management (IAM) in the cloud.
 
 2. **Cloud Compute Enrichment - Generic**
-   
-   Enriches information related to cloud compute resources.
+   - Enriches information related to cloud compute resources.
 
+The playbook supports a single CSP enrichment at a time.
 ---
 
 ## Dependencies
@@ -43,7 +42,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| cloudProvider | The cloud provider involved. |  | Optional |
+| cloudProvider | The cloud provider involved.<br/>The supported CSPs are AWS, Azure and GCP. |  | Optional |
 | instanceName | The instance name. |  | Optional |
 | instanceID | The instance ID. |  | Optional |
 | zone | The zone holding the instance. |  | Optional |

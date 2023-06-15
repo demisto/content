@@ -16,6 +16,7 @@ description: |-
   2. **Cloud Compute Enrichment - Generic**
      - Enriches information related to cloud compute resources.
 
+  The playbook supports a single CSP enrichment at a time.
   ---
 starttaskid: "0"
 tasks:
@@ -200,7 +201,9 @@ inputs:
 - key: cloudProvider
   value: {}
   required: false
-  description: The cloud provider involved.
+  description: |-
+    The cloud provider involved.
+    The supported CSPs are AWS, Azure and GCP.
   playbookInputQuery:
 - key: instanceName
   value: {}

@@ -6,7 +6,7 @@ description: |-
 
   ## Cloud Threat Hunting - Persistence Playbook
 
-  The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure.
+  The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure - one at a time.
 
   ### Hunting Queries
 
@@ -18,7 +18,7 @@ description: |-
 
   ### Indicator Extraction
 
-If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
+  If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
 
   ---
 starttaskid: "0"
@@ -259,7 +259,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -305,7 +305,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -351,7 +351,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -377,6 +377,9 @@ tasks:
       attributeValue:
         complex:
           root: inputs.AWSAccessKeyID
+      region:
+        complex:
+          root: inputs.region
       startTime:
         complex:
           root: inputs.AWSTimespan
@@ -665,7 +668,7 @@ tasks:
         simple: "false"
       project_name:
         complex:
-          root: inputs.projectName
+          root: inputs.GCPProjectName
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -678,7 +681,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -711,7 +714,7 @@ tasks:
         simple: "false"
       project_name:
         complex:
-          root: inputs.projectName
+          root: inputs.GCPProjectName
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -724,7 +727,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -757,7 +760,7 @@ tasks:
         simple: "false"
       project_name:
         complex:
-          root: inputs.projectName
+          root: inputs.GCPProjectName
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -770,7 +773,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1201,7 +1204,7 @@ tasks:
       id: 015006b4-cdec-4f28-8e37-ab6aebb51851
       version: -1
       name: Found results?
-      description: Checks if any results were recieved by the threat hunting queries.
+      description: Checks if any results were received by the threat hunting queries.
       type: condition
       iscommand: false
       brand: ""
@@ -1305,7 +1308,9 @@ inputs:
 - key: cloudProvider
   value: {}
   required: false
-  description: The cloud service provider involved.
+  description: |-
+    The cloud service provider involved.
+    The supported CSPs are AWS, Azure and GCP.
   playbookInputQuery:
 - key: AWSAccessKeyID
   value: {}
@@ -1320,7 +1325,9 @@ inputs:
 - key: region
   value: {}
   required: false
-  description: The region to search for events in.
+  description: |-
+    The region to search for events in.
+    e.g. us-east-1, us-west-2, etc.
   playbookInputQuery:
 - key: AzureTimespan
   value: {}
@@ -1350,7 +1357,7 @@ inputs:
     2022-05-29T12:00:00.123Z
     2021-01-01T12:00:00.234Z
   playbookInputQuery:
-- key: projectName
+- key: GCPProjectName
   value: {}
   required: false
   description: The GCP project name.

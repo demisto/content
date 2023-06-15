@@ -2,7 +2,7 @@
 
 ## Cloud Threat Hunting - Persistence Playbook
 
-The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure.
+The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure - one at a time.
 
 ### Hunting Queries
 
@@ -32,9 +32,9 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ExtractIndicators-CloudLogging
 * IsIntegrationAvailable
 * Set
+* ExtractIndicators-CloudLogging
 
 ### Commands
 
@@ -48,14 +48,14 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| cloudProvider | The cloud service provider involved. |  | Optional |
+| cloudProvider | The cloud service provider involved.<br/>The supported CSPs are AWS, Azure and GCP. |  | Optional |
 | AWSAccessKeyID | The AWS access key ID. |  | Optional |
 | username | The username that initiated the API call. |  | Optional |
-| region | The region to search for events in. |  | Optional |
-| AzureTimespan | The timespan to limit by the hunting query.<br/>e.g.<br/>Use 2d for timespan of 2 days<br/>Use 1.5h for timespan of 1.5 hour<br/>Use 30m for timespan of 30 minutes |  | Optional |
+| region | The region to search for events in.<br/>e.g. us-east-1, us-west-2, etc. |  | Optional |
+| AzureTimespan | The timespan to limit by the hunting query.<br/>e.g.,<br/>Use 2d for timespan of 2 days<br/>Use 1.5h for timespan of 1.5 hour<br/>Use 30m for timespan of 30 minutes |  | Optional |
 | AWSTimespan | Date and time in the following format - yyyy-mm-ddThh:mm:ss<br/>e.g.,<br/>2022-05-29T12:00:00<br/>2021-01-01T12:00:00 |  | Optional |
-| GCPTimespan | Date in ISO<br/>e.g.,<br/>2022-05-29T12:00:00.123Z<br/>2021-01-01T12:00:00.234Z |  | Optional |
-| projectName | The GCP project name. |  | Optional |
+| GCPTimespan | Date in ISO.<br/>e.g.<br/>2022-05-29T12:00:00.123Z<br/>2021-01-01T12:00:00.234Z |  | Optional |
+| GCPProjectName | The GCP project name. |  | Optional |
 
 ## Playbook Outputs
 

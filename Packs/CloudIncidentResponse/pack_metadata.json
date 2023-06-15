@@ -6,10 +6,19 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Incident Response"
+    ],
+    "keywords": [
+        "Cloud",
+        "IR",
+        "Incident Response",
+        "Token Theft"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

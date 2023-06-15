@@ -6,7 +6,7 @@ description: |-
 
   ## Cloud Token Theft Response Playbook
 
-The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
+  The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
 
   **Cloud Enrichment:**
   - Enriches the involved resources
@@ -191,23 +191,38 @@ tasks:
       id: a505e901-1a19-4c54-89a5-5679da10c8e7
       version: -1
       name: Cloud Enrichment - Generic
+      description: |-
+        ---
+
+        ## Generic Cloud Enrichment Playbook
+
+        The **Cloud Enrichment - Generic Playbook** is designed to unify all the relevant playbooks concerning the enrichment of information in the cloud. It provides a standardized approach to enriching information in cloud environments.
+
+        ### Supported Blocks
+
+        1. **Cloud IAM Enrichment - Generic**
+           - Enriches information related to Identity and Access Management (IAM) in the cloud.
+
+        2. **Cloud Compute Enrichment - Generic**
+           - Enriches information related to cloud compute resources.
+
+        ---
       playbookName: Cloud Enrichment - Generic
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
       cloudProvider:
         complex:
-          root: alert.cloudprovider
-          accessor: '[0]'
+          root: alert
+          accessor: cloudprovider
       username:
         complex:
-          root: alert.username
-          accessor: '[0]'
+          root: alert
+          accessor: username
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1153,11 +1168,30 @@ tasks:
       id: e470723c-a8a3-4166-883b-5f4b38a6e7e6
       version: -1
       name: Cloud Threat Hunting - Persistence
+      description: |-
+        ---
+
+        ## Cloud Threat Hunting - Persistence Playbook
+
+        The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure.
+
+        ### Hunting Queries
+
+        The playbook executes hunting queries for each provider related to each of the following:
+
+        1. IAM
+        2. Compute Resources
+        3. Compute Functions
+
+        ### Indicator Extraction
+
+        If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
+
+        ---
       playbookName: Cloud Threat Hunting - Persistence
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -1219,8 +1253,8 @@ tasks:
           accessor: region
       username:
         complex:
-          root: alert.username
-          accessor: '[0]'
+          root: alert
+          accessor: username
     separatecontext: true
     continueonerrortype: ""
     loop:
