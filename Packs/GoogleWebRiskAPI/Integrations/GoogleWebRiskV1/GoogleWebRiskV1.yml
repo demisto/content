@@ -1,0 +1,48 @@
+category: Utilities
+commonfields:
+  id: Google Web Risk v1
+  version: -1
+configuration:
+- display: ""
+  name: APIkey
+  required: true
+  type: 4
+- defaultvalue: SOCIAL_ENGINEERING
+  display: ""
+  name: ThreatCategories
+  options:
+  - SOCIAL_ENGINEERING_EXTENDED_COVERAGE
+  - MALWARE
+  - UNWANTED_SOFTWARE
+  - SOCIAL_ENGINEERING
+  required: false
+  type: 16
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: b2370105-d6b4-4917-8650-a40497fa8d26
+    packName: Google Web Risk API
+    prevname: ""
+    propagationLabels: []
+    toServerVersion: ""
+description: |
+  This integration was build to utilise the "Google Web Risk" API to query for an URI for there current associated threat.
+display: Google Web Risk v1
+name: Google Web Risk v1
+script:
+  commands:
+  - arguments:
+    - name: value
+      required: true
+    name: gwr-check-url
+    outputs:
+    - contextPath: GoogleWebRisk
+      type: unknown
+  dockerimage: demisto/python3:3.10.9.42476
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: Google Web Risk
