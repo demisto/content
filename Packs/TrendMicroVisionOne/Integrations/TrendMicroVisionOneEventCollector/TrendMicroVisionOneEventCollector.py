@@ -883,11 +883,8 @@ def get_audit_logs(
         log_id_field_name='id',
         date_format=DATE_FORMAT
     )
-    if latest_log_time:
-        # decrease the last time of the audit in one second as the api works only on greater than and not greater equal
-        latest_log_time = (dateparser.parse(latest_log_time) - timedelta(seconds=1)).strftime(DATE_FORMAT)  # type: ignore
-
     latest_audit_log_time = latest_log_time or end_time
+    latest_audit_log_time = (dateparser.parse(latest_audit_log_time) - timedelta(seconds=1)).strftime(DATE_FORMAT)  # type: ignore
 
     for log in audit_logs:
         # pop all the hashes used to find duplicates
