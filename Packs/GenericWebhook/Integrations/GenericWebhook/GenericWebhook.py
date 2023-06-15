@@ -1,3 +1,4 @@
+import json
 from collections import deque
 from copy import copy
 from secrets import compare_digest
@@ -77,7 +78,10 @@ async def handle_post(
             demisto.debug(f'Authorization failed - request headers {request_headers}')
             return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
-    raw_json = incident.raw_json or await request.json()
+    raw_json = {}
+    raw_json['body'] = incident.raw_json or await request.json()
+    raw_json['headers'] = dict(request.headers)
+
     incident = {
         'name': incident.name or 'Generic webhook triggered incident',
         'type': incident.type or demisto.params().get('incidentType'),
