@@ -1,0 +1,20 @@
+[{
+  "first_seen": "2022-12-28T11:20:07.001",
+  "software": "",
+  "last_seen": "2023-01-05T01:25:55.001",
+  "risk_score": 8,
+  "sub_category": "Open Ports",
+  "web_server": null,
+  "ip": "103.10.147.138",
+  "alert_created_date": "2023-01-05T04:18:46.001",
+  "description": null,
+  "web_server_version": null,
+  "uid": "63ac266713b0752aa7865100",
+  "top_domain": "aa.id",
+  "cat": 8,
+  "sub_domain": "ns6.aa.id",
+  "open_ports": [
+    53
+  ],
+  "category": "Attack Surface"
+}]
