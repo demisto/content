@@ -641,6 +641,99 @@ script:
     execution: false
     name: azure-nsg-generate-login-url
     arguments: []
+  - description: Gets all subscriptions for a tenant.
+    name: azure-nsg-subscriptions-list
+    outputs:
+    - contextPath: AzureNSG.Subscription.id
+      description: 'The unique identifier of the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.authorizationSource
+      description: 'The source of authorization for the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.managedByTenants
+      description: 'The tenants that have access to manage the Azure Network Security Groups subscription.'
+      type: Unknown
+    - contextPath: AzureNSG.Subscription.subscriptionId
+      description: 'The ID of the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.tenantId
+      description: 'The ID of the tenant associated with the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.displayName
+      description: 'The display name of the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.state
+      description: 'The current state of the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.subscriptionPolicies.locationPlacementId
+      description: 'The ID of the location placement policy for the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.subscriptionPolicies.quotaId
+      description: 'The ID of the quota policy for the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.subscriptionPolicies.spendingLimit
+      description: 'The spending limit policy for the Azure Network Security Groups subscription.'
+      type: String
+    - contextPath: AzureNSG.Subscription.count.type
+      description: 'The type of the Azure Network Security Groups subscription count.'
+      type: String
+    - contextPath: AzureNSG.Subscription.count.value
+      description: 'The value of the Azure Network Security Groups subscription count.'
+      type: Number
+  - description: Gets all resource groups for a subscription.
+    name: azure-nsg-resource-group-list
+    arguments:
+    - default: false
+      description: "A comma separated list of the subscription ID's, optional. Note: This argument will override the instance parameter ‘Subscription ID'."
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - name: limit
+      description: Limit on the number of resource groups to return. Default value is 50.
+      required: false
+      defaultValue: 50
+    - default: false
+      name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+      required: false
+    outputs:
+    - contextPath: AzureNSG.ResourceGroup.id
+      description: 'The unique identifier of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.name
+      description: 'The name of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.type
+      description: 'The type of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.location
+      description: 'The location of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.properties.provisioningState
+      description: 'The provisioning state of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.Owner
+      description: 'The owner tag of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags
+      description: 'The tags associated with the Azure Network Security Groups resource group.'
+      type: Unknown
+    - contextPath: AzureKS.ResourceGroup.tags.Name
+      description: 'The name tag of the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.managedBy
+      description: 'The entity that manages the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-name
+      description: 'The AKS managed cluster name tag associated with the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-rg
+      description: 'The AKS managed cluster resource group tag associated with the Azure Network Security Groups resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.type
+      description: 'The type tag associated with the Azure Network Security Groups resource group.'
+      type: String
   dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
