@@ -5,7 +5,24 @@ from SymantecCloudSOC import Client
 import pytest
 from test_data.use_cases import response_data, response_pagination_incident, response_pagination_investigate
 from test_data.use_cases import dedup_by_id_test_case, get_first_fetch_time_params
-from test_data.use_cases import get_all_events_for_log_type_test_case, test_main_params
+from test_data.use_cases import get_all_events_for_log_type_test_case_with_pagination, test_main_params, \
+    get_all_events_for_log_type_test_case_without_pagination
+
+
+''' HELPER FUNCTIONS '''
+
+
+def get_mocked_url(app: str, subtype: str,
+                   created_timestamp: str = None, limit: int = None):
+    if limit:
+        if created_timestamp:
+            return f'{mocked_client._base_url}?app={app}&subtype={subtype}&limit={limit}&created_timestamp={created_timestamp}'
+        return f'{mocked_client._base_url}?app={app}&subtype={subtype}&limit={limit}'
+    return f'{mocked_client._base_url}?app={app}&subtype={subtype}'
+
+
+def mock_set_last_run(last_run):
+    return last_run
 
 
 def get_client() -> Client:
@@ -63,19 +80,6 @@ def test_get_events_command():
         assert command_results.readable_output == response_data["readable_output_collector"]
 
 
-def get_mocked_url(app: str, subtype: str,
-                   created_timestamp: str = None, limit: int = None):
-    if limit:
-        if created_timestamp:
-            return f'{mocked_client._base_url}?app={app}&subtype={subtype}&limit={limit}&created_timestamp={created_timestamp}'
-        return f'{mocked_client._base_url}?app={app}&subtype={subtype}&limit={limit}'
-    return f'{mocked_client._base_url}?app={app}&subtype={subtype}'
-
-
-def mock_set_last_run(last_run):
-    return last_run
-
-
 @freeze_time("2022-01-01 00:00:00 UTC")
 def test_test_module():
     """
@@ -102,16 +106,17 @@ def test_test_module():
     assert detect_incidents_mocker.called_once
 
 
-@pytest.mark.parametrize('event,log_type ,expected_event',
-                         [({"_id": "_id1", "incident_start_time": "2023-01-02T23:23:59"},
-                           "Incident_logs", {'_id': '_id1', '_time': '2023-01-02T23:23:59',
-                                             'incident_start_time': '2023-01-02T23:23:59',
-                                             'type': 'Detect incident'}),
-                          ({"_id": "_id1", "created_timestamp": "2023-01-02T23:23:59"}, "Investigate_logs",
-                           {'_id': '_id1',
-                            '_time': '2023-01-02T23:23:59',
-                            'created_timestamp': '2023-01-02T23:23:59',
-                            'type': 'Investigate'})])
+@pytest.mark.parametrize('event, log_type ,expected_event', [
+    ({"_id": "_id1", "incident_start_time": "2023-01-02T23:23:59"},
+     "Incident_logs",
+     {'_id': '_id1', '_time': '2023-01-02T23:23:59',
+      'incident_start_time': '2023-01-02T23:23:59',
+      'type': 'Detect incident'}),
+    ({"_id": "_id1", "created_timestamp": "2023-01-02T23:23:59"},
+     "Investigate_logs",
+     {'_id': '_id1', '_time': '2023-01-02T23:23:59',
+      'created_timestamp': '2023-01-02T23:23:59',
+      'type': 'Investigate'})])
 def test_add_fields_to_event(event, log_type, expected_event):
     """
         Given:
@@ -178,10 +183,10 @@ def test_create_client_with_authorization():
 @pytest.mark.parametrize('max_fetch, log_type, last_run,'
                          'first_fetch_time, first_fetch_time_investigate,'
                          'expected_all_events_list, expected_last_run',
-                         get_all_events_for_log_type_test_case)
-def test_get_all_events_for_log_type(max_fetch, log_type, last_run,
-                                     first_fetch_time, first_fetch_time_investigate,
-                                     expected_all_events_list, expected_last_run):
+                         get_all_events_for_log_type_test_case_with_pagination)
+def test_get_all_events_for_log_type_with_pagination(max_fetch, log_type, last_run,
+                                                     first_fetch_time, first_fetch_time_investigate,
+                                                     expected_all_events_list, expected_last_run):
     from SymantecCloudSOC import get_all_events_for_log_type
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
@@ -207,11 +212,39 @@ def test_get_all_events_for_log_type(max_fetch, log_type, last_run,
     detect_incidents_mocker.called_once
     investigate_mocker.called
     investigate_mocker.called_once
-    if max_fetch > 1000:
-        detect_incidents_mocker_page.called
-        detect_incidents_mocker_page.called_once
-        detect_investigate_mocker_page.called
-        detect_investigate_mocker_page.called_once
+    detect_incidents_mocker_page.called
+    detect_incidents_mocker_page.called_once
+    detect_investigate_mocker_page.called
+    detect_investigate_mocker_page.called_once
+    assert all_events_list == expected_all_events_list
+    assert last_run_for_log_type == expected_last_run
+
+
+@pytest.mark.parametrize('max_fetch, log_type, last_run,'
+                         'first_fetch_time, first_fetch_time_investigate,'
+                         'expected_all_events_list, expected_last_run',
+                         get_all_events_for_log_type_test_case_without_pagination)
+def test_get_all_events_for_log_type_without_pagination(max_fetch, log_type, last_run,
+                                                        first_fetch_time, first_fetch_time_investigate,
+                                                        expected_all_events_list, expected_last_run):
+    from SymantecCloudSOC import get_all_events_for_log_type
+    with requests_mock.Mocker() as request_mocker:
+        investigate_mocker = request_mocker.get(
+            url=get_mocked_url(app="Investigate", subtype="all",
+                               created_timestamp="2022-01-01T00%3A00%3A00Z", limit=1000),
+            status_code=200, json=response_pagination_investigate["page_1_response"])
+        detect_incidents_mocker = request_mocker.get(
+            url=get_mocked_url(app="detect", subtype="incidents", limit=1000),
+            status_code=200, json=response_pagination_incident["page_1_response"])
+        investigate_mocker = request_mocker.get(
+            url=get_mocked_url(app="Investigate", subtype="all", limit=1000),
+            status_code=200, json=response_pagination_investigate["page_1_response"])
+        all_events_list, last_run_for_log_type = get_all_events_for_log_type(mocked_client, max_fetch, log_type, last_run,
+                                                                             first_fetch_time, first_fetch_time_investigate)
+    detect_incidents_mocker.called
+    detect_incidents_mocker.called_once
+    investigate_mocker.called
+    investigate_mocker.called_once
     assert all_events_list == expected_all_events_list
     assert last_run_for_log_type == expected_last_run
 
