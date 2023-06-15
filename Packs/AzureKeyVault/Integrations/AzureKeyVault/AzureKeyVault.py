@@ -1279,7 +1279,7 @@ def get_azure_cloud(params):
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     azure_cloud_name = AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg]
     azure_cloud = AZURE_CLOUDS[azure_cloud_name]
-    demisto.log(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
+    demisto.debug(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
     return azure_cloud
 
 
