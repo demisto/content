@@ -142,6 +142,29 @@ script:
       predefined:
       - 'True'
       - 'False'
+    - name: playbook
+      auto: PREDEFINED
+      predefined:
+      - none
+      - default
+      - alt_tab_programs
+      - open_word_embedded_object
+      - visit_site
+      - close_file
+      - use_best_option
+      description: 'Name of a playbook to apply to this sample run. none: Explicitly disables playbooks, default: Default Playbook, alt_tab_programs: Conduct Active Window Change, open_word_embedded_object: Open Embedded Object in Word Document, use_best_option: allows Malware Analytics to select the best Playbook option based on the submitted sample, visit_site: Visit Website Using Internet Explorer, close_file: Close Active Window. The current list of playbooks endpoints can be obtained by querying /api/v3/configuration/playbooks.'
+    - name: vm
+      auto: PREDEFINED
+      predefined:
+      - win7-x64
+      - win7-x64-2
+      - win10
+      - win10-x64-2-beta
+      - win10-x64-browser
+      - win10-x64-jp
+      - win10-x64-kr
+      - win10-x64-phishing-beta
+      description: 'a string identifying a specific VM to use. Options: win7-x64: Windows 7 64bit, win7-x64-2: Windows 7 64-bit Profile 2, win10-x64-2-beta: Windows 10 LTSC 2019 (beta), win10-x64-browser: Windows 10 Browser, win10-x64-jp: Windows 10 Japanese, win10-x64-kr: Windows 10 Korean, win10-x64-phishing-beta: Windows 10 (Phishing), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese character sets, such as S-JIS, submit to the appropriate VM.'
     - name: hide_polling_output
       description: Whether to hide the polling result (automatically filled by polling).
       deprecated: true
