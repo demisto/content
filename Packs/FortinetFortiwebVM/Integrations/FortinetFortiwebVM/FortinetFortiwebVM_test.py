@@ -6417,6 +6417,9 @@ def test_url_access_rule_group_list_command(
     if isinstance(result.outputs, list):
         assert len(result.outputs) == expected
     assert result.outputs_prefix == "FortiwebVM.URLAccessRuleGroup"
+    assert isinstance(result.outputs, list)
+    assert result.outputs[0]['count'] == 0
+    assert result.outputs[0]['host'] == 'test'
 
 
 @pytest.mark.parametrize(
@@ -6719,7 +6722,7 @@ def test_url_access_rule_condition_delete_command(
             "WebProtection/Access/URLAccessRule/test/URLAccessRuleNewURLAccessCondition",
             {"group_name": "test", "page": "1", "page_size": 3},
             "url_access_rule_condition/v1_list.json",
-            3,
+            2,
         ),
         (
             ClientV2.API_VER,
@@ -6754,6 +6757,8 @@ def test_url_access_rule_condition_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = url_access_rule_condition_list_command(mock_client, args)
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) == expected
+    assert isinstance(result.outputs, dict)
     assert result.outputs_prefix == "FortiwebVM.URLAccessRuleGroup"
+    assert result.outputs.get('Condition')
+    assert isinstance(result.outputs.get('Condition'), list)
+    assert len(result.outputs['Condition']) == expected

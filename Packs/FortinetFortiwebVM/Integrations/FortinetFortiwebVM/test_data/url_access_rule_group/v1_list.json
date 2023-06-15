@@ -1,13 +1,13 @@
 [
     {
-        "_id": "fhgfhfg",
+        "_id": "test",
         "id": 1,
-        "name": "fhgfhfg",
+        "name": "test",
         "ngid": 602,
         "count": 0,
-        "action": 2,
-        "disaction": "Alert & Deny",
-        "host": "",
+        "action": 4,
+        "disaction": "Deny (no log)",
+        "host": "test",
         "hostStatus": true,
         "severity": 3,
         "triggerPolicy": "",

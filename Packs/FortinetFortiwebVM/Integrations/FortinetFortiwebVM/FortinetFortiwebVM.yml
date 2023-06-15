@@ -4556,7 +4556,7 @@ script:
       description: The Trigger policy of the URL access rule group.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.count
-      description: 'The count of the conditions that are related to the current URL access rule group. '
+      description: The amount  of the conditions that are related to the current URL access rule group.
       type: Number
   - arguments:
     - description: URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups).

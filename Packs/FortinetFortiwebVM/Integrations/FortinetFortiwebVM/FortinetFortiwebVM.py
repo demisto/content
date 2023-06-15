@@ -763,46 +763,69 @@ class ParserV1(Parser):
     def parse_url_access_rule_group(
         self, access_rule_group: dict[str, Any]
     ) -> dict[str, Any]:
+        """Parse for URL access rule group dict.
+
+        Args:
+            access_rule_group (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
         return {
-            "id": access_rule_group["_id"],
+            "id": access_rule_group.get("_id"),
             "action": access_rule_group.get("disaction") or "",
-            "host_status": access_rule_group["hostStatus"],
-            "host": access_rule_group["host"],
+            "host_status": access_rule_group.get("hostStatus"),
+            "host": access_rule_group.get("host"),
             "severity": dict_safe_get(
                 self.severity_api_to_user_mapper,
-                [access_rule_group["severity"]],
+                [access_rule_group.get("severity")],
             ),
-            "trigger_policy": access_rule_group["triggerPolicy"],
-            "count": access_rule_group["count"],
+            "trigger_policy": access_rule_group.get("triggerPolicy"),
+            "count": access_rule_group.get("count"),
         }
 
     def parse_url_access_rule_condition(
         self, url_access_rule_condition: dict[str, Any]
     ) -> dict[str, Any]:
+        """Parse for URL access rule condition dict.
+
+        Args:
+            url_access_rule_condition (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        url_type = url_access_rule_condition.get("urlType")
+        meet_this_condition_if = url_access_rule_condition.get("meetthisconditionif")
+        source_address = url_access_rule_condition.get("sourceAddress")
+        source_address_type = url_access_rule_condition.get("sourceAddressType")
+        ip_type = url_access_rule_condition.get("type")
+        source_domain_type = url_access_rule_condition.get("source_domain_type")
         return {
-            "id": url_access_rule_condition["_id"],
-            "url_type": self.url_type_api_to_user_mapper[
-                url_access_rule_condition["urlType"]
-            ],
-            "url_pattern": url_access_rule_condition["urlPattern"],
-            "meet_this_condition_if": self.meet_condition_api_to_user_mapper[
-                url_access_rule_condition["meetthisconditionif"]
-            ],
-            "source_address": self.enable_disable_to_boolean_mapper.get(
-                url_access_rule_condition["sourceAddress"]
+            "id": url_access_rule_condition.get("_id"),
+            "url_type": url_type and self.url_type_api_to_user_mapper.get(
+                url_type
             ),
-            "source_address_type": self.source_address_type_api_to_user_mapper.get(
-                url_access_rule_condition["sourceAddressType"]
+            "url_pattern": url_access_rule_condition.get("urlPattern"),
+            "meet_this_condition_if": meet_this_condition_if
+            and self.meet_condition_api_to_user_mapper.get(
+                meet_this_condition_if
             ),
-            "ip_range": url_access_rule_condition["iPv4IPv6"],
-            "ip_type": self.ip_type_api_to_user_mapper.get(
-                url_access_rule_condition["type"]
+            "source_address": source_address and self.enable_disable_to_boolean_mapper.get(
+                source_address
             ),
-            "domain": url_access_rule_condition["domain"],
-            "source_domain_type": self.url_type_api_to_user_mapper.get(
-                url_access_rule_condition.get("source_domain_type", ""), ""
+            "source_address_type": source_address_type and self.source_address_type_api_to_user_mapper.get(
+                source_address_type
             ),
-            "source_domain": url_access_rule_condition["source_domain"],
+            "ip_range": url_access_rule_condition.get("iPv4IPv6"),
+            "ip_type": ip_type and self.ip_type_api_to_user_mapper.get(
+                ip_type
+            ),
+            "domain": url_access_rule_condition.get("domain"),
+            "source_domain_type": source_domain_type and self.url_type_api_to_user_mapper.get(
+                source_domain_type
+            ),
+            "source_domain": url_access_rule_condition.get("source_domain"),
         }
 
     @property
@@ -930,40 +953,70 @@ class ParserV1(Parser):
         return reverse_dict(self.url_action_user_to_api_mapper)
 
     @property
-    @abstractmethod
     def meet_condition_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for URL access rule meet_this_condition to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             "Object matches the URL Pattern": "1",
             "Object does not match the URL Pattern": "2",
         }
 
     @property
-    @abstractmethod
     def meet_condition_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for URL access rule meet_this_condition to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.meet_condition_user_to_api_mapper)
 
     @property
     def url_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for url_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {"Simple String": "1", "Regular Expression": "2"}
 
     @property
     def url_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for url_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.url_type_user_to_api_mapper)
 
     @property
     def source_address_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for source_address_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {"IP": 1, "IP Resolved by Specified Domain": 2, "Source Domain": 3}
 
     @property
     def source_address_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for source_address_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.source_address_type_user_to_api_mapper)
 
     @property
     def ip_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for ip_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {"IPv4": 2, "IPv6": 10}
 
     @property
     def ip_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for ip_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.ip_type_user_to_api_mapper)
 
 
@@ -1301,45 +1354,68 @@ class ParserV2(Parser):
     def parse_url_access_rule_group(
         self, access_rule_group: dict[str, Any]
     ) -> dict[str, Any]:
+        """Parse for URL access rule group dict.
+
+        Args:
+            access_rule_group (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
         return {
-            "id": access_rule_group["name"],
-            "action": access_rule_group["action"],
-            "host_status": access_rule_group["host-status"],
-            "host": access_rule_group["host"],
-            "severity": access_rule_group["severity"],
-            "trigger_policy": access_rule_group["trigger"],
-            "count": access_rule_group["sz_match-condition"],
+            "id": access_rule_group.get("name"),
+            "action": access_rule_group.get("action"),
+            "host_status": access_rule_group.get("host-status"),
+            "host": access_rule_group.get("host"),
+            "severity": access_rule_group.get("severity"),
+            "trigger_policy": access_rule_group.get("trigger"),
+            "count": access_rule_group.get("sz_match-condition"),
         }
 
     def parse_url_access_rule_condition(
         self, url_access_rule_condition: dict[str, Any]
     ) -> dict[str, Any]:
+        """Parse for URL access rule condition dict.
+
+        Args:
+            url_access_rule_condition (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        url_type = url_access_rule_condition.get("type")
+        meet_this_condition_if = url_access_rule_condition.get("reverse-match")
+        source_address_type = url_access_rule_condition.get("sip-address-type")
+        ip_type = url_access_rule_condition.get("sdomain-type")
+        source_domain_type = url_access_rule_condition.get("source-domain-type")
         return {
-            "id": url_access_rule_condition["id"],
-            "url_type": self.url_type_api_to_user_mapper[
-                url_access_rule_condition["type"]
-            ],
-            "url_pattern": url_access_rule_condition["reg-exp"],
-            "meet_this_condition_if": self.meet_condition_api_to_user_mapper.get(
-                url_access_rule_condition["reverse-match"]
+            "id": url_access_rule_condition.get("id"),
+            "url_type": url_type and self.url_type_api_to_user_mapper.get(
+                url_type
             ),
-            "source_address": url_access_rule_condition["sip-address-check"],
-            "source_address_type": self.source_address_type_api_to_user_mapper.get(
-                url_access_rule_condition["sip-address-type"]
+            "url_pattern": url_access_rule_condition.get("reg-exp"),
+            "meet_this_condition_if": meet_this_condition_if
+            and self.meet_condition_api_to_user_mapper.get(
+                meet_this_condition_if
             ),
-            "ip_range": url_access_rule_condition["sip-address-value"],
-            "ip_type": self.ip_type_api_to_user_mapper.get(
-                url_access_rule_condition["sdomain-type"]
+            "source_address": url_access_rule_condition.get("sip-address-check"),
+            "source_address_type": source_address_type
+            and self.source_address_type_api_to_user_mapper.get(
+                source_address_type
             ),
-            "domain": url_access_rule_condition["sip-address-domain"],
-            "source_domain_type": self.url_type_api_to_user_mapper.get(
-                url_access_rule_condition["source-domain-type"]
+            "ip_range": url_access_rule_condition.get("sip-address-value"),
+            "ip_type": ip_type and self.ip_type_api_to_user_mapper.get(
+                ip_type
             ),
-            "source_domain": url_access_rule_condition["source-domain"],
-            "only_method_check": url_access_rule_condition["only-method-check"],
-            "only_protocol_check": url_access_rule_condition["only-protocol-check"],
-            "only_method": url_access_rule_condition["only-method"],
-            "only_protocol": url_access_rule_condition["only-protocol"],
+            "domain": url_access_rule_condition.get("sip-address-domain"),
+            "source_domain_type": source_domain_type and self.url_type_api_to_user_mapper.get(
+                source_domain_type
+            ),
+            "source_domain": url_access_rule_condition.get("source-domain"),
+            "only_method_check": url_access_rule_condition.get("only-method-check"),
+            "only_protocol_check": url_access_rule_condition.get("only-protocol-check"),
+            "only_method": url_access_rule_condition.get("only-method"),
+            "only_protocol": url_access_rule_condition.get("only-protocol"),
         }
 
     @property
@@ -1480,27 +1556,37 @@ class ParserV2(Parser):
 
     @property
     def url_action_api_to_user_mapper(self) -> dict[str, str]:
-        """Mapping the API output for URL access rule action to the user output
+        """Mapping the user output for URL access rule action to the API output.
         Returns:
             dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.url_action_user_to_api_mapper)
 
     @property
-    @abstractmethod
     def meet_condition_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for URL access rule meet_this_condition to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             "Object matches the URL Pattern": "yes",
             "Object does not match the URL Pattern": "no",
         }
 
     @property
-    @abstractmethod
     def meet_condition_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for URL access rule meet_this_condition to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.meet_condition_user_to_api_mapper)
 
     @property
     def url_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for url_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             "Simple String": "simple-string",
             "Regular Expression": "regex-expression",
@@ -1508,10 +1594,18 @@ class ParserV2(Parser):
 
     @property
     def url_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for url_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.url_type_user_to_api_mapper)
 
     @property
     def source_address_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for source_address_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             "IP": "sip",
             "IP Resolved by Specified Domain": "sdomain",
@@ -1520,14 +1614,26 @@ class ParserV2(Parser):
 
     @property
     def source_address_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for source_address_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.source_address_type_user_to_api_mapper)
 
     @property
     def ip_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for ip_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {"IPv4": "ipv4", "IPv6": "ipv6"}
 
     @property
     def ip_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for ip_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.ip_type_user_to_api_mapper)
 
 
@@ -2140,11 +2246,8 @@ class Client(BaseClient):
         Returns:
             CommandResults: outputs, readable outputs and raw response for XSOAR.
         """
-        validate = partial(validate_argument, args=args)
-        validate(key_="action", values=ArgumentValues.URL_ACTION.value)
-        validate(key_="severity", values=ArgumentValues.SEVERITY.value)
-        validate(key_="host_status", values=ArgumentValues.ENABLE_DISABLE.value)
-        if (host_status := args.get("host_status")) and host_status == ArgumentValues.ENABLE.value and not args.get("host"):
+        if (host_status := args.get("host_status")) and \
+                host_status == ArgumentValues.ENABLE.value and not args.get("host"):
             raise ValueError(ErrorMessage.INSERT_VALUE.value.format("host"))
 
     def validate_url_access_rule_condition(self, args: dict[str, Any]):
@@ -2157,16 +2260,16 @@ class Client(BaseClient):
             ValueError: Errors.
         """
         validate = partial(validate_argument, args=args)
-        if args["source_address"] == ArgumentValues.ENABLE.value:
+        if args.get("source_address") == ArgumentValues.ENABLE.value:
             validate(key_="source_address_type")
-            if args["source_address_type"] == ArgumentValues.SOURCE_ADDRESS_IP.value:
+            if args.get("source_address_type") == ArgumentValues.SOURCE_ADDRESS_IP.value:
                 validate(key_="ip_range")
 
-            if args["source_address_type"] == ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value:
+            if args.get("source_address_type") == ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value:
                 validate(key_="ip")
                 validate(key_="ip_type")
 
-            if args["source_address_type"] == ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value:
+            if args.get("source_address_type") == ArgumentValues.SOURCE_ADDRESS_SOURCE_DOMAIN.value:
                 validate(key_="source_domain")
                 validate(key_="source_domain_type")
 
@@ -2528,11 +2631,11 @@ class Client(BaseClient):
     @abstractmethod
     def url_access_rule_group_create_request(
         self,
-        name: str,
-        action: str,
+        name: str | None,
+        action: str | None,
         trigger_policy: str | None,
         severity: str | None,
-        host_status: str,
+        host_status: str | None,
         host: str | None,
     ) -> dict[str, Any]:
         pass
@@ -2560,11 +2663,11 @@ class Client(BaseClient):
     @abstractmethod
     def url_access_rule_condition_create_request(
         self,
-        group_name: str,
-        url_type: str,
-        url_pattern: str,
-        meet_this_condition_if: str,
-        source_address: str,
+        group_name: str | None,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
         source_address_type: str | None,
         ip_range: str | None,
         ip_type: str | None,
@@ -3878,11 +3981,11 @@ class ClientV1(Client):
 
     def url_access_rule_group_create_request(
         self,
-        name: str,
-        action: str,
+        name: str | None,
+        action: str | None,
         trigger_policy: str | None,
         severity: str | None,
-        host_status: str,
+        host_status: str | None,
         host: str | None,
     ) -> dict[str, Any]:
         """Create a URL access rule group.
@@ -3901,12 +4004,12 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "name": name,
-                "action": self.parser.url_action_user_to_api_mapper[action],
+                "action": action and self.parser.url_action_user_to_api_mapper.get(action),
                 "triggerPolicy": trigger_policy,
                 "severity": self.parser.severity_user_to_api_mapper.get(severity)
                 if severity and action == "Alert & Deny"
                 else None,
-                "hostStatus": self.parser.boolean_user_to_api_mapper[host_status],
+                "hostStatus": host_status and self.parser.boolean_user_to_api_mapper.get(host_status),
                 "host": host if host_status == ArgumentValues.ENABLE.value else None,
             }
         )
@@ -4054,11 +4157,11 @@ class ClientV1(Client):
 
     def url_access_rule_condition_create_request(
         self,
-        group_name: str,
-        url_type: str,
-        url_pattern: str,
-        meet_this_condition_if: str,
-        source_address: str,
+        group_name: str | None,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
         source_address_type: str | None,
         ip_range: str | None,
         ip_type: str | None,
@@ -5574,11 +5677,11 @@ class ClientV2(Client):
 
     def url_access_rule_group_create_request(
         self,
-        name: str,
-        action: str,
+        name: str | None,
+        action: str | None,
         trigger_policy: str | None,
         severity: str | None,
-        host_status: str,
+        host_status: str | None,
         host: str | None,
     ) -> dict[str, Any]:
         """Create a URL access rule group.
@@ -5598,7 +5701,7 @@ class ClientV2(Client):
             "data": remove_empty_elements(
                 {
                     "name": name,
-                    "action": self.parser.url_action_user_to_api_mapper.get(action),
+                    "action": action and self.parser.url_action_user_to_api_mapper.get(action),
                     "trigger": trigger_policy,
                     "severity": self.parser.severity_user_to_api_mapper.get(severity) if severity else None,
                     "host-status": host_status,
@@ -5764,11 +5867,11 @@ class ClientV2(Client):
 
     def url_access_rule_condition_create_request(
         self,
-        group_name: str,
-        url_type: str,
-        url_pattern: str,
-        meet_this_condition_if: str,
-        source_address: str,
+        group_name: str | None,
+        url_type: str | None,
+        url_pattern: str | None,
+        meet_this_condition_if: str | None,
+        source_address: str | None,
         source_address_type: str | None,
         ip_range: str | None,
         ip_type: str | None,
@@ -7751,13 +7854,13 @@ def url_access_rule_group_create_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.validate_url_access_group(args=args)
-    name = args["name"]
+    name = args.get("name")
     response = client.url_access_rule_group_create_request(
         name=name,
-        action=args["action"],
+        action=args.get("action"),
         trigger_policy=args.get("trigger_policy"),
         severity=args.get("severity"),
-        host_status=args["host_status"],
+        host_status=args.get("host_status"),
         host=args.get("host"),
     )
     command_results = generate_simple_command_results(
@@ -7881,14 +7984,14 @@ def url_access_rule_condition_create_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.validate_url_access_rule_condition(args)
-    group_name = args["group_name"]
-    url_pattern = args["url_pattern"]
+    group_name = args.get("group_name")
+    url_pattern = args.get("url_pattern")
     response = client.url_access_rule_condition_create_request(
         group_name=group_name,
-        url_type=args["url_type"],
+        url_type=args.get("url_type"),
         url_pattern=url_pattern,
-        meet_this_condition_if=args["meet_this_condition_if"],
-        source_address=args["source_address"],
+        meet_this_condition_if=args.get("meet_this_condition_if"),
+        source_address=args.get("source_address"),
         source_address_type=args.get("source_address_type"),
         ip_range=args.get("ip_range"),
         ip_type=args.get("ip_type"),
@@ -7899,7 +8002,7 @@ def url_access_rule_condition_create_command(
     member_id = client.get_object_id(
         response,
         "urlPattern",
-        url_pattern,
+        str(url_pattern),
         client.url_access_rule_condition_list_request,
         group_name,
     )
@@ -8820,7 +8923,7 @@ def list_response_handler(
         response = [group_dict] if group_dict else []
         if not response:
             raise DemistoException(ErrorMessage.NOT_EXIST.value)
-    if name_filter := args.get("search"):
+    if name_filter := args.get("search") and isinstance(response, list):
         filter_response: List = remove_empty_elements(
             [obj if name_filter in obj["name"] else None for obj in response]
         )
@@ -8987,15 +9090,15 @@ def reverse_dict(dict_: dict[str, str] | dict[str, int]) -> dict:
 
 
 def generate_simple_command_results(
-    object_type: str, object_name: str, action: str, response: dict[str, Any]
+    object_type: str, object_name: str | None, action: str, response: dict[str, Any]
 ) -> CommandResults:
     """Genarte a simple command result with output (without context data).
 
     Args:
-        key (str): Output key.
-        value (str): Output value.
+        object_type (str): Object type.
+        object_name (str): Object name.
+        action (str): Action.
         response (Dict[str, Any]): Response dictionary from Fortiweb VM
-        message (str): Output message.
 
     Returns:
         CommandResults: CommandResults: outputs, readable outputs and raw response for XSOAR.
