@@ -13,7 +13,7 @@ API_KEY = 'test-api-key'
 
 
 def load_json_file(file_path: str):
-    with open("test_data/" + file_path, 'r') as json_file:
+    with open(f"test_data/{file_path}", 'r') as json_file:
         json_data = json.load(json_file)
     return json_data
 
@@ -52,10 +52,11 @@ PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
 def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None, response_type='object'):
-    if body and body[0].get('id') == 'HelloWorld':
-        return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
-    elif body and body[0].get('id') == 'AzureSentinel':
-        return MOCK_AZURESENTINEL_SEARCH_RESULTS, 200, None
+    if body:
+        if body[0].get('id') == 'HelloWorld':
+            return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
+        elif body and body[0].get('id') == 'AzureSentinel':
+            return MOCK_AZURESENTINEL_SEARCH_RESULTS, 200, None
     return None, None, None
 
 

@@ -108,7 +108,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
-def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock):
+def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> dict | None:
     """
     Get the pack's required dependencies.
 
@@ -408,9 +408,11 @@ def search_pack_and_its_dependencies(client: demisto_client,
     if one_pack_and_its_dependencies_in_batch:
         if batch_packs_install_request_body is None:
             batch_packs_install_request_body = []
-        pack_and_its_dependencies = \
-            {p['id']: p for p in current_packs_to_install if p['id'] not in packs_in_the_list_to_install}
-        if pack_and_its_dependencies:
+        if pack_and_its_dependencies := {
+            p['id']: p
+            for p in current_packs_to_install
+            if p['id'] not in packs_in_the_list_to_install
+        }:
             packs_in_the_list_to_install += pack_and_its_dependencies
             batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))
     else:
