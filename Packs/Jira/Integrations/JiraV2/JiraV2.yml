@@ -542,7 +542,7 @@ script:
     name: get-modified-remote-data
     arguments: []
   - arguments: []
-    description: Gets the information related to the role, including users assigned.
+    description: Gets the information related to the role, including assigned users.
     name: jira-get-project-role
   - arguments:
     - description: User's email address.
