@@ -1354,6 +1354,14 @@ tasks:
             value:
               simple: Reopen And Close
           ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CampaignStatus
+            iscontext: true
+          right:
+            value:
+              simple: "2"
     continueonerrortype: ""
     view: |-
       {
@@ -1575,7 +1583,7 @@ inputs:
 
     "Reopen And Leave Open" - Reopens the phishing campaign incident, adds the new phishing incident to it and leaves the phishing campaign incident open.
 
-    "Reopen And Close" - Reopens the phishing campaign incident, adds the new phishing incident to it, and closes the phishing campaign incident again.
+    "Reopen And Close" - Reopens the phishing campaign incident, adds the new phishing incident to it, and closes the phishing campaign incident again. If the incident was already open and did not need to be reopened, it will not be closed.
 
     "Do Not Change" - New phishing incidents will not be added to a closed campaign.
   playbookInputQuery:
