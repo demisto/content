@@ -1,5 +1,5 @@
 [MODEL: dataset = microsoft_windows_raw]
-filter provider_name contains "Microsoft-Windows-"
+filter provider_name contains "Microsoft-Windows-" AND provider_name!="AD FS Auditing"
 |alter IpPort=json_extract_scalar(event_data ,"$.IpPort"),
 LogLevel=lowercase(log_level),
 xdm.event.original_event_type=coalesce(event_action,task)
