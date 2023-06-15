@@ -1073,7 +1073,7 @@ There is no context output for this command.
 ### jira-get-project-role
 
 ***
-Gets the information related to the role, including users assigned.
+Gets the information related to the role, including assigned users.
 
 #### Base Command
 
