@@ -1063,12 +1063,36 @@ tasks:
     task:
       id: 6c84bcd2-0d5c-4cf5-8c7a-8e29a87073b3
       version: -1
-      name: Cloud Token Theft - Set Verdict
-      playbookName: Cloud Token Theft - Set Verdict
+      name: Cloud Token Theft  - Set Verdict
+      description: |-
+        ---
+
+        ## Cloud Token Theft  - Set Verdict Playbook
+
+        The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
+
+        ### Event Search
+
+        The playbook searches for events based on the attacker's IP address within the last two hours.
+
+        ### Tests Performed
+
+        The following tests are performed on the observed activity:
+
+        1. **Malicious IP Check**: Determines if the IP address is malicious.
+        2. **CSP ASN Check**: Checks if the activity was performed from an Autonomous System Number (ASN) belonging to one of the Cloud Service Providers (CSPs).
+        3. **IP and ASN History Check**: Verifies if the IP address and ASN have been previously observed.
+        4. **Region Check**: Determines if the API call was made from outside the recognized region.
+        5. **Anomalous State Check**: Checks if the API call was made from an anomalous state.
+        6. **Alert Check**: Looks for any related alerts around the event, including:
+           - Possible cloud instance metadata service (IMDS) abuse.
+           - Impossible Traveler by cloud identity.
+
+        ---
+      playbookName: Cloud Token Theft  - Set Verdict
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -1317,8 +1341,8 @@ tasks:
           - operator: uniq
       IP:
         complex:
-          root: IP
-          accessor: Address
+          root: CloudIndicators
+          accessor: source_ip
           transformers:
           - operator: uniq
       MD5:
@@ -1349,8 +1373,8 @@ tasks:
           - operator: uniq
       Username:
         complex:
-          root: Account
-          accessor: Username
+          root: CloudIndicators
+          accessor: username
           transformers:
           - operator: uniq
     separatecontext: true
