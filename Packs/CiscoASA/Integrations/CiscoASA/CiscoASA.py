@@ -46,10 +46,6 @@ class Pagination:
         api_limit (int): Maximum number of items that can be returned from the API request.
         items_key_path (list[str], optional): A list of keys to the items within an API response.
             Defaults to None.
-        has_limit (bool | None): Whether to use a "limit" in API requests.
-            Defaults to True.
-        has_offset (bool | None): Whether to use an "offset" in API requests.
-            Defaults to True.
         start_count_from_zero (bool | None): Whether the count of the first item is 0 or 1.
             Defaults to True.
         default_limit (int): The number of default items to return with an API request.
@@ -63,15 +59,11 @@ class Pagination:
         self,
         api_limit: int,
         items_key_path: list[str] | None = None,
-        has_limit: bool = True,
-        has_offset: bool = True,
         start_count_from_zero: bool = True,
         default_limit: int = DEFAULT_LIMIT,
     ) -> None:
         self.api_limit = api_limit
         self.items_key_path = items_key_path
-        self.has_limit = has_limit
-        self.has_offset = has_offset
         self.start_count_from_zero = start_count_from_zero
         self.default_limit = default_limit
 
@@ -108,24 +100,13 @@ class Pagination:
                 tuple[list | dict, list | dict]: All the items combined within raw response,
                     All the raw responses combined.
             """
-            is_manual, remaining_items, offset = self._get_pagination_arguments(
+            remaining_items, offset = self._get_pagination_arguments(
                 page=page,
                 page_size=page_size,
                 limit=limit
             )
 
-            if not self.has_offset:
-                return self._handle_no_offset_pagination(
-                    client_instance,
-                    func,
-                    is_manual,
-                    remaining_items,
-                    offset,
-                    *args,
-                    **kwargs,
-                )
-
-            return self._handle_offset_pagination(
+            return self._handle_pagination(
                 client_instance,
                 func,
                 remaining_items,
@@ -141,7 +122,7 @@ class Pagination:
         page: int | None,
         page_size: int | None,
         limit: int = DEFAULT_LIMIT
-    ) -> tuple[bool, int, int | None]:
+    ) -> tuple[int, int | None]:
         """
         Determine if pagination is automatic or manual and compute remaining items and offset values.
 
@@ -151,7 +132,6 @@ class Pagination:
 
         Returns:
             tuple[bool, int, int | None]:
-                is_manual: Whether the pagination is manual.
                 remaining_items: The number of remaining items to fetch.
                 offset: The offset for the next API request.
         """
@@ -167,60 +147,9 @@ class Pagination:
             remaining_items = limit
             offset = None
 
-        return is_manual, remaining_items, offset
+        return remaining_items, offset
 
-    def _handle_no_offset_pagination(
-        self,
-        client_instance: BaseClient,
-        func: Callable,
-        is_manual: bool,
-        remaining_items: int,
-        offset: int | None,
-        *args,
-        **kwargs,
-    ) -> tuple[list | dict, list | dict]:
-        """
-        Handle pagination when the API does not support offset parameter.
-
-        Args:
-            client_instance (BaseClient): The instance of the Client class used to call the API request function.
-            func (Callable): API request function to be called.
-            is_manual (bool): Whether the pagination is manual.
-            remaining_items (int): The number of remaining items to fetch.
-            offset (int | None): The offset for the next API request.
-            args (tuple[Any, ...]): Positional arguments to be passed to the API request function.
-            kwarg (dict[str, Any]): Keyword arguments to be passed to the API request function.
-
-        Returns:
-            tuple[list | dict, list | dict]:
-                All the items combined within raw response, All the raw responses combined
-        """
-        kwargs['self'] = client_instance
-
-        if self.has_limit:
-            limit = (offset or 0) + remaining_items
-            kwargs['limit'] = min(limit, self.api_limit)
-
-        raw_response = func(
-            *args,
-            **kwargs,
-        )
-
-        items = raw_response
-
-        if self.items_key_path:
-            items = dict_safe_get(items, self.items_key_path)
-
-        if is_manual and offset is not None:
-            stop = offset + remaining_items
-            items = items[offset:stop]
-
-        else:  # is_automatic or no pagination.
-            items = items[:remaining_items]
-
-        return items, raw_response
-
-    def _handle_offset_pagination(
+    def _handle_pagination(
         self,
         client_instance: BaseClient,
         func: Callable,
