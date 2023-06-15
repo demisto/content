@@ -7,8 +7,8 @@ configuration:
     name: incidentType
     required: false
     type: 13
-  - defaultvalue:
-    display: DeCYFIR Server URL (e.g. https://example.net)
+  - defaultvalue: https://decyfir.cyfirma.com
+    display: DeCYFIR Server URL (e.g. https://decyfir.cyfirma.comt)
     name: url
     required: true
     type: 0
@@ -54,7 +54,7 @@ display: DeCYFIR
 name: decyfir
 script:
   commands: [ ]
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: true
   longRunning: false
