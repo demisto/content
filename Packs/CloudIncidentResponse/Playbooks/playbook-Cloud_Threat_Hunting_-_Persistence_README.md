@@ -1,5 +1,3 @@
----
-
 ## Cloud Threat Hunting - Persistence Playbook
 
 The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure - one at a time.
@@ -15,8 +13,6 @@ The playbook executes hunting queries for each provider related to each of the f
 ### Indicator Extraction
 
 If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
-
----
 
 ## Dependencies
 

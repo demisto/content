@@ -39,11 +39,12 @@ def main():
         args = demisto.args()
         json_data = args.get("json_data")
         data = json.loads(json_data) if isinstance(json_data, str) else json_data
+        results = None
 
         # Extract information from AWS event
         event_type, event_info = extract_event_info(data)
         if event_type == "AWS":
-            return CommandResults(
+            results = CommandResults(
                 outputs_prefix='CloudIndicators',
                 outputs={'arn': event_info[0], 'access_key_id': event_info[1], 'resource_name': event_info[2],
                          'source_ip': event_info[3], 'username': event_info[4], 'event_name': event_info[5],
@@ -52,14 +53,16 @@ def main():
 
         # Extract information from GCP event
         elif event_type == "GCP":
-            return CommandResults(
+            results = CommandResults(
                 outputs_prefix='CloudIndicators',
                 outputs={'resource_name': event_info[0], 'source_ip': event_info[1], 'username': event_info[2],
                          'event_name': event_info[3], 'user_agent': event_info[4]}
             )
 
+        return_results(results)
+
     except Exception as e:
         return_error(f"An error occurred: {str(e)}")
 
-
-return_results(main())
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()

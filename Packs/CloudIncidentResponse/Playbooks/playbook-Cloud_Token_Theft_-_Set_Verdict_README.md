@@ -1,5 +1,3 @@
----
-
 ## Cloud Token Theft  - Set Verdict Playbook
 
 The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
@@ -20,8 +18,6 @@ The following tests are performed on the observed activity:
 6. **Alert Check**: Looks for any related alerts around the event, including:
    - Possible cloud instance metadata service (IMDS) abuse.
    - Impossible Traveler by cloud identity.
-
----
 
 ## Dependencies
 

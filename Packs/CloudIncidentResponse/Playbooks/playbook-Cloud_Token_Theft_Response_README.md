@@ -1,5 +1,3 @@
----
-
 ## Cloud Token Theft Response Playbook
 
 The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
@@ -27,8 +25,6 @@ Conducts threat hunting activities to identify any cloud persistence techniques
 **Verdict Handling:**
 - Handles false positives identified during the investigation
 - Handles true positives by initiating appropriate response actions
-
----
 
 ## Dependencies
 
