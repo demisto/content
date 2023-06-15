@@ -22,7 +22,7 @@ This pack includes Cortex XSIAM content.
 ![Add NSS Server](https://raw.githubusercontent.com/demisto/content/9dc21658443d25d7eaf62106b24a2d3c7e9d367d/Packs/Zscaler/doc_files/add_nss_server.png)
 
 **To download the SSL Certificate:**
-1. Click the Edit icon corresponding to the NSS server.
+1. Click the **Edit** icon corresponding to the NSS server.
 2. In the Edit NSS Server window, under the SSL Certificate field, you can either download the SSL Certificate or generate a new certificate for that NSS server. You can upload this SSL certificate to the desired platform.
 ![Edit NSS Server](https://raw.githubusercontent.com/demisto/content/9dc21658443d25d7eaf62106b24a2d3c7e9d367d/Packs/Zscaler/doc_files/edit_nss_server.png)
 
