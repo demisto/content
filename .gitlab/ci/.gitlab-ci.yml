@@ -12,10 +12,10 @@ stages:
   - unittests-and-validations
   - prepare-testing-bucket
   - run-instances
+  - xsoar-test-playbooks-results
   - upload-to-marketplace
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
-  - xsoar-test-playbooks-results
 
 
 variables:

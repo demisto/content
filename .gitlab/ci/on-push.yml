@@ -602,8 +602,36 @@ test-upload-flow:
     - section_end "Verify Created Testing Bucket"
 
 test_playbooks_report:
-  stage: xsoar-test-playbooks-results
+  stage: xsiam_server_ga-test_playbooks_results
+  needs: [ "xsiam_server_ga" ]
+  script:
+    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+  stage: xsoar_ng_server_ga-test_playbooks_results
+  needs: [ "xsoar_ng_server_ga" ]
+  script:
+    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+  stage: xsoar_server_6_6-test_playbooks_results
   needs: ["xsoar_server_6_6"]
+  script:
+    - |
+      if [[ -f $ARTIFACTS_FOLDER/test_playbooks_report.json ]]; then
+        cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+        fi
+
+  stage: xsoar_server_6_8-test_playbooks_results
+  needs: [ "xsoar_server_6_8" ]
+  script:
+    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+  stage: xsoar_server_6_9-test_playbooks_results
+  needs: [ "xsoar_server_6_9" ]
+  script:
+    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+  stage: xsoar_server_6_10-test_playbooks_results
+  needs: [ "xsoar_server_6_10" ]
+  script:
+    cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+  stage: xsoar_server_master-test_playbooks_results
+  needs: [ "xsoar_server_master" ]
   script:
     cat $ARTIFACTS_FOLDER/test_playbooks_report.json
 
