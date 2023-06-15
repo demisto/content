@@ -1,0 +1,9 @@
+[file:LinuxEventsCollection_1_3.yml]
+ignore=MR108
+
+[file:LinuxEventsCollection.yml]
+ignore=MR108
+
+[file:LinuxEventsCollectionParsingRules.yml]
+ignore=PR101
+

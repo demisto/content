@@ -1,9 +1,23 @@
+
+const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
+
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
-if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
+// returns true if the current platform is XSIAM or XSOAR 8.0 and above.
+isHosted = function () {
+    res = getDemistoVersion();
+    platform = res.platform;
+    if  (((platform === "xsoar" || platform === "xsoar_hosted") && (isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION))) || platform === "x2") {
+        return true
+    }
+    return false
+}
+
+// only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
+if  (isHosted()) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
