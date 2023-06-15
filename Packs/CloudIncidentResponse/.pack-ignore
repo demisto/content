@@ -1,0 +1,17 @@
+[file:displayCloudIndicators.yml]
+ignore=BA124
+
+[file:EntryWidgetRegionNameXCLOUD.yml]
+ignore=BA124
+
+[file:EntryWidgetResourceTypeXCLOUD.yml]
+ignore=BA124
+
+[file:XCloudIdentitiesWidget.yml]
+ignore=BA124
+
+[file:XCloudProviderWidget.yml]
+ignore=BA124
+
+[file:XCloudRelatedAlertsWidget.yml]
+ignore=BA124
