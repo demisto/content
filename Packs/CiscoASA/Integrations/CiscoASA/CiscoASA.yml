@@ -548,6 +548,7 @@ script:
       - 'False'
       required: false
       secret: false
+      defaultValue: 'True'
     - auto: PREDEFINED
       default: false
       description: The interface type. Can be "In", "Out", or "Global".
@@ -851,6 +852,7 @@ script:
       - 'False'
       required: false
       secret: false
+      defaultValue: 'True'
     - default: false
       description: The log level of the rule.
       isArray: false

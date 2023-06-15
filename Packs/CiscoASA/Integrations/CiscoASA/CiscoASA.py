@@ -1124,7 +1124,7 @@ def handle_rule_configurations_setup(rule_body: dict[str, Any], args: dict[str, 
         time_range=args.get('time_range')
     )
 
-    rule_body['active'] = argToBoolean(args.get('active', 'True'))
+    rule_body['active'] = argToBoolean(args['active'])
 
     if position := args.get('position'):
         rule_body['position'] = position
