@@ -1560,7 +1560,7 @@ inputs:
   playbookInputQuery:
 - key: AutomaticallyCloseIncidents
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     Whether to automatically close the current incident when it's added to a campaign. Can be True or False.
