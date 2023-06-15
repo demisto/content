@@ -4,13 +4,14 @@ from CommonServerPython import *
 import requests
 import json
 from collections import defaultdict
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warnings
+import urllib3
+urllib3.disable_warnings()
 
 
 '''GLOBAL VARS'''
 API_URL = demisto.params().get('url')
-API_KEY = demisto.params().get('api_key')
+API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 
@@ -19,6 +20,8 @@ PROXY = demisto.params().get('proxy')
 
 
 def http_request(data):
+    if not API_KEY:
+        return_error('API key must be provided.')
     headers = {
         'X-API-KEY': API_KEY,
     }
