@@ -2291,7 +2291,7 @@ script:
       type: String
     - contextPath: Panorama.SecurityRule.SecurityProfile
       description: The security profile settings applied to the security rule.
-      type: Unkown
+      type: Unknown
     - contextPath: Panorama.SecurityRule.Target.devices
       description: The devices targeted by the security rule.
       type: String
@@ -5875,7 +5875,7 @@ script:
       type: String
     - contextPath: Panorama.SecurityRule.SecurityProfile
       description: The security profile settings applied to the security rule.
-      type: Unkown
+      type: Unknown
     - contextPath: Panorama.SecurityRule.Target.devices
       description: The devices targeted by the security rule.
       type: String

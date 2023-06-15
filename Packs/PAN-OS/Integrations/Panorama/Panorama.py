@@ -3489,7 +3489,7 @@ def prettify_rule(rule: dict):
             for key, value in profiles.items()   # pylint: disable=E0601 - profiles is assigned in the if statement bellow.
             if isinstance(value, dict)
         }
-        if (profiles := rule_get(['profile-setting', 'profiles'], return_type=dict, default_return_value={}))
+        if (profiles := rule_get(['profile-setting', 'profiles'], return_type=dict, default_return_value={}))  # pylint: disable=E1124
         else None,
         'Target': {
             'devices': rule_devices,
@@ -3513,7 +3513,7 @@ def prettify_rule(rule: dict):
             'LogAtSessionStart': rule.get('log-start', ''),
             'LogForwarding': rule.get('log-setting', ''),
             'Schedule': rule.get('schedule', ''),
-            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()), None),
+            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()), None),  # pylint: disable=E1124
             'DisableServerResponseInspection': rule_get(['option', 'disable-server-response-inspection']),
         }
     }
