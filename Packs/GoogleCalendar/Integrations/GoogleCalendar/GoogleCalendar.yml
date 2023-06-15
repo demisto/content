@@ -4,15 +4,15 @@ commonfields:
   version: -1
 configuration:
 - display: User's Service Account JSON
-  hidden: true
   name: user_service_account_json
   required: false
   type: 4
-- displaypassword: User's Service Account JSON
-  hiddenusername: true
-  name: user_service_account_json_creds
+  hidden: true
+- name: user_service_account_json_creds
   required: false
   type: 9
+  displaypassword: User's Service Account JSON
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -221,7 +221,7 @@ script:
     - contextPath: GoogleCalendar.PageToken.Acl.nextSyncToken
       description: Token used at a later point in time to retrieve only the entries that have changed since this result was returned.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.62767
+  dockerimage: demisto/googleapi-python3:1.0.0.63394
   feed: false
   isfetch: false
   longRunning: false
