@@ -11,7 +11,7 @@ This pack includes Cortex XSIAM content.
 
 1. Go to Administration > Nanolog Streaming Service.
 2. From the **NSS Servers** tab, click **Add NSS Server**.
-3. In the Add NSS Server window:
+3. In the **Add NSS Server** window:
    * Name: Enter a name for the NSS server.
    * Type: The NSS for Web type is selected by default. To configure NSS for firewall logs, select NSS for Firewall.
      *Note*: If you have a subscription to Cloud Connector, the NSS for Firewall (NSS type) is displayed as NSS for Firewall, Cloud and Branch Connector.
