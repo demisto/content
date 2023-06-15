@@ -495,8 +495,7 @@ def get_latest_log_created_time(
     logs: List[Dict],
     log_type: str,
     created_time_field: str = '_time',
-    date_format: str = DATE_FORMAT,
-    decrease_latest_log: bool = False
+    date_format: str = DATE_FORMAT
 ) -> str:
     """
     Get the latest occurred time of a log from a list of logs.
@@ -506,7 +505,6 @@ def get_latest_log_created_time(
         created_time_field (str): The created time field for the logs.
         log_type (str): the log type for debugging purposes.
         date_format (str): the date format.
-        decrease_latest_log (bool): whether to decrease the latest log time by one second
 
     Returns:
         str: latest occurred time of a log, empty string in case there aren't any logs.
@@ -518,9 +516,6 @@ def get_latest_log_created_time(
             log_time = datetime.strptime(log[created_time_field], date_format)
             if log_time > latest_log_time_datetime:
                 latest_log_time_datetime = log_time
-
-        if decrease_latest_log:
-            latest_log_time_datetime = latest_log_time_datetime - timedelta(seconds=1)
 
         latest_log_time = latest_log_time_datetime.strftime(date_format)
         demisto.info(f'{latest_log_time=} for {log_type=}')
@@ -555,7 +550,6 @@ def get_all_latest_time_logs_ids(
         log_type=log_type,
         created_time_field=log_created_time_field_name,
         date_format=date_format,
-        decrease_latest_log=log_type == LogTypes.AUDIT.value  # decrease the latest log time by 1 second only if its audit
     )
 
     # if there aren't any new logs, no need to cache anything
@@ -876,6 +870,9 @@ def get_audit_logs(
         log_id_field_name='id',
         date_format=DATE_FORMAT
     )
+    if latest_log_time:
+        # decrease the last time of the audit in one second as the api works only on greater than and not greater equal
+        latest_log_time = (dateparser.parse(latest_log_time) - timedelta(seconds=1)).strftime(DATE_FORMAT)
 
     latest_audit_log_time = latest_log_time or end_time
 
