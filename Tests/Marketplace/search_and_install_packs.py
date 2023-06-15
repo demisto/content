@@ -338,25 +338,9 @@ def install_packs(client: demisto_client,
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
     """
-
-    class GCPTimeOutException(ApiException):
-        def __init__(self, error):
-            if '/packs/' in error:
-                self.pack_id = get_pack_id_from_error_with_gcp_path(error)
-            super().__init__()
-
-    class MalformedPackException(ApiException):
-        def __init__(self, pack_ids):
-            self.malformed_ids = pack_ids
-            super().__init__()
-
-    class GeneralItemNotFoundError(ApiException):
-        def __init__(self, error_msg):
-            self.error_msg = error_msg
-            super().__init__()
-
-    def call_install_packs_request(packs, attempts_count=1):
-        for attempt in range(attempts_count):
+    global SUCCESS_FLAG
+    try:
+        for attempt in range(attempts_count - 1, -1, -1):
             try:
                 logging.info(f"Installing packs {', '.join([p.get('id') for p in packs_to_install])} on server {host}. "
                              f"Attempt: {attempts_count - attempt}/{attempts_count}")
@@ -418,8 +402,7 @@ def install_packs(client: demisto_client,
             logging.debug(f"failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
     except Exception as e:
-        logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
-        global SUCCESS_FLAG
+        logging.exception(f'The request to install packs: {packs_to_install} has failed. Additional info: {str(e)}')
         SUCCESS_FLAG = False
 
     finally:
