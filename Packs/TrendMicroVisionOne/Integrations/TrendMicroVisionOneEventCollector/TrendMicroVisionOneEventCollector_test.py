@@ -45,10 +45,10 @@ def create_any_type_logs(
         return [
             {
                 id_field_name: i,
-                created_time_field: (
-                    dateparser.parse(last_event_fetch_time) + timedelta(seconds=i + extra_seconds)
+                created_time_field: (  # type: ignore
+                    dateparser.parse(last_event_fetch_time) + timedelta(seconds=i + extra_seconds)  # type: ignore
                 ).strftime(DATE_FORMAT) if created_time_field != 'eventTime' else int(
-                    (dateparser.parse(last_event_fetch_time) + timedelta(seconds=i + extra_seconds)).timestamp()
+                    (dateparser.parse(last_event_fetch_time) + timedelta(seconds=i + extra_seconds)).timestamp()  # type: ignore
                 ) * 1000
             } for i in range(start + 1, end + 1)
         ]
@@ -70,7 +70,7 @@ def create_logs_mocks(
     num_of_events: int,
     created_time_field: str,
     id_field_name: str,
-    last_event_fetch_time: str,
+    last_event_fetch_time: str | None,
     url_suffix,
     top: int = 10,
     extra_seconds: int = 0,
