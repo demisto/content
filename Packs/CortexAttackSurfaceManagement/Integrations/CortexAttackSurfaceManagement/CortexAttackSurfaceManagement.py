@@ -281,7 +281,7 @@ def get_api_error(response):
             extra_message = json_response.get("reply", {}).get("err_extra", {})
             rcs_err_msg = f"{error_message}. {extra_message}"
         except Exception as err:
-            print(f"Unexpected {err=}, {type(err)=}")
+            return_results(f"Unexpected {err=}, {type(err)=}")
         else:
             if error_code:
                 rcs_err_msg = f"{error_message}. {extra_message}"
@@ -750,22 +750,6 @@ def get_remediation_confirmation_scan_status_command(args: Dict[str, Any], clien
             readable_output="The remediation confirmation scan timed out or failed."
         )
         return PollResult(response=command_results, continue_to_poll=False)
-        
-    # elif scan_status == "FAILED_TIMEOUT":
-    #     return PollResult(response="The remediation confirmation scan timed out after 3 hours.",
-    #                       partial_result=CommandResults(
-    #                           outputs_prefix="ASM.RemediationScan",
-    #                           outputs_key_field="scan_id",
-    #                           readable_output=""
-    #                       ))
-    # elif scan_status == "FAILED_ERROR":
-    #     return PollResult(response="The remediation confirmation scan encountered an error, please check you asset or retry later.",
-    #                       partial_result=CommandResults(
-    #                           outputs_prefix="ASM.RemediationScan",
-    #                           outputs_key_field="scan_id",
-    #                           readable_output=""
-    #                       ))
-    # return PollResult(response="The remediation confirmation scan was inconclusive, please retry later.")
 
 
 def test_module(client: Client) -> None:
