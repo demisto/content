@@ -3,10 +3,11 @@
 This pack includes Cortex XSIAM content.
 
 
-## configure send syslog CEF:
+## config syslog CEF in Zscaler:
 
 **Add an NSS Server:**
-[link to the website](https://help.zscaler.com/zia/adding-nss-servers)
+
+[Add an NSS Server manual Website](https://help.zscaler.com/zia/adding-nss-servers)
 
 1. Go to Administration > Nanolog Streaming Service.
 2. From the NSS Servers tab, click Add NSS Server.
@@ -18,13 +19,19 @@ This pack includes Cortex XSIAM content.
    * State: The health of the NSS server. This field is non-configurable.
 
 4. Click Save. The NSS server gets added to your ZIA Admin Portal.
-
+![Add NSS Server](https://raw.githubusercontent.com/demisto/content/9dc21658443d25d7eaf62106b24a2d3c7e9d367d/Packs/Zscaler/doc_files/add_nss_server.png)
 
 **To download the SSL Certificate:**
 1. Click the Edit icon corresponding to the NSS server.
 2. In the Edit NSS Server window, under the SSL Certificate field, you can either download the SSL Certificate or generate a new certificate for that NSS server. You can upload this SSL certificate to the desired platform.
+![Edit NSS Server](https://raw.githubusercontent.com/demisto/content/9dc21658443d25d7eaf62106b24a2d3c7e9d367d/Packs/Zscaler/doc_files/edit_nss_server.png)
 
+**Add NSS Feeds:**
 
+click the following link and do both of the manuals:
+
+* [Web Logs](https://help.zscaler.com/zia/adding-nss-feeds-web-logs)
+* [SaaS Security Logs](https://help.zscaler.com/zia/adding-nss-feeds-saas-security-logs)
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
