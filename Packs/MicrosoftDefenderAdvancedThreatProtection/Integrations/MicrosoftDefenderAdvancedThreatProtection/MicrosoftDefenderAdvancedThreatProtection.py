@@ -5471,7 +5471,7 @@ def main():  # pragma: no cover
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed = self_deployed or managed_identities_client_id is not None
 
-    endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(is_gcc, params_endpoint_type, params_url)
+    endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc)
 
     base_url: str = urljoin(params_url, '/api')
 

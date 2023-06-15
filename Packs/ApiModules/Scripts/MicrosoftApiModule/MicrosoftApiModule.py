@@ -560,24 +560,7 @@ def create_custom_azure_cloud(origin: str,
         ))
 
 
-def url_trim_end_slash(url):
-    """
-        Will trim the end "/" from a URL.
-
-        Example:
-        "https://google.com/", "/"   => "https://google.com"
-        "https://google.com", "/"   => "https://google.com"
-
-        :type url: ``string``
-        :param url: URL string (required)
-
-        :return: trimmed url
-        :rtype: ``string``
-    """
-    return url.rstrip("/")
-
-
-def microsoft_defender_for_endpoint_get_base_url(is_gcc, params_endpoint_type, params_url):
+def microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
     if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or params_endpoint_type is None:
         # When the integration was configured before our Azure Cloud support, the value will be None.
@@ -680,14 +663,14 @@ class MicrosoftClient(BaseClient):
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
-                                                                  endpoint=url_trim_end_slash(
-                                                                      self.azure_cloud.endpoints.active_directory))
+                                                                  endpoint=self.azure_cloud.endpoints.active_directory
+                                                                  .rstrip("/"))
             self.client_id = auth_id
             self.client_secret = enc_key
             self.auth_code = auth_code
             self.grant_type = grant_type
             self.resource = resource
-            self.scope = scope.format(graph_endpoint=url_trim_end_slash(self.azure_cloud.endpoints.microsoft_graph_resource_id))
+            self.scope = scope.format(graph_endpoint=self.azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"))
             self.redirect_uri = redirect_uri
             if certificate_thumbprint and private_key:
                 try:
@@ -706,7 +689,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
         self.azure_ad_endpoint = azure_ad_endpoint.format(
-            endpoint=url_trim_end_slash(self.azure_cloud.endpoints.active_directory))
+            endpoint=self.azure_cloud.endpoints.active_directory.rstrip("/"))
         self.timeout = timeout  # type: ignore
 
         self.multi_resource = multi_resource

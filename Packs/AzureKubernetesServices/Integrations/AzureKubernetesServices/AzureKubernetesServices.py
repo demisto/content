@@ -206,7 +206,7 @@ def get_azure_cloud(params):
     if azure_cloud_arg is None or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
         # Backward compatibility before the azure cloud settings.
         server_url = params.get('azure_ad_endpoint') or 'https://login.microsoftonline.com'
-        azure_cloud = create_custom_azure_cloud('AzureSentinel', defaults=AZURE_WORLDWIDE_CLOUD,
+        azure_cloud = create_custom_azure_cloud('AzureKubernetesServices', defaults=AZURE_WORLDWIDE_CLOUD,
                                                 endpoints={'active_directory': server_url})
     else:
         azure_cloud_name = AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg]

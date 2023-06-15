@@ -345,8 +345,8 @@ def main(command: str, params: dict):
     try:
         params_endpoint_type = params.get('endpoint_type')
         params_url = params.get('url') or 'https://api.securitycenter.microsoft.com'
-        is_gcc = params.get('is_gcc')
-        endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(is_gcc, params_endpoint_type, params_url)
+        # is_gcc wasn't supported in the event collector, thus passing it as None.
+        endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url)
 
         parsed_params = copy.copy(params)
         parsed_params["url"] = params_url
