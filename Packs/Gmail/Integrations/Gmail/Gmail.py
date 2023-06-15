@@ -477,7 +477,7 @@ def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     return command_results
 
 
-def emails_to_entry(title, raw_emails, format_data, mailbox, fields: list[str] = None):
+def emails_to_entry(title, raw_emails, format_data, mailbox, fields: list[str] | None = None):
     gmail_emails = []
     emails = []
     for email_data in raw_emails:
