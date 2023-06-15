@@ -271,23 +271,20 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
 
 def get_api_error(response):
-    if response.status_code == 500:
-        raise NotFoundError("The endpoint could not be contacted at this time.")
-    elif response.status_code == 400 and response is not None:
-        try:
-            json_response = response.json()
-            error_code = json_response.get("reply", {}).get("err_code", {})
-            error_message = json_response.get("reply", {}).get("err_msg", {})
-            extra_message = json_response.get("reply", {}).get("err_extra", {})
+    try:
+        json_response = response.json()
+        error_code = json_response.get("reply", {}).get("err_code", {})
+        error_message = json_response.get("reply", {}).get("err_msg", {})
+        extra_message = json_response.get("reply", {}).get("err_extra", {})
+        rcs_err_msg = f"{error_message}. {extra_message}"
+    except Exception as err:
+        raise NotFoundError(f"Unexpected {err=}, {type(err)=}")
+    else:
+        if error_code:
             rcs_err_msg = f"{error_message}. {extra_message}"
-        except Exception as err:
-            return_results(f"Unexpected {err=}, {type(err)=}")
-        else:
-            if error_code:
-                rcs_err_msg = f"{error_message}. {extra_message}"
-                raise ProcessingError(
-                    f"Received error message: '{rcs_err_msg}'."
-                )
+            raise ProcessingError(
+                f"Received error message: '{rcs_err_msg}'."
+            )
 
 
 """ COMMAND FUNCTIONS """

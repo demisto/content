@@ -898,31 +898,35 @@ RCS_START_SCAN_SUCCESSFUL_RESPONSE_200 = {
     }
 }
 
-RCS_GET_SCAN_STATUS_SUCCESS_RESPONSE_200 = {
+RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESPONSE_200 = {
     "reply": {
         "status": "SUCCESS",
         "result": "REMEDIATED"
     }
 }
 
+RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESPONSE_200 = {
+    "reply": {
+        "status": "SUCCESS",
+        "result": "UNREMEDIATED"
+    }
+}
+
 RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200 = {
     "reply": {
-        "status": "IN_PROGRESS",
-        "result": "UNREMEDIATED"
+        "status": "IN_PROGRESS"
     }
 }
 
 RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200 = {
     "reply": {
-        "status": "FAILED_ERROR",
-        "result": "UNREMEDIATED"
+        "status": "FAILED_ERROR"
     }
 }
 
 RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200 = {
     "reply": {
-        "status": "FAILED_TIMEOUT",
-        "result": "UNREMEDIATED"
+        "status": "FAILED_TIMEOUT"
     }
 }
 
