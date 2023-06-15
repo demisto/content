@@ -15,7 +15,7 @@ stages:
   - upload-to-marketplace
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
-  - test_playbooks_report
+  - xsoar-test-playbooks-results
 
 
 variables:

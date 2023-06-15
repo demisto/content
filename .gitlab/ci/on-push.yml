@@ -289,7 +289,7 @@ xpanse-prepare-testing-bucket:
     - exit $EXIT_CODE
 
 test_playbooks_report:
-  stage: xsoar test playbooks results
+  stage: xsoar-test-playbooks-results
   needs:
     - job: .test_content_on_xsoar_server_instances_base
       optional: true
