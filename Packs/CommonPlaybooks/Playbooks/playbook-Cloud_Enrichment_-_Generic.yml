@@ -248,7 +248,7 @@ inputs:
     Can be either Service Account or a user.
   playbookInputQuery:
 outputs: []
-quiet: true
+quiet: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
