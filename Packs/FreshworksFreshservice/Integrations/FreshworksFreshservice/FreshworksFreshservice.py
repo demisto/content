@@ -2480,7 +2480,7 @@ def list_freshservice_entities_command(
 
 def test_module(client: Client) -> str:
     try:
-        client.freshservice_asset_list(1, 20)
+        client.freshservice_ticket_list(1, 20)
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code in [
                 HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND,
