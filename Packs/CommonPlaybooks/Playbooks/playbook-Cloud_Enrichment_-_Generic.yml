@@ -17,6 +17,7 @@ description: |-
      - Enriches information related to cloud compute resources.
 
   The playbook supports a single CSP enrichment at a time.
+
   ---
 starttaskid: "0"
 tasks:
@@ -247,8 +248,79 @@ inputs:
     The type of the GCP identity.
     Can be either Service Account or a user.
   playbookInputQuery:
-outputs: []
-quiet: false
+outputs:
+- contextPath: AWS.EC2.Instances
+  description: The instances.
+  type: unknown
+- contextPath: AWS.EC2.Instances.NetworkInterfaces
+  description: The network interfaces for the instance.
+  type: unknown
+- contextPath: GoogleCloudCompute.Instances
+  description: The instances.
+  type: unknown
+- contextPath: GoogleCloudCompute.Instances.networkInterfaces
+  description: An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance.
+- contextPath: GoogleCloudCompute.Instances.disks
+  description: Array of disks associated with this instance. Persistent disks must be created before you can assign them.
+- contextPath: GoogleCloudCompute.Instances.metadata
+  description: The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys.
+- contextPath: GoogleCloudCompute.Instances.scheduling
+  description: Sets the scheduling options for this instance.
+- contextPath: Azure.Compute
+  description: The VMs.
+  type: unknown
+- contextPath: AWS.IAM.Users
+  description: |-
+    AWS AM Users include:
+    UserId
+    Arn
+    CreateDate
+    Path
+    PasswordLastUsed
+  type: unknown
+- contextPath: AWS.IAM.UserPolicies
+  description: AWS IAM - user inline policies.
+  type: unknown
+- contextPath: AWS.IAM.AttachedUserPolicies
+  description: AWS IAM - User attached policies.
+  type: unknown
+- contextPath: AWS.IAM.Users.AccessKeys
+  description: |-
+    AWS IAM Users Access Keys include:
+    AccessKeyId
+    Status
+    CreateDate
+    UserName
+  type: unknown
+- contextPath: AWS.IAM.Users.Groups
+  description: AWS IAM - User groups.
+  type: unknown
+- contextPath: GCPIAM
+  description: GCP IAM information.
+  type: unknown
+- contextPath: GSuite
+  description: GSuite user information.
+  type: unknown
+- contextPath: MSGraphUser
+  description: MSGraph user information.
+  type: unknown
+- contextPath: MSGraphGroups
+  description: MSGraph groups information.
+  type: unknown
+- contextPath: MSGraphGroup
+  description: MSGraph group information.
+  type: unknown
+- contextPath: GSuite.PageToken
+  description: Token to specify the next page in the list.
+  type: unknown
+- contextPath: MSGraph.identityProtection
+  description: MSGraph identity protection - risky user history.
+  type: unknown
+- contextPath: AWS.IAM.Users.AccessKeys.CreateDate
+  description: The date when the access key was created.
+- contextPath: AWS.IAM.Users.AccessKeys.UserName
+  description: The name of the IAM user that the key is associated with.
+quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0

@@ -532,8 +532,73 @@ inputs:
   required: false
   description: The instance's resource group.
   playbookInputQuery:
-outputs: []
-quiet: false
+outputs:
+- contextPath: AWS.EC2.Instances
+  description: The instances.
+  type: unknown
+- contextPath: AWS.EC2.Instances.Monitoring
+  description: The monitoring for the instance.
+  type: unknown
+- contextPath: AWS.EC2.Instances.State
+  description: The current state of the instance.
+  type: unknown
+- contextPath: AWS.EC2.Instances.IamInstanceProfile
+  description: The IAM instance profile associated with the instance, if applicable.
+  type: unknown
+- contextPath: AWS.EC2.Instances.NetworkInterfaces
+  description: The network interfaces for the instance.
+  type: unknown
+- contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses
+  description: The private IPv4 addresses associated with the network interface.
+  type: unknown
+- contextPath: AWS.EC2.Instances.SecurityGroups
+  description: The security groups for the instance.
+  type: unknown
+- contextPath: AWS.EC2.Instances.StateReason
+  description: The reason for the most recent state transition.
+  type: unknown
+- contextPath: AWS.EC2.Instances.Tags
+  description: Any tags assigned to the instance.
+  type: unknown
+- contextPath: GoogleCloudCompute.Instances
+  description: The instances.
+  type: unknown
+- contextPath: GoogleCloudCompute.Instances.tags
+  description: Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the tags.items field.
+- contextPath: GoogleCloudCompute.Instances.networkInterfaces
+  description: An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance.
+- contextPath: GoogleCloudCompute.Instances.networkInterfaces.aliasIpRanges
+  description: An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet-mode networks.
+- contextPath: GoogleCloudCompute.Instances.disks
+  description: Array of disks associated with this instance. Persistent disks must be created before you can assign them.
+- contextPath: GoogleCloudCompute.Instances.disks.initializeParams
+  description: Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance.
+- contextPath: GoogleCloudCompute.Instances.disks.initializeParams.sourceImageEncryptionKey
+  description: The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key.
+- contextPath: GoogleCloudCompute.Instances.disks.initializeParams.labels
+  description: Labels to apply to this disk. These can be later modified by the disks.setLabels method. This field is only applicable for persistent disks.
+- contextPath: GoogleCloudCompute.Instances.disks.guestOsFeatures
+  description: A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options.
+- contextPath: GoogleCloudCompute.Instances.disks.diskEncryptionKey
+  description: Encrypts or decrypts a disk using a customer-supplied encryption key.
+- contextPath: GoogleCloudCompute.Instances.metadata
+  description: The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys.
+- contextPath: GoogleCloudCompute.Instances.metadata.items
+  description: Array of key/value pairs. The total size of all keys and values must be less than 512 KB.
+- contextPath: GoogleCloudCompute.Instances.serviceAccounts
+  description: A list of service accounts, with their specified scopes, authorized for this instance. Only one service account per VM instance is supported.
+- contextPath: GoogleCloudCompute.Instances.scheduling
+  description: Sets the scheduling options for this instance.
+- contextPath: GoogleCloudCompute.Instances.scheduling.nodeAffinities
+  description: A set of node affinity and anti-affinity.
+- contextPath: GoogleCloudCompute.Instances.labels
+  description: Labels to apply to this instance. These can be later modified by the setLabels method.
+- contextPath: GoogleCloudCompute.Instances.guestAccelerators
+  description: A list of the type and count of accelerator cards attached to the instance.
+- contextPath: Azure.Compute
+  description: The VMs.
+  type: unknown
+quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
