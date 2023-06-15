@@ -7143,6 +7143,7 @@ ipwhois_exception_mapping: Dict[type, str] = {
     ipwhois.exceptions.BaseIpwhoisException: "general_error",
     urllib.error.HTTPError: "general_error",
     ValueError: "general_error",
+    ipwhois.exceptions.IPDefinedError: "general_error",
 
     # Service Errors
     ipwhois.exceptions.BlacklistError: "service_error",
@@ -7153,7 +7154,6 @@ ipwhois_exception_mapping: Dict[type, str] = {
 
     # Rate Limit Errors
     ipwhois.exceptions.HTTPRateLimitError: "quota_error",
-    ipwhois.exceptions.IPDefinedError: "quota_error",
     ipwhois.exceptions.WhoisRateLimitError: "quota_error",
 }
 
@@ -8564,19 +8564,17 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
             results.append(result)
 
         except Exception as e:
-            demisto.debug(f"Exception type {e.__class__.__name__} caught performing RDAP lookup for IP {ip}: {e}")
+            demisto.error(f"Exception type {e.__class__.__name__} caught performing RDAP lookup for IP {ip}: {e}")
 
             output = {
                 'query': ip,
                 'raw': f"Query failed for {ip}: {e.__class__.__name__} {e}"
             }
 
-            # Find and increment execution metrics according to known ipwhois exceptions
-            for exception_type, metric_attribute in ipwhois_exception_mapping.items():
-                if isinstance(e, exception_type):
-                    execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
-                    output['reason'] = metric_attribute
-                    break
+            # TODO handle case where exception is not available in dict
+            metric_attribute = ipwhois_exception_mapping[type(e)]
+            execution.__setattr__(metric_attribute, execution.__getattribute__(metric_attribute) + 1)
+            output['reason'] = metric_attribute
 
             if should_error:
                 results.append(
@@ -8650,10 +8648,10 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
             # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
             demisto.error(f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}'")
 
-            for exception_type, metric_attribute in whois_exception_mapping.items():
-                if isinstance(e, exception_type):
-                    execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
-                    break
+            # TODO handle case where exception is not available in dict
+            metric_attribute = whois_exception_mapping[type(e)]
+            demisto.debug(f"Metric attribute to increment: {metric_attribute}")
+            execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
 
             output = ({
                 outputPaths['domain']: {
@@ -8667,6 +8665,7 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
             if should_error:
                 results.append(CommandResults(
                     outputs=output,
+                    # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
                     readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
                     entry_type=EntryType.ERROR,
                     raw_response=str(e)
@@ -8674,6 +8673,7 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
             else:
                 results.append(CommandResults(
                     outputs=output,
+                    # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
                     readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
                     entry_type=EntryType.WARNING,
                     raw_response=str(e)

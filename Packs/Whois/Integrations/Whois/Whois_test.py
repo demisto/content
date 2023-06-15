@@ -7,10 +7,11 @@ import subprocess
 import time
 import tempfile
 import sys
-from typing import List, Dict
+from typing import List, Dict, Type
 
-from CommonServerPython import DBotScoreReliability, CommandResults, EntryType, GetDemistoVersion
+from CommonServerPython import DBotScoreReliability, CommandResults, EntryType
 from Whois import has_rate_limited_result
+import ipwhois
 
 import json
 
@@ -561,6 +562,7 @@ def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, 
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': demisto_version, 'buildNumber': '12345'})
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
+    # TODO patch response for query
     results = Whois.whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
     assert len(results) == expected_entries
 
@@ -573,6 +575,7 @@ def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: En
 
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
+    # TODO patch response for query
     results = Whois.whois_command(
         reliability=DBotScoreReliability.B,
         query=args['query'],
@@ -580,3 +583,35 @@ def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: En
         should_error=with_error
     )
     assert results[2].entry_type == entry_type
+
+
+@pytest.mark.parametrize('exception_caught,expcected_metric', [
+    (ipwhois.exceptions.WhoisLookupError, "general_error"),
+    (ipwhois.exceptions.BlacklistError, "service_error"),
+    (ipwhois.exceptions.NetError, "connection_error"),
+    (ipwhois.exceptions.WhoisRateLimitError, "quota_error")
+])
+def test_exception_type_to_metrics(exception_caught: Type, expcected_metric: str):
+    """
+    Test whether the caught `ipwhois.exception` type results in the expected API execution metric being incremented.
+
+    Given: The exception type and the expected metric.
+
+    When:
+        - Case A: WhoisLookupError is provided
+        - Case B: BlacklistError is provided
+        - Case C: NetError is provided
+        - Case D: WhoisRateLimitError is provided
+
+    Then:
+        - Case A: general_error is returned.
+        - Case B: service_error is returned.
+        - Case C: connection_error is returned.
+        - Case D: quota_error is returned.
+
+    """
+
+    from Whois import ipwhois_exception_mapping
+
+    actual = ipwhois_exception_mapping[exception_caught]
+    assert actual == expcected_metric
