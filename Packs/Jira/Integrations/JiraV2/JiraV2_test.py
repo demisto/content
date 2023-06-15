@@ -1607,3 +1607,22 @@ def test_get_organizations(mocker):
     mocker.patch("JiraV2.jira_req", return_value=ORGANIZATIONS)
     result = get_organizations_command()
     assert result.raw_response == organizations
+
+
+def test_get_project_role(mocker):
+    from test_data.raw_response import PROJECT_ROLES, PROJECT_ROLE
+    from JiraV2 import get_project_role_command
+    mocker.patch("JiraV2.get_project_roles", return_value=PROJECT_ROLES)
+    mocker.patch("JiraV2.jira_req", return_value=PROJECT_ROLE)
+
+    role = get_project_role_command("demisto", "Agent")
+    assert role.get('id') == 11823
+
+
+def test_get_project_roles(mocker):
+    from test_data.raw_response import PROJECT_ROLES
+    from JiraV2 import get_project_roles
+    mocker.patch("JiraV2.jira_req", return_value=PROJECT_ROLES)
+
+    roles = get_project_roles("demisto")
+    assert len(roles) == 2

@@ -731,14 +731,19 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
 
 
 def get_project_role_command(project_key, role_name):
-    url = f'rest/api/latest/project/{project_key}/role'
-    j_res = jira_req('GET', url, resp_type='json')
+    j_res = get_project_roles(project_key)
     url = j_res.get(role_name)
     if not url:
         return_error(f"Role '{role_name}' not found")
 
     role_id = url.split('/')[-1]
     url = f'rest/api/latest/project/{project_key}/role/{role_id}'
+    j_res = jira_req('GET', url, resp_type='json')
+    return j_res
+
+
+def get_project_roles(project_key):
+    url = f'rest/api/latest/project/{project_key}/role'
     j_res = jira_req('GET', url, resp_type='json')
     return j_res
 
