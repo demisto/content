@@ -1209,7 +1209,7 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CommandResults: A CommandResults object containing the results of the created rule.
     """
     interface_name = args.get('interface_name')
-    interface_type = args.get('interface_type')
+    interface_type = args.get('interface_type', '')
 
     if interface_type == 'Global':
         interface_name = ''
@@ -1324,7 +1324,7 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
         CommandResults: A CommandResults object containing the results of the edited rule.
     """
     rule_id = args.get('rule_id', '')
-    interface_type = args.get('interface_type')
+    interface_type = args.get('interface_type', '')
     interface_name = args.get('interface_name')
 
     if interface_type == 'Global':
