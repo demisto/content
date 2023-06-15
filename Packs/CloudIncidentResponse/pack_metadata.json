@@ -20,7 +20,6 @@
         "Token Theft"
     ],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
