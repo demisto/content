@@ -90,9 +90,9 @@ class OutputTitle(Enum):
     CUSTOM_WHITELIST_HEADER_FIELD = "Custom whitelist Header Field member"
     CUSTOM_WHITELIST_MEMBER = "Custom whitelist member"
     CUSTOM_PREDIFINED = "Custom predifined member"
-    CREATED = "successfully created!"
-    UPDATED = "successfully updated!"
-    DELETED = "successfully deleted!"
+    CREATED = "was successfully created!"
+    UPDATED = "was successfully updated!"
+    DELETED = "was successfully deleted!"
     PROTECTED_HOSTNAME_GROUP_LIST = "Protected Hostnames Groups:"
     PROTECTED_HOSTNAME_MEMBER_CREATE = "Hostname member successfully created!"
     PROTECTED_HOSTNAME_MEMBER_LIST = "Protected Hostnames Members:"
@@ -8785,7 +8785,7 @@ def custom_predifined_whitelist_update_command(
 
 def list_response_handler(
     client: Client,
-    response: Union[List[dict[str, Any]], dict[str, Any]],
+    response: List[dict[str, Any]] | dict[str, Any],
     data_parser: Callable,
     args: dict[str, Any],
     sub_object_id: str | None = None,
@@ -8820,6 +8820,11 @@ def list_response_handler(
         response = [group_dict] if group_dict else []
         if not response:
             raise DemistoException(ErrorMessage.NOT_EXIST.value)
+    if name_filter := args.get("search"):
+        filter_response: List = remove_empty_elements(
+            [obj if name_filter in obj["name"] else None for obj in response]
+        )
+        response = filter_response
     response, pagination_message = paginate_results(client.version, response, args)
     parsed_data = parser_handler(response, data_parser)
     return parsed_data, pagination_message, response
