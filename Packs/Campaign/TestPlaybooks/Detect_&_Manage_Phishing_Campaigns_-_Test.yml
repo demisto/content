@@ -914,8 +914,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 3430
+          "x": 460,
+          "y": 3700
         }
       }
     note: false
@@ -1002,7 +1002,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
+          "x": 460,
           "y": 2950
         }
       }
@@ -1015,10 +1015,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 5557554d-58e3-481d-837f-3a4dce40bf72
+    taskid: 3f968473-2b82-4b95-8ba7-3fa5b0b62cad
     type: condition
     task:
-      id: 5557554d-58e3-481d-837f-3a4dce40bf72
+      id: 3f968473-2b82-4b95-8ba7-3fa5b0b62cad
       version: -1
       name: Does the campaign context contain 9 incidents?
       type: condition
@@ -1033,7 +1033,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -1049,7 +1049,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
+          "x": 460,
           "y": 3130
         }
       }
@@ -1096,10 +1096,12 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "75_72_yes": 0.19
+    },
     "paper": {
       "dimensions": {
-        "height": 3445,
+        "height": 3715,
         "width": 3250,
         "x": -1120,
         "y": 50
