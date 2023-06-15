@@ -246,7 +246,6 @@ script:
       name: add-to-context
       required: false
       secret: false
-      defaultValue: false
     - default: false
       description: Raw JSON file event query to be used for search.
       isArray: false
@@ -290,27 +289,27 @@ script:
     execution: false
     name: code42-file-events-search
     outputs:
-      - contextPath: Code42.FileEvents.timestamp
-        description: The timestamp when the event occurred.
-        type: date
-      - contextPath: Code42.FileEvents.event
-        description: Summary information about the event, including date observed, event type, and event source.
-      - contextPath: Code42.FileEvents.user
-        description: Details about the user associated with the event (if any).
-      - contextPath: Code42.FileEvents.destination
-        description: Details about the destination target of the event (if any).
-      - contextPath: Code42.FileEvents.process
-        description: Details about the CPU process involved in the event (if any).
-      - contextPath: Code42.FileEvents.risk
-        description: Details overall risk severity for the event and lists all associated risk indicators.
-      - contextPath: Code42.FileEvents.git
-        description: Details about git repository involved in event (if any).
-      - contextPath: Code42.FileEvents.report
-        description: Details about Salesforce reports involved in the event (if any).
-      - contextPath: Code42.FileEvents.file
-        description: Details about file metadata for file involved in the event (if any).
-      - contextPath: Code42.FileEvents.source
-        description: Info about the origin of a file involved in the event (if any).
+    - contextPath: Code42.FileEvents.timestamp
+      description: The timestamp when the event occurred.
+      type: date
+    - contextPath: Code42.FileEvents.event
+      description: Summary information about the event, including date observed, event type, and event source.
+    - contextPath: Code42.FileEvents.user
+      description: Details about the user associated with the event (if any).
+    - contextPath: Code42.FileEvents.destination
+      description: Details about the destination target of the event (if any).
+    - contextPath: Code42.FileEvents.process
+      description: Details about the CPU process involved in the event (if any).
+    - contextPath: Code42.FileEvents.risk
+      description: Details overall risk severity for the event and lists all associated risk indicators.
+    - contextPath: Code42.FileEvents.git
+      description: Details about git repository involved in event (if any).
+    - contextPath: Code42.FileEvents.report
+      description: Details about Salesforce reports involved in the event (if any).
+    - contextPath: Code42.FileEvents.file
+      description: Details about file metadata for file involved in the event (if any).
+    - contextPath: Code42.FileEvents.source
+      description: Info about the origin of a file involved in the event (if any).
   - arguments:
     - default: false
       description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
@@ -955,25 +954,25 @@ script:
   - name: code42-user-get-risk-profile
     description: Get the risk profile details for a given user
     arguments:
-      - name: username
-        description: The user to get risk profile for.
-        required: true
-        secret: false
-        isArray: false
-        default: false
+    - name: username
+      description: The user to get risk profile for.
+      required: true
+      secret: false
+      isArray: false
+      default: false
     outputs:
-      - contextPath: Code42.UserRiskProfiles.Username
-        description: The username.
-        type: string
-      - contextPath: Code42.UserRiskProfiles.StartDate
-        description: The startDate value of the UserRiskProfile.
-        type: date
-      - contextPath: Code42.UserRiskProfiles.EndDate
-        description: The startDate value of the UserRiskProfile.
-        type: date
-      - contextPath: Code42.UserRiskProfiles.Notes
-        description: The notes value of the UserRiskProfile.
-        type: string
+    - contextPath: Code42.UserRiskProfiles.Username
+      description: The username.
+      type: string
+    - contextPath: Code42.UserRiskProfiles.StartDate
+      description: The startDate value of the UserRiskProfile.
+      type: date
+    - contextPath: Code42.UserRiskProfiles.EndDate
+      description: The startDate value of the UserRiskProfile.
+      type: date
+    - contextPath: Code42.UserRiskProfiles.Notes
+      description: The notes value of the UserRiskProfile.
+      type: string
   - name: code42-user-update-risk-profile
     description: Update a user's risk profile.
     arguments:
@@ -1035,7 +1034,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.61519
+  dockerimage: demisto/py42:1.0.0.62930
   feed: false
   isfetch: true
   longRunning: false

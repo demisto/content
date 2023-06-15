@@ -7,26 +7,22 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
-  hidden: false
   name: server_url
   required: true
   type: 0
   section: Connect
 - display: Username
-  hidden: false
   name: credentials
   required: true
   type: 9
   section: Connect
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
@@ -35,14 +31,12 @@ configuration:
 - additionalinfo: Default is 50. Maximum is 200.
   defaultvalue: 50
   display: Maximum incidents per fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
   section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, like 12 hours, 7 days).
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -174,7 +168,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
       description: Indicates whether the result list should be sorted in ascending or descending order.
       isArray: false
       name: sort_ascending
@@ -294,7 +287,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
       description: Indicates whether the result list should be sorted in ascending or descending order.
       isArray: false
       name: sort_ascending
@@ -656,7 +648,6 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
       description: Whether to retrieve all the sensors (ICS Patrol and passive) or only the passive ones.
       isArray: false
       name: all_sensors

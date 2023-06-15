@@ -15,7 +15,6 @@ comment: Extract fields from a certificate file and return the standard context.
 commonfields:
   id: CertificateExtract
   version: -1
-enabled: false
 name: CertificateExtract
 outputs:
 - contextPath: Certificate.Name
