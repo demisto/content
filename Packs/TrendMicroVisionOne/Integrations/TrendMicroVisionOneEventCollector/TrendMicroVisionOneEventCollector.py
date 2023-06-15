@@ -217,7 +217,6 @@ class Client(BaseClient):
 
         # take the first event that is equal or bigger than start time of the query
         for start_time_event_index, event in enumerate(events):
-            # type: ignore[operator]
             if (
                 event_time := event.get(created_time_field)
             ) and dateparser.parse(event_time) >= start_time_datetime:  # type: ignore[operator]
