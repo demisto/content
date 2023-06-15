@@ -1063,7 +1063,7 @@ tasks:
     task:
       id: 6c84bcd2-0d5c-4cf5-8c7a-8e29a87073b3
       version: -1
-      name: Cloud Token Theft  - Set Verdict
+      name: Cloud Token Theft - Set Verdict
       description: |-
         ---
 
