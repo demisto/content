@@ -928,6 +928,7 @@ def fetch_events(
         last_run=last_run,
         limit=limit
     )
+    demisto.info(f'Fetched amount of workbench logs: {len(workbench_logs)}')
 
     demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
     observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
@@ -936,6 +937,7 @@ def fetch_events(
         last_run=last_run,
         limit=limit
     )
+    demisto.info(f'Fetched amount of observed attack techniques logs: {len(observed_attack_techniques_logs)}')
 
     demisto.info(f'starting to fetch {LogTypes.SEARCH_DETECTIONS} logs')
     search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
@@ -944,6 +946,7 @@ def fetch_events(
         last_run=last_run,
         limit=limit
     )
+    demisto.info(f'Fetched amount of search detection logs: {len(search_detection_logs)}')
 
     demisto.info(f'starting to fetch {LogTypes.AUDIT} logs')
     audit_logs, updated_audit_last_run = get_audit_logs(
@@ -952,6 +955,7 @@ def fetch_events(
         last_run=last_run,
         limit=limit
     )
+    demisto.info(f'Fetched amount of audit logs: {len(audit_logs)}')
 
     events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
