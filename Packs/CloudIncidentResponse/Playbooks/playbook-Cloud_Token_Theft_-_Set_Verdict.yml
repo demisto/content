@@ -122,16 +122,11 @@ tasks:
       id: 759d168e-6a6f-470b-83da-af9a108070a0
       version: -1
       name: Get additional alerts
-      description: |-
-        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: SearchAlertsV2
+      description: commands.local.cmd.get.incs
+      script: Builtin|||getAlerts
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "2"
