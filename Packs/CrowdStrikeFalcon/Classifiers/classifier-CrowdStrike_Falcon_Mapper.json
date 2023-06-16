@@ -25,8 +25,8 @@
                     "simple": "behaviors.tactic"
                 },
                 "Technique": {
-					"simple": "behaviors.technique"
-				},
+                    "simple": "behaviors.technique"
+                },
                 "CMD line": {
                     "simple": "behaviors.cmdline"
                 },
@@ -55,19 +55,19 @@
                     "simple": "device.hostname"
                 },
                 "Agent Version": {
-					"simple": "device.agent_version"
-				},
+                    "simple": "device.agent_version"
+                },
                 "File MD5": {
                     "simple": "behaviors.md5"
                 },
                 "MD5": {
-					"complex": null,
-					"simple": "behaviors.md5"
-				},
+                    "complex": null,
+                    "simple": "behaviors.md5"
+                },
                 "SHA256": {
-					"complex": null,
-					"simple": "behaviors.sha256"
-				},
+                    "complex": null,
+                    "simple": "behaviors.sha256"
+                },
                 "File Name": {
                     "simple": "behaviors.filename"
                 },
@@ -87,11 +87,11 @@
                     "simple": "device.mac_address"
                 },
                 "Event Names": {
-					"simple": "behaviors.display_name"
-				},
+                    "simple": "behaviors.display_name"
+                },
                 "Event Descriptions": {
-					"simple": "behaviors.description"
-				},
+                    "simple": "behaviors.description"
+                },
                 "OS": {
                     "simple": "device.os_version"
                 },
@@ -140,17 +140,29 @@
                         ]
                     }
                 },
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "detection_id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "detection_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
                 "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
+                    "simple": "in_mirror_error"
+                },
+                "Behaviour Pattern Disposition Details": {
+                    "complex": {
+                        "accessor": "pattern_disposition_details",
+                        "filters": [],
+                        "root": "behaviors",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -182,8 +194,8 @@
                     "simple": "hosts.ou"
                 },
                 "Agent Version": {
-					"simple": "hosts.agent_version"
-				},
+                    "simple": "hosts.agent_version"
+                },
                 "DNS Name": {
                     "simple": "hosts.site_name"
                 },
@@ -209,7 +221,7 @@
                     "simple": "start"
                 },
                 "Source Status": {
-					"simple": "status"
+                    "simple": "status"
                 },
                 "State": {
                     "simple": "state"
@@ -218,8 +230,8 @@
                     "simple": "tactics"
                 },
                 "Tags": {
-					"simple": "tags"
-				},
+                    "simple": "tags"
+                },
                 "Technique": {
                     "simple": "techniques"
                 },
@@ -246,40 +258,40 @@
                     }
                 },
                 "severity": {
-					"complex": {
-						"filters": [],
-						"root": "fine_score",
-						"transformers": [
-							{
-								"args": {
-									"map_from": {
-										"value": {
-											"simple": "1-24,25-49,50-74,75-100"
-										}
-									},
-									"map_to": {
-										"value": {
-											"simple": "1,2,3,4"
-										}
-									},
-									"sep": {}
-								},
-								"operator": "MapRangeValues"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "filters": [],
+                        "root": "fine_score",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "map_from": {
+                                        "value": {
+                                            "simple": "1-24,25-49,50-74,75-100"
+                                        }
+                                    },
+                                    "map_to": {
+                                        "value": {
+                                            "simple": "1,2,3,4"
+                                        }
+                                    },
+                                    "sep": {}
+                                },
+                                "operator": "MapRangeValues"
+                            }
+                        ]
+                    }
+                },
                 "dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "incident_id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
                 "IncomingMirrorError": {
-                  "simple": "in_mirror_error"
+                    "simple": "in_mirror_error"
                 }
             }
         },
