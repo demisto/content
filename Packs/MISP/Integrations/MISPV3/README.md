@@ -4253,3 +4253,37 @@ Check a list of indicator values against the MISP warninglist.
 | MISP.Warninglist.Count | number | Count on how many warninglists the value was found. | 
 | MISP.Warninglist.Value | string | Value checked. | 
 | MISP.Warninglist.Lists | string | Name of warninglists where the value was found. | 
+### misp-get-organization-info
+
+***
+Display organization ids and names.
+
+#### Base Command
+
+`misp-get-organization-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### misp-get-role-info
+
+***
+Display role names and role ids.
+
+#### Base Command
+
+`misp-get-role-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

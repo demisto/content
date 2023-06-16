@@ -2510,7 +2510,7 @@ script:
   - arguments: []
     description: Display role names and role ids.
     name: misp-get-role-info
-  dockerimage: demisto/pymisp2:1.0.0.62932
+  dockerimage: demisto/pymisp2:1.0.0.63745
   runonce: false
   script: ''
   subtype: python3
