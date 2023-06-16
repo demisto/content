@@ -62,4 +62,4 @@ This playbook does not use any commands.
 
 ---
 
-![Cloud Token Theft - Set Verdict](https://raw.githubusercontent.com/demisto/content/581469643d7d7ef5b206855b89dc4ac119df1fca/Packs/CloudIncidentResponse/doc_files/Cloud_Token_Theft_-_Set_Verdict.png)
+![Cloud Token Theft - Set Verdict](../doc_files/Cloud_Token_Theft_-_Set_Verdict.png)
