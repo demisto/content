@@ -27,7 +27,7 @@ jobs:
 #          cd Utils/github_workflow_scripts
 #          pipenv sync
           # should i keep the cd Utils/github_workflow_scripts??
-           poetry install
+           poetry install --with ci
       - name: Check if contribution form needs to be filled
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}

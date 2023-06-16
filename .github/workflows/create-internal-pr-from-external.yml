@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          poetry install
+          poetry install --with ci
       - name: Create Internal PR
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
