@@ -9791,7 +9791,7 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  dockerimage: demisto/pan-os-python:1.0.0.62889
+  dockerimage: demisto/pan-os-python:1.0.0.63723
   feed: false
   isfetch: true
   longRunning: false
