@@ -26,7 +26,7 @@
             "mandatory": false,
             "display_name": "Barracuda Reputation Block List (BRBL)"
         },
-        "CIRCLEHashlookup": {
+        "CIRCLHashlookup": {
             "mandatory": false,
             "display_name": "CIRCL hash lookup is a public API to lookup hash values against known database of files."
         },
