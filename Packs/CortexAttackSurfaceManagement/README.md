@@ -89,8 +89,8 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
 - Automation Scripts
   - [GenerateASMReport](#generateasmreport)
-  - [RankServiceOwners](#rankserviceowners)
   - [GetProjectOwners](#getprojectowners)
+  - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
   - [SnmpDetection](#snmpdetection)
 
