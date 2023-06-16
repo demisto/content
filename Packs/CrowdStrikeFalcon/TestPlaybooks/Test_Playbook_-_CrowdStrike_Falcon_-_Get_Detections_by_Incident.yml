@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -3405
+          "y": -3955
         }
       }
     note: false
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -3270
+          "y": -3820
         }
       }
     note: false
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 5690,
-          "y": 500
+          "y": 290
         }
       }
     note: false
@@ -122,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": -1390
+          "x": -190,
+          "y": -1530
         }
       }
     note: false
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": -1600
+          "x": -190,
+          "y": -1730
         }
       }
     note: false
@@ -214,7 +214,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -226,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "248":
     id: "248"
-    taskid: 3e8ca2c2-6ee1-46da-8241-11ef5818cc0a
+    taskid: cc58fa69-15da-4d8e-8460-05badc256ba5
     type: playbook
     task:
-      id: 3e8ca2c2-6ee1-46da-8241-11ef5818cc0a
+      id: cc58fa69-15da-4d8e-8460-05badc256ba5
       version: -1
       name: CrowdStrike Falcon - Get Detections by Incident
       description: |-
@@ -266,7 +266,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -2940
+          "y": -3330
         }
       }
     note: false
@@ -290,14 +290,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "362"
+      - "366"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": -1895
+          "x": -190,
+          "y": -2365
         }
       }
     note: false
@@ -330,7 +330,7 @@ tasks:
       {
         "position": {
           "x": -190,
-          "y": -1150
+          "y": -1360
         }
       }
     note: false
@@ -362,7 +362,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -396,7 +396,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -2090
+          "y": -2510
         }
       }
     note: false
@@ -442,7 +442,7 @@ tasks:
       {
         "position": {
           "x": -190,
-          "y": -1010
+          "y": -1220
         }
       }
     note: false
@@ -478,7 +478,7 @@ tasks:
       {
         "position": {
           "x": -190,
-          "y": -800
+          "y": -1010
         }
       }
     note: false
@@ -522,7 +522,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": -1010
+          "y": -1220
         }
       }
     note: false
@@ -558,7 +558,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": -800
+          "y": -1010
         }
       }
     note: false
@@ -602,7 +602,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": -1010
+          "y": -1220
         }
       }
     note: false
@@ -638,7 +638,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": -800
+          "y": -1010
         }
       }
     note: false
@@ -680,7 +680,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": -560
+          "y": -770
         }
       }
     note: false
@@ -711,7 +711,7 @@ tasks:
       {
         "position": {
           "x": 5370,
-          "y": -820
+          "y": -1030
         }
       }
     note: false
@@ -742,7 +742,7 @@ tasks:
       {
         "position": {
           "x": 5360,
-          "y": -1420
+          "y": -1550
         }
       }
     note: false
@@ -786,7 +786,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -818,7 +818,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -849,7 +849,7 @@ tasks:
       {
         "position": {
           "x": 5370,
-          "y": -240
+          "y": -450
         }
       }
     note: false
@@ -893,7 +893,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -925,7 +925,7 @@ tasks:
       {
         "position": {
           "x": 630,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -969,7 +969,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -1001,7 +1001,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -1045,7 +1045,7 @@ tasks:
       {
         "position": {
           "x": 1430,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -1077,7 +1077,7 @@ tasks:
       {
         "position": {
           "x": 1430,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -1121,7 +1121,7 @@ tasks:
       {
         "position": {
           "x": 1830,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -1153,7 +1153,7 @@ tasks:
       {
         "position": {
           "x": 1830,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -1197,7 +1197,7 @@ tasks:
       {
         "position": {
           "x": 2230,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -1229,7 +1229,7 @@ tasks:
       {
         "position": {
           "x": 2230,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -1273,7 +1273,7 @@ tasks:
       {
         "position": {
           "x": 2630,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -1305,7 +1305,7 @@ tasks:
       {
         "position": {
           "x": 2630,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -1349,7 +1349,7 @@ tasks:
       {
         "position": {
           "x": 3030,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -1381,7 +1381,7 @@ tasks:
       {
         "position": {
           "x": 3030,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -1425,7 +1425,7 @@ tasks:
       {
         "position": {
           "x": 3430,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -1457,7 +1457,7 @@ tasks:
       {
         "position": {
           "x": 3430,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -1501,7 +1501,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": 40
+          "y": -170
         }
       }
     note: false
@@ -1545,7 +1545,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -1577,7 +1577,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -1621,7 +1621,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -1653,7 +1653,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -1697,7 +1697,7 @@ tasks:
       {
         "position": {
           "x": 610,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -1729,7 +1729,7 @@ tasks:
       {
         "position": {
           "x": 610,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -1773,7 +1773,7 @@ tasks:
       {
         "position": {
           "x": 1010,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -1805,7 +1805,7 @@ tasks:
       {
         "position": {
           "x": 1010,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -1849,7 +1849,7 @@ tasks:
       {
         "position": {
           "x": 1400,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -1881,7 +1881,7 @@ tasks:
       {
         "position": {
           "x": 1400,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -1925,7 +1925,7 @@ tasks:
       {
         "position": {
           "x": 1790,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -1957,7 +1957,7 @@ tasks:
       {
         "position": {
           "x": 1790,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2001,7 +2001,7 @@ tasks:
       {
         "position": {
           "x": 2190,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2033,7 +2033,7 @@ tasks:
       {
         "position": {
           "x": 2190,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2077,7 +2077,7 @@ tasks:
       {
         "position": {
           "x": 2580,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2109,7 +2109,7 @@ tasks:
       {
         "position": {
           "x": 2580,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2153,7 +2153,7 @@ tasks:
       {
         "position": {
           "x": 2980,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2185,7 +2185,7 @@ tasks:
       {
         "position": {
           "x": 2980,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2229,7 +2229,7 @@ tasks:
       {
         "position": {
           "x": 3370,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2261,7 +2261,7 @@ tasks:
       {
         "position": {
           "x": 3370,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2305,7 +2305,7 @@ tasks:
       {
         "position": {
           "x": 3770,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2337,7 +2337,7 @@ tasks:
       {
         "position": {
           "x": 3770,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2381,7 +2381,7 @@ tasks:
       {
         "position": {
           "x": 4160,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2413,7 +2413,7 @@ tasks:
       {
         "position": {
           "x": 4160,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2457,7 +2457,7 @@ tasks:
       {
         "position": {
           "x": 4550,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2489,7 +2489,7 @@ tasks:
       {
         "position": {
           "x": 4550,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2535,7 +2535,7 @@ tasks:
       {
         "position": {
           "x": 4950,
-          "y": 180
+          "y": -30
         }
       }
     note: false
@@ -2567,7 +2567,7 @@ tasks:
       {
         "position": {
           "x": 4950,
-          "y": 390
+          "y": 180
         }
       }
     note: false
@@ -2598,7 +2598,7 @@ tasks:
       {
         "position": {
           "x": 5370,
-          "y": 360
+          "y": 150
         }
       }
     note: false
@@ -2642,7 +2642,7 @@ tasks:
       {
         "position": {
           "x": 3830,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -2674,7 +2674,7 @@ tasks:
       {
         "position": {
           "x": 3830,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -2718,7 +2718,7 @@ tasks:
       {
         "position": {
           "x": 4220,
-          "y": -420
+          "y": -630
         }
       }
     note: false
@@ -2750,7 +2750,7 @@ tasks:
       {
         "position": {
           "x": 4220,
-          "y": -210
+          "y": -420
         }
       }
     note: false
@@ -2789,7 +2789,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": -2630
+          "y": -3020
         }
       }
     note: false
@@ -2840,7 +2840,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -2872,7 +2872,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -2923,7 +2923,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -2955,7 +2955,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3006,7 +3006,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -3038,7 +3038,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3089,7 +3089,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -3121,7 +3121,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3172,7 +3172,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -3204,7 +3204,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3255,7 +3255,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -3287,7 +3287,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3338,7 +3338,7 @@ tasks:
       {
         "position": {
           "x": 2160,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -3370,7 +3370,7 @@ tasks:
       {
         "position": {
           "x": 2160,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3421,7 +3421,7 @@ tasks:
       {
         "position": {
           "x": 2550,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -3453,7 +3453,7 @@ tasks:
       {
         "position": {
           "x": 2550,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3504,7 +3504,7 @@ tasks:
       {
         "position": {
           "x": 2940,
-          "y": -2490
+          "y": -2880
         }
       }
     note: false
@@ -3536,7 +3536,7 @@ tasks:
       {
         "position": {
           "x": 2940,
-          "y": -2280
+          "y": -2670
         }
       }
     note: false
@@ -3567,7 +3567,7 @@ tasks:
       {
         "position": {
           "x": 5360,
-          "y": -2310
+          "y": -2700
         }
       }
     note: false
@@ -3599,7 +3599,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -2780
+          "y": -3170
         }
       }
     note: false
@@ -3611,10 +3611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "362":
     id: "362"
-    taskid: 46570c09-ac84-4b5a-861b-06f4b463d2db
+    taskid: fea0465c-7106-4672-8a75-1e2804151e30
     type: playbook
     task:
-      id: 46570c09-ac84-4b5a-861b-06f4b463d2db
+      id: fea0465c-7106-4672-8a75-1e2804151e30
       version: -1
       name: CrowdStrike Falcon - Get Detections by Incident
       description: |-
@@ -3629,7 +3629,11 @@ tasks:
       - "243"
     scriptarguments:
       IncidentID:
-        simple: ldt:046761c46ec84f40b27b6f79ce7cd32c:223338720900
+        complex:
+          root: CrowdStrike.Detections
+          accessor: detection_id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -3640,8 +3644,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": -1760
+          "x": -190,
+          "y": -1890
         }
       }
     note: false
@@ -3653,12 +3657,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "363":
     id: "363"
-    taskid: fa148b4e-2db6-4c44-8e6e-17f28eb009a3
+    taskid: 816ade5b-534e-42eb-8bcc-1ae59e057d4b
     type: regular
     task:
-      id: fa148b4e-2db6-4c44-8e6e-17f28eb009a3
+      id: 816ade5b-534e-42eb-8bcc-1ae59e057d4b
       version: -1
-      name: Check CrowdStrike Falcon Available Incidents
+      name: Get CrowdStrike Falcon Available Incidents
       description: Obtains a list of CrowdStrike Falcon incidents before performing the tests.
       script: '|||cs-falcon-list-incident-summaries'
       type: regular
@@ -3666,14 +3670,199 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "248"
+      - "364"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -400,
-          "y": -3110
+          "y": -3660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "364":
+    id: "364"
+    taskid: 67c8cdaa-dced-4837-8d44-57b2429f2662
+    type: condition
+    task:
+      id: 67c8cdaa-dced-4837-8d44-57b2429f2662
+      version: -1
+      name: Check CrowdStrike Falcon Available Incidents
+      description: Checks if there are available incidents for testing processes.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "365"
+      "yes":
+      - "248"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.Incidents
+                accessor: incident_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": -3500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "365":
+    id: "365"
+    taskid: 9ba903ae-a6a7-404b-860b-027ae9581d77
+    type: regular
+    task:
+      id: 9ba903ae-a6a7-404b-860b-027ae9581d77
+      version: -1
+      name: Print Error Message - No incidents found
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "202"
+    scriptarguments:
+      message:
+        simple: As there are no CrowdStrike Falcon incidents available, this test playbook cannot be executed.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5340,
+          "y": -3330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "366":
+    id: "366"
+    taskid: 1797e962-1225-4d7d-8ef2-df8abed919f7
+    type: regular
+    task:
+      id: 1797e962-1225-4d7d-8ef2-df8abed919f7
+      version: -1
+      name: Get CrowdStrike Falcon Available Detections
+      description: Lists detection summaries.
+      script: CrowdstrikeFalcon|||cs-falcon-list-detection-summaries
+      type: regular
+      iscommand: true
+      brand: CrowdstrikeFalcon
+    nexttasks:
+      '#none#':
+      - "367"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "367":
+    id: "367"
+    taskid: bbd79b5b-121e-4bd2-8768-37d78f74296b
+    type: condition
+    task:
+      id: bbd79b5b-121e-4bd2-8768-37d78f74296b
+      version: -1
+      name: Check CrowdStrike Falcon Available Incidents
+      description: Checks if there are available detections for testing processes.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "368"
+      "yes":
+      - "362"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.Detections
+                accessor: detection_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "368":
+    id: "368"
+    taskid: ca2e697d-fbd5-4c0b-8059-3b500034b0b5
+    type: regular
+    task:
+      id: ca2e697d-fbd5-4c0b-8059-3b500034b0b5
+      version: -1
+      name: Print Error Message - No detections found
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: As there are no CrowdStrike Falcon detections available, the 'No Detections Found' context data test cannot be executed.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -1890
         }
       }
     note: false
@@ -3722,14 +3911,15 @@ view: |-
       "350_360_Verified": 0.1,
       "352_360_Verified": 0.1,
       "356_360_Verified": 0.16,
-      "358_360_Verified": 0.2
+      "358_360_Verified": 0.2,
+      "364_248_yes": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 3970,
+        "height": 4310,
         "width": 6470,
         "x": -400,
-        "y": -3405
+        "y": -3955
       }
     }
   }
