@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 def extract_keys_with_values(obj, parent_key=''):
     """Extracts the keys with values in the JSON object"""
     items = []
@@ -30,7 +31,6 @@ def format_data_to_table(items):
     return table
 
 
-
 def convert_to_html(markdown):
     html = "<table style='border-collapse: collapse;'>"
     lines = markdown.split("\n")
@@ -45,6 +45,7 @@ def convert_to_html(markdown):
         html += "</tr>"
     html += "</table>"
     return html
+
 
 def main():
     # Fetch alert mapped fields
@@ -70,7 +71,6 @@ def main():
         'Type': entryTypes['note'],
         'Contents': html
     })
-
 
 
 if __name__ in ("builtins", "__builtin__", "__main__"):

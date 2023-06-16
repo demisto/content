@@ -64,5 +64,6 @@ def main():
     except Exception as e:
         return_error(f"An error occurred: {str(e)}")
 
+
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

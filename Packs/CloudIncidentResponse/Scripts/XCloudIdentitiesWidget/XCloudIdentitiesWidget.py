@@ -17,7 +17,7 @@ def get_additonal_info() -> List[Dict]:
         if alert == {}:
             continue
         if isinstance(alert, list):
-                alert = tuple(alert)
+            alert = tuple(alert)
         alert_event = alert.get('event')
         res = {'Identity Name': alert_event.get('identity_name'),
                'Identity Type': alert_event.get('identity_type'),
@@ -46,4 +46,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

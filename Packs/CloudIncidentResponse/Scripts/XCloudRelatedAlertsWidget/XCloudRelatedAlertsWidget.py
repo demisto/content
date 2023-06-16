@@ -17,7 +17,7 @@ def get_additonal_info() -> List[Dict]:
         if alert == {}:
             continue
         if isinstance(alert, list):
-                alert = tuple(alert)
+            alert = tuple(alert)
         alert_event = alert.get('CustomFields')
         res = {'Alert Full Description': alert.get('name'),
                'Action': alert_event.get('action'),
@@ -52,4 +52,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

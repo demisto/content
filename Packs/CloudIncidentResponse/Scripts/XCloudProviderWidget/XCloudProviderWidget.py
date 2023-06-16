@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 COLORS = {'AWS': 'ff0000',
           'GCP': '339966',
           'Azure': '0000ff'}
@@ -45,4 +44,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

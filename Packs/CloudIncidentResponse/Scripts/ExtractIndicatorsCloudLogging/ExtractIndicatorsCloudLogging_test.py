@@ -1,5 +1,6 @@
 from ExtractIndicatorsCloudLogging import extract_aws_info, extract_gcp_info
 
+
 def test_extract_aws_info():
     event = {
         "userIdentity": {
@@ -27,6 +28,7 @@ def test_extract_aws_info():
         "aws-sdk-go/1.43.16 (go1.20.4 X:boringcrypto; linux; amd64)"
     )
     assert result == expected_result
+
 
 def test_extract_gcp_info():
     event = {
