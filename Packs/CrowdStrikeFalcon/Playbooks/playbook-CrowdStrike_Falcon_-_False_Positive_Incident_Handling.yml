@@ -112,7 +112,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: true
+        completeafterv2: false
         completeaftersla: false
       replyOptions:
       - "Yes"
@@ -853,4 +853,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test - CrowdStrike Falcon
+- No tests
