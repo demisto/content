@@ -861,6 +861,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         if not alert_id or not alert_name:
             demisto.debug(f'{INTEGRATION_NAME} - Alert details are missing. {str(alert)}')
 
+        if highlights := alert.get('ioc_attr', {}).get('highlights'):
+            for i, value in enumerate(highlights):
+                    highlights[i] = value.replace("PREPREPRE", "").replace("POSTPOSTPOST", "")
+
         incident = {
             'name': incident_name,
             'occurred': timestamp_to_datestring(incident_created_time_ms),
