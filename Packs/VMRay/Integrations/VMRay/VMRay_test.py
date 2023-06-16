@@ -63,6 +63,15 @@ def test_upload_sample_command(mocker):
     ]
 )
 def test_encoding_file_name(file_name, expected):
+    """
+    Given:
+        A string representing a file name
+    When:
+        `encode_file_name` is running
+    Then:
+        Verify the output of `encode_file_name` is the same as the expected bytes.
+        Characters that Windows doesn't allow for filenames get removed from the string.
+    """
     from VMRay import encode_file_name
 
     assert encode_file_name(file_name) == expected
