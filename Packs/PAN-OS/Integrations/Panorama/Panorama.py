@@ -6939,7 +6939,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
 
     rule_profiles = ''
 
-    if profile_name:  # if not, we remove the given profile_type
+    if profile_name:  # if profile_name was not provided, we remove the profile type from the rule.
         # first we update the given profile type with the given profile name
         rule_profiles += f"<{profile_type}><member>{profile_name}</member></{profile_type}>"
 
