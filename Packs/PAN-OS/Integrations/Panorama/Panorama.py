@@ -3482,8 +3482,8 @@ def prettify_rule(rule: dict):
         'vulnerability',
         'wildfire-analysis',
     )
-    profiles = rule_get(
-        ['profile-setting', 'profiles'], return_type=dict, default_return_value={})  # pylint: disable=E1124
+    profiles = rule_get(  # pylint: disable=E1124
+        ['profile-setting', 'profiles'], return_type=dict, default_return_value={})
     rule_profiles = {
         key: dict_safe_get(profiles, [key, 'member'], '')
         for key in profile_keys
