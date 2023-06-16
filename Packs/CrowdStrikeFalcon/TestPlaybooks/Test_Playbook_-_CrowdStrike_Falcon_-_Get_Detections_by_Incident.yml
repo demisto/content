@@ -3701,7 +3701,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "365"
+      - "202"
       "yes":
       - "248"
     separatecontext: false
@@ -3720,42 +3720,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -3500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "365":
-    id: "365"
-    taskid: 9ba903ae-a6a7-404b-860b-027ae9581d77
-    type: regular
-    task:
-      id: 9ba903ae-a6a7-404b-860b-027ae9581d77
-      version: -1
-      name: Print Error Message - No incidents found
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "202"
-    scriptarguments:
-      message:
-        simple: As there are no CrowdStrike Falcon incidents available, this test playbook cannot be executed.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 5340,
-          "y": -3330
+          "y": -3490
         }
       }
     note: false
@@ -3811,7 +3776,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "368"
+      - "202"
       "yes":
       - "362"
     separatecontext: false
@@ -3831,38 +3796,6 @@ tasks:
         "position": {
           "x": -190,
           "y": -2065
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "368":
-    id: "368"
-    taskid: ca2e697d-fbd5-4c0b-8059-3b500034b0b5
-    type: regular
-    task:
-      id: ca2e697d-fbd5-4c0b-8059-3b500034b0b5
-      version: -1
-      name: Print Error Message - No detections found
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: As there are no CrowdStrike Falcon detections available, the 'No Detections Found' context data test cannot be executed.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": -1890
         }
       }
     note: false
