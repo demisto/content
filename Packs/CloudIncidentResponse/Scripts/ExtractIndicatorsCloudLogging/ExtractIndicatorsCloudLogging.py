@@ -26,7 +26,7 @@ def extract_gcp_info(event):
 
 
 def extract_event_info(event):
-    if 'amazonaws.com' in event.get('eventSource'):
+    if event.get('eventSource') and 'amazonaws.com' in event.get('eventSource'):
         return "AWS", extract_aws_info(event)
     elif event.get('logName', '').startswith('projects/'):
         return "GCP", extract_gcp_info(event)
