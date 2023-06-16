@@ -301,35 +301,36 @@ After you successfully execute a command, a DBot message appears in the War Room
 80. [Gets information about available PAN-OS licenses and their statuses: panorama-get-licenses](#pan-os-get-licenses)
 81. [Gets information for the specified security profile: panorama-get-security-profiles](#pan-os-get-security-profiles)
 82. [Apply a security profile to specific rules or rules with a specific tag: panorama-apply-security-profile](#pan-os-apply-security-profile)
-83. [Get SSL decryption rules: panorama-get-ssl-decryption-rules](#pan-os-get-ssl-decryption-rules)
-84. [Retrieves the Wildfire configuration: panorama-get-wildfire-configuration](#pan-os-get-wildfire-configuration)
-85. [Set default categories to block in the URL filtering profile: panorama-url-filtering-block-default-categories](#pan-os-url-filtering-block-default-categories)
-86. [Get anti-spyware best practices: panorama-get-anti-spyware-best-practice](#pan-os-get-anti-spyware-best-practice)
-87. [Get file-blocking best practices: panorama-get-file-blocking-best-practice](#pan-os-get-file-blocking-best-practice)
-88. [Get anti-virus best practices: panorama-get-antivirus-best-practice](#pan-os-get-antivirus-best-practice)
-89. [Get vulnerability-protection best practices: panorama-get-vulnerability-protection-best-practice](#pan-os-get-vulnerability-protection-best-practice)
-90. [View WildFire best practices: panorama-get-wildfire-best-practice](#pan-os-get-wildfire-best-practice)
-91. [View URL Filtering best practices: panorama-get-url-filtering-best-practice](#pan-os-get-url-filtering-best-practice)
-92. [Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule: panorama-enforce-wildfire-best-practice](#pan-os-enforce-wildfire-best-practice)
-93. [Creates an antivirus best practice profile: panorama-create-antivirus-best-practice-profile](#pan-os-create-antivirus-best-practice-profile)
-94. [Creates an Anti-Spyware best practice profile: panorama-create-anti-spyware-best-practice-profile](#pan-os-create-anti-spyware-best-practice-profile)
-95. [Creates a vulnerability protection best practice profile: panorama-create-vulnerability-best-practice-profile](#pan-os-create-vulnerability-best-practice-profile)
-96. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#pan-os-create-url-filtering-best-practice-profile)
-97. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#pan-os-create-file-blocking-best-practice-profile)
-98. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#pan-os-create-wildfire-best-practice-profile)
-99. [Shows the user ID interface configuration.](#pan-os-show-user-id-interfaces-config)
-100. [Shows the zones configuration.](#pan-os-show-zones-config)
-101. [Retrieves list of user-ID agents configured in the system.](#pan-os-list-configured-user-id-agents)
-102. [Gets global counter information from all the PAN-OS firewalls in the topology.](#pan-os-platform-get-global-counters)
-103. [Retrieves all BGP peer information from the PAN-OS firewalls in the topology.](#pan-os-platform-get-bgp-peers)
-104. [Check the devices for software that is available to be installed.](#pan-os-platform-get-available-software)
-105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
-106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
-107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
-108. [Download the running configuration](#pan-os-get-running-config)
-109. [Download the merged configuration](#pan-os-get-merged-config)
-110. [Create Nat-rule](#pan-os-create-nat-rule)
-111. [Create PBF-rule](#pan-os-create-pbf-rule)
+83. [Removes a security profile to specific rules or rules with a specific tag](#pan-os-remove-security-profile)
+84. [Get SSL decryption rules: panorama-get-ssl-decryption-rules](#pan-os-get-ssl-decryption-rules)
+85. [Retrieves the Wildfire configuration: panorama-get-wildfire-configuration](#pan-os-get-wildfire-configuration)
+86. [Set default categories to block in the URL filtering profile: panorama-url-filtering-block-default-categories](#pan-os-url-filtering-block-default-categories)
+87. [Get anti-spyware best practices: panorama-get-anti-spyware-best-practice](#pan-os-get-anti-spyware-best-practice)
+88. [Get file-blocking best practices: panorama-get-file-blocking-best-practice](#pan-os-get-file-blocking-best-practice)
+89. [Get anti-virus best practices: panorama-get-antivirus-best-practice](#pan-os-get-antivirus-best-practice)
+90. [Get vulnerability-protection best practices: panorama-get-vulnerability-protection-best-practice](#pan-os-get-vulnerability-protection-best-practice)
+91. [View WildFire best practices: panorama-get-wildfire-best-practice](#pan-os-get-wildfire-best-practice)
+92. [View URL Filtering best practices: panorama-get-url-filtering-best-practice](#pan-os-get-url-filtering-best-practice)
+93. [Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule: panorama-enforce-wildfire-best-practice](#pan-os-enforce-wildfire-best-practice)
+94. [Creates an antivirus best practice profile: panorama-create-antivirus-best-practice-profile](#pan-os-create-antivirus-best-practice-profile)
+95. [Creates an Anti-Spyware best practice profile: panorama-create-anti-spyware-best-practice-profile](#pan-os-create-anti-spyware-best-practice-profile)
+96. [Creates a vulnerability protection best practice profile: panorama-create-vulnerability-best-practice-profile](#pan-os-create-vulnerability-best-practice-profile)
+97. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#pan-os-create-url-filtering-best-practice-profile)
+98. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#pan-os-create-file-blocking-best-practice-profile)
+99. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#pan-os-create-wildfire-best-practice-profile)
+100. [Shows the user ID interface configuration.](#pan-os-show-user-id-interfaces-config)
+101. [Shows the zones configuration.](#pan-os-show-zones-config)
+102. [Retrieves list of user-ID agents configured in the system.](#pan-os-list-configured-user-id-agents)
+103. [Gets global counter information from all the PAN-OS firewalls in the topology.](#pan-os-platform-get-global-counters)
+104. [Retrieves all BGP peer information from the PAN-OS firewalls in the topology.](#pan-os-platform-get-bgp-peers)
+105. [Check the devices for software that is available to be installed.](#pan-os-platform-get-available-software)
+106. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
+107. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
+108. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+109. [Download the running configuration](#pan-os-get-running-config)
+110. [Download the merged configuration](#pan-os-get-merged-config)
+111. [Create Nat-rule](#pan-os-create-nat-rule)
+112. [Create PBF-rule](#pan-os-create-pbf-rule)
 
 
 
@@ -4276,8 +4277,28 @@ There is no context output for this command.
 ```!pan-os-apply-security-profile profile_name=test profile_type=spyware rule_name=rule1 pre_post="pre-rulebase" ```
 
 #### Human Readable Output
->The profile test has been applied to the rule rule1
+>The profile spyware = test has been applied to the rule rule1
 
+### pan-os-remove-security-profile
+
+***
+Removes a security profile to specific rules or rules with a specific tag.
+
+#### Base Command
+
+`pan-os-remove-security-profile`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_type | The security profile type. Possible values are: data-filtering, file-blocking, spyware, url-filtering, virus, vulnerability, wildfire-analysis. | Required | 
+| rule_name | The rule name to apply. | Required | 
+| pre_post | The location of the rules. Mandatory for Panorama instances. Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| device-group | The device group for which to apply security profiles. | Optional | 
+
+#### Human Readable Output
+>The profile test has been removed from the rule rule1
 
 ### pan-os-get-ssl-decryption-rules
 ***

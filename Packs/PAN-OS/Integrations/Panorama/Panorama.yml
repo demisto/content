@@ -6880,6 +6880,33 @@ script:
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
   - arguments:
+    - description: The security profile type.
+      name: profile_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+    - description: The rule name to apply.
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      description: The location of the rules. Mandatory for Panorama instances.
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group for which to apply security profiles.
+      name: device-group
+      required: false
+    description: Removes a security profile to specific rules or rules with a specific tag.
+    name: pan-os-remove-security-profile
+  - arguments:
     - description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
       auto: PREDEFINED
@@ -9656,7 +9683,7 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  dockerimage: demisto/pan-os-python:1.0.0.62889
+  dockerimage: demisto/pan-os-python:1.0.0.63723
   feed: false
   isfetch: true
   longRunning: false

@@ -6937,8 +6937,11 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
     profile_types = {'data-filtering', 'file-blocking', 'spyware', 'url-filtering',
                      'virus', 'vulnerability', 'wildfire-analysis'} - {profile_type}
 
-    # first we update the given profile type with the given profile name
-    rule_profiles = f"<{profile_type}><member>{profile_name}</member></{profile_type}>"
+    rule_profiles = ''
+
+    if profile_name:  # if profile_name was not provided, we remove the profile type from the rule.
+        # first we update the given profile type with the given profile name
+        rule_profiles += f"<{profile_type}><member>{profile_name}</member></{profile_type}>"
 
     # Keeping the existing profile types
     for p_type in profile_types:
@@ -6960,7 +6963,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
 
 
 def apply_security_profile_command(args):
-    profile_name = args.get('profile_name')
+    profile_name = args.get('profile_name', '')  # when removing a profile, no need to a pass a profile_name
     profile_type = args.get('profile_type')
     rule_name = args.get('rule_name')
     pre_post = args.get('pre_post')
@@ -6975,7 +6978,10 @@ def apply_security_profile_command(args):
         xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']"
 
     apply_security_profile(xpath, profile_name, profile_type)
-    return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
+    if profile_name:
+        return_results(f'The profile {profile_type} = {profile_name} has been applied to the rule {rule_name}')
+    else:
+        return_results(f'The profile {profile_type} has been removed from the rule {rule_name}')
 
 
 @logger
@@ -14178,6 +14184,9 @@ def main():  # pragma: no cover
             get_security_profiles_command(args.get('security_profile'))
 
         elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
+            apply_security_profile_command(args)
+
+        elif command == 'pan-os-remove-security-profile':
             apply_security_profile_command(args)
 
         elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
