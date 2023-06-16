@@ -4542,9 +4542,6 @@ def delete_ioa_exclusion_command(args: dict) -> CommandResults:
     )
 
 
-def get_host_details_command(args:) -> CommandResults:
-    return
-
 def search_ioa_exclusion_command(args: dict) -> CommandResults:
     """Searches IOA exclusions by providing an ID / name / cusotm-filter.
 
@@ -4781,8 +4778,6 @@ def main():
             return_results(delete_host_groups_command(host_group_ids=argToList(args.get('host_group_id'))))
         elif command == 'cs-falcon-list-host-group-members':
             return_results(list_host_group_members_command(**args))
-        elif command == 'cs-falcon-get-host-details':
-            return_results(get_host_details_command(**args))
         elif command == 'cs-falcon-add-host-group-members':
             return_results(add_host_group_members_command(host_group_id=args.get('host_group_id'),
                                                           host_ids=argToList(args.get('host_ids'))))
