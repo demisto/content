@@ -116,3 +116,4 @@ runonce: false
 tests:
 - DBotPredictURLPhishing_test
 fromversion: 6.0.0
+toversion: 7.9.9
