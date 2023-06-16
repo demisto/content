@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import hashlib
 import io
 import json
@@ -5,14 +8,14 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto
+
 import pytz
 import requests
 import splunklib.client as client
 import splunklib.results as results
 from splunklib.data import Record
 import urllib3
-from CommonServerPython import *  # noqa: F401
+
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 urllib3.disable_warnings()
@@ -1220,7 +1223,7 @@ def get_last_update_in_splunk_time(last_update):
 
     try:
         splunk_timezone = int(params['timezone'])
-    except (KeyError, ValueError, TypeError):
+    except (KeyError, ValueError):
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
 
@@ -2619,7 +2622,7 @@ def main():  # pragma: no cover
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = argToBoolean(params.get('proxy', False))
+    proxy = argToBoolean(params.get('proxy', True))
 
     connection_args = get_connection_args()
 
