@@ -344,7 +344,7 @@ script:
     description: Delete file from Share.
     execution: true
     name: azure-storage-fileshare-file-delete
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
