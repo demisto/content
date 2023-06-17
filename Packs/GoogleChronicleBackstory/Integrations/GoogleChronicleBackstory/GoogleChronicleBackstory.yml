@@ -3920,7 +3920,7 @@ script:
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detectionTime
       description: The time period the detection was found in.
       type: Date
-  dockerimage: demisto/googleapi-python3:1.0.0.62140
+  dockerimage: demisto/googleapi-python3:1.0.0.63394
   feed: false
   isfetch: true
   longRunning: false

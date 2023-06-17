@@ -807,7 +807,7 @@ script:
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
       description: Status of the failed alert recovery.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.62140
+  dockerimage: demisto/googleapi-python3:1.0.0.63394
   feed: false
   isfetch: true
   longRunning: false
