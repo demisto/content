@@ -1153,7 +1153,7 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str):
 
     # Update the file version of the matching corepacks version in the versions-metadata.json file
     override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('file_version')
-    logging.debug(f'Bumping file version of server version {override_corepacks_server_version} in versions-metadata.json file from'
+    logging.debug(f'Bumping file version of server version {override_corepacks_server_version} in versions-metadata.json from'
                   f'{GCPConfig.versions_metadata_contents["version_map"][override_corepacks_server_version]["file_version"]} to'
                   f'{override_corepacks_file_version}')
     GCPConfig.versions_metadata_contents['version_map'][override_corepacks_server_version]['file_version'] = \
