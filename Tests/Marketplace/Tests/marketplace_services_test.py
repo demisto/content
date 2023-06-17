@@ -3411,7 +3411,7 @@ class TestVersionsMetadataFile:
         """ Test class to check that the versions-metadata.json file is in the correct format."""
 
         def test_version_map(self):
-            version_map_content = GCPConfig.VERSIONS_METADATA_CONTENTS.get('version_map')
+            version_map_content = GCPConfig.versions_metadata_contents.get('version_map')
             valid_keys = {'core_packs_file', 'core_packs_file_is_locked', 'file_version', 'marketplaces'}
             for version, core_packs_info in version_map_content.items():
                 missing_keys = set(valid_keys).difference(core_packs_info.keys()).difference({'marketplaces'})

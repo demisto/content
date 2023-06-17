@@ -409,17 +409,20 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     required_core_packs = GCPConfig.get_core_packs(marketplace)
     corepacks_files_names = [GCPConfig.CORE_PACK_FILE_NAME]
     corepacks_files_names.extend(GCPConfig.get_core_packs_unlocked_files(marketplace))
+    logging.debug(f"Updating the following corepacks files: {corepacks_files_names}")
     for corepacks_file in corepacks_files_names:
         logging.info(f"Creating corepacks file {corepacks_file}.")
         core_packs_public_urls = []
         bucket_core_packs = set()
+        packs_missing_metadata = set()
         for pack in os.scandir(index_folder_path):
             if pack.is_dir() and pack.name in required_core_packs:
                 pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
                 if not os.path.exists(pack_metadata_path):
                     logging.critical(f"{pack.name} pack {Pack.METADATA} is missing in {GCPConfig.INDEX_NAME}")
-                    sys.exit(1)
+                    packs_missing_metadata.add(pack.name)
+                    continue
 
                 with open(pack_metadata_path, 'r') as metadata_file:
                     metadata = json.load(metadata_file)
@@ -440,6 +443,11 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
 
                 core_packs_public_urls.append(core_pack_public_url)
                 bucket_core_packs.add(pack.name)
+
+        if packs_missing_metadata:
+            logging.critical(f"Missing {Pack.METADATA} in {len(packs_missing_metadata)} packs: "
+                             f"{','.join(sorted(packs_missing_metadata))}, exiting...")
+            sys.exit(1)
 
         missing_core_packs = set(required_core_packs).difference(bucket_core_packs)
         unexpected_core_packs = set(bucket_core_packs).difference(required_core_packs)
@@ -1093,10 +1101,10 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
 
     Returns True if a file should be updated and False otherwise.
     """
-    override_corepacks_server_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('server_version')
-    override_marketplaces = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('marketplaces', [])
-    override_corepacks_file_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('file_version')
-    current_corepacks_file_version = GCPConfig.CORE_PACKS_FILE_VERSIONS.get(
+    override_corepacks_server_version = GCPConfig.corepacks_override_contents.get('server_version')
+    override_marketplaces = GCPConfig.corepacks_override_contents.get('marketplaces', [])
+    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('file_version')
+    current_corepacks_file_version = GCPConfig.core_packs_file_versions.get(
         override_corepacks_server_version, {}).get('file_version')
     if not current_corepacks_file_version:
         logging.info(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
@@ -1104,9 +1112,10 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
         return False
 
     if int(override_corepacks_file_version) <= int(current_corepacks_file_version):
-        logging.info(f'Corepacks file version of server version {override_corepacks_server_version} in '
-                     f' {GCPConfig.COREPACKS_OVERRIDE_FILE} is not greater than the version in'
-                     f' {GCPConfig.VERSIONS_METADATA_FILE}. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
+        logging.info(
+            f'Corepacks file version: {override_corepacks_file_version} of server version {override_corepacks_server_version} in '
+            f'{GCPConfig.COREPACKS_OVERRIDE_FILE} is not greater than the version in {GCPConfig.VERSIONS_METADATA_FILE}: '
+            f'{current_corepacks_file_version}. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
     if override_marketplaces and marketplace not in override_marketplaces:
@@ -1119,9 +1128,9 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
 
 def override_locked_corepacks_file(build_number: str, artifacts_dir: str):
     """
-    Overrides an existing corepacks-X.X.X.json file, where X.X.X is the server version that was specified in the
+    Override an existing corepacks-X.X.X.json file, where X.X.X is the server version that was specified in the
     corepacks_override.json file.
-    Additionally, updates the file version in the versions-metadata.json file, and updates the corepacks file with the
+    Additionally, update the file version in the versions-metadata.json file, and the corepacks file with the
     current build number.
 
     Args:
@@ -1129,21 +1138,25 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str):
          artifacts_dir (str): The CI artifacts directory to upload the corepacks file to.
     """
     # Get the updated content of the corepacks file:
-    override_corepacks_server_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('server_version')
-    corepacks_file_new_content = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('updated_corepacks_content')
+    override_corepacks_server_version = GCPConfig.corepacks_override_contents.get('server_version')
+    corepacks_file_new_content = GCPConfig.corepacks_override_contents.get('updated_corepacks_content')
 
     # Update the build number to the current build number:
     corepacks_file_new_content['buildNumber'] = build_number
 
     # Upload the updated corepacks file to the given artifacts folder:
     override_corepacks_file_name = f'corepacks-{override_corepacks_server_version}.json'
+    logging.debug(f'Overriding {override_corepacks_file_name} with the following content:\n {corepacks_file_new_content}')
     corepacks_json_path = os.path.join(artifacts_dir, override_corepacks_file_name)
     json_write(corepacks_json_path, corepacks_file_new_content)
     logging.success(f"Finished copying overriden {override_corepacks_file_name} to artifacts.")
 
-    # Update the file version of the matching corepacks version in the versions-metadta.json file
-    override_corepacks_file_version = GCPConfig.COREPACKS_OVERRIDE_CONTENTS.get('file_version')
-    GCPConfig.VERSIONS_METADATA_CONTENTS['version_map'][override_corepacks_server_version]['file_version'] = \
+    # Update the file version of the matching corepacks version in the versions-metadata.json file
+    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('file_version')
+    logging.debug(f'Bumping file version of server version {override_corepacks_server_version} in versions-metadata.json file from'
+                  f'{GCPConfig.versions_metadata_contents["version_map"][override_corepacks_server_version]["file_version"]} to'
+                  f'{override_corepacks_file_version}')
+    GCPConfig.versions_metadata_contents['version_map'][override_corepacks_server_version]['file_version'] = \
         override_corepacks_file_version
 
 
@@ -1155,7 +1168,7 @@ def upload_server_versions_metadata(artifacts_dir: str):
         artifacts_dir (str): The CI artifacts directory to upload the versions-metadata.json file to.
     """
     versions_metadata_path = os.path.join(artifacts_dir, GCPConfig.VERSIONS_METADATA_FILE)
-    json_write(versions_metadata_path, GCPConfig.VERSIONS_METADATA_CONTENTS)
+    json_write(versions_metadata_path, GCPConfig.versions_metadata_contents)
     logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts.")
 
 

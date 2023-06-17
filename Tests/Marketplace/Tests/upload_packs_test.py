@@ -695,7 +695,7 @@ class TestCorepacksFiles:
             assert corepacks_file_contents.get('corePacks') == ['pack1', 'pack2']
 
         # Assert that the versions-metadata file was updated with the required file version:
-        assert GCPConfig.VERSIONS_METADATA_CONTENTS.get('version_map').get('8.2.0').get('file_version') == '2'
+        assert GCPConfig.versions_metadata_contents.get('version_map').get('8.2.0').get('file_version') == '2'
 
         # Remove the temp artifacts dir that was created for testing:
         shutil.rmtree(artifacts_dir)
