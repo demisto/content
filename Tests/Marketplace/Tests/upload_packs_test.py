@@ -590,7 +590,7 @@ class TestCorepacksFiles:
                 "file_version": "1"
             }
         }
-        mocker.patch.object(GCPConfig, "CORE_PACKS_FILE_VERSIONS", versions_metadata)
+        mocker.patch.object(GCPConfig, "core_packs_file_versions", versions_metadata)
 
         # Case 1
         corepacks_override = {
@@ -603,7 +603,7 @@ class TestCorepacksFiles:
                     "buildNumber": "123"
                 }
         }
-        mocker.patch.object(GCPConfig, "COREPACKS_OVERRIDE_CONTENTS", corepacks_override)
+        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
         assert not should_override_locked_corepacks_file()
 
         # Case 2
@@ -617,7 +617,7 @@ class TestCorepacksFiles:
                     "buildNumber": "123"
                 }
         }
-        mocker.patch.object(GCPConfig, "COREPACKS_OVERRIDE_CONTENTS", corepacks_override)
+        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
         assert not should_override_locked_corepacks_file()
 
         # Case 3
@@ -634,7 +634,7 @@ class TestCorepacksFiles:
                     "buildNumber": "123"
             }
         }
-        mocker.patch.object(GCPConfig, "COREPACKS_OVERRIDE_CONTENTS", corepacks_override)
+        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
         assert not should_override_locked_corepacks_file(marketplace='marketplacev2')
 
         # Case 4
@@ -648,7 +648,7 @@ class TestCorepacksFiles:
                     "buildNumber": "123"
                 }
         }
-        mocker.patch.object(GCPConfig, "COREPACKS_OVERRIDE_CONTENTS", corepacks_override)
+        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
         assert should_override_locked_corepacks_file()
 
     def test_override_locked_corepacks_file(self, mocker):
@@ -673,7 +673,7 @@ class TestCorepacksFiles:
                     "buildNumber": "123"
                 }
         }
-        mocker.patch.object(GCPConfig, "COREPACKS_OVERRIDE_CONTENTS", corepacks_override)
+        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
 
         versions_metadata_content = {
             "version_map": {
@@ -684,7 +684,7 @@ class TestCorepacksFiles:
                 }
             }
         }
-        mocker.patch.object(GCPConfig, "VERSIONS_METADATA_CONTENTS", versions_metadata_content)
+        mocker.patch.object(GCPConfig, "versions_metadata_contents", versions_metadata_content)
 
         override_locked_corepacks_file(build_number='456', artifacts_dir=artifacts_dir)
 

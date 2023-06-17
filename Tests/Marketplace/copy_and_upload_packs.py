@@ -195,7 +195,7 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
                 blob=build_corepacks_blob, destination_bucket=production_bucket, new_name=prod_corepacks_storage_path
             )
             if copied_corepacks_file.exists():
-                logging.success(f"Finished uploading {corepacks_file} to storage.")
+                logging.success(f"Finished uploading {corepacks_file} to bucket.")
             else:
                 logging.error(f"Failed copying {corepacks_file} from build bucket to production bucket - blob"
                               f" does not exist, exiting...")
