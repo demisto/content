@@ -131,6 +131,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
         ):
             packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
+        packs_support_levels = set()
         print(f'Received error when trying to checkout to {external_pr_branch} forked content repo\n{error=}')
 
     print(f'{packs_support_levels=}')
