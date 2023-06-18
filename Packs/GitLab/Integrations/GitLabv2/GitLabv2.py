@@ -314,7 +314,7 @@ class Client(BaseClient):
         suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
         return self._http_request('get', suffix, headers=headers, resp_type='text')
 
-    def gitlab_trigger_nightly(self, project_id: str, data: dict):
+    def gitlab_trigger_pipeline(self, project_id: str, data: dict):
         suffix = f'projects/{project_id}/trigger/pipeline'
         return self._http_request('post', suffix, data=data)
 
@@ -1724,10 +1724,10 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
         'variables[NIGHTLY]': args.get('nightly', 'true'),
         'variables[SLACK_CHANNEL]': args.get('slack_channel', 'dmst-build'),
     }
-    response = client.gitlab_trigger_nightly(args.get('project_id'), data)
+    response = client.gitlab_trigger_pipeline(args.get('project_id'), data)
 
     outputs = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
-    human_readable = f'## Pipeline for branch {data.get("ref")} [triggered]({outputs.get("web_url")}) successfully.'
+    human_readable = f'## Pipeline for branch {outputs.get("ref")} [triggered]({outputs.get("web_url")}) successfully.'
 
     return CommandResults(
         outputs_prefix='GitLab.Pipeline',
