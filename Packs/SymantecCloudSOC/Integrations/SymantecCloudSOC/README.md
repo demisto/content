@@ -3,13 +3,13 @@ This integration was integrated and tested with version 3.157 of Symantec CloudS
 
 ## Configure Symantec Cloud SOC Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Symantec Cloud SOC Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g.<https://api.elastica.net/casb/>) | True |
+    | Server URL (e.g., <https://api.elastica.net/casb/>) | True |
     | Key ID | True |
     | Key Secret | True |
     | First fetch time | False |
@@ -23,11 +23,11 @@ Symantec CloudSOC Event Collector collects the following event types:
 * Detect incidents logs
   
 ### API Limitations
-* You cannot retrieve investigate logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for investigate logs it will be a maximum of 180 days.
+  You cannot retrieve investigate logs that are older than 180 days. Therefore, if setting a first fetch that is more than 180 days, for investigate logs it will be a maximum of 180 days.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### symantec-get-events
@@ -44,7 +44,7 @@ Gets events from Symantec CloudSOC.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. | Optional | 
+| limit | Maximum number of results to return. | Optional | 
 
 #### Context Output
 
