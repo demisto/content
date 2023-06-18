@@ -63,6 +63,9 @@ tasks:
       description:
         complex:
           root: inputs.description
+      serviceNowAssignmentGroup:
+        complex:
+          root: inputs.serviceNowAssignmentGroup
       serviceNowCategory:
         complex:
           root: inputs.serviceNowCategory

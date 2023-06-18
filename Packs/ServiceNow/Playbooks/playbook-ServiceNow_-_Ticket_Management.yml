@@ -832,6 +832,11 @@ inputs:
   required: false
   description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
   playbookInputQuery:
+- key: serviceNowAssignmentGroup
+  value: {}
+  required: false
+  description: The group to which to assign the new ticket.
+  playbookInputQuery:
 outputs:
 - contextPath: ServiceNow.Ticket.ID
   description: ServiceNow Ticket ID.
