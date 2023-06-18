@@ -1,4 +1,4 @@
-Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+Entry widget that returns the region involved in the alert.
 
 ## Script Data
 
@@ -7,15 +7,13 @@ Recommend most likely service owners from those surfaced by Cortex ASM Enrichmen
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
+| Tags | dynamic-section |
 | Cortex XSOAR Version | 6.8.0 |
 
 ## Inputs
 
 ---
-
-| **Argument Name** | **Description** |
-| --- | --- |
-| owners | List of potential service owners |
+There are no inputs for this script.
 
 ## Outputs
 
