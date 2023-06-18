@@ -314,6 +314,10 @@ class Client(BaseClient):
         suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
         return self._http_request('get', suffix, headers=headers, resp_type='text')
 
+    def gitlab_trigger_nightly(self, project_id: str, data: dict):
+        suffix = f'projects/{project_id}/trigger/pipeline'
+        return self._http_request('post', suffix, data=data)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1698,6 +1702,42 @@ def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
+def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Triggers a GitLab pipeline on a selected project and branch.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (dict) XSOAR arguments:
+            - 'project_id' (Required): Project ID on winch to run the pipeline.
+            - 'token' (Required): Trigger token to run the pipeline.
+            - 'branch': The branch on which to run the pipeline. Default is 'master'
+            - 'nightly': The 'nightly' variable value (True/False) affects only on master. Default is 'True'.
+            - 'slack_channel': On which Slack channel to notify about the success/failure of this pipeline
+                (affects only if 'nightly' set to true). Default is 'dmst-build'.
+
+    Returns:
+        (CommandResults).
+    """
+    data = {
+        'token': args.get('token'),
+        'ref': args.get('branch', 'master'),
+        'variables[NIGHTLY]': args.get('nightly', 'true'),
+        'variables[SLACK_CHANNEL]': args.get('slack_channel', 'dmst-build'),
+    }
+    response = client.gitlab_trigger_nightly(args.get('project_id'), data)
+
+    outputs = {k: v for k, v in response.json().items() if k in PIPELINE_FIELDS_TO_EXTRACT}
+    human_readable = f'## Pipeline for branch {data.get("ref")} (triggered)[{outputs.get("web_url")}] successfully.'
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=human_readable
+    )
+
+
 def check_for_html_in_error(e: str):
     """
     Args:
@@ -1758,6 +1798,7 @@ def main() -> None:  # pragma: no cover
                 'gitlab-pipelines-schedules-list': gitlab_pipelines_schedules_list_command,
                 'gitlab-jobs-list': gitlab_jobs_list_command,
                 'gitlab-artifact-get': gitlab_artifact_get_command,
+                'gitlab-trigger-pipeline': gitlab_trigger_pipeline_command,
                 }
 
     try:
