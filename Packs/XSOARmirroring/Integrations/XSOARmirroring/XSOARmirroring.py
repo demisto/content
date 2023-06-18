@@ -15,10 +15,10 @@ urllib3.disable_warnings()
 
 MAX_INCIDENTS_TO_FETCH = 100
 FIELDS_TO_COPY_FROM_REMOTE_INCIDENT = [
-    'name', 'rawName', 'severity', 'occurred', 'modified', 'roles', 'type', 'rawType', 'status', 'reason', 'created', 'closed',
-    'sla', 'labels', 'attachment', 'details', 'openDuration', 'lastOpen', 'owner', 'closeReason', 'notifyTime', 'dueDate',
-    'category', 'rawCloseReason', 'closeNotes', 'playbookId', 'reminder', 'runStatus', 'phase', 'rawPhase', 'CustomFields',
-    'rawCategory',
+    'name', 'rawName', 'severity', 'occurred', 'modified', 'roles', 'type', 'rawType', 'status', 'reason', 'created',
+    'closed', 'sla', 'labels', 'attachment', 'details', 'openDuration', 'lastOpen', 'owner', 'closeReason',
+    'rawCloseReason', 'closeNotes', 'playbookId', 'dueDate', 'reminder', 'runStatus', 'notifyTime', 'phase',
+    'rawPhase', 'CustomFields', 'category', 'rawCategory'
 ]
 
 MIRROR_DIRECTION = {
