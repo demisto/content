@@ -1096,7 +1096,7 @@ def list_rules_command(client: Client, args: dict[str, Any]) -> CommandResults:
                                                "IsActive", "Position", "SourceService", "DestService"])
         return CommandResults(
             readable_output=hr,
-            outputs_prefix='Rules',
+            outputs_prefix='CiscoASA.Rules',
             outputs=rules,
             raw_response=raw_rules,
         )
@@ -1184,7 +1184,7 @@ def rule_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
                                                      "DestService"])
     return CommandResults(
         readable_output=hr,
-        outputs_prefix='Rules',
+        outputs_prefix='CiscoASA.Rules',
         outputs=rules,
         raw_response=raw_rules,
     )
@@ -1258,7 +1258,7 @@ def create_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
         return CommandResults(
             readable_output=hr,
-            outputs_prefix='Rules',
+            outputs_prefix='CiscoASA.Rules',
             outputs=rules,
             raw_response=raw_rule,
         )
@@ -1380,7 +1380,7 @@ def edit_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
         return CommandResults(
             readable_output=hr,
-            outputs_prefix='Rules',
+            outputs_prefix='CiscoASA.Rules',
             outputs=rules,
             raw_response=raw_rule,
         )
@@ -1422,7 +1422,7 @@ def list_objects_command(client: Client, args: dict[str, Any]) -> CommandResults
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix='NetworkObject',
+        outputs_prefix='CiscoASA.NetworkObject',
         outputs=formated_objects,
         raw_response=formated_objects,
     )
