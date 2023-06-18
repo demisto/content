@@ -1371,6 +1371,7 @@ script:
       predefined:
       - 'true'
       - 'false'
+      defaultValue: false
     outputs:
     - contextPath: VirusTotal.SigmaAnalysis.data.attributes.last_modification_date
       description: Date of the last update in epoch format.
@@ -1644,7 +1645,7 @@ script:
       type: String
 
   runonce: false
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
