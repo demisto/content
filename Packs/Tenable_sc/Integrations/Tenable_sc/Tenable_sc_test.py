@@ -3,7 +3,7 @@ import json
 from Tenable_sc import update_asset_command, list_zones_command, list_queries, create_policy_request_body, list_groups_command, \
     list_plugin_family_command, validate_create_scan_inputs, Client, validate_user_body_params, get_query, \
     create_get_device_request_params_and_path, create_user_request_body, list_query_command, list_users_command, launch_scan, \
-    list_report_definitions_command
+    list_report_definitions_command, delete_asset_command, delete_scan_command, delete_user_command, list_scans_command
 import io
 
 client_mocker = Client(verify_ssl=False, proxy=True, access_key="access_key", secret_key="secret_key",
@@ -503,5 +503,80 @@ def test_list_report_definitions_command(mocker, test_case):
     args = test_data.get("args")
     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
     command_results = list_report_definitions_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+def test_delete_asset_command(mocker):
+    """
+        Given:
+        - Args with asset_id to delete.
+
+        When:
+        - Running delete_asset_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR is returned.
+    """
+    args = {"asset_id": "test_id"}
+    mocker.patch.object(client_mocker, 'send_request', return_value={"code": 200})
+    command_results = delete_asset_command(client_mocker, args)
+    assert "Asset test_id was deleted successfully." == command_results.readable_output
+
+
+def test_delete_scan_command(mocker):
+    """
+        Given:
+        - Args with scan_id to delete.
+
+        When:
+        - Running delete_scan_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR is returned.
+    """
+    args = {"scan_id": "test_id"}
+    mocker.patch.object(client_mocker, 'send_request', return_value={"code": 200})
+    command_results = delete_scan_command(client_mocker, args)
+    assert "Scan test_id was deleted successfully." == command_results.readable_output
+
+
+def test_delete_user_command(mocker):
+    """
+        Given:
+        - Args with user_id to delete.
+
+        When:
+        - Running delete_user_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR is returned.
+    """
+    args = {"user_id": "test_id"}
+    mocker.patch.object(client_mocker, 'send_request', return_value={"code": 200})
+    command_results = delete_user_command(client_mocker, args)
+    assert "User test_id was deleted successfully." == command_results.readable_output
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_list_scans_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with manageable = true, and mock response to response with 2 report definitions with the same name,
+                  where one report is later than the second.
+
+        When:
+        - Running test_list_scans_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return only one report definition, the one that occurred later.
+    """
+    test_data = load_json("./test_data/test_list_scans_command.json").get(test_case, {})
+    args = test_data.get("args")
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = list_scans_command(client_mocker, args)
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs
