@@ -3666,17 +3666,20 @@ script:
       type: String
   - name: gitlab-trigger-pipeline
     arguments:
-    - description: Project ID on winch to run the pipeline.
+    - default: false
+      description: Project ID on winch to run the pipeline.
       isArray: false
       name: project_id
       required: true
       secret: false
-    - description: Token to trigger the pipeline.
+    - default: false
+      description: "Token to trigger the pipeline. See here how to generate: https://docs.gitlab.com/ee/ci/triggers/index.html#create-a-trigger-token"
       isArray: false
       name: token
       required: true
-      secret: true
-    - description: The branch on which to run the pipeline. Default is 'master'.
+      secret: false
+    - default: false
+      description: The branch on which to run the pipeline. Default is 'master'.
       isArray: false
       name: branch
       required: false
@@ -3690,7 +3693,8 @@ script:
       predefined:
         - 'true'
         - 'false'
-    - description: On which Slack channel to notify about the success/failure of this pipeline
+    - default: false
+      description: On which Slack channel to notify about the success/failure of this pipeline
       isArray: false
       name: slack_channel
       required: false

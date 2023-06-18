@@ -1726,8 +1726,8 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
     }
     response = client.gitlab_trigger_nightly(args.get('project_id'), data)
 
-    outputs = {k: v for k, v in response.json().items() if k in PIPELINE_FIELDS_TO_EXTRACT}
-    human_readable = f'## Pipeline for branch {data.get("ref")} (triggered)[{outputs.get("web_url")}] successfully.'
+    outputs = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
+    human_readable = f'## Pipeline for branch {data.get("ref")} [triggered]({outputs.get("web_url")}) successfully.'
 
     return CommandResults(
         outputs_prefix='GitLab.Pipeline',
