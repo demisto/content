@@ -3772,8 +3772,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     if element_to_change == 'profile-setting':
         params['action'] = 'set'
         params['element'] = '<profile-setting><group/></profile-setting>'
-        http_request(URL, 'POST', body=params)
-        return_results(f'Rule edited successfully.')
+        values = [element_value]
+        result = http_request(URL, 'POST', body=params)
 
     else:
         params["xpath"] = f'{params["xpath"]}/{element_to_change}'
@@ -3789,23 +3789,23 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
         params['element'] = add_argument_list(values, element_to_change, True)
         result = http_request(URL, 'POST', body=params)
 
-        rule_output = {
-            'Name': rulename,
-            SECURITY_RULE_ARGS[element_to_change]: values
-        }
-        if DEVICE_GROUP:
-            rule_output['DeviceGroup'] = DEVICE_GROUP
+    rule_output = {
+        'Name': rulename,
+        SECURITY_RULE_ARGS[element_to_change]: values
+    }
+    if DEVICE_GROUP:
+        rule_output['DeviceGroup'] = DEVICE_GROUP
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['text'],
-            'HumanReadable': 'Rule edited successfully.',
-            'EntryContext': {
-                "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
-            }
-        })
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Rule edited successfully.',
+        'EntryContext': {
+            "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
+        }
+    })
 
 
 def build_audit_comment_params(
