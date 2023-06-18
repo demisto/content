@@ -1463,7 +1463,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.50693
+  dockerimage: demisto/boto3py3:1.0.0.63655
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
