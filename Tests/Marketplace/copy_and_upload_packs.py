@@ -173,7 +173,7 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
                 corepacks_list_str = '\n'.join(corepacks_list)
                 logging.exception(f"GCS paths in build bucket corepacks.json file are not of format: "
                                   f"{GCPConfig.GCS_PUBLIC_URL}/<BUCKET_NAME>/.../content/packs/...\n"
-                                  f"List of build bucket corepacks paths:\n{corepacks_list_str}")
+                                  f"List of build bucket corepacks paths:\n{corepacks_list_str}, exiting...")
                 sys.exit(1)
 
             # construct core pack data with public gcs urls
@@ -187,19 +187,17 @@ def upload_core_packs_config(production_bucket: Bucket, build_number: str, extra
             prod_corepacks_file_path = os.path.join(storage_base_path, GCPConfig.CORE_PACK_FILE_NAME)
             prod_corepacks_blob = production_bucket.blob(prod_corepacks_file_path)
             prod_corepacks_blob.upload_from_string(json.dumps(core_packs_data, indent=4))
-            logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to bucket.")
 
-        else:
+        else:  # upload of a versioned corepacks file
             prod_corepacks_storage_path = os.path.join(storage_base_path, corepacks_file)
             copied_corepacks_file = build_bucket.copy_blob(
                 blob=build_corepacks_blob, destination_bucket=production_bucket, new_name=prod_corepacks_storage_path
             )
-            if copied_corepacks_file.exists():
-                logging.success(f"Finished uploading {corepacks_file} to bucket.")
-            else:
+            if not copied_corepacks_file.exists():
                 logging.error(f"Failed copying {corepacks_file} from build bucket to production bucket - blob"
                               f" does not exist, exiting...")
                 sys.exit(1)
+        logging.success(f"Finished uploading {corepacks_file} to bucket.")
 
 
 def upload_versions_metadata(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str,
