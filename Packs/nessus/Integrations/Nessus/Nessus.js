@@ -114,12 +114,17 @@ var jsonToEntity = function(origObj, newKeys){
 };
 
 var login = function() {
+    var username =  params.credentials !== undefined ? params.credentials.identifier : params.username;
+    var password =  params.credentials !== undefined ? params.credentials.password : params.password;
+    if (!(username&&password)){ 
+        throw 'Username and Password must be provided';
+    }
     var result = http(
         getReadyURL()+'session',
         {
             Headers: {'Content-Type': ['application/json']},
             Method: 'POST',
-            Body: JSON.stringify({'username':params.username,'password':params.password}),
+            Body: JSON.stringify({'username':username,'password':password}),
         },
         params.insecure
     );
