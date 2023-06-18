@@ -3780,7 +3780,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
         current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
         if behaviour == 'add':
-            values = list((set(current_objects_items)).union(set(element_value)))
+            values = list((set(current_objects_items)).union(set(element_value)))  # type: ignore[arg-type]
         else:  # remove
             values = [item for item in current_objects_items if item not in element_value]
             if not values:
