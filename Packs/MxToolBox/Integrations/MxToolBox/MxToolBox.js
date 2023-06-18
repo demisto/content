@@ -10,7 +10,7 @@ var doReq = function(cmd, data, p) {
     var result = http(
         url,
         {
-            Headers: {'Accept': ['application/json'], 'Authorization': [params.apiKey]},
+            Headers: {'Accept': ['application/json'], 'Authorization': [apiKey]},
             Method: 'GET'
         },
         params.insecure,
