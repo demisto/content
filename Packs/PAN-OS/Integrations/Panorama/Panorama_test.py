@@ -1560,7 +1560,7 @@ class TestPanoramaEditRuleCommand:
         # Ensure 'element' wasn't sent with a group (since we removed the profile-setting group)
         assert request_mock.call_args.kwargs['body']['element'] == '<profile-setting><group/></profile-setting>'
         # Make sure the message is correct for the user
-        assert res.call_args.args[0] == 'Rule edited successfully.'
+        assert res.call_args.args[0]['HumanReadable'] == 'Rule edited successfully.'
 
 
 def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
