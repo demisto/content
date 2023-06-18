@@ -4389,7 +4389,7 @@ script:
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
     outputs: []
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   ismappable: true
   isremotesyncin: true
