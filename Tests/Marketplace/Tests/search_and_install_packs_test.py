@@ -98,7 +98,8 @@ class MockLock:
         return False
 
 
-def test_search_and_install_packs_and_their_dependencies(mocker):
+@pytest.mark.parametrize('use_multithreading', [False, True])
+def test_search_and_install_packs_and_their_dependencies(mocker, use_multithreading: bool):
     """
     Given
     - Valid pack ids.
@@ -121,14 +122,17 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
 
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids, client=client)
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
+                                                                                      client=client,
+                                                                                      multithreading=use_multithreading)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
     assert success is True
 
-    installed_packs, _ = script.search_and_install_packs_and_their_dependencies(bad_pack_ids,
-                                                                                client)
+    installed_packs, _ = script.search_and_install_packs_and_their_dependencies(pack_ids=bad_pack_ids,
+                                                                                client=client,
+                                                                                multithreading=use_multithreading)
     assert bad_pack_ids[0] not in installed_packs
 
 

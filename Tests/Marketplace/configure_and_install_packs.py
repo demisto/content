@@ -39,16 +39,15 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
     Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
 
     Args:
-        hostname:
         pack_ids: the pack IDs to install.
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
-    install_packs_one_by_one: bool = marketplace_tag_name == XSIAM_MP
+    use_multithreading = marketplace_tag_name != XSIAM_MP
 
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
         _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                     install_packs_one_by_one)
+                                                                     use_multithreading)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 

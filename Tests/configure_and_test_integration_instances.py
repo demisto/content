@@ -334,16 +334,16 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids=None, install_packs_one_by_one=False):
+    def install_packs(self, pack_ids: list | None = None, multithreading=True) -> bool:
         """
         Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
         Args:
-            pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
-            by previous step of the build.
-            install_packs_one_by_one: Whether to install packs one by one or all together.
+            pack_ids (list | None, optional): Packs to install on the server.
+                If no packs provided, installs packs that were provided by the previous step of the build.
+            multithreading (bool): Whether to install packs in parallel or not.
 
         Returns:
-            installed_content_packs_successfully: Whether packs installed successfully
+            bool: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
         logging.info(f"Packs ids to install: {pack_ids}")
@@ -352,8 +352,7 @@ class Build(ABC):
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                          install_packs_one_by_one,
-                                                                          )
+                                                                          multithreading)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -804,7 +803,7 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        success = self.install_packs(install_packs_one_by_one=True)
+        success = self.install_packs(multithreading=False)
         if not success:
             logging.error('Failed to install content packs, aborting.')
             sys.exit(1)
@@ -1908,7 +1907,7 @@ def main():
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
-        build.install_packs(pack_ids=packs_to_install_in_pre_update)
+        build.install_packs(pack_ids=list(packs_to_install_in_pre_update))
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,

@@ -123,7 +123,7 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
     global SUCCESS_FLAG
 
     api_endpoint = "/contentpacks/marketplace/search/dependencies"
-    body = [{"id": pack_id}]  # 'version' key can be specified alongside "id". Not including it will fetch the latest version.
+    body = [{"id": pack_id}]  # Not specifying a "version" key will result in the latest version of the pack being fetched.
 
     logging.debug(f"Fetching dependencies for pack '{pack_id}'.\n"
                   f"Sending POST request to {api_endpoint} with body: {json.dumps(body)}")
@@ -347,8 +347,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      packs_to_install: list,
                                      installation_request_body: list,
                                      lock: Lock,
-                                     packs_in_the_list_to_install: list,
-                                     one_pack_and_its_dependencies_in_batch: bool = False,
+                                     collected_dependencies: list,
+                                     multithreading: bool = True,
                                      batch_packs_install_request_body: list = None,
                                      ):
     """
@@ -361,12 +361,11 @@ def search_pack_and_its_dependencies(client: demisto_client,
         packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
-        packs_in_the_list_to_install (list): list of packs that are already in the list to install
-        one_pack_and_its_dependencies_in_batch(bool): Whether to install packs in small batches.
+        collected_dependencies (list): list of packs that are already in the list to install
+        multithreading (bool): Whether to install packs in parallel or not.
             If false - install all packs in one batch.
         batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
             Each list contain one pack and its dependencies.
-
     """
     if api_data := get_pack_dependencies(client, pack_id, lock):
         pack_data = api_data["packs"][0]
@@ -400,15 +399,15 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
         lock.acquire()
 
-        if one_pack_and_its_dependencies_in_batch:
+        if not multithreading:
             if batch_packs_install_request_body is None:
                 batch_packs_install_request_body = []
             if pack_and_its_dependencies := {
                 p['id']: p
                 for p in current_packs_to_install
-                if p['id'] not in packs_in_the_list_to_install
+                if p['id'] not in collected_dependencies
             }:
-                packs_in_the_list_to_install += pack_and_its_dependencies
+                collected_dependencies += pack_and_its_dependencies
                 batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))
         else:
             for pack in current_packs_to_install:
@@ -597,7 +596,7 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
                                                     client: demisto_client, hostname: str | None = None,
-                                                    install_packs_one_by_one=False):
+                                                    multithreading=True):
     """
     Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
@@ -606,8 +605,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         hostname (str): Hostname of instance. Using for logs.
-        install_packs_one_by_one(bool): Whether to install packs in small batches.
-            If false - install all packs in one batch.
+        multithreading (bool): Whether to use multithreading to install packs in parallel.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
@@ -619,25 +617,30 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body: list = []  # the packs to install, in the request format
-    batch_packs_install_request_body: list = []    # list of lists of packs to install if install packs one by one.
+    batch_packs_install_request_body: list = []    # list of lists of packs to install if not using multithreading (one by one).
     # Each list contain one pack and its dependencies.
-    packs_in_the_list_to_install: list = []    # list of packs that are already in the list to install.
+    collected_dependencies: list = []    # list of packs that are already in the list to install.
 
     lock = Lock()
 
-    if install_packs_one_by_one:
+    kwargs = {
+        'client': client,
+        'packs_to_install': packs_to_install,
+        'installation_request_body': installation_request_body,
+        'lock': lock,
+        'collected_dependencies': collected_dependencies,
+        'multithreading': multithreading,
+        'batch_packs_install_request_body': batch_packs_install_request_body,
+    }
+
+    if not multithreading:
         for pack_id in pack_ids:
-            search_pack_and_its_dependencies(
-                client, pack_id, packs_to_install, installation_request_body, lock,
-                packs_in_the_list_to_install, install_packs_one_by_one,
-                batch_packs_install_request_body)
+            search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
+
     else:
         with ThreadPoolExecutor(max_workers=130) as pool:
             for pack_id in pack_ids:
-                pool.submit(search_pack_and_its_dependencies,
-                            client, pack_id, packs_to_install, installation_request_body, lock,
-                            packs_in_the_list_to_install, install_packs_one_by_one,
-                            batch_packs_install_request_body)
+                pool.submit(search_pack_and_its_dependencies, pack_id=pack_id, **kwargs)
         batch_packs_install_request_body = [installation_request_body]
 
     for packs_to_install_body in batch_packs_install_request_body:
