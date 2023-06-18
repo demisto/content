@@ -123,7 +123,7 @@ configuration:
   advanced: true
 description: Exchange Web Services and Office 365 (mail)
 display: EWS v2
-name:  EWS v2
+name: EWS v2
 script:
   commands:
   - arguments:
@@ -1301,7 +1301,7 @@ script:
     description: Replies to an email using EWS.
     execution: false
     name: reply-mail
-  dockerimage: devdemisto/py-ews:1.0.0.63451
+  dockerimage: demisto/py-ews:5.0.2.63879
   feed: false
   isfetch: true
   longRunning: false

@@ -30,6 +30,21 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2016, EXCHANGE_2019)
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
+from exchangelib.version import VERSIONS as EXC_VERSIONS
+
+
+# Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
+# overriding this function to prevent error printed when running in debug-mode.
+def our_fullname(self):
+    for build, api_version, full_name in EXC_VERSIONS:
+        if self.build:
+            if self.build.major_version != build.major_version:
+                continue
+        if self.api_version == api_version:
+            return full_name
+
+
+Version.fullname = our_fullname
 
 
 class exchangelibSSLAdapter(SSLAdapter):
@@ -1947,9 +1962,9 @@ def start_compliance_search(query):     # pragma: no cover
             f.write(START_COMPLIANCE)
 
         output = subprocess.Popen(["pwsh", "startcompliancesearch2.ps1", USERNAME, query],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
 
-        stdout, stderr = output.communicate(input=PASSWORD.encode())
+        stdout, stderr = output.communicate(input=PASSWORD)
 
     finally:
         os.remove("startcompliancesearch2.ps1")
@@ -1958,7 +1973,7 @@ def start_compliance_search(query):     # pragma: no cover
         return get_cs_error(stderr)
 
     prefix = '"Action status: '
-    pref_ind = stdout.find(bytes(prefix))
+    pref_ind = stdout.find(prefix)
     sub_start = pref_ind + len(prefix)
     sub_end = sub_start + 45
     search_name = stdout[sub_start:sub_end]
@@ -1980,8 +1995,8 @@ def get_compliance_search(search_name, show_only_recipients):     # pragma: no c
             f.write(GET_COMPLIANCE)
 
         output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = output.communicate(input=PASSWORD.encode())
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
+        stdout, stderr = output.communicate(input=PASSWORD)
 
     finally:
         os.remove("getcompliancesearch2.ps1")
@@ -1998,7 +2013,7 @@ def get_compliance_search(search_name, show_only_recipients):     # pragma: no c
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
         if stdout[1] and stdout[1] != '{}':
-            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))  # mypy: ignore-errors
+            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
             res = [{k: v for k, v in (s.split(': ') for s in x)} for x in res]
             entry = {
                 'Type': entryTypes['note'],
@@ -2038,8 +2053,8 @@ def purge_compliance_search(search_name):     # pragma: no cover
             f.write(PURGE_COMPLIANCE)
 
         output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        _, stderr = output.communicate(input=PASSWORD.encode())
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
+        _, stderr = output.communicate(input=PASSWORD)
 
     finally:
         os.remove("purgecompliancesearch2.ps1")
@@ -2057,8 +2072,8 @@ def check_purge_compliance_search(search_name):     # pragma: no cover
             f.write(PURGE_STATUS_COMPLIANCE)
 
         output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = output.communicate(input=PASSWORD.encode())
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
+        stdout, stderr = output.communicate(input=PASSWORD)
 
         stdout = stdout[len(PASSWORD):]
 
@@ -2079,8 +2094,8 @@ def remove_compliance_search(search_name):     # pragma: no cover
 
         output = subprocess.Popen(
             ["pwsh", "removecompliance2.ps1", USERNAME, search_name],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = output.communicate(input=PASSWORD.encode())
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
+        stdout, stderr = output.communicate(input=PASSWORD)
 
     finally:
         os.remove("removecompliance2.ps1")
