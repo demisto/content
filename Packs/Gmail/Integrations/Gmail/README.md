@@ -4,54 +4,67 @@ This integration replaces the Gmail functionality in the GoogleApps API and G Su
 
 ### Prerequisites
 
-You need to do the following in Google before configuring the integration in Cortex XSOAR.
+You need to do the following in Google before configuring your integration instance in Cortex XSOAR.
 
 * [Get a New Private Key](#get-a-new-private-key)
+* [Enable APIs](#enable-apis)
 * [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
-* [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id-parameters)
+* [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id)
 
 ### Get a New Private Key
 
 1.  Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
 2.  In the IAM & admin section select **Service accounts**.
-3.  If you need to create a new project, click **CREATE** do the following:
+3.  If you need to create a new project, click **CREATE PROJECT** and do the following:
     1.  In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
     2.  Click **CREATE**.
-4.  In the Service accounts section, click **Create Service Account**.
-5.  In the **Create service account** window, type a name for the service account, add a description and then click **CREATE**.
-6.  Click **Continue.**
-7.  In the **Create key** section, click **CREATE KEY**.
-8.  Select Key type **JSON** and click **CREATE**.
-9.  Click **DONE**.<br/>A Service Account file with a key pair is generated and automatically downloads.
-10.  In the **Actions** column, select the service and then click **edit**.
-    ![mceclip1.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip1.png) 
-11.  Under the show domain wide delegation, select **Enable G Suite Domain-wide Delegation**.
-    ![gmail-_enable.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png)  
-    NOTE: Copy the value of the Unique ID for the client name in step 2 in Delegate Domain-wide Authority to Your Service Account. 
-12.  Click Save.
-13.  In the top search bar, search for _admin sdk_.
-14.  Click **Enable**.
+4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.    
+
+    ![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
+5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
+ 
+    ![gmail_section1_step5](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step5.png)
+6.  In the **Grant this service account access to project** section,click **Continue**.
+7.  In the **Grant users access to this service account** section, click **DONE**.  
+8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
+    
+    ![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
+9. Click the **ADD KEY** dropdown, and select **Create new key**.
+10. Select Key type **JSON** and click **CREATE**.  
+    This will generate a json **Private key** file that will be downloaded and saved locally.
+11. Click **CLOSE** to close the dialog.
+12. Navigate to **DETAILS** -> **Advanced Settings**.  Copy the **Client ID**.
+
+### Enable APIs
+
+Both the **Gmail API** and the **Admin SDK API** are required to use this integration.
+
+1. From the main **Navigation Menu** hamburger icon, navigate to **APIs & Services** -> **Library**.
+2. In **Search for APIs & Services**, search for **gmail**.
+3. Click **Gmail API**, then click **ENABLE**.
+4. Repeat steps 2 & 3 for **Admin SDK API**.
 
 ### Delegate Domain-wide Authority to Your Service Account
 
-1. Access the [Google Administrator Console](http://admin.google.com/).
-2. Enter a client name (the Unique ID) and paste the following into the One or More API Scopes textbox. 
+1. In the [Google Administrator Console](http://admin.google.com/), navigate to **Security** -> **Access and data control** -> **API Controls**.
+2. Click **MANAGE DOMAIN WIDE DELEGATION**.
+3. Click **Add new** to open the **Add a new client ID** dialog.
+4. Complete the dialog using the **Client ID** copied in **Step 12** above, and the **OAuth scopes** noted below, then click **AUTHORIZE** to close the dialog.
     
 ``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
-    
-![Setup Account](./doc_imgs/mceclip1-1.png)
 
-### Get an Immutable Google Apps ID Parameters
-In order to revoke/fetch a user role, you need an Immutable Google Apps ID param.
+### Get an Immutable Google Apps ID
 
-1. Open [https://admin.google.com](https://admin.google.com) (as in step 2).
-2. Navigate to **Security > Set up single sign-on (SSO)**. 
-   The SSO URL is the Immutable Google Apps ID.
-3. Record the SSO URL, which is the Immutable Google Apps ID, and copy it for later use.
+To revoke or fetch a user role, you need an Immutable Google Apps ID.
 
-![Setup Account](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip2.png)
+1. Continue within the [Google Administrator Console](https://admin.google.com) from the previous step.
+2. Navigate to **Security** -> **Authentication** -> **SSO with SAML applications**.
+3. Copy the **idpid** value from the **SSO URL**, this is the Immutable Google Apps ID.
+
+![gmail_section4_step3](https://raw.githubusercontent.com/demisto/content-docs/d8ca78236562702cd1347af133fbba09972a8160/docs/doc_imgs/integrations/gmail_section4_step3.png)
 
 ## Required Scopes
+
 | Function | API to Authorize |
 | -------- | ---------------- |
 | Authorize the next APIs for the service account | [https://www.googleapis.com/auth/admin.directory.user.readonly](https://www.googleapis.com/auth/admin.directory.user.readonly) |
@@ -69,6 +82,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 | Send mails or reply to a mail | [https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send) |
 | Add the send as email ID | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing)  |
 | Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
+
 ## Configure Gmail in Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Instances**.
@@ -116,46 +130,49 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-- **gmail-delete-user**: Deletes a Gmail user.
-- **gmail-get-tokens-for-user**: Gets tokens for a user.
-- **gmail-get-user**: Gets information for a Google user.
-- **gmail-get-user-roles**: Gets all available Google roles.
-- **gmail-get-attachments**: Gets Gmail message attachments.
-- **gmail-get-mail**: Gets a Gmail message.
-- **gmail-search**: Searches a user's Gmail records.
-- **gmail-search-all-mailboxes**: Searches in all Gmail mailboxes.
-- **gmail-list-users**: Lists all Google users.
-- **gmail-list-labels**: Lists all labels for a given user.
-- **gmail-revoke-user-role**: Revokes a Google user's role.
-- **gmail-create-user**: Creates a new user.
-- **gmail-delete-mail**: Deletes mail from a mailbox. 
-- **gmail-get-thread**: Gets the message in an email thread. 
-- **gmail-move-mail**: Moves an email to a different folder. 
-- **gmail-move-mail-to-mailbox**: Moves an email to a different mailbox.
-- **gmail-add-delete-filter**: Adds a rule to delete an email. 
-- **gmail-add-filter**: Adds a new filter. 
-- **gmail-list-filter**: Gets a list of filters in a mailbox. 
-- **gmail-remove-filter**: Removes a filter from an email. 
-- **gmail-hide-user-in-directory**: Hides a user's information. 
-- **gmail-set-password**: Sets a password. 
-- **gmail-get-autoreply**: Gets an auto reply message for the user. 
-- **gmail-set-autoreply**: Sets an auto-reply for the user.
-- **gmail-delegate-user-mailbox**: Adds a delegate user to a mailbox. 
-- **send-mail**: Sends an email using Gmail. 
-- **reply-mail**: Replies to an email using Gmail.
-- **gmail-remove-delegated-mailbox**: Removes a delegate user from a mailbox. 
-- **gmail-get-role**: Gets details of a specific role. 
-- **gmail-forwarding-address-add**: Creates a forwarding address. 
-- **gmail-forwarding-address-update**: Updates the disposition in a forwarding address.
-- **gmail-forwarding-address-list**: Gets a list of forwarding addresses.
-- **gmail-forwarding-address-get**: Gets a forwarding address.
-- **gmail-forwarding-address-remove**: Removes a forwarding address.
-- **gmail-send-as-add**: Creates a custom "from" send-as alias. 
+
+* **gmail-delete-user**: Deletes a Gmail user.
+* **gmail-get-tokens-for-user**: Gets tokens for a user.
+* **gmail-get-user**: Gets information for a Google user.
+* **gmail-get-user-roles**: Gets all available Google roles.
+* **gmail-get-attachments**: Gets Gmail message attachments.
+* **gmail-get-mail**: Gets a Gmail message.
+* **gmail-search**: Searches a user's Gmail records.
+* **gmail-search-all-mailboxes**: Searches in all Gmail mailboxes.
+* **gmail-list-users**: Lists all Google users.
+* **gmail-list-labels**: Lists all labels for a given user.
+* **gmail-revoke-user-role**: Revokes a Google user's role.
+* **gmail-create-user**: Creates a new user.
+* **gmail-delete-mail**: Deletes mail from a mailbox. 
+* **gmail-get-thread**: Gets the message in an email thread. 
+* **gmail-move-mail**: Moves an email to a different folder. 
+* **gmail-move-mail-to-mailbox**: Moves an email to a different mailbox.
+* **gmail-add-delete-filter**: Adds a rule to delete an email. 
+* **gmail-add-filter**: Adds a new filter. 
+* **gmail-list-filter**: Gets a list of filters in a mailbox. 
+* **gmail-remove-filter**: Removes a filter from an email. 
+* **gmail-hide-user-in-directory**: Hides a user's information. 
+* **gmail-set-password**: Sets a password. 
+* **gmail-get-autoreply**: Gets an auto reply message for the user. 
+* **gmail-set-autoreply**: Sets an auto-reply for the user.
+* **gmail-delegate-user-mailbox**: Adds a delegate user to a mailbox. 
+* **send-mail**: Sends an email using Gmail. 
+* **reply-mail**: Replies to an email using Gmail.
+* **gmail-remove-delegated-mailbox**: Removes a delegate user from a mailbox. 
+* **gmail-get-role**: Gets details of a specific role. 
+* **gmail-forwarding-address-add**: Creates a forwarding address. 
+* **gmail-forwarding-address-update**: Updates the disposition in a forwarding address.
+* **gmail-forwarding-address-list**: Gets a list of forwarding addresses.
+* **gmail-forwarding-address-get**: Gets a forwarding address.
+* **gmail-forwarding-address-remove**: Removes a forwarding address.
+* **gmail-send-as-add**: Creates a custom "from" send-as alias. 
 
 
 ### gmail-delete-user
+
 ***
 Deletes a Gmail user.
 
@@ -163,6 +180,7 @@ Deletes a Gmail user.
 #### Base Command
 
 `gmail-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,6 +193,7 @@ Deletes a Gmail user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gmail-delete-user user-id=user1@domain.io```
 
 
@@ -183,6 +202,7 @@ There is no context output for this command.
 >User user1@domain.io have been deleted.
 
 ### gmail-get-tokens-for-user
+
 ***
 Lists all tokens associated with a specified user.
 
@@ -190,6 +210,7 @@ Lists all tokens associated with a specified user.
 #### Base Command
 
 `gmail-get-tokens-for-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -198,9 +219,11 @@ Lists all tokens associated with a specified user.
 
 
 #### Command Example
+
 ```!gmail-get-tokens-for-user user-id=user@domain.io```
 
 #### Context Example
+
 ```
 {
     "Tokens": {
@@ -219,6 +242,7 @@ Lists all tokens associated with a specified user.
 #### Human Readable Output
 
 >### Tokens:
+
 >|DisplayText|ClientId|Kind|Scopes|UserKey|
 >|---|---|---|---|---|
 >| Google APIs Explorer | 292824132082.apps.googleusercontent.com | admin#directory#token | openid,<br/>`https://www.googleapis.com/auth/calendar` | 123456789 |
@@ -228,6 +252,7 @@ Lists all tokens associated with a specified user.
 >|Postman|805864674475-3abs2rivkn7kreou30b8ru8esnti4oih.apps.googleusercontent.com|admin#directory#token|`https://www.googleapis.com/auth/userinfo.profile`, <br/> `https://www.googleapis.com/auth/userinfo.email`|123456789|
 
 ### gmail-get-user
+
 ***
 Gets information for a specified user.
 
@@ -235,6 +260,7 @@ Gets information for a specified user.
 #### Base Command
 
 `gmail-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,9 +289,11 @@ Gets information for a specified user.
 
 
 #### Command Example
+
 ```!gmail-get-user user-id=user@domain.io```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -292,12 +320,14 @@ Gets information for a specified user.
 #### Human Readable Output
 
 >### User user@domain.io:
+
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 115824619743385532879 | user | user user | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | true |
 
 
 ### gmail-get-user-roles
+
 ***
 Retrieves a list of all Google roles for a specified user.
 
@@ -305,6 +335,7 @@ Retrieves a list of all Google roles for a specified user.
 #### Base Command
 
 `gmail-get-user-roles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -325,9 +356,11 @@ Retrieves a list of all Google roles for a specified user.
 
 
 #### Command Example
+
 ```!gmail-get-user-roles user-id=user@domain.io```
 
 #### Context Example
+
 ```
 {
     "Gmail": {
@@ -365,6 +398,7 @@ Retrieves a list of all Google roles for a specified user.
 #### Human Readable Output
 
 >### User Roles of user@domain.io:
+
 >|ID|RoleAssignmentId|ScopeType|Kind|OrgUnitId|
 >|---|---|---|---|---|
 >| 13801188331880449 | 13801188331880456 | CUSTOMER | admin#directory#roleAssignment |  |
@@ -372,6 +406,7 @@ Retrieves a list of all Google roles for a specified user.
 >| 13801188331880469 | 13801188331880492 | ORG_UNIT | admin#directory#roleAssignment | 03ph8a2z3tho209 |
 
 ### gmail-get-attachments
+
 ***
 Retrieves attachments from a sent Gmail message.
 
@@ -379,11 +414,12 @@ Retrieves attachments from a sent Gmail message.
 #### Base Command
 
 `gmail-get-attachments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 
 
@@ -393,10 +429,12 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!gmail-get-attachments message-id=16d4316a25a332e4 user-id=admin@demistodev.com```
 
 
 ### gmail-get-mail
+
 ***
 Retrieves the Gmail message sent to a specified user.
 
@@ -404,12 +442,13 @@ Retrieves the Gmail message sent to a specified user.
 #### Base Command
 
 `gmail-get-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
 
 
@@ -444,9 +483,11 @@ Retrieves the Gmail message sent to a specified user.
 
 
 #### Command Example
+
 ```!gmail-get-mail user-id=user@domain.io message-id=175276e027a9aab9```
 
 #### Context Example
+
 ```
 {
     "Email": {
@@ -701,12 +742,14 @@ Retrieves the Gmail message sent to a specified user.
 #### Human Readable Output
 
 >### Email:
+
 >|Mailbox|ID|Subject|From|To|Labels|Format|Body|
 >|---|---|---|---|---|---|---|---|
 >| user@domain.io | 175276e027a9aab9 | Your G Suite data transfer was successful for test user to newaccount newdemo | The G Suite Team <gsuite-noreply@google.com> | user@domain.io | UNREAD, CATEGORY_UPDATES, INBOX | multipart/alternative | From: "The G Suite Team" [gsuite-noreply@google.com]<br/>Subject:  Your G Suite data transfer was successful for test user to  <br/>newaccount newdemo<br/><br/>Hello Admin,<br/><br/>GÂ Suite recently processed a request from test user (user@domain.io)  <br/>to transfer data for test user (user@domain.io) to newaccount  <br/>newdemo (demo@domain.io).<br/><br/>The data transfer was successful.<br/><br/>Sincerely,<br/><br/>The GÂ Suite Team<br/><br/><br/>[Google Cloud]<br/><br/>(c) 2020 Google LLC 1600 Amphitheatre Parkway, Mountain View, CA 94043 *  <br/>Google Ireland Ltd, Gordon House, Barrow Street, Dublin 4, Ireland * Google  <br/>Asia Pacific Pte. Ltd., 8 Marina View, #30-01, Asia Square 1, Singapore  <br/>018960<br/><br/>You're receiving this mandatory email service announcement to update you  <br/>about important changes to your Google Cloud product or account.<br/> |
 
 
 ### gmail-search
+
 ***
 Searches for Gmail records for a specific Google user.
 
@@ -714,6 +757,7 @@ Searches for Gmail records for a specific Google user.
 #### Base Command
 
 `gmail-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -721,7 +765,7 @@ Searches for Gmail records for a specific Google user.
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
 | max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved, separated by commas. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse. | Optional | 
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
 | labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
 | page-token | Page token to retrieve a specific page of results in the list. | Optional | 
 | include-spam-trash | Include messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 
@@ -766,9 +810,11 @@ Searches for Gmail records for a specific Google user.
 
 
 #### Command Example
+
 ```!gmail-search user-id=user@domain.io after=2020/03/20 before=2021/04/01 query=access max-results=2```
 
 #### Context Example
+
 ```
 {
     "Email": [
@@ -1271,35 +1317,41 @@ Searches for Gmail records for a specific Google user.
 #### Human Readable Output
 
 >### Search in user@domain.io:
+
 >query: "after:2020/03/20  before:2021/04/01  access"
 >|Mailbox|ID|Subject|From|To|Labels|Format|Body|
 >|---|---|---|---|---|---|---|---|
->| user@domain.io | 17503a0adab4557e | A new editing experience from Grammarly | Grammarly <info@send.grammarly.com> | <user@domain.io> | CATEGORY_PROMOTIONS, UNREAD, INBOX | multipart/alternative | Grammarly<br/> <br/>https://click.send.grammarly.com/?qs=63b8bce6088947298e58f6b209acbedec627da2c5a9e6db63c25d7a91cc5d033f20b5e98474ae6c26955d5953c80e198718e7c642c683f08 <br/><br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/><br/><br/>Your Guide to Great Writing<br/>When you&rsquo;re polishing an important message, there&rsquo;s a lot to consider. To better guide you through the editing process, we&rsquo;ve given Grammarly's browser extension a sleek new look. With suggestions organized by importance and theme, plus easy access to Grammarly&rsquo;s tone detector, it&rsquo;s never been easier to quickly and thoroughly improve your writing before sending it out into the world.<br/>Want to check it out for yourself?<br/><br/> Next time you&rsquo;re writing online, open Grammarly by clicking the green G in the lower right corner of your text field.<br/><br/><br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/>Learn More <br/><br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/><br/><br/>Floating sidebar<br/><br/>Now you can see all of Grammarlyâ€™s feedbackâ€”including suggestions about wordinessâ€”in a compact sidebar that you can position anywhere on your screen.<br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/><br/>Organized feedback<br/>Instead of one long list of fixes, Grammarly now groups suggestions by theme, so you can tackle issues in an order that makes sense to you.<br/><br/><br/><br/>https://click.send.grammarly.com/?qs=63b8bce60889472968c8fbdddda67d5ffe4e3e9510c3d039f51c5e6384a0dbf7f50df926ac0c45cffcc37d987e90c2db8d5a605ae2bf3c4a <br/><br/><br/>What's new in Premium?<br/>If youâ€™re considering an upgrade to Grammarly Premium, nowâ€™s a fantastic time. Youâ€™ll get full access to Grammarlyâ€™s tone suggestions and some all-new suggestions, including full-sentence clarity rewrites. For multilingual speakers, weâ€™ve added tailored suggestions to help you write more fluently with natural phrasing and word choice.<br/><br/>https://click.send.grammarly.com/?qs=63b8bce60889472968c8fbdddda67d5ffe4e3e9510c3d039f51c5e6384a0dbf7f50df926ac0c45cffcc37d987e90c2db8d5a605ae2bf3c4a <br/>Upgrade to Premium <br/><br/>  <br/> <br/><br/>https://click.send.grammarly.com/?qs=63b8bce6088947298205de4bc6f5baa6942035a27347bed70f376eb641988ce13553a98df548d5334c710496da40d701ea7f0747436cb35e <br/><br/> <br/>https://click.send.grammarly.com/?qs=63b8bce60889472909674b9e1b80086f2f8a55a758ec0ff5422c7e418731df78a536f03419e5467ea3cdc46cfe13a7219c9c76aa43c18353 <br/><br/> <br/>https://click.send.grammarly.com/?qs=63b8bce60889472978abf8c16e483cf9963720144e7eedea2b7fae9baca38d9f366a74bfaa6a9c55bb716d0eb437e2b13b0e0b9aa03f956a <br/><br/> <br/>https://click.send.grammarly.com/?qs=63b8bce608894729cd424fff00db5cfde8a9258b354120767b238dc40dc183b9789fa2f900ff0e57c8d9a6bc77ad2ef68d26c422e5e3e9c0 <br/><br/><br/> <br/><br/> <br/><br/> <br/><br/>https://view.send.grammarly.com/?qs=09877178720a4d39668e7a44fdd78d68f8393fb23acee0b64eff0a606379ca046d45856dfefd80f8302eadc8f7dec1dae314e6f038bafd98a388c93dc5a7bdddd160a54982f69a8f21b74bd31a5adbcf567ca0583163d53d <br/>View Web Version  . <br/>https://click.send.grammarly.com/?qs=63b8bce608894729304de51e86d38d53940d8ee74804fd68ba82bccecdc473489f3ae530efe098cb4fad4d7796657104acd6cd72a37bcb4319ef4ac52472d689 <br/>Email Preferences .<br/>https://click.send.grammarly.com/?qs=63b8bce608894729304de51e86d38d53940d8ee74804fd68ba82bccecdc473489f3ae530efe098cb4fad4d7796657104acd6cd72a37bcb4319ef4ac52472d689 <br/>Unsubscribe <br/><br/><br/>You received this email because you are signed up to receive product update emails. If you would no longer like to receive these, please update your email preferences by visiting the link above.<br/><br/><br/>(c) 2020 Grammarly, Inc. 548 Market St. #35410, San Francisco, CA 94104<br/><br/><br/> <br/><br/><br/> <br/><br/><br/> |
->| user@domain.io | 174dfdee81fa8346 | Write like a pro. Here's 20% off Grammarly Premium! | Grammarly <info@send.grammarly.com> | <user@domain.io> | CATEGORY_PROMOTIONS, UNREAD, INBOX | multipart/alternative | Grammarly Premium August 2019 Promo <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/>Get 20% off Premium &rarr;  <br/> <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/><br/> <br/>Are you ready to level up? Grammarly Premium empowers you to put your best foot forward through exclusive access to features like vocabulary enhancement and suggestions for improving style and tone.<br/><br/>Upgrade in the next 48 hours to receive 20% OFF and start writing compelling, effective content with greater confidence.<br/> <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/>Get 20% Off Premium <br/><br/> <br/><br/> <br/> <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/><br/> <br/> <br/> <br/><br/>https://click.send.grammarly.com/?qs=2a35c60cf790245dace2796a031670f49219f3c4a00cae25d2dab59f72e6be49671fdecec1ca6d0285eac535168d7d98d0174ae389750a82 <br/><br/>https://click.send.grammarly.com/?qs=a5f2bccb158ea90a0f6327f16256b045f7045b3ad3b9888cb4403400459f0be6bd90d7662bd64b837e1407368baedc62b0a80ca05f11d285 <br/><br/>https://click.send.grammarly.com/?qs=a8de5e2a924b74c72a9cab9ac340987e51210dfea60c966334c7fe8354d11d0ee4824a49abaf38276f8a4f57fe26b84881b2f518ca4e5c44 <br/><br/>https://click.send.grammarly.com/?qs=31d75588096fc8f0ecf301e89b11f8e90f5ea6e5283bd15266a2bbc89e4bec07c0a70213de591dfb18a0d88647f8a091eb0b527f013b4087 <br/><br/> <br/> <br/><br/>https://view.send.grammarly.com/?qs=04bdbe912f831db4355d68715de8fcc8bc879738444c98c65c7026b05760cc2e72cb475a3fcefe9843d4d8a929dbb99cca13e0eff2ed2b7693c950a77831230ebcc2421322e1194ee01f317d8b9ddb58e33dde99eb0db358 <br/>View Web Version   Â·  <br/>https://click.send.grammarly.com/?qs=19dd9fb895689c3f0dd49d01ba845db6ad830f8fea7e18f4f49ced631c9a973533f91f93115ca5afaf96b7e3a9d092eaa29d1a417ad1c7975ab94c6b36607509 <br/>Email Preferences   Â·  <br/>https://click.send.grammarly.com/?qs=19dd9fb895689c3f0dd49d01ba845db6ad830f8fea7e18f4f49ced631c9a973533f91f93115ca5afaf96b7e3a9d092eaa29d1a417ad1c7975ab94c6b36607509 <br/>Unsubscribe <br/> <br/>You received this offer for Grammarly Premium because you are currently opted in to receive them via your preference settings. You may adjust your preferences at any time by clicking the link above.<br/> <br/>Â© 2020 Grammarly, Inc., 548 Market St. #35410, San Francisco, CA 94104<br/> <br/><br/><br/> |
+>| user@domain.io | 17503a0adab4557e | A new editing experience from Grammarly | Grammarly <info@send.grammarly.com> | <user@domain.io> | CATEGORY_PROMOTIONS, UNREAD, INBOX | multipart/alternative | Grammarly<br/> <br/><https://click.send.grammarly.com/?qs=63b8bce6088947298e58f6b209acbedec627da2c5a9e6db63c25d7a91cc5d033f20b5e98474ae6c26955d5953c80e198718e7c642c683f08> <br/><br/><br/><https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0> <br/><br/><br/>Your Guide to Great Writing<br/>When you&rsquo;re polishing an important message, there&rsquo;s a lot to consider. To better guide you through the editing process, we&rsquo;ve given Grammarly's browser extension a sleek new look. With suggestions organized by importance and theme, plus easy access to Grammarly&rsquo;s tone detector, it&rsquo;s never been easier to quickly and thoroughly improve your writing before sending it out into the world.<br/>Want to check it out for yourself?<br/><br/> Next time you&rsquo;re writing online, open Grammarly by clicking the green G in the lower right corner of your text field.<br/><br/><br/><br/><https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0> <br/>Learn More <br/><br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/><br/><br/>Floating sidebar<br/><br/>Now you can see all of Grammarlyâ€™s feedbackâ€”including suggestions about wordinessâ€”in a compact sidebar that you can position anywhere on your screen.<br/><br/>https://click.send.grammarly.com/?qs=63b8bce608894729a31f23d448c10aacac177bc32d35281412289bdeaee77e6d71237bba943365135f276dd3a216a98afc38539bcc342bd0 <br/><br/>Organized feedback<br/>Instead of one long list of fixes, Grammarly now groups suggestions by theme, so you can tackle issues in an order that makes sense to you.<br/><br/><br/><br/><https://click.send.grammarly.com/?qs=63b8bce60889472968c8fbdddda67d5ffe4e3e9510c3d039f51c5e6384a0dbf7f50df926ac0c45cffcc37d987e90c2db8d5a605ae2bf3c4a> <br/><br/><br/>What's new in Premium?<br/>If youâ€™re considering an upgrade to Grammarly Premium, nowâ€™s a fantastic time. Youâ€™ll get full access to Grammarlyâ€™s tone suggestions and some all-new suggestions, including full-sentence clarity rewrites. For multilingual speakers, weâ€™ve added tailored suggestions to help you write more fluently with natural phrasing and word choice.<br/><br/><https://click.send.grammarly.com/?qs=63b8bce60889472968c8fbdddda67d5ffe4e3e9510c3d039f51c5e6384a0dbf7f50df926ac0c45cffcc37d987e90c2db8d5a605ae2bf3c4a> <br/>Upgrade to Premium <br/><br/>  <br/> <br/><br/><https://click.send.grammarly.com/?qs=63b8bce6088947298205de4bc6f5baa6942035a27347bed70f376eb641988ce13553a98df548d5334c710496da40d701ea7f0747436cb35e> <br/><br/> <br/><https://click.send.grammarly.com/?qs=63b8bce60889472909674b9e1b80086f2f8a55a758ec0ff5422c7e418731df78a536f03419e5467ea3cdc46cfe13a7219c9c76aa43c18353> <br/><br/> <br/><https://click.send.grammarly.com/?qs=63b8bce60889472978abf8c16e483cf9963720144e7eedea2b7fae9baca38d9f366a74bfaa6a9c55bb716d0eb437e2b13b0e0b9aa03f956a> <br/><br/> <br/><https://click.send.grammarly.com/?qs=63b8bce608894729cd424fff00db5cfde8a9258b354120767b238dc40dc183b9789fa2f900ff0e57c8d9a6bc77ad2ef68d26c422e5e3e9c0> <br/><br/><br/> <br/><br/> <br/><br/> <br/><br/><https://view.send.grammarly.com/?qs=09877178720a4d39668e7a44fdd78d68f8393fb23acee0b64eff0a606379ca046d45856dfefd80f8302eadc8f7dec1dae314e6f038bafd98a388c93dc5a7bdddd160a54982f69a8f21b74bd31a5adbcf567ca0583163d53d> <br/>View Web Version  . <br/><https://click.send.grammarly.com/?qs=63b8bce608894729304de51e86d38d53940d8ee74804fd68ba82bccecdc473489f3ae530efe098cb4fad4d7796657104acd6cd72a37bcb4319ef4ac52472d689> <br/>Email Preferences .<br/><https://click.send.grammarly.com/?qs=63b8bce608894729304de51e86d38d53940d8ee74804fd68ba82bccecdc473489f3ae530efe098cb4fad4d7796657104acd6cd72a37bcb4319ef4ac52472d689> <br/>Unsubscribe <br/><br/><br/>You received this email because you are signed up to receive product update emails. If you would no longer like to receive these, please update your email preferences by visiting the link above.<br/><br/><br/>(c) 2020 Grammarly, Inc. 548 Market St. #35410, San Francisco, CA 94104<br/><br/><br/> <br/><br/><br/> <br/><br/><br/> |
+>| user@domain.io | 174dfdee81fa8346 | Write like a pro. Here's 20% off Grammarly Premium! | Grammarly <info@send.grammarly.com> | <user@domain.io> | CATEGORY_PROMOTIONS, UNREAD, INBOX | multipart/alternative | Grammarly Premium August 2019 Promo <br/><br/><https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f> <br/>Get 20% off Premium &rarr;  <br/> <br/><br/><https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f> <br/><br/> <br/>Are you ready to level up? Grammarly Premium empowers you to put your best foot forward through exclusive access to features like vocabulary enhancement and suggestions for improving style and tone.<br/><br/>Upgrade in the next 48 hours to receive 20% OFF and start writing compelling, effective content with greater confidence.<br/> <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/>Get 20% Off Premium <br/><br/> <br/><br/> <br/> <br/><br/>https://click.send.grammarly.com/?qs=7d3ab28cc69aa23344f507f25b9d65dc197b1db732e9723c9d03738396344f15d971c8232f3f859821a9ed07612787ae8952a52df6c3e3e7f288747e04e4537f <br/><br/> <br/> <br/> <br/><br/><https://click.send.grammarly.com/?qs=2a35c60cf790245dace2796a031670f49219f3c4a00cae25d2dab59f72e6be49671fdecec1ca6d0285eac535168d7d98d0174ae389750a82> <br/><br/><https://click.send.grammarly.com/?qs=a5f2bccb158ea90a0f6327f16256b045f7045b3ad3b9888cb4403400459f0be6bd90d7662bd64b837e1407368baedc62b0a80ca05f11d285> <br/><br/><https://click.send.grammarly.com/?qs=a8de5e2a924b74c72a9cab9ac340987e51210dfea60c966334c7fe8354d11d0ee4824a49abaf38276f8a4f57fe26b84881b2f518ca4e5c44> <br/><br/><https://click.send.grammarly.com/?qs=31d75588096fc8f0ecf301e89b11f8e90f5ea6e5283bd15266a2bbc89e4bec07c0a70213de591dfb18a0d88647f8a091eb0b527f013b4087> <br/><br/> <br/> <br/><br/><https://view.send.grammarly.com/?qs=04bdbe912f831db4355d68715de8fcc8bc879738444c98c65c7026b05760cc2e72cb475a3fcefe9843d4d8a929dbb99cca13e0eff2ed2b7693c950a77831230ebcc2421322e1194ee01f317d8b9ddb58e33dde99eb0db358> <br/>View Web Version   Â·  <br/><https://click.send.grammarly.com/?qs=19dd9fb895689c3f0dd49d01ba845db6ad830f8fea7e18f4f49ced631c9a973533f91f93115ca5afaf96b7e3a9d092eaa29d1a417ad1c7975ab94c6b36607509> <br/>Email Preferences   Â·  <br/><https://click.send.grammarly.com/?qs=19dd9fb895689c3f0dd49d01ba845db6ad830f8fea7e18f4f49ced631c9a973533f91f93115ca5afaf96b7e3a9d092eaa29d1a417ad1c7975ab94c6b36607509> <br/>Unsubscribe <br/> <br/>You received this offer for Grammarly Premium because you are currently opted in to receive them via your preference settings. You may adjust your preferences at any time by clicking the link above.<br/> <br/>Â© 2020 Grammarly, Inc., 548 Market St. #35410, San Francisco, CA 94104<br/> <br/><br/><br/> |
 
 
 ### gmail-search-all-mailboxes
+
 ***
 Searches the Gmail records for all Google users.
 
 #### Troubleshooting
+
 The command iterates over all available **accounts**, and downloads **messages** matching the query for each account. For organizations with many accounts, this can take longer than the default 5 minutes. To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/docs/playbooks/playbooks-field-reference#advanced-fields) from 300 to a higher value.
 To determine what value should be used, take a look at the logs after a failed execution of the command. The command prints to the logs *info* messages detailing the status of the search for every 100 accounts it successfully searched.
+
 ```
 2022-06-27 09:56:05.1588 info (Gmail_instance_Gmail_gmail-search-all-mailboxes) Still searching. Searched 40% of total accounts (400 / 1000), and found 30 results so far (source: /Users/darbel/dev/go/src/github.com/demisto/server/services/automation/dockercoderunner.go:955)
 ```
+
 Inspecting these messages should allow you to determine what percent the search was able to finish before timing out. Take the given timeout and divide it with the last percent you see in the logs - the new timeout value should be greater than this. Fine tune the correct **execution-timeout**.
 
 #### Base Command
 
 `gmail-search-all-mailboxes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
 | max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse. | Optional | 
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
 | labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
 | page-token | Page token to retrieve a specific page of results in the list. | Optional | 
 | include-spam-trash | Includes messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 
@@ -1351,9 +1403,11 @@ Inspecting these messages should allow you to determine what percent the search 
 | Email.Date | String | The date the email was received. | 
 
 #### Command Example
+
 ```!gmail-search-all-mailboxes after=2019/04/10 max-results=1 before=2021/04/15```
 
 #### Context Example
+
 ```
 {
     "Email": [
@@ -3422,6 +3476,7 @@ Inspecting these messages should allow you to determine what percent the search 
 >Search completed
 
 ### gmail-list-users
+
 ***
 Lists all Google users in a domain.
 
@@ -3429,6 +3484,7 @@ Lists all Google users in a domain.
 #### Base Command
 
 `gmail-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3438,7 +3494,7 @@ Lists all Google users in a domain.
 | customer | The unique ID for the customer's Google account. Default is the value specified in the integration configuration. For a multi-domain account, to fetch all groups for a customer, use this field instead of domain. | Optional | 
 | max-results | Maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. | Optional | 
 | custom-field-mask | A comma-separated list of schema names. All fields from these schemas are fetched. Must be set when projection=custom. | Optional | 
-| query | Query string search. Should be of the form "". Complete documentation is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users. | Optional | 
+| query | Query string search. Should be of the form "". Complete documentation is at <https://developers.google.com/admin-sdk/directory/v1/guides/search-users>. | Optional | 
 | show-deleted | If true, retrieves the list of deleted users. Default is false. Possible values are: False, True. | Optional | 
 | sort-order | How to sort the results. Can be ASCENDING/DESCENDING. Possible values are: ASCENDING, DESCENDING. | Optional | 
 | token | Token to authorize and authenticate the action. | Optional | 
@@ -3462,9 +3518,11 @@ Lists all Google users in a domain.
 
 
 #### Command Example
+
 ```!gmail-list-users query=user show-deleted=False```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -3491,12 +3549,14 @@ Lists all Google users in a domain.
 #### Human Readable Output
 
 >### Users:
+
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 113493660192005193453 | user | user test | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | true |
 
 
 ### gmail-list-labels
+
 ***
 Lists all labels in the user's mailbox.
 
@@ -3504,6 +3564,7 @@ Lists all labels in the user's mailbox.
 #### Base Command
 
 `gmail-list-labels`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3524,9 +3585,11 @@ Lists all labels in the user's mailbox.
 
 
 #### Command Example
+
 ```!gmail-list-labels user-id=me```
 
 #### Context Example
+
 ```
 {
 "GmailLabel":
@@ -3546,6 +3609,7 @@ Lists all labels in the user's mailbox.
 #### Human Readable Output
 
 >### Labels for UserID me:
+
 >|Name|ID|Type|MessageListVisibility|LabelListVisibility|
 >|---|---|---|---|---|
 >| INBOX | INBOX | system | | |
@@ -3553,6 +3617,7 @@ Lists all labels in the user's mailbox.
 
 
 ### gmail-revoke-user-role
+
 ***
 Revokes a role for a specified Google user.
 
@@ -3560,6 +3625,7 @@ Revokes a role for a specified Google user.
 #### Base Command
 
 `gmail-revoke-user-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3573,13 +3639,16 @@ Revokes a role for a specified Google user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gmail-revoke-user-role role-assignment-id=role1```
 
 #### Human Readable Output
+
 >Role has been deleted.
 
 
 ### gmail-create-user
+
 ***
 Creates a new Gmail user.
 
@@ -3587,6 +3656,7 @@ Creates a new Gmail user.
 #### Base Command
 
 `gmail-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3613,9 +3683,11 @@ Creates a new Gmail user.
 
 
 #### Command Example
+
 ```!gmail-create-user email=user1@domain.io first-name=John family-name=Snow password=WinterIsComing```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -3642,12 +3714,14 @@ Creates a new Gmail user.
 #### Human Readable Output
 
 >### New User:
+
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|
 >|---|---|---|---|---|---|---|---|
 >| Google | 103470368646956060577 | John | John Snow | admin#directory#user | C03puekhd | domain.io | Address: user1@domain.io |
 
 
 ### gmail-delete-mail
+
 ***
 Deletes an email in the user's mailbox.
 
@@ -3655,12 +3729,13 @@ Deletes an email in the user's mailbox.
 #### Base Command
 
 `gmail-delete-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The special value me can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to delete. | Required | 
+| message-id | The ID of the email to delete.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
 | permanent | Whether to delete the email permanently or move it to trash (default). Possible values are: False, True. | Optional | 
 
 
@@ -3669,13 +3744,16 @@ Deletes an email in the user's mailbox.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gmail-delete-mail user-id=admin@demistodev.com message-id=16d4316a25a332e4```
 
 #### Human Readable Output
+
 >Email has been successfully moved to trash.
 
 
 ### gmail-get-thread #
+
 ***
 Returns all messages in a thread.
 
@@ -3683,6 +3761,7 @@ Returns all messages in a thread.
 #### Base Command
 
 `gmail-get-thread`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3723,9 +3802,11 @@ Returns all messages in a thread.
 
 
 #### Command Example
+
 ```!gmail-get-thread user-id=user@domain.io thread-id=1756d926adcca849```
 
 #### Context Example
+
 ```
 {
     "Email": {
@@ -3868,12 +3949,14 @@ Returns all messages in a thread.
 #### Human Readable Output
 
 >### Emails of Thread:
+
 >|Mailbox|ID|Subject|From|To|Labels|Format|Body|
 >|---|---|---|---|---|---|---|---|
 >| user@domain.io | 1756d926adcca849 | hello Re: Untitled document - @user@domain.io @user@domain... | user1 test1 <user@domain.io> | 3d_qYXxAPBdI0CAA2BHG-BCF2D9M1C0G.4CC492.0CA12Jy9B6Az921yHy.6C@docos.bounces.google.com | SENT | text/plain | <br/> |
 
 
 ### gmail-move-mail
+
 ***
 Moves an email to a different folder.
 
@@ -3881,12 +3964,13 @@ Moves an email to a different folder.
 #### Base Command
 
 `gmail-move-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the emaill to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | add-labels | A comma-separated list of labels to add to the email. | Optional | 
 | remove-labels | A comma-separated list of labels to remove from the email. | Optional | 
 
@@ -3922,9 +4006,11 @@ Moves an email to a different folder.
 
 
 #### Command Example
+
 ```!gmail-move-mail user-id=user@domain.io message-id=1756ad6c1dc2956a add-labels=INBOX remove-labels=TRASH```
 
 #### Context Example
+
 ```
 {
     "Email": {
@@ -3969,12 +4055,14 @@ Moves an email to a different folder.
 #### Human Readable Output
 
 >### Email:
+
 >|Mailbox|ID|Labels|
 >|---|---|---|
 >| user@domain.io | 1756ad6c1dc2956a | SENT, INBOX |
 
 
 ### gmail-move-mail-to-mailbox
+
 ***
 Moves an email to a different mailbox.
 
@@ -3982,12 +4070,13 @@ Moves an email to a different mailbox.
 #### Base Command
 
 `gmail-move-mail-to-mailbox`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | src-user-id | The source user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the message to retrieve. | Required | 
+| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
 | dst-user-id | The destination user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 
 
@@ -4022,9 +4111,11 @@ Moves an email to a different mailbox.
 
 
 #### Command Example
+
 ```!gmail-move-mail-to-mailbox src-user-id="test.user@domain.com" message-id="1756acd6df2a9793" dst-user-id="user1@domain.io"```
 
 #### Context Example
+
 ```
  "Gmail": [
       {
@@ -4092,12 +4183,14 @@ Moves an email to a different mailbox.
 #### Human Readable Output
 
 >### Email:
+
 >|Mailbox|ID|Subject|From|To|Format|Body|
 >|---|---|---|---|---|---|---|
 >| user1@domain.io | 1756acc058c19cdb | Re: | user1 <user1@domain.io> | test.user@domain.com | text/plain | Body |
 
 
 ### gmail-add-delete-filter
+
 ***
 Adds a rule for email deletion by address.
 
@@ -4105,6 +4198,7 @@ Adds a rule for email deletion by address.
 #### Base Command
 
 `gmail-add-delete-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4114,9 +4208,11 @@ Adds a rule for email deletion by address.
 
 
 #### Command Example
+
 ```!gmail-add-delete-filter user-id="user@domain.io" email-address="user1@domain.io"```
 
 #### Context Example
+
 ```
 {
     "Gmail": {
@@ -4152,12 +4248,14 @@ Adds a rule for email deletion by address.
 #### Human Readable Output
 
 >### New filter:
+
 >|ID|Criteria|Action|
 >|---|---|---|
 >| ANe1BmjeWtVj1i4t6dCiDJ8F54cAlqebm2k3rQ | from: user1@domain.io | addLabelIds: TRASH |
 
 
 ### gmail-add-filter
+
 ***
 Adds a new filter.
 
@@ -4165,6 +4263,7 @@ Adds a new filter.
 #### Base Command
 
 `gmail-add-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4178,7 +4277,7 @@ Adds a new filter.
 | size | The size of the entire RFC822 message in bytes, including all headers and attachments. | Optional | 
 | add-labels | A comma-separated list of labels to add to the message. | Optional | 
 | remove-labels | A comma-separated list of labels to remove from the message. | Optional | 
-| forward | The email address that the message is to be forwarded to. The email needs to be configured as a forwarding address, see https://support.google.com/mail/answer/10957?hl=en#null. | Optional | 
+| forward | The email address that the message is to be forwarded to. The email needs to be configured as a forwarding address, see <https://support.google.com/mail/answer/10957?hl=en#null>. | Optional | 
 | size-comparison | The message size in bytes compared to the size field. Possible values are: larger, smaller. | Optional | 
 
 
@@ -4192,9 +4291,11 @@ Adds a new filter.
 | Gmail.Filter.Action | Unknown | The filter action. | 
 
 #### Command Example
+
 ```!gmail-add-filter user-id=admin@demistodev.com has-attachments=true forward=test@demistodev.com subject=phishing```
 
 #### Context Example
+
 ```
 {
     "Gmail": {
@@ -4227,6 +4328,7 @@ Adds a new filter.
 #### Human Readable Output
 
 >### New filter:
+
 >|ID|Criteria|Action|
 >|---|---|---|
 >| ANe1BmjTS0eUGRX96ncj1FZmbPKrXrJvVG05Pg | hasAttachment: true<br/>subject: Scam | forward: test@demistodev.com |
@@ -4234,6 +4336,7 @@ Adds a new filter.
 
 
 ### gmail-list-filters
+
 ***
 Lists all filters in a user's mailbox.
 
@@ -4241,6 +4344,7 @@ Lists all filters in a user's mailbox.
 #### Base Command
 
 `gmail-list-filters`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4261,9 +4365,11 @@ Lists all filters in a user's mailbox.
 
 
 #### Command Example
+
 ```!gmail-list-filters user-id=user@domain.io```
 
 #### Context Example
+
 ```
 {
     "Gmail": {
@@ -4298,12 +4404,14 @@ Lists all filters in a user's mailbox.
 #### Human Readable Output
 
 >### filters:
+
 >|ID|Criteria|Action|
 >|---|---|---|
 >| ANe1BmiEVq9vNXrutJQzaEKFaK2odmTyfG29RA | from: user@domain.io | addLabelIds: TRASH |
 
 
 ### gmail-remove-filter
+
 ***
 Removes a Filter.
 
@@ -4311,6 +4419,7 @@ Removes a Filter.
 #### Base Command
 
 `gmail-remove-filter`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4325,13 +4434,16 @@ There is no context output for this command.
 
 
 #### Command Example
+
 ```!gmail-remove-filter user-id=admin@demistodev.com filter_ids=id1```
 
 #### Human Readable Output
+
 >filters were removed successfully.
 
 
 ### gmail-hide-user-in-directory
+
 ***
 Hides a user's contact information in the Global Directory, for example email address and profile information.
 
@@ -4339,6 +4451,7 @@ Hides a user's contact information in the Global Directory, for example email ad
 #### Base Command
 
 `gmail-hide-user-in-directory`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4364,9 +4477,11 @@ Hides a user's contact information in the Global Directory, for example email ad
 
 
 #### Command Example
+
 ```!gmail-hide-user-in-directory user-id=user@domain.io visible-globally=false```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -4393,12 +4508,14 @@ Hides a user's contact information in the Global Directory, for example email ad
 #### Human Readable Output
 
 >### User user@domain.io:
+
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|
 >|---|---|---|---|---|---|---|---|---|
 >| Google | 118105533760233960163 | user1 | user1 test1 | admin#directory#user | C03puekhd | domain.io | Address: user@domain.io | false |
 
 
 ### gmail-set-password
+
 ***
 Sets the password for the user.
 
@@ -4406,6 +4523,7 @@ Sets the password for the user.
 #### Base Command
 
 `gmail-set-password`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4419,6 +4537,7 @@ Sets the password for the user.
 There is no context output for this command.
 
 #### Command Example
+
 ```!gmail-set-password user-id=user@domain.io password=user@1234```
 
 
@@ -4427,6 +4546,7 @@ There is no context output for this command.
 >User user@domain.io password has been set.
 
 ### gmail-get-autoreply
+
 ***
 Returns the auto-reply message set for the user-account.
 
@@ -4434,6 +4554,7 @@ Returns the auto-reply message set for the user-account.
 #### Base Command
 
 `gmail-get-autoreply`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4454,9 +4575,11 @@ Returns the auto-reply message set for the user-account.
 
 
 #### Command Example
+
 ```!gmail-get-autoreply user-id=user@domain.io```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -4482,12 +4605,14 @@ Returns the auto-reply message set for the user-account.
 #### Human Readable Output
 
 >### User user@domain.io:
+
 >|EnableAutoReply|ResponseBody|ResponseSubject|RestrictToContact|RestrictToDomain|EnableAutoReply|
 >|---|---|---|---|---|---|
 >| false | body_test | subject_test | false | false | false |
 
 
 ### gmail-set-autoreply
+
 ***
 Sets the auto-reply for the user. Note: If the body is not set, the current body will be deleted.
 
@@ -4495,6 +4620,7 @@ Sets the auto-reply for the user. Note: If the body is not set, the current body
 #### Base Command
 
 `gmail-set-autoreply`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4527,9 +4653,11 @@ Sets the auto-reply for the user. Note: If the body is not set, the current body
 
 
 #### Command Example
+
 ```!gmail-set-autoreply user-id=user@domain.io enable-autoReply=false response-body=body_test response-subject=subject_test```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -4555,12 +4683,14 @@ Sets the auto-reply for the user. Note: If the body is not set, the current body
 #### Human Readable Output
 
 >### User user@domain.io:
+
 >|EnableAutoReply|ResponseBody|ResponseSubject|RestrictToContact|RestrictToDomain|EnableAutoReply|
 >|---|---|---|---|---|---|
 >| false | body_test | subject_test | false | false | false |
 
 
 ### gmail-delegate-user-mailbox
+
 ***
 Adds a delegate to the mailbox, without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user and must be added using their primary email address, and not an email alias.
 
@@ -4568,6 +4698,7 @@ Adds a delegate to the mailbox, without sending any verification email. The dele
 #### Base Command
 
 `gmail-delegate-user-mailbox`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4581,13 +4712,16 @@ Adds a delegate to the mailbox, without sending any verification email. The dele
 There is no context output for this command.
 
 #### Command Example
+
 ``` !gmail-delegate-user-mailbox delegate-email=shai@demistodev.com user-id=admin@demistodev.com```
 
 #### Human Readable Output
+
 >Email shai@demistodev.com has been delegated
 
 
 ### send-mail
+
 ***
 Sends mail using Gmail.
 
@@ -4595,6 +4729,7 @@ Sends mail using Gmail.
 #### Base Command
 
 `send-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4634,9 +4769,11 @@ Sends mail using Gmail.
 
 
 #### Command Example
+
 ```!send-mail subject="this is the subject" to=test@demistodev.com body="this is the body"```
 
 #### Context Example
+
 ```
 {
     "Gmail.SentMail": [
@@ -4660,12 +4797,15 @@ Sends mail using Gmail.
 ```
 
 #### Human Readable Output
+
 >### Email sent:
+
 >|Type|ID|To|From|Subject|Body|Labels|ThreadId|
 >|---|---|---|---|---|---|---|---|
 >| Gmail | 16d43287fc29b71a | test@demistodev.com | admin@demistodev.com | this is the subject |this is the body | SENT | 16d43287fc29b71a |
 
 ### reply-mail
+
 ***
 Replies to a mail using Gmail.
 
@@ -4673,6 +4813,7 @@ Replies to a mail using Gmail.
 #### Base Command
 
 `reply-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4714,9 +4855,11 @@ Replies to a mail using Gmail.
 
 
 #### Command Example
+
 ``` !reply-mail subject="this is the subject" to=test@demistodev.com replyTo=test@demistodev.com body="this is the body" inReplyTo=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com> references=<CAEvnzx+zEeFJ1U5g4FOfHKeWe-H3hU7kGiKaK7q0F0A@mail.gmail.com>```
 
 #### Context Example
+
 ```
 {
     "Gmail.SentMail": [
@@ -4740,13 +4883,16 @@ Replies to a mail using Gmail.
 ```
 
 #### Human Readable Output
+
 >### Email sent:
+
 >|Type|ID|To|From|Subject|Body|Labels|ThreadId|
 >|---|---|---|---|---|---|---|---|
 >| Gmail | 16d43287fc29b71a | test@demistodev.com | admin@demistodev.com | this is the subject |this is the body | SENT | 16d43287fc29b71a |
 
 
 ### gmail-remove-delegated-mailbox
+
 ***
 Removes a delegate from the mailbox without sending any verification email. The delegate user must be a member of the same G Suite organization as the delegator user using their primary email address, and not an email alias.
 
@@ -4754,6 +4900,7 @@ Removes a delegate from the mailbox without sending any verification email. The 
 #### Base Command
 
 `gmail-remove-delegated-mailbox`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4767,13 +4914,16 @@ Removes a delegate from the mailbox without sending any verification email. The 
 There is no context output for this command.
 
 #### Command Example
+
 ```!gmail-remove-delegated-mailbox removed-mail=shai@demistodev.com user-id=admin@demistodev.com```
 
 #### Human Readable Output
+
 >Email shai@demistodev.com has been removed from delegation
 
 
 ### gmail-get-role
+
 ***
 Gets details of a specific role.
 
@@ -4781,6 +4931,7 @@ Gets details of a specific role.
 #### Base Command
 
 `gmail-get-role`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4805,9 +4956,11 @@ Gets details of a specific role.
 
 
 #### Command Example
+
 ```!gmail-get-role role-id=13801188331880449 customer-id=C03puekhd```
 
 #### Context Example
+
 ```
 {
     "Gmail": {
@@ -4933,10 +5086,13 @@ Gets details of a specific role.
 #### Human Readable Output
 
 >### Role 13801188331880449 details:
+
 >|ETag|IsSuperAdminRole|IsSystemRole|Kind|Description|ID|Name|
 >|---|---|---|---|---|---|---|
 >| HKDSgTnCxrWl3RtRnlZSCPY3NjdWJxz53nrhwSz7ob4/Y2lKFcwh-5YCBqMXBNWR3Ezo8ik | true | true | admin#directory#role | Google Apps Administrator Seed Role | 13801188331880449 | _SEED_ADMIN_ROLE |
+
 >### Role 13801188331880449 privileges:
+
 >|ServiceID|Name|
 >|---|---|
 >| 01ci93xb3tmzyin | SUPER_ADMIN |
@@ -4967,6 +5123,7 @@ Gets details of a specific role.
 >| 00meukdy0whjvor | ROOT_APP_ADMIN |
 
 ### gmail-send-as-add
+
 ***
 Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
 
@@ -4976,6 +5133,7 @@ This command is only available to service account clients who have been delegate
 #### Base Command
 
 `gmail-send-as-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5012,9 +5170,11 @@ This command is only available to service account clients who have been delegate
 
 
 #### Command Example
+
 ```!gmail-send-as-add send_as_email=user2@domain.io user_id=user1@domain.io```
 
 #### context Example
+
 ```
 {
     "Gmail.SendAs": {
@@ -5031,13 +5191,16 @@ This command is only available to service account clients who have been delegate
 ```
 
 #### Human Readable Output
+
 >### A custom "user2@domain.io" send-as alias created for "user1@domain.io".
+
 >|Send As Email|Treat As Alias|
 >|---|---|
 >| user2@domain.io | false |
 
 
 ### gmail-forwarding-address-add
+
 ***
 Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority. The special value "me" can be used to indicate the authenticated user.
 
@@ -5045,6 +5208,7 @@ Creates a forwarding address. If ownership verification is required, a message w
 #### Base Command
 
 `gmail-forwarding-address-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5062,8 +5226,11 @@ Creates a forwarding address. If ownership verification is required, a message w
 | Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
 
 #### Command example
+
 ```!gmail-forwarding-address-add forwarding_email="test@gmail.com" user_id="me"```
+
 #### Context Example
+
 ```json
 {
     "Gmail": {
@@ -5079,12 +5246,14 @@ Creates a forwarding address. If ownership verification is required, a message w
 #### Human Readable Output
 
 >### Forwarding addresses results for "me":
+
 >|forwardingEmail|userId|verificationStatus|
 >|---|---|---|
 >| test@gmail.com | me | accepted |
 
 
 ### gmail-forwarding-address-update
+
 ***
 Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
 
@@ -5092,6 +5261,7 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 #### Base Command
 
 `gmail-forwarding-address-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5111,8 +5281,11 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 | Gmail.ForwardingAddress.Enabled | Boolean | Indicates whether all incoming mail is automatically forwarded to another address. | 
 
 #### Command example
+
 ```!gmail-forwarding-address-update forwarding_email="test@gmail.com" user_id="me" disposition="archive"```
+
 #### Context Example
+
 ```json
 {
     "Gmail": {
@@ -5129,11 +5302,13 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 #### Human Readable Output
 
 >### Forwarding addresses update results for "me":
+
 >|forwardingEmail|userId|disposition|enabled|
 >|---|---|---|---|
 >| test@gmail.com | me | archive | true |
 
 ### gmail-forwarding-address-get
+
 ***
 Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
 
@@ -5141,6 +5316,7 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 #### Base Command
 
 `gmail-forwarding-address-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5157,8 +5333,11 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 | Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
 
 #### Command example
+
 ```!gmail-forwarding-address-get forwarding_email="test@gmail.com" user_id="me"```
+
 #### Context Example
+
 ```json
 {
     "Gmail": {
@@ -5174,12 +5353,14 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 #### Human Readable Output
 
 >### Get forwarding address for: "me"
+
 >|forwardingEmail|verificationStatus|
 >|---|---|
 >| test@gmail.com | accepted |
 
 
 ### gmail-forwarding-address-remove
+
 ***
 Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
 
@@ -5187,6 +5368,7 @@ Deletes the specified forwarding address and revokes any verification that may h
 #### Base Command
 
 `gmail-forwarding-address-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5200,12 +5382,15 @@ Deletes the specified forwarding address and revokes any verification that may h
 There is no context output for this command.
 
 #### Command example
+
 ```!gmail-forwarding-address-remove forwarding_email="test@gmail.com" user_id="me"```
+
 #### Human Readable Output
 
 >Forwarding address "test@gmail.com" for "me" was deleted successfully .
 
 ### gmail-forwarding-address-list
+
 ***
 Lists the forwarding addresses for the specified account.
 
@@ -5213,6 +5398,7 @@ Lists the forwarding addresses for the specified account.
 #### Base Command
 
 `gmail-forwarding-address-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -5229,8 +5415,11 @@ Lists the forwarding addresses for the specified account.
 | Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
 
 #### Command example
+
 ```!gmail-forwarding-address-list user_id="me"```
+
 #### Context Example
+
 ```json
 {
     "Gmail": {
@@ -5263,6 +5452,7 @@ Lists the forwarding addresses for the specified account.
 #### Human Readable Output
 
 >### Forwarding addresses list for: "me"
+
 >|forwardingEmail|verificationStatus|
 >|---|---|
 >| test@gmail.com | accepted |

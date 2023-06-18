@@ -1,0 +1,243 @@
+{
+    "description": "Maps incoming Datadog incidents.",
+    "feed": false,
+    "id": "Datadog Cloud SIEM - Incoming Mapper",
+    "mapping": {
+        "Datadog Cloud SIEM": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Datadog": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Attachment User ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "incidents.relationships.attachments.data",
+                        "transformers": []
+                    }
+                },
+                "Datadog Commander User": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "incidents.relationships.commander_user.data",
+                        "transformers": []
+                    }
+                },
+                "Datadog Customer Impact Scope ": {
+                    "complex": {
+                        "accessor": "customer_impact_scope",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Customer Impacted": {
+                    "complex": {
+                        "accessor": "customer_impacted",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Detect and Create Duration ": {
+                    "complex": {
+                        "accessor": "time_to_internal_response",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Detected": {
+                    "complex": {
+                        "accessor": "detected",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Detected Method": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [],
+                        "root": "incidents.fields.detection_method",
+                        "transformers": []
+                    }
+                },
+                "Datadog Display Name": {
+                    "complex": {
+                        "accessor": "display_name",
+                        "filters": [],
+                        "root": "incidents.notification_handles",
+                        "transformers": []
+                    }
+                },
+                "Datadog Duration": {
+                    "complex": {
+                        "accessor": "customer_impact_duration",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Last Modified By": {
+                    "complex": {
+                        "accessor": "user_id",
+                        "filters": [],
+                        "root": "incidents.last_modified_by.data",
+                        "transformers": []
+                    }
+                },
+                "Datadog Modified": {
+                    "complex": {
+                        "accessor": "modified",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Notification Email": {
+                    "complex": {
+                        "accessor": "handle",
+                        "filters": [],
+                        "root": "incidents.notification_handles",
+                        "transformers": []
+                    }
+                },
+                "Datadog Public ID": {
+                    "complex": {
+                        "accessor": "public_id",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Repair Time": {
+                    "complex": {
+                        "accessor": "time_to_repair",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Resolution Time": {
+                    "complex": {
+                        "accessor": "time_to_resolve",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Resolved": {
+                    "complex": {
+                        "accessor": "resolved",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Datadog Root Cause ": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [],
+                        "root": "incidents.fields.root_cause",
+                        "transformers": []
+                    }
+                },
+                "External Start Time": {
+                    "complex": {
+                        "accessor": "customer_impact_start",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Datadog Customer Impact Scope ": {
+                    "simple": "incidents.customer_impact_scope"
+                },
+                "Datadog Customer Impacted": {
+                    "simple": "incidents.customer_impacted"
+                },
+                "Datadog Relationships User ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "relationships.last_modified_by_user.data",
+                        "transformers": []
+                    }
+                },
+                "Datadog Title": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [],
+                        "root": "incidents.fields.summary",
+                        "transformers": []
+                    }
+                },
+                "Detection SLA": {
+                    "complex": {
+                        "accessor": "time_to_detect",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "External End Time": {
+                    "simple": "incidents.customer_impact_end"
+                },
+                "External Start Time": {
+                    "simple": "incidents.customer_impact_start"
+                },
+                "Source Create time": {
+                    "simple": "incidents.created"
+                },
+                "Source Created By": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "relationships.created_by_user.data",
+                        "transformers": []
+                    }
+                },
+                "State": {
+                    "complex": {
+                        "accessor": "state",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "incidents",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Datadog Cloud SIEM - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

@@ -1907,7 +1907,8 @@ def send_message():
     message_type: str = demisto.args().get('messageType', '')
     original_message: str = demisto.args().get('originalMessage', '')
     message: str = demisto.args().get('message', '')
-    external_form_url_header: str | None = demisto.args().get('external_form_url_header')
+    external_form_url_header: str | None = demisto.args().get(
+        'external_form_url_header') or demisto.params().get('external_form_url_header')
     demisto.debug("Send message")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))

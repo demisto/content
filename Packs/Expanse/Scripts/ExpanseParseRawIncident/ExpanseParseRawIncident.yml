@@ -13,7 +13,6 @@ tags:
 commonfields:
   id: ExpanseParseRawIncident
   version: -1
-enabled: false
 name: ExpanseParseRawIncident
 outputs:
 - contextPath: Expanse.Event.eventType
