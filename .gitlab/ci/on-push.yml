@@ -606,6 +606,8 @@ test-upload-flow:
   script:
     - |
       echo "BINAT"
+      echo $ARTIFACTS_FOLDER
+      ls -ltr $ARTIFACTS_FOLDER
       if [[ -f $ARTIFACTS_FOLDER/test_playbooks_report.json ]]; then
         echo "YUVAL"
         cat $ARTIFACTS_FOLDER/test_playbooks_report.json
