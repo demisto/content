@@ -124,9 +124,7 @@ google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
 google-cloud-secret-manager = "^2.13.0"
 json5 = "^0.9.10"
-dataparser = "*"
-GitPython = "*"
-demisto-sdk = "*"
+dateparser = "^1.1.8"
 
 [tool.ruff]
 select = [
