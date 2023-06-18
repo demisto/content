@@ -6,14 +6,14 @@ commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
-- additionalinfo: |-
-    When selecting the Custom option, the Server URL parameter must be filled. More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection
-  defaultvalue: Worldwide
+- defaultvalue: Worldwide
   display: Endpoint Type
   name: endpoint_type
   required: false
   type: 15
   section: Connect
+  additionalinfo: |-
+    When selecting the Custom option, the Server URL parameter must be filled. More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection
   options:
   - Worldwide
   - EU Geo Proximity
@@ -150,15 +150,15 @@ configuration:
   required: false
   type: 0
   section: Collect
-- defaultvalue: https://api.securitycenter.microsoft.com
-  display: Server URL (e.g., https://api.securitycenter.microsoft.com)
+- display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
   required: true
   type: 0
   section: Connect
+  advanced: true
+  defaultvalue: https://api.securitycenter.microsoft.com
   additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   hidden: false
-  advanced: true
 - display: Use a self-deployed Azure Application
   name: self_deployed
   required: false
@@ -189,14 +189,14 @@ configuration:
   required: false
   type: 0
   section: Collect
-- defaultvalue: 'false'
-  display: Using Microsoft GCC? (Deprecated)
+- display: Using Microsoft GCC? (Deprecated)
   name: is_gcc
   required: false
   type: 8
+  hidden: true
   section: Connect
   advanced: true
-  hidden: true
+  defaultvalue: 'false'
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -6711,7 +6711,7 @@ script:
     execution: false
     name: microsoft-atp-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.62834
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: true
   longRunning: false

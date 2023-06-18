@@ -302,7 +302,7 @@ script:
     execution: false
     name: azure-ks-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.62834
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: false
   longRunning: false
