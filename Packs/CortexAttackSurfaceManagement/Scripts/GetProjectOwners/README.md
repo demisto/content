@@ -1,4 +1,4 @@
-Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
 
 ## Script Data
 
@@ -16,6 +16,7 @@ Recommend most likely service owners from those surfaced by Cortex ASM Enrichmen
 | **Argument Name** | **Description** |
 | --- | --- |
 | owners | List of potential service owners |
+| external_service | String indicating which cloud provider the service is |
 
 ## Outputs
 

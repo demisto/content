@@ -25,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 877.5,
+          "y": 20
         }
       }
     note: false
@@ -66,8 +66,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 877.5,
+          "y": 165
         }
       }
     note: false
@@ -99,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 877.5,
+          "y": 340
         }
       }
     note: false
@@ -146,8 +146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 580
+          "x": 1972.5,
+          "y": 645
         }
       }
     note: false
@@ -200,8 +200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -450,
-          "y": 580
+          "x": 100,
+          "y": 540
         }
       }
     note: false
@@ -252,8 +252,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 20,
-          "y": 580
+          "x": 877.5,
+          "y": 485
         }
       }
     note: false
@@ -280,8 +280,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 3160
+          "x": 1162.5,
+          "y": 3150
         }
       }
     note: false
@@ -308,7 +308,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "9"
+      - "31"
     scriptarguments:
       gridfield:
         simple: asmserviceowner
@@ -349,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 1140
+          "x": 92.5,
+          "y": 1075
         }
       }
     note: false
@@ -380,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 865
+          "x": 92.5,
+          "y": 740
         }
       }
     note: false
@@ -413,8 +413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 990
+          "x": 92.5,
+          "y": 900
         }
       }
     note: false
@@ -460,8 +460,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 1035
+          "x": 2402.5,
+          "y": 1475
         }
       }
     note: false
@@ -491,8 +491,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 915
+          "x": 2402.5,
+          "y": 1265
         }
       }
     note: false
@@ -516,14 +516,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "31"
+      - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 915
+          "x": 1757.5,
+          "y": 965
         }
       }
     note: false
@@ -535,10 +535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 21387b0e-6514-4fea-8d52-07bd460ea4c0
+    taskid: f7ee4b2f-ac30-4ba1-8255-6f24b48fa7f0
     type: regular
     task:
-      id: 21387b0e-6514-4fea-8d52-07bd460ea4c0
+      id: f7ee4b2f-ac30-4ba1-8255-6f24b48fa7f0
       version: -1
       name: Set cloud grid field
       description: |-
@@ -583,17 +583,14 @@ tasks:
           transformers:
           - operator: uniq
       val5:
-        complex:
-          root: folder-ids
-          transformers:
-          - operator: uniq
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 1590
+          "x": 1747.5,
+          "y": 1475
         }
       }
     note: false
@@ -623,8 +620,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
-          "y": 915
+          "x": 2842.5,
+          "y": 1090
         }
       }
     note: false
@@ -684,8 +681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
-          "y": 1370
+          "x": 2842.5,
+          "y": 1475
         }
       }
     note: false
@@ -715,8 +712,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 885
+          "x": 950,
+          "y": 690
         }
       }
     note: false
@@ -764,8 +761,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1010
+          "x": 950,
+          "y": 835
         }
       }
     note: false
@@ -813,8 +810,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1160
+          "x": 950,
+          "y": 1010
         }
       }
     note: false
@@ -862,8 +859,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1310
+          "x": 950,
+          "y": 1185
         }
       }
     note: false
@@ -911,8 +908,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1470
+          "x": 950,
+          "y": 1360
         }
       }
     note: false
@@ -960,8 +957,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1620
+          "x": 950,
+          "y": 1535
         }
       }
     note: false
@@ -1019,8 +1016,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1780
+          "x": 950,
+          "y": 1710
         }
       }
     note: false
@@ -1047,7 +1044,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+      - "33"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -1068,8 +1065,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1930
+          "x": 950,
+          "y": 1885
         }
       }
     note: false
@@ -1113,8 +1110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
-          "y": 1085
+          "x": 2842.5,
+          "y": 1250
         }
       }
     note: false
@@ -1126,19 +1123,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 0690c6c8-103e-4bd0-86f3-9d84e872d94d
+    taskid: ad12af87-5f1c-440c-8d67-bf70e31c1997
     type: condition
     task:
-      id: 0690c6c8-103e-4bd0-86f3-9d84e872d94d
+      id: ad12af87-5f1c-440c-8d67-bf70e31c1997
       version: -1
-      name: Are there any folders?
-      description: Determines if there is GCP folder information to set in the cloud field.
+      name: Is service account field set?
+      description: Determines if a service account associated with the Cloud Compute Instance was discovered and set on the alert.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "33"
+      - "9"
       "yes":
       - "32"
     separatecontext: false
@@ -1148,24 +1145,14 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: GCPHierarchy.id
-                filters:
-                - - operator: startWith
-                    left:
-                      value:
-                        simple: GCPHierarchy.id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: folders/
+              simple: GoogleCloudCompute.Instances.serviceAccounts
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 1085
+          "x": 92.5,
+          "y": 1245
         }
       }
     note: false
@@ -1177,100 +1164,68 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b933f5bd-5202-40ed-8fdf-0e1f879085d9
+    taskid: fbfb581c-ea98-4482-813e-458904d2fdc1
     type: regular
     task:
-      id: b933f5bd-5202-40ed-8fdf-0e1f879085d9
+      id: fbfb581c-ea98-4482-813e-458904d2fdc1
       version: -1
-      name: Set Folders
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      name: Add service account to unranked service owner list
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "9"
     scriptarguments:
-      key:
-        simple: folder-ids
-      value:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        simple: n/a
+      val2:
         complex:
-          root: GCPHierarchy.id
-          filters:
-          - - operator: startWith
-              left:
-                value:
-                  simple: GCPHierarchy.id
-                iscontext: true
-              right:
-                value:
-                  simple: folders/
+          root: GoogleCloudCompute.Instances
+          accessor: serviceAccounts
           transformers:
-          - operator: join
+          - operator: getField
             args:
-              separator:
+              field:
                 value:
-                  simple: ','
+                  simple: email
+      val3:
+        simple: GCP
+      val4:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 1370
+          "x": 92.5,
+          "y": 1585
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 47e7e955-9a1a-4f87-8f15-416094aa383f
-    type: regular
-    task:
-      id: 47e7e955-9a1a-4f87-8f15-416094aa383f
-      version: -1
-      name: Set Folders to n/a
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      key:
-        simple: folder-ids
-      value:
-        simple: n/a
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 1370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 3253a943-89a8-45f6-8015-82c684102aed
+    taskid: 990e42a9-5881-4aa6-8dba-7bed61bc4a9a
     type: condition
     task:
-      id: 3253a943-89a8-45f6-8015-82c684102aed
+      id: 990e42a9-5881-4aa6-8dba-7bed61bc4a9a
       version: -1
       name: Is there GCP project hierarchy information?
       description: Determines if there is GCP hierarchy information to set in the system IDs field.
@@ -1281,8 +1236,23 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "35"
+      - "34"
     separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
     conditions:
     - label: "yes"
       condition:
@@ -1302,12 +1272,31 @@ tasks:
                         simple: project
                 accessor: number
             iscontext: true
+  "34":
+    id: "34"
+    taskid: 925a0712-edc4-4a65-869e-baa3ad1f666f
+    type: regular
+    task:
+      id: 925a0712-edc4-4a65-869e-baa3ad1f666f
+      version: -1
+      name: Set system IDs grid field (Project-Number)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: "Builtin"
+      scriptName: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 2095
+          "x": 950,
+          "y": 2330
         }
       }
     note: false
@@ -1317,24 +1306,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 8532ca2f-e3b6-4f72-8d66-59d5e712d114
-    type: regular
-    task:
-      id: 8532ca2f-e3b6-4f72-8d66-59d5e712d114
-      version: -1
-      name: Set system IDs grid field (Project-Number)
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "37"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -1365,13 +1336,31 @@ tasks:
                   simple: projects/
       val3:
         simple: n/a
+  "35":
+    id: "35"
+    taskid: 148de1f5-7bb5-4689-84dd-d7c94e949ed6
+    type: condition
+    task:
+      id: 148de1f5-7bb5-4689-84dd-d7c94e949ed6
+      version: -1
+      name: Is there GCP folder hierarchy information?
+      description: |-
+        Determines if there is GCP folder hierarchy information to set in the system IDs field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 2280
+          "x": 950,
+          "y": 2540
         }
       }
     note: false
@@ -1381,12 +1370,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GCPHierarchy.number
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: GCPHierarchy.number
+                      iscontext: true
+                    right:
+                      value:
+                        simple: folders/
+            iscontext: true
   "36":
     id: "36"
-    taskid: 4b6724d2-8a9c-47fc-8408-01c3fb3f90be
+    taskid: 555c06a3-c2ca-4610-8c2e-852a424394f9
     type: regular
     task:
-      id: 4b6724d2-8a9c-47fc-8408-01c3fb3f90be
+      id: 555c06a3-c2ca-4610-8c2e-852a424394f9
       version: -1
       name: Set system IDs grid field (Folder-Number)
       description: |-
@@ -1433,8 +1440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 2595
+          "x": 950,
+          "y": 2800
         }
       }
     note: false
@@ -1446,35 +1453,125 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 5f61a43b-6264-4720-8e06-525acafb45ed
+    taskid: c107eb96-1e28-46a2-87e7-df341ee46e50
+    type: regular
+    task:
+      id: c107eb96-1e28-46a2-87e7-df341ee46e50
+      version: -1
+      name: Set Folders
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: Set
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1972.5,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      key:
+        simple: folder-ids
+      value:
+        complex:
+          root: GCPHierarchy.id
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: GCPHierarchy.id
+                iscontext: true
+              right:
+                value:
+                  simple: folders/
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+  "38":
+    id: "38"
+    taskid: a4387a55-65b8-4972-8eba-f4aaaf5ceeaf
+    type: regular
+    task:
+      id: a4387a55-65b8-4972-8eba-f4aaaf5ceeaf
+      version: -1
+      name: Set Folders to n/a
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: folder-ids
+      value:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1542.5,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c667b42a-93c1-4c84-8b5f-049ade9fb188
     type: condition
     task:
-      id: 5f61a43b-6264-4720-8e06-525acafb45ed
+      id: c667b42a-93c1-4c84-8b5f-049ade9fb188
       version: -1
-      name: Is there GCP folder hierarchy information?
-      description: Determines if there is GCP folder hierarchy information to set in the system IDs field.
+      name: Are there any folders?
       type: condition
+      description: Determines if there is GCP folder information to set in the cloud field.
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "9"
+      - "38"
       "yes":
-      - "36"
+      - "37"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: GCPHierarchy.number
+                root: GCPHierarchy.id
                 filters:
-                - - operator: containsGeneral
+                - - operator: startWith
                     left:
                       value:
-                        simple: GCPHierarchy.number
+                        simple: GCPHierarchy.id
                       iscontext: true
                     right:
                       value:
@@ -1484,8 +1581,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 2430
+          "x": 1757.5,
+          "y": 1075
         }
       }
     note: false
@@ -1498,17 +1595,27 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "29_9_#default#": 0.16,
-      "3_9_#default#": 0.13,
-      "4_9_#default#": 0.25,
+      "29_9_#default#": 0.1,
+      "31_32_yes": 0.53,
+      "31_9_#default#": 0.2,
+      "33_34_yes": 0.5,
+      "33_9_#default#": 0.14,
+      "35_36_yes": 0.54,
+      "35_9_#default#": 0.23,
+      "39_37_yes": 0.63,
+      "39_38_#default#": 0.65,
+      "3_15_yes": 0.72,
+      "3_17_yes": 0.76,
+      "3_9_#default#": 0.14,
+      "4_9_#default#": 0.18,
       "5_9_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 3175,
-        "width": 2480,
-        "x": -450,
-        "y": 50
+        "height": 3195,
+        "width": 3130,
+        "x": 92.5,
+        "y": 20
       }
     }
   }
