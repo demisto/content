@@ -941,11 +941,12 @@ def test_prettify_rule():
         rule = json.load(f)
 
     with open("test_data/prettify_rule.json") as f:
-        expected_prettify_rule = json.load(f)
+        expected_pretty_rule = json.load(f)
 
-    prettify_rule = prettify_rule(rule)
+    pretty_rule = prettify_rule(rule)
+    del pretty_rule['DeviceGroup']
 
-    assert prettify_rule == expected_prettify_rule
+    assert pretty_rule == expected_pretty_rule
 
 
 class TestPcap:
@@ -1210,7 +1211,7 @@ def test_apply_security_profiles_command_main_flow(mocker):
         'key': 'thisisabogusAPIKEY!', 'element': '<profile-setting><profiles><data-filtering>'
                                                  '<member>test-profile</member></data-filtering></profiles>'
                                                  '</profile-setting>'}
-    assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
+    assert res.call_args.args[0] == 'The profile data-filtering = test-profile has been applied to the rule rule-test'
 
 
 def test_apply_security_profiles_command_when_one_already_exists(mocker):
@@ -1254,7 +1255,48 @@ def test_apply_security_profiles_command_when_one_already_exists(mocker):
         'key': 'thisisabogusAPIKEY!',
         'element': '<profile-setting><profiles><spyware><member>strict</member></spyware>'
                    '<virus><member>Tap</member></virus></profiles></profile-setting>'}
-    assert res.call_args.args[0] == 'The profile strict has been applied to the rule rule-test'
+    assert res.call_args.args[0] == 'The profile spyware = strict has been applied to the rule rule-test'
+
+
+def test_remove_security_profiles_command(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-remove-security-profile command arguments
+
+    When -
+        running the pan-os-remove-security-profile command through the main flow
+
+    Then
+     - Ensure the given profile type has been removed from the given rule
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'spyware',
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
+        }
+    )
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-remove-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!',
+        'element': '<profile-setting><profiles><virus><member>Tap</member></virus></profiles></profile-setting>'}
+    assert res.call_args.args[0] == 'The profile spyware has been removed from the rule rule-test'
 
 
 class TestPanoramaEditRuleCommand:
