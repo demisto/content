@@ -27,8 +27,6 @@ jobs:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Deleting stale contribution base branches (contrib/*)"
-#          cd Utils/github_workflow_scripts
-#          pipenv sync
           poetry run ./delete_stale_contrib_branches.py
           echo "Finished deleting stale branches"
 
@@ -52,7 +50,6 @@ jobs:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Deleting stale non contribution branches"
-#          cd Utils/github_workflow_scripts
-#          pipenv sync
+          cd Utils/github_workflow_scripts
           poetry run ./delete_stale_non_contrib_branches.py
           echo "Finished deleting stale branches"
