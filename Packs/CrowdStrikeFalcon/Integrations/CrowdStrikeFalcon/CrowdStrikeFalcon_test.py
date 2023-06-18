@@ -5294,7 +5294,6 @@ def test_cs_falcon_ods_create_scan_command(mocker):
         'wait_for_result': True,
         'interval_in_seconds': 1,
         'timeout_in_seconds': 1,
-        'hide_polling_output': True,
     })
 
 
