@@ -11,7 +11,7 @@ pygithub = "*" # done in ci
 requests = "*" # in dev group, to add to ci?
 blessings = "*" # done in ci
 dateparser = "*" # added to ci
-slack_sdk = "*" # in ci
+slack_sdk = "*" # done in ci
 GitPython = "*" # Aadded to ci
 demisto-sdk = "*"   # added to ci, but demisto_sdk in dev, same?
 
