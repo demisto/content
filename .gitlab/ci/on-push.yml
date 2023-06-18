@@ -605,8 +605,11 @@ test-upload-flow:
   stage: test_playbooks_report
   script:
     - |
+      echo "BINAT"
       if [[ -f $ARTIFACTS_FOLDER/test_playbooks_report.json ]]; then
+        echo "YUVAL"
         cat $ARTIFACTS_FOLDER/test_playbooks_report.json
+        echo "COHEN"
         fi
   
 
