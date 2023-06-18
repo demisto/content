@@ -32,13 +32,14 @@ FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
 
 ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
 if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
-    from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
+    from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch import Elasticsearch, RequestsHttpConnection
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
+
 
 class ElasticsearchClient:
     def __init__(self, insecure=None, server=None, username=None, password=None, api_key=None, api_id=None,
