@@ -3807,7 +3807,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str, is_commit_r
 
 @logger
 def panorama_edit_rule_items(rulename: str, element_to_change: str, element_value: List[str], behaviour: str):
-    listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']
+    listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag', 'profile-setting']
     if element_to_change not in listable_elements:
         raise Exception(f'Adding objects is only available for the following Objects types:{listable_elements}')
     if element_to_change == 'target' and not DEVICE_GROUP:
@@ -3826,18 +3826,28 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
-    current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
-    if behaviour == 'add':
-        values = list((set(current_objects_items)).union(set(element_value)))
-    else:  # remove
-        values = [item for item in current_objects_items if item not in element_value]
-        if not values:
-            raise Exception(f'The object: {element_to_change} must have at least one item.')
+    # in this case, we want to remove the profile-setting group
+    if element_to_change == 'profile-setting':
+        params['action'] = 'set'
+        params['element'] = '<profile-setting><group/></profile-setting>'
+        values = [element_value]
+        result = http_request(URL, 'POST', body=params)
 
-    params['element'] = add_argument_list(values, element_to_change, True)
-    result = http_request(URL, 'POST', body=params)
+    else:
+        params["xpath"] = f'{params["xpath"]}/{element_to_change}'
+
+        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
+        if behaviour == 'add':
+            values = list((set(current_objects_items)).union(set(element_value)))  # type: ignore[arg-type]
+        else:  # remove
+            values = [item for item in current_objects_items if item not in element_value]
+            if not values:
+                raise Exception(f'The object: {element_to_change} must have at least one item.')
+
+        params['element'] = add_argument_list(values, element_to_change, True)
+        result = http_request(URL, 'POST', body=params)
+
     rule_output = {
         'Name': rulename,
         SECURITY_RULE_ARGS[element_to_change]: values
@@ -3886,6 +3896,8 @@ def panorama_edit_rule_command(args: dict):
         raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
     behaviour = args.get('behaviour') if 'behaviour' in args else 'replace'
+    # in this case of profile-setting add is the same as replace
+    behaviour = 'replace' if element_to_change == 'profile-setting' and behaviour == 'add' else behaviour
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
