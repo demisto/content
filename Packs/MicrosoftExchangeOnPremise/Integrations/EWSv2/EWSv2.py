@@ -34,8 +34,8 @@ from requests.exceptions import ConnectionError
 
 class exchangelibSSLAdapter(SSLAdapter):
     def cert_verify(self, conn, url, verify, cert):
-        # pylint: disable=unused-argument
-        # We're overriding a method, so we have to keep the signature
+        # We're overriding a method, so we have to keep the signature, although verify is unused
+        del verify
         super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
 
@@ -584,7 +584,7 @@ def filter_dict_null(d):      # pragma: no cover
 def is_empty_object(obj):
     size = 0
     if isinstance(obj, map):
-        size = obj.__sizeof__
+        size = obj.__sizeof__()
     else:
         size = len(obj)
     return size == 0
@@ -978,6 +978,8 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
         if not FETCH_ALL_HISTORY:
             tz = EWSTimeZone('UTC')
             first_fetch_datetime = dateparser.parse(FETCH_TIME)
+            if not first_fetch_datetime:
+                raise DemistoException('Failed to parse first last run time')
             first_fetch_ews_datetime = first_fetch_datetime.astimezone(tz)
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
@@ -1226,7 +1228,7 @@ def parse_incident_from_item(item, is_fetch):     # pragma: no cover
 
                         # save the attachment
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
-                            # came across an item with bytes attachemnt which failed in the source code, added this to keep functionality
+                            # Some items arrive with bytes attachemnt
                             if isinstance(attachment.item.mime_content, bytes):
                                 attached_email = email.message_from_bytes(attachment.item.mime_content)
                             else:
@@ -1956,7 +1958,7 @@ def start_compliance_search(query):     # pragma: no cover
         return get_cs_error(stderr)
 
     prefix = '"Action status: '
-    pref_ind = stdout.find(prefix)
+    pref_ind = stdout.find(bytes(prefix))
     sub_start = pref_ind + len(prefix)
     sub_end = sub_start + 45
     search_name = stdout[sub_start:sub_end]
@@ -1964,7 +1966,7 @@ def start_compliance_search(query):     # pragma: no cover
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Search started: {}'.format(search_name),
+        'Contents': f'Search started: {search_name!r}',
         'EntryContext': {
             'EWS.ComplianceSearch': {'Name': search_name, 'Status': 'Starting'}
         }
@@ -1996,7 +1998,7 @@ def get_compliance_search(search_name, show_only_recipients):     # pragma: no c
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
         if stdout[1] and stdout[1] != '{}':
-            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
+            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))  # mypy: ignore-errors
             res = [{k: v for k, v in (s.split(': ') for s in x)} for x in res]
             entry = {
                 'Type': entryTypes['note'],
