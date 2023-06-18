@@ -2,6 +2,7 @@ commonfields:
   id: McAfee Web Gateway
   version: -1
 name: McAfee Web Gateway
+deprecated: true
 display: McAfee Web Gateway
 category: IT Services
 description: Block list/Allow list handling
