@@ -365,6 +365,7 @@ def get_build(version_str):      # pragma: no cover
 
 def get_build_autodiscover(context_dict):      # pragma: no cover
     build_params = context_dict["build"].split(".")
+    build_params = [int(i) for i in build_params]
     return Build(*build_params)
 
 
