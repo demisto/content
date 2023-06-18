@@ -293,7 +293,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             last_fetch = int(last_fetch)
             last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
         except Exception:
-            pass
+            demisto.info(f'Could not parse {last_fetch=}')
 
     latest_created_time = dateparser.parse(last_fetch)  # type: ignore[arg-type]
     incidents_result: List[Dict[str, Any]] = []
