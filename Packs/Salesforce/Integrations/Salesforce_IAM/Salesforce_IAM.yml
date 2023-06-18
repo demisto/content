@@ -13,12 +13,20 @@ configuration:
   type: 9
 - display: Consumer Key
   name: consumer_key
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Consumer Secret
   name: consumer_secret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: Consumer Key
+  name: credentials_consumer
+  required: false
+  type: 9
+  displaypassword: Consumer Secret
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -279,7 +287,7 @@ script:
     description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: false
   longRunning: false
