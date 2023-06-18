@@ -936,7 +936,7 @@ Allowed for: Admins, Agents.
 | --- | --- | --- |
 | Zendesk.Group.created_at | Date | The time the group was created. | 
 | Zendesk.Group.default | Boolean | If the group is the default one for the account. | 
-| Zendesk.Group.deleted | Boolean | Deleted groups get marked as such. | 
+| Zendesk.Group.deleted | Boolean | `true` if the group is deleted `false` otherwise. | 
 | Zendesk.Group.description | String | The description of the group. | 
 | Zendesk.Group.id | Number | The group ID. | 
 | Zendesk.Group.is_public | Boolean | If true, the group is public. If false, the group is private. You can't change a private group to a public group. | 

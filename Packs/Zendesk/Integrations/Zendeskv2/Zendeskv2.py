@@ -736,7 +736,7 @@ class ZendeskClient(BaseClient):
         return CommandResults(outputs_prefix="Zendesk.Ticket.Comment",
                               outputs=comments, readable_output=readable_outputs)
 
-    def _get_comments(self, ticket_id: str, **kwargs):
+    def _get_comments(self, ticket_id: str, **kwargs) -> list:
         for comment in self._paged_request(url_suffix=f'tickets/{ticket_id}/comments', data_field_name='comments', **kwargs):
             for attachment in comment.get('attachments', []):
                 attachment.pop('thumbnails', None)
@@ -933,9 +933,14 @@ class ZendeskClient(BaseClient):
 
         return next_run
 
-    def get_attachments_ids(self, ticket):
+    def get_attachments_ids(self, ticket: dict) -> List[int]:
         """
-        Get all the attachment ids for a ticket
+
+        Args:
+            ticket (dict): The fetched ticket.
+
+        Returns (list): all the attachment ids for a ticket
+
         """
         attachments_ids = []
         ticket_id = ticket['id']
@@ -948,7 +953,7 @@ class ZendeskClient(BaseClient):
 
         return attachments_ids
 
-    def get_attachment_entries(self, ticket):
+    def get_attachment_entries(self, ticket) -> list:
         attachments_ids = self.get_attachments_ids(ticket)
         attachments = []
         file_names = []

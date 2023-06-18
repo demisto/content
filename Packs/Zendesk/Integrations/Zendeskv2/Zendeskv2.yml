@@ -725,8 +725,8 @@ script:
       description: |-
         The ID of a specific group.
     - name: limit
-      default: true
-      description: Maximum number of results to return. Default is 50.
+      defaultValue: 50
+      description: Maximum number of results to return.
     - name: page_size
       description: The page size (used for pagination).
     - name: page_number
@@ -850,7 +850,7 @@ script:
     arguments:
     - name: limit
       default: true
-      description: Maximum number of results to return. Default is 50.
+      description: Maximum number of results to return.
     - name: page_size
       description: The page size (used for pagination).
     - name: page_number
@@ -863,7 +863,7 @@ script:
         description: If the group is the default one for the account.
         type: Boolean
       - contextPath: Zendesk.Group.deleted
-        description: Deleted groups get marked as such.
+        description: `true` if the group is deleted `false` otherwise.
         type: Boolean
       - contextPath: Zendesk.Group.description
         description: The description of the group.
