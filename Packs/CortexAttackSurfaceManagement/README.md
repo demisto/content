@@ -89,11 +89,12 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
 - Automation Scripts
   - [GenerateASMReport](#generateasmreport)
+  - [GetProjectOwners](#getprojectowners)
   - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
   - [SnmpDetection](#snmpdetection)
 
-### Playbooks 
+### Playbooks
 
 #### Cortex ASM - ASM Alert
 
@@ -222,6 +223,10 @@ This automation identifies whether the service is a "development" server. Develo
 #### RankServiceOwners
 
 This automation recommends the most likely service owners from those surfaced by Cortex ASM Enrichment and updates content.
+
+#### GetProjectOwners
+
+This automation parses a GCP service account email for the project ID, then looks up the project owners and adds them to a list of potential service owners for ranking.
 
 #### RemediationPathRuleEvaluation
 
