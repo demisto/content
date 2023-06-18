@@ -232,14 +232,14 @@ def process_timeline(detection_id):
                         'attributes', {}).get('command_line'),
                 }
                 files.append({
-                    'Name': os.path.basename(image.get('path')),
+                    'Name': os.path.basename(image.get('path', '')),
                     'MD5': image.get('md5'),
                     'SHA256': image.get('sha256'),
                     'Path': image.get('path'),
-                    'Extension': os.path.splitext(image['path'])[-1],
+                    'Extension': os.path.splitext(image.get('path', ''))[-1],
                 })
                 processes.append({
-                    'Name': os.path.basename(image.get('path')),
+                    'Name': os.path.basename(image.get('path', '')),
                     'Path': image.get('path'),
                     'MD5': image.get('md5'),
                     'SHA256': image.get('sha256'),
@@ -571,7 +571,7 @@ def fetch_incidents(last_run):
         if incident_id not in last_incidents_ids:
             # makes sure that the incident wasn't fetched before
             incidents.append(incident)
-            new_incidents_ids.append(incident_id)
+        new_incidents_ids.append(incident_id)
 
     if incidents:
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
