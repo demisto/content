@@ -1835,6 +1835,7 @@ def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
         external_dynamic_list['type'][dynamic_list_type]['recurring'] = build_recurring_according_to_params(args)
 
     demisto.debug(f'Sending external_dynamic_list to the API. external_dynamic_list: {external_dynamic_list}')
+    raise DemistoException('BINAT\n')
     raw_response = client.create_external_dynamic_list(query_params=query_params,
                                                        external_dynamic_list=external_dynamic_list,
                                                        tsg_id=tsg_id)  # type: ignore
