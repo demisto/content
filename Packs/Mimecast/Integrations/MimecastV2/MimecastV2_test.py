@@ -566,3 +566,48 @@ def test_list_email_queues_command(mocker):
     assert response.outputs == mock_response.get('data')[0].get('messages')
     assert response.outputs_prefix == 'Mimecast.ProcessingMessage'
     assert response.outputs_key_field == 'id'
+
+
+def test_parse_queried_fields():
+    query = """<?xml version=\"1.0\"?>
+    <xmlquery trace=\"iql,muse\">
+    <metadata query-type=\"emailarchive\" archive=\"true\" active=\"false\" page-size=\"25\" startrow=\"0\">
+        <smartfolders/>
+        <return-fields>
+            <return-field>attachmentcount</return-field>
+            <return-field>status</return-field>
+            <return-field>subject</return-field>
+            <return-field>size</return-field>
+            <return-field>receiveddate</return-field>
+            <return-field>displayfrom</return-field>
+            <return-field>id</return-field>
+            <return-field>displayto</return-field>
+            <return-field>smash</return-field>
+            <return-field>isitchristmas</return-field>
+        </return-fields>
+    </metadata>
+    <muse>
+        <text></text>
+        <date select=\"last_year\"/>
+        <sent></sent>
+        <docs select=\"optional\"></docs>
+        <route/>
+    </muse>
+    </xmlquery>"""
+    assert MimecastV2.parse_queried_fields(query) == (
+        'attachmentcount', 'status', 'subject', 'size', 'receiveddate', 'display', 'id', 'displayto', 'smash', 'isitchristmas'
+    )
+
+
+def test_query(mocker):
+    """
+    Given
+        - An XML query string
+    When
+        - Calling query()
+    Then
+        - Make sure all return-field values are returned to context and human-readable.
+    """
+    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    result = MimecastV2.query()
+    result.get('outputs')

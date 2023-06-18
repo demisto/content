@@ -13,8 +13,9 @@ import requests
 
 from datetime import timedelta
 from urllib.error import HTTPError
-from typing import Dict, Tuple
+from typing import Dict
 import urllib3
+from xml.etree import ElementTree
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -709,22 +710,32 @@ def test_module():
     list_managed_url()
 
 
+def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
+    if not (fields := ElementTree.fromstring(query_xml).find('.//return-fields')):  # noqa:S314 - argument set by user
+        demisto.debug("could not find a 'return-fields' section - will only return default fields")
+        return ()
+    return tuple(field.text for field in fields if field and field.text)
+
+
+DEFAULT_QUERY_KEYS = frozenset(('subject', 'displayfrom', 'displayto', 'receiveddate', 'size', 'attachmentcount', 'status', 'id'))
+
+
 def query():
-    headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status', 'ID']
+    args = demisto.args()
+    query_xml = args.get('queryXml') or parse_query_args(args)
+    additional_keys = sorted(set(parse_queried_fields(query_xml)).difference(
+        DEFAULT_QUERY_KEYS))  # non-default keys found in query)
+    headers = ['Subject', 'Display From', 'Display To', 'Received Date',
+               'Size', 'Attachment Count', 'Status', 'ID'] + additional_keys
+
     contents = []
     context = {}
     messages_context = []
-    limit = arg_to_number(demisto.args().get('limit')) or 20
-    page = arg_to_number(demisto.args().get('page'))
-    page_size = arg_to_number(demisto.args().get('page_size'))
+    limit = arg_to_number(args.get('limit')) or 20
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
 
-    query_xml = ''
-
-    if demisto.args().get('queryXml'):
-        query_xml = demisto.args().get('queryXml')
-    else:
-        query_xml = parse_query_args(demisto.args())
-    if demisto.args().get('dryRun') == 'true':
+    if args.get('dryRun') == 'true':
         return query_xml
 
     # API request demands admin boolean, since we don't have any other support but admin we simply pass true.
@@ -740,6 +751,8 @@ def query():
                                           page_size=page_size)
 
     for message in messages:
+        additional_dict = {k: message[k] for k in additional_keys}
+
         contents.append({
             'Subject': message.get('subject'),
             'From': message.get('displayfrom'),
@@ -749,7 +762,7 @@ def query():
             'Attachment Count': message.get('attachmentcount'),
             'Status': message.get('status'),
             'ID': message.get('id')
-        })
+        } | additional_dict)
         messages_context.append({
             'Subject': message.get('subject'),
             'Sender': message.get('displayfrom'),
@@ -759,7 +772,7 @@ def query():
             'AttachmentCount': message.get('attachmentcount'),
             'Status': message.get('status'),
             'ID': message.get('id')
-        })
+        } | additional_dict)
 
     context['Mimecast.Message(val.ID && val.ID == obj.ID)'] = messages_context
 
