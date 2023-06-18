@@ -22,4 +22,4 @@ if [ $RETVAL -eq 0 ]; then
   touch "$filepath"
 fi
 
-exit 0
+exit $RETVAL
