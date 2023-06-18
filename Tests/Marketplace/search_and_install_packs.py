@@ -88,7 +88,6 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         dependencies_data (list): The dependencies data structure to be created.
         checked_packs (list): Required dependants that were already found.
     """
-
     next_call_dependants_ids = []
 
     for dependency in response_data:
@@ -99,7 +98,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
                 dependencies_data.append({
                     'id': dependency.get('id'),
                     'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion'),
-                    'deprecated': dependency.get('extras', {}).get('pack', {}).get('deprecated'),
+                    'deprecated': dependency.get('extras', {}).get('pack', {}).get('deprecated', False),
                 })
                 next_call_dependants_ids.append(dependency.get('id'))
                 checked_packs.append(dependency.get('id'))
@@ -377,7 +376,9 @@ def search_pack_and_its_dependencies(client: demisto_client,
             get_pack_installation_request_data(pack_id=pack_id,
                                                pack_version=pack_data['extras']['pack']['currentVersion'])
         ]
-        dependencies_data: list[dict] = []
+        dependencies_data: list[dict] = [{'id': pack_id,
+                                          'version': pack_data['extras']['pack']['currentVersion'],
+                                          'deprecated': False}]
 
         create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
                                            dependants_ids=[pack_id],
@@ -615,11 +616,11 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     logging.info(f'Starting to search and install packs in server: {host}')
 
-    packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
-    installation_request_body: list = []  # the packs to install, in the request format
-    batch_packs_install_request_body: list = []    # list of lists of packs to install if not using multithreading (one by one).
+    packs_to_install: list = []  # Packs we want to install, to avoid duplications
+    installation_request_body: list = []  # Packs to install, in the request format
+    batch_packs_install_request_body: list = []    # List of lists of packs to install if not using multithreading .
     # Each list contain one pack and its dependencies.
-    collected_dependencies: list = []    # list of packs that are already in the list to install.
+    collected_dependencies: list = []    # List of packs that are already in the list to install.
 
     lock = Lock()
 
