@@ -429,14 +429,14 @@ def wildfire_upload_file(upload):
     # body = {'apikey': TOKEN}
     body = BODY_DICT
 
-    # file_path = demisto.getFilePath(upload)['path']
-    file_name = demisto.getFilePath(upload)['path']
+    file_path = demisto.getFilePath(upload)['path']
+    file_name = demisto.getFilePath(upload)['name']
 
-    # try:
-    #     shutil.copy(file_path, file_name)
-    # except Exception as exc:
-    #     demisto.error(f'Failed to prepare file for upload. Error: {exc}')
-    #     raise Exception('Failed to prepare file for upload.')
+    try:
+        shutil.copy(file_path, file_name)
+    except Exception as exc:
+        demisto.error(f'Failed to prepare file for upload. Error: {exc}')
+        raise Exception('Failed to prepare file for upload.')
 
     try:
         with open(file_name, 'rb') as file:
