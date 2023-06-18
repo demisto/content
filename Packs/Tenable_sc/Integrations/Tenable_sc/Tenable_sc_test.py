@@ -5,7 +5,8 @@ from Tenable_sc import update_asset_command, list_zones_command, list_queries, c
     create_get_device_request_params_and_path, create_user_request_body, list_query_command, list_users_command, launch_scan, \
     list_report_definitions_command, delete_asset_command, delete_scan_command, delete_user_command, list_scans_command, \
     get_scan_status_command, get_device_command, list_policies_command, list_credentials_command, create_asset_command, \
-    create_scan_command
+    create_scan_command, get_scan_report_command, get_system_information_command, get_system_licensing_command, \
+    get_all_scan_results_command
 import io
 
 client_mocker = Client(verify_ssl=False, proxy=True, access_key="access_key", secret_key="secret_key",
@@ -726,5 +727,94 @@ def test_create_scan_command(mocker, test_case):
     args = test_data.get("args")
     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
     command_results = create_scan_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_scan_report_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with scan results id and a mock response.
+
+        When:
+        - Running get_scan_report_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return the parsed HR and EC.
+    """
+    test_data = load_json("./test_data/test_get_scan_report_command.json").get(test_case, {})
+    args = test_data.get("args")
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = get_scan_report_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_system_information_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          response mock, and expected hr.
+        - Case 1: A mock response.
+
+        When:
+        - Running get_system_information_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR is returned.
+        - Case 1: Should return the parsed hr.
+    """
+    test_data = load_json("./test_data/test_get_system_information_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = get_system_information_command(client_mocker, {})
+    assert test_data.get('expected_hr') == command_results.readable_output
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_system_licensing_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          response mock, and expected hr.
+        - Case 1: A mock response.
+
+        When:
+        - Running get_system_licensing_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and ec are returned.
+        - Case 1: Should return the parsed hr and ec.
+    """
+    test_data = load_json("./test_data/test_get_system_licensing_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = get_system_licensing_command(client_mocker, {})
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_all_scan_results_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with limit=1, and a mock response with 2 results.
+
+        When:
+        - Running get_all_scan_results_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and ec are returned.
+        - Case 1: Should return only the first scan result.
+    """
+    test_data = load_json("./test_data/test_get_all_scan_results_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    args = test_data.get("args")
+    command_results = get_all_scan_results_command(client_mocker, args)
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs
