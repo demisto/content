@@ -121,39 +121,36 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
         dict: API response data for the /search/dependencies endpoint.
     """
     global SUCCESS_FLAG
-    logging.debug(f'Fetching dependencies for pack {pack_id}')
+
+    api_endpoint = "/contentpacks/marketplace/search/dependencies"
+    body = [{"id": pack_id}]  # 'version' key can be specified alongside "id". Not including it will fetch the latest version.
+
+    logging.debug(f"Fetching dependencies for pack '{pack_id}'.\n"
+                  f"Sending POST request to {api_endpoint} with body: {json.dumps(body)}")
 
     try:
-        response_data, status_code, _ = demisto_client.generic_request_func(
+        response_data, _, _ = demisto_client.generic_request_func(
             client,
-            path='/contentpacks/marketplace/search/dependencies',
+            path=api_endpoint,
             method='POST',
-            body=[{'id': pack_id}],  # 'version' key can be specified as well. Not including it will fetch the latest version.
+            body=body,
             accept='application/json',
             _request_timeout=None,
             response_type='object',
         )
 
-        if 200 <= status_code < 300:
-            return response_data
-
-        elif status_code == 400:
-            logging.error(f'Could not find pack \'{pack_id}\' in the marketplace.')
-
-        else:
-            msg = response_data.get('message', '')
-            raise Exception(f'status code {status_code}\n{msg}\n')
+        return response_data
 
     except ApiException as api_ex:
         with lock:
             SUCCESS_FLAG = False
-        logging.exception(f"The request to get pack {pack_id} dependencies has failed, Got {api_ex.status} from server, "
-                          f"message:{api_ex.body}, headers:{api_ex.headers}")
+        logging.exception(f"API request to fetch dependencies of pack '{pack_id}' has failed.\n"
+                          f"Response code '{api_ex.status}'\nResponse: '{api_ex.body}'\nResponse Headers: '{api_ex.headers}'")
 
     except Exception as ex:
         with lock:
             SUCCESS_FLAG = False
-        logging.exception(f"API call to fetch dependencies of '{pack_id}' has failed.\n{ex}.")
+        logging.exception(f"API call to fetch dependencies of '{pack_id}' has failed.\nError: {ex}.")
 
     return None
 
