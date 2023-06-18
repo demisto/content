@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.elastica.net/casb/
-  display: Server URL (e.g.https://api.elastica.net/casb/)
+  display: Server URL (e.g., https://api.elastica.net/casb/)
   name: url
   required: true
   type: 0
@@ -45,7 +45,7 @@ script:
       required: true
     - default: false
       defaultValue: 1000
-      description: Maximum results to return.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
