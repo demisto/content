@@ -492,11 +492,13 @@ class Taxii2FeedClient:
     @staticmethod
     def parse_custom_fields(extensions):
         custom_fields = {}
+        score = None
         for key, value in extensions.items():
             if key.startswith('extension-definition--'):
                 custom_fields = value.get('CustomFields', {})
+                score = value.get('score', None)
                 break
-        return custom_fields
+        return custom_fields, score
 
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
@@ -564,8 +566,10 @@ class Taxii2FeedClient:
             "publications": publications,
         })
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(attack_pattern_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(attack_pattern_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                attack_pattern['score'] = score
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
         attack_pattern["fields"] = fields
@@ -599,8 +603,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(report_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(report_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                report['score'] = score
 
         tags = list((set(report_obj.get('labels', []))).union(set(self.tags)))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
@@ -636,8 +642,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(threat_actor_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(threat_actor_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                threat_actor['score'] = score
 
         tags = list((set(threat_actor_obj.get('labels', []))).union(set(self.tags)))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
@@ -670,8 +678,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(infrastructure_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(infrastructure_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                infrastructure['score'] = score
 
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
@@ -709,8 +719,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(malware_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(malware_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                malware['score'] = score
 
         tags = list((set(malware_obj.get('labels', []))).union(set(self.tags)))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
@@ -743,8 +755,10 @@ class Taxii2FeedClient:
             "tool_version": tool_obj.get('tool_version', '')
         })
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(tool_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(tool_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                tool['score'] = score
 
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
@@ -774,8 +788,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(coa_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(coa_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                course_of_action['score'] = score
 
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
@@ -802,8 +818,10 @@ class Taxii2FeedClient:
             "objective": campaign_obj.get('objective', ''),
         })
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(campaign_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(campaign_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                campaign['score'] = score
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
         campaign["fields"] = fields
 
@@ -835,8 +853,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(intrusion_set_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(intrusion_set_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                intrusion_set['score'] = score
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
         intrusion_set["fields"] = fields
@@ -863,8 +883,10 @@ class Taxii2FeedClient:
         fields = self.set_default_fields(sco_object)
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(sco_object.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(sco_object.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                sco_indicator['score'] = score
         fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
 
         sco_indicator['fields'] = fields
@@ -972,8 +994,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(identity_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(identity_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                identity['score'] = score
 
         tags = list((set(identity_obj.get('labels', []))).union(set(self.tags)))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
@@ -1003,8 +1027,10 @@ class Taxii2FeedClient:
         })
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(location_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(location_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                location['score'] = score
 
         tags = list((set(location_obj.get('labels', []))).union(set(self.tags)))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
@@ -1035,8 +1061,10 @@ class Taxii2FeedClient:
         fields = self.set_default_fields(vulnerability_obj)
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(vulnerability_obj.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(vulnerability_obj.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                cve['score'] = score
 
         tags = list((set(vulnerability_obj.get('labels', []))).union(set(self.tags), {name} if name else {}))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
@@ -1312,8 +1340,10 @@ class Taxii2FeedClient:
             fields["trafficlightprotocol"] = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
         if self.update_custom_fields:
-            custom_fields = self.parse_custom_fields(ioc_obj_copy.get('extensions', {}))
+            custom_fields, score = self.parse_custom_fields(ioc_obj_copy.get('extensions', {}))
             fields.update(assign_params(**custom_fields))
+            if score:
+                indicator['score'] = score
 
         # union of tags and labels
         if "tags" in fields:

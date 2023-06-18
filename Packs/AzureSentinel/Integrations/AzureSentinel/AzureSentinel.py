@@ -1391,7 +1391,7 @@ def build_query_filter(args):
         'minValidUntil': format_date(args.get('min_valid_from', '')),
         'maxValidUntil': format_date(args.get('max_valid_from', '')),
         'sources': argToList(args.get('sources')),
-        'keywords': argToList(args.get('keywords')),
+        'keywords': ' '.join(argToList(args.get('keywords'))),
         'threatTypes': argToList(args.get('threat_types')),
         'patternTypes': []
     }
