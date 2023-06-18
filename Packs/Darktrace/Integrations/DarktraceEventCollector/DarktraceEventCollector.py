@@ -1,12 +1,10 @@
 import hashlib
 import hmac
 import json
-import time
 import traceback
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Mapping, Optional, Tuple, cast
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
-import dateparser
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -24,9 +22,9 @@ MODEL_BREACH_ENDPOINT = '/modelbreaches'
 DARKTRACE_API_ERRORS = {
     'SIGNATURE_ERROR': 'API Signature Error. You have invalid credentials in your config.',
     'DATE_ERROR': 'API Date Error. Check that the time on this machine matches that of the Darktrace instance.',
-    'ENDPOINT_ERROR': f'Invalid Endpoint.',
+    'ENDPOINT_ERROR': 'Invalid Endpoint.',
     'PRIVILEGE_ERROR': 'User has insufficient permissions to access the API endpoint.',
-    'UNDETERMINED_ERROR': f'Darktrace was unable to process your request.',
+    'UNDETERMINED_ERROR': 'Darktrace was unable to process your request.',
     'FAILED_TO_PARSE': 'N/A'
 }
 
@@ -146,7 +144,7 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict
 
 
 def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> \
-    List[Dict[str, Any]]:
+        List[Dict[str, Any]]:
     """Filters events by pbid and max_fetch"""
     return [event for event in events if event.get('pbid') > last_fetched_pid][:max_fetch]
 
@@ -176,7 +174,7 @@ def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
 
 
 def fetch_events(client: Client, max_fetch: int, first_fetch_time: float, last_run: Dict[str, Any]) -> Tuple[
-    List[Dict[str, Any]], Dict[str, Any]]:
+        List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """

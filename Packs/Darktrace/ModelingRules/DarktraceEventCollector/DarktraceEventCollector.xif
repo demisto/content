@@ -8,7 +8,7 @@ alter
     xdm.alert.original_threat_id = to_string(json_extract_scalar(model, "$.then.uuid")),
     xdm.alert.original_threat_name = json_extract_scalar(model, "$.then.name"),
     xdm.alert.severity = to_string(score),
-    // priority = json_extract_scalar(model, "$.then.priority"),
+    priority = json_extract_scalar(model, "$.then.priority"),
     xdm.event.tags = json_extract_array(model, "$.then.tags"),
     xdm.network.rule = to_string(json_extract_scalar(model, "$.then.pid")),
     xdm.observer.action = json_extract_scalar(model, "$.then.actions.antigena.action"),
@@ -28,7 +28,7 @@ alter
     xdm.target.resource.id = to_string(json_extract_scalar(model, "$.then.pid")),
     xdm.target.resource.parent_id = coalesce(json_extract_scalar(model, "$.then.edited.by"), json_extract_scalar(model, "$.then.edited.userID"))
 | alter
-    // xdm.event.log_level = if(priority in("0", "1", "2", "3"), XDM_CONST.LOG_LEVEL_INFORMATIONAL, priority = "4", XDM_CONST.LOG_LEVEL_WARNING , priority = "5",XDM_CONST.LOG_LEVEL_CRITICAL)",
+    xdm.event.log_level = if(priority in("0", "1", "2", "3"), XDM_CONST.LOG_LEVEL_INFORMATIONAL, priority = "4", XDM_CONST.LOG_LEVEL_WARNING , priority = "5",XDM_CONST.LOG_LEVEL_CRITICAL),
     historically_associated_ip_addresses = arraymap(historically_associated_ip_records , json_extract_scalar("@element", "$.ip")),
     xdm.source.interface = mac_address,
     xdm.source.host.mac_addresses = arraycreate(mac_address),
