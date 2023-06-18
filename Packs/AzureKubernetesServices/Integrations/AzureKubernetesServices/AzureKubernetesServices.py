@@ -203,7 +203,7 @@ def test_module(client):
 
 def get_azure_cloud(params):
     azure_cloud_arg = params.get('azure_cloud')
-    if azure_cloud_arg is None or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
+    if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
         # Backward compatibility before the azure cloud settings.
         server_url = params.get('azure_ad_endpoint') or 'https://login.microsoftonline.com'
         azure_cloud = create_custom_azure_cloud('AzureKubernetesServices', defaults=AZURE_WORLDWIDE_CLOUD,

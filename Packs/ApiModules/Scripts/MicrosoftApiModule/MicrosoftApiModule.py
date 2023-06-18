@@ -562,7 +562,7 @@ def create_custom_azure_cloud(origin: str,
 
 def microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
-    if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or params_endpoint_type is None:
+    if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not params_endpoint_type:
         # When the integration was configured before our Azure Cloud support, the value will be None.
         endpoint_type = "com"  # Default to "com"
         if is_gcc:  # Backward compatible.
