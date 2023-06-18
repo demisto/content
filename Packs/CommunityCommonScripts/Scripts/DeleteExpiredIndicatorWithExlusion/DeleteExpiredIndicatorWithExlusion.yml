@@ -4,7 +4,8 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.62631
+dockerimage: demisto/python3:3.10.12.63474
+comment: deletes expired indicators.
 enabled: true
 name: delete_expired_indicator_with_exlusion
 runas: DBotWeakRole
