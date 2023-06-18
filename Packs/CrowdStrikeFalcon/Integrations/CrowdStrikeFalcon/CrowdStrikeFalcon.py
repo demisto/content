@@ -2286,16 +2286,15 @@ def fetch_incidents():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
                                                                     first_fetch=FETCH_TIME,
                                                                     look_back=look_back)
-
         incident_type = 'detection'
         # last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
 
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
-            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=end_fetch_time, query=fetch_query)
+            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=start_fetch_time, query=fetch_query)
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
         else:
-            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=end_fetch_time, ),
+            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time),
                                          'resources')
 
         if detections_ids:
@@ -2334,11 +2333,11 @@ def fetch_incidents():
         fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
-            fetch_query = "start:>'{time}'+{query}".format(time=end_fetch_time, query=fetch_query)
+            fetch_query = "start:>'{time}'+{query}".format(time=start_fetch_time, query=fetch_query)
             incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query), 'resources')
 
         else:
-            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=end_fetch_time, offset=offset),
+            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=start_fetch_time),
                                         'resources')
 
         if incidents_ids:
