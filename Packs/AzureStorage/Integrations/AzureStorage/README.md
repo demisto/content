@@ -1,5 +1,5 @@
 This integration enables you to deploy and manage storage accounts and blob services.
-This integration was integrated and tested with version 2019-06-01 of Azure Storage
+This integration was integrated and tested with version 2022-09-01 of Azure Storage
 
 # Authorization
 In order to connect to the Azure Storage Accounts and the Blob Service use either the Cortex XSOAR Azure App or the Self-Deployed Azure App.
