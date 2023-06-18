@@ -7,7 +7,8 @@ This pack includes Cortex XSIAM content.
 
 **Add an NSS Server:**
 
-[Add an NSS Server manual Website](https://help.zscaler.com/zia/adding-nss-servers)
+Link to the configuration in Zscaler website:
+https://help.zscaler.com/zia/adding-nss-servers
 
 1. Go to **Administration** > **Nanolog Streaming Service**.
 2. From the **NSS Servers** tab, click **Add NSS Server**.
@@ -30,8 +31,8 @@ This pack includes Cortex XSIAM content.
 
 Click and follow the instructions in each of the following links.:
 
-* [Web Logs](https://help.zscaler.com/zia/adding-nss-feeds-web-logs)
-* [SaaS Security Logs](https://help.zscaler.com/zia/adding-nss-feeds-saas-security-logs)
+* Web Logs: https://help.zscaler.com/zia/adding-nss-feeds-web-logs
+* SaaS Security Logs: https://help.zscaler.com/zia/adding-nss-feeds-saas-security-logs
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
