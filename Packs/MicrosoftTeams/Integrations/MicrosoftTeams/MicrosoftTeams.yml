@@ -748,7 +748,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.62985
+  dockerimage: demisto/teams:1.0.0.63824
   feed: false
   isfetch: false
   longRunning: true
