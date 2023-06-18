@@ -12,13 +12,7 @@ stages:
   - unittests-and-validations
   - prepare-testing-bucket
   - run-instances
-  - xsoar_server_master-test_playbooks_results
-  - xsoar_server_6_10-test_playbooks_results
-  - xsoar_server_6_9-test_playbooks_results
-  - xsoar_server_6_8-test_playbooks_results
-  - xsoar_server_6_6-test_playbooks_results
-  - xsoar_ng_server_ga-test_playbooks_results
-  - xsiam_server_ga-test_playbooks_results
+  - test_playbooks_report
   - upload-to-marketplace
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
