@@ -363,7 +363,7 @@ Creates a new AWS secret access key and corresponding AWS access key ID for the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | The name of the IAM user that the new key will belong to. | Optional | 
+| userName | The name of the IAM user that the new key will belong to. If username is not provided, the account name configured in your integration will be used| Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -397,7 +397,7 @@ Changes the status of the specified access key from Active to Inactive, or vice 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | The name of the user whose key you want to update. | Optional | 
+| userName | The name of the user whose key you want to update. If username is not provided, the account name configured in your integration will be used| Optional | 
 | accessKeyId | The access key ID of the secret access key you want to update. | Required | 
 | status | The status you want to assign to the secret access key. Active means that the key can be used for API calls to AWS, while Inactive means that the key cannot be used. Possible values are: Active, Inactive. | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
@@ -710,7 +710,7 @@ Deletes the access key pair associated with the specified IAM user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | he name of the user whose access key pair you want to delete. | Optional | 
+| userName | he name of the user whose access key pair you want to delete. If username is not provided, the account name configured in your integration will be used| Optional | 
 | AccessKeyId | The access key ID for the access key ID and secret access key you want to delete. | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
