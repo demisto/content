@@ -4688,7 +4688,7 @@ def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
           '|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|\n'
           '|---|---|---|---|---|---|---|---|---|\n'
           '| 123456 |  |  |  |  |  |  |  |  |\n')),
-        ({'wait_for_result': True, 'ids': '123456'}, [], {'resources': [{'status': 'pending'}]}, 'Fetching Results:'),
+        ({'wait_for_result': True, 'ids': '123456'}, [], {'resources': [{'status': 'pending'}]}, 'Retrieving scan results:'),
     )
 )
 def test_cs_falcon_ODS_query_scans_command(mocker, command_args, query_result, entites_result, readable_output):
