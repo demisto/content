@@ -1693,7 +1693,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
 
     items = items[:limit]
     searched_items_result = [parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
-                                        compact_fields=selected_all_fields) for item in items]
+                                                compact_fields=selected_all_fields) for item in items]
 
     if not selected_all_fields:
         # we show id as 'itemId' for BC
