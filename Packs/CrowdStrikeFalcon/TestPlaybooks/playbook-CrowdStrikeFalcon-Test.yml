@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -60
+          "x": 1257.5,
+          "y": 50
         }
       }
     note: false
@@ -332,8 +332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 135
+          "x": 1257.5,
+          "y": 195
         }
       }
     note: false
@@ -1661,7 +1661,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
+          "x": 1472.5,
           "y": 9965
         }
       }
@@ -3564,8 +3564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 370
+          "x": 2332.5,
+          "y": 6655
         }
       }
     note: false
@@ -3599,8 +3599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 545
+          "x": 2332.5,
+          "y": 6815
         }
       }
     note: false
@@ -3658,8 +3658,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 730
+          "x": 2332.5,
+          "y": 6990
         }
       }
     note: false
@@ -3693,8 +3693,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 1810
+          "x": 2332.5,
+          "y": 8040
         }
       }
     note: false
@@ -3725,8 +3725,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 3710
+          "x": 2332.5,
+          "y": 9790
         }
       }
     note: false
@@ -3764,8 +3764,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 3330
+          "x": 2332.5,
+          "y": 9440
         }
       }
     note: false
@@ -3799,8 +3799,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 2760
+          "x": 2332.5,
+          "y": 8915
         }
       }
     note: false
@@ -3841,8 +3841,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 1430
+          "x": 2332.5,
+          "y": 7690
         }
       }
     note: false
@@ -3884,8 +3884,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 1090
+          "x": 2332.5,
+          "y": 7340
         }
       }
     note: false
@@ -3923,8 +3923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 2200
+          "x": 2332.5,
+          "y": 8390
         }
       }
     note: false
@@ -3936,10 +3936,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: 6b2295e0-9ce0-4eec-86f1-de2b072117e4
+    taskid: d3842de6-82ba-41c4-813c-323ad314e925
     type: condition
     task:
-      id: 6b2295e0-9ce0-4eec-86f1-de2b072117e4
+      id: d3842de6-82ba-41c4-813c-323ad314e925
       version: -1
       name: Verify Scheduled Scan Created
       type: condition
@@ -3957,31 +3957,12 @@ tasks:
             value:
               simple: CrowdStrike.ODSScheduledScan.id
             iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CrowdStrike.ODSScheduledScan.host_groups
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: CrowdStrike.HostGroup
-                accessor: id
-                transformers:
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "0"
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 915
+          "x": 2332.5,
+          "y": 7165
         }
       }
     note: false
@@ -4026,8 +4007,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 1260
+          "x": 2332.5,
+          "y": 7515
         }
       }
     note: false
@@ -4068,8 +4049,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 1620
+          "x": 2332.5,
+          "y": 7865
         }
       }
     note: false
@@ -4116,8 +4097,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 2010
+          "x": 2332.5,
+          "y": 8215
         }
       }
     note: false
@@ -4159,8 +4140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 2400
+          "x": 2332.5,
+          "y": 8565
         }
       }
     note: false
@@ -4197,8 +4178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 3090
+          "x": 2332.5,
+          "y": 9265
         }
       }
     note: false
@@ -4232,8 +4213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 2930
+          "x": 2332.5,
+          "y": 9090
         }
       }
     note: false
@@ -4274,8 +4255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 2585
+          "x": 2332.5,
+          "y": 8740
         }
       }
     note: false
@@ -4317,8 +4298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1840,
-          "y": 3510
+          "x": 2332.5,
+          "y": 9615
         }
       }
     note: false
@@ -4333,10 +4314,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10090,
-        "width": 2232.5,
+        "height": 9980,
+        "width": 2662.5,
         "x": 50,
-        "y": -60
+        "y": 50
       }
     }
   }
