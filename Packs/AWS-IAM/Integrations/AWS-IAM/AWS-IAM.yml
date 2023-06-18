@@ -526,7 +526,7 @@ script:
     name: aws-iam-add-user-to-group
   - arguments:
     - default: false
-      description: The name of the IAM user that the new key will belong to.
+      description: The name of the IAM user that the new key will belong to. If username is not provided, the account name configured in your integration will be used
       isArray: false
       name: userName
       required: false
@@ -568,7 +568,7 @@ script:
       type: date
   - arguments:
     - default: false
-      description: The name of the user whose key you want to update.
+      description: The name of the user whose key you want to update. If username is not provided, the account name configured in your integration will be used
       isArray: false
       name: userName
       required: false
@@ -989,7 +989,7 @@ script:
     name: aws-iam-create-login-profile
   - arguments:
     - default: false
-      description: he name of the user whose access key pair you want to delete.
+      description: The name of the user whose access key pair you want to delete. If username is not provided, the account name configured in your integration will be used
       isArray: false
       name: userName
       required: false
