@@ -605,7 +605,6 @@ def handle_response_errors(raw_res: dict, err_msg: str = None):
         raise DemistoException(err_msg)
     if raw_res.get('errors'):
         raise DemistoException(raw_res.get('errors'))
-    return
 
 
 def create_json_iocs_list(
@@ -2289,14 +2288,14 @@ def fetch_incidents():
                                                                     look_back=look_back)
 
         incident_type = 'detection'
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
+        # last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
 
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
-            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
-            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
+            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=end_fetch_time, query=fetch_query)
+            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
         else:
-            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch_time, offset=offset),
+            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=end_fetch_time, ),
                                          'resources')
 
         if detections_ids:
@@ -2309,10 +2308,6 @@ def fetch_incidents():
 
                     detections.append(incident)
 
-            if len(detections) == INCIDENTS_PER_FETCH:
-                current_fetch_info_detections['offset'] = offset + INCIDENTS_PER_FETCH
-            else:
-                current_fetch_info_detections['offset'] = 0
             detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                                   last_run=current_fetch_info_detections,
                                                                   fetch_limit=fetch_limit, id_field='name')
@@ -2321,6 +2316,7 @@ def fetch_incidents():
                 occurred = dateparser.parse(detection["occurred"])
                 if occurred:
                     detection["occurred"] = occurred.strftime(DATE_FORMAT)
+                    demisto.debug(f"occured time is {detection['occurred']}")
             last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
@@ -2335,18 +2331,14 @@ def fetch_incidents():
 
         incident_type = 'incident'
 
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_incidents)
-        last_incident_fetched = current_fetch_info_incidents.get('last_fetched_incident')
-        new_last_incident_fetched = ''
-
         fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
-            fetch_query = "start:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
-            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, offset=offset), 'resources')
+            fetch_query = "start:>'{time}'+{query}".format(time=end_fetch_time, query=fetch_query)
+            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query), 'resources')
 
         else:
-            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=last_fetch_time, offset=offset),
+            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=end_fetch_time, offset=offset),
                                         'resources')
 
         if incidents_ids:
@@ -2355,24 +2347,7 @@ def fetch_incidents():
                 for incident in demisto.get(raw_res, "resources"):
                     incident['incident_type'] = incident_type
                     incident_to_context = incident_to_incident_context(incident)
-                    incident_date = incident_to_context['occurred']
-
-                    incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
-
-                    # Update last run and add incident if the incident is newer than last fetch
-                    if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch_timestamp = incident_date_timestamp
-                        new_last_incident_fetched = incident.get('incident_id')
-
-                    if last_incident_fetched != incident.get('incident_id'):
-                        incidents.append(incident_to_context)
-
-            if len(incidents) == INCIDENTS_PER_FETCH:
-                current_fetch_info_incidents['offset'] = offset + INCIDENTS_PER_FETCH
-                current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
-            else:
-                current_fetch_info_incidents['offset'] = 0
-                current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
+                    incidents.append(incident_to_context)
 
             incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
                                                                  fetch_limit=fetch_limit, id_field='name')
@@ -2862,7 +2837,7 @@ def get_endpoint_command():
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
-        lowercase_hostnames = set(hostname.lower() for hostname in hostnames)
+        lowercase_hostnames = {hostname.lower() for hostname in hostnames}
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
     standard_endpoints = generate_endpoint_by_contex_standard(devices)
