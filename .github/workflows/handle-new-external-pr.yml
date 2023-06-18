@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.9'
       - name: Setup Poetry
-          uses: Gr1N/setup-poetry@v7
+        uses: Gr1N/setup-poetry@v7
       - name: Print Context
         run: |
           echo "$GITHUB_CONTEXT"
