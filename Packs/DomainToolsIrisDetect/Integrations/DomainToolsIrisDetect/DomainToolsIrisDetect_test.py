@@ -42,9 +42,7 @@ client = Client(
     new_domains="test_new",
     changed_domains="test_changed",
     blocked_domains="test_blocked",
-    tags=["TT1", "TT2"],
     risk_score_ranges=["100-100"],
-    tlp_color="RED",
     include_domain_data=True,
     verify=False,
     proxy=False,
@@ -145,7 +143,6 @@ CREATE_INDICATOR_FROM_DETECT_DOMAIN_OUTPUT = {
         "domaintoolsriskscore": 74,
         "domaintoolsriskscorestatus": "full",
         "irisdetectdomainid": "MWpVbD0x5E",
-        "tags": ["TT1", "TT2"],
         "irisdetectescalations": [],
         "irisdetecthostingipdetails": [],
         "registrant_name": "dummy Technology Co., Ltd.",
@@ -160,7 +157,6 @@ CREATE_INDICATOR_FROM_DETECT_DOMAIN_OUTPUT = {
             "spam": 32,
             "evidence": ["domain name", "name server", "registrant"],
         },
-        "traffic_light_protocol": "RED",
         "last_seen_by_source": "2023-01-07T03:20:16.000000+00:00",
         "first_seen_by_source": "2023-01-07T03:18:40.704000+00:00",
     },
@@ -598,7 +594,7 @@ def test_domaintools_iris_detect_blocklist_domains_command(mocker):
     mocker.patch.object(client, "query_dt_api", side_effect=[POST_BLOCKED_LIST])
     response = domaintools_iris_detect_blocklist_domains_command(client, {})
     assert len(response.outputs) == 1
-    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.Indicators"
+    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.BlockedDomain"
 
 
 def test_domaintools_iris_detect_escalate_domains_command(mocker):
@@ -614,7 +610,7 @@ def test_domaintools_iris_detect_escalate_domains_command(mocker):
     mocker.patch.object(client, "query_dt_api", side_effect=[POST_ESCALATED_LIST])
     response = domaintools_iris_detect_escalate_domains_command(client, {})
     assert len(response.outputs) == 1
-    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.Indicators"
+    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.EscalatedDomain"
 
 
 def test_domaintools_iris_detect_watch_domains_command(mocker):
@@ -630,7 +626,7 @@ def test_domaintools_iris_detect_watch_domains_command(mocker):
     mocker.patch.object(client, "query_dt_api", side_effect=[POST_WATCHED_LIST])
     response = domaintools_iris_detect_watch_domains_command(client, {})
     assert len(response.outputs) == 1
-    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.Indicators"
+    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.WatchedDomain"
 
 
 def test_domaintools_iris_detect_ignore_domains_command(mocker):
@@ -646,7 +642,7 @@ def test_domaintools_iris_detect_ignore_domains_command(mocker):
     mocker.patch.object(client, "query_dt_api", side_effect=[POST_IGNORED_LIST])
     response = domaintools_iris_detect_ignore_domains_command(client, {})
     assert len(response.outputs) == 1
-    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.Indicators"
+    assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.IgnoredDomain"
 
 
 def test_fetch_domain_tools_api_results(mocker):

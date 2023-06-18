@@ -27,5 +27,4 @@ Configure the pack to ingest and optionally create incidents off of new, watched
 
 ## Playbooks
 
-1. DomainTools Iris Detect & Enrich Incident
-2. Test Playbook
+1. Test Playbook

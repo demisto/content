@@ -141,10 +141,8 @@ class Client(BaseClient):
           changed_domains (str): Specifies the action for changed domains, either "Import Indicators Only" or
           "Create Incidents and Import Indicators".
           blocked_domains (str): Specifies the action for blocked domains, either "Import Indicators Only" or
-          "Create Incidents and Import Indicators".
-          tags(List): Tags list
+          "Create Incidents and Import Indicators"
           risk_score_ranges(List): List of risk score ranges to filter domains by
-          tlp_color(str): The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
           include_domain_data(bool): specifies whether to include DomainTools
           Iris Detect Whois, DNS Records or not.
           verify (bool): specifies whether to verify the SSL certificate or not.
@@ -158,9 +156,7 @@ class Client(BaseClient):
             new_domains: str,
             changed_domains: str,
             blocked_domains: str,
-            tags: List,
             risk_score_ranges: List,
-            tlp_color: Optional[str] = None,
             include_domain_data: Optional[bool] = None,
             first_fetch: str = '3 days',
             fetch_limit: Optional[int] = 50,
@@ -175,8 +171,6 @@ class Client(BaseClient):
         )
         self.username = username
         self.api_key = api_key
-        self.feed_tags = tags
-        self.tlp_color = tlp_color
         self.risk_score_ranges = risk_score_ranges
         self.include_domain_data = include_domain_data
         self.first_fetch = first_fetch
@@ -254,7 +248,6 @@ class Client(BaseClient):
                 "domaintoolsriskscore": item.get("risk_score", ""),
                 "domaintoolsriskscorestatus": item.get("risk_score_status", ""),
                 "irisdetectdomainid": item.get("id", ""),
-                "tags": self.feed_tags,
                 "irisdetectescalations": [
                     {
                         "escalationtype": result.get("escalation_type", ""),
@@ -285,7 +278,6 @@ class Client(BaseClient):
                     key: risk_score_components.get(key, "")
                     for key in ["proximity", "phishing", "malware", "spam", "evidence"]
                 },
-                "traffic_light_protocol": self.tlp_color,
                 "last_seen_by_source": item.get("changed_date", ""),
                 "first_seen_by_source": item.get("discovered_date", ""),
             },
@@ -308,7 +300,6 @@ class Client(BaseClient):
             List[Dict[str, Any]]: A list containing the incident object if one was created,
             otherwise an empty list.
         """
-
         indicators = [self.create_indicator_from_detect_domain(item, term) for item in domains_list]
         if not indicators:
             return []
@@ -1150,28 +1141,31 @@ def handle_domain_action(
             DOMAINTOOLS_MANAGE_WATCHLIST_ENDPOINT,
             DOMAINTOOLS_WATCHED_DOMAINS_HEADER,
             format_watchlist_fields,
+            "WatchedDomain"
         ),
         "ignored": (
             "PATCH",
             DOMAINTOOLS_MANAGE_WATCHLIST_ENDPOINT,
             DOMAINTOOLS_IGNORE_DOMAINS_HEADER,
             format_watchlist_fields,
+            "IgnoredDomain"
         ),
         "google_safe": (
             "POST",
             DOMAINTOOLS_ESCALATE_DOMAINS_ENDPOINT,
             DOMAINTOOLS_ESCALATE_DOMAINS_HEADER,
             format_blocklist_fields,
+            "EscalatedDomain"
         ),
         "blocked": (
             "POST",
             DOMAINTOOLS_ESCALATE_DOMAINS_ENDPOINT,
             DOMAINTOOLS_BLOCKED_DOMAINS_HEADER,
             format_blocklist_fields,
+            "BlockedDomain"
         ),
     }
-
-    method, endpoint, header, format_func = action_params[action]
+    method, endpoint, header, format_func, context_output_string = action_params[action]
 
     data = {"watchlist_domain_ids": argToList(args.get("watchlist_domain_ids"))} | DOMAINTOOLS_PARAMS
 
@@ -1188,7 +1182,7 @@ def handle_domain_action(
 
     return CommandResults(
         outputs=indicators_list,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Indicators",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.{context_output_string}",
         outputs_key_field="",
         readable_output=tableToMarkdown(name=header, t=indicators_list)
         if indicators_list
@@ -1278,13 +1272,11 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-    username = params.get("dt_api_username")
-    api_key = params.get("dt_api_key")
+    username = params.get('credentials', {}).get('identifier')
+    api_key = params.get('credentials', {}).get('password')
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     handle_proxy()
-    tlp_color = params.get("tlp_color")
-    tags = argToList(params.get("feedTags"))
     risk_score_ranges = argToList(params.get("risk_score_ranges"))
     include_domain_data = params.get("include_domain_data")
     first_fetch_time = params.get('first_fetch', DEFAULT_DAYS_BACK).strip()
@@ -1299,9 +1291,7 @@ def main() -> None:
             new_domains,
             changed_domains,
             blocked_domains,
-            tags,
             risk_score_ranges,
-            tlp_color,
             include_domain_data,
             first_fetch_time,
             fetch_limit,

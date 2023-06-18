@@ -3,16 +3,12 @@ commonfields:
   id: DomainToolsIrisDetect
   version: -1
 configuration:
-- additionalinfo: DomainTools API Username
+- additionalinfo: Client ID and Client Secret.
   display: DomainTools API Username
-  name: dt_api_username
+  displaypassword: DomainTools API Key
+  name: credentials
   required: true
-  type: 0
-- additionalinfo: DomainTools API Key
-  display: DomainTools API Key
-  name: dt_api_key
-  required: true
-  type: 4
+  type: 9
 - additionalinfo: Monitors the Iris Detect endpoint for newly discovered domains for active monitors in an account. This is the most commonly used option. If selected, each pull will create a new incident every time the enrichment is run, with the new domains attached as indicators to the incident. Whois and DNS information is preserved in comments.
   defaultvalue: Create Incidents and Import Indicators
   display: Enabled on New Domains
@@ -71,6 +67,7 @@ configuration:
 - additionalinfo: This is a required field by XSOAR and should be set to 3, one for each possible feed type new, changed, blocked.
   defaultvalue: '3'
   display: Maximum number of incidents to fetch
+  hidden: true
   name: max_fetch
   required: false
   type: 0
@@ -84,69 +81,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  defaultvalue: feedInstanceReputationNotSet
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- additionalinfo: Sets the source reliability for indicators returned by this integration.
-  defaultvalue: F - Reliability cannot be judged
-  display: Source Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- defaultvalue: never
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- name: feedExpirationInterval
-  required: false
-  type: 1
-- additionalinfo: Sets tags to be applied to indicators returned by this integration. Supports CSV values.
-  display: Tags
-  name: feedTags
-  required: false
-  type: 0
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
-  defaultvalue: 'true'
-  display: Incremental Feed
-  hidden: true
-  name: feedIncremental
-  required: false
-  type: 8
 - defaultvalue: '240'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -158,7 +92,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Fetch incidents
+- defaultvalue: 'true'
+  display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -172,14 +107,31 @@ script:
       description: List of Iris Detect domain IDs to escalate. The domain ID can be found in the API response when querying the "new" endpoint.
       isArray: false
       name: watchlist_domain_ids
-      predefined:
-      - ''
       required: true
       secret: false
     deprecated: false
     description: Reports a domain to Google's Safe Browsing API. After approval, their block list is picked up by Chrome and most modern browsers.
     execution: false
     name: domaintools-iris-detect-escalate-domains
+    outputs:
+    - contextPath: DomainToolsIrisDetect.EscalatedDomain.watchlist_domain_id
+      description: The blocked domain ID.
+      type: String
+    - contextPath: DomainToolsIrisDetect.EscalatedDomain.escalation_type
+      description: The escalation type.
+      type: String
+    - contextPath: DomainToolsIrisDetect.EscalatedDomain.id
+      description: The ID.
+      type: String
+    - contextPath: DomainToolsIrisDetect.EscalatedDomain.created_date
+      description: The date and time when the domain was created.
+      type: String
+    - contextPath: DomainToolsIrisDetect.EscalatedDomain.updated_date
+      description: The date and time when the domain was updated.
+      type: String
+    - contextPath: DomainToolsIrisDetect.EscalatedDomain.created_by
+      description: The email address of the person who created the escalated entry.
+      type: String
   - arguments:
     - default: false
       description: List of Iris Detect domain IDs to block. The domain ID can be found in the API response when querying the "new" or "watched" endpoints.
@@ -191,6 +143,25 @@ script:
     description: Mark a given domain as blocked, which allows a script against the Iris Detect API to pass these domains on to other teams or security controls within your organization to block them in email, web, or other filtering controls.
     execution: false
     name: domaintools-iris-detect-blocklist-domains
+    outputs:
+    - contextPath: DomainToolsIrisDetect.BlockedDomain.watchlist_domain_id
+      description: The blocked domain ID.
+      type: String
+    - contextPath: DomainToolsIrisDetect.BlockedDomain.escalation_type
+      description: The escalation type.
+      type: String
+    - contextPath: DomainToolsIrisDetect.BlockedDomain.id
+      description: The ID.
+      type: String
+    - contextPath: DomainToolsIrisDetect.BlockedDomain.created_date
+      description: The date and time when the domain was created.
+      type: String
+    - contextPath: DomainToolsIrisDetect.BlockedDomain.updated_date
+      description: The date and time when the domain was updated.
+      type: String
+    - contextPath: DomainToolsIrisDetect.BlockedDomain.created_by
+      description: The email address of the person who created the blocked entry.
+      type: String
   - arguments:
     - default: false
       description: List of Iris Detect domain IDs to watchlist. The domain ID can be found in the API response when querying the "new" endpoint.
@@ -202,19 +173,61 @@ script:
     description: Mark a given domain as watched, which will trigger more frequent scanning by DomainTools automation. Changes to watched domains can trigger incidents if enabled, or manually queried via the domaintools-iris-detect-get-watched-domains command.
     execution: false
     name: domaintools-iris-detect-watch-domains
+    outputs:
+    - contextPath: DomainToolsIrisDetect.WatchedDomain.state
+      description: Indicates that the domain is watched.
+      type: String
+    - contextPath: DomainToolsIrisDetect.WatchedDomain.domain
+      description: The domain name.
+      type: String
+    - contextPath: DomainToolsIrisDetect.WatchedDomain.discovered_date
+      description: The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").
+      type: String
+    - contextPath: DomainToolsIrisDetect.WatchedDomain.changed_date
+      description: The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00").
+      type: String
+    - contextPath: DomainToolsIrisDetect.WatchedDomain.id
+      description: The domain ID.
+      type: String
+    - contextPath: DomainToolsIrisDetect.WatchedDomain.assigned_by
+      description: The email address of the person who assigned the domain to the watchlist.
+      type: String
+    - contextPath: DomainToolsIrisDetect.WatchedDomain.assigned_date
+      description: The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00").
+      type: String
   - arguments:
     - default: false
       description: List of Iris Detect domain IDs to ignore.
       isArray: false
       name: watchlist_domain_ids
-      predefined:
-      - ''
       required: true
       secret: false
     deprecated: false
     description: Ignore a given domain, removing it from new and block lists, if applicable.
     execution: false
     name: domaintools-iris-detect-ignore-domains
+    outputs:
+    - contextPath: DomainToolsIrisDetect.IgnoredDomain.state
+      description: Indicates that the domain is ignored.
+      type: String
+    - contextPath: DomainToolsIrisDetect.IgnoredDomain.domain
+      description: The domain name.
+      type: String
+    - contextPath: DomainToolsIrisDetect.IgnoredDomain.discovered_date
+      description: The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").
+      type: String
+    - contextPath: DomainToolsIrisDetect.IgnoredDomain.changed_date
+      description: The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00").
+      type: String
+    - contextPath: DomainToolsIrisDetect.IgnoredDomain.id
+      description: The domain ID.
+      type: String
+    - contextPath: DomainToolsIrisDetect.IgnoredDomain.assigned_by
+      description: The email address of the person who assigned the domain to the watchlist.
+      type: String
+    - contextPath: DomainToolsIrisDetect.IgnoredDomain.assigned_date
+      description: The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00").
+      type: String
   - arguments:
     - default: false
       description: 'ISO 8601 datetime format: default None. Conditionally required if the include_counts parameter is set to True. for example 2022-05-18T12:19:51.685496'
@@ -241,7 +254,7 @@ script:
       - term
       - created_date
       - domain_counts_changed
-      - ' domain_counts_discovered'
+      - domain_counts_discovered
       required: false
       secret: false
     - auto: PREDEFINED
@@ -307,8 +320,6 @@ script:
       description: List of TLDs to filter domains by. E.g. top.
       isArray: false
       name: tlds
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -508,12 +519,11 @@ script:
       name: monitor_id
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: false
       name: tlds
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -733,8 +743,6 @@ script:
       description: List of TLDs to filter domains by. E.g. top.
       isArray: false
       name: tlds
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -935,12 +943,11 @@ script:
       name: monitor_id
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: false
       name: tlds
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1129,12 +1136,11 @@ script:
       name: monitor_id
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: List of TLDs to filter domains by. E.g. top.
       isArray: false
       name: tlds
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1157,8 +1163,6 @@ script:
       description: A "contains" search for any portion of a domain name.
       isArray: false
       name: search
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1335,7 +1339,7 @@ script:
     description: This command will reset your fetch history.
     execution: false
     name: domaintools-iris-detect-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

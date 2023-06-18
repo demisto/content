@@ -1,6 +1,11 @@
 DomainTools is an essential component in the security stack of mature enterprises and performance-driven security teams.
 Iris Detect helps organizations discover and monitor lookalike domains with unmatched speed and coverage.
 
+The DomainTools Iris Detect content pack works indepenently or alongside the DomainTools Iris Content Pack. It works with the Iris Detect APIs to help you discover, track, and act against lookalike domains. A DomainTools key provisioned for Iris Detect is required.
+
+Configure the pack to ingest and optionally create incidents off of new, watched, or escalated domains on a scheduled basis, as frequently as hourly. Indicator mappings and layouts help you act on the domains.
+
+
 ## Configure DomainTools Iris Detect on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -53,36 +58,45 @@ Reports a domain to Google's Safe Browsing API. After approval, their block list
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DomainToolsIrisDetect.EscalatedDomain.watchlist_domain_id | String | The blocked domain ID. | 
+| DomainToolsIrisDetect.EscalatedDomain.escalation_type | String | The escalation type. | 
+| DomainToolsIrisDetect.EscalatedDomain.id | String | The ID. | 
+| DomainToolsIrisDetect.EscalatedDomain.created_date | String | The date and time when the domain was created. | 
+| DomainToolsIrisDetect.EscalatedDomain.updated_date | String | The date and time when the domain was updated. | 
+| DomainToolsIrisDetect.EscalatedDomain.created_by | String | The email address of the person who created the escalated entry. | 
 
 #### Command example
 
-```!domaintools-iris-detect-escalate-domains watchlist_domain_ids="jaMzYv2flE"```
+```!domaintools-iris-detect-escalate-domains watchlist_domain_ids="ba476NwNjW"```
 
 #### Context Example
 
 ```json
 {
-  "DomainToolsIrisDetect": {
-    "Indicators": {
-      "dt_created_by": "user@example.com",
-      "dt_created_date_result": "2023-04-11T05:20:49.104498+00:00",
-      "dt_escalation_type": "google_safe",
-      "dt_id": "5ebALaKhQW",
-      "dt_updated_date": "2023-04-11T05:20:49.104498+00:00",
-      "dt_watchlist_domain_id": "jaMzYv2flE"
+    "DomainToolsIrisDetect": {
+        "EscalatedDomain": [
+            {
+                "dt_created_by": "user@example.com",
+                "dt_created_date_result": "2023-06-18T07:09:56.638704+00:00",
+                "dt_escalation_type": "google_safe",
+                "dt_id": "LpbmA0lbOB",
+                "dt_updated_date": "2023-06-18T07:09:56.638704+00:00",
+                "dt_watchlist_domain_id": "ba476NwNjW"
+            }
+        ]
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Escalated Domains
+>### Escalated Domains
 >
 >|dt_created_by|dt_created_date_result|dt_escalation_type|dt_id|dt_updated_date|dt_watchlist_domain_id|
 >|---|---|---|---|---|---|
->| <user@example.com> | 2023-04-11T05:20:49.104498+00:00 | google_safe | 5ebALaKhQW | 2023-04-11T05:20:49.104498+00:00 | jaMzYv2flE |
+>| <user@example.com> | 2023-06-18T07:09:56.638704+00:00 | google_safe | LpbmA0lbOB | 2023-06-18T07:09:56.638704+00:00 | ba476NwNjW |
 
 ### domaintools-iris-detect-blocklist-domains
 
@@ -101,36 +115,45 @@ Mark a given domain as blocked, which allows a script against the Iris Detect AP
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DomainToolsIrisDetect.BlockedDomain.watchlist_domain_id | String | The blocked domain ID. | 
+| DomainToolsIrisDetect.BlockedDomain.escalation_type | String | The escalation type. | 
+| DomainToolsIrisDetect.BlockedDomain.id | String | The ID. | 
+| DomainToolsIrisDetect.BlockedDomain.created_date | String | The date and time when the domain was created. | 
+| DomainToolsIrisDetect.BlockedDomain.updated_date | String | The date and time when the domain was updated. | 
+| DomainToolsIrisDetect.BlockedDomain.created_by | String | The email address of the person who created the blocked entry. | 
 
 #### Command example
 
-```!domaintools-iris-detect-blocklist-domains watchlist_domain_ids="vEwp2mQxYP"```
+```!domaintools-iris-detect-blocklist-domains watchlist_domain_ids="7WbwkN9wga"```
 
 #### Context Example
 
 ```json
 {
-  "DomainToolsIrisDetect": {
-    "Indicators": {
-      "dt_created_by": "user@example.com",
-      "dt_created_date_result": "2023-04-11T05:20:43.339439+00:00",
-      "dt_escalation_type": "blocked",
-      "dt_id": "47E4ZwAboq",
-      "dt_updated_date": "2023-04-11T05:20:43.339439+00:00",
-      "dt_watchlist_domain_id": "vEwp2mQxYP"
+    "DomainToolsIrisDetect": {
+        "BlockedDomain": [
+            {
+                "dt_created_by": "user@example.com",
+                "dt_created_date_result": "2023-06-18T07:09:48.626367+00:00",
+                "dt_escalation_type": "blocked",
+                "dt_id": "qabz2ekbp1",
+                "dt_updated_date": "2023-06-18T07:09:48.626367+00:00",
+                "dt_watchlist_domain_id": "7WbwkN9wga"
+            }
+        ]
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Blocked Domains
+>### Blocked Domains
 >
 >|dt_created_by|dt_created_date_result|dt_escalation_type|dt_id|dt_updated_date|dt_watchlist_domain_id|
 >|---|---|---|---|---|---|
->| <user@example.com> | 2023-04-11T05:20:43.339439+00:00 | blocked | 47E4ZwAboq | 2023-04-11T05:20:43.339439+00:00 | vEwp2mQxYP |
+>| <user@example.com> | 2023-06-18T07:09:48.626367+00:00 | blocked | qabz2ekbp1 | 2023-06-18T07:09:48.626367+00:00 | 7WbwkN9wga |
 
 ### domaintools-iris-detect-watch-domains
 
@@ -149,35 +172,45 @@ Mark a given domain as watched, which will trigger more frequent scanning by Dom
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DomainToolsIrisDetect.WatchedDomain.state | String | Indicates that the domain is watched. | 
+| DomainToolsIrisDetect.WatchedDomain.domain | String | The domain name. | 
+| DomainToolsIrisDetect.WatchedDomain.discovered_date | String | The date and time when the domain was discovered \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
+| DomainToolsIrisDetect.WatchedDomain.changed_date | String | The date and time when the domain information was last changed \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
+| DomainToolsIrisDetect.WatchedDomain.id | String | The domain ID. | 
+| DomainToolsIrisDetect.WatchedDomain.assigned_by | String | The email address of the person who assigned the domain to the watchlist. | 
+| DomainToolsIrisDetect.WatchedDomain.assigned_date | String | The date and time when the domain was assigned to the watchlist \(e.g.,"2023-04-20T13:13:23.000000\+00:00"\). | 
 
 #### Command example
 
-```!domaintools-iris-detect-watch-domains watchlist_domain_ids="OWxlNO23VW"```
+```!domaintools-iris-detect-watch-domains watchlist_domain_ids="Ya2q68ldNW"```
 
 #### Context Example
 
 ```json
 {
-  "DomainToolsIrisDetect": {
-    "Indicators": {
-      "dt_changed_date": "2023-04-09T09:50:36.000000+00:00",
-      "dt_discovered_date": "2023-04-09T09:49:49.447000+00:00",
-      "dt_domain": "fakepayinsurance.ie",
-      "dt_domain_id": "OWxlNO23VW",
-      "dt_state": "watched"
+    "DomainToolsIrisDetect": {
+        "WatchedDomain": [
+            {
+                "dt_changed_date": "2023-06-18T02:18:06.000000+00:00",
+                "dt_discovered_date": "2023-06-18T02:08:14.821000+00:00",
+                "dt_domain": "draliexpress.com",
+                "dt_domain_id": "Ya2q68ldNW",
+                "dt_state": "watched"
+            }
+        ]
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Watched Domains
+>### Watched Domains
 >
 >|dt_changed_date|dt_discovered_date|dt_domain|dt_domain_id|dt_state|
 >|---|---|---|---|---|
->| 2023-04-09T09:50:36.000000+00:00 | 2023-04-09T09:49:49.447000+00:00 | fakepayinsurance.ie | OWxlNO23VW | watched |
+>| 2023-06-18T02:18:06.000000+00:00 | 2023-06-18T02:08:14.821000+00:00 | draliexpress.com | Ya2q68ldNW | watched |
 
 ### domaintools-iris-detect-ignore-domains
 
@@ -196,35 +229,45 @@ Ignore a given domain, removing it from new and block lists, if applicable.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DomainToolsIrisDetect.IgnoredDomain.state | String | Indicates that the domain is ignored. | 
+| DomainToolsIrisDetect.IgnoredDomain.domain | String | The domain name. | 
+| DomainToolsIrisDetect.IgnoredDomain.discovered_date | String | The date and time when the domain was discovered \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
+| DomainToolsIrisDetect.IgnoredDomain.changed_date | String | The date and time when the domain information was last changed \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
+| DomainToolsIrisDetect.IgnoredDomain.id | String | The domain ID. | 
+| DomainToolsIrisDetect.IgnoredDomain.assigned_by | String | The email address of the person who assigned the domain to the watchlist. | 
+| DomainToolsIrisDetect.IgnoredDomain.assigned_date | String | The date and time when the domain was assigned to the watchlist \(e.g.,"2023-04-20T13:13:23.000000\+00:00"\). | 
 
 #### Command example
 
-```!domaintools-iris-detect-ignore-domains watchlist_domain_ids="OWxlNO23VW"```
+```!domaintools-iris-detect-ignore-domains watchlist_domain_ids="XEmKQoLBpW"```
 
 #### Context Example
 
 ```json
 {
-  "DomainToolsIrisDetect": {
-    "Indicators": {
-      "dt_changed_date": "2023-04-09T09:50:36.000000+00:00",
-      "dt_discovered_date": "2023-04-09T09:49:49.447000+00:00",
-      "dt_domain": "fakepayinsurance.ie",
-      "dt_domain_id": "OWxlNO23VW",
-      "dt_state": "ignored"
+    "DomainToolsIrisDetect": {
+        "IgnoredDomain": [
+            {
+                "dt_changed_date": "2023-06-18T03:21:47.000000+00:00",
+                "dt_discovered_date": "2023-06-18T02:44:42.448000+00:00",
+                "dt_domain": "amazon-test.top",
+                "dt_domain_id": "XEmKQoLBpW",
+                "dt_state": "ignored"
+            }
+        ]
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Ignored Domains
+>### Ignored Domains
 >
 >|dt_changed_date|dt_discovered_date|dt_domain|dt_domain_id|dt_state|
 >|---|---|---|---|---|
->| 2023-04-09T09:50:36.000000+00:00 | 2023-04-09T09:49:49.447000+00:00 | fakepayinsurance.ie | OWxlNO23VW | ignored |
+>| 2023-06-18T03:21:47.000000+00:00 | 2023-06-18T02:44:42.448000+00:00 | amazon-test.top | XEmKQoLBpW | ignored |
 
 ### domaintools-iris-detect-get-monitors-list
 
