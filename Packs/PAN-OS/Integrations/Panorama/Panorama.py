@@ -3768,6 +3768,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
+    # in this case, we want to remove the profile-setting group
     if element_to_change == 'profile-setting':
         params['action'] = 'set'
         params['element'] = '<profile-setting><group/></profile-setting>'
