@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import demisto_client
 import pytest
@@ -12,14 +13,14 @@ BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
 
 
-def load_json_file(file_path: str):
-    with open(f"test_data/{file_path}", 'r') as json_file:
+def load_json_file(directory: str, file_name: str):
+    with open(Path(__file__).parent / 'test_data' / directory / file_name, 'r') as json_file:
         json_data = json.load(json_file)
     return json_data
 
 
-MOCK_HELLOWORLD_SEARCH_RESULTS = load_json_file("search_dependencies/HelloWorld_1.2.19.json")
-MOCK_AZURESENTINEL_SEARCH_RESULTS = load_json_file("search_dependencies/AzureSentinel_1.5.8.json")
+MOCK_HELLOWORLD_SEARCH_RESULTS = load_json_file('search_dependencies', "HelloWorld_1.2.19.json")
+MOCK_AZURESENTINEL_SEARCH_RESULTS = load_json_file('search_dependencies', 'AzureSentinel_1.5.8.json')
 
 MOCK_PACKS_INSTALLATION_RESULT = [
     {
