@@ -2076,16 +2076,7 @@ def list_users_command(client: Client, args: Dict[str, Any]):
         raise DemistoException('No users found')
 
     headers = [
-        'ID',
-        'Username',
-        'Firstname',
-        'Lastname',
-        'Title',
-        'Email',
-        'Created',
-        'Modified',
-        'LastLogin',
-        'Role'
+        'ID', 'Username', 'Firstname', 'Lastname', 'Title', 'Email', 'Created', 'Modified', 'LastLogin', 'Role'
     ]
 
     mapped_users = [{
