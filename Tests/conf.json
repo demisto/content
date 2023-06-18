@@ -1416,6 +1416,10 @@
             "playbookID": "Protectwise-Test"
         },
         {
+            "integrations": "WhatsMyBrowser",
+            "playbookID": "WhatsMyBrowser-Test"
+        },
+        {
             "integrations": "BigFix",
             "playbookID": "BigFixTest"
         },
