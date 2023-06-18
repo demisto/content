@@ -4,7 +4,8 @@ from Tenable_sc import update_asset_command, list_zones_command, list_queries, c
     list_plugin_family_command, validate_create_scan_inputs, Client, validate_user_body_params, get_query, \
     create_get_device_request_params_and_path, create_user_request_body, list_query_command, list_users_command, launch_scan, \
     list_report_definitions_command, delete_asset_command, delete_scan_command, delete_user_command, list_scans_command, \
-    get_scan_status_command, get_device_command, list_policies_command
+    get_scan_status_command, get_device_command, list_policies_command, list_credentials_command, create_asset_command, \
+    create_scan_command
 import io
 
 client_mocker = Client(verify_ssl=False, proxy=True, access_key="access_key", secret_key="secret_key",
@@ -654,5 +655,76 @@ def test_list_policies_command(mocker, test_case):
     args = test_data.get("args")
     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
     command_results = list_policies_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_list_credentials_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with manageable = true, and mock response to response with 1 usable and 1 manageable credentials.
+        - Case 2: Empty args, and mock response to response with 1 usable and 1 manageable credentials.
+
+        When:
+        - Running list_credentials_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return only the manageable credentials.
+        - Case 2: Should return only the usable credentials.
+    """
+    test_data = load_json("./test_data/test_list_credentials_command.json").get(test_case, {})
+    args = test_data.get("args")
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = list_credentials_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_create_asset_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with name, description, and ip_list and a successful response.
+
+        When:
+        - Running create_asset_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return the created asset info.
+    """
+    test_data = load_json("./test_data/test_create_asset_command.json").get(test_case, {})
+    args = test_data.get("args")
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = create_asset_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_create_scan_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with multiple scan args and a successful response.
+
+        When:
+        - Running create_scan_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return the created scan info.
+    """
+    test_data = load_json("./test_data/test_create_scan_command.json").get(test_case, {})
+    args = test_data.get("args")
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = create_scan_command(client_mocker, args)
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs

@@ -1497,13 +1497,7 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     scan = res['response']
 
     headers = [
-        'ID',
-        'CreatorID',
-        'Name',
-        'Type',
-        'CreationTime',
-        'OwnerName',
-        'Reports'
+        'ID', 'CreatorID', 'Name', 'Type', 'CreationTime', 'OwnerName', 'Reports'
     ]
 
     mapped_scan = {
