@@ -34,7 +34,7 @@ def extract_event_info(event):
         raise ValueError("Unknown event type")
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         json_data = args.get("json_data")
