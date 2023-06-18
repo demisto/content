@@ -4971,7 +4971,8 @@
             "integrations": "Azure Sentinel",
             "fromversion": "5.5.0",
             "is_mockable": false,
-            "playbookID": "TestAzureSentinelPlaybookV2"
+            "playbookID": "TestAzureSentinelPlaybookV2",
+            "instance_names": "azure_sentinel_dev"
         },
         {
             "integrations": "AnsibleAlibabaCloud",
