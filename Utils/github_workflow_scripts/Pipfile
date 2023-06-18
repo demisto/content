@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+flake8 = "*"    # already in linter, but added to dev group alr in sdk
+
+[packages]
+pygithub = "*" # done in ci=========
+requests = "*" # in dev group, to add to ci? no need...=====
+blessings = "*" # done in ci======
+slack_sdk = "*" # done in ci======
+demisto-sdk = "*"   # added to ci, but demisto_sdk in dev, same? remove...======
+GitPython = "*" # Aadded to ci
+dateparser = "*" # added to ci
+
+[requires]
+python_version = "3.9"
