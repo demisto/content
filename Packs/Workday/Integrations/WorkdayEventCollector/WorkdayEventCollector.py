@@ -148,7 +148,7 @@ def remove_duplications(activity_loggings: list, last_run: dict):
     log_found = False
     if last_log_stored:
         for count, log in enumerate(activity_loggings):
-            if sort_logging(log) == last_log_stored:
+            if log == last_log_stored:
                 log_found = True
                 break
         if log_found:
@@ -202,15 +202,6 @@ def get_activity_logging_command(client: Client, from_date: str, to_date: str, l
     return activity_loggings, CommandResults(readable_output=readable_output)
 
 
-def sort_logging(activity_logging: dict):
-    log_strs = []
-    for value in activity_logging.values():
-        if type(value) == str:
-            log_strs.append(value)
-
-    return sorted(log_strs)
-
-
 def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime, last_run: dict):
     """
     Fetches activity loggings from Workday.
@@ -236,8 +227,7 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
     if activity_loggings:
         last_log = activity_loggings[-1]
         last_log_time = remove_milliseconds_from_time_of_logging(last_log)
-        last_log_to_store = sort_logging(last_log)
-        last_run = {'last_fetch_time': last_log_time, 'last_log': last_log_to_store}
+        last_run = {'last_fetch_time': last_log_time, 'last_log': last_log}
 
     return activity_loggings, last_run
 
