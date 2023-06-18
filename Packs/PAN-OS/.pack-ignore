@@ -40,6 +40,17 @@ finanical
 ransomeware
 pbf
 ampersand
+CustomUrlCategory
+SourceDevice
+SecurityProfileGroup
+SecurityProfile
+DestinationDevice
+LogForwardingProfile
+NegateSource
+ICMPUnreachable
+NegateDestination
+GroupTag
+SourceUser
 
 [file:PanoramaCVECoverage.yml]
 ignore=BA124
