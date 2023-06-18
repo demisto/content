@@ -61,14 +61,6 @@ def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
     return None, None, None
 
 
-def mocked_get_pack_display_name(pack_id):
-    if pack_id == 'HelloWorld':
-        return 'HelloWorld'
-    elif pack_id == 'AzureSentinel':
-        return 'Microsoft Sentinel'
-    return ''
-
-
 class MockConfiguration:
     def __init__(self):
         self.host = None
@@ -99,6 +91,7 @@ class MockLock:
 
 
 @pytest.mark.parametrize('use_multithreading', [False, True])
+# TODO: Updating this test revealed that the test fails while not using multithreading (reproduced on 'master'). Fix.
 def test_search_and_install_packs_and_their_dependencies(mocker, use_multithreading: bool):
     """
     Given
@@ -151,7 +144,6 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
 
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
-    mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
                                                                                       client)
