@@ -12,8 +12,15 @@ configuration:
 - additionalinfo: The API secret key
   display: API Secret
   name: api_secret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Secret
+  name:  credentials_api_secret
+  additionalinfo: The API secret key
+  required: false
+  hiddenusername: true
+  type: 9
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -4044,7 +4051,7 @@ script:
       description: The name of the default policy setting.
     - contextPath: TrendMicro.DefaultPolicySettings.value
       description: The value of the default policy setting.
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
   runonce: false
   subtype: python3
   type: python
