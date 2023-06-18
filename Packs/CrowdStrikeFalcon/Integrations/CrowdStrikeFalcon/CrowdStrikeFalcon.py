@@ -2253,14 +2253,12 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     if (detection_time := last_run.get('first_behavior_detection_time')) and \
        (detection_time_date := dateparser.parse(detection_time)):
         updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
-    updated_last_run_detections['offset'] = last_run.get('detection_offset')
 
     updated_last_run_incidents: dict[str, str | None] = {}
     if (incident_time := last_run.get('first_behavior_incident_time')) and \
        (incident_time_date := dateparser.parse(incident_time)):
         updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
-    updated_last_run_incidents['offset'] = last_run.get('incident_offset')
 
     return [updated_last_run_detections, updated_last_run_incidents]
 
@@ -2287,8 +2285,6 @@ def fetch_incidents():
                                                                     first_fetch=FETCH_TIME,
                                                                     look_back=look_back)
         incident_type = 'detection'
-        # last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
-
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
             fetch_query = "created_timestamp:>'{time}'+{query}".format(time=start_fetch_time, query=fetch_query)
@@ -2315,7 +2311,7 @@ def fetch_incidents():
                 occurred = dateparser.parse(detection["occurred"])
                 if occurred:
                     detection["occurred"] = occurred.strftime(DATE_FORMAT)
-                    demisto.debug(f"occured time is {detection['occurred']}")
+                    demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} occurred at {detection['occurred']}")
             last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
@@ -2354,7 +2350,7 @@ def fetch_incidents():
                 occurred = dateparser.parse(incident["occurred"])
                 if occurred:
                     incident["occurred"] = occurred.strftime(DATE_FORMAT)
-
+                    demisto.debug(f"CrowdStrikeFalconMsg: Incident {incident['name']} occurred at {incident['occurred']}")
             last_run = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
