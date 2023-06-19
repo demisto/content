@@ -6,9 +6,9 @@ The API key can be found and generated in the **API KEYS** section. You can navi
 
 ## Configure FireEyeHelix on Cortex XSOAR
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for FireEyeHelix.
-3. Click __Add instance__ to create and configure a new integration instance.
+3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Example** |
    | ---------             | -----------           | -------            |
@@ -23,13 +23,15 @@ The API key can be found and generated in the **API KEYS** section. You can navi
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
 
 
-4. Click __Test__ to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get all alerts
+
 ---
 Returns all alerts.
 
@@ -115,25 +117,32 @@ Returns all alerts.
 ##### Human Readable Output
 
 ##### FireEye Helix - List alerts:
+
 ##### Page 1/58
+
 ID|Name|Description|State|Severity|
 |---|---|---|---|---|
 | 123 | HX | FireEye HX detected and quarantined malware on this system. | Open | Medium |
 | 32 | HX | This rule alerts on IOC. | Open | Medium |
 
 ### Get alert details by ID
+
 ---
 Returns alert details, by alert ID.
 
 ##### Base Command
+
 `fireeye-helix-get-alert-by-id`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The ID of the alert. | Required | 
 | headers | A comma-separated list (no spaces) of output values to display in the command result. For example, "ID", "Name" ,or "Hostname". | Optional | 
+
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.Alert.ID | Number | The primary ID of the alert. | 
@@ -200,18 +209,22 @@ Returns alert details, by alert ID.
 ##### Human Readable Output
 
 ##### FireEye Helix - Alert 3232:
+
 |AlertTypeID|ClosedState|Confidence|CreatedTime|CreatorID|CreatorName|Description|EventsCount|FileName|FirstEventTime|Hostname|ID|LastEventTime|MD5|MalwareType|Message|ModifiedTime|Name|NotesCount|PID|ProcessPath|Products|Result|Risk|SHA1|Severity|State|Tags|Type|UpdaterID|UpdaterName|Virus|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1793 | Unknown | high | 2019-03-30T19:40:16.132456Z | id | System User | FireEye HX detected and quarantined malware on this system. | 2 | c:\users\demon\appdata\local\temp | 2019-03-30T14:07:34.132456ZZ | helix<span></span>.apps.fireeye<span></span>.com | 123 | 2019-03-31T14:08:07.132456ZZ | md5 | malware | FIREEYE H | 2019-10-20T12:35:02.132456Z | HX | 0 | 11 | c:\windows\microsoft<span></span>.net\framework\v7.0.30319\csc.exe | hx: 2 | quarantined | Medium | sha1 | Medium | Open | fireeye | fireeye_rule | id | George | gen:variant.ursu |
 
 ### Create an alert note
+
 ---
 Creates an alert note.
 
 ##### Base Command
+
 `fireeye-helix-alert-create-note`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of the alert for which the note is being created. | Required | 
@@ -219,6 +232,7 @@ Creates an alert note.
 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.Note.ID | Number | The ID of the note. | 
@@ -230,17 +244,21 @@ Creates an alert note.
 | FireEyeHelix.Note.AlertID | Number | The ID of the related alert. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-alert-create-note note=This is a note test alert_id=3232
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Created Note for Alert 3232:
+
 |ID|Creator Name|Message|Created Time|
 |---|---|---|---|
 | 9 | George | This is a note test | 2019-10-28T07:41:30.396000Z |
 
 ### List event alerts
+
 ---
 Lists events alerts for a specific alert.
 
@@ -249,11 +267,14 @@ Lists events alerts for a specific alert.
 `fireeye-helix-get-events-by-alert`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The alert ID for which to get events. | Required | 
 | headers | A comma-separated list (no spaces) of output values to display in the command result. For example, "ID", "Type" , "SourceIPv4". | Optional | 
+
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.Event.ID | String | The ID of the event. | 
@@ -306,24 +327,29 @@ Lists events alerts for a specific alert.
 ##### Human Readable Output
 
 ##### FireEye Helix - Events for alert 3232:
+
 |Class|Detected Rule ID|Event Time|False Positive|ID|MD5|Matched At|PID|Process|Process Path|Report Time|Result|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | fireeye_hx_alert | 99 | 2019-09-13T06:51:59.000Z | false | 101 | md5 | 2019-08-11t06:51:40.000z | 404 | net1 | c:\windows\system32\et1.exe | 2019-09-13t06:53:08.000 | alert | processevent |
 
 ### Get a specific alert
+
 ---
 Retrieves a specific alert from an helix endpoint.
 
 ##### Base Command
+
 `fireeye-helix-get-endpoints-by-alert`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. | Required | 
 | offset | The offset to the result. The default is 0. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.Endpoint.ID | Number | The ID of the endpoint. | 
@@ -345,6 +371,7 @@ Retrieves a specific alert from an helix endpoint.
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Endpoints for alert 3232:
 
 |ID|Device ID|Hostname|IP|MAC Address|Updated Time|
@@ -352,13 +379,16 @@ Retrieves a specific alert from an helix endpoint.
 | 191 | device_id | Demisto | primary_ip_address | mac_address | updated_at |
 
 ### Get alert cases
+
 ---
 Returns cases of an alert.
 
 ##### Base Command
+
 `fireeye-helix-get-cases-by-alert`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of an alert. | Required | 
@@ -367,6 +397,7 @@ Returns cases of an alert.
 | order_by | The field by which to order the results. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.Case.AlertsCount | Number | The number of alerts related to the case. | 
@@ -395,25 +426,31 @@ Cases with the following statuses are considered closed, "Recovered", or "Improv
 | FireEyeHelix.Case.Count | Number | The total number of cases. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-get-cases-by-alert alert_id=3232 offset=0 page_size=1
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Cases for alert 3232:
+
 |ID|Name|Priority|Severity|State|Status|ModifiedTime|
 |---|---|---|---|---|---|---|
 | 35 | demisto test case | Critical | 10 | Testing | Declared | updated_at |
 
 
 ### Get lists
+
 ---
 Returns lists.
 
 ##### Base Command
+
 `fireeye-helix-get-lists`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page_size | The number of results to return per page. | Optional | 
@@ -431,6 +468,7 @@ Returns lists.
 | order_by | The field by which to order the results. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.List.ID | Number | The list of IDs. | 
@@ -451,18 +489,22 @@ Returns lists.
 | FireEyeHelix.List.Count | Number | The total number of lists. | 
 
 ### Get a specific list by ID
+
 ---
 Returns a specific list by list ID.
 
 ##### Base Command
+
 `fireeye-helix-get-list-by-id`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The ID of the list. | Required | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.List.ID | Number | The ID of the list. | 
@@ -482,13 +524,16 @@ Returns a specific list by list ID.
 | FireEyeHelix.List.Active | Unknown | Whether the list is active. Can be "true" or "false". | 
 
 ### Create a list
+
 ---
 Creates a list.
 
 ##### Base Command
+
 `fireeye-helix-create-list`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the list. | Required | 
@@ -502,6 +547,7 @@ Creates a list.
 | description | The description of the list. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.List.ID | Number | The list ID. | 
@@ -521,13 +567,16 @@ Creates a list.
 | FireEyeHelix.List.Active | Unknown | Whether the list is active. Can be "true" or "false". | 
 
 ### Update a list
+
 ---
 Updates an existing list.
 
 ##### Base Command
+
 `fireeye-helix-update-list`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the list to update. | Optional | 
@@ -542,6 +591,7 @@ Updates an existing list.
 | list_id | The ID of the list. | Required | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.List.ID | Number | The ID of the list. | 
@@ -561,27 +611,35 @@ Updates an existing list.
 | FireEyeHelix.List.Active | Unknown | Whether the list is active. Can be "true" or "false". |
 
 ### Delete a list
+
 ---
 Deletes a single list by list ID.
 
 ##### Base Command
+
 `fireeye-helix-delete-list`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_id | The ID of the list to delete. | Required | 
 
 ##### Context Output
+
 There is no context output for this command.
 
 ### Fetch all sensors
+
 ---
 Fetches all sensors.
+
 ##### Base Command
+
 `fireeye-helix-list-sensors`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page_size | The maximum number of results to return per page. | Optional | 
@@ -590,16 +648,20 @@ Fetches all sensors.
 | status | The status of the sensor. | Optional | 
 
 ##### Context Output
+
 There is no context output for this command.
 
 ### Get all rules
+
 ---
 Returns all rules.
 
 ##### Base Command
+
 `fireeye-helix-list-rules`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page_size | The maximum number of results to return per page. | Optional | 
@@ -607,6 +669,7 @@ Returns all rules.
 | sort | A comma-separated list of field names by which to sort the results. For example, “createDate” or "-updateDate,riskOrder" | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.Rule.ID | String | The rule ID. | 
@@ -628,55 +691,70 @@ verified to be a true positive. Confidence and Severity combine to form the risk
 | FireEyeHelix.Rule.Type | String | The type of the rule. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-list-rules offset=1
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - List rules:
+
 |ID|Type|Description|Risk|Confidence|Severity|Enabled|
 |---|---|---|---|---|---|---|
 | 1.1.1 | alert | demisto | Medium | Medium | Medium | true |
 
 ### Edit an existing rule
+
 ---
 Modifies an existing rule.
 
 ##### Base Command
+
 `fireeye-helix-edit-rule`
+
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | enabled | Whether the rule is enabled. Can be "true" or "false". | Optional | 
 | rule_id | The ID of the rule. | Required | 
 
 ##### Context Output
+
 There is no context output for this command.
 
 ##### Command Example
+
 ```
 !fireeye-helix-edit-rule rule_id=1.1.1 enabled=true
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Successfully updated rule 1.1.1:
+
 |ID|Type|Description|Risk|Confidence|Severity|
 |---|---|---|---|---|---|
 | 1.1.1 | alert | demisto | Medium | Medium | Medium |
 
 ### Get all notes related to an alert
+
 ---
 Returns all notes related to an alert.
 
 ##### Base Command
+
 `fireeye-helix-alert-get-notes`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of the alert. | Required | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelix.Note.ID | Number | The ID of the note. | 
@@ -689,41 +767,51 @@ Returns all notes related to an alert.
 | FireEyeHelix.Note.Count | Number | The total number of notes for the alert. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-alert-get-notes id=3232
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Notes for Alert None:
+
 |ID|Creator Name|Message|Created Time|
 |---|---|---|---|
 | 9 | George | This is a note test | 2019-10-28T07:41:30.396000Z |
 | 91 | George | What a great note this is | 2019-10-24T13:52:19.021299Z |
 
 ### Delete a note's alert
+
 ---
 Deletes a note's alert.
 
 ##### Base Command
+
 `fireeye-helix-alert-delete-note`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The ID of the alert to delete. | Required | 
 | note_id | The ID of the note. | Required | 
 
 ##### Context Output
+
 There is no context output for this command.
 
 ### Preform a search
+
 ---
 Executes a search in FireEye Helix using MQL.
 
 ##### Base Command
+
 `fireeye-helix-search`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | start | The start time of the event in the format yyyy-mm-dd or yyyy-mm. | Optional | 
@@ -738,6 +826,7 @@ Executes a search in FireEye Helix using MQL.
 | headers | A comma-separated list (no spaces) of output values to display in the command result. For example, "ID", "Type", or "SourceIPv4". | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelixSearch.Result.ID | String | The ID of the event. | 
@@ -786,18 +875,22 @@ Executes a search in FireEye Helix using MQL.
 | FireEyeHelixSearch.Result.InReplyTo | String | The reply email address. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-search query=domain:google.com start="4 days ago" groupby=subject limit=1 page_size=2
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Search result for domain:google.com and meta_ts>=2019-10-25T09:07:43.810Z {page_size:2 offset:1 limit:1} | groupby subject sep=`|%$,$%|`
+
 |Class|Domain|Event Time|From|ID|In Reply To|Source Domain|Source I Pv 4|Source ISP|Source Latitude|Source Longitude|Status|To|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | fireeye_etp | mx.google<span></span>.com | 2019-10-28T10:43:11.000Z | de@demisto<span></span>.com | demisto | demisto | google<span></span>.com | 8.8.8.8 | google llc | 37.40599060058594 | -122.0785140991211 | delivered | demisto@demisto<span></span>.com | trace |
 | fireeye_etp | gmr-mx.google<span></span>.com | 2019-10-29T05:08:39.000Z | dem@demisto<span></span>.com | demisto | demisto@demisto<span></span>.com | google<span></span>.com | 8.8.8.8 | google llc | 37.40599060058594 | -122.0785140991211 | delivered | demisto@demisto<span></span>.com | trace |
 
 ##### Group By
+
 |subject|DocCount|
 |---|---|
 | google alert - gold | 3 |
@@ -805,13 +898,16 @@ Executes a search in FireEye Helix using MQL.
 | invitation: Declined | 1 |
 
 ### Add an item to a list
+
 ---
 Adds an item to a list.
 
 ##### Base Command
+
 `fireeye-helix-add-list-item`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The item type. Can be, "email", "fqdn", "ipv4", "ipv6", "md5", "misc", or "sha-1". | Required | 
@@ -821,6 +917,7 @@ Adds an item to a list.
 | notes | The item notes. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelixList.Item.ID | Number | The ID of the item. | 
@@ -831,30 +928,37 @@ Adds an item to a list.
 | FireEyeHelixList.Item.ListID | String | The list ID with which the item is associated. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-add-list-item list_id=3232 value=test type=misc risk=Low
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - List item 163 was added successfully to 3232
+
 |ID|ListID|Notes|Risk|Type|Value|
 |---|---|---|---|---|---|
 | 163 | 3232 | test ok | Medium | misc | aTest list |
 
 ### Fetch list items
+
 ---
 Fetches the items of a list.
 
 ##### Base Command
+
 `fireeye-helix-get-list-items`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_id | The ID of the list for which to fetch items. | Required | 
 | offset | THe item offset. The default is 0. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelixList.Item.ID | Number | The ID of the item. | 
@@ -866,24 +970,30 @@ Fetches the items of a list.
 | FireEyeHelixList.Item.Count | Number | The number of items in the list. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-get-list-items list_id=3232 offset=0
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - List items for list 3232
+
 |ID|ListID|Notes|Risk|Type|Value|
 |---|---|---|---|---|---|
 | 163 | 3232 |  | Low | misc | Test list |
 
 ### Update an item on a list 
+
 ---
 Updates a single list item.
 
 ##### Base Command
+
 `fireeye-helix-update-list-item`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | item_id | The ID of the item to update. | Required | 
@@ -894,6 +1004,7 @@ Updates a single list item.
 | notes | The notes of the item. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelixList.Item.ID | Number | The ID of the item. | 
@@ -904,47 +1015,58 @@ Updates a single list item.
 | FireEyeHelixList.Item.ListID | String | The list ID with which the item is associated. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-update-list-item list_id=3232 value=test type=misc risk=Low item_id=163
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - List item 163 from list 3232 was updated successfully
+
 |ID|ListID|Notes|Risk|Type|Value|
 |---|---|---|---|---|---|
 | 163 | 3232 | test ok | Medium | misc | aTest list |
 
 
 ### Remove an item from a list
+
 ---
 Removes an item from a list.
 
 ##### Base Command
+
 `fireeye-helix-remove-list-item`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_id | The ID of the list from which to remove an item. | Required | 
 | item_id | The ID of the item. | Required | 
 
 ##### Context Output
+
 There is no context output for this command.
 
 ### Fetch archive search results
+
 ---
 Fetches archive search results.
 
 ##### Base Command
+
 `fireeye-helix-archive-search-get-results`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_id | The ID of the search for which to return archive results. | Required | 
 | headers | A comma-separated list of output values to display in the command result. For example, "ID", "Type", and "SourceIPv4". | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelixSearch.Result.ID | String | The ID of the event. | 
@@ -993,12 +1115,15 @@ Fetches archive search results.
 | FireEyeHelixSearch.Result.InReplyTo | String | The reply email address. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-archive-search-get-results search_id=82
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Search result for domain:[google,com] | groupby eventtype sep=`|%$,$%|`
+
 |Class|Domain|Event Time|From|ID|In Reply To|Source Domain|Source I Pv 4|Source ISP|Source Latitude|Source Longitude|Status|To|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | fireeye_etp | domain<span></span>.com | 2019-10-06T10:48:13.000Z | squidward@demisto<span></span>.com | evenid | squidward squidward@demisto<span></span>.com |  | 8.8.8.8 |  | 51.8594 | -0.12574 | delivered | demisto@demisto<span></span>.com | trace |
@@ -1007,14 +1132,17 @@ Fetches archive search results.
 | fireeye_etp | demisto<span></span>.com | 2019-10-06T11:03:00.000Z | squidward@demisto<span></span>.com | 93730 | geroge &lt;hello@demisto<span></span>.com&gt; | demisto<span></span>.com | 8.8.8.8 | the demisto group | 33.770843 | -84.377 | delivered | squidward@demisto<span></span>.com | trace |
 
 ### Create an archive from a query
+
 ---
 Creates an archive search from a query.
 
 
 ##### Base Command
+
 `fireeye-helix-archive-search`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | start | The start time of the event in the format yyyy-mm-dd or yyyy-mm. | Optional | 
@@ -1027,6 +1155,7 @@ Creates an archive search from a query.
 | limit | The number of events to search. | Optional | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelixSearch.ID | Number | The ID of an archive search. | 
@@ -1035,30 +1164,37 @@ Creates an archive search from a query.
 | FireEyeHelixSearch.State | String | The state of the search. | 
 
 ##### Command Example
+
 ```
 !fireeye-helix-archive-search query=domain:google.com start="4 days ago" groupby=subject limit=1 offset=1
 ```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Successfully created archive search
+
 |ID|Percent Complete|Query|State|
 |---|---|---|---|
 | 82 | 100.0 | domain:[google,com] \| groupby eventtype | completed |
 | 83 | 100.0 | domain:[google] \| groupby eventtype | completed |
 
 ### Get the status of an archive search
+
 ---
 Gets the status of an archive search.
 
 ##### Base Command
+
 `fireeye-helix-archive-search-get-status`
 
 ##### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_id | The archive search's ID. | Required | 
 
 ##### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FireEyeHelixSearch<span></span>.ID | Number | The archive search's ID. | 
@@ -1067,10 +1203,13 @@ Gets the status of an archive search.
 | FireEyeHelixSearch.State | String | The state of the search. | 
 
 ##### Command Example
+
 ```!fireeye-helix-archive-search-get-status search_id=82,83```
 
 ##### Human Readable Output
+
 ##### FireEye Helix - Search status
+
 |ID|Percent Complete|Query|State|
 |---|---|---|---|
 | 82 | 100.0 | domain:[google,com] \| groupby eventtype | completed |
