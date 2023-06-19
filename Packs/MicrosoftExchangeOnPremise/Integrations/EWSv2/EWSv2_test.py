@@ -464,7 +464,13 @@ def test_categories_parse_item_as_dict():
     assert return_value.get("categories") == ['Purple category', 'Orange category']
 
 
-def test_is_empty_object():
-    from EWSv2 import is_empty_object
+def test_get_entry_for_object_empty():
+    from EWSv2 import get_entry_for_object
     obj = {}
-    assert is_empty_object(obj)
+    assert get_entry_for_object("test", "keyTest", obj) == "There is no output results"
+
+
+def test_get_entry_for_object():
+    from EWSv2 import get_entry_for_object
+    obj = {"a": 1, "b": 2}
+    assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
