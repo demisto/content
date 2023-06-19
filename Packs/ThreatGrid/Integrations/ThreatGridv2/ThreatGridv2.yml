@@ -48,6 +48,24 @@ script:
     arguments:
     - name: sample_id
       description: The sample ID
+    - name: user_only
+      description: It 'True' - Only display samples created by the current user, as determined by the value of api_key.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: It 'True' - Only display samples created by the current user's organization, as determined by the value of api_key.
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+    - name: sha256
+      description: A SHA256 of the submitted sample, only matches samples, not their artifacts.
+    - name: md5
+      description: A MD5 checksum of the submitted sample, only matches samples, not their artifacts.
+    - name: sha1
+      description: A sha1 of the submitted sample, only matches samples, not their artifacts.
     - name: artifact
       description: The artifact to download. Sample ID is required when choosing 'artifact'.
       auto: PREDEFINED
@@ -136,6 +154,8 @@ script:
       name: timeout_in_seconds
     - description: The uploaded sample ID.
       name: sample_id
+    - name: tags
+      description: A comma-separated list of tags applied to this sample.
     - name: private
       description: Whether to mark the sample as private.
       auto: PREDEFINED
@@ -1390,7 +1410,7 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

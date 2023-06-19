@@ -94,6 +94,11 @@ class Client(BaseClient):
         offset: Optional[int] = None,
         artifact: Optional[str] = None,
         summary: Optional[str] = None,
+        user_only: Optional[bool] = False,
+        org_only: Optional[bool] = False,
+        sha1: Optional[str] = None,
+        sha256: Optional[str] = None,
+        md5: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Retrieves the Sample Info record of a submission by sample ID.
 
@@ -110,6 +115,11 @@ class Client(BaseClient):
         params = remove_empty_elements({
             "limit": limit,
             "offset": offset,
+            "user_only": user_only,
+            "org_only": org_only,
+            "md5": md5,
+            "sha1": sha1,
+            "sha256": sha256,
         })
 
         url_suffix = f"samples/{sample_id}" if sample_id else "samples"
@@ -892,6 +902,11 @@ def get_sample_command(
     is_summary = get_arg_from_command_name(args["command_name"], 3)
     arg_name = is_summary if is_summary == "summary" else arg_name
     sample_id = args.get("sample_id")
+    sha1 = args.get("sha1")
+    sha256 = args.get("sha256")
+    md5 = args.get("md5")
+    user_only = args.get("user_only")
+    org_only = args.get("org_only")
 
     artifact = args.get("artifact")
     limit, offset, pagination_message = pagination(args)
@@ -907,6 +922,11 @@ def get_sample_command(
         offset=offset,
         artifact=artifact,
         summary=SAMPLE_ARGS[arg_name]["summary"],  # type: ignore[arg-type]
+        user_only=user_only,
+        org_only=org_only,
+        sha1=sha1,
+        sha256=sha256,
+        md5=md5,
     )
 
     sample_details = response
