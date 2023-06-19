@@ -11,7 +11,6 @@ urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
 API_URL = demisto.params().get('url')
-API_KEY = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 
@@ -20,10 +19,11 @@ PROXY = demisto.params().get('proxy')
 
 
 def http_request(data):
-    if not API_KEY:
+    api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
+    if not api_key:
         return_error('API key must be provided.')
     headers = {
-        'X-API-KEY': API_KEY,
+        'X-API-KEY': api_key,
     }
     r = requests.request(
         'POST',
