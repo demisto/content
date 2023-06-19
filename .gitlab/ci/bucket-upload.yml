@@ -544,7 +544,7 @@ sync-buckets-between-projects:
   when: always
   script:
     - |
-      if [[ $TEST_UPLOAD == "true" ]]; then
+      if [[ $TEST_UPLOAD == "true" ]] && [[ $DEMISTO_SDK_NIGHTLY == "false" ]]; then
         echo "Skipping syncing buckets in test upload-flow"
         exit 0
       fi
