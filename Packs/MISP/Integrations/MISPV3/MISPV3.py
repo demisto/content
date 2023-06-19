@@ -566,7 +566,7 @@ def get_organizations_info():
         org_id = organization.get('Organisation').get('id')
         org_name = organization.get('Organisation').get('name')
         if org_id and org_name:
-            org_info.append({'organisation_name':org_name, 'organisation_id': org_id})
+            org_info.append({'organisation_name': org_name, 'organisation_id': org_id})
     return CommandResults(raw_response=org_info)
 
 
