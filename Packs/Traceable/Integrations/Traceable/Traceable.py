@@ -24,6 +24,9 @@ from string import Template
 from datetime import datetime, timezone
 import logging
 from concurrent.futures import ThreadPoolExecutor
+import requests
+from requests.adapters import HTTPAdapter, Retry
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -521,7 +524,7 @@ class Client(BaseClient):
         if response is not None and response.status_code != 200:
             if response.text is not None:
                 msg = "Error occurred: " + response.text + \
-                    " | Status Code: " + response.status_code
+                    " | Status Code: " + str(response.status_code)
                 logging.error(msg)
                 raise Exception(msg)
 
@@ -641,6 +644,18 @@ class Client(BaseClient):
 
         for domain_event, future in future_list:
             trace_results = future.result()
+            domain_event["type"] = "Exploit"
+            if domain_event["name"] is not None and domain_event["name"]["value"] is not None:
+                domain_event["displayname"] = domain_event["name"]["value"]
+                domain_event["name"] = domain_event["name"]["value"]
+            if domain_event["actorCountry"] is not None and domain_event["actorCountry"]["value"] is not None:
+                domain_event["country"] = domain_event["actorCountry"]["value"]
+            if domain_event["actorIpAddress"] is not None and domain_event["actorIpAddress"]["value"] is not None:
+                domain_event["sourceip"] = domain_event["actorIpAddress"]["value"]
+            if domain_event["securityScoreCategory"] is not None and domain_event["securityScoreCategory"]["value"] is not None:
+                domain_event["riskscore"] = domain_event["securityScoreCategory"]["value"]
+                domain_event["severity"] = domain_event["securityScoreCategory"]["value"]
+
             if Helper.is_error(trace_results, "data", "spans", "results"):
                 msg = "Error Object: " + \
                     json.dumps(result) + ". Couldn't get the Span."
@@ -739,11 +754,17 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     latest_created_time = last_fetch
     incidents = []
     items = client.get_threat_events(last_fetch, datetime.now())
+    demisto.info("Retrieved " + str(len(items)) + " records.")
     logging.debug("First Incident: " + json.dumps(items[0], indent=3))
     for item in items:
         incident_created_time = datetime.fromtimestamp(item['timestamp']['value'] / 1000)
         incident = {
-            'name': item['name']['value'],
+            'name': item['name'],
+            'displayname': item['displayname'],
+            'country': item['country'],
+            'sourceip': item['sourceip'],
+            'riskscore': item['riskscore'],
+            # 'severity': item['severity'],
             'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item)
         }

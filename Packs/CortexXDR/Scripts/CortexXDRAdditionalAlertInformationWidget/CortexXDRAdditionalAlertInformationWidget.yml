@@ -2,7 +2,6 @@ comment: This script retrieves additional original alert information from the co
 commonfields:
   id: CortexXDRAdditionalAlertInformationWidget
   version: -1
-enabled: false
 name: CortexXDRAdditionalAlertInformationWidget
 script: '-'
 system: false

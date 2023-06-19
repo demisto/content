@@ -110,6 +110,54 @@
         "FeedTAXII": {
             "mandatory": false,
             "display_name": "TAXII Feed (1.x, 2.x)"
+        },
+        "FeedAWS": {
+            "mandatory": false,
+            "display_name": "AWS IP Feed"
+        },
+        "FeedAzure": {
+            "mandatory": false,
+            "display_name": "Azure IP Feed"
+        },
+        "CiscoWebExFeed": {
+            "mandatory": false,
+            "display_name": "Cisco webex assets Feed"
+        },
+        "FeedCloudflare": {
+            "mandatory": false,
+            "display_name": "Cloudflare IP Feed"
+        },
+        "FeedGCPWhitelist": {
+            "mandatory": false,
+            "display_name": "Google IP Feed"
+        },
+        "FeedAzureADConnectHealth": {
+            "mandatory": false,
+            "display_name": "Azure AD Connect Health assets Feed"
+        },
+        "FeedMicrosoftIntune": {
+            "mandatory": false,
+            "display_name": "Microsoft Intune assets Feed"
+        },
+        "FeedOffice365": {
+            "mandatory": false,
+            "display_name": "Office 365 assets Feed"
+        },
+        "FeedPublicDNS": {
+            "mandatory": false,
+            "display_name": "Public DNS servers IP Feed"
+        },
+        "FeedZoom": {
+            "mandatory": false,
+            "display_name": "Zoom assets Feed"
+        },
+        "FeedFastly": {
+            "mandatory": false,
+            "display_name": "Fastly IP Feed"
+        },
+        "FeedLOLBAS": {
+                "mandatory": false,
+                "display_name": "LOLBAS Tools Feed"
         }
     },
     "marketplaces": [

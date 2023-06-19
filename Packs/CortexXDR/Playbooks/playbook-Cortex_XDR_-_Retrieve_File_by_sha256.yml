@@ -415,5 +415,5 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
-- No tests (auto formatted)
+- Test Playbook - Cortex XDR - Retrieve File by sha256
 fromversion: 6.5.0

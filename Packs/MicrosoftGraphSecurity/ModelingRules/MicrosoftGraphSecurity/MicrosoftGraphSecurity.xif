@@ -1,26 +1,27 @@
 [MODEL: dataset=msft_graph_security_alerts_raw]
 filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alerts_v2"
 | alter 
-    alertEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null))),
-    analyzedMessageEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null))),
-    cloudApplicationEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null))),
-    deviceEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null))),
-    fileEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null))),
-    ipEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null))),
-    mailboxEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null))),
-    processEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null))),
-    registryKeyEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null))),
-    registryValueEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null))),
-    urlEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null))),
-    userEvidence_json = to_json_string(arraymap(evidence -> [], if("@element" ~= "userEvidence", "@element", null)))
+    alertEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null)), ""),
+    analyzedMessageEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)), ""),
+    analyzedMessageEvidence2_json = arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)),
+    cloudApplicationEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null)), ""),
+    deviceEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null)), ""),
+    fileEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null)), ""),
+    ipEvidence_json = arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null)),
+    mailboxEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null)), ""),
+    processEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null)), ""),
+    registryKeyEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null)), ""),
+    registryValueEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null)), ""),
+    urlEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null)), ""),
+    userEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "userEvidence", "@element", null)), "")
 | alter
 // userEvidence Fields
-    userEvidence_userAccount_accountName = json_extract_scalar(processEvidence_json, "$.userAccount.accountName"),
-    userEvidence_userAccount_domainName = json_extract_scalar(processEvidence_json, "$.userAccount.domainName"),
-    userEvidence_userAccount_userSid = json_extract_scalar(processEvidence_json, "$.userAccount.userSid"),
-    userEvidence_userAccount_azureAdUserId = json_extract_scalar(processEvidence_json, "$.userAccount.azureAdUserId"),
-    userEvidence_userAccount_userPrincipalName = json_extract_scalar(processEvidence_json, "$.userAccount.userPrincipalName"),
-    userEvidence_userAccount_displayName = json_extract_scalar(processEvidence_json, "$.userAccount.displayName"),
+    userEvidence_userAccount_accountName = json_extract_scalar(userEvidence_json, "$.userAccount.accountName"),
+    userEvidence_userAccount_domainName = json_extract_scalar(userEvidence_json, "$.userAccount.domainName"),
+    userEvidence_userAccount_userSid = json_extract_scalar(userEvidence_json, "$.userAccount.userSid"),
+    userEvidence_userAccount_azureAdUserId = json_extract_scalar(userEvidence_json, "$.userAccount.azureAdUserId"),
+    userEvidence_userAccount_userPrincipalName = json_extract_scalar(userEvidence_json, "$.userAccount.userPrincipalName"),
+    userEvidence_userAccount_displayName = json_extract_scalar(userEvidence_json, "$.userAccount.displayName"),
 // alertEvidence Fields
     alertEvidence_tags = json_extract_scalar(alertEvidence_json, "$.tags"),
 // analyzedMessageEvidence Fields
@@ -28,8 +29,8 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     analyzedMessageEvidence_threats = json_extract_scalar(analyzedMessageEvidence_json, "$.threats"),
     analyzedMessageEvidence_internetMessageId = json_extract_scalar(analyzedMessageEvidence_json, "$.internetMessageId"),
     analyzedMessageEvidence_receivedDateTime = json_extract_scalar(analyzedMessageEvidence_json, "$.receivedDateTime"),
-    analyzedMessageEvidence_recipientEmailAddress = json_extract_scalar(analyzedMessageEvidence_json, "$.recipientEmailAddress"),
     analyzedMessageEvidence_subject = json_extract_scalar(analyzedMessageEvidence_json, "$.subject"),
+    analyzedMessageEvidence_recipientEmailAddress = arraymap(analyzedMessageEvidence2_json, json_extract_scalar("@element", "$.recipientEmailAddress")),
 // cloudApplicationEvidence Fields
     cloudApplicationEvidence_tags = json_extract_scalar(cloudApplicationEvidence_json, "$.tags"),
     cloudApplicationEvidence_displayName = json_extract_scalar(cloudApplicationEvidence_json, "$.displayName"),
@@ -49,8 +50,8 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     fileEvidence_fileDetails_sha256 = json_extract_scalar(fileEvidence_json, "$.fileDetails.sha256"),
     fileEvidence_fileDetails_signer = json_extract_scalar(fileEvidence_json, "$.fileDetails.signer"),
 // ipEvidence Fields
-    ipEvidence_tags = json_extract_scalar(ipEvidence_json, "$.tags"),
-    ipEvidence_ipAddress = json_extract_scalar(ipEvidence_json, "$.ipAddress"),
+    ipEvidence_tags = arraystring(arraymap(ipEvidence_json, json_extract_scalar("@element", "$.tags")), " "),
+    ipEvidence_ipAddress = arraymap(ipEvidence_json, json_extract_scalar("@element", "$.ipAddress")),
 // mailboxEvidence Fields
     mailboxEvidence_tags = json_extract_scalar(mailboxEvidence_json, "$.tags"),
     mailboxEvidence_displayName = json_extract_scalar(mailboxEvidence_json, "$.displayName"),
@@ -114,7 +115,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     xdm.intermediate.host.hostname = detectionSource,
     xdm.email.message_id = analyzedMessageEvidence_internetMessageId, 
     xdm.email.delivery_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%S %p %z", arraystring(arraycreate(get_email_timestamp, get_email_zone), " ")),
-    xdm.email.recipients = arraycreate(analyzedMessageEvidence_recipientEmailAddress),
+    xdm.email.recipients = analyzedMessageEvidence_recipientEmailAddress,
     xdm.email.subject = analyzedMessageEvidence_subject,
     xdm.source.application.name = cloudApplicationEvidence_displayName,
     xdm.source.cloud.project = cloudApplicationEvidence_instanceName,
@@ -127,9 +128,9 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     xdm.target.file.size = to_integer(fileEvidence_fileDetails_fileSize),
     xdm.target.file.sha256 = fileEvidence_fileDetails_sha256,
     xdm.target.file.signer = fileEvidence_fileDetails_signer,
-    xdm.alert.mitre_techniques = arraycreate(mitreTechniques),
-    xdm.source.ipv4 = check_ipv4,
-    xdm.source.ipv6 = check_ipv6,
+    xdm.alert.mitre_techniques = mitreTechniques,
+    xdm.source.host.ipv4_addresses = check_ipv4,
+    xdm.source.host.ipv6_addresses = check_ipv6,
     xdm.source.user.username = coalesce(mailboxEvidence_displayName, mailboxEvidence_primaryAddress, mailboxEvidence_userAccount_accountName, mailboxEvidence_userAccount_userPrincipalName, processEvidence_userAccount_accountName, processEvidence_userAccount_userPrincipalName, userEvidence_userAccount_accountName, userEvidence_userAccount_userPrincipalName, userEvidence_userAccount_displayName),
     xdm.source.user.domain = coalesce(mailboxEvidence_userAccount_domainName, processEvidence_userAccount_domainName, userEvidence_userAccount_domainName),
     xdm.source.user.identifier = coalesce(mailboxEvidence_userAccount_userSid, processEvidence_userAccount_userSid, userEvidence_userAccount_userSid),

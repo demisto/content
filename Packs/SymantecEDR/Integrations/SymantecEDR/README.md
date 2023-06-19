@@ -1419,13 +1419,14 @@ Cancel a command that is already in progress. Cancel the command execution on al
 
 
 ### file
+
 ***
 Issue a sandbox command of a specific SHA2.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1435,7 +1436,14 @@ Issue a sandbox command of a specific SHA2.
 | timeout_in_seconds | Timeout for polling. Default is 600 seconds. | Optional | 
 | interval_in_seconds | Interval between polling. Default is 10 seconds. Must be 10 or higher. | Optional | 
 
-
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| File.MD5 | String | MD5 hash of the file submitted for analysis. | 
+| File.SHA1 | String | SHA1 hash of the file submitted for analysis. | 
+| File.SHA256 | String | SHA256 hash of the file submitted for analysis. | 

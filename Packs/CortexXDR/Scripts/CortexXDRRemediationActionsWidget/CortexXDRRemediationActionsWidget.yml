@@ -2,7 +2,6 @@ comment: This widget displays Cortex XDR remediation action information.
 commonfields:
   id: CortexXDRRemediationActionsWidget
   version: -1
-enabled: false
 name: CortexXDRRemediationActionsWidget
 script: '-'
 system: false
