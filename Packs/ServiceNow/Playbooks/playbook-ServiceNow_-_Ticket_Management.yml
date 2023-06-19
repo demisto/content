@@ -686,7 +686,7 @@ tasks:
           root: inputs.serviceNowCategory
       comments:
         complex:
-          root: inputs.Comment
+          root: inputs.CommentToAdd
       description:
         complex:
           root: inputs.description
@@ -831,6 +831,11 @@ inputs:
   value: {}
   required: false
   description: 'Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment.'
+  playbookInputQuery:
+- key: serviceNowAssignmentGroup
+  value: {}
+  required: false
+  description: The group to which to assign the new ticket.
   playbookInputQuery:
 outputs:
 - contextPath: ServiceNow.Ticket.ID
