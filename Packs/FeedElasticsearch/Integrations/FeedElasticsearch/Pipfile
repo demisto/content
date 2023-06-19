@@ -9,11 +9,11 @@ pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
+opensearch-py = "*"
 
 [packages]
 elasticsearch = "*"
 elasticsearch-dsl = "*"
-opensearch-py = "*"
 pytest = "*"
 
 [requires]
