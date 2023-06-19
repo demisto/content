@@ -4810,6 +4810,7 @@
         {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],

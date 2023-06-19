@@ -462,3 +462,9 @@ def test_categories_parse_item_as_dict():
 
     return_value = parse_item_as_dict(message, False)
     assert return_value.get("categories") == ['Purple category', 'Orange category']
+
+
+def test_is_empty_object():
+    from EWSv2 import is_empty_object
+    obj = {}
+    assert is_empty_object(obj)
