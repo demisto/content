@@ -340,7 +340,7 @@ def install_packs(client: demisto_client,
     """
     global SUCCESS_FLAG
     if not packs_to_install:
-        logging.info("There is not packs to install on servers. Consolidating installation as success")
+        logging.info("There are no packs to install on servers. Consolidating installation as success")
         return SUCCESS_FLAG
     try:
         for attempt in range(attempts_count - 1, -1, -1):
