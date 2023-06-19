@@ -60,7 +60,8 @@ filter
     xdm.source.process.executable.path = indicatorsValuesExecutablePath,
     xdm.event.description = matchedRules,
     xdm.alert.original_threat_name = originalThreatName,
-    xdm.alert.mitre_techniques = mitreTechniques;
+    xdm.alert.mitre_techniques = mitreTechniques,
+    xdm.event.type = event_type;
 
 filter
     event_type in ("search_detections")
@@ -110,8 +111,8 @@ filter
     xdm.source.user_agent = requestClientApplication,
     xdm.alert.name = threatName,
     xdm.source.ipv6 = arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" contains ":", "@element", null)), ","),
-    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(src, "$."), if("@element" contains ":", "@element", null)), ","));
-
+    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(src, "$."), if("@element" contains ":", "@element", null)), ",")),
+    xdm.event.type = event_type;
 
 filter
     event_type in ("observed_attack_techniques")
@@ -149,7 +150,8 @@ filter
     xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
-    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ",");
+    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
+    xdm.event.type = event_type;
 
 filter
     event_type in ("audit")
@@ -160,4 +162,5 @@ filter
     xdm.event.type = category,
     xdm.event.operation_sub_type = activity,
     xdm.event.outcome_reason = result,
-    xdm.event.description = details;
+    xdm.event.description = details,
+    xdm.event.type = event_type;

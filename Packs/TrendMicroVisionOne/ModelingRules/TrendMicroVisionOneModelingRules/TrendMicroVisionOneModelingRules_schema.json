@@ -8,6 +8,14 @@
          "type":"string",
          "is_array":false
       },
+       "actResult":{
+            "type":"string",
+            "is_array":false
+       },
+       "app":{
+            "type":"string",
+            "is_array":false
+       },
       "accessType":{
          "type":"string",
          "is_array":false
@@ -62,7 +70,7 @@
       },
       "component":{
          "type":"string",
-         "is_array":false
+         "is_array":true
       },
       "deviceGUID":{
          "type":"string",
