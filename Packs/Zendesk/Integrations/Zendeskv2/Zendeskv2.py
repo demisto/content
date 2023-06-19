@@ -736,7 +736,7 @@ class ZendeskClient(BaseClient):
         return CommandResults(outputs_prefix="Zendesk.Ticket.Comment",
                               outputs=comments, readable_output=readable_outputs)
 
-    def _get_comments(self, ticket_id: str, **kwargs) -> list:
+    def _get_comments(self, ticket_id: str, **kwargs):
         for comment in self._paged_request(url_suffix=f'tickets/{ticket_id}/comments', data_field_name='comments', **kwargs):
             for attachment in comment.get('attachments', []):
                 attachment.pop('thumbnails', None)
