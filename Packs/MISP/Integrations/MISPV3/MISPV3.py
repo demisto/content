@@ -9,9 +9,6 @@ from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEv
 from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
 from pymisp.tools import FileObject
-
-
-
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
@@ -1693,4 +1690,3 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-
