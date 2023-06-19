@@ -2408,7 +2408,7 @@ def delete_comment(client: Client, args: dict) -> CommandResults:
 def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
     """Get last sigma analysis for a given file"""
     file_hash = args['file']
-    only_stats = argToBoolean(args['only_stats'])
+    only_stats = argToBoolean(args.get('only_stats', False))
     raw_response = client.file(file_hash)
     data = raw_response['data']
 
