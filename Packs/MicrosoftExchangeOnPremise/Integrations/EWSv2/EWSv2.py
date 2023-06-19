@@ -34,11 +34,12 @@ from exchangelib.version import VERSIONS as EXC_VERSIONS
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
-# overriding this function to prevent error printed when running in debug-mode.
-def our_fullname(self):
+# overriding this function to remove minor version test and remove error throw.
+# opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
+def our_fullname(self):  # pragma: no cover
     for build, api_version, full_name in EXC_VERSIONS:
         if self.build:
-            if self.build.major_version != build.major_version:
+            if self.build.major_version != build.major_version:  # removed 'or self.build.minor_version != build.minor_version'
                 continue
         if self.api_version == api_version:
             return full_name
