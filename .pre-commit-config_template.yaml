@@ -1,3 +1,5 @@
+# This is a template, used and modified by the demisto-sdk pre-commit command. 
+
 exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
 
 repos:
