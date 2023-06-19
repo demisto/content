@@ -5,11 +5,11 @@ import urllib3
 urllib3.disable_warnings()
 
 DEFAULT_HEADERS = {
-    'X-Access-Key': demisto.params().get("Access Key"),
-    'X-Key-Id': demisto.params().get("Key ID"),
+    'X-Access-Key': demisto.params().get('customer_id_creds', {}).get('password') or demisto.params().get("Access Key"),
+    'X-Key-Id': demisto.params().get('key_id_creds', {}).get('password') or demisto.params().get("Key ID"),
     'Content-Type': 'application/json',
 }
-CUSTOMER_ID = demisto.params().get("Customer ID")
+CUSTOMER_ID = demisto.params().get('customer_id_creds', {}).get('identifier') or demisto.params().get("Customer ID")
 BASE_URL = demisto.params().get("url")
 DEFAULT_PAGE_SIZE = 1000
 
@@ -361,10 +361,7 @@ def convert_vulnerability_list_to_cef(vulnerability_list=None):
             input_field = t[0]
             output_field = t[1]
             # print input_field, output_field
-            if input_field in vulnerability:
-                val = vulnerability[input_field]
-            else:
-                val = ""
+            val = vulnerability.get(input_field, '')
             if output_field and val:
                 line += str(output_field) + str(val) + " "
         data.append(line)
@@ -431,10 +428,7 @@ def convert_device_list_to_cef(device_list=None):
                 input_field = t[0]
                 output_field = t[1]
                 # print input_field, output_field
-                if input_field in device_map:
-                    val = device_map[input_field]
-                else:
-                    val = ""
+                val = device_map.get(input_field, '')
                 if output_field and val:
                     line += str(output_field) + str(val) + " "
             data.append(line)
