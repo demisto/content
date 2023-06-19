@@ -948,7 +948,8 @@ def fetch_events(
         client=client,
         first_fetch=first_fetch,
         last_run=last_run,
-        limit=limit
+        limit=limit,
+        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
     )
     demisto.info(f'Fetched amount of observed attack techniques logs: {len(observed_attack_techniques_logs)}')
 
@@ -957,7 +958,8 @@ def fetch_events(
         client=client,
         first_fetch=first_fetch,
         last_run=last_run,
-        limit=limit
+        limit=limit,
+        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
     )
     demisto.info(f'Fetched amount of search detection logs: {len(search_detection_logs)}')
 
