@@ -227,6 +227,11 @@ STATUS_TEXT_TO_NUM_IDP = {'new': "20",
                           'reopened': "25",
                           'in_progress': "30",
                           'closed': "40"}
+
+STATUS_NUM_TO_TEXT_IDP = {20: 'new',
+                          25: 'reopened',
+                          30: 'in Progress',
+                          40: 'closed'}
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
 DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
@@ -569,7 +574,7 @@ def idp_detection_to_incident_context(idp_detection):
             :return: Incident context representation of a incident
             :rtype ``dict``
         """
-    # add_mirroring_fields(idp_detection)
+    add_mirroring_fields(idp_detection)
     if idp_detection.get('status'):
         demisto.debug(f"the status is: {idp_detection.get('status')}")
         idp_detection['status'] = STATUS_TEXT_TO_NUM_IDP.get(idp_detection.get('status'))
@@ -1350,7 +1355,7 @@ def get_incidents_entities(incidents_ids: List):
     return response
 
 
-def get_alerts_entities(incidents_ids: List):
+def get_idp_detection_entities(incidents_ids: List):
     ids_json = {'ids': incidents_ids}
     response = http_request(
         'POST',
@@ -2009,6 +2014,12 @@ def get_remote_data_command(args: Dict[str, Any]):
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
+        elif incident_type == IncidentType.IDP_DETECTION:
+            mirrored_data, updated_object = get_remote_idp_detection_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
+
         else:
             # this is here as prints can disrupt mirroring
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
@@ -2070,6 +2081,23 @@ def get_remote_detection_data(remote_incident_id: str):
 
     updated_object: Dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+    return mirrored_data, updated_object
+
+
+def get_remote_idp_detection_data(remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on an IDP detection.
+    Gets the relevant detection entity from the remote system (CrowdStrike Falcon). The remote system returns a list with this
+    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    """
+    mirrored_data_list = get_idp_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
+    mirrored_data = mirrored_data_list[0]
+
+    if 'status' in mirrored_data:
+        mirrored_data['status'] = STATUS_NUM_TO_TEXT_IDP.get(int(str(mirrored_data.get('status'))))
+
+    updated_object: Dict[str, Any] = {'incident_type': 'incident'}
+    set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
     return mirrored_data, updated_object
 
 
@@ -2479,7 +2507,7 @@ def fetch_incidents():
             filter += f"+{fetch_query}"
         idp_detections_ids = demisto.get(get_alerts_ids(filter_arg=filter, offset=offset), 'resources')
         if idp_detections_ids:
-            raw_res = get_alerts_entities(idp_detections_ids)
+            raw_res = get_idp_detection_entities(idp_detections_ids)
             if "resources" in raw_res:
                 for idp_detection in demisto.get(raw_res, "resources"):
                     idp_detection['incident_type'] = incident_type
