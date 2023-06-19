@@ -3569,7 +3569,7 @@ script:
       type: String
     - contextPath: GitLab.PipelineSchedule.last_pipeline.status
       description: Status of the last pipeline that was run by the scheduled pipeline. Relevant only when the pipeline schedule ID is given.
-      type: String 
+      type: String
   - name: gitlab-jobs-list
     arguments:
     - default: false
@@ -3651,7 +3651,7 @@ script:
       isArray: false
       name: artifact_path_suffix
       required: true
-      secret: false 
+      secret: false
     description: Gets an artifact from a given artifact path, corresponding to a given job ID.
     execution: false
     outputs:
@@ -3691,8 +3691,8 @@ script:
       required: false
       secret: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: On which Slack channel to notify about the success/failure of this pipeline
       isArray: false
@@ -3758,7 +3758,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.5.0
 tests:
 - Test-GitLab-v2
