@@ -2166,6 +2166,10 @@ script:
       name: service_id
       required: false
       secret: false
+    - default: false
+      description: Drive or NTFS Mount path for which MFT is requested.
+      name: path
+      required: false
     deprecated: false
     description: Initiates the MFT download to the endpoint server.
     execution: false

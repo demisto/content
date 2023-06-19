@@ -249,7 +249,7 @@ def test_get_incidents(mocker):
 
         """
 
-    fetch_responses = util_load_json('test_data/fetch_results.json')
+    fetch_responses = util_load_json('test_data/get_incidents_results.json')
     mocked_http_response = fetch_responses['get_inc_response']
     mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http_response)
 
@@ -257,7 +257,14 @@ def test_get_incidents(mocker):
     assert items == fetch_responses['get_inc_results']
 
 
-def test_fetch_incidents(mocker):
+@pytest.mark.parametrize(
+    'import_alerts, test_data_key',
+    [
+        (True, "fetch_incidents_with_alerts"),
+        (False, "fetch_incidents_without_alerts"),
+    ]
+)
+def test_fetch_incidents(mocker, import_alerts: bool, test_data_key: str):
     """
             Given:
             client with fetch parameters
@@ -269,12 +276,14 @@ def test_fetch_incidents(mocker):
              Assert that the incidents received are as expected
 
         """
-    fetch_responses = util_load_json('test_data/fetch_results.json')
-    mocked_http_response = fetch_responses['get_inc_response']
-    mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http_response)
+    fetch_responses = util_load_json('test_data/fetch_incidents.json')
+    mocked_http__incidents_response = fetch_responses['list_incidents_request'][0]
+    mocked_http__alerts_response = fetch_responses['incident_list_alerts_request'][0]
+    mocker.patch.object(client, 'list_incidents_request', return_value=mocked_http__incidents_response)
+    mocker.patch.object(client, 'incident_list_alerts_request', return_value=mocked_http__alerts_response)
 
-    incidents = fetch_incidents(client)
-    assert incidents == fetch_responses['fetch_results']
+    incidents = fetch_incidents(client, params={"import_alerts": import_alerts})
+    assert incidents == fetch_responses[test_data_key][0]
 
 
 def test_generate_token(mocker):

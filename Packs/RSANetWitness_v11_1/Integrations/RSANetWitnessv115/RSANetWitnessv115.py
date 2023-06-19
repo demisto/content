@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Tuple
+from urllib3 import disable_warnings
 
 ERROR_TITLES = {
     400: "400 Bad Request - The request was malformed, check the given arguments\n",
@@ -175,9 +176,9 @@ class Client(BaseClient):
 
         return response
 
-    def mft_download_request_request(self, agent_id: Optional[str], service_id: Optional[str]) -> dict:
+    def mft_download_request_request(self, agent_id: Optional[str], service_id: Optional[str], path: Optional[str]) -> dict:
         service_id = service_id or self.service_id
-        params = assign_params(serviceId=service_id)
+        params = assign_params(serviceId=service_id, path=path)
         response = self._http_request('POST', f'rest/api/host/{agent_id}/download/mft', params=params,
                                       empty_valid_codes=[200], return_empty_response=True)
 
@@ -726,8 +727,9 @@ def file_download_command(client: Client, args: Dict[str, Any]) -> CommandResult
 def mft_download_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
+    path = args.get('path')
 
-    client.mft_download_request_request(agent_id, service_id)
+    client.mft_download_request_request(agent_id, service_id, path=path)
     command_results = CommandResults(
         readable_output=f'MFT download request for host {agent_id} sent successfully'
     )
@@ -826,14 +828,14 @@ def fetch_alerts_related_incident(client: Client, incident_id: str):
             id_=incident_id,
             page_size=None
         )
-        alerts.extend(response_body.get('items'))
-        has_next = response_body.get('hasNext')
+        alerts.extend(response_body.get('items', []))
+        has_next = response_body.get('hasNext', False)
         page_number += 1
 
     return alerts
 
 
-def fetch_incidents(client: Client, params) -> list:
+def fetch_incidents(client: Client, params: dict) -> list:
     total_items, last_fetched_ids, timestamp = client.get_incidents()
     incidents: List[Dict] = []
     new_ids = []
@@ -843,8 +845,12 @@ def fetch_incidents(client: Client, params) -> list:
         item['incident_url'] = client.get_incident_url(inc_id)
 
         # add to incident object an array of all related alerts
-        if params.get('import_alerts', False):  # need to check if is true always
+        if params.get('import_alerts', False):
             item['alerts'] = fetch_alerts_related_incident(client, item.get('id'))
+            if alerts := item.get('alerts'):
+                if alerts_ids := [alert.get('id') for alert in alerts]:
+                    item['alerts_ids'] = alerts_ids
+
         incident = {"name": f"RSA NetWitness 11.5 {item.get('id')} - {item.get('title')}",
                     "occurred": item.get('created'),
                     "rawJSON": json.dumps(item)}
@@ -1174,7 +1180,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        disable_warnings()
         client: Client = Client(url, verify_certificate, proxy, headers=headers, service_id=service_id,
                                 fetch_time=fetch_time, fetch_limit=fetch_limit, cred=cred)
         client.get_token()
