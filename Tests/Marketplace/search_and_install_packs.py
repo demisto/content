@@ -412,7 +412,9 @@ def search_pack_and_its_dependencies(client: demisto_client,
                 if p['id'] not in collected_dependencies
             }:
                 collected_dependencies += pack_and_its_dependencies
-                batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))
+                pack_and_its_dependencies_as_list = list(pack_and_its_dependencies.values())
+                packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
+                batch_packs_install_request_body.append(pack_and_its_dependencies_as_list)
         else:
             for pack in current_packs_to_install:
                 if pack['id'] not in packs_to_install:
