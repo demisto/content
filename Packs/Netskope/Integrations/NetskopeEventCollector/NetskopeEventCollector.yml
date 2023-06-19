@@ -12,7 +12,6 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: API token
-  hidden: false
   hiddenusername: true
   name: credentials
   required: true
@@ -21,18 +20,16 @@ configuration:
 - additionalinfo: The API version to use (v1 or v2).
   defaultvalue: v2
   display: API Version
-  hidden: false
   name: api_version
   required: false
   type: 15
   section: Connect
   options:
-    - v1
-    - v2
+  - v1
+  - v2
 - additionalinfo: 'The first fetch is limited to the last 50,000 events (for each event type).'
   defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch
   required: false
   section: Collect
@@ -41,7 +38,6 @@ configuration:
   defaultvalue: '1000'
   display: Max events per fetch
   section: Collect
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -67,8 +63,8 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: true
     - default: false
       description: The maximum number of alerts to return (maximum value - 10000).

@@ -1092,4 +1092,3 @@ script:
       description: The Policy Name
     description: Get a specific policy details. If no args supplied, default policy is retrieved
   isfetch: true
-hidden: false

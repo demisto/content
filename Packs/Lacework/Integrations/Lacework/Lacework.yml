@@ -21,7 +21,6 @@ configuration:
   type: 4
 - defaultvalue: high
   display: Lacework Alert Severity Threshold
-  hidden: false
   name: lacework_event_severity
   options:
   - critical
@@ -41,7 +40,6 @@ configuration:
   type: 13
 - defaultvalue: '7'
   display: Lacework Alert History to Import (in days)
-  hidden: false
   name: lacework_event_history
   options:
   - '1'
@@ -53,8 +51,7 @@ configuration:
   - '7'
   required: false
   type: 15
-description: Lacework provides end-to-end cloud security automation for AWS, Azure,
-  and GCP with a comprehensive view of risks across cloud workloads and containers.
+description: Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.
 display: Lacework
 name: Lacework
 script:
@@ -69,8 +66,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Details
-      description: The scope of data to retrieve from Lacework for the specified Alert
-        ID
+      description: The scope of data to retrieve from Lacework for the specified Alert ID
       isArray: false
       name: scope
       predefined:
@@ -112,8 +108,7 @@ script:
       description: The alert description provides why the potential threat occurred.
       type: String
     - contextPath: Lacework.Alert.alertInfo.subject
-      description: The alert subject. In some cases, the alert subject can be the
-        same as the alert name.
+      description: The alert subject. In some cases, the alert subject can be the same as the alert name.
       type: String
     - contextPath: Lacework.Alert.entityMap
       description: The entity map for the alert.
@@ -142,8 +137,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
+      description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       isArray: false
       name: rec_id
       required: false
@@ -293,8 +287,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
+      description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       isArray: false
       name: rec_id
       required: false
@@ -438,8 +431,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
+      description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       isArray: false
       name: rec_id
       required: false
@@ -583,15 +575,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The primary ID that is used to fetch the report; for example, AWS
-        Account ID or Azure Tenant ID.
+      description: The primary ID that is used to fetch the report; for example, AWS Account ID or Azure Tenant ID.
       isArray: false
       name: primary_query_id
       required: false
       secret: false
     - default: false
-      description: The secondary ID that is used to fetch the report; for example,
-        GCP Project ID or Azure Subscription ID.
+      description: The secondary ID that is used to fetch the report; for example, GCP Project ID or Azure Subscription ID.
       isArray: false
       name: secondary_query_id
       required: false
@@ -662,8 +652,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Setting the 'rec_id' will filter compliance results for the specified
-        Recommendation ID.
+      description: Setting the 'rec_id' will filter compliance results for the specified Recommendation ID.
       isArray: false
       name: rec_id
       required: false
@@ -789,8 +778,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex.
-        "2020-01-01T01:10:00Z")
+      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       isArray: false
       name: start_time
       required: false
@@ -808,8 +796,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An array of strings to specify which top-level fields of the response
-        schema you want to receive.
+      description: An array of strings to specify which top-level fields of the response schema you want to receive.
       isArray: false
       name: returns
       required: false
@@ -871,8 +858,7 @@ script:
       description: The SHA256 hash of the layer which introduced the vulnerability
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.src
-      description: The path within the container identifying the source of the vulnerability
-        data
+      description: The path within the container identifying the source of the vulnerability data
       type: String
     - contextPath: Lacework.Vulnerability.Container.featureProps.version_format
       description: The format of the version data for the vulnerable package
@@ -881,8 +867,7 @@ script:
       description: An integer representing whether a fix is available for the vulnerability
       type: Number
     - contextPath: Lacework.Vulnerability.Container.fixInfo.fixed_version
-      description: The version in which the vulnerability is fixed for the CVE and
-        package
+      description: The version in which the vulnerability is fixed for the CVE and package
       type: String
     - contextPath: Lacework.Vulnerability.Container.imageId
       description: The image ID of the container identified in the evaluation
@@ -904,8 +889,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex.
-        "2020-01-01T01:10:00Z")
+      description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       isArray: false
       name: start_time
       required: false
@@ -923,8 +907,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An array of strings to specify which top-level fields of the response
-        schema you want to receive.
+      description: An array of strings to specify which top-level fields of the response schema you want to receive.
       isArray: false
       name: returns
       required: false
@@ -974,8 +957,7 @@ script:
       description: An integer representing whether a fix is available for the vulnerability
       type: String
     - contextPath: Lacework.Vulnerability.Host.fixInfo.fixed_version
-      description: The version in which the vulnerability is fixed for the CVE and
-        package
+      description: The version in which the vulnerability is fixed for the CVE and package
       type: String
     - contextPath: Lacework.Vulnerability.Host.machineTags
       description: A string representing the machine tags in key/value pairs
