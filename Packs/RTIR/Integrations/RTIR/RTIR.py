@@ -486,8 +486,7 @@ def edit_ticket():
             content += '\n' + key + value
 
     if arguments_given:
-        encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
-        edited_ticket = edit_ticket_request(ticket_id, encoded)
+        edited_ticket = edit_ticket_request(ticket_id, f"content={urllib.parse.quote_plus(content)}")
         if "200 Ok" in edited_ticket.text:
             ticket_context = ({
                 'ID': ticket_id,
@@ -815,10 +814,9 @@ def add_comment_attachment(ticket_id, encoded, files_data):
 
 def add_comment():
     ticket_id = demisto.args().get('ticket-id')
-    text = demisto.args().get('text')
     content = 'Action: comment\n'
-    if text:
-        content += '\nText: ' + text.encode('utf-8')
+    if text := demisto.args().get('text'):
+        content += f'\nText: {text}'
     attachments = demisto.args().get('attachment', '')
     files_data = {}
     if attachments:
@@ -833,7 +831,7 @@ def add_comment():
             files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
             content += 'Attachment: {}\n'.format(file_name)
 
-    encoded = "content=" + urllib.parse.quote_plus(content)
+    encoded = f"content={urllib.parse.quote_plus(content)}"
     if attachments:
         files_data.update({'content': (None, content)})  # type: ignore
         comment = add_comment_attachment(ticket_id, encoded, files_data)
