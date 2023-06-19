@@ -10,7 +10,7 @@ alter BillingLat = json_extract_scalar(BillingAddress , "$.latitude"),
     xdm.source.location.city = coalesce(BillingCity,ShippingCity),
     xdm.source.location.country = coalesce(BillingState,ShippingState),
     xdm.event.description = Description,
-    xdm.source.user.ou = Tradestyle
+    xdm.source.user.ou = Tradestyle,
     xdm.source.location.latitude = coalesce(BillingLat,ShippingLatitude),
     xdm.source.location.longitude = coalesce(BillingLong,ShippingLongitude),
     xdm.network.session_id = MasterRecordId,
@@ -38,8 +38,6 @@ alter xdm.target.resource.id = Id,
     xdm.target.url = coalesce(PdfDownloadUrl,ContentDownloadUrl,DistributionPublicUrl),
     xdm.network.session_id = RelatedRecordId;
 
-[MODEL: dataset = salesforce_eventlogfile_raw ] checking the field names. all of them started with _ and ends with _
-
 [MODEL: dataset = salesforce_group_raw ]
  alter xdm.target.resource.id = coalesce(Id,RelatedId),
     xdm.target.resource.name = Name,
@@ -59,7 +57,7 @@ alter xdm.target.resource.id = coalesce(Id,Tenant),
     xdm.target.resource.type = MetricsType;
 
 [MODEL: dataset = salesforce_tenantsecurityuserperm_raw ]
-| alter xdm.target.resource.id = coalesce(Id,Tenant),
+alter xdm.target.resource.id = coalesce(Id,Tenant),
     xdm.target.resource.name = coalesce(Name,TenantName),
     xdm.event.operation_sub_type = Action,
     xdm.source.user.username = Username,
