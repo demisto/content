@@ -5449,7 +5449,8 @@ def put_file_get_successful_action_results(client, res):
 def main():  # pragma: no cover
     params: dict = demisto.params()
     params_endpoint_type = params.get('endpoint_type')
-    params_url = params.get('url') or 'https://api.securitycenter.windows.com'
+    params_url = params.get('url') or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE]
+    params_url = params.get('url') or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE]
     is_gcc = params.get('is_gcc', False)
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     auth_id = params.get('_auth_id') or params.get('auth_id')
@@ -5479,7 +5480,7 @@ def main():  # pragma: no cover
         if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-        elif not enc_key and not (certificate_thumbprint and private_key):
+        elif not enc_key and (not certificate_thumbprint or not private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
         if not auth_id:
             raise Exception('Authentication ID must be provided.')
@@ -5510,9 +5511,8 @@ def main():  # pragma: no cover
             if auth_type == 'Authorization Code':
                 raise Exception('Test-module is not available when using Authentication-code auth flow. '
                                 'Please use `!microsoft-atp-test` command to test the connection')
-            else:
-                test_module(client)
-                demisto.results('ok')
+            test_module(client)
+            demisto.results('ok')
 
         elif command == 'microsoft-atp-test':
             test_module(client)
@@ -5662,7 +5662,6 @@ def main():  # pragma: no cover
             return_outputs(*update_indicator_command(client, args))
         elif command == 'microsoft-atp-indicator-delete':
             return_outputs(delete_indicator_command(client, args))
-        # using security-center api for indicators
         elif command in ('microsoft-atp-sc-indicator-list', 'microsoft-atp-sc-indicator-get-by-id'):
             return_results(sc_list_indicators_command(client, args))
         elif command in ('microsoft-atp-sc-indicator-update', 'microsoft-atp-sc-indicator-create'):

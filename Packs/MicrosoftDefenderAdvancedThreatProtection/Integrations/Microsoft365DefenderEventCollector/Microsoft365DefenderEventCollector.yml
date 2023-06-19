@@ -69,10 +69,9 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- defaultvalue: 'https://api.securitycenter.microsoft.com'
-  display: Server URL (e.g., https://api.securitycenter.microsoft.com)
+- display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
-  required: true
+  required: false
   type: 0
   section: Connect
   advanced: true

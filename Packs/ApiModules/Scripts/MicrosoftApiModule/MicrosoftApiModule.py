@@ -567,13 +567,12 @@ def microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_ur
         endpoint_type = "com"  # Default to "com"
         if is_gcc:  # Backward compatible.
             endpoint_type = "gcc"
-        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+            params_url = MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
 
         if params_url is None:
             if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
                 raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
             raise DemistoException("Endpoint type is not set and no URL was provided.")
-
     else:
         endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE[params_endpoint_type]  # type: ignore[assignment]
         params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]

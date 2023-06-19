@@ -152,11 +152,11 @@ configuration:
   section: Collect
 - display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
-  required: true
+  required: false
   type: 0
   section: Connect
   advanced: true
-  defaultvalue: https://api.securitycenter.microsoft.com
+  defaultvalue:
   additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   hidden: false
 - display: Use a self-deployed Azure Application
