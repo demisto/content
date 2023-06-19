@@ -1,7 +1,7 @@
 var sendRequest = function(method, url, body) {
-    var username = (params.credentials_token!== undefined)? params.credentials_token.identifier : params.sid;
-    var password = (params.credentials_token!== undefined)? params.credentials_token.password : params.token;
-    if (!(username && password)){
+    var account_sid = (params.credentials_token!== undefined)? params.credentials_token.identifier : params.sid;
+    var auth_token = (params.credentials_token!== undefined)? params.credentials_token.password : params.token;
+    if (!(account_sid && auth_token)){
         throw('Account SID and Auth token must be provided.');
     }
     var res = http(
@@ -10,8 +10,8 @@ var sendRequest = function(method, url, body) {
             Method: method,
             Body: body,
             Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
-            Username: username,
-            Password: password
+            Username: account_sid,
+            auth_token: auth_token
         },
         params.insecure,
         params.proxy
