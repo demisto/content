@@ -3001,7 +3001,8 @@ tasks:
       - "83"
     scriptarguments:
       AutoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.AutoBlockIndicators
       AutoCommit:
         complex:
           root: inputs.AutoCommit
@@ -3038,30 +3039,13 @@ tasks:
           accessor: SHA256
       URL:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
+          root: URL
+          accessor: Data
           transformers:
           - operator: uniq
       UserVerification:
-        simple: "True"
+        complex:
+          root: inputs.UserVerification
       Username:
         complex:
           root: DBotScore
@@ -3304,6 +3288,18 @@ inputs:
     simple: "10"
   required: false
   description: The maximum number of results to retrieve. Default is 10.
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: 'The input setting indicates whether to Automatically Block Indicators related to the SolarStrom Attack Default: True'
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: 'The input indicates whether the user should verify the indicators before continuing with the playbook Default: Fasle'
   playbookInputQuery:
 outputs: []
 tests:

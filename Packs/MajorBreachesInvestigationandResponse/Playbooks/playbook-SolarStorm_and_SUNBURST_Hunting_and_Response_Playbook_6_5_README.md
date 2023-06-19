@@ -22,17 +22,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Block Indicators - Generic v3
+* Panorama Query Logs
+* Office 365 and Azure Hunting
+* Block IP - Generic v3
+* Palo Alto Networks - Hunting And Threat Detection
+* Office 365 and Azure Configuration Analysis
+* Search Endpoint by CVE - Generic
+* Isolate Endpoint - Generic V2
+* CVE Enrichment - Generic v2
 * SolarStorm Activity Behavior Hunting playbook
 * Search Endpoints By Hash - Generic V2
-* Isolate Endpoint - Generic V2
-* Block IP - Generic v3
-* CVE Enrichment - Generic v2
-* Panorama Query Logs
-* Office 365 and Azure Configuration Analysis
-* Block Indicators - Generic v3
-* Office 365 and Azure Hunting
-* Search Endpoint by CVE - Generic
-* Palo Alto Networks - Hunting And Threat Detection
 
 ### Integrations
 
@@ -40,20 +40,20 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* UnEscapeIPs
-* SearchIncidentsV2
-* UnEscapeURLs
 * CreateIndicatorsFromSTIX
-* http
+* UnEscapeURLs
 * FileCreateAndUploadV2
+* http
+* SearchIncidentsV2
+* UnEscapeIPs
 
 ### Commands
 
-* createNewIndicator
-* expanse-get-issues
-* extractIndicators
-* closeInvestigation
 * appendIndicatorField
+* closeInvestigation
+* expanse-get-issues
+* createNewIndicator
+* extractIndicators
 
 ## Playbook Inputs
 
@@ -72,6 +72,8 @@ This playbook does not use any integrations.
 | DeviceGroup | Target Device Group \(Panorama only\)  |  | Optional |
 | O365_AdminRolesList | Comma-separated list of Service O365 admin roles. |  | Optional |
 | Mialboxes_Retrieve_Limit | The maximum number of results to retrieve. Default is 10. | 10 | Optional |
+| AutoBlockIndicators | The input setting indicates whether to Automatically Block Indicators related to the SolarStrom Attack Default: True | True | Optional |
+| UserVerification | The input indicates whether the user should verify the indicators before continuing with the playbook Default: Fasle | False | Optional |
 
 ## Playbook Outputs
 
