@@ -45,9 +45,9 @@ class LastRunTimeLogsLimitFieldNames(Enum):
 
 
 class LogTypes(Enum):
-    OBSERVED_ATTACK_TECHNIQUES = 'observed_attack_techniques'
+    OBSERVED_ATTACK_TECHNIQUES = 'observed_attack_technique'
     WORKBENCH = 'workbench'
-    SEARCH_DETECTIONS = 'search_detections'
+    SEARCH_DETECTIONS = 'search_detection'
     AUDIT = 'audit'
 
 

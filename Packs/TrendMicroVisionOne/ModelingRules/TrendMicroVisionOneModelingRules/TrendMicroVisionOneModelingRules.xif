@@ -37,7 +37,7 @@ filter
     xdm.event.outcome_reason = investigationStatus,
     xdm.network.http.url = workbenchLink,
     xdm.source.application.name = alertProvider,
-    xdm.event.original_event_type = model,
+    xdm.event.type = model,
     xdm.alert.severity = to_string(score),
     xdm.event.log_level = severity,
     xdm.alert.description = description,
@@ -61,10 +61,10 @@ filter
     xdm.event.description = matchedRules,
     xdm.alert.original_threat_name = originalThreatName,
     xdm.alert.mitre_techniques = mitreTechniques,
-    xdm.event.type = event_type;
+    xdm.event.original_event_type = event_type;
 
 filter
-    event_type in ("search_detections")
+    event_type in ("search_detection")
 | alter
     xdm.event.outcome_reason = arraystring(json_extract_array(act, "$."), ","),
     xdm.alert.original_threat_name = behaviorCat,
@@ -73,7 +73,7 @@ filter
     xdm.target.ipv4 = arraystring(json_extract_array(dst, "$."), ","),
     xdm.source.host.device_id = endpointGUID,
     xdm.event.id = eventId,
-    xdm.event.type = eventName,
+    xdm.event.description = eventName,
     xdm.event.operation_sub_type = eventSubName,
     xdm.observer.type = mpname,
     xdm.observer.version = mpver,
@@ -88,7 +88,7 @@ filter
     xdm.alert.original_alert_id = uuid,
     xdm.observer.action = actResult,
     xdm.network.application_protocol = app,
-    xdm.event.original_event_type = blocking,
+    xdm.event.type = blocking,
     xdm.alert.severity = cat,
     xdm.source.agent.version = arraystring(json_extract_array(component,  "$."), ","),
     xdm.source.process.name = coalesce(deviceProcessName, processName),
@@ -112,12 +112,12 @@ filter
     xdm.alert.name = threatName,
     xdm.source.ipv6 = arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" contains ":", "@element", null)), ","),
     xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" not contains ":", "@element", null)), ","), arraystring(arraymap(json_extract_array(src, "$."), if("@element" contains ":", "@element", null)), ",")),
-    xdm.event.type = event_type;
+    xdm.event.original_event_type = event_type;
 
 filter
-    event_type in ("observed_attack_techniques")
+    event_type in ("observed_attack_technique")
 | alter
-    xdm.event.original_event_type = source,
+    xdm.event.type = source,
     xdm.session_context_id = uuid,
     xdm.source.agent.identifier = json_extract_scalar(endpoint, "$.agentGuid"),
     xdm.source.host.os = json_extract_scalar(detail, "$.osName"),
@@ -151,7 +151,7 @@ filter
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSigner"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ","),
     xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ","),
-    xdm.event.type = event_type;
+    xdm.event.original_event_type = event_type;
 
 filter
     event_type in ("audit")
@@ -163,4 +163,4 @@ filter
     xdm.event.operation_sub_type = activity,
     xdm.event.outcome_reason = result,
     xdm.event.description = details,
-    xdm.event.type = event_type;
+    xdm.event.original_event_type = event_type;
