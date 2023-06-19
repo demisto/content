@@ -2458,7 +2458,7 @@ script:
       - Safe
       required: false
     - auto: PREDEFINED
-      description: "The server pool protocol. HTTP - Specifies that the server pool governs HTTP traffic. Specific options for configuring an HTTP server pool become available. FTP - Specifies that the server pool governs FTP traffic. Specific options for configuring an FTP server pool become available. ADFSPIP - Specifies that the server pool governs ADFSPIP traffic. Specific options for configuring an ADFSPIP server pool become available. In case you use FTP/ADFSPIP make sure it enabled in the “Feature Visibility” (under system->config). Supports API version 2 only."
+      description: "The server pool protocol. HTTP - Specifies that the server pool governs HTTP traffic. Specific options for configuring an HTTP server pool become available. FTP - Specifies that the server pool governs FTP traffic. Specific options for configuring an FTP server pool become available. ADFSPIP - Specifies that the server pool governs ADFSPIP traffic. Specific options for configuring an ADFSPIP server pool become available. In case you use FTP/ADFSPIP make sure it enabled in the “Feature Visibility” (under system->config). Supports API version 2 only. Relevant when type=Reverse Proxy."
       isArray: false
       name: protocol
       predefined:
@@ -2510,6 +2510,14 @@ script:
     - description: Enter a name for the AD FS Server. It should be the federation service name. This option is mandatory if the AD FS Server needs to verify the server name in the SSL handshake. Relevant when protocol=ADFSPIP. Supports API version 2 only.
       isArray: false
       name: adfs_server_name
+      required: false
+    - description: Health Check Source IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty.
+      isArray: false
+      name: health_check_source_ip
+      required: false
+    - description: Health Check Source v6 IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty.
+      isArray: false
+      name: health_check_source_ip_v6
       required: false
     deprecated: false
     description: Create a server pool group. Server pools define a group of one or more physical or domain servers (web servers) that FortiWeb distributes connections among, or where the connections pass through to, depending on the operation mode. Supports API versions 1 & 2.
@@ -2576,7 +2584,7 @@ script:
       - Safe
       required: false
     - auto: PREDEFINED
-      description: "The server pool protocol. HTTP - Specifies that the server pool governs HTTP traffic. Specific options for configuring an HTTP server pool become available. FTP - Specifies that the server pool governs FTP traffic. Specific options for configuring an FTP server pool become available. ADFSPIP - Specifies that the server pool governs ADFSPIP traffic. Specific options for configuring an ADFSPIP server pool become available. In case you use FTP/ADFSPIP make sure it enabled in the “Feature Visibility” (under system->config). Supports API version 2 only."
+      description: "The server pool protocol. HTTP - Specifies that the server pool governs HTTP traffic. Specific options for configuring an HTTP server pool become available. FTP - Specifies that the server pool governs FTP traffic. Specific options for configuring an FTP server pool become available. ADFSPIP - Specifies that the server pool governs ADFSPIP traffic. Specific options for configuring an ADFSPIP server pool become available. In case you use FTP/ADFSPIP make sure it enabled in the “Feature Visibility” (under system->config). Supports API version 2 only. Relevant when type=Reverse Proxy."
       isArray: false
       name: protocol
       predefined:
@@ -2623,6 +2631,14 @@ script:
     - description: Enter a name for the AD FS Server. It should be the federation service name. This option is mandatory if the AD FS Server needs to verify the server name in the SSL handshake. Relevant when protocol=ADFSPIP. Supports API version 2 only.
       isArray: false
       name: adfs_server_name
+      required: false
+    - description: Health Check Source IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty.
+      isArray: false
+      name: health_check_source_ip
+      required: false
+    - description: Health Check Source v6 IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty.
+      isArray: false
+      name: health_check_source_ip_v6
       required: false
     deprecated: false
     description: Update a server pool group. Supports API versions 1 & 2.
@@ -2893,7 +2909,7 @@ script:
       - disable
       required: false
     deprecated: false
-    description: "Create a rule for an reverse proxy server pool group (server pool rule is a member of server pool group). Offline Protection  -  Requests are destined for a virtual server’s network interface and IP address on the FortiWeb appliance. The FortiWeb appliance applies the first applicable policy, then forwards permitted traffic to a real web server. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command."
+    description: "Create a rule for an reverse proxy server pool group (server pool rule is a member of server pool group). Reverse proxy — Requests are destined for a virtual server’s network interface and IP address on the FortiWeb appliance.. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command."
     execution: false
     name: fortiwebvm-server-pool-reverse-proxy-rule-create
     outputs:
@@ -3146,7 +3162,6 @@ script:
       predefined:
       - enable
       - disable
-      - maintenance
       required: false
     - description: 'The IP address of the web server to include in the pool. '
       isArray: false
@@ -3157,9 +3172,13 @@ script:
       isArray: false
       name: port
       required: false
-    - description: Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
+    - auto: PREDEFINED
+      description: Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
       isArray: false
       name: http2
+      predefined:
+      - enable
+      - disable
       required: false
     - auto: PREDEFINED
       description: Enable to use SSL/TLS for connections between FortiWeb and the pool member.
@@ -3187,7 +3206,7 @@ script:
       isArray: false
       name: multi_certificate
       required: false
-    - description: Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). Supports API version 2 only.
+    - description: Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-letsencrypt-certificate-list command to list all the letsencrypt certificates). Supports API version 2 only.
       isArray: false
       name: letsencrypt
       required: false
@@ -3198,6 +3217,22 @@ script:
     - description: 'The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable.'
       isArray: false
       name: client_certificate_file
+      required: false
+    - auto: PREDEFINED
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration.
+      isArray: false
+      name: health_check_inherit
+      predefined:
+      - enable
+      - disable
+      required: false
+    - description: 'The domain name of the server pool. Required when health_check_inherit =enable. '
+      isArray: false
+      name: health_check_domain
+      required: false
+    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies).
+      isArray: false
+      name: health_check
       required: false
     deprecated: false
     description: "Create a rule for an true transparent server pool group (server pool rule is a member of server pool group). True transparent proxy  -  Requests are destined for a real web server instead of the FortiWeb appliance. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command."
@@ -3223,7 +3258,6 @@ script:
       predefined:
       - enable
       - disable
-      - maintenance
       required: false
     - description: 'The IP address of the web server to include in the pool. '
       isArray: false
@@ -3233,9 +3267,13 @@ script:
       isArray: false
       name: port
       required: false
-    - description: Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
+    - auto: PREDEFINED
+      description: Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
       isArray: false
       name: http2
+      predefined:
+      - enable
+      - disable
       required: false
     - auto: PREDEFINED
       description: Enable to use SSL/TLS for connections between FortiWeb and the pool member.
@@ -3246,7 +3284,7 @@ script:
       - disable
       required: false
     - auto: PREDEFINED
-      description: Enable this option to allow FortiWeb to use local / multiple local / letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
@@ -3262,7 +3300,7 @@ script:
       isArray: false
       name: multi_certificate
       required: false
-    - description: Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). Supports API version 2 only.
+    - description: Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-letsencrypt-certificate-list command to list all the letsencrypt certificates). Supports API version 2 only.
       isArray: false
       name: letsencrypt
       required: false
@@ -3273,6 +3311,22 @@ script:
     - description: 'The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable.'
       isArray: false
       name: client_certificate_file
+      required: false
+    - auto: PREDEFINED
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration.
+      isArray: false
+      name: health_check_inherit
+      predefined:
+      - enable
+      - disable
+      required: false
+    - description: 'The domain name of the server pool. Required when health_check_inherit =enable. '
+      isArray: false
+      name: health_check_domain
+      required: false
+    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies).
+      isArray: false
+      name: health_check
       required: false
     deprecated: false
     description: Update a rule for an true transparent server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
@@ -3399,7 +3453,6 @@ script:
       predefined:
       - enable
       - disable
-      - maintenance
       required: false
     - description: 'The IP address of the web server to include in the pool. '
       isArray: false
@@ -3408,7 +3461,8 @@ script:
     - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
       isArray: false
       name: port
-      required: true
+      required: false
+      defaultVale : '80'
     - auto: PREDEFINED
       defaultValue: disable
       description: Enable to use SSL/TLS for connections between FortiWeb and the pool member.
@@ -3420,7 +3474,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: Local
-      description: Enable this option to allow FortiWeb to use local / multiple local / letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
@@ -3428,7 +3482,7 @@ script:
       - Multi Certificate
       - Letsencrypt
       required: false
-    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. In API version 2 - relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates)."
+    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. Relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates)."
       isArray: false
       name: certificate_file
       required: false
@@ -3436,20 +3490,16 @@ script:
       isArray: false
       name: multi_certificate
       required: false
-    - description: Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). Supports API version 2 only.
-      isArray: false
-      name: letsencrypt
-      required: false
     - description: "The name of a group of intermediate certificate authority (CA) certificates, if any, that FortiWeb presents to clients to complete the signing chain for them and validate the server certificate’s CA signature (dependencies - use fortiwebvm-certificate-intermediate-group-list command to get all the certificate intermediate groups). Relevant when ssl=enable."
       isArray: false
       name: certficate_intermediate_group
       required: false
-    - description: 'The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: (ssl=enable) (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
+    - description: 'The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: enable_ssl=enable (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
       isArray: false
       name: client_certificate_file
       required: false
     deprecated: false
-    description: Create a rule for an WCCP server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Create a rule for an WCCP server pool group (server pool rule is a member of server pool group). WCCP - The FortiWeb appliance allows traffic to pass through to the server pool when it receives traffic that is directed to the FortiWeb (configured as a WCCP client) by a FortiGate acting as a WCCP server. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-wccp-rule-create
     outputs:
@@ -3472,7 +3522,6 @@ script:
       predefined:
       - enable
       - disable
-      - maintenance
       required: false
     - description: 'The IP address of the web server to include in the pool. '
       isArray: false
@@ -3491,7 +3540,7 @@ script:
       - disable
       required: false
     - auto: PREDEFINED
-      description: Enable this option to allow FortiWeb to use local / multiple local / letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
@@ -3499,7 +3548,7 @@ script:
       - Multi Certificate
       - Letsencrypt
       required: false
-    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. In API version 2 - relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates)."
+    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. Relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates)."
       isArray: false
       name: certificate_file
       required: false
@@ -3507,20 +3556,16 @@ script:
       isArray: false
       name: multi_certificate
       required: false
-    - description: Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). Supports API version 2 only.
-      isArray: false
-      name: letsencrypt
-      required: false
     - description: "The name of a group of intermediate certificate authority (CA) certificates, if any, that FortiWeb presents to clients to complete the signing chain for them and validate the server certificate’s CA signature (dependencies - use fortiwebvm-certificate-intermediate-group-list command to get all the certificate intermediate groups). Relevant when ssl=enable."
       isArray: false
       name: certficate_intermediate_group
       required: false
-    - description: 'The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: (ssl=enable) (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
+    - description: 'The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: enable_ssl=enable (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
       isArray: false
       name: client_certificate_file
       required: false
     deprecated: false
-    description: Create a rule for an WCCP server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Update a rule for an WCCP server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-wccp-rule-update
   - arguments:
@@ -3585,7 +3630,6 @@ script:
       - enable
       - disable
       required: false
-
     - auto: PREDEFINED
       defaultValue: disable
       description: Enable to use SSL/TLS for connections between FortiWeb and the pool member.
@@ -3879,7 +3923,7 @@ script:
       name: warm_rate
       required: false
     deprecated: false
-    description: Update a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Update a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-adfs-rule-update
   - arguments:
@@ -4065,6 +4109,34 @@ script:
       name: limit
       required: false
     deprecated: false
+    description: List the Letsencrypt certificates. Supports API version 2 only.
+    execution: false
+    name: fortiwebvm-letsencrypt-certificate-list
+    outputs:
+    - contextPath: FortiwebVM.Letsencrypt.id
+      description: Letsencrypt certificate name.
+      type: String
+  - arguments:
+    - description: 'Return all objects that include the specified string. For example: search=test will return objects like ''test1'', ''test2'', ''5test'', and any other objects containing the test string.'
+      isArray: false
+      name: search
+      required: false
+    - defaultValue: '1'
+      description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - defaultValue: '50'
+      description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    deprecated: false
     description: List the system virtual IPs. The virtual IP addresses are the IP addresses that paired with the domain name of your application. When users visit your application, the destination of their requests are these IP addresses. Supports API version 2 only.
     execution: false
     name: fortiwebvm-virtual-ip-list
@@ -4105,11 +4177,11 @@ script:
       isArray: false
       name: name
       required: true
-    - description: 'The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces).  For example: 1.2.3.5/1.0.0.0. Required in API version 1. Supports API version 1 only.'
+    - description: 'The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). For example: port1. Required in API version 1. Supports API version 1 only.'
       isArray: false
       name: interface
       required: false
-    - description: 'The IPv4 address and subnet of the virtual server. For exampl: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only.'
+    - description: 'The IPv4 address and subnet of the virtual server. For example: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only.'
       isArray: false
       name: ipv4_address
       required: false
@@ -4145,7 +4217,7 @@ script:
       isArray: false
       name: name
       required: true
-    - description: 'The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). For example: 1.2.3.5/1.0.0.0. Supports API version 1 only.'
+    - description: 'The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). For example: port1. Supports API version 1 only.'
       isArray: false
       name: interface
       required: false
@@ -4183,7 +4255,7 @@ script:
       name: name
       required: true
     deprecated: false
-    description: Delete Virtual Server. Supports API versions 1 & 2.
+    description: Delete virtual server group. Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-virtual-server-group-delete
   - arguments:
@@ -4305,12 +4377,12 @@ script:
       - enable
       - disable
       required: false
-    - description: The virtual IP of the virtual server item (dependencies - use fortiwebvm-virtual-ip-list command to get all the virtual IPs). Required when use_interface_ip=disable.
+    - description: The virtual IP name of the virtual server item (dependencies - use fortiwebvm-virtual-ip-list command to get all the virtual IP names). Required when use_interface_ip=disable.
       isArray: false
       name: virtual_ip
       required: false
     deprecated: false
-    description: Create a virtual serer item (virtual server Item is a member of virtual server group in API version 2). A virtual server defines the network interface, bridge , and IP address on which traffic destined for an individual physical server or server farm will arrive in API version 2. Supports API version 2 only.
+    description: Create a virtual serer item (virtual server Item is a member of virtual server group in API version 2). A virtual server defines the network interface, bridge, and IP address on which traffic destined for an individual physical server or server farm will arrive in API version 2. Supports API version 2 only.
     execution: false
     name: fortiwebvm-virtual-server-item-create
     outputs:
@@ -4346,7 +4418,7 @@ script:
       - enable
       - disable
       required: false
-    - description: The virtual IP of the virtual server item (dependencies - use fortiwebvm-virtual-ip-list command to get all the virtual IPs). Required when use_interface_ip=disable.
+    - description: The virtual IP name of the virtual server item (dependencies - use fortiwebvm-virtual-ip-list command to get all the virtual IP names). Required when use_interface_ip=disable.
       isArray: false
       name: virtual_ip
       required: false
@@ -4556,7 +4628,7 @@ script:
       description: The Trigger policy of the URL access rule group.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.count
-      description: The amount  of the conditions that are related to the current URL access rule group.
+      description: 'The count of the conditions that are related to the current URL access rule group. '
       type: Number
   - arguments:
     - description: URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups).
@@ -4571,7 +4643,7 @@ script:
       - Simple String
       - Regular Expression
       required: true
-    - description: Depending on your selection in url_type and meet_this_condition_if, type a regular expression that defines either all matching or all non-matching URLs.
+    - description: Depending on your selection in url_type and meet_this_condition_if, type a regular expression that defines either all matching or all non-matching URLs. Must start with '/' when url_type=Simple String.
       isArray: false
       name: url_pattern
       required: true
@@ -4602,7 +4674,7 @@ script:
       - IP Resolved by Specified Domain
       - Source Domain
       required: false
-    - description: 'IPv4/IPv6/IP range.  Relevant when source_address_type=IP. '
+    - description: 'IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. '
       isArray: false
       name: ip_range
       required: false
@@ -4626,7 +4698,7 @@ script:
       - Simple String
       - Regular Expression
       required: false
-    - description: 'Source Domain. For example: test.com whRelevant when source_address_type=Source Domain. '
+    - description: 'Source Domain. For example: test.com. Relevant when source_address_type=Source Domain. '
       isArray: false
       name: source_domain
       required: false
@@ -4655,7 +4727,7 @@ script:
       - Simple String
       - Regular Expression
       required: false
-    - description: Depending on your selection in url_type and meet_this_condition_if, type a regular expression that defines either all matching or all non-matching URLs.
+    - description: Depending on your selection in url_type and meet_this_condition_if, type a regular expression that defines either all matching or all non-matching URLs. Must start with '/' when url_type=Simple String.
       isArray: false
       name: url_pattern
       required: false
@@ -4684,7 +4756,7 @@ script:
       - IP Resolved by Specified Domain
       - Source Domain
       required: false
-    - description: 'IPv4/IPv6/IP range.  Relevant when source_address_type=IP. '
+    - description: 'IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. '
       isArray: false
       name: ip_range
       required: false
@@ -4708,7 +4780,7 @@ script:
       - Simple String
       - Regular Expression
       required: false
-    - description: 'Source Domain. For example: test.com whRelevant when source_address_type=Source Domain. '
+    - description: 'Source Domain. For example: test.com. Relevant when source_address_type=Source Domain. '
       isArray: false
       name: source_domain
       required: false
