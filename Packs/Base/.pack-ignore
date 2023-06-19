@@ -76,6 +76,8 @@ refang
 indicatorssearcher
 FeedIndicatorType
 str
+FileResult
+JavaScript
 CPE
 CPEs
 
