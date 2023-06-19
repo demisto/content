@@ -49,6 +49,8 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
         _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
                                                                      install_packs_one_by_one)
+
+
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 
