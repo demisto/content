@@ -6,19 +6,16 @@ script: ''
 type: python
 args:
 - default: false
-  description: The ole command to activate. 
-              oleid - to analyze OLE files to detect specific characteristics usually found in malicious files.
-              oleobj - to extract embedded objects from OLE files.
-              olevba - to extract and analyze VBA Macro source code from MS Office documents (OLE and OpenXML).
+  description: The ole command to activate. oleid - to analyze OLE files to detect specific characteristics usually found in malicious files. oleobj - to extract embedded objects from OLE files. olevba - to extract and analyze VBA Macro source code from MS Office documents (OLE and OpenXML).
   isArray: false
   name: ole_command
   required: true
   secret: false
   auto: PREDEFINED
   predefined:
-    - 'oleid'
-    - 'oleobj'
-    - 'olevba'
+  - 'oleid'
+  - 'oleobj'
+  - 'olevba'
 - default: false
   description: The file to activate the oletools analysis on.
   isArray: false
@@ -32,8 +29,8 @@ args:
   type: String
   auto: PREDEFINED
   predefined:
-    - 'true'
-    - 'false'
+  - 'true'
+  - 'false'
   required: false
   secret: false
 - default: false
@@ -47,10 +44,7 @@ args:
   isArray: false
   name: non_secret_password
   required: false
-comment: This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, 
-  such as Microsoft Office documents or Outlook messages, mainly for malware analysis, forensics, and debugging. 
-  This automation allows performing some basic oletools commands from Cortex XSOAR.
-  Note that oletools is open source code and is subject to change.
+comment: This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, such as Microsoft Office documents or Outlook messages, mainly for malware analysis, forensics, and debugging. This automation allows performing some basic oletools commands from Cortex XSOAR. Note that oletools is open source code and is subject to change.
 outputs:
 - contextPath: Oletools.Oleid.ole_command_result
   description: Indicator list from the oleid command.
@@ -147,7 +141,7 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
 subtype: python3
-dockerimage: demisto/parse-emails:1.0.0.32153
+dockerimage: demisto/parse-emails:1.0.0.63730
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
