@@ -5450,7 +5450,6 @@ def main():  # pragma: no cover
     params: dict = demisto.params()
     params_endpoint_type = params.get('endpoint_type')
     params_url = params.get('url') or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE]
-    params_url = params.get('url') or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE]
     is_gcc = params.get('is_gcc', False)
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     auth_id = params.get('_auth_id') or params.get('auth_id')
