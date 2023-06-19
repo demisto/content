@@ -1601,6 +1601,7 @@ def test_files(content_path, packs_to_install: list = None):
         playbooks_root = f'{pack_dir.path}/TestPlaybooks'
         if os.path.isdir(playbooks_root):
             for playbook_path, playbook in get_test_playbooks_in_dir(playbooks_root):
+                logging.info(f"playbook_path: {str(playbook_path)}")
                 yield playbook_path, playbook
             if os.path.isdir(f'{playbooks_root}/NonCircleTests'):
                 for playbook_path, playbook in get_test_playbooks_in_dir(f'{playbooks_root}/NonCircleTests'):
