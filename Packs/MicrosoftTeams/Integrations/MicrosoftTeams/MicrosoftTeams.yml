@@ -264,6 +264,7 @@ script:
       - 'true'
       - 'false'
       required: false
+      defaultValue: false
     description: Adds a member (user) to a private/shared channel.
     name: microsoft-teams-add-user-to-channel
   - arguments:
@@ -747,7 +748,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.58918
+  dockerimage: demisto/teams:1.0.0.63824
   feed: false
   isfetch: false
   longRunning: true

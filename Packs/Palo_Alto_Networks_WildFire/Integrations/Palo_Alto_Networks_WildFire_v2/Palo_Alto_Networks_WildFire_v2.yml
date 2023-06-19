@@ -236,6 +236,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
+      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data
@@ -507,6 +508,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
+      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data
@@ -771,6 +773,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
+      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data
@@ -1128,6 +1131,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
+      defaultValue: false
       description: If set to “true”, the report returns extended data, which includes additional outputs.
       isArray: false
       name: extended_data

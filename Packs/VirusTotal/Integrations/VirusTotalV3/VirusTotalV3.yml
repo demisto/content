@@ -183,9 +183,9 @@ script:
       description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: true
     - name: extended_data
-      defaultValue: 'false'
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -423,9 +423,9 @@ script:
       description: IP address to check.
       isArray: true
     - name: extended_data
-      defaultValue: 'false'
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -540,9 +540,9 @@ script:
       description: URL to check.
       isArray: true
     - name: extended_data
-      defaultValue: 'false'
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -683,9 +683,9 @@ script:
       description: Domain name to check.
       isArray: true
     - name: extended_data
-      defaultValue: 'false'
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -1035,9 +1035,9 @@ script:
       default: true
       description: 'This endpoint searches any of the following: A file hash, URL, domain, IP address, tag comments.'
     - name: extended_data
-      defaultValue: 'false'
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -1304,6 +1304,7 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
     outputs:
     - contextPath: VirusTotal.Analysis.data.attributes.date
       description: Date of the analysis in epoch format.
@@ -1366,12 +1367,12 @@ script:
     - name: only_stats
       description: Print only Sigma analysis summary stats.
       required: false
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      defaultValue: false
     outputs:
     - contextPath: VirusTotal.SigmaAnalysis.data.attributes.last_modification_date
       description: Date of the last update in epoch format.

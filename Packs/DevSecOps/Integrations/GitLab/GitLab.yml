@@ -1017,6 +1017,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: false
       description: 'Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false".'
       isArray: false
       name: create_file_from_content

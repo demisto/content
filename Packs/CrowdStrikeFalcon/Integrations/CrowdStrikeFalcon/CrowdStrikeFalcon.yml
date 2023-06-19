@@ -404,8 +404,8 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -692,8 +692,8 @@ script:
       name: timeout
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -2412,8 +2412,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2444,8 +2444,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2461,8 +2461,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2475,8 +2475,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2494,8 +2494,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2505,8 +2505,8 @@ script:
       required: true
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2529,8 +2529,8 @@ script:
       name: SHA256
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
-      required: false
       defaultValue: false
+      required: false
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
