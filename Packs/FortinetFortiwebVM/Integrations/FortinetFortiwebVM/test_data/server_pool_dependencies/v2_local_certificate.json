@@ -1,0 +1,26 @@
+{
+    "results": [
+        {
+            "_id": "certificate",
+            "name": "certificate",
+            "q_ref": 0,
+            "cert_type": "local",
+            "pkey_type": 1,
+            "can_delete": true,
+            "can_view": true,
+            "can_download": false,
+            "can_config": true,
+            "is_default": false,
+            "hsm": "disable",
+            "comments": "",
+            "status": "OK",
+            "issuer": "C = us, ST = nnew york, O = Internet Widgits Pty Ltd",
+            "validFrom": "2023-04-23 08:47:47  GMT",
+            "validTo": "2024-04-22 08:47:47  GMT",
+            "version": 3,
+            "subject": "C = us, ST = nnew york, O = Internet Widgits Pty Ltd",
+            "serialNumber": "62:f4:29:a6:9f:5f:16:b3:13:1e:c5:f4:f3:2c:97:33:aa:49:76:ab ",
+            "extension": "Name: X509v3 Subject Key Identifier<br>\nCritical: no<br>\nContent: <br>\nA5:F1:B8:06:8B:1E:2A:7F:B9:EB:CC:22:F4:80:57:5B:81:76:92:9A<br>\nName: X509v3 Authority Key Identifier<br>\nCritical: no<br>\nContent: <br>\nkeyid:A5:F1:B8:06:8B:1E:2A:7F:B9:EB:CC:22:F4:80:57:5B:81:76:92:9A\n<br>\nName: X509v3 Basic Constraints<br>\nCritical: yes<br>\nContent: <br>\nCA:TRUE<br>\n"
+        }
+    ]
+}

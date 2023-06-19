@@ -12,6 +12,11 @@ from requests import Response
 LIMIT_SIZE = 50
 
 
+class CommandAction(Enum):
+    CREATE = "CREATE"
+    UPDATE = "UPDATE"
+
+
 class ArgumentValues(Enum):
     SOURCE_ADDRESS_IP = "IP"
     SOURCE_ADDRESS_IP_RESOLVED = "IP Resolved by Specified Domain"
@@ -159,6 +164,8 @@ class OutputTitle(Enum):
     )
     URL_ACCESS_RULE_GROUP = "URL access rule group"
     URL_ACCESS_RULE_CONDITION = "URL access rule condition"
+    VIRTUAL_SERVER_GROUP = "Virtual server group"
+    VIRTUAL_SERVER_ITEM = "Virtual server item"
 
 
 class ErrorMessage(Enum):
@@ -174,6 +181,7 @@ class ErrorMessage(Enum):
     SEVERITY = "The severity should be High/Medium/Low/Info"
     IGNORE_X_FORWARDED_FOR = "ignore_x_forwarded_for should be enable/disable"
     V1_NOT_SUPPORTED = "Command not supported in version 1."
+    V2_NOT_SUPPORTED = "Command not supported in version 2."
     TYPE = 'The type should be "Allow Only Ip"/"Black IP"/"Trust IP"'
     IP = "is not a valid IPv4/IPv6 address."
     ALLOW_IP_V1 = "Allow only ip not supported by version 1."
@@ -475,6 +483,20 @@ class Parser:
     @property
     def enable_disable_to_boolean_mapper(self) -> dict[bool, str]:
         return {True: "enable", False: "disable"}
+
+    @abstractmethod
+    def parse_persistence_policy(
+        self, persistence_policy: dict[str, Any]
+    ) -> dict[str, Any]:
+        pass
+
+    def parse_virtual_server_item(
+        self, virtual_server_item: dict[str, Any]
+    ) -> dict[str, Any]:
+        pass
+
+    def parse_snakify_with_id(self, obj: dict[str, Any]):
+        return snakify(obj) | {"id": obj["name"]}
 
 
 class ParserV1(Parser):
@@ -795,35 +817,28 @@ class ParserV1(Parser):
         Returns:
             Dict[str, Any]: Parsed dictionary.
         """
-        url_type = url_access_rule_condition.get("urlType")
-        meet_this_condition_if = url_access_rule_condition.get("meetthisconditionif")
-        source_address = url_access_rule_condition.get("sourceAddress")
-        source_address_type = url_access_rule_condition.get("sourceAddressType")
-        ip_type = url_access_rule_condition.get("type")
-        source_domain_type = url_access_rule_condition.get("source_domain_type")
         return {
             "id": url_access_rule_condition.get("_id"),
-            "url_type": url_type and self.url_type_api_to_user_mapper.get(
-                url_type
+            "url_type": dict_safe_get(self.url_type_api_to_user_mapper, [
+                url_access_rule_condition.get("urlType")]
             ),
             "url_pattern": url_access_rule_condition.get("urlPattern"),
-            "meet_this_condition_if": meet_this_condition_if
-            and self.meet_condition_api_to_user_mapper.get(
-                meet_this_condition_if
+            "meet_this_condition_if": dict_safe_get(self.meet_condition_api_to_user_mapper, [
+                url_access_rule_condition.get("meetthisconditionif")]
             ),
-            "source_address": source_address and self.enable_disable_to_boolean_mapper.get(
-                source_address
+            "source_address": dict_safe_get(self.enable_disable_to_boolean_mapper, [
+                url_access_rule_condition.get("sourceAddress")]
             ),
-            "source_address_type": source_address_type and self.source_address_type_api_to_user_mapper.get(
-                source_address_type
+            "source_address_type": dict_safe_get(self.source_address_type_api_to_user_mapper, [
+                url_access_rule_condition.get("sourceAddressType")]
             ),
             "ip_range": url_access_rule_condition.get("iPv4IPv6"),
-            "ip_type": ip_type and self.ip_type_api_to_user_mapper.get(
-                ip_type
+            "ip_type": dict_safe_get(self.ip_type_api_to_user_mapper, [
+                url_access_rule_condition.get("type")]
             ),
             "domain": url_access_rule_condition.get("domain"),
-            "source_domain_type": source_domain_type and self.url_type_api_to_user_mapper.get(
-                source_domain_type
+            "source_domain_type": dict_safe_get(self.url_type_api_to_user_mapper, [
+                url_access_rule_condition.get("source_domain_type")]
             ),
             "source_domain": url_access_rule_condition.get("source_domain"),
         }
@@ -1018,6 +1033,14 @@ class ParserV1(Parser):
             dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.ip_type_user_to_api_mapper)
+
+    def parse_persistence_policy(
+        self, persistence_policy: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": persistence_policy["_id"],
+            "type": persistence_policy["dispType"],
+        }
 
 
 class ParserV2(Parser):
@@ -1390,26 +1413,24 @@ class ParserV2(Parser):
         source_domain_type = url_access_rule_condition.get("source-domain-type")
         return {
             "id": url_access_rule_condition.get("id"),
-            "url_type": url_type and self.url_type_api_to_user_mapper.get(
-                url_type
+            "url_type": dict_safe_get(self.url_type_api_to_user_mapper, [
+                url_type]
             ),
             "url_pattern": url_access_rule_condition.get("reg-exp"),
-            "meet_this_condition_if": meet_this_condition_if
-            and self.meet_condition_api_to_user_mapper.get(
-                meet_this_condition_if
+            "meet_this_condition_if": dict_safe_get(self.meet_condition_api_to_user_mapper, [
+                meet_this_condition_if]
             ),
             "source_address": url_access_rule_condition.get("sip-address-check"),
-            "source_address_type": source_address_type
-            and self.source_address_type_api_to_user_mapper.get(
-                source_address_type
+            "source_address_type": dict_safe_get(self.source_address_type_api_to_user_mapper, [
+                source_address_type]
             ),
             "ip_range": url_access_rule_condition.get("sip-address-value"),
-            "ip_type": ip_type and self.ip_type_api_to_user_mapper.get(
-                ip_type
+            "ip_type": dict_safe_get(self.ip_type_api_to_user_mapper, [
+                ip_type]
             ),
             "domain": url_access_rule_condition.get("sip-address-domain"),
-            "source_domain_type": source_domain_type and self.url_type_api_to_user_mapper.get(
-                source_domain_type
+            "source_domain_type": dict_safe_get(self.url_type_api_to_user_mapper, [
+                source_domain_type]
             ),
             "source_domain": url_access_rule_condition.get("source-domain"),
             "only_method_check": url_access_rule_condition.get("only-method-check"),
@@ -1635,6 +1656,25 @@ class ParserV2(Parser):
             dict[int, str]: Mapped dictionary.
         """
         return reverse_dict(self.ip_type_user_to_api_mapper)
+
+    def parse_persistence_policy(
+        self, persistence_policy: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": persistence_policy["name"],
+            "type": persistence_policy["type"],
+        }
+
+    def parse_virtual_server_item(
+        self, virtual_server_item: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": virtual_server_item["id"],
+            "interface": virtual_server_item["interface"],
+            "status": virtual_server_item["status"],
+            "use_interface_ip": virtual_server_item["use-interface-ip"],
+            "virtual_ip": virtual_server_item["vip"],
+        }
 
 
 class Client(BaseClient):
@@ -2273,6 +2313,29 @@ class Client(BaseClient):
                 validate(key_="source_domain")
                 validate(key_="source_domain_type")
 
+    def validate_virtual_server_group(self, args: dict[str, Any], action: str):
+        """Virtual server group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+            action (str): The command action (create/ upadte).
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        pass
+
+    def validate_virtual_server_item(self, args: dict[str, Any]):
+        """Virtual server item args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        pass
+
     @abstractmethod
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -2707,6 +2770,97 @@ class Client(BaseClient):
     ) -> dict[str, Any]:
         pass
 
+    @abstractmethod
+    def persistence_policy_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_health_check_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def local_certificate_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def multi_certificate_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def sni_certificate_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_ip_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def letsencrypt_certificate_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def network_interface_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_group_create_request(
+        self,
+        name: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_group_update_request(
+        self,
+        name: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_group_delete_request(self, name: str) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_group_list_request(self, **kwargs) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_item_create_request(
+        self,
+        group_name: str,
+        interface: str | None,
+        use_interface_ip: str,
+        status: str,
+        virtual_ip: str | None,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_item_update_request(
+        self,
+        group_name: str,
+        item_id: str,
+        interface: str | None,
+        use_interface_ip: str | None,
+        status: str | None,
+        virtual_ip: str | None,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_item_delete_request(
+        self, group_name: str, member_id: str
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def virtual_server_item_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        pass
+
 
 class ClientV1(Client):
     """Fortiweb VM V1 Client
@@ -2810,6 +2964,30 @@ class ClientV1(Client):
         super().validate_ip_list_member(args)
         if args.get("type") and args["type"] == "Allow Only Ip":
             raise ValueError(ErrorMessage.ALLOW_IP_V1.value)
+
+    def validate_virtual_server_group(self, args: dict[str, Any], action: str):
+        """Virtual server group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+            action (str): The command action (create/ upadte).
+
+        Raises:
+            ValueError: Errors.
+        """
+        if action == CommandAction.CREATE.value:
+            validate_argument(args=args, key_="interface")
+
+        if all(
+            [
+                args.get("use_interface_ip") == ArgumentValues.DISABLE.value,
+                not args.get("ipv4_address"),
+                not args.get("ipv6_address"),
+            ]
+        ):
+            raise ValueError(
+                ErrorMessage.INSERT_VALUE.value.format("ipv4_address or ipv6_address")
+            )
 
     def get_object_id(
         self,
@@ -4004,12 +4182,12 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "name": name,
-                "action": action and self.parser.url_action_user_to_api_mapper.get(action),
+                "action": dict_safe_get(self.parser.url_action_user_to_api_mapper, [action]),
                 "triggerPolicy": trigger_policy,
                 "severity": self.parser.severity_user_to_api_mapper.get(severity)
                 if severity and action == "Alert & Deny"
                 else None,
-                "hostStatus": host_status and self.parser.boolean_user_to_api_mapper.get(host_status),
+                "hostStatus": dict_safe_get(self.parser.boolean_user_to_api_mapper, [host_status]),
                 "host": host if host_status == ArgumentValues.ENABLE.value else None,
             }
         )
@@ -4134,22 +4312,22 @@ class ClientV1(Client):
 
         return remove_empty_elements(
             {
-                "urlType": url_type and self.parser.url_type_user_to_api_mapper.get(url_type),
+                "urlType": dict_safe_get(self.parser.url_type_user_to_api_mapper, [url_type]),
                 "urlPattern": url_pattern,
-                "meetThisConditionIf": meet_this_condition_if and self.parser.meet_condition_user_to_api_mapper.get(
-                    meet_this_condition_if
+                "meetThisConditionIf": dict_safe_get(self.parser.meet_condition_user_to_api_mapper, [
+                    meet_this_condition_if]
                 ),
-                "sourceAddress": source_address and self.parser.boolean_user_to_api_mapper.get(
-                    source_address
+                "sourceAddress": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
+                    source_address]
                 ),
-                "sourceAddressType": source_address_type and self.parser.source_address_type_user_to_api_mapper.get(
-                    source_address_type
+                "sourceAddressType": dict_safe_get(self.parser.source_address_type_user_to_api_mapper, [
+                    source_address_type]
                 ),
                 "iPv4IPv6": ip_range,
                 "type": self.parser.ip_type_user_to_api_mapper.get(ip_type) if ip_type else None,
                 "domain": ip,
-                "source_domain_type": source_domain_type and self.parser.request_type_user_to_api_mapper.get(
-                    source_domain_type
+                "source_domain_type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [
+                    source_domain_type]
                 ),
                 "source_domain": source_domain,
             }
@@ -4286,6 +4464,225 @@ class ClientV1(Client):
         """
         endpoint = f"WebProtection/Access/URLAccessRule/{group_name}/URLAccessRuleNewURLAccessCondition"
         return self._http_request(method="GET", url_suffix=endpoint)
+
+    def persistence_policy_list_request(self) -> dict[str, Any]:
+        """List all the Persistence policies.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        return self._http_request(
+            method="GET", url_suffix="ServerObjects/Server/Persistence"
+        )
+
+    def server_health_check_list_request(self) -> dict[str, Any]:
+        """List all the server health check policies.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="ServerObjects/ServerHealthCheck/ServerHealthCheckList",
+        )
+
+    def local_certificate_list_request(self) -> dict[str, Any]:
+        """List the Server certificate that is stored locally on the FortiWeb appliance.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        return self._http_request(method="GET", url_suffix="System/Certificates/Local")
+
+    def multi_certificate_list_request(self) -> dict[str, Any]:
+        """List the Certificate intermediate groups.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
+    def sni_certificate_list_request(self) -> dict[str, Any]:
+        """List the SNI certificates.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
+    def virtual_ip_list_request(self) -> dict[str, Any]:
+        """List the virtual IPs.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
+    def letsencrypt_certificate_list_request(self) -> dict[str, Any]:
+        """List the virtual IPs.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
+    def network_interface_list_request(self) -> dict[str, Any]:
+        """List the Network interfaces.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        return self._http_request(method="GET", url_suffix="System/Network/Interface")
+
+    def virtual_server_group_create_request(
+        self,
+        name: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """Create a virtual server group name.
+
+        Args:
+            name (str): Virtual server group name.
+            kwargs: interface (str): The name of the network interface or bridge.
+            kwargs: ipv4_address (str): The IPv4 address and subnet of the virtual server.
+            kwargs: ipv6_address (str): The IPv6 address and subnet of the virtual server.
+            kwargs: status (str): Wheter to enable the virtual server group.
+            kwargs: use_interface_ip (str): Whether uses interface IP.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        data = remove_empty_elements(
+            {
+                "name": name,
+                "interface": kwargs["interface"],
+                "ipv4Address": kwargs.get("ipv4_address"),
+                "ipv6Address": kwargs.get("ipv6_address"),
+                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
+                    kwargs.get("status")]
+                ),
+                "useInterfaceIP": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
+                    kwargs.get("use_interface_ip")]
+                ),
+            }
+        )
+        return self._http_request(
+            method="POST",
+            url_suffix="ServerObjects/Server/VirtualServer",
+            json_data=data,
+        )
+
+    def virtual_server_group_update_request(
+        self,
+        name: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """Update a virtual server group name.
+
+        Args:
+            name (str): Virtual server group name.
+            kwargs: interface (str): The name of the network interface or bridge.
+            kwargs: ipv4_address (str): The IPv4 address and subnet of the virtual server.
+            kwargs: ipv6_address (str): The IPv6 address and subnet of the virtual server.
+            kwargs: status (str): Wether to enable the virtual server group.
+            kwargs: use_interface_ip (str): Whether uses interface IP.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        data = remove_empty_elements(
+            {
+                "name": name,
+                "interface": kwargs.get("interface"),
+                "ipv4Address": kwargs.get("ipv4_address"),
+                "ipv6Address": kwargs.get("ipv6_address"),
+                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
+                    kwargs.get("status")]
+                ),
+                "useInterfaceIP": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
+                    kwargs.get("use_interface_ip")]
+                ),
+            }
+        )
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"ServerObjects/Server/VirtualServer/{name}",
+            json_data=data,
+        )
+
+    def virtual_server_group_delete_request(self, name: str) -> dict[str, Any]:
+        """Delete a virtual server group.
+
+        Args:
+            name (str): Virtual server group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"ServerObjects/Server/VirtualServer/{name}",
+        )
+
+    def virtual_server_group_list_request(self, **kwargs) -> dict[str, Any]:
+        """
+        List virtual server groups.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="ServerObjects/Server/VirtualServer",
+        )
+
+    def virtual_server_item_create_request(
+        self,
+        group_name: str,
+        interface: str | None,
+        use_interface_ip: str,
+        status: str,
+        virtual_ip: str | None,
+    ) -> dict[str, Any]:
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
+    def virtual_server_item_update_request(
+        self,
+        group_name: str,
+        item_id: str,
+        interface: str | None,
+        use_interface_ip: str | None,
+        status: str | None,
+        virtual_ip: str | None,
+    ) -> dict[str, Any]:
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
+    def virtual_server_item_delete_request(
+        self, group_name: str, condition_id: str
+    ) -> dict[str, Any]:
+        """Delete an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
+    def virtual_server_item_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        """List URL access rule conditions.
+
+        Args:
+            group_name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
 
 class ClientV2(Client):
@@ -4564,6 +4961,20 @@ class ClientV2(Client):
                     "Regular Expression",
                 ]:
                     raise ValueError(ErrorMessage.HEADER_VALUE_TYPE.value)
+
+    def validate_virtual_server_item(self, args: dict[str, Any]):
+        """Virtaul server item args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        if args.get("use_interface_ip") == ArgumentValues.DISABLE.value and not args.get("virtual_ip"):
+            raise ValueError(ErrorMessage.INSERT_VALUE.value.format("virtual_ip"))
+        if args.get("use_interface_ip") == ArgumentValues.ENABLE.value and not args.get("interface"):
+            raise ValueError(ErrorMessage.INSERT_VALUE.value.format("interface"))
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -5701,9 +6112,9 @@ class ClientV2(Client):
             "data": remove_empty_elements(
                 {
                     "name": name,
-                    "action": action and self.parser.url_action_user_to_api_mapper.get(action),
+                    "action": dict_safe_get(self.parser.url_action_user_to_api_mapper, [action]),
                     "trigger": trigger_policy,
-                    "severity": self.parser.severity_user_to_api_mapper.get(severity) if severity else None,
+                    "severity": dict_safe_get(self.parser.severity_user_to_api_mapper, [severity]),
                     "host-status": host_status,
                     "host": host,
                 }
@@ -5845,21 +6256,21 @@ class ClientV2(Client):
                 {
                     "type": self.parser.url_type_user_to_api_mapper.get(url_type) if url_type else None,
                     "sip-address-check": source_address,
-                    "sip-address-type": source_address_type and self.parser.source_address_type_user_to_api_mapper.get(
-                        source_address_type
+                    "sip-address-type": dict_safe_get(self.parser.source_address_type_user_to_api_mapper, [
+                        source_address_type]
                     ),
                     "sip-address-value": ip_range,
-                    "sdomain-type": ip_type and self.parser.ip_type_user_to_api_mapper.get(
-                        ip_type
+                    "sdomain-type": dict_safe_get(self.parser.ip_type_user_to_api_mapper, [
+                        ip_type]
                     ),
-                    "source-domain-type": source_domain_type and self.parser.url_type_user_to_api_mapper.get(
-                        source_domain_type
+                    "source-domain-type": dict_safe_get(self.parser.url_type_user_to_api_mapper, [
+                        source_domain_type]
                     ),
                     "sip-address-domain": ip,
                     "source-domain": source_domain,
                     "reg-exp": url_pattern,
-                    "reverse-match": meet_this_condition_if and self.parser.meet_condition_user_to_api_mapper.get(
-                        meet_this_condition_if
+                    "reverse-match": dict_safe_get(self.parser.meet_condition_user_to_api_mapper, [
+                        meet_this_condition_if]
                     ),
                 }
             )
@@ -6462,6 +6873,269 @@ class ClientV2(Client):
         return self._http_request(
             method="GET",
             url_suffix="cmdb/system/certificate.intermediate-certificate-group",
+        )
+
+    def persistence_policy_list_request(self) -> dict[str, Any]:
+        """List all the Persistence policies.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/server-policy/persistence-policy",
+        )
+
+    def server_health_check_list_request(self) -> dict[str, Any]:
+        """List all the server health check policies.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/server-policy/health",
+        )
+
+    def local_certificate_list_request(self) -> dict[str, Any]:
+        """List the Server certificate that is stored locally on the FortiWeb appliance.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="system/certificate.local",
+        )
+
+    def multi_certificate_list_request(self) -> dict[str, Any]:
+        """List the Certificate intermediate groups.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/system/certificate.multi-local",
+        )
+
+    def sni_certificate_list_request(self) -> dict[str, Any]:
+        """List the SNI certificates.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/system/certificate.sni",
+        )
+
+    def virtual_ip_list_request(self) -> dict[str, Any]:
+        """List the SNI certificates.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/system/vip",
+        )
+
+    def letsencrypt_certificate_list_request(self) -> dict[str, Any]:
+        """List the SNI certificates.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/system/certificate.letsencrypt",
+        )
+
+    def network_interface_list_request(self) -> dict[str, Any]:
+        """List the Network interfaces.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="system/network.interface",
+        )
+
+    def virtual_server_group_create_request(
+        self,
+        name: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """Create a virtual server group name.
+
+                Args:
+                    name (str): Virtual server group name.
+        =
+                Returns:
+                    Dict[str, Any]: API response from FortiwebVM V2.
+        """
+        data = {
+            "data": remove_empty_elements(
+                {
+                    "name": name,
+                }
+            )
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="cmdb/server-policy/vserver",
+            json_data=data,
+        )
+
+    def virtual_server_group_update_request(
+        self,
+        name: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """Update a virtual server group name.
+
+        Raises:
+            NotImplementedError: Command not implemented for API version 2.
+        """
+        raise NotImplementedError(ErrorMessage.V2_NOT_SUPPORTED.value)
+
+    def virtual_server_group_delete_request(self, name: str) -> dict[str, Any]:
+        """Delete a virtual server group.
+
+        Args:
+            name (str): Virtual server group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        params = {"mkey": name}
+        return self._http_request(
+            method="DELETE",
+            url_suffix="cmdb/server-policy/vserver",
+            params=params,
+        )
+
+    def virtual_server_group_list_request(self, **kwargs) -> dict[str, Any]:
+        """List virtual server groups.
+
+        Args:
+
+            kwargs: name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
+        params = remove_empty_elements({"mkey": kwargs.get("name")})
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/server-policy/vserver",
+            params=params,
+        )
+
+    def virtual_server_item_create_request(
+        self,
+        group_name: str,
+        interface: str | None,
+        use_interface_ip: str,
+        status: str,
+        virtual_ip: str | None,
+    ) -> dict[str, Any]:
+        """
+        Create virtual server item.
+
+        Args:
+            group_name (str): Virtual server group name.
+            interface (str): The name of the network interface or bridge.
+            virtual_ip (str): The virtual IP of the virtual server.
+            status (str): Wheter to enable the virtual server group.
+            use_interface_ip (str): Whether uses interface IP.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        params = {"mkey": group_name}
+        data = {
+            "data": remove_empty_elements(
+                {
+                    "interface": interface,
+                    "use-interface-ip": use_interface_ip,
+                    "status": status,
+                    "vip": virtual_ip if use_interface_ip == 'disable' else None,
+                }
+            )
+        }
+        return self._http_request(
+            method="POST",
+            url_suffix="cmdb/server-policy/vserver/vip-list",
+            json_data=data,
+            params=params,
+        )
+
+    def virtual_server_item_update_request(
+        self,
+        group_name: str,
+        item_id: str,
+        interface: str | None,
+        use_interface_ip: str | None,
+        status: str | None,
+        virtual_ip: str | None,
+    ) -> dict[str, Any]:
+        params = {"mkey": group_name, "sub_mkey": item_id}
+        data = {
+            "data": remove_empty_elements(
+                {
+                    "interface": interface,
+                    "use-interface-ip": use_interface_ip,
+                    "status": status,
+                    "vip": virtual_ip,
+                }
+            )
+        }
+        return self._http_request(
+            method="PUT",
+            url_suffix="cmdb/server-policy/vserver/vip-list",
+            json_data=data,
+            params=params,
+        )
+
+    def virtual_server_item_delete_request(
+        self, group_name: str, member_id: str
+    ) -> dict[str, Any]:
+        """Delete an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        params = {"mkey": group_name, "sub_mkey": member_id}
+        return self._http_request(
+            method="DELETE",
+            url_suffix="cmdb/server-policy/vserver/vip-list",
+            params=params,
+        )
+
+    def virtual_server_item_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        """List URL access rule conditions.
+
+        Args:
+            group_name (str): URL access rule group name.
+            kwargs: condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        params = {"mkey": group_name}
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/server-policy/vserver/vip-list",
+            params=params,
         )
 
 
@@ -8923,11 +9597,10 @@ def list_response_handler(
         response = [group_dict] if group_dict else []
         if not response:
             raise DemistoException(ErrorMessage.NOT_EXIST.value)
-    if name_filter := args.get("search") and isinstance(response, list):
-        filter_response: List = remove_empty_elements(
-            [obj if name_filter in obj["name"] else None for obj in response]
-        )
-        response = filter_response
+    if name_filter := args.get("search") and isinstace(response, list):
+        for obj in response[:]:
+            if name_filter not in obj["name"]:
+                response.remove(obj)
     response, pagination_message = paginate_results(client.version, response, args)
     parsed_data = parser_handler(response, data_parser)
     return parsed_data, pagination_message, response
@@ -8945,11 +9618,7 @@ def parser_handler(
     Returns:
         List[Dict[str, Any]]: Filtered output to xsoar.
     """
-    parsed_data = []
-    for obj in data:
-        parsed_obj = data_parser(obj)
-        parsed_data.append(parsed_obj)
-    return parsed_data
+    return [data_parser(data_to_parse) for data_to_parse in data]
 
 
 def paginate_results(
@@ -8972,16 +9641,16 @@ def paginate_results(
 
     output = response
 
-    if page and page_size:
-        if page_size < len(response):
-            first_item = page_size * (page - 1)
-            output = response[first_item: (first_item + page_size)]
-        else:
-            output = response[:page_size]
-        pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
-    else:
+    if limit:
         output = response[:limit]
         pagination_message = f"Showing {len(output)} rows out of {len(response)}."
+    if page and page_size:
+        if page_size < len(output):
+            first_item = page_size * (page - 1)
+            output = output[first_item: (first_item + page_size)]
+        else:
+            output = output[:page_size]
+        pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
 
     return output, pagination_message
 
@@ -9158,6 +9827,469 @@ def validate_argument(args: dict[str, Any], key_: str, values: List[str] | None 
         raise ValueError(ErrorMessage.INSERT_VALUE.value.format(key_))
 
 
+def dependencies_handler(client: Client, args: dict[str, Any], request_command: Callable,
+                         parser_command: Callable, title: str, headers: list, outputs_prefix: str) -> CommandResults:
+    response = request_command()
+    parsed_data, pagination_message, formatted_response = list_response_handler(
+        client=client,
+        response=response,
+        data_parser=parser_command,
+        args=args,
+    )
+    readable_output = tableToMarkdown(
+        name=title,
+        metadata=pagination_message,
+        t=parsed_data,
+        headers=headers,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=parsed_data,
+        raw_response=response,
+    )
+
+
+def persistence_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all the Persistence policies.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.persistence_policy_list_request,
+                                parser_command=client.parser.parse_persistence_policy,
+                                title="Persistence policy:",
+                                headers=["id", "type"],
+                                outputs_prefix="FortiwebVM.PersistencePolicy")
+
+
+def server_health_check_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List all the server health check policies.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.server_health_check_list_request,
+                                parser_command=client.parser.parse_simple_name,
+                                title="Server health check:",
+                                headers=["id"],
+                                outputs_prefix="FortiwebVM.ServerHealthCheck")
+
+
+def local_certificate_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List all the local certificates.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.local_certificate_list_request,
+                                parser_command=snakify,
+                                title="Local certificate:",
+                                headers=["id", "valid_to", "subject", "status"],
+                                outputs_prefix="FortiwebVM.LocalCertificate")
+
+
+def multi_certificate_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List all the multi certificates.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.multi_certificate_list_request,
+                                parser_command=client.parser.parse_simple_name,
+                                title="Multi certificate:",
+                                headers=["id"],
+                                outputs_prefix="FortiwebVM.MultiCertificate")
+
+
+def sni_certificate_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List all the SNI certificates.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.sni_certificate_list_request,
+                                parser_command=client.parser.parse_simple_name,
+                                title="SNI certificate:",
+                                headers=["id"],
+                                outputs_prefix="FortiwebVM.SNICertificate")
+
+
+def virtual_ip_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all the virtual IPs.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.virtual_ip_list_request,
+                                parser_command=client.parser.parse_simple_name,
+                                title="Virtaul IP:",
+                                headers=["id"],
+                                outputs_prefix="FortiwebVM.VirtualIP")
+
+
+def letsencrypt_certificate_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all the virtual IPs.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.letsencrypt_certificate_list_request,
+                                parser_command=client.parser.parse_simple_name,
+                                title="Letsencrypt certificate:",
+                                headers=["id"],
+                                outputs_prefix="FortiwebVM.Letsencrypt")
+
+
+def network_inteface_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List all the network intefaces.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.network_interface_list_request,
+                                parser_command=snakify,
+                                title="Network interface:",
+                                headers=[
+                                        "name",
+                                        "ipv4_netmask",
+                                        "ipv4_access",
+                                        "ipv6_netmask",
+                                        "ipv6_access",
+                                        "status",
+                                        "type"],
+                                outputs_prefix="FortiwebVM.NetworkInterface")
+
+
+def virtual_server_group_create_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Create a virtual server group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_virtual_server_group(args=args, action=CommandAction.CREATE.value)
+    name = args["name"]
+    response = client.virtual_server_group_create_request(
+        name=name,
+        interface=args.get("interface"),
+        ipv4_address=args.get("ipv4_address"),
+        ipv6_address=args.get("ipv6_address"),
+        status=args["status"],
+        use_interface_ip=args["use_interface_ip"],
+    )
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.VIRTUAL_SERVER_GROUP.value,
+        object_name=name,
+        action=OutputTitle.CREATED.value,
+        response=response,
+    )
+    return command_results
+
+
+def virtual_server_group_update_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Update a virtual server group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_virtual_server_group(args=args, action=CommandAction.UPDATE.value)
+    name = args["name"]
+    response = client.virtual_server_group_update_request(
+        name=name,
+        interface=args.get("interface"),
+        ipv4_address=args.get("ipv4_address"),
+        ipv6_address=args.get("ipv6_address"),
+        status=args.get("status"),
+        use_interface_ip=args.get("use_interface_ip"),
+    )
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.VIRTUAL_SERVER_GROUP.value,
+        object_name=name,
+        action=OutputTitle.UPDATED.value,
+        response=response,
+    )
+    return command_results
+
+
+def virtual_server_group_delete_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Delete a virtual server group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    name = args["name"]
+    response = client.virtual_server_group_delete_request(name)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.VIRTUAL_SERVER_GROUP.value,
+        object_name=name,
+        action=OutputTitle.DELETED.value,
+        response=response,
+    )
+    return command_results
+
+
+def virtual_server_group_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List virtual server groups.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    name = args.get("name")
+    response = client.virtual_server_group_list_request(name=name)
+    parsed_data, pagination_message, _ = list_response_handler(
+        client=client,
+        response=response,
+        data_parser=client.parser.parse_snakify_with_id,
+        args=args,
+        sub_object_id=name,
+        sub_object_key=client.parser.sub_object_id_key,
+    )
+    headers = client.parser.create_output_headers(
+        client.version,
+        ["id"],
+        ["ipv4_address", "ipv6_address", "interface", "use_interface_ip", "enable"],
+        ["items_count"],
+    )
+    readable_output = tableToMarkdown(
+        name=OutputTitle.VIRTUAL_SERVER_GROUP.value,
+        metadata=pagination_message,
+        t=parsed_data,
+        headers=headers,
+        headerTransform=string_to_table_header,
+    )
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="FortiwebVM.VirtualServerGroup",
+        outputs_key_field="id",
+        outputs=parsed_data,
+        raw_response=response,
+    )
+    return command_results
+
+
+def virtual_server_item_create_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Create a virtual server item.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_virtual_server_item(args=args)
+    group_name = args["group_name"]
+    response = client.virtual_server_item_create_request(
+        group_name=group_name,
+        interface=args.get("interface"),
+        use_interface_ip=args["use_interface_ip"],
+        status=args["status"],
+        virtual_ip=args.get("virtual_ip"),
+    )
+    member_id = {"id": group_name, "Item": {"id": response["results"]["id"]}}
+    command_results = generate_simple_context_data_command_results(
+        "id",
+        None,
+        response,
+        OutputTitle.VIRTUAL_SERVER_ITEM.value,
+        "FortiwebVM.VirtualServerGroup",
+        readable_outputs=member_id["Item"],
+        outputs=member_id,
+    )
+    return command_results
+
+
+def virtual_server_item_update_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Update a virtual server item.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_virtual_server_group(args=args, action=CommandAction.UPDATE.value)
+    group_name = args["group_name"]
+    item_id = args["item_id"]
+    response = client.virtual_server_item_update_request(
+        group_name=group_name,
+        item_id=item_id,
+        interface=args.get("interface"),
+        use_interface_ip=args.get("use_interface_ip"),
+        status=args.get("status"),
+        virtual_ip=args.get("virtual_ip"),
+    )
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.VIRTUAL_SERVER_ITEM.value,
+        object_name=item_id,
+        action=OutputTitle.UPDATED.value,
+        response=response,
+    )
+    return command_results
+
+
+def virtual_server_item_delete_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Delete a virtual server item.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+
+    group_name = args["group_name"]
+    item_id = args["item_id"]
+    response = client.virtual_server_item_delete_request(group_name, item_id)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.VIRTUAL_SERVER_ITEM.value,
+        object_name=item_id,
+        action=OutputTitle.DELETED.value,
+        response=response,
+    )
+    return command_results
+
+
+def virtual_server_item_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List virtual server items.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_name = args["group_name"]
+    condition_id = args.get("condition_id")
+    response = client.virtual_server_item_list_request(
+        group_name, condition_id=condition_id
+    )
+    parsed_data, pagination_message, _ = list_response_handler(
+        client,
+        response,
+        client.parser.parse_virtual_server_item,
+        args,
+        condition_id,
+    )
+    outputs = {"id": group_name, "Item": parsed_data}
+    headers = client.parser.create_output_headers(
+        client.version,
+        [],
+        [],
+        ["id", "interface", "status", "use_interface_ip", "virtual_ip"],
+    )
+    readable_output = tableToMarkdown(
+        name=OutputTitle.VIRTUAL_SERVER_ITEM.value,
+        metadata=pagination_message,
+        t=outputs["Item"],
+        headers=headers,
+        headerTransform=string_to_table_header,
+    )
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="FortiwebVM.VirtualServerGroup",
+        outputs_key_field="id",
+        outputs=outputs,
+        raw_response=response,
+    )
+    return command_results
+
+
 def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
@@ -9232,7 +10364,22 @@ def main() -> None:
         "fortiwebvm-url-access-rule-condition-update": url_access_rule_condition_update_command,
         "fortiwebvm-url-access-rule-condition-delete": url_access_rule_condition_delete_command,
         "fortiwebvm-url-access-rule-condition-list": url_access_rule_condition_list_command,
-
+        "fortiwebvm-persistence-policy-list": persistence_list_command,
+        "fortiwebvm-server-health-check-list": server_health_check_list_command,
+        "fortiwebvm-local-certificate-list": local_certificate_list_command,
+        "fortiwebvm-multi-certificate-list": multi_certificate_list_command,
+        "fortiwebvm-sni-certificate-list": sni_certificate_list_command,
+        "fortiwebvm-virtual-ip-list": virtual_ip_list_command,
+        "fortiwebvm-letsencrypt-certificate-list": letsencrypt_certificate_list_command,
+        "fortiwebvm-network-interface-list": network_inteface_list_command,
+        "fortiwebvm-virtual-server-group-create": virtual_server_group_create_command,
+        "fortiwebvm-virtual-server-group-update": virtual_server_group_update_command,
+        "fortiwebvm-virtual-server-group-delete": virtual_server_group_delete_command,
+        "fortiwebvm-virtual-server-group-list": virtual_server_group_list_command,
+        "fortiwebvm-virtual-server-item-create": virtual_server_item_create_command,
+        "fortiwebvm-virtual-server-item-update": virtual_server_item_update_command,
+        "fortiwebvm-virtual-server-item-delete": virtual_server_item_delete_command,
+        "fortiwebvm-virtual-server-item-list": virtual_server_item_list_command,
     }
     try:
         client_class = {"V1": ClientV1, "V2": ClientV2}[version]
