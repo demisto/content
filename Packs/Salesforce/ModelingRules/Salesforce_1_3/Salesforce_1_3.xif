@@ -25,6 +25,24 @@ alter xdm.target.resource.name = Name,
 
 
 [MODEL: dataset = salesforce_audit_raw]
-| alter xdm.event.operation_sub_type = Action,
+alter xdm.event.operation_sub_type = Action,
     xdm.event.description = Display,
-    xdm.source.user.identifier = CreatedById
+    xdm.source.user.identifier = CreatedById,
+    xdm.target.resource.id = Id,
+    xdm.source.user.username = DelegateUser;
+
+[MODEL: dataset = salesforce_contentdistribution_raw ]
+//LastModifiedDate will be _time
+alter xdm.target.resource.id = Id,
+    xdm.target.resource.name = Name,
+    xdm.source.user.identifier = coalesce(OwnerId,CreatedById),
+    xdm.target.url = coalesce(PdfDownloadUrl,ContentDownloadUrl,DistributionPublicUrl),
+    xdm.network.session_id = RelatedRecordId;
+
+[MODEL: dataset = salesforce_eventlogfile_raw ] checking the field names. all of them started with _ and ends with _
+
+[MODEL: dataset = salesforce_group_raw ]
+ alter xdm.target.resource.id = Id,
+    xdm.target.resource.name = Name,
+    xdm.source.user.user_type = if(Type in ("Regular","AllCustomerPortal","ChannelProgramGroup","Manager","ManagerAndSubordinatesInternal","Organization","Participant","PRMOrganization","Role","RoleAndSubordinates","RoleAndSubordinatesInternal","Territory","TerritoryAndSubordinates"),REGULAR,Type = "Queue",SERVICE_ACCOUNT,to_string(Type))
+
