@@ -1,7 +1,6 @@
 ## **Generate Compliance Dashboards and Reports**
 The NIST 800-53 compliance pack provides a comprehensive dashboard and report template to easily monitor your Cortex XSIAM data compliance regulations and provide evidence for compliance audits. The dashboard and report aggregate and reference all data mapped to the Cortex Data Model (XDM).
 
-The dashboard and report in this pack utilizes XQL queries that reference the XSIAM data model (XDM). All data that has been onboarded to XSIAM and mapped to the data model will be automatically included in this dashboard and report.
 
 **Note:** This pack is currently offered as a free beta of the Compliance module for a limited time. In the future, this module will be sold separately on top of XSIAM.
 
