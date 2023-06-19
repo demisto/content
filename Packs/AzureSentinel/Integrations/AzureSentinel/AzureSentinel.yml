@@ -3034,7 +3034,7 @@ script:
     description: Lists all resource groups.
     arguments:
     - name: subscription_id
-      description: "A comma-separated list of subscription IDs. Note: The integration default Subscription ID will be used unless this argument is provided."
+      description: "The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided."
       type: String
       required: false
     - name: tag

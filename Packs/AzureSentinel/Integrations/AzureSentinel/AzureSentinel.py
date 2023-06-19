@@ -1818,50 +1818,33 @@ def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:
     )
 
 
-def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any], subscription_id: str) -> List[CommandResults]:
+def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any], subscription_id: str) -> CommandResults:
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', 50))
-    subscription_id_list = argToList(subscription_id)
+    subscription_id = subscription_id
 
     # extracting the tag name and value from the tag argument that is received from the user as a string
     filter_by_tag = arg_to_tag(tag) if tag else ''
 
-    command_results_list = []
-    all_subscription_ids_are_wrong = True
-    warning_message = ''
-
-    for subscription_id in subscription_id_list:
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter=\
+    full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter=\
 {filter_by_tag}&$top={limit}&api-version=2021-04-01'
 
-        try:
-            response = client.http_request('GET', full_url=full_url)
-            data_from_response = response.get('value', [])
-            all_subscription_ids_are_wrong = False
+    response = client.http_request('GET', full_url=full_url)
+    data_from_response = response.get('value', [])
 
-            readable_output = tableToMarkdown(
-                'Azure Sentinel Resource Groups',
-                data_from_response,
-                ['name', 'location', 'tags', 'properties.provisioningState'], removeNull=True,
-                headerTransform=string_to_table_header)
+    readable_output = tableToMarkdown(
+        'Azure Sentinel Resource Groups',
+        data_from_response,
+        ['name', 'location', 'tags', 'properties.provisioningState'], removeNull=True,
+        headerTransform=string_to_table_header)
 
-            command_results_list.append(CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='AzureSentinel.ResourceGroup',
-                outputs=data_from_response,
-                outputs_key_field='name',
-                raw_response=response
-            ))
-        except Exception as e:
-            # if at least one of the subscription ids is correct, we will return the results of the correct subscription ids
-            # and add a warning message for the wrong subscription ids
-            warning_message += f'Failed to get resource groups for subscription id "{subscription_id}". Error: {str(e)}\n\n'
-            # if all subscription ids are wrong, we will raise the exception
-            if all_subscription_ids_are_wrong and subscription_id == subscription_id_list[-1]:
-                raise e
-
-    return_warning(warning_message) if warning_message else None
-    return command_results_list
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.ResourceGroup',
+        outputs=data_from_response,
+        outputs_key_field='name',
+        raw_response=response
+    )
 
 
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
