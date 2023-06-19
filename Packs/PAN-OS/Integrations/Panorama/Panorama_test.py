@@ -738,13 +738,37 @@ def test_prettify_logs():
 
 
 prepare_security_rule_inputs = [
+    ('after', 'test_rule_name', ['user1'], '<source-user><member>user1</member></source-user>'),
+    ('after', 'test_rule_name', ['user1,user2'], '<source-user><member>user1,user2</member></source-user>'),
+]
+
+
+@pytest.mark.parametrize('where, dst, source_user, expected_result', prepare_security_rule_inputs)
+def test_prepare_security_rule_params(where, dst, source_user, expected_result):
+    """
+    Given:
+     - valid arguments for the prepare_security_rule_params function
+
+    When:
+     - running the prepare_security_rule_params utility function
+
+    Then:
+     - a valid security rule dictionary is returned.
+    """
+    from Panorama import prepare_security_rule_params
+    params = prepare_security_rule_params(api_action='set', action='drop', destination=['any'], source=['any'],
+                                          rulename='test', where=where, dst=dst, source_user=source_user)
+    assert expected_result in params.get('element', '')
+
+
+prepare_security_rule_fail_inputs = [
     ('top', 'test_rule_name'),
     ('bottom', 'test_rule_name'),
 ]
 
 
-@pytest.mark.parametrize('where, dst', prepare_security_rule_inputs)
-def test_prepare_security_rule_params(where, dst):
+@pytest.mark.parametrize('where, dst', prepare_security_rule_fail_inputs)
+def test_prepare_security_rule_params_fail(where, dst):
     """
     Given:
      - a non valid arguments for the prepare_security_rule_params function
@@ -917,11 +941,12 @@ def test_prettify_rule():
         rule = json.load(f)
 
     with open("test_data/prettify_rule.json") as f:
-        expected_prettify_rule = json.load(f)
+        expected_pretty_rule = json.load(f)
 
-    prettify_rule = prettify_rule(rule)
+    pretty_rule = prettify_rule(rule)
+    del pretty_rule['DeviceGroup']
 
-    assert prettify_rule == expected_prettify_rule
+    assert pretty_rule == expected_pretty_rule
 
 
 class TestPcap:
@@ -1186,7 +1211,7 @@ def test_apply_security_profiles_command_main_flow(mocker):
         'key': 'thisisabogusAPIKEY!', 'element': '<profile-setting><profiles><data-filtering>'
                                                  '<member>test-profile</member></data-filtering></profiles>'
                                                  '</profile-setting>'}
-    assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
+    assert res.call_args.args[0] == 'The profile data-filtering = test-profile has been applied to the rule rule-test'
 
 
 def test_apply_security_profiles_command_when_one_already_exists(mocker):
@@ -1230,7 +1255,48 @@ def test_apply_security_profiles_command_when_one_already_exists(mocker):
         'key': 'thisisabogusAPIKEY!',
         'element': '<profile-setting><profiles><spyware><member>strict</member></spyware>'
                    '<virus><member>Tap</member></virus></profiles></profile-setting>'}
-    assert res.call_args.args[0] == 'The profile strict has been applied to the rule rule-test'
+    assert res.call_args.args[0] == 'The profile spyware = strict has been applied to the rule rule-test'
+
+
+def test_remove_security_profiles_command(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-remove-security-profile command arguments
+
+    When -
+        running the pan-os-remove-security-profile command through the main flow
+
+    Then
+     - Ensure the given profile type has been removed from the given rule
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'spyware',
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
+        }
+    )
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-remove-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!',
+        'element': '<profile-setting><profiles><virus><member>Tap</member></virus></profiles></profile-setting>'}
+    assert res.call_args.args[0] == 'The profile spyware has been removed from the rule rule-test'
 
 
 class TestPanoramaEditRuleCommand:
@@ -1452,6 +1518,50 @@ class TestPanoramaEditRuleCommand:
             'key': 'thisisabogusAPIKEY!'
         }
         assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+
+    @staticmethod
+    def test_edit_rule_main_flow_remove_profile_setting_group(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+         - arguments to remove a profile-setting group.
+        When
+         - running the pan-os-edit-rule command through the main flow.
+
+        Then
+         - make sure the API request body is correct.
+         - make sure the message is correct for the user.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "profile-setting",
+                "element_value": "some string",
+                "behaviour": "remove",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # Check: 'action' == set (not edit)
+        assert request_mock.call_args.kwargs['body']['action'] == 'set'
+        # Ensure 'element' wasn't sent with a group (since we removed the profile-setting group)
+        assert request_mock.call_args.kwargs['body']['element'] == '<profile-setting><group/></profile-setting>'
+        # Make sure the message is correct for the user
+        assert res.call_args.args[0]['HumanReadable'] == 'Rule edited successfully.'
 
 
 def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):

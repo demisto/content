@@ -30,7 +30,7 @@ This integration was integrated and tested with Splunk v7.2.
     | Use Splunk Clock Time For Fetch |  | False |
     | Parse Raw Part of Notable Events |  | False |
     | Replace with Underscore in Incident Fields |  | False |
-    | Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. (Set only if the Splunk server is different than the Cortex XSOAR server.) Relevant only for fetching and mirroring notable events. |  | False |
+    | Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled. |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
     | Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
     | Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field. | False |
