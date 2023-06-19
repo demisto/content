@@ -1704,7 +1704,7 @@ def main():  # pragma: no cover
     base_url = f"{params.get('url', '').rstrip('/')}"
     if not base_url.endswith('/helix/id'):
         base_url += '/helix/id'
-    base_url += f"/{params.get('h_id_creds', {}).get('identifier') or f" / {params.get('h_id')}"
+    base_url += f"/{params.get('h_id_creds', {}).get('identifier') or params.get('h_id')}"
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     headers = {
