@@ -1,1 +1,5 @@
-IN126RM104RM106
+[file:FireEyeHelix.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM104,RM106

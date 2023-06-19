@@ -1,3 +1,5 @@
-PA116
+[file:Imperva_Skyfence]
+ignore=PA116
 
-IM111
+[file:ImpervaSkyfence_image.png]
+ignore=IM111
