@@ -713,10 +713,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 24f02ce6-fdcb-435d-84bd-352d3bc47b9f
+    taskid: a108e15e-1fab-4183-8228-2e466faee8bf
     type: regular
     task:
-      id: 24f02ce6-fdcb-435d-84bd-352d3bc47b9f
+      id: a108e15e-1fab-4183-8228-2e466faee8bf
       version: -1
       name: Set timestamp to epoch (milliseconds)
       description: Set a value in context under the key you entered.
@@ -739,22 +739,11 @@ tasks:
               formatter:
                 value:
                   simple: '%Y-%m-%dT%H:%M:%S.%f+00:00'
-          - operator: TimeComponents
+          - operator: multiply
             args:
-              key:
+              by:
                 value:
-                  simple: iso_8601
-              time_zone:
-                value:
-                  simple: inputs.StartTime
-                iscontext: true
-          - operator: replace
-            args:
-              limit: {}
-              replaceWith: {}
-              toReplace:
-                value:
-                  simple: T
+                  simple: "1000"
     separatecontext: false
     continueonerrortype: ""
     view: |-
