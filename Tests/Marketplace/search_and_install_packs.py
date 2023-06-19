@@ -138,6 +138,7 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
             response_type='object',
         )
 
+        logging.debug(f"Succeeded to fetch dependencies for pack '{pack_id}'.\nResponse: '{json.dumps(response_data)}'")
         return response_data
 
     except ApiException as api_ex:
