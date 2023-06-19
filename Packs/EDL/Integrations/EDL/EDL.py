@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+# pack version: 3.1.27
 import tempfile
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 
 import re
 
@@ -475,20 +475,24 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
     Returns:
         a dict of the formatted indicators by category.
     """
-    if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
-        stripped_indicator = url_handler(indicator_value, True, request_args.url_port_stripping,
-                                         request_args.url_truncate)
+    if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') in ['IP', 'URL', 'Domain', 'DomainGlob']:
+        stripped_indicator = url_handler(indicator_value, request_args.url_protocol_stripping,
+                                         request_args.url_port_stripping, request_args.url_truncate)
         indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')
         # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
                 (indicator_proxysg_category in request_args.category_attribute or len(request_args.category_attribute) == 0):
-            proxysg_category = indicator_proxysg_category
+            # handle indicators in multiple categories
+            if isinstance(indicator_proxysg_category, list):
+                for category in indicator_proxysg_category:
+                    files_by_category = add_indicator_to_category(stripped_indicator, category, files_by_category)
+            else:
+                files_by_category = add_indicator_to_category(stripped_indicator, indicator_proxysg_category, files_by_category)
         else:
             # if ProxySG Category is not set or does not exist in the category_attribute list
-            proxysg_category = request_args.category_default
+            files_by_category = add_indicator_to_category(stripped_indicator, request_args.category_default, files_by_category)
 
-        files_by_category = add_indicator_to_category(stripped_indicator, proxysg_category, files_by_category)
     return files_by_category
 
 
