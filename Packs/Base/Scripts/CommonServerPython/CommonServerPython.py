@@ -11113,7 +11113,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
             data_format = 'json'
         # Separating each event with a new line
         data = '\n'.join(events)
-    else:
+    elif not isinstance(events, str):
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
                                 'list.').format(type_events=type(events)))
     if not data_format:
