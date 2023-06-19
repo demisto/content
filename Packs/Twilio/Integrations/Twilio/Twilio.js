@@ -2,7 +2,7 @@ var sendRequest = function(method, url, body) {
     var username = (params.credentials_token!== undefined)? params.credentials_token.identifier : params.sid;
     var password = (params.credentials_token!== undefined)? params.credentials_token.password : params.token;
     if (!(username && password)){
-        throw('API key and Auth token must be provided.');
+        throw('Account SID and Auth token must be provided.');
     }
     var res = http(
         params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
