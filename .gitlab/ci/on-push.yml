@@ -607,13 +607,9 @@ test-upload-flow:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   script:
     - |
-      echo "BINAT"
-      echo $ARTIFACTS_FOLDER
-      ls -ltr $ARTIFACTS_FOLDER
-      if [[ -f $ARTIFACTS_FOLDER/test_playbooks_report.json ]]; then
-        echo "YUVAL"
-        cat $ARTIFACTS_FOLDER/test_playbooks_report.json
-        echo "COHEN"
+      if [[ -f $ARTIFACTS_FOLDER/failed_tests.txt ]]; then
+        cat $ARTIFACTS_FOLDER/failed_tests.txt
+        exit 1
         fi
   
 
