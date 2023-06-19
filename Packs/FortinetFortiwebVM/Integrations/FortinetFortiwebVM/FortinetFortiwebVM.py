@@ -9232,6 +9232,7 @@ def main() -> None:
         "fortiwebvm-url-access-rule-condition-update": url_access_rule_condition_update_command,
         "fortiwebvm-url-access-rule-condition-delete": url_access_rule_condition_delete_command,
         "fortiwebvm-url-access-rule-condition-list": url_access_rule_condition_list_command,
+
     }
     try:
         client_class = {"V1": ClientV1, "V2": ClientV2}[version]
