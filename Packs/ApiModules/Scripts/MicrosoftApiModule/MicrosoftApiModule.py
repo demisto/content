@@ -563,19 +563,15 @@ def create_custom_azure_cloud(origin: str,
 def microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
     if is_gcc:  # Backward compatible.
-        endpoint_type = "gcc"
-        params_url = MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+        params_endpoint_type = "US GCC"
     elif params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not params_endpoint_type:
         # When the integration was configured before our Azure Cloud support, the value will be None.
-        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE  # Default to "com"
-
         if not params_url:
             if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
                 raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
             raise DemistoException("Endpoint type is not set and no URL was provided.")
-    else:
-        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE[params_endpoint_type]  # type: ignore[assignment]
-        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params_endpoint_type, 'com')  
+    params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
     return endpoint_type, params_url
 
 
