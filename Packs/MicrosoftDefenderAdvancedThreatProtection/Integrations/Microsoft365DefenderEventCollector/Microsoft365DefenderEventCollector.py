@@ -343,8 +343,8 @@ def test_module(get_events: DefenderGetEvents) -> str:
 def main(command: str, params: dict):
     demisto.debug(f'Command being called is {command}')
     try:
-        params_endpoint_type = params.get('endpoint_type')
-        params_url = params.get('url') or 'https://api.securitycenter.microsoft.com'
+        params_endpoint_type = params.get('endpoint_type') or 'Worldwide'
+        params_url = params.get('url')
         # is_gcc wasn't supported in the event collector, thus passing it as None.
         endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url)
 

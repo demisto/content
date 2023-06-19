@@ -567,7 +567,7 @@ def microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_ur
         params_url = MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
     elif params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not params_endpoint_type:
         # When the integration was configured before our Azure Cloud support, the value will be None.
-        endpoint_type = "com"  # Default to "com"
+        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE  # Default to "com"
 
         if not params_url:
             if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
