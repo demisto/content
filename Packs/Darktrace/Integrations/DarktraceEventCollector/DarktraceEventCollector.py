@@ -143,10 +143,12 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict
     ).hexdigest()
 
 
-def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> \
-        List[Dict[str, Any]]:
+def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> List[Dict[str, Any]]:
     """Filters events by pbid and max_fetch"""
-    return [event for event in events if event.get('pbid') > last_fetched_pid][:max_fetch]
+    for index, event in enumerate(events):
+        if event.get('pbid') > last_fetched_pid:
+            return events[index:index + max_fetch]
+    return []
 
 
 def add_time_field(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -174,7 +176,7 @@ def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
 
 
 def fetch_events(client: Client, max_fetch: int, first_fetch_time: float, last_run: Dict[str, Any]) -> Tuple[
-        List[Dict[str, Any]], Dict[str, Any]]:
+    List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """
@@ -234,10 +236,11 @@ def main() -> None:  # pragma: no cover
                                                 max_fetch=max_fetch,
                                                 first_fetch_time=first_fetch_time,  # type: ignore
                                                 last_run=last_run)
-            add_time_field(events)
-            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-            if new_last_run:
-                demisto.setLastRun(new_last_run)
+            if events:
+                add_time_field(events)
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                if new_last_run:
+                    demisto.setLastRun(new_last_run)
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
