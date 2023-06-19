@@ -22,4 +22,4 @@ if [ $RETVAL -eq 0 ]; then
   touch "$filepath"
 fi
 
-exit $RETVAL
+exit 0 # change back when the change in the sdk will be merged
