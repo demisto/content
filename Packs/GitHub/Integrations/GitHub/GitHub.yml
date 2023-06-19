@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: GitHub
+  id: GitHub -custom
   version: -1
 configuration:
 - display: Fetch incidents
@@ -94,8 +94,8 @@ configuration:
   section: Connect
   advanced: true
 description: Integration to GitHub API
-display: GitHub
-name: GitHub
+display: GitHub -custom
+name: GitHub -custom
 script:
   commands:
   - arguments:
@@ -4034,6 +4034,41 @@ script:
     - contextPath: GitHub.Assignees.assignees.html_url
       description: HTML URL for user
       type: String
+  - arguments:
+    - default: false
+      description: The GitHub owner (organization or username) of the repository.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: The GitHub repository name.
+      isArray: true
+      name: repository
+      required: false
+      secret: false
+    - default: false
+      description: The branch to trigger the workflow on.
+      isArray: false
+      name: branch
+      required: false
+      secret: false
+    - default: false
+      description: The name of your workflow file.
+      isArray: true
+      name: workflow
+      required: true
+      secret: false
+    - default: false
+      description: The GitHub personal access token.
+      isArray: false
+      name: access_token
+      required: false
+      secret: false
+    deprecated: false
+    description: Triggers a GitHub workflow on a given repository and workflow.
+    execution: false
+    name: GitHub-trigger-workflow
   dockerimage: demisto/pyjwt3:1.0.0.45830
   feed: false
   isfetch: true

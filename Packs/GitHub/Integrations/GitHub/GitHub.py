@@ -2018,6 +2018,46 @@ def github_add_assignee_command():
                                   raw_response=response, readable_output=message))
 
 
+def github_trigger_workflow_command():
+    """
+    Triggers a GitHub workflow on a given repository and workflow
+
+        Args:
+            owner (str): The GitHub owner (organization or username) of the repository.
+            repository (str): The GitHub repository name.
+            branch (str): The branch to trigger the workflow on.
+            workflow (str): The name of your workflow file.
+            access_token (str): The GitHub personal access token.
+
+        Returns:
+            CommandResults object with informative printout if trigger the workflow succeeded or not.
+    """
+    args = demisto.args()
+    params = demisto.params()
+    owner = args.get('owner') or params.get('user')
+    repository = args.get('repository') or params.get('repository')
+    branch = args.get('branch', 'master')
+    workflow = args.get('workflow')
+    access_token = args.get('access_token') or params.get('api_token', {}).get('password', '')
+
+    suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Accept": "application/vnd.github.v3+json"
+    } if access_token else HEADERS
+    data = {
+        "ref": branch
+    }
+    response = http_request('POST', url_suffix=suffix, headers=headers, data=data)
+
+    if response.status_code == 204:
+        message = "Workflow triggered successfully."
+    else:
+        message = f"Failed to trigger workflow. {response.json().get('message')}"
+
+    return_results(CommandResults(raw_response=response, readable_output=message))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 COMMANDS = {
@@ -2064,6 +2104,7 @@ COMMANDS = {
     'GitHub-update-comment': github_update_comment_command,
     'GitHub-delete-comment': github_delete_comment_command,
     'GitHub-add-assignee': github_add_assignee_command,
+    'GitHub-trigger-workflow': github_trigger_workflow_command,
 }
 
 
