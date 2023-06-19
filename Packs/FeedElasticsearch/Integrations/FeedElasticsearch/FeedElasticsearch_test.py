@@ -1,5 +1,6 @@
 from CommonServerPython import *
 
+
 class MockHit:
     def __init__(self, hit_val):
         self._hit_val = hit_val
