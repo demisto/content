@@ -2197,10 +2197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "317":
     id: "317"
-    taskid: 41318b2c-fa34-43f5-827b-4fc32b3fe308
+    taskid: 9abbf569-85f6-4a26-8de1-22c7fb1a27ff
     type: condition
     task:
-      id: 41318b2c-fa34-43f5-827b-4fc32b3fe308
+      id: 9abbf569-85f6-4a26-8de1-22c7fb1a27ff
       version: -1
       name: Verify IOC Value
       description: Verify that the 'CrowdStrike.Detection.Behavior.IOCValue' context key was populated.
@@ -2216,7 +2216,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
@@ -2273,10 +2273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "323":
     id: "323"
-    taskid: 86ed4eee-19a0-4060-85de-be2f84db90c7
+    taskid: 6bba1a41-4839-4dc1-8a42-74e23a03b98e
     type: condition
     task:
-      id: 86ed4eee-19a0-4060-85de-be2f84db90c7
+      id: 6bba1a41-4839-4dc1-8a42-74e23a03b98e
       version: -1
       name: Verify IOC Type
       description: Verify that the 'CrowdStrike.Detection.Behavior.IOCType' context key was populated.
@@ -2292,7 +2292,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
@@ -3858,4 +3858,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.5.0
+fromversion: 6.8.0
