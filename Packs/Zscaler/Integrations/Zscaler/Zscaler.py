@@ -508,6 +508,7 @@ def url_lookup(args):
                     "urlClassificationsWithSecurityAlert", None
                 ),
                 score=score,
+                reliability=demisto.params().get("reliability")
             ),
         )
 
@@ -575,6 +576,7 @@ def ip_lookup(ip):
                     "ipClassificationsWithSecurityAlert", None
                 ),
                 score=score,
+                reliability=demisto.params().get("reliability"),
             ),
         )
         results.append(
@@ -909,6 +911,7 @@ def sandbox_report_command():
             "Type": "file",
             "Vendor": "Zscaler",
             "Score": dbot_score,
+            "Reliability": demisto.params().get("reliability"),
         }
     }
 
