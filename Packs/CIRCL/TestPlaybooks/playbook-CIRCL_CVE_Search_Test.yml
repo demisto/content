@@ -1,14 +1,15 @@
 id: CIRCL CVE Search - Test
 version: -1
 name: CIRCL CVE Search - Test
+description: Test playbook for CIRCL CVE Search
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7d1358a3-e15f-460d-8590-d544320a6217
+    taskid: c24dc861-a4e0-4842-8f79-cd59fcb5e225
     type: start
     task:
-      id: 7d1358a3-e15f-460d-8590-d544320a6217
+      id: c24dc861-a4e0-4842-8f79-cd59fcb5e225
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c7fb2a03-6f61-453f-87b9-217bf45089fe
+    taskid: c41704e4-2289-4864-8fda-a5c5b0774b5a
     type: regular
     task:
-      id: c7fb2a03-6f61-453f-87b9-217bf45089fe
+      id: c41704e4-2289-4864-8fda-a5c5b0774b5a
       version: -1
       name: DeleteContext
       description: |-
@@ -75,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 86ac3cf1-3300-4b00-8d18-242da861ab71
+    taskid: 919c8735-8600-4056-89f2-a97cacbfd551
     type: regular
     task:
-      id: 86ac3cf1-3300-4b00-8d18-242da861ab71
+      id: 919c8735-8600-4056-89f2-a97cacbfd551
       version: -1
       name: cve-latest
       description: Returns the latest updated CVEs.
@@ -110,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: db9f3841-cbb2-48f3-8d42-e36d1d564e54
+    taskid: 7c2c86da-fb29-4f94-8241-276c6170f7c0
     type: condition
     task:
-      id: db9f3841-cbb2-48f3-8d42-e36d1d564e54
+      id: 7c2c86da-fb29-4f94-8241-276c6170f7c0
       version: -1
       name: Check 2 CVEs returned
       type: condition
@@ -155,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7451916b-9457-438a-8f70-399df4c3999d
+    taskid: 890c1578-5f21-49d8-833b-4b409e8c74ff
     type: regular
     task:
-      id: 7451916b-9457-438a-8f70-399df4c3999d
+      id: 890c1578-5f21-49d8-833b-4b409e8c74ff
       version: -1
       name: Check CVE
       description: Returns CVE information by CVE ID.
@@ -170,6 +171,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      cve:
+        simple: CVE-2021-26855,CVE-2020-1472
       cve_id:
         simple: CVE-2021-21972, CVE-2021-44228
     separatecontext: false
@@ -190,10 +193,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 89520bde-8088-4291-86ff-79c26e30df09
+    taskid: 8ae8d026-1824-4625-8c44-aa8fa739d738
     type: regular
     task:
-      id: 89520bde-8088-4291-86ff-79c26e30df09
+      id: 8ae8d026-1824-4625-8c44-aa8fa739d738
       version: -1
       name: DeleteContext
       description: |-
@@ -230,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: afa3dbe8-8bb8-4510-8b22-60237a31bf41
+    taskid: 3b9cedea-aac5-4ced-8476-8a7df80ccc78
     type: condition
     task:
-      id: afa3dbe8-8bb8-4510-8b22-60237a31bf41
+      id: 3b9cedea-aac5-4ced-8476-8a7df80ccc78
       version: -1
       name: Check 2 CVEs returned
       type: condition
@@ -275,10 +278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 3f5351f0-d88f-4755-8f14-61613a7d9bad
+    taskid: 0442186e-756e-4041-8f1b-ee1e805ae7a9
     type: regular
     task:
-      id: 3f5351f0-d88f-4755-8f14-61613a7d9bad
+      id: 0442186e-756e-4041-8f1b-ee1e805ae7a9
       version: -1
       name: DeleteContext
       description: |-
@@ -315,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 86881e77-c328-482a-8bdc-399cf1d27437
+    taskid: ffa7245a-ff66-4781-80ac-f0df70046107
     type: title
     task:
-      id: 86881e77-c328-482a-8bdc-399cf1d27437
+      id: ffa7245a-ff66-4781-80ac-f0df70046107
       version: -1
       name: Done
       type: title
@@ -355,5 +358,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.5.0
-description: Test playbook for CIRCL CVE Search
+fromversion: 6.8.0
