@@ -1,5 +1,6 @@
 Aruba ClearPass Policy Manager provides role and device-based network access control for employees, contractors, and guests across any multi-vendor wired, wireless, and VPN infrastructure.
 This integration was integrated and tested with version 6.9 of HPE Aruba ClearPass.
+
 ## Configure HPE Aruba ClearPass on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,17 +9,21 @@ This integration was integrated and tested with version 6.9 of HPE Aruba ClearPa
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your server URL (e.g., https://example.net) |  | True |
+    | Your server URL (e.g., <https://example.net>) |  | True |
     | Client ID | HPE Aruba ClearPass client identifier. | True |
     | Client Secret | HPE Aruba ClearPass client secret. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### aruba-clearpass-endpoints-list
+
 ***
 Get a list of endpoints. An endpoint device is an Internet-capable hardware device on a TCP/IP network (e.g. laptops, smart phones, tablets, etc.)
 
@@ -26,6 +31,7 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
 #### Base Command
 
 `aruba-clearpass-endpoints-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -49,9 +55,11 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
 
 
 #### Command Example
+
 ```!aruba-clearpass-endpoints-list```
 
 #### Context Example
+
 ```json
 {
     "HPEArubaClearPass": {
@@ -85,6 +93,7 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
 #### Human Readable Output
 
 >### HPE Aruba ClearPass endpoints
+
 >|attributes|description|id|mac_address|status|
 >|---|---|---|---|---|
 >| A: B<br/>C: D<br/>test: bad<br/>test: b | test | 3001 | 005056894ae2 | Known |
@@ -92,6 +101,7 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
 
 
 ### aruba-clearpass-endpoint-update
+
 ***
 Updates some fields of an endpoint.
 
@@ -99,6 +109,7 @@ Updates some fields of an endpoint.
 #### Base Command
 
 `aruba-clearpass-endpoint-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -124,9 +135,11 @@ Updates some fields of an endpoint.
 
 
 #### Command Example
+
 ```!aruba-clearpass-endpoint-update endpoint_id=3001 description="test" status=Known```
 
 #### Context Example
+
 ```json
 {
     "HPEArubaClearPass": {
@@ -149,12 +162,14 @@ Updates some fields of an endpoint.
 #### Human Readable Output
 
 >### HPE Aruba ClearPass endpoints
+
 >|attributes|description|id|mac_address|status|
 >|---|---|---|---|---|
 >| A: B<br/>C: D<br/>test1: bad<br/>test2: b | test | 3001 | 005056894ae2 | Known |
 
 
 ### aruba-clearpass-attributes-list
+
 ***
 Get a list of attributes. Attributes allows you to specify unique sets of criteria for local users, guest users, endpoints, and devices. If no arguments were given, all of the attributes will be displayed.
 
@@ -162,6 +177,7 @@ Get a list of attributes. Attributes allows you to specify unique sets of criter
 #### Base Command
 
 `aruba-clearpass-attributes-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,9 +204,11 @@ Get a list of attributes. Attributes allows you to specify unique sets of criter
 
 
 #### Command Example
+
 ```!aruba-clearpass-attributes-list```
 
 #### Context Example
+
 ```json
 {
     "HPEArubaClearPass": {
@@ -403,6 +421,7 @@ Get a list of attributes. Attributes allows you to specify unique sets of criter
 #### Human Readable Output
 
 >### HPE Aruba ClearPass attributes
+
 >|allow_multiple|data_type|entity_name|id|mandatory|name|
 >|---|---|---|---|---|---|
 >| true | String | Device | 35 | false | Controller Id |
@@ -433,6 +452,7 @@ Get a list of attributes. Attributes allows you to specify unique sets of criter
 
 
 ### aruba-clearpass-attribute-create
+
 ***
 Create a new attribute.
 
@@ -440,6 +460,7 @@ Create a new attribute.
 #### Base Command
 
 `aruba-clearpass-attribute-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -468,9 +489,11 @@ Create a new attribute.
 
 
 #### Command Example
+
 ```!aruba-clearpass-attribute-create data_type=Boolean entity_name=Device name="new_attribute"```
 
 #### Context Example
+
 ```json
 {
     "HPEArubaClearPass": {
@@ -489,12 +512,14 @@ Create a new attribute.
 #### Human Readable Output
 
 >### HPE Aruba ClearPass new attribute
+
 >|allow_multiple|data_type|entity_name|id|mandatory|name|
 >|---|---|---|---|---|---|
 >| false | Boolean | Device | 3044 | false | new_attribute |
 
 
 ### aruba-clearpass-attribute-update
+
 ***
 Update some fields of an attribute by the attribute's ID.
 
@@ -502,6 +527,7 @@ Update some fields of an attribute by the attribute's ID.
 #### Base Command
 
 `aruba-clearpass-attribute-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -531,9 +557,11 @@ Update some fields of an attribute by the attribute's ID.
 
 
 #### Command Example
+
 ```!aruba-clearpass-attribute-update attribute_id=31 name="Device Type" data_type=String```
 
 #### Context Example
+
 ```json
 {
     "HPEArubaClearPass": {
@@ -552,12 +580,14 @@ Update some fields of an attribute by the attribute's ID.
 #### Human Readable Output
 
 >### HPE Aruba ClearPass update attribute
+
 >|allow_multiple|data_type|entity_name|id|mandatory|name|
 >|---|---|---|---|---|---|
 >| true | String | Device | 31 | false | Device Type |
 
 
 ### aruba-clearpass-attribute-delete
+
 ***
 Delete an attribute.
 
@@ -565,6 +595,7 @@ Delete an attribute.
 #### Base Command
 
 `aruba-clearpass-attribute-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -577,6 +608,7 @@ Delete an attribute.
 There is no context output for this command.
 
 #### Command Example
+
 ```!aruba-clearpass-attribute-delete attribute_id=3043```
 
 #### Human Readable Output
@@ -584,6 +616,7 @@ There is no context output for this command.
 >HPE Aruba ClearPass attribute with ID: 3043 deleted successfully.
 
 ### aruba-clearpass-active-sessions-list
+
 ***
 Get a list of active sessions.
 
@@ -591,6 +624,7 @@ Get a list of active sessions.
 #### Base Command
 
 `aruba-clearpass-active-sessions-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -615,11 +649,13 @@ Get a list of active sessions.
 
 
 #### Command Example
+
 ```!aruba-clearpass-active-sessions-list```
 
 
 
 ### aruba-clearpass-active-session-disconnect
+
 ***
 Disconnect active session.
 
@@ -627,6 +663,7 @@ Disconnect active session.
 #### Base Command
 
 `aruba-clearpass-active-session-disconnect`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -643,6 +680,7 @@ Disconnect active session.
 
 
 #### Command Example
+
 ```!aruba-clearpass-active-session-disconnect session_id=123```
 
 
