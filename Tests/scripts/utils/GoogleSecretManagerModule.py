@@ -41,7 +41,6 @@ class GoogleSecreteManagerModule:
             except Exception as e:
                 labels = {}
                 logging.error(f'Error the secret: {secret.name} has no labels, got the error: {e}')
-                # print(f'{labels=}')
             secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
@@ -49,8 +48,6 @@ class GoogleSecreteManagerModule:
                     formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
                     branch_name and labels.get('branch', '') != branch_name):
                 continue
-            # print(f'formatted_integration_search_ids:{formatted_integration_search_ids}')
-            # print(f'secret_pack_id:{secret_pack_id}')
             if with_secret:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
@@ -58,7 +55,6 @@ class GoogleSecreteManagerModule:
                     secrets.append(secret_value)
                 except Exception as e:
                     logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
-                    print(f'Error getting the secret: {secret.name}, got the error: {e}')
             else:
                 secrets.append(secret)
 

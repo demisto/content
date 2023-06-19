@@ -1,43 +1,24 @@
 import argparse
 import json5
+import pathlib
+import yaml
 
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
 from pathlib import Path
-import pathlib
-import yaml
 
 
-def get_git_diff(branch_name, repo):
+def get_git_diff(branch_name: str, repo) -> list[str]:
     changed_files: list[str] = []
-    packs_files_were_removed_from: set[str] = set()
 
     previous_commit = 'origin/master'
     current_commit = branch_name
 
-    # if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
-    #     # logger.info('bucket upload: getting last commit from index')
-    #     previous_commit = get_last_commit_from_index(self.service_account)
-    #     if self.branch_name == 'master':
-    #         current_commit = 'origin/master'
-
     if branch_name == 'master':
         current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))
 
-    # elif os.getenv('CONTRIB_BRANCH'):
-    #     # gets files of unknown status
-    #     contrib_diff: tuple[str, ...] = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
-    #     # logger.info('contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
-    #     changed_files.extend(contrib_diff)
-
-    # elif os.getenv('EXTRACT_PRIVATE_TESTDATA'):
-    #     logger.info('considering extracted private test data')
-    #     private_test_data = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
-    #     changed_files.extend(private_test_data)
-
     diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
-    # logger.debug(f'raw changed files string:\n{diff}')
 
     # diff is formatted as `M  foo.json\n A  bar.py\n ...`, turning it into ('foo.json', 'bar.py', ...).
     for line in diff.splitlines():
@@ -51,74 +32,22 @@ def get_git_diff(branch_name, repo):
                     print(f'{git_status=} for {file_path=}, considering it as <M>odified')
                     git_status = 'M'
 
-                # if pack_file_removed_from := find_pack_file_removed_from(Path(old_file_path), Path(file_path)):
-                #     packs_files_were_removed_from.add(pack_file_removed_from)
-
             case _:
-                raise ValueError(f'unexpected line format '
+                logging.error(f'unexpected line format '
                                  f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
                                  f', got {line}')
 
         if git_status not in {'A', 'M', 'D', }:
             print(f'unexpected {git_status=}, considering it as <M>odified')
 
-        # if git_status == 'D':  # git-deleted file
-        #     if pack_file_removed_from := find_pack_file_removed_from(Path(file_path), None):
-        #         packs_files_were_removed_from.add(pack_file_removed_from)
-        #     continue  # not adding to changed files list
+        changed_files.append(file_path)
 
-        changed_files.append(file_path)  # non-deleted files (added, modified)
-        # return FilesToCollect(changed_files=tuple(changed_files),
-        #                       pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
     return changed_files
 
 
-def run(options):
-    paths = PathManager(Path(__file__).absolute().parents[2])
-    branch_name = paths.content_repo.active_branch.name
-    root_dir = Path(__file__).absolute().parents[2]
-    root_dir_instance = pathlib.Path(root_dir)
-    filesindir = [item.name for item in root_dir_instance.glob("*")]
-    # TODO: Add Ddup
-    changed_files = get_git_diff(branch_name, paths.content_repo)
-    changed_packs = []
-    yml_ids = []
-    for f in changed_files:
-        if 'Packs' in f:
-            pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
-            pack_path = '/'.join(pack_path.split('/')[:-1])
-            changed_packs.append(pack_path)
-    print(f'{changed_packs=}')
-    for changed_pack in changed_packs:
-        # print(f'changed_pack: {changed_pack}')
-        pack_dir = changed_pack
-        print(f'pack_dir: {pack_dir}')
-        pack_dir_instance = pathlib.Path(pack_dir)
-        pack_files = [item.name for item in pack_dir_instance.glob("*")]
-        print(branch_name)  # the branch name
-        print('******************************')
-        print(f'{filesindir=}')  # the files in content
-        print('******************************')
-        print(f'{changed_files=}')  # the array of changed files
-        print('******************************')
-        print(f'{changed_pack=}')  # the path of the changed integration
-        print('******************************')
-        print(f'{pack_files=}')  # the content of the paath location
-        root_dir = Path(changed_pack)
-        root_dir_instance = pathlib.Path(root_dir)
-        filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
-        print(f'{filesindir=}')
-        for yml_file in filesindir:
-            with open(f'{changed_pack}/{yml_file}', "r") as stream:
-                try:
-                    yml_obj = yaml.safe_load(stream)
-                    yml_ids.append(yml_obj['commonfields']['id'])
-                except yaml.YAMLError as exc:
-                    print(exc)
-    print('^^^^^^^^^^^^^^^^^^^^m^^^^^^^^^^')
-    print(yml_ids)
+def get_secrets_from_gsm(branch_name: str, options, yml_pack_ids: list[str]) -> dict:
     secret_conf = GoogleSecreteManagerModule(options.service_account)
-    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True, ignore_dev=True)
+    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_pack_ids, with_secret=True, ignore_dev=True)
     secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, branch_name=branch_name,
                                            ignore_dev=False)
     print('==============================')
@@ -132,6 +61,7 @@ def run(options):
                 if dev_secret['name'] == secrets[i]['name']:
                     secrets[i] = dev_secret
                     replaced = True
+            # If the dev secret is not in the changed packs it's a new secret
             if not replaced:
                 secrets.append(dev_secret)
     print('++++++++++++++++++++++++++++++++++')
@@ -141,12 +71,62 @@ def run(options):
         "userPassword": options.password,
         "integrations": secrets
     }
+    return secret_file
+
+
+def write_secrets_to_file(options, secrets_file: dict):
     with open(options.json_path_file, 'w') as secrets_out_file:
         try:
-            secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
+            secrets_out_file.write(json5.dumps(secrets_file, quote_keys=True))
         except Exception as e:
             logging.error(f'Could not save secrets file, malformed json5 format, the error is: {e}')
     logging.info(f'saved the json file to: {options.json_path_file}')
+
+
+def get_yml_pack_ids(changed_packs):
+    yml_ids = []
+    for changed_pack in changed_packs:
+        root_dir = Path(changed_pack)
+        root_dir_instance = pathlib.Path(root_dir)
+        yml_files = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
+        print(f'{yml_files=}')
+        for yml_file in yml_files:
+            with open(f'{changed_pack}/{yml_file}', "r") as stream:
+                try:
+                    yml_obj = yaml.safe_load(stream)
+                    yml_ids.append(yml_obj['commonfields']['id'])
+                except yaml.YAMLError as exc:
+                    logging.error(f'Could not convert {yml_file} to YML: {exc}')
+    return yml_ids
+
+
+def get_changed_packs(changed_files: list[str]) -> list[str]:
+    """
+
+    """
+    changed_packs = []
+    for f in changed_files:
+        if 'Packs' in f:
+            pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
+            pack_path = '/'.join(pack_path.split('/')[:-1])
+            changed_packs.append(pack_path)
+    return changed_packs
+
+
+def run(options):
+    paths = PathManager(Path(__file__).absolute().parents[2])
+    branch_name = paths.content_repo.active_branch.name
+    changed_packs = []
+    yml_pack_ids = []
+    # TODO: Add Ddup
+    changed_files = get_git_diff(branch_name, paths.content_repo)
+    changed_packs.extend(get_changed_packs(changed_files))
+    print(f'{changed_packs=}')
+    yml_pack_ids.extend(get_yml_pack_ids(changed_packs))
+    print(f'{yml_pack_ids=}')
+    print('^^^^^^^^^^^^^^^^^^^^m^^^^^^^^^^')
+    secrets_file = get_secrets_from_gsm(branch_name, options, yml_pack_ids)
+    write_secrets_to_file(options, secrets_file)
 
 
 def options_handler(args=None):
