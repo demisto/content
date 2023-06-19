@@ -11,6 +11,7 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 | Your server URL | The api endpoint to the trend micro vision one instance, see domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs | True |
 | Trend Micro Vision One API Key | The Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key. | False |
 | The maximum number of events per fetch | The maximum number of events to fetch every time fetch is executed for a single log-type \(Workbench, Observed Attack Techniques, Search Detections and Audit logs\). | False |
+| Observed attack techniques and Search detections logs date-time range (hours) | Defines the date-range (hours) in each api call that retrieves observed attack techniques and search detections logs. Used mainly to prevent timeouts by looping over large amount of logs.  Default is 24 hours. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Fetch events |  | False |
 | Trust any certificate (not secure) |  | False |
