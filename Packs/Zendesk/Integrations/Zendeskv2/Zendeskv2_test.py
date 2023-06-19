@@ -961,17 +961,10 @@ class TestFetchIncidents:
 
         @freeze_time('2023-01-15T12:00:00Z')
         def test_usual_fetch_with_attachment(self, mocker, zendesk_client, requests_mock):
-            fetched_tickets = [10]
-            last_fetch = '2023-01-12T12:00:00Z'
-            time_filter = '2023-01-12T12:00:00Z'
-            query = ''
-            max_fetch = 50
-            page_number = 1
-            get_attachments = True
+            fetched_args = ([10], '2023-01-12T12:00:00Z', '2023-01-12T12:00:00Z', '', 50, 1, True)
             ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
             ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
-            mocker.patch.object(zendesk_client, '_fetch_args', return_value=(fetched_tickets, last_fetch, time_filter, query,
-                                                                             max_fetch, page_number, get_attachments))
+            mocker.patch.object(zendesk_client, '_fetch_args', return_value=fetched_args)
             mocker.patch.object(demisto, 'getLastRun', return_value=None)
             mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
             mocker.patch.object(zendesk_client, 'get_attachments_ids', return_value=[1234])
