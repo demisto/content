@@ -4649,42 +4649,6 @@ def test_apply_quarantine_file_action_command(requests_mock):
 
     assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
     assert mock_request.last_request.text == '{"ids": ["121212", "171717"], "comment": "Added a test comment."}'
-<<<<<<< HEAD
-    
-    
-def test_gql_pack():
-    from gql import Client, gql
-    from gql.transport.requests import RequestsHTTPTransport
-    bearer = ""
-    request_params = {
-        'url': "https://dev77201.service-now.com/",
-        'verify': False,
-        'retries': 3,
-        'headers': {'Authorization': f'Bearer {bearer}',
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"}
-    }
-    transport = RequestsHTTPTransport(**request_params)
-    handle_proxy()
-    params = {}
-    fetch_schema_from_transport = params.get('fetch_schema_from_transport', True)
-    if fetch_schema_from_transport is None:
-        fetch_schema_from_transport = True
-    client = Client(
-        transport=transport,
-        fetch_schema_from_transport=fetch_schema_from_transport,
-    )
-    gql("""
-        mutation {
-setIncidentState
-(
-input: {
-lifeCycleStage: NEW,
-incidentId:"INC-6",
-reason:"The reason goes here",
-}) { incident {            lifeCycleStage     } }    
-""")
-=======
 
 
 filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
@@ -5417,4 +5381,3 @@ def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_param
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_delete_scheduled_scans_request(ids, scans_filter)
     http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)
->>>>>>> master

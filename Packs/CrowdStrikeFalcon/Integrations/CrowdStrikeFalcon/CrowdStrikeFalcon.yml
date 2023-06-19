@@ -3612,87 +3612,6 @@ script:
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
   - arguments:
-<<<<<<< HEAD
-    - description: API type.
-      name: type
-      required: true
-      predefined:
-      - 'USER'
-      - 'ENDPOINT'
-      auto: PREDEFINED
-    - description: The sort key to sort by.
-      name: sort_key
-      required: false
-      predefined:
-      - RISK_SCORE,
-      - PRIMARY_DISPLAY_NAME,
-      - SECONDARY_DISPLAY_NAME,
-      - MOST_RECENT_ACTIVITY,
-      - ENTITY_ID
-      auto: PREDEFINED
-    - description: Default ascending. The sort order.
-      name: sort_order
-      required: false
-      predefined:
-      - 'DESCENDING'
-      - 'ASCENDING'
-      auto: PREDEFINED
-      defaultvalue: ASCENDING
-    - description: Comma separated list of entity ids to look for.
-      name: entity_id
-      required: false
-      isArray: true
-    - description: Primary display name to filter by.
-      name: primary_display_name
-      required: false
-      isArray: true
-    - description: Secondary display name to filter by.
-      name: secondary_display_name
-      required: false
-      isArray: true
-    - description: The maximum risk score severity to filter by.
-      name: max_risk_score_severity
-      required: false
-      predefined:
-      - 'NORMAL'
-      - 'MEDIUM'
-      - 'HIGH'
-      auto: PREDEFINED
-    - description: The minimum risk score severity to filter by.
-      name: min_risk_score_severity
-      required: false
-      predefined:
-      - 'NORMAL'
-      - 'MEDIUM'
-      - 'HIGH'
-      auto: PREDEFINED
-    - description: Wether to get only enabled or disabled identity entities.
-      name: enabled
-      required: false
-      predefined:
-      - 'true'
-      - 'false'
-      auto: PREDEFINED
-    - description: Filter by mail.
-      name: email
-      required: false
-    - description: endCursor.
-      name: next_token
-      required: false
-    - description: Default is 50. The limist is 1000. The page size.
-      name: page_size
-      required: false
-      defaultValue: 50
-    - description: Default is 1. The page number.
-      name: page
-      required: false
-    - description: The maximum identity entities to list.
-      name: limit
-      required: false
-    description: List identity entities.
-    name: cs-falcon-list-identity-entities
-  dockerimage: demisto/gql:1.0.0.60508
-=======
     - description: Whether to poll for results.
       auto: PREDEFINED
       name: wait_for_result
@@ -4477,8 +4396,86 @@ script:
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
     outputs: []
-  dockerimage: demisto/python3:3.10.12.63474
->>>>>>> master
+  - arguments:
+    - description: API type.
+      name: type
+      required: true
+      predefined:
+      - 'USER'
+      - 'ENDPOINT'
+      auto: PREDEFINED
+    - description: The sort key to sort by.
+      name: sort_key
+      required: false
+      predefined:
+      - RISK_SCORE,
+      - PRIMARY_DISPLAY_NAME,
+      - SECONDARY_DISPLAY_NAME,
+      - MOST_RECENT_ACTIVITY,
+      - ENTITY_ID
+      auto: PREDEFINED
+    - description: Default ascending. The sort order.
+      name: sort_order
+      required: false
+      predefined:
+      - 'DESCENDING'
+      - 'ASCENDING'
+      auto: PREDEFINED
+      defaultvalue: ASCENDING
+    - description: Comma separated list of entity ids to look for.
+      name: entity_id
+      required: false
+      isArray: true
+    - description: Primary display name to filter by.
+      name: primary_display_name
+      required: false
+      isArray: true
+    - description: Secondary display name to filter by.
+      name: secondary_display_name
+      required: false
+      isArray: true
+    - description: The maximum risk score severity to filter by.
+      name: max_risk_score_severity
+      required: false
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: The minimum risk score severity to filter by.
+      name: min_risk_score_severity
+      required: false
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: Wether to get only enabled or disabled identity entities.
+      name: enabled
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - description: Filter by mail.
+      name: email
+      required: false
+    - description: endCursor.
+      name: next_token
+      required: false
+    - description: Default is 50. The limist is 1000. The page size.
+      name: page_size
+      required: false
+      defaultValue: 50
+    - description: Default is 1. The page number.
+      name: page
+      required: false
+    - description: The maximum identity entities to list.
+      name: limit
+      required: false
+    description: List identity entities.
+    name: cs-falcon-list-identity-entities
+  dockerimage: demisto/gql:1.0.0.60508
   isfetch: true
   ismappable: true
   isremotesyncin: true

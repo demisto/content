@@ -4788,131 +4788,6 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
         readable_output=f'The Quarantined File with IDs {ids} was successfully updated.',
     )
 
-
-<<<<<<< HEAD
-def list_identity_entities_command(args: dict) -> CommandResults:
-    """List identity entities
-    Args:
-        args: The demisto.args() dict object.
-    Returns:
-        The command result object.
-    """
-    client = create_gql_client()
-    args_keys_ls = ["sort_key", "sort_order", "max_risk_score_severity", "min_risk_score_severity", "enabled"]
-    ls_args_keys_ls = ["type", "entity_id", "primary_display_name", "secondary_display_name", "email"]
-    variables = {}
-    for key in args_keys_ls:
-        if key in args:
-            variables[key] = args.get(key)
-    for key in ls_args_keys_ls:
-        if key in args:
-            variables[key] = args.get(key).split(",")
-    idp_query = gql("""
-    query ($sort_key: EntitySortKey, $type: [EntityType!], $sort_order: SortOrder, $entity_id: [UUID!],
-           $primary_display_name: [String!], $secondary_display_name: [String!], $max_risk_score_severity: ScoreSeverity,
-           $min_risk_score_severity: ScoreSeverity, $enabled: Boolean, $email: [String!], $first: Int) {
-        entities(types: $type, sortKey: $sort_key, sortOrder: $sort_order, entityIds: $entity_id, enabled: $enabled,
-                 primaryDisplayNames: $primary_display_name, secondaryDisplayNames: $secondary_display_name,
-                 maxRiskScoreSeverity: $max_risk_score_severity, minRiskScoreSeverity: $min_risk_score_severity,
-                 emailAddresses: $email, first: $first) {
-            pageInfo{
-                hasNextPage
-                endCursor
-            }
-            nodes{
-                primaryDisplayName
-                secondaryDisplayName
-                isHuman:hasRole(type: HumanUserAccountRole)
-                isProgrammatic:hasRole(type: ProgrammaticUserAccountRole)
-                ...
-                on
-                UserEntity{
-                    emailAddresses
-                }
-                riskScore
-                riskScoreSeverity
-                riskFactors{
-                    type
-                    severity
-                }
-            }
-        }
-    }
-""")
-    identity_entities_ls = []
-    next_token = args.get("next_token", "")
-    limit = int(args.get("limit", "50"))
-    page = int(args.get("page", "0"))
-    page_size = int(args.get("page_size", "50"))
-    res_ls = []
-    has_next_page = True
-    if page:
-        variables["first"] = page_size
-        while has_next_page and page:
-            res = client.execute(idp_query, variable_values=variables)
-            res_ls.append(res)
-            page -= 1
-            pageInfo = res.get("entities", {}).get("pageInfo", {})
-            has_next_page = pageInfo.get("hasNextPage", False)
-            if page == 0:
-                identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
-            if has_next_page:
-                next_token = pageInfo.get("endCursor", "")
-    else:
-        while has_next_page and limit > 0:
-            variables["first"] = min(1000, limit)
-            if next_token:
-                variables["after"] = next_token
-            res = client.execute(idp_query, variable_values=variables)
-            res_ls.append(res)
-            pageInfo = res.get("entities", {}).get("pageInfo", {})
-            has_next_page = pageInfo.get("hasNextPage", False)
-            identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
-            if has_next_page:
-                next_token = pageInfo.get("endCursor", "")
-            limit -= 1000
-    mapped_identity_entities_ls = [
-        {
-            "Primary Display Name": identity_entity.get("primaryDisplayName", ""),
-            "Secondary Display Name": identity_entity.get("secondaryDisplayName", ""),
-            "Is Human": identity_entity.get("isHuman", ""),
-            "Is Programmatic": identity_entity.get("isProgrammatic", ""),
-            "Is Admin": identity_entity.get("isAdmin", ""),
-            "Email Addresses": identity_entity.get("emailAddresses", ""),
-            "Risk Score": identity_entity.get("riskScore", ""),
-            "Risk Score Severity": identity_entity.get("riskScoreSeverity", ""),
-            "riskFactors": identity_entity.get("riskFactors", "")
-        }
-        for identity_entity in identity_entities_ls]
-    headers = ["Primary Display Name", "Secondary Display Name", "Is Human", "Is Programmatic", "Is Admin", "Email Addresses",
-               "Risk Score", "Risk Score Severity", "riskFactors"]
-
-    return CommandResults(
-        outputs_prefix='CrowdStrike.IDPEntity',
-        outputs=createContext(response_to_context(identity_entities_ls), removeNull=True),
-        readable_output=tableToMarkdown("Identity entities:", mapped_identity_entities_ls, headers=headers, removeNull=True),
-        raw_response=res,
-    )
-
-
-def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
-    url_suffix = url_suffix['url'][1:] if url_suffix.startswith('/') else url_suffix
-    kwargs = {
-        'url': f"{SERVER}/{url_suffix}",
-        'verify': USE_SSL,
-        'retries': 3,
-        'headers': {'Authorization': f'Bearer {get_token()}',
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"}
-    }
-    transport = RequestsHTTPTransport(**kwargs)
-    handle_proxy()
-    client = Client(
-        transport=transport,
-        fetch_schema_from_transport=True,
-    )
-    return client
-=======
 def build_cs_falcon_filter(custom_filter: str | None = None, **filter_args) -> str:
     """Creates an FQL syntax filter from a dictionary and a custom built filter
 
@@ -5398,7 +5273,128 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
 
     return command_results
 
->>>>>>> master
+def list_identity_entities_command(args: dict) -> CommandResults:
+    """List identity entities
+    Args:
+        args: The demisto.args() dict object.
+    Returns:
+        The command result object.
+    """
+    client = create_gql_client()
+    args_keys_ls = ["sort_key", "sort_order", "max_risk_score_severity", "min_risk_score_severity", "enabled"]
+    ls_args_keys_ls = ["type", "entity_id", "primary_display_name", "secondary_display_name", "email"]
+    variables = {}
+    for key in args_keys_ls:
+        if key in args:
+            variables[key] = args.get(key)
+    for key in ls_args_keys_ls:
+        if key in args:
+            variables[key] = args.get(key).split(",")
+    idp_query = gql("""
+    query ($sort_key: EntitySortKey, $type: [EntityType!], $sort_order: SortOrder, $entity_id: [UUID!],
+           $primary_display_name: [String!], $secondary_display_name: [String!], $max_risk_score_severity: ScoreSeverity,
+           $min_risk_score_severity: ScoreSeverity, $enabled: Boolean, $email: [String!], $first: Int) {
+        entities(types: $type, sortKey: $sort_key, sortOrder: $sort_order, entityIds: $entity_id, enabled: $enabled,
+                 primaryDisplayNames: $primary_display_name, secondaryDisplayNames: $secondary_display_name,
+                 maxRiskScoreSeverity: $max_risk_score_severity, minRiskScoreSeverity: $min_risk_score_severity,
+                 emailAddresses: $email, first: $first) {
+            pageInfo{
+                hasNextPage
+                endCursor
+            }
+            nodes{
+                primaryDisplayName
+                secondaryDisplayName
+                isHuman:hasRole(type: HumanUserAccountRole)
+                isProgrammatic:hasRole(type: ProgrammaticUserAccountRole)
+                ...
+                on
+                UserEntity{
+                    emailAddresses
+                }
+                riskScore
+                riskScoreSeverity
+                riskFactors{
+                    type
+                    severity
+                }
+            }
+        }
+    }
+""")
+    identity_entities_ls = []
+    next_token = args.get("next_token", "")
+    limit = int(args.get("limit", "50"))
+    page = int(args.get("page", "0"))
+    page_size = int(args.get("page_size", "50"))
+    res_ls = []
+    has_next_page = True
+    if page:
+        variables["first"] = page_size
+        while has_next_page and page:
+            res = client.execute(idp_query, variable_values=variables)
+            res_ls.append(res)
+            page -= 1
+            pageInfo = res.get("entities", {}).get("pageInfo", {})
+            has_next_page = pageInfo.get("hasNextPage", False)
+            if page == 0:
+                identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
+            if has_next_page:
+                next_token = pageInfo.get("endCursor", "")
+    else:
+        while has_next_page and limit > 0:
+            variables["first"] = min(1000, limit)
+            if next_token:
+                variables["after"] = next_token
+            res = client.execute(idp_query, variable_values=variables)
+            res_ls.append(res)
+            pageInfo = res.get("entities", {}).get("pageInfo", {})
+            has_next_page = pageInfo.get("hasNextPage", False)
+            identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
+            if has_next_page:
+                next_token = pageInfo.get("endCursor", "")
+            limit -= 1000
+    mapped_identity_entities_ls = [
+        {
+            "Primary Display Name": identity_entity.get("primaryDisplayName", ""),
+            "Secondary Display Name": identity_entity.get("secondaryDisplayName", ""),
+            "Is Human": identity_entity.get("isHuman", ""),
+            "Is Programmatic": identity_entity.get("isProgrammatic", ""),
+            "Is Admin": identity_entity.get("isAdmin", ""),
+            "Email Addresses": identity_entity.get("emailAddresses", ""),
+            "Risk Score": identity_entity.get("riskScore", ""),
+            "Risk Score Severity": identity_entity.get("riskScoreSeverity", ""),
+            "riskFactors": identity_entity.get("riskFactors", "")
+        }
+        for identity_entity in identity_entities_ls]
+    headers = ["Primary Display Name", "Secondary Display Name", "Is Human", "Is Programmatic", "Is Admin", "Email Addresses",
+               "Risk Score", "Risk Score Severity", "riskFactors"]
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IDPEntity',
+        outputs=createContext(response_to_context(identity_entities_ls), removeNull=True),
+        readable_output=tableToMarkdown("Identity entities:", mapped_identity_entities_ls, headers=headers, removeNull=True),
+        raw_response=res,
+    )
+
+
+def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
+    url_suffix = url_suffix['url'][1:] if url_suffix.startswith('/') else url_suffix
+    kwargs = {
+        'url': f"{SERVER}/{url_suffix}",
+        'verify': USE_SSL,
+        'retries': 3,
+        'headers': {'Authorization': f'Bearer {get_token()}',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"}
+    }
+    transport = RequestsHTTPTransport(**kwargs)
+    handle_proxy()
+    client = Client(
+        transport=transport,
+        fetch_schema_from_transport=True,
+    )
+    return client
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -5592,10 +5588,6 @@ def main():
             return_results(list_quarantined_file_command(args))
         elif command == 'cs-falcon-apply-quarantine-file-action':
             return_results(apply_quarantine_file_action_command(args))
-<<<<<<< HEAD
-        elif command == 'cs-falcon-list-identity-entities':
-            return_results(list_identity_entities_command(args))
-=======
         elif command == 'cs-falcon-ods-query-scan':
             return_results(cs_falcon_ODS_query_scans_command(args))
         elif command == 'cs-falcon-ods-query-scheduled-scan':
@@ -5610,7 +5602,8 @@ def main():
             return_results(cs_falcon_ods_create_scheduled_scan_command(args))
         elif command == 'cs-falcon-ods-delete-scheduled-scan':
             return_results(cs_falcon_ods_delete_scheduled_scan_command(args))
->>>>>>> master
+        elif command == 'cs-falcon-list-identity-entities':
+            return_results(list_identity_entities_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
