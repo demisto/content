@@ -321,9 +321,9 @@ def install_packs(client: demisto_client,
                   host: str,
                   packs_to_install: list,
                   request_timeout: int = 3600,
-                  attempts_count: int = 5,
                   sleep_interval: int = 60,
-                  ):
+                  attempts_count: int = 5,
+                  ) -> bool:
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
        request to install packs again, this time without the corrupted pack.
@@ -372,13 +372,23 @@ def install_packs(client: demisto_client,
 
                     # We've more attempts, retrying without tho malformed packs.
                     SUCCESS_FLAG = False
-                    logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
                     packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_ids]
+                    if packs_to_install:
+                        logging.error(f"Unable to install malformed packs: {malformed_ids}, retrying without them.")
+                    else:
+                        raise Exception(f"Unable to install malformed packs: {malformed_ids}, no other packages left to install")
 
                 if (error_ids := get_error_ids(ex.body)) and WLM_TASK_FAILED_ERROR_CODE in error_ids:
-                    # If we got this error code, it means that the modeling rules are not valid, exiting install flow.
-                    raise Exception(f"Got [{WLM_TASK_FAILED_ERROR_CODE}] error code - Modeling rules and Dataset validations "
-                                    f"failed. Please look at GCP logs to understand why it failed.") from ex
+                    if len(packs_to_install) == 1:
+                        # If we only have one pack, and it failed, there is noting else to try, exiting.
+                        raise Exception(f"Got [{WLM_TASK_FAILED_ERROR_CODE}] error code - Modeling rules and Dataset validations "
+                                        f"failed. Please look at GCP logs to understand why it failed.") from ex
+
+                    # We've multiple packs to install, retrying one pack at a time.
+                    logging.debug(f"Failed to install packs:{packs_to_install}, trying one pack at a time, with only one attempt")
+                    for pack_to_install in packs_to_install:
+                        SUCCESS_FLAG &= install_packs(client, host, [pack_to_install], request_timeout, sleep_interval,
+                                                      attempts_count=1)
 
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     if 'timeout awaiting response' in ex.body:
