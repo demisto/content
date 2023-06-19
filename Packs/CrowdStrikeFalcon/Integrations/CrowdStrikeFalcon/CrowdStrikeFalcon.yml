@@ -4408,10 +4408,10 @@ script:
       name: sort_key
       required: false
       predefined:
-      - RISK_SCORE,
-      - PRIMARY_DISPLAY_NAME,
-      - SECONDARY_DISPLAY_NAME,
-      - MOST_RECENT_ACTIVITY,
+      - RISK_SCORE
+      - PRIMARY_DISPLAY_NAME
+      - SECONDARY_DISPLAY_NAME
+      - MOST_RECENT_ACTIVITY
       - ENTITY_ID
       auto: PREDEFINED
     - description: Default ascending. The sort order.

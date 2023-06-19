@@ -279,6 +279,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 class IncidentType(Enum):
     INCIDENT = 'inc'
     DETECTION = 'ldt'
+    IDP_DETECTION = 'ind'
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(PARAMS.get('mirror_direction'))
@@ -2033,6 +2034,10 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
         return IncidentType.DETECTION
+    if remote_incident_id[0:3] == IncidentType.IDP_DETECTION.value:
+        demisto.info(f"marked as IDP_detection.")
+        return IncidentType.IDP_DETECTION
+    demisto.info(f"Begining for idp: {remote_incident_id}")
 
 
 def get_remote_incident_data(remote_incident_id: str):
@@ -5281,7 +5286,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
         The command result object.
     """
     client = create_gql_client()
-    args_keys_ls = ["sort_key", "sort_order", "max_risk_score_severity", "min_risk_score_severity", "enabled"]
+    args_keys_ls = ["sort_key", "sort_order", "max_risk_score_severity", "min_risk_score_severity"]
     ls_args_keys_ls = ["type", "entity_id", "primary_display_name", "secondary_display_name", "email"]
     variables = {}
     for key in args_keys_ls:
@@ -5290,14 +5295,16 @@ def list_identity_entities_command(args: dict) -> CommandResults:
     for key in ls_args_keys_ls:
         if key in args:
             variables[key] = args.get(key).split(",")
+    if "enabled" in args:
+        variables["enabled"] = argToBoolean(args.get("enabled"))
     idp_query = gql("""
     query ($sort_key: EntitySortKey, $type: [EntityType!], $sort_order: SortOrder, $entity_id: [UUID!],
            $primary_display_name: [String!], $secondary_display_name: [String!], $max_risk_score_severity: ScoreSeverity,
-           $min_risk_score_severity: ScoreSeverity, $enabled: Boolean, $email: [String!], $first: Int) {
+           $min_risk_score_severity: ScoreSeverity, $enabled: Boolean, $email: [String!], $first: Int, $after: Cursor) {
         entities(types: $type, sortKey: $sort_key, sortOrder: $sort_order, entityIds: $entity_id, enabled: $enabled,
                  primaryDisplayNames: $primary_display_name, secondaryDisplayNames: $secondary_display_name,
                  maxRiskScoreSeverity: $max_risk_score_severity, minRiskScoreSeverity: $min_risk_score_severity,
-                 emailAddresses: $email, first: $first) {
+                 emailAddresses: $email, first: $first, after: $after) {
             pageInfo{
                 hasNextPage
                 endCursor
@@ -5332,6 +5339,8 @@ def list_identity_entities_command(args: dict) -> CommandResults:
     if page:
         variables["first"] = page_size
         while has_next_page and page:
+            if next_token:
+                variables["after"] = next_token
             res = client.execute(idp_query, variable_values=variables)
             res_ls.append(res)
             page -= 1
