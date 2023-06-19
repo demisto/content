@@ -446,7 +446,7 @@ outputs:
 - contextPath: CarbonBlackEDR.Sensor.network_adapters
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
-  description: self-reported health score, from 0 to 100. Higher numbers are better.
+  description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
 - contextPath: CarbonBlackEDR.Sensor.registration_time
   description: Time this sensor was originally registered in server-local time and zone.
 - contextPath: CarbonBlackEDR.Sensor.restart_queued

@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CarbonblackV2
+CarbonblackV2
 
 ### Scripts
 
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 
@@ -36,7 +36,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.Sensors.CbSensorID | Carbon Black Response Sensors IDs that are isolated. | unknown |
+| CbResponse.Sensors.CbSensorID | Carbon Black Response sensor IDs that are isolated. | unknown |
 | Endpoint | The isolated endpoint. | unknown |
 | CbResponse.Sensors.Status | Sensor status. | unknown |
 | CbResponse.Sensors.Isolated | Is sensor isolated. | unknown |
