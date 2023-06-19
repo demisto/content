@@ -16,8 +16,7 @@
                                 "width": 100,
                                 "height": 140,
                                 "tenantId": "1004205575214",
-                                "description": "Monitor HIPAA controls and produce evidence for audits.",
-                                "customerName": "Palo Alto Networks - TMECortexXDR"
+                                "description": "Monitor HIPAA controls and produce evidence for audits."
                             }
                         }
                     ]
