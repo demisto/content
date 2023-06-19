@@ -2046,9 +2046,7 @@ def find_incident_type(remote_incident_id: str):
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
         return IncidentType.DETECTION
     if remote_incident_id[0:3] == IncidentType.IDP_DETECTION.value:
-        demisto.info(f"marked as IDP_detection.")
         return IncidentType.IDP_DETECTION
-    demisto.info(f"Begining for idp: {remote_incident_id}")
 
 
 def get_remote_incident_data(remote_incident_id: str):
