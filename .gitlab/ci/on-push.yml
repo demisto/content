@@ -603,6 +603,8 @@ test-upload-flow:
 
 .server_test_playbooks_report:
   stage: test_playbooks_report
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   script:
     - |
       echo "BINAT"
