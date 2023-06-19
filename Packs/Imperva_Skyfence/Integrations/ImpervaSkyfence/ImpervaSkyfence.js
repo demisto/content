@@ -43,7 +43,7 @@ var login = function(params) {
     var body = {
         grant_type: 'client_credentials',
         client_id: params.clientId,
-        client_secret: params.clientSecret
+        client_secret: params.clientsecret_creds ? params.clientsecret_creds.password : params.clientSecret
     };
     var res = httpMultipart(
         fullUrl,
