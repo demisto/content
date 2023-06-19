@@ -27,6 +27,13 @@ configuration:
   required: false
   type: 0
   section: Collect
+- display: Observed attack techniques and Search detections logs date-time range (hours)
+  additionalinfo: Defines the date-range (hours) in each api call that retrieves observed attack techniques and search detections logs. Used mainly to prevent timeouts by looping over large amount of logs.
+  defaultvalue: 24
+  name: date_range
+  required: false
+  type: 0
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false

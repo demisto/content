@@ -20,7 +20,7 @@ DEFAULT_MAX_LIMIT = 1000
 DEFAULT_URL = 'https://api.xdr.trendmicro.com'
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
-ONE_DAY = 1
+ONE_DAY = 24
 
 
 class LastRunLogsTimeFields(Enum):
@@ -450,6 +450,7 @@ def get_datetime_range(
     first_fetch: str,
     log_type_time_field_name: str,
     date_format: str = DATE_FORMAT,
+    date_range_for_oat_and_search_logs: int = ONE_DAY
 ) -> Tuple[str, str]:
     """
     Get a datetime range for any log type.
@@ -459,6 +460,7 @@ def get_datetime_range(
         first_fetch (str): First fetch time.
         log_type_time_field_name (str): the name of the field in the last run for a specific log type.
         date_format (str): The date format.
+        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[str, str]: start time and end time
@@ -491,7 +493,8 @@ def get_datetime_range(
     ):
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
-        one_day_from_last_run_time = last_run_time_datetime + timedelta(days=ONE_DAY)  # type: ignore[operator]
+        one_day_from_last_run_time = last_run_time_datetime + \
+            timedelta(hours=date_range_for_oat_and_search_logs)  # type: ignore[operator]
         if one_day_from_last_run_time > now:
             end_time_datetime = now
         else:
@@ -673,7 +676,7 @@ def get_workbench_logs(
         log_type=workbench_log_type
     )
 
-    latest_occurred_workbench_logs, latest_log_time = get_all_latest_time_logs_ids(
+    latest_occurred_workbench_log_ids, latest_log_time = get_all_latest_time_logs_ids(
         logs=workbench_logs,
         log_type=workbench_log_type,
         log_id_field_name='id',
@@ -685,7 +688,7 @@ def get_workbench_logs(
 
     workbench_updated_last_run = {
         workbench_log_last_run_time: latest_workbench_log_time,
-        workbench_cache_time_field_name: latest_occurred_workbench_logs
+        workbench_cache_time_field_name: latest_occurred_workbench_log_ids
     }
 
     demisto.info(f'{workbench_logs=}, {latest_workbench_log_time=}, {workbench_updated_last_run=}')
@@ -697,7 +700,8 @@ def get_observed_attack_techniques_logs(
     first_fetch: str,
     last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
-    date_format: str = DATE_FORMAT
+    date_format: str = DATE_FORMAT,
+    date_range_for_oat_and_search_logs: int = ONE_DAY
 ) -> Tuple[List[Dict], Dict]:
     """
     Get the observed attack techniques logs.
@@ -708,6 +712,7 @@ def get_observed_attack_techniques_logs(
         last_run (dict): last run time object
         limit (int): the maximum number of observed attack techniques logs to return.
         date_format (str): the date format.
+        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[List[Dict], Dict]: observed attack techniques logs & updated last run.
@@ -731,7 +736,8 @@ def get_observed_attack_techniques_logs(
         last_run_time=last_run.get(observed_attack_technique_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=observed_attack_technique_log_last_run_time,
-        date_format=date_format
+        date_format=date_format,
+        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
     )
 
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
@@ -748,7 +754,7 @@ def get_observed_attack_techniques_logs(
         log_type=observed_attack_technique_log_type
     )
 
-    latest_occurred_observed_attack_techniques_logs, latest_log_time = get_all_latest_time_logs_ids(
+    latest_occurred_observed_attack_techniques_log_ids, latest_log_time = get_all_latest_time_logs_ids(
         logs=observed_attack_techniques_logs,
         log_type=observed_attack_technique_log_type,
         log_id_field_name='uuid',
@@ -761,7 +767,7 @@ def get_observed_attack_techniques_logs(
 
     observed_attack_techniques_updated_last_run = {
         observed_attack_technique_log_last_run_time: latest_observed_attack_technique_log_time,
-        observed_attack_technique_cache_time_field_name: latest_occurred_observed_attack_techniques_logs
+        observed_attack_technique_cache_time_field_name: latest_occurred_observed_attack_techniques_log_ids
     }
 
     demisto.info(
@@ -778,6 +784,7 @@ def get_search_detection_logs(
     last_run: Dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
+    date_range_for_oat_and_search_logs: int = ONE_DAY
 ) -> Tuple[List[Dict], Dict]:
     """
     Get the search detection logs.
@@ -788,6 +795,7 @@ def get_search_detection_logs(
         last_run (dict): last run time object
         limit (int): the maximum number of search detection logs to return.
         date_format (str): the date format.
+        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[List[Dict], Dict]: search detection logs & updated last run time
@@ -800,7 +808,8 @@ def get_search_detection_logs(
         last_run_time=last_run.get(search_detection_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS.value,
-        date_format=date_format
+        date_format=date_format,
+        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
     )
     search_detection_logs = client.get_search_detection_logs(
         start_datetime=start_time, top=limit, limit=limit
@@ -814,7 +823,7 @@ def get_search_detection_logs(
         log_type=search_detections_log_type
     )
 
-    latest_occurred_search_detection_logs, latest_log_time = get_all_latest_time_logs_ids(
+    latest_occurred_search_detection_log_ids, latest_log_time = get_all_latest_time_logs_ids(
         logs=search_detection_logs,
         log_type=search_detections_log_type,
         log_id_field_name='uuid',
@@ -825,7 +834,7 @@ def get_search_detection_logs(
 
     search_detections_updated_last_run = {
         search_detection_log_last_run_time: latest_search_detection_log_time,
-        search_detections_cache_time_field_name: latest_occurred_search_detection_logs
+        search_detections_cache_time_field_name: latest_occurred_search_detection_log_ids
     }
 
     demisto.info(f'{search_detection_logs=}, {latest_search_detection_log_time=}, {search_detections_updated_last_run=}')
@@ -879,7 +888,7 @@ def get_audit_logs(
         log_type=audit_log_type
     )
 
-    latest_audit_logs, latest_log_time = get_all_latest_time_logs_ids(
+    latest_audit_log_ids, latest_log_time = get_all_latest_time_logs_ids(
         logs=audit_logs,
         log_type=audit_log_type,
         log_id_field_name='id',
@@ -894,7 +903,7 @@ def get_audit_logs(
 
     audit_updated_last_run = {
         audit_log_last_run_time: latest_audit_log_time,
-        audit_cache_time_field_name: latest_audit_logs
+        audit_cache_time_field_name: latest_audit_log_ids
     }
 
     demisto.info(f'{audit_logs=}, {latest_audit_log_time=}, {audit_updated_last_run=}')
@@ -907,7 +916,8 @@ def get_audit_logs(
 def fetch_events(
     client: Client,
     first_fetch: str,
-    limit: int = DEFAULT_MAX_LIMIT
+    limit: int = DEFAULT_MAX_LIMIT,
+    date_range_for_oat_and_search_logs: int = ONE_DAY
 ) -> Tuple[List[Dict], Dict]:
     """
     Get all the logs.
@@ -916,6 +926,7 @@ def fetch_events(
         client (Client): the client object
         first_fetch (str): the first fetch time
         limit (int): the maximum number of logs to fetch from each type
+        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
@@ -1099,6 +1110,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch') or '3 days'
     limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_LIMIT
+    arg_to_number(params.get('date_range')) or ONE_DAY
 
     command = demisto.command()
 
