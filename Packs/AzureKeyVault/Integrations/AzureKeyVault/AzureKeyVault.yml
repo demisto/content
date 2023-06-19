@@ -48,15 +48,15 @@ configuration:
   advanced: true
 - display: Default Subscription ID
   name: subscription_id
-  required: false
+  required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
   section: Connect
 - display: Default Resource Group Name
   name: resource_group_name
-  required: false
+  required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
   section: Connect
 - display: Fetches credentials
   name: isFetchCredentials
@@ -318,9 +318,9 @@ script:
       isArray: false
       required: false
     - name: resource_group_name
-      description: "A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
-      isArray: true
+      isArray: false
       required: false
     deprecated: false
     description: Create or update a key vault in the specified subscription. If the Key Vault exists, the updated properties will overwrite the existing ones. Please use azure-key-vault-access-policy-update command if you wish to update the access policy of an existing Key Vault.
@@ -391,9 +391,9 @@ script:
       isArray: false
       required: false
     - name: resource_group_name
-      description: "A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
-      isArray: true
+      isArray: false
       required: false
     deprecated: false
     description: Delete the specified key vault.
@@ -660,9 +660,9 @@ script:
       isArray: false
       required: false
     - name: resource_group_name
-      description: "A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
-      isArray: true
+      isArray: false
       required: false
     deprecated: false
     description: Update access policies in a key vault in the specified subscription. The update regards only the access policy for the specified object ID.
@@ -1134,8 +1134,8 @@ script:
     description: List all resource groups for a subscription.
     arguments:
     - name: subscription_id
-      description: "A comma-separated list of subscription IDs. Note: This argument will override the instance parameter ‘Subscription ID'."
-      isArray: true
+      description: "The of subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      isArray: false
     - name: limit
       description: Limit on the number of resource groups to return. Default value is 50.
       required: false
