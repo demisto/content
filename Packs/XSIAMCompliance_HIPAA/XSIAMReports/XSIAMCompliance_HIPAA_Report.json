@@ -3,7 +3,7 @@
     "templates_data": [
         {
             "report_name": "HIPAA Compliance Report",
-            "report_description": "Use this report to monitor HIPAA controls and produce evidence for audits.",
+            "report_description": "Monitor HIPAA controls and produce evidence for audits.",
             "layout": [
                 {
                     "id": "Row 1",
