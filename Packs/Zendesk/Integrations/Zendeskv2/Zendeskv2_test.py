@@ -771,7 +771,8 @@ class TestFetchIncidents:
     @pytest.mark.parametrize(test_fetch_args_parametrize_str, data_test_fetch_args)
     def test_fetch_args(self, params, last_run, expected_fetched_tickets, expected_last_fetch,
                         expected_time_filter, expected_query, expected_max_fetch, expected_page_number):
-        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number = ZendeskClient._fetch_args(params, last_run)
+        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number, get_attachments = \
+            ZendeskClient._fetch_args(params, last_run)
         assert fetched_tickets == expected_fetched_tickets
         assert last_fetch == expected_last_fetch
         assert time_filter == expected_time_filter
@@ -960,16 +961,32 @@ class TestFetchIncidents:
 
         @freeze_time('2023-01-15T12:00:00Z')
         def test_usual_fetch_with_attachment(self, mocker, zendesk_client, requests_mock):
+            fetched_tickets = [10]
+            last_fetch = '2023-01-12T12:00:00Z'
+            time_filter = '2023-01-12T12:00:00Z'
+            query = ''
+            max_fetch = 50
+            page_number = 1
+            get_attachments = True
             ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
             ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(zendesk_client, '_fetch_args', return_value=(fetched_tickets, last_fetch, time_filter, query,
+                                                                             max_fetch, page_number, get_attachments))
             mocker.patch.object(demisto, 'getLastRun', return_value=None)
             mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
             mocker.patch.object(zendesk_client, 'get_attachments_ids', return_value=[1234])
             mocker.patch.object(zendesk_client, 'zendesk_attachment_get',
-                                return_value=['<CommandResults object at 0x7f35d0cd7400>',
-                                              {'Contents': '', 'ContentsFormat': 'text', 'Type': 9,
-                                               'File': 'TestFile.json',
-                                               'FileID': 'f57c064c-26e8-4042-b3e8-6cea0348c932'}])
+                                return_value={'url': 'testurl/api/v2/attachments/11656206786333.json', 'id': 11656206786333,
+                                              'file_name': 'TestFile.json',
+                                              'content_url': 'testurl/attachments/token/1234/?name=TestFile.json',
+                                              'mapped_content_url': 'testurl/attachments/token/1234/?name=TestFile.json',
+                                              'content_type': 'application/x-yaml', 'size': 44726, 'width': None,
+                                              'height': None, 'inline': False, 'deleted': False,
+                                              'malware_access_override': False, 'malware_scan_result': 'malware_not_found'})
+            mocker.patch.object(zendesk_client, 'get_file_entries', return_value=[{'Contents': '', 'ContentsFormat': 'text',
+                                                                                   'Type': 9, 'File': 'TestFile.json',
+                                                                                   'FileID': '77fe1c6d-3096-4f1c-80c7-'
+                                                                                             '4e7c8573d580'}])
             mocker.patch.object(zendesk_client, 'get_attachment_entries',
                                 return_value=[{'path': '77fe1c6d-3096-4f1c-80c7-4e7c8573d580',
                                                'name': 'TestFile.json'}])
@@ -977,11 +994,10 @@ class TestFetchIncidents:
             zendesk_client.fetch_incidents({}, json.dumps({
                 "fetched_tickets": [10],
                 "fetch_time": "2023-01-12T12:00:00Z"
-            })
-            )
+            }))
             assert ticket_mock_10.call_count == 0
             assert ticket_mock_20.called_once
             assert demisto_incidents_mock.called_once()
             assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
             assert demisto_incidents_mock.call_args[0][0][0]['attachment'] == [{
-                'path': 'f57c064c-26e8-4042-b3e8-6cea0348c932', 'name': 'TestFile.json'}]
+                'path': '77fe1c6d-3096-4f1c-80c7-4e7c8573d580', 'name': 'TestFile.json'}]
