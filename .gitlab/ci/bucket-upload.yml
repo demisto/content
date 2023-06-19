@@ -521,7 +521,7 @@ upload-id-set-bucket:
   script:
     # This is needed because we still use id_set.json in other repos
     - |
-      if [[ $TEST_UPLOAD == "true" ]]; then
+      if [[ $TEST_UPLOAD == "true" ]] && [[ $DEMISTO_SDK_NIGHTLY == "false" ]]; then
         echo "Skipping uploading id-set to the bucket in test upload-flow"
         job-done
         exit 0
@@ -544,7 +544,7 @@ sync-buckets-between-projects:
   when: always
   script:
     - |
-      if [[ $TEST_UPLOAD == "true" ]] && [[ $DEMISTO_SDK_NIGHTLY == "false" ]]; then
+      if [[ $TEST_UPLOAD == "true" ]]; then
         echo "Skipping syncing buckets in test upload-flow"
         exit 0
       fi
