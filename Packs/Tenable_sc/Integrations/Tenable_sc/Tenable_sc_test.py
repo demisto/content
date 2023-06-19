@@ -6,7 +6,8 @@ from Tenable_sc import update_asset_command, list_zones_command, list_queries, c
     list_report_definitions_command, delete_asset_command, delete_scan_command, delete_user_command, list_scans_command, \
     get_scan_status_command, get_device_command, list_policies_command, list_credentials_command, create_asset_command, \
     create_scan_command, get_scan_report_command, get_system_information_command, get_system_licensing_command, \
-    get_all_scan_results_command
+    get_all_scan_results_command, list_alerts_command, list_repositories_command, list_assets_command, get_asset_command, \
+    get_alert_command
 import io
 
 client_mocker = Client(verify_ssl=False, proxy=True, access_key="access_key", secret_key="secret_key",
@@ -816,5 +817,122 @@ def test_get_all_scan_results_command(mocker, test_case):
     mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
     args = test_data.get("args")
     command_results = get_all_scan_results_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_list_alerts_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with manageable = true, and mock response to response with 1 usable and 1 manageable alerts.
+        - Case 2: Empty args, and mock response to response with 1 usable and 1 manageable alerts.
+
+        When:
+        - Running list_alerts_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return only the manageable alerts.
+        - Case 2: Should return only the usable alerts.
+    """
+    test_data = load_json("./test_data/test_list_alerts_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    args = test_data.get("args")
+    command_results = list_alerts_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_list_repositories_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          response mock, expected hr, and expected_ec.
+        - Case 1: Mock response with 1 repo.
+
+        When:
+        - Running list_repositories_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+    """
+    test_data = load_json("./test_data/test_list_repositories_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    command_results = list_repositories_command(client_mocker, {})
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_list_assets_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with manageable = true, and mock response to response with 1 usable and 1 manageable assets.
+        - Case 2: Empty args, and mock response to response with 1 usable and 1 manageable assets.
+
+        When:
+        - Running list_assets_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return only the manageable assets.
+        - Case 2: Should return only the usable assets.
+    """
+    test_data = load_json("./test_data/test_list_assets_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    args = test_data.get("args")
+    command_results = list_assets_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_asset_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with asset id, and a mock response.
+
+        When:
+        - Running get_asset_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should parse all the ips and return both HR and EC.
+    """
+    test_data = load_json("./test_data/test_get_asset_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    args = test_data.get("args")
+    command_results = get_asset_command(client_mocker, args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1"])
+def test_get_alert_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected hr, and expected_ec.
+        - Case 1: args with alert id, and a mock response.
+
+        When:
+        - Running get_alert_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR and EC is returned.
+        - Case 1: Should return all tables with parsed response.
+    """
+    test_data = load_json("./test_data/test_get_alert_command.json").get(test_case, {})
+    mocker.patch.object(client_mocker, 'send_request', return_value=test_data.get('mock_response'))
+    args = test_data.get("args")
+    command_results = get_alert_command(client_mocker, args)
     assert test_data.get('expected_hr') == command_results.readable_output
     assert test_data.get('expected_ec') == command_results.outputs
