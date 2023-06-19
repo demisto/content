@@ -272,7 +272,7 @@ def test_new_major_version(mocker):
     mocker.patch('DBotPredictURLPhishing.decode_model_data', return_value=model_mock, create=True)
     mocker.patch('DBotPredictURLPhishing.oob_model_exists_and_updated', return_value=(True, 0, 0, 'ModelData'),
                  create=True)
-    mocker.patch('DBotPredictURLPhishing.load_oob', return_value='test'.encode('utf-8'), create=True)
+    mocker.patch('DBotPredictURLPhishing.load_oob', return_value=b'test', create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
