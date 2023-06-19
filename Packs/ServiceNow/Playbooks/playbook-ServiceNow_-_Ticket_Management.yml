@@ -686,7 +686,7 @@ tasks:
           root: inputs.serviceNowCategory
       comments:
         complex:
-          root: inputs.Comment
+          root: inputs.CommentToAdd
       description:
         complex:
           root: inputs.description
