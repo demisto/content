@@ -22,10 +22,11 @@
     "tests": [
         {
             "integrations": [
-                "Cortex XDR - IR",
-                "Joe Security"
+                "Joe Security",
+                "Cortex XDR - IR"
             ],
-            "playbookID": "Test Playbook - Cortex XDR Malware - Investigation And Response"
+            "playbookID": "Test Playbook - Cortex XDR Malware - Investigation And Response",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "CrowdstrikeFalcon",
