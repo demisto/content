@@ -78,8 +78,7 @@ async def handle_post(
             demisto.debug(f'Authorization failed - request headers {request_headers}')
             return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
-    raw_json = {}
-    raw_json['body'] = incident.raw_json or await request.json()
+    raw_json = incident.raw_json or await request.json()
     raw_json['headers'] = dict(request.headers)
 
     incident = {
