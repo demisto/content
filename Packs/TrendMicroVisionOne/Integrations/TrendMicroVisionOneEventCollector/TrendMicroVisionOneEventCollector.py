@@ -1112,7 +1112,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch') or '3 days'
     limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_LIMIT
-    arg_to_number(params.get('date_range')) or ONE_DAY
+    date_range = arg_to_number(params.get('date_range')) or ONE_DAY
 
     command = demisto.command()
 
@@ -1129,7 +1129,9 @@ def main() -> None:
         if demisto.command() == 'test-module':
             return_results(test_module(client=client, first_fetch=first_fetch))
         elif command == 'fetch-events':
-            events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit)
+            events, updated_last_run = fetch_events(
+                client=client, first_fetch=first_fetch, limit=limit, date_range_for_oat_and_search_logs=date_range
+            )
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(updated_last_run)
         elif command == 'trend-micro-vision-one-get-events':
