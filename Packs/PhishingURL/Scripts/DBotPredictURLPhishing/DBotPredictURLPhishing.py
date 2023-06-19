@@ -472,8 +472,9 @@ def extract_created_date(entry_list: List):
         if is_error(entry):
             continue
         else:
-            date_str = entry['EntryContext'].get('Domain(val.Name && val.Name == obj.Name)', {}).get('WHOIS', {}).get(
-                'CreationDate', None)
+            date_str = (
+                entry.get('EntryContext') or {}
+            ).get('Domain(val.Name && val.Name == obj.Name)', {}).get('WHOIS', {}).get('CreationDate')
             if date_str:
                 date = datetime.strptime(date_str, '%d-%m-%Y')
                 threshold_date = datetime.now() - timedelta(days=THRESHOLD_NEW_DOMAIN_MONTHS * 30)

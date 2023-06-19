@@ -327,3 +327,13 @@ def test_get_score():
         MODEL_KEY_URL_SCORE: 0.6
     }
     assert round(get_score(pred_json_2), 2) == 0.55
+
+
+def test_extract_created_date_with_empty_entry():
+    """
+    Given: entry that does not contain anything
+    When: running extract_created_date function
+    Then: Make sure None is returned
+    """
+    from DBotPredictURLPhishing import extract_created_date
+    assert not extract_created_date(entry_list=[{"EntryContext": None, "Type": 1}])
