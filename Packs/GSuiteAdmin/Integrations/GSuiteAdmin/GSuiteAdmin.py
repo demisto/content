@@ -567,7 +567,7 @@ def mobile_update_command(client: Client, args: Dict[str, str]) -> CommandResult
         return CommandResults(readable_output=HR_MESSAGES['MOBILE_UPDATE_SUCCESS'].format(resource_id))
     except DemistoException as e:
         error_message = str(e)
-        if('Internal error encountered' in error_message or 'Bad Request' in error_message):
+        if ('Internal error encountered' in error_message or 'Bad Request' in error_message):
             raise DemistoException(MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', ''))
         raise DemistoException(error_message)
 
@@ -1188,7 +1188,7 @@ def device_list_automatic_pagination(request_by_device_type: Callable, client, c
 
         devices.extend(response_mobile_devices)
         results_limit -= len(response_mobile_devices)
-        if(results_limit <= 0 or not next_page_token):
+        if (results_limit <= 0 or not next_page_token):
             continue_pagination = False
     return {'data': devices, 'raw_response': responses}
 
@@ -1228,7 +1228,7 @@ def prepare_pagination_arguments(page_token: str, page_size: int | None, limit: 
     Returns:
         dict: A dictionary that holds the pagination information.
     """
-    if(page_token or page_size is not None):
+    if (page_token or page_size is not None):
         if limit is not None:
             raise DemistoException(MESSAGES.get('INVALID_PAGINATION_ARGS_SUPPLIED'))
         page_size = page_size if (page_size is not None) else DEFAULT_PAGE_SIZE
@@ -1237,7 +1237,7 @@ def prepare_pagination_arguments(page_token: str, page_size: int | None, limit: 
         return {'page_size': page_size, 'page_token': page_token}
 
     limit = limit if (limit is not None) else DEFAULT_LIMIT
-    if(limit <= 0):
+    if (limit <= 0):
         raise DemistoException(message=MESSAGES.get('LIMIT_ARG_INVALID_ERROR'))
     return {'limit': limit}
 
@@ -1425,7 +1425,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         return command_results
     except DemistoException as e:
         error_message = str(e)
-        if('INVALID_OU_ID' in error_message):
+        if ('INVALID_OU_ID' in error_message):
             raise DemistoException(MESSAGES.get('INVALID_ORG_UNIT_PATH', ''))
         raise DemistoException(error_message)
 
@@ -1453,7 +1453,7 @@ def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) 
 
     except DemistoException as e:
         error_message = str(e)
-        if('Delinquent account' in error_message):
+        if ('Delinquent account' in error_message):
             raise DemistoException(MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', ''))
         raise DemistoException(error_message)
     command_results = CommandResults(
