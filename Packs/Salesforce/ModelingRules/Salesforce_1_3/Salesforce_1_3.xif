@@ -11,8 +11,8 @@ alter BillingLat = json_extract_scalar(BillingAddress , "$.latitude"),
     xdm.source.location.country = coalesce(BillingState,ShippingState),
     xdm.event.description = Description,
     xdm.source.user.ou = Tradestyle
-    xdm.source.location.latitude = coalesce(BillingLat,BillingLatitude,ShippingLatitude),
-    xdm.source.location.longitude = coalesce(BillingLong,BillingLongitude,ShippingLongitude),
+    xdm.source.location.latitude = coalesce(BillingLat,ShippingLatitude),
+    xdm.source.location.longitude = coalesce(BillingLong,ShippingLongitude),
     xdm.network.session_id = MasterRecordId,
     xdm.source.user.first_name = FirstName,
     xdm.source.user.last_name = LastName,
@@ -21,8 +21,7 @@ alter BillingLat = json_extract_scalar(BillingAddress , "$.latitude"),
 [MODEL: dataset = salesforce_connectedapplication_raw]
 alter xdm.target.resource.name = Name,
     xdm.target.url = StartUrl,
-    xdm.network.http.url = MobileStartUrl
-
+    xdm.network.http.url = MobileStartUrl;
 
 [MODEL: dataset = salesforce_audit_raw]
 alter xdm.event.operation_sub_type = Action,
@@ -42,7 +41,64 @@ alter xdm.target.resource.id = Id,
 [MODEL: dataset = salesforce_eventlogfile_raw ] checking the field names. all of them started with _ and ends with _
 
 [MODEL: dataset = salesforce_group_raw ]
+ alter xdm.target.resource.id = coalesce(Id,RelatedId),
+    xdm.target.resource.name = Name,
+    xdm.source.user.user_type = if(Type in ("Regular","AllCustomerPortal","ChannelProgramGroup","Manager","ManagerAndSubordinatesInternal","Organization","Participant","PRMOrganization","Role","RoleAndSubordinates","RoleAndSubordinatesInternal","Territory","TerritoryAndSubordinates"),XDM_CONST.USER_TYPE_REGULAR ,Type = "Queue",XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,to_string(Type)),
+    xdm.email.sender = Email,
+    xdm.source.user.identifier = coalesce(OwnerId,CreatedById),
+    xdm.source.user.groups = arraycreate(DeveloperName);
+
+[MODEL: dataset = salesforce_groupmember_raw ]
+alter xdm.target.resource.id = coalesce(GroupIdתUserOrGroupId);
+
+[MODEL: dataset = salesforce_tenantsecuritylogin_raw]
+alter xdm.target.resource.id = coalesce(Id,Tenant),
+    xdm.target.resource.name = coalesce(Name,TenantName),
+    xdm.source.user.username = Username,
+    xdm.source.user.upn = UserEmail,
+    xdm.target.resource.type = MetricsType;
+
+[MODEL: dataset = salesforce_tenantsecurityuserperm_raw ]
+| alter xdm.target.resource.id = coalesce(Id,Tenant),
+    xdm.target.resource.name = coalesce(Name,TenantName),
+    xdm.event.operation_sub_type = Action,
+    xdm.source.user.username = Username,
+    xdm.source.user.upn = UserEmail;
+
+[MODEL: dataset = salesforce_userrole_raw]
+alter xdm.target.resource.id = Id,
+    xdm.source.user.groups = arraycreate(Name),
+    xdm.target.resource.name = DeveloperName,
+    xdm.source.user.identifier = LastModifiedById;
+
+[MODEL: dataset = salesforce_profile_raw]
  alter xdm.target.resource.id = Id,
     xdm.target.resource.name = Name,
-    xdm.source.user.user_type = if(Type in ("Regular","AllCustomerPortal","ChannelProgramGroup","Manager","ManagerAndSubordinatesInternal","Organization","Participant","PRMOrganization","Role","RoleAndSubordinates","RoleAndSubordinatesInternal","Territory","TerritoryAndSubordinates"),REGULAR,Type = "Queue",SERVICE_ACCOUNT,to_string(Type))
+    xdm.target.user.user_type = if(UserType in ("Standard","PowerPartner","CSPLitePortal","CustomerSuccess","PowerCustomerSuccess","CsnOnly","Guest","AUL","AUL1","Salesforce","PackageManager","PRM","CustomerUser","CustomerManager"), XDM_CONST.USER_TYPE_REGULAR, to_string(UserType)),
+    xdm.source.user.identifier = CreatedById,
+    xdm.event.description = Description;
 
+[MODEL: dataset = salesforce_permissionset_raw]
+ alter xdm.target.resource.id = Id,
+    xdm.target.resource.name = Name,
+    xdm.source.user.identifier = coalesce(ProfileId,CreatedById),
+    xdm.event.description = Description;
+
+
+[MODEL: dataset = salesforce_user_raw ]
+alter xdm.target.user.is_disabled = if(IsActive= "true", false,IsActive= "false", true,to_string(IsActive)),
+    xdm.source.user.identifier = Id,
+    xdm.target.resource.name = Name,
+    xdm.target.location.city = City,
+    xdm.target.user.username = Username,
+    xdm.target.user.upn = Email,
+    xdm.target.location.country = Country,
+    xdm.target.user.last_name = LastName,
+    xdm.target.user.first_name = FirstName,
+    xdm.target.location.latitude = Latitude,
+    xdm.target.location.longitude = Longitude,
+    xdm.source.user.user_type = if(UserType  in ("Standard","PowerPartner","CSPLitePortal","CustomerSuccess","PowerCustomerSuccess","CsnOnly","Guest"),XDM_CONST.USER_TYPE_REGULAR ,to_string(UserType)),
+    xdm.target.user.identifier = AccountId,
+    xdm.source.user.identifier = CreatedById,
+    xdm.email.sender = SenderEmail,
+    xdm.target.user.employee_id = EmployeeNumber;
