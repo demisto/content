@@ -1519,6 +1519,50 @@ class TestPanoramaEditRuleCommand:
         }
         assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
 
+    @staticmethod
+    def test_edit_rule_main_flow_remove_profile_setting_group(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+         - arguments to remove a profile-setting group.
+        When
+         - running the pan-os-edit-rule command through the main flow.
+
+        Then
+         - make sure the API request body is correct.
+         - make sure the message is correct for the user.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "profile-setting",
+                "element_value": "some string",
+                "behaviour": "remove",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # Check: 'action' == set (not edit)
+        assert request_mock.call_args.kwargs['body']['action'] == 'set'
+        # Ensure 'element' wasn't sent with a group (since we removed the profile-setting group)
+        assert request_mock.call_args.kwargs['body']['element'] == '<profile-setting><group/></profile-setting>'
+        # Make sure the message is correct for the user
+        assert res.call_args.args[0]['HumanReadable'] == 'Rule edited successfully.'
+
 
 def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     """

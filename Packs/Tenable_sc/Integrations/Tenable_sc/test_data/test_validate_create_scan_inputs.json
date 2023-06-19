@@ -1,0 +1,20 @@
+{
+    "test_case_1":{
+        "args": {
+            "time_zone": "incorrect_time_zone"
+        },
+        "expected_error_msg": "Invalid time zone ID. Please choose one of the following: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html"
+    },
+    "test_case_2":{
+        "args": {
+        },
+        "expected_error_msg": "Error: Assets and/or IPs must be provided"
+    },
+    "test_case_3":{
+        "args": {
+            "schedule": "dependent",
+            "ip_list": "ip"
+        },
+        "expected_error_msg": "Error: Dependent schedule must include a dependent scan ID"
+    }
+}
