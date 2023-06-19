@@ -6,11 +6,7 @@ from urllib.parse import unquote
 from _pytest.python_api import raises
 
 import demistomock as demisto
-<<<<<<< HEAD
-from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus, handle_proxy
-=======
 from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus, ScheduledCommand
->>>>>>> master
 from test_data import input_data
 from freezegun import freeze_time
 
