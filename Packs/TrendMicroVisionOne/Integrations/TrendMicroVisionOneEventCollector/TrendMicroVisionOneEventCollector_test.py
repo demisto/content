@@ -290,13 +290,13 @@ class TestFetchEvents:
                 {'max_fetch': 1000},
                 {
                     'audit_logs_time': '2023-01-01T15:01:13Z',
+                    'oat_detection_logs_time': '2023-01-01T15:03:45Z',
+                    'search_detection_logs_time': '2023-01-01T15:03:44Z',
+                    'workbench_logs_time': '2023-01-01T15:03:45Z',
                     'found_audit_logs': ['d6294890ed71d3399f2a5ab568738be6fe1fd5dca7d8dbcbf480d1095c7f3bb5'],
                     'found_oat_logs': [],
                     'found_search_detection_logs': [50],
                     'found_workbench_logs': [],
-                    'oat_detection_logs_time': '2023-01-01T15:03:45Z',
-                    'search_detection_logs_time': '2023-01-01T15:03:44Z',
-                    'workbench_logs_time': '2023-01-01T15:03:45Z'
                 },
                 '2023-01-01T15:03:45Z',
                 0,
@@ -442,7 +442,7 @@ def test_get_datetime_range(
     Then:
         - Case A: make sure start time is 3 years ago and end time is "now".
         - Case B: make sure the start time is 180 days ago and end time is "now"
-        - Case C: make sure the start time is 3 years ago and the time is 1 year after.
+        - Case C: make sure the start time is 3 years ago and the time is 1 day after.
         - Case D: make sure the start time is 1 month ago and end time is "now"
         - Case E: make sure the start time is the last_run_time and end time is "now"
     """

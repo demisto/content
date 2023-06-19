@@ -209,7 +209,7 @@ class Client(BaseClient):
             params=params,
             headers=headers,
             limit=limit,
-            should_finish_pagination=True
+            should_finish_pagination=demisto.command() != 'test-module'  # in case of test-module we do not need pagination
         )
 
         start_time_datetime = dateparser.parse(params.get(start_time_field_name))  # type: ignore
@@ -486,7 +486,9 @@ def get_datetime_range(
             settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
         )
 
-    if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value:
+    if log_type_time_field_name in (
+        LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value, LastRunLogsTimeFields.SEARCH_DETECTIONS.value
+    ):
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
         one_day_from_last_run_time = last_run_time_datetime + timedelta(days=ONE_DAY)  # type: ignore[operator]
