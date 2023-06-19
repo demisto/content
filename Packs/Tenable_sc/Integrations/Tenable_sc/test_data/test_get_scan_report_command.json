@@ -1,0 +1,39 @@
+{
+    "test_case_1":{
+        "args": {
+            "scan_results_id": "1557"
+          },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"completedChecks":"0","description":"","details":"Network Scan",
+        "finishTime":"1686487896","id":"1557","importStart":"1686487900","importStatus":"Finished","name":"my_test_Scan",
+        "owner":{"firstname":"Yuval","id":"39","lastname":"Hayun","username":"yuv","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},
+        "progress":{"awaitingDownloadIPs":"","awaitingDownloadSize":0,"checksPerHost":"-1","completedChecks":"0","completedIPs":"1",
+        "deadHostIPs":"192.168.1.17","deadHostSize":1,"distributedSize":1,"runState":"Stopped","scannedIPs":"","scannedSize":0,
+        "scanners":[{"awaitingDownloadIPs":"","awaitingDownloadSize":0,"chunkCompleted":"1","chunks":[],"completedChecks":"0",
+        "deadHostIPs":"192.168.1.17","deadHostSize":1,"description":"","distributedSize":1,"id":"2","loadAvg":"0","name":"RHEL6 Scanner",
+        "scannedIPs":"","scannedSize":0,"scanningIPs":"","scanningSize":0}],"scanningIPs":"","scanningSize":0,"status":"Completed",
+        "totalChecks":"-1","totalIPs":"1"},"repository":{"description":"","id":"1","name":"Local","type":"Local",
+        "uuid":"uuid"},"running":"false","scanDuration":"21","scannedIPs":"1","startTime":"1686487875",
+        "status":"Completed"},"timestamp":1687097361,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan 1557 Report\n|ID|Name|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|ImportStatus|IsScanRunning|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1557 | my_test_Scan | Network Scan | Full Access | yuv | 1 | 2023-06-11T12:51:15Z | 2023-06-11T12:51:36Z | 0.35 | 0 | 2023-06-11T12:51:40Z | Local | Completed | regular | Finished | false |\n",
+        "expected_ec": {
+            "Checks": "0",
+            "Completed IPs": "1",
+            "Duration": 0.35,
+            "EndTime": "2023-06-11T12:51:36Z",
+            "Group": "Full Access",
+            "ID": "1557",
+            "ImportStatus": "Finished",
+            "ImportTime": "2023-06-11T12:51:40Z",
+            "IsScanRunning": "false",
+            "Name": "my_test_Scan",
+            "Owner": "yuv",
+            "Policy": "Network Scan",
+            "RepositoryName": "Local",
+            "Scan Type": "regular",
+            "ScannedIPs": "1",
+            "StartTime": "2023-06-11T12:51:15Z",
+            "Status": "Completed"
+          }
+    }
+}
