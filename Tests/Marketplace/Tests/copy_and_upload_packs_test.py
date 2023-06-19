@@ -114,4 +114,73 @@ class TestRegex:
        """
         from Tests.Marketplace.copy_and_upload_packs import LATEST_ZIP_REGEX
         assert LATEST_ZIP_REGEX.findall(gcs_path)[0] == latest_zip_suffix
+
+    def test_upload_core_packs_config(self, mocker):
+        """
+        When:
+            Calling the upload_core_packs_config function
+        Given:
+            The default corepacks.json file and one versioned corepacks file corepacks-8.3.0.json, that should be copied
+            from the build bucket to the production bucket.
+        Then:
+            - For the corepacks.json file, assert that the file is downloaded from the build bucket, modified according
+              to the full paths as required in the production bucket, and then uploaded to the production bucket.
+            - For the versioned corepacks file, assert that the file is copied from the build bucket as is.
+        """
+        from Tests.Marketplace.copy_and_upload_packs import upload_core_packs_config
+        from Tests.Marketplace.marketplace_constants import GCPConfig
+        import json
+
+        production_bucket = mocker.MagicMock()
+        production_bucket.name = GCPConfig.PRODUCTION_BUCKET
+
+        production_bucket_blob = mocker.MagicMock()
+        mocker.patch.object(production_bucket_blob, 'upload_from_string')
+        production_bucket.blob.return_value = production_bucket_blob
+
+        build_bucket = mocker.MagicMock()
+        build_bucket.name = GCPConfig.CI_BUILD_BUCKET
+
+        build_bucket_base_path = 'dummy-build-bucket-path'
+        corepacks_version = 'corepacks-8.3.0.json'
+        build_number = '123456'
+
+        corepacks_file = {
+            "corePacks": [
+                "https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_1/1.4.0/pack_1.zip",
+                "https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_2/2.2.3/pack_2.zip"
+            ],
+            "upgradeCorePacks": [
+                "pack_1"
+            ],
+            "buildNumber": "123456"
+        }
+
+        mocker.patch('Tests.Marketplace.copy_and_upload_packs.load_json', return_value=corepacks_file)
+
+        mocker.patch("Tests.Marketplace.marketplace_constants.GCPConfig.get_core_packs_unlocked_files",
+                     return_value=[corepacks_version])
+
+        upload_core_packs_config(production_bucket, build_number, '',
+                                 build_bucket, GCPConfig.PRODUCTION_STORAGE_BASE_PATH, build_bucket_base_path)
+
+        # Assert that corepacks.json file was processed and uploaded successfully
+        corepacks_expected_data = {
+            "corePacks": [
+                "https://storage.googleapis.com/marketplace-dist/content/packs/pack_1/1.4.0/pack_1.zip",
+                "https://storage.googleapis.com/marketplace-dist/content/packs/pack_2/2.2.3/pack_2.zip"
+            ],
+            "upgradeCorePacks": [
+                "pack_1"
+            ],
+            "buildNumber": "123456"
+        }
+
+        production_bucket_blob.upload_from_string.assert_called_once_with(
+            json.dumps(corepacks_expected_data, indent=4)
+        )
+
+        # Assert that the versioned corepacks-8.3.0.json file was copied from the build bucket to the production bucket
+        build_bucket.copy_blob.assert_called_once()
+
 # disable-secrets-detection-end
