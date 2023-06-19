@@ -15,13 +15,6 @@ MAX_RETRY_ALLOWED = params.get('max_retry_time', -1)
 API_KEY = params.get('credentials_api_key', {}).get('password') or params.get('api_key')
 USE_SSL = not params.get('insecure', False)
 BASE_URL = 'https://haveibeenpwned.com/api/v3'
-HEADERS = {
-    'hibp-api-key': API_KEY,
-    'user-agent': 'DBOT-API',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
-
 DEFAULT_DBOT_SCORE_EMAIL = 2 if params.get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if params.get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
@@ -53,7 +46,12 @@ def http_request(method, url_suffix, params=None, data=None):
             verify=USE_SSL,
             params=params,
             data=data,
-            headers=HEADERS
+            headers={
+                'hibp-api-key': API_KEY,
+                'user-agent': 'DBOT-API',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
         )
 
         if res.status_code != 429:
