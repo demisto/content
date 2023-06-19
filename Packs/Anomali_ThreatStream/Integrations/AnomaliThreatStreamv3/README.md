@@ -1481,7 +1481,7 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 | md5_mapping | Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported MD5-type observable when an explicit itype is not specified for it. | Optional | 
 | tags | A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. | Optional | 
 | tags_tlp | You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable. Possible values are: Red, Amber, Green, White. | Optional | 
-| expiration_ts | The time stamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date. | Optional | 
+| expiration_ts | The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date. | Optional | 
 | default_state | Whether the import job must be approved from the ThreatStream user interface before observables become active. When default_state is set to active, observables become active upon submission, without requiring approval. In these cases, an import job is created on ThreatStream which is automatically approved. Possible values are: active, inactive. Default is inactive. | Optional | 
 
 
@@ -1528,7 +1528,7 @@ Imports indicators (observables) into ThreatStream. Approval is not required for
 | --- | --- | --- |
 | confidence | The observable certainty level of a reported indicator type. Default is 50. | Optional | 
 | source_confidence_weight | Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100. | Optional | 
-| expiration_ts | The time stamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date. | Optional | 
+| expiration_ts | The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date. | Optional | 
 | severity | The severity to assign to the observable when it is imported. Possible values are: low, medium, high, very-high. | Optional | 
 | tags | A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags. | Optional | 
 | trustedcircles | A comma-separated list of trusted circle IDs with which threat data should be shared. | Optional | 

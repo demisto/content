@@ -2580,7 +2580,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time stamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
+      description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
       isArray: false
       name: expiration_ts
       required: false
@@ -2622,7 +2622,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time stamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
+      description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
       isArray: false
       name: expiration_ts
       required: false
