@@ -8,15 +8,15 @@ configuration:
   required: true
   type: 0
 - display: API Token
-  hidden: true
   name: token
   required: false
   type: 4
-- displaypassword: API Token
-  hiddenusername: true
-  name: token_creds
+  hidden: true
+- name: token_creds
   required: false
   type: 9
+  displaypassword: API Token
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -30,11 +30,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: subject
-  display: The object field to use for incident name
+- display: The object field to use for incident name
   name: incident_name_field
   required: true
   type: 0
+  defaultvalue: subject
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -366,7 +366,7 @@ script:
     - contextPath: IvantiHeat.incidents.Email
       description: Incident owner email address.
       type: String
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

@@ -8,15 +8,15 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  hidden: true
   name: token
   required: false
   type: 4
-- displaypassword: API Key
-  hiddenusername: true
-  name: token_creds
+  hidden: true
+- name: token_creds
   required: false
   type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -1099,7 +1099,7 @@ script:
     - contextPath: Rundeck.WebhookEvent.executionId
       description: The ID of the execution.
       type: String
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
