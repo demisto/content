@@ -348,7 +348,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      lock: Lock,
                                      collected_dependencies: list,
                                      multithreading: bool = True,
-                                     batch_packs_install_request_body: list = None,
+                                     batch_packs_install_request_body: list | None = None,
                                      ):
     """
     Searches for the pack of the specified file path, as well as its dependencies,
@@ -363,8 +363,11 @@ def search_pack_and_its_dependencies(client: demisto_client,
         collected_dependencies (list): list of packs that are already in the list to install
         multithreading (bool): Whether to install packs in parallel or not.
             If false - install all packs in one batch.
-        batch_packs_install_request_body (list): A list of lists packs to be installed, in the request format.
+        batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
+
+    Returns:
+        list: A list of packs to be installed, in the request format.
     """
     if api_data := get_pack_dependencies(client, pack_id, lock):
         pack_data = api_data["packs"][0]
@@ -420,14 +423,15 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
 
 def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> str:
-    """ Retrieves the latest version of pack in the bucket
+    """
+    Retrieves the latest version of pack in the bucket
 
     Args:
         pack_id (str): The pack id to retrieve the latest version
         production_bucket (Bucket): The GCS production bucket
 
-    Returns: The latest version of the pack as it is in the production bucket
-
+    Returns:
+        The latest version of the pack as it is in the production bucket
     """
     pack_bucket_path = os.path.join(GCPConfig.PRODUCTION_STORAGE_BASE_PATH, pack_id)
     logging.debug(f'Trying to get latest version for pack {pack_id} from bucket path {pack_bucket_path}')
@@ -539,13 +543,14 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
 def upload_zipped_packs(client: demisto_client,
                         host: str,
                         pack_path: str):
-    """ Install packs from zip file.
+    """
+    Install packs from zip file.
 
-        Args:
-            client (demisto_client): The configured client to use.
-            host (str): The server URL.
-            pack_path (str): path to pack zip.
-        """
+    Args:
+        client (demisto_client): The configured client to use.
+        host (str): The server URL.
+        pack_path (str): path to pack zip.
+    """
     header_params = {
         'Content-Type': 'multipart/form-data'
     }
@@ -607,7 +612,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         client (demisto_client): The client to connect to.
         hostname (str): Hostname of instance. Using for logs.
         multithreading (bool): Whether to use multithreading to install packs in parallel.
-
+            If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
@@ -618,9 +623,9 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     packs_to_install: list = []  # Packs we want to install, to avoid duplications
     installation_request_body: list = []  # Packs to install, in the request format
-    batch_packs_install_request_body: list = []    # List of lists of packs to install if not using multithreading .
+    batch_packs_install_request_body: list = []  # List of lists of packs to install if not using multithreading .
     # Each list contain one pack and its dependencies.
-    collected_dependencies: list = []    # List of packs that are already in the list to install.
+    collected_dependencies: list = []  # List of packs that are already in the list to install.
 
     lock = Lock()
 
