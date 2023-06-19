@@ -881,11 +881,16 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
+    - description: Deprecated. Use the `cve` argument instead.
+      isArray: false
+      name: cve_id
+      required: false
+      secret: false
     - default: true
       description: CVE ID.
       isArray: false
-      name: cve_id
-      required: true
+      name: cve
+      required: false
       secret: false
     - default: false
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
