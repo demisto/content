@@ -3,17 +3,28 @@ commonfields:
   id: FeedTenableIO
   version: -1
 configuration:
-- defaultvalue: https://example.com/
+- defaultvalue: https://cloud.tenable.com
   display: Your server URL
   name: url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+- displaypassword: Secret Key
+  display: Access Key
+  additionalinfo: Tenable API client ID and secret.
   name: credentials
   required: true
-  hiddenusername: true
   type: 9
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The maximum number of assets per fetch.
+  defaultvalue: '5000'
+  display: Max Fetch
+  name: max_fetch
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -22,7 +33,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: Use Tenable.io Feed integration to get assets and their vulnerabilities from Tenable.
 display: 'FeedTenableIO'
 name: FeedTenableIO
 script:
@@ -37,7 +48,7 @@ script:
     deprecated: false
     description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
     execution: false
-    name: baseintegration-dummy
+    name: dummy-command
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
@@ -45,6 +56,7 @@ script:
   isfetch: false
   runonce: false
   script: '-'
+  fetchassetsandevents: true
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.7.35188

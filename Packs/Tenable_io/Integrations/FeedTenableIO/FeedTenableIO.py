@@ -36,31 +36,112 @@ class Client(BaseClient):
     """Client class to interact with the service API
 
     This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
     """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+    def export_assets_request(self, chuck_size: int, last_fetch):
         """
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        Args:
+            chuck_size: maximum number of assets to fetch.
+            last_fetch: the last asset that was fetched previously.
 
+        Returns: The UUID of the assets export job.
+
+        """
+        payload = {
+            "filters":
+                {}
+        }
+        if last_fetch:
+            payload['filters'].update({'last_fetch': last_fetch})
+
+        res = self._http_request(method='POST', url_suffix='assets/export', params={'chunk_size': chuck_size}, json_data=payload,
+                                 headers=self._headers)
+        return res.get('export_uuid')
+
+    def get_export_assets_status(self, export_uuid):
+        """
+        Args:
+                export_uuid: The UUID of the vulnerabilities export job.
+
+        Returns: The assets' chunk id.
+
+        """
+        res = self._http_request(method='GET', url_suffix=f'assets/export/{export_uuid}/status', headers=self._headers)
+        return res.get('chunk_id')
+
+    def download_assets_chunk(self, export_uuid: str, chunk_id: int):
+        """
+
+        Args:
+            export_uuid: The UUID of the assets export job.
+            chunk_id: The ID of the chunk you want to export.
+
+        Returns: Chunk of assets from API.
+
+        """
+        return self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
+                                  headers=self._headers)
+
+    def export_vulnerabilities_request(self, num_assets: int, last_found: Optional[float], severity: List[str]):
+        """
+
+        Args:
+            num_assets: number of assets used to chunk the vulnerabilities.
+            last_found: vulnerabilities that were last found between the specified date (in Unix time) and now.
+            severity: severity of the vulnerabilities to include in the export.
+
+        Returns: The UUID of the vulnerabilities export job.
+
+        """
+        payload: Dict[str, Union[Any]] = {
+            "filters":
+                {
+                    "severity": severity
+                },
+            "num_assets": num_assets
+        }
+        if last_found:
+            payload['filters'].update({"last_found": last_found})
+
+        res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
+        return res.get('export_uuid', '')
+
+    def get_vulnerabilities_export_status(self, export_uuid: str):
+        """
+
+        Args:
+            export_uuid: The UUID of the vulnerabilities export job.
+
+        Returns: The status of the job, and number of chunks available if succeeded.
+
+        """
+        res = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/status',
+                                 headers=self._headers)
+        status = res.get('status')
+        chunks_available = res.get('chunks_available', [])
+        return status, chunks_available
+
+    def download_vulnerabilities_chunk(self, export_uuid: str, chunk_id: int):
+        """
+
+        Args:
+            export_uuid: The UUID of the vulnerabilities export job.
+            chunk_id: The ID of the chunk you want to export.
+
+        Returns: Chunk of vulnerabilities from API.
+
+        """
+        return self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
+                                  headers=self._headers)
+
+
+    def get_networks_requests(self, name, filter_type):
+        query = ''
+        return self._http_request(method='GET', url_suffix=f'/networks{query}',
+                                  headers=self._headers)
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -81,34 +162,26 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
+def list_networks_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    network_name = args.get('name')
+    filter_type =args.get('filter_type')
     # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    result = client.get_networks_request(network_name, filter_type)
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
+        outputs_prefix='TenableIO.Network',
         outputs_key_field='',
         outputs=result,
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''
@@ -116,33 +189,25 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    params = demisto.params()
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(params.get('url'))
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+    access_key = params.get('credentials', {}).get('identifier', '')
+    secret_key = params.get('credentials', {}).get('password', '')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    # Fetch Params
+    first_fetch = arg_to_datetime(params.get('first_fetch', '3 days'))
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
+        headers = {'X-ApiKeys': f'accessKey={access_key}; secretKey={secret_key}',
+                   "Accept": "application/json"}
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -154,12 +219,11 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'fetch-assets':
+            last_assets_run = demisto.getLastAssetsRun()
 
-    # Log exceptions and return errors
+
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
