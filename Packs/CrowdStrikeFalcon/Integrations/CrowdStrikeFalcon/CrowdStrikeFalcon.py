@@ -20,6 +20,7 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
+IDP_DETECTION = "IDP Detection"
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
 # Remove trailing slash to prevent wrong URL path to service
@@ -2017,8 +2018,8 @@ def get_remote_data_command(args: Dict[str, Any]):
         elif incident_type == IncidentType.IDP_DETECTION:
             mirrored_data, updated_object = get_remote_idp_detection_data(remote_incident_id)
             if updated_object:
-                demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
+                demisto.debug(f'Update IDP detection {mirrored_data} with fields: {updated_object}')
+                set_xsoar_idp_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2045,7 +2046,7 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
         return IncidentType.DETECTION
-    if remote_incident_id[0:3] == IncidentType.IDP_DETECTION.value:
+    if remote_incident_id[0:3] == IncidentType.IDP_DETECTION.value or f":{IncidentType.IDP_DETECTION.value}:" in remote_incident_id:
         return IncidentType.IDP_DETECTION
 
 
@@ -2082,7 +2083,7 @@ def get_remote_detection_data(remote_incident_id: str):
     return mirrored_data, updated_object
 
 
-def get_remote_idp_detection_data(remote_incident_id: str):
+def get_remote_idp_detection_data(remote_incident_id):
     """
     Called every time get-remote-data command runs on an IDP detection.
     Gets the relevant detection entity from the remote system (CrowdStrike Falcon). The remote system returns a list with this
@@ -2092,11 +2093,22 @@ def get_remote_idp_detection_data(remote_incident_id: str):
     mirrored_data = mirrored_data_list[0]
 
     if 'status' in mirrored_data:
-        mirrored_data['status'] = STATUS_NUM_TO_TEXT_IDP.get(int(str(mirrored_data.get('status'))))
+        mirrored_data['status'] = mirrored_data.get('status')
 
-    updated_object: Dict[str, Any] = {'incident_type': 'incident'}
-    set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
-    return mirrored_data, updated_object
+    updated_object: Dict[str, Any] = {'incident_type': IDP_DETECTION}
+    set_updated_object(updated_object, mirrored_data, ['status'])
+    # last_updated = dateparser.parse(last_updated, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}).strftime('%Y-%m-%dT%H:%M:%S.%fZ')  # noqa: E501
+    # filter = f"updated_timestamp:>'{last_updated}'+status:'closed'+product:'idp'"
+    # mirrored_data = http_request(
+    #     'GET',
+    #     "/alerts/queries/alerts/v1",
+    #     params={"filter": filter}
+    # ).get('resources', [])
+
+    # updated_object: Dict[str, Any] = {'incident_type': IDP_DETECTION,
+    #                                   'id': mirrored_data,
+    #                                   'status': 'closed'}
+    # return mirrored_data, updated_object
 
 
 def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
@@ -2113,6 +2125,14 @@ def set_xsoar_detection_entries(updated_object: Dict[str, Any], entries: List, r
             close_in_xsoar(entries, remote_detection_id, 'Detection')
         elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
+
+
+def set_xsoar_idp_detection_entries(updated_object: Dict[str, Any], entries: List, remote_detection_id: str):
+    if PARAMS.get('close_incident'):
+        if updated_object.get('status') == 'closed':
+            close_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
+        elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM_IDP.keys()) - {'Closed'}):
+            reopen_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
 
 
 def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
@@ -2495,7 +2515,6 @@ def fetch_incidents():
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
     if "IDP Detection" in fetch_incidents_or_detections:
-        incident_type = 'IDP detection'
         latest_fetched_idp_detection = None
         last_fetch_time, offset, _, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_idp_detections)
         last_idp_detection_fetched = current_fetch_info_incidents.get('last_fetched_idp_detection')
@@ -2508,7 +2527,7 @@ def fetch_incidents():
             raw_res = get_idp_detection_entities(idp_detections_ids)
             if "resources" in raw_res:
                 for idp_detection in demisto.get(raw_res, "resources"):
-                    idp_detection['incident_type'] = incident_type
+                    idp_detection['incident_type'] = IDP_DETECTION
                     idp_detection_to_context = idp_detection_to_incident_context(idp_detection)
                     idp_detection_date = idp_detection_to_context['last_updated']
 
