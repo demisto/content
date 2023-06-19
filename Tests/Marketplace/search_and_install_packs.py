@@ -257,6 +257,9 @@ def install_packs(client: demisto_client,
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
     """
     global SUCCESS_FLAG
+    if not packs_to_install:
+        logging.info("There are no packs to install on servers. Consolidating installation as success")
+        return SUCCESS_FLAG
     try:
         for attempt in range(attempts_count - 1, -1, -1):
             try:
