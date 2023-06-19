@@ -90,7 +90,7 @@ class MockLock:
         return False
 
 
-@pytest.mark.parametrize('use_multithreading', [True])
+@pytest.mark.parametrize('use_multithreading', [True, False])
 def test_search_and_install_packs_and_their_dependencies(mocker, use_multithreading: bool):
     """
     Given

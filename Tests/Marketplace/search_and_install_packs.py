@@ -45,21 +45,6 @@ def get_pack_id_from_error_with_gcp_path(error: str) -> str:
     return error.split('/packs/')[1].split('.zip')[0].split('/')[0]
 
 
-def get_pack_display_name(pack_id: str) -> str:
-    """
-    Gets the display name of the pack from the pack ID.
-
-    :param pack_id: ID of the pack.
-    :return: Name found in the pack metadata, otherwise an empty string.
-    """
-    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
-    if pack_id and os.path.isfile(metadata_path):
-        with open(metadata_path, 'r') as json_file:
-            pack_metadata = json.load(json_file)
-        return pack_metadata.get('name')
-    return ''
-
-
 @lru_cache
 def is_pack_hidden(pack_id: str) -> bool:
     """
