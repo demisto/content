@@ -1895,20 +1895,6 @@ def create_and_update_alert_rule_command(client: AzureSentinelClient, args: Dict
     )
 
 
-def get_azure_cloud(params):
-    azure_cloud_arg = params.get('azure_cloud')
-    if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
-        # Backward compatibility before the azure cloud settings.
-        server_url = params.get('server_url') or 'https://management.azure.com'
-        azure_cloud = create_custom_azure_cloud('AzureSentinel', defaults=AZURE_WORLDWIDE_CLOUD,
-                                                endpoints={'resource_manager': server_url})
-    else:
-        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg]
-        azure_cloud = AZURE_CLOUDS[azure_cloud_name]
-    demisto.debug(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
-    return azure_cloud
-
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1936,7 +1922,7 @@ def main():
         resource_group_name = args.get('resource_group_name') or params.get('resourceGroupName', '')
 
         client = AzureSentinelClient(
-            azure_cloud=get_azure_cloud(params),
+            azure_cloud=get_azure_cloud(params, 'AzureSentinel'),
             tenant_id=tenant_id,
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=client_secret,

@@ -1274,15 +1274,6 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
     return datetime.utcfromtimestamp(timestamp).isoformat()
 
 
-def get_azure_cloud(params):
-    azure_cloud_arg = params.get('azure_cloud') or 'Worldwide'
-    # There is no need for backward compatibility support, as the integration didn't support it to begin with.
-    azure_cloud_name = AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg]
-    azure_cloud = AZURE_CLOUDS[azure_cloud_name]
-    demisto.debug(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
-    return azure_cloud
-
-
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
@@ -1292,7 +1283,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     identifier = args.get('identifier')
     client_secret = params.get('client_secret', {}).get('password')
-    azure_cloud = get_azure_cloud(params)
+    azure_cloud = get_azure_cloud(params, "AzureKeyVault")
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')

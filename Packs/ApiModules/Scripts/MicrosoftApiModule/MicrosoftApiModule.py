@@ -575,6 +575,24 @@ def microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_ur
     return endpoint_type, params_url
 
 
+def get_azure_cloud(params, integration_name):
+    azure_cloud_arg = params.get('azure_cloud')
+    if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
+        # Backward compatibility before the azure cloud settings.
+        if 'server_url' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={'resource_manager': params['server_url']})
+        if 'azure_ad_endpoint' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={
+                                                 'active_directory': params.get('azure_ad_endpoint',
+                                                                                'https://login.microsoftonline.com')
+                                             })
+
+    # There is no need for backward compatibility support, as the integration didn't support it to begin with.
+    return AZURE_CLOUDS[AzureCloudNames.WORLDWIDE]
+
+
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',

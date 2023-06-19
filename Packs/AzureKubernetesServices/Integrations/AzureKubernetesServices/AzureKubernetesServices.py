@@ -201,21 +201,6 @@ def test_module(client):
         return 'ok'
 
 
-def get_azure_cloud(params):
-    azure_cloud_arg = params.get('azure_cloud')
-    if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
-        # Backward compatibility before the azure cloud settings.
-        server_url = params.get('azure_ad_endpoint') or 'https://login.microsoftonline.com'
-        azure_cloud = create_custom_azure_cloud('AzureKubernetesServices', defaults=AZURE_WORLDWIDE_CLOUD,
-                                                endpoints={'active_directory': server_url})
-    else:
-        azure_cloud_name = AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg]
-        azure_cloud = AZURE_CLOUDS[azure_cloud_name]
-
-    demisto.debug(f'Cloud selection: {azure_cloud.name}, Preset:{azure_cloud.origin}')
-    return azure_cloud
-
-
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
@@ -223,7 +208,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-        azure_cloud = get_azure_cloud(params)
+        azure_cloud = get_azure_cloud(params, 'AzureKubernetesServices')
         client = AKSClient(
             tenant_id=params.get('tenant_id'),
             auth_type=params.get('auth_type', 'Device Code'),
