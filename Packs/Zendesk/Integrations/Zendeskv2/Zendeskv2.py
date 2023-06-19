@@ -774,7 +774,7 @@ class ZendeskClient(BaseClient):
 
         return f'file: {", ".join(uploaded_files)} attached to ticket: {ticket_id}'
 
-    def zendesk_attachment_get(self, attachment_id: int):
+    def zendesk_attachment_get(self, attachment_id):
         attachments = [
             self._http_request(
                 'GET',
@@ -787,14 +787,26 @@ class ZendeskClient(BaseClient):
             return attachment
 
         attachments = list(map(filter_thumbnails, attachments))
-        readable_output = tableToMarkdown(name='Zendesk attachments', t=attachments,
-                                          headers=ATTACHMENTS_HEADERS, headerTransform=camelize_string)
-        results = [CommandResults(outputs_prefix='Zendesk.Attachment',
-                                  outputs=attachments, readable_output=readable_output)]
+
+        return attachments
+
+    def get_file_entries(self, attachments):
+        results = []
         for attachment_link, attachment_name in map(lambda x: (x['content_url'], x['file_name']), attachments):
             res = self._http_request('GET', full_url=attachment_link, resp_type='response')
             res.raise_for_status()
             results.append(fileResult(filename=attachment_name, data=res.content, file_type=EntryType.ENTRY_INFO_FILE))
+        return results
+
+    def zendesk_attachment_get_command(self, attachment_id: int):
+        attachments = self.zendesk_attachment_get(attachment_id)
+        readable_output = tableToMarkdown(name='Zendesk attachments', t=attachments,
+                                          headers=ATTACHMENTS_HEADERS, headerTransform=camelize_string)
+        results = [CommandResults(outputs_prefix='Zendesk.Attachment',
+                                  outputs=attachments, readable_output=readable_output)]
+
+        file_entries = self.get_file_entries(attachments)
+        results.append(file_entries)
 
         return results
 
@@ -873,7 +885,7 @@ class ZendeskClient(BaseClient):
             'rawJSON': json.dumps(ticket),
             'name': ticket['subject'],
             'occurred': ticket['created_at'],
-            'attachment': ZendeskClient.get_attachment_entries(self, ticket=ticket)
+            'attachment': ticket.get('attachments', [])
         }
 
     @staticmethod
@@ -896,6 +908,7 @@ class ZendeskClient(BaseClient):
         time_filter = 'updated' if params.get('time_filter') == 'updated-at' else 'created'
         query = params.get('fetch_query') or ZendeskClient._fetch_query_builder(**params)
         max_fetch = min(100, int(params.get('max_fetch') or 50))
+        get_attachments = params.get('get_attachments')
 
         # from last_run
         fetched_tickets = deque(last_run.get('fetched_tickets') or [])
@@ -911,7 +924,7 @@ class ZendeskClient(BaseClient):
                 raise DemistoException(f'invalid first fetch time specified ({first_fetch})')
             last_fetch = first_fetch_datetime.strftime(ZENDESK_FETCH_TIME_FORMAT)
 
-        return fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number
+        return fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number, get_attachments
 
     @staticmethod
     def _next_fetch_args(fetched_tickets, search_results_ids, next_run_start_time, query, time_filter,
@@ -955,27 +968,24 @@ class ZendeskClient(BaseClient):
 
     def get_attachment_entries(self, ticket) -> list:
         attachments_ids = self.get_attachments_ids(ticket)
-        attachments = []
         file_names = []
-        for attachment_id in attachments_ids:
-            attachment = self.zendesk_attachment_get(attachment_id)
-            attachment.pop(0)  # Removing the CommandResults Object
-            attachments.extend(attachment)
-            demisto.debug(f'The fetched attachments for ID {attachment_id} - {attachments}')
-
-            if isinstance(attachments, list):
-                for file_result in attachments:
-                    if file_result['Type'] == entryTypes['error']:
-                        raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
-                    file_names.append({
-                        'path': file_result.get('FileID', ''),
-                        'name': file_result.get('File', '')
-                    })
+        attachments = self.zendesk_attachment_get(attachments_ids)
+        demisto.debug(f'The fetched attachments - {attachments}')
+        attachments_entries = self.get_file_entries(attachments)
+        if isinstance(attachments_entries, list):
+            for file_result in attachments_entries:
+                if file_result['Type'] == entryTypes['error']:
+                    raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                file_names.append({
+                    'path': file_result.get('FileID', ''),
+                    'name': file_result.get('File', '')
+                })
         return file_names
 
     def fetch_incidents(self, params: dict, lastRun: Optional[str] = None):
         last_run = json.loads(lastRun or 'null') or demisto.getLastRun() or {}
-        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number = self._fetch_args(params, last_run)
+        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number, get_attachments = self._fetch_args(params,
+                                                                                                                    last_run)
 
         # look back window for tickets
         next_run_start_time = datetime.utcnow() - timedelta(minutes=1)
@@ -991,6 +1001,14 @@ class ZendeskClient(BaseClient):
         search_results_ids = list(map(lambda x: x['id'], search_results))
         filtered_search_results_ids = list(filter(lambda x: x not in fetched_tickets, search_results_ids))
         tickets = map(lambda x: self._get_ticket_by_id(x), filtered_search_results_ids)
+        ticket_modified = []
+        if get_attachments:
+            for ticket in tickets:
+                attachments = ZendeskClient.get_attachment_entries(self, ticket)
+                ticket.update({'attachments': attachments})
+                ticket_modified.append(ticket)
+
+        tickets = ticket_modified if ticket_modified else tickets
         incidents = list(map(self._ticket_to_incident, tickets))
 
         demisto.incidents(incidents)
@@ -1195,7 +1213,7 @@ def main():  # pragma: no cover
 
             # attachment commands
             'zendesk-ticket-attachment-add': client.zendesk_ticket_attachment_add,
-            'zendesk-attachment-get': client.zendesk_attachment_get,
+            'zendesk-attachment-get': client.zendesk_attachment_get_command,
 
             # search command
             'zendesk-search': client.zendesk_search,
