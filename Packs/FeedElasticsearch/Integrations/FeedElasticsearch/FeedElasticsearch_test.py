@@ -1,3 +1,5 @@
+from CommonServerPython import *
+
 class MockHit:
     def __init__(self, hit_val):
         self._hit_val = hit_val
@@ -171,7 +173,9 @@ def test_hit_to_indicator():
     assert ioc[CUSTOM_TYPE_KEY] == ''
 
 
-def test_extract_indicators_from_insight_hit(mocker):
+def test_extract_indicators_from_insight_hit2(mocker):
+    params: dict = {'client_type': 'OpenSearch'}
+    mocker.patch.object(demisto, 'params', return_value=params)
     import FeedElasticsearch as esf
     mocker.patch.object(esf, 'hit_to_indicator', return_value=dict(PARSED_INSIGHT_HIT))
     ioc_lst, ioc_enrch_lst = esf.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT, ['tag1', 'tag2'], 'AMBER')

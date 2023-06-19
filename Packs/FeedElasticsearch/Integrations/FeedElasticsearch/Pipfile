@@ -13,6 +13,7 @@ pytest-asyncio = "*"
 [packages]
 elasticsearch = "*"
 elasticsearch-dsl = "*"
+opensearch-py = "*"
 pytest = "*"
 
 [requires]
