@@ -268,7 +268,7 @@ class Client(BaseClient):
                 if ta_rel_data:
                     raw_ta_rels = []
                     raw_ta_data = {}
-                    raw_ta_obj ={}
+                    raw_ta_obj = {}
                     # Only source object getting from the iterating
                     for data1 in ta_rel_data:
                         if LABEL_THREAT_ACTOR == data1.get(LABEL_TYPE):
@@ -353,21 +353,24 @@ class Client(BaseClient):
         for ioc in decyfir_iocs:
             ioc_type = self.get_indicator_or_threatintel_type(ioc.get("pattern"))
             value: str = ioc.get("name")
-            file_hash_value = ""
+            file_hash_values = {}
             decyfir_ioc_type: str = ioc_type
 
             if 'File SHA-1 hash' in value:
-                value = value.replace('File SHA-1 hash ', '').replace("'", '')
-                file_hash_value = "SHA-1"
                 decyfir_ioc_type = "SHA"
             elif 'File SHA-256 hash' in value:
-                value = value.replace('File SHA-256 hash ', '').replace("'", '')
-                file_hash_value = "SHA-256"
                 decyfir_ioc_type = "SHA"
             elif 'File MD5 hash' in value:
-                value = value.replace('File MD5 hash ', '').replace("'", '')
-                file_hash_value = "MD5"
                 decyfir_ioc_type = "MD5"
+
+            pattern_val: str = ioc.get("pattern")
+            pattern_val = pattern_val.replace("[", "").replace("]", "").replace("file:hashes.", "")
+            pattern_vals: list = pattern_val.split("OR")
+            for p_v in pattern_vals:
+                p = p_v.split(" = ")
+                key_ = p[0].replace("'", '').replace(" ", '')
+                val_ = p[1].replace("'", '').replace(" ", '')
+                file_hash_values[key_] = val_
 
             if ioc_type is FeedIndicatorType.IPv6:
                 decyfir_ioc_type = FeedIndicatorType.IP
@@ -387,8 +390,9 @@ class Client(BaseClient):
                     "modified": ioc.get('modified'),
                 }
             }
-            if file_hash_value:
-                ioc_data['fields'][file_hash_value] = value
+            if file_hash_values:
+                for key_ in file_hash_values.keys():
+                    ioc_data['fields'][key_] = file_hash_values.get(key_)
 
             if feed_tags:
                 self.add_tags(ioc_data, feed_tags)
@@ -464,7 +468,6 @@ def fetch_indicators_command(
         tlp_color: Optional[str],
         reputation: Optional[str],
         feed_tags: Optional[List]) -> List[Dict]:
-
     return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags)
 
 
