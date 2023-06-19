@@ -212,7 +212,8 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    service_account_json = demisto.params().get('project_creds', {}).get('password') or demisto.params().get('service_account_json')
+    service_account_json = demisto.params().get('project_creds', {}).get('password')\
+        or demisto.params().get('service_account_json')
     try:
         service_account = json.loads(service_account_json)
     except Exception:
