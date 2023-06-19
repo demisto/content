@@ -3,7 +3,7 @@
     "dashboards_data": [
         {
             "name": "HIPAA Compliance Dashboard",
-            "description": "Use this dashboard to monitor HIPAA controls and produce evidence for audits.",
+            "description": "Monitor HIPAA controls and produce evidence for audits.",
             "status": "ENABLED",
             "layout": [
                 {
