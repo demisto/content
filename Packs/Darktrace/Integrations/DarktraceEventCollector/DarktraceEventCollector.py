@@ -146,7 +146,7 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict
 def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> List[Dict[str, Any]]:
     """Filters events by pbid and max_fetch"""
     for index, event in enumerate(events):
-        if event.get('pbid') > last_fetched_pid:
+        if event.get('pbid', 0) > last_fetched_pid:
             return events[index:index + max_fetch]
     return []
 
@@ -176,7 +176,7 @@ def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
 
 
 def fetch_events(client: Client, max_fetch: int, first_fetch_time: float, last_run: Dict[str, Any]) -> Tuple[
-    List[Dict[str, Any]], Dict[str, Any]]:
+        List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """
@@ -186,7 +186,7 @@ def fetch_events(client: Client, max_fetch: int, first_fetch_time: float, last_r
     retrieve_events = client.get_events(start_time, end_time.timestamp())
     demisto.debug(f'Fetched {len(retrieve_events)} events.')
     # filtering events
-    retrieve_events = filter_events(retrieve_events, last_run.get('last_fetch_pid', 0), max_fetch)
+    retrieve_events = filter_events(retrieve_events, int(last_run.get('last_fetch_pid', 0)), max_fetch)
     demisto.debug(f'Limiting to {len(retrieve_events)} events.')
     # setting last run object
     if retrieve_events:
@@ -213,8 +213,10 @@ def main() -> None:  # pragma: no cover
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
     first_fetch_time = arg_to_datetime(arg=params.get('first_fetch', '3 days'),
                                        arg_name='First fetch time',
-                                       required=True).timestamp()
+                                       required=True)
     tokens = (public_api_token, private_api_token)
+    if first_fetch_time and isinstance(first_fetch_time, datetime):
+        first_fetch_timestamp = first_fetch_time.timestamp()
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -228,13 +230,13 @@ def main() -> None:  # pragma: no cover
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client, first_fetch_time))
+            return_results(test_module(client, first_fetch_timestamp))
 
         elif demisto.command() == 'fetch-events':
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client=client,
                                                 max_fetch=max_fetch,
-                                                first_fetch_time=first_fetch_time,  # type: ignore
+                                                first_fetch_time=first_fetch_timestamp,  # type: ignore
                                                 last_run=last_run)
             if events:
                 add_time_field(events)
