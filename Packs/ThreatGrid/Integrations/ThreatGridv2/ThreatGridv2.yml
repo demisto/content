@@ -1410,7 +1410,7 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
