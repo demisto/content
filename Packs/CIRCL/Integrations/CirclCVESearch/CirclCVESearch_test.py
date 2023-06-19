@@ -13,7 +13,7 @@ def test_wrong_path():
     client = Client(base_url=bad_url)
 
     with pytest.raises(DemistoException) as excinfo:
-        cve_command(client, {"cve_id": 'cve-2000-1234'})
+        cve_command(client, {"cve": 'cve-2000-1234'})
 
     expected_exception_message = 'Verify that the server URL parameter is correct'
     assert expected_exception_message in str(excinfo.value), 'Bad error response when bad URL is given'
@@ -24,7 +24,7 @@ def test_bad_cve_id():
     client = Client(base_url=BASE_URL)
 
     with pytest.raises(DemistoException) as excinfo:
-        cve_command(client, {'cve_id': bad_cve_id})
+        cve_command(client, {'cve': bad_cve_id})
 
     expected_exception_message = f'"{bad_cve_id}" is not a valid cve ID'
     assert str(excinfo.value) == expected_exception_message
@@ -43,8 +43,8 @@ def test_cve_id_validation():
 
 
 test_data = [
-    ({"cve_id": "cve-2000-1234,CVE-2020-155555"}, ['response.json', 'empty_response.json'], 2),
-    ({"cve_id": "cve-2000-1234"}, ['response.json'], 1),
+    ({"cve": "cve-2000-1234,CVE-2020-155555"}, ['response.json', 'empty_response.json'], 2),
+    ({"cve": "cve-2000-1234"}, ['response.json'], 1),
 ]
 
 
@@ -124,7 +124,7 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     Then:
         return a List of commandResults - each item representing a CVE.
     """
-    cves = argToList(cve_id_arg.get('cve_id'))
+    cves = argToList(cve_id_arg.get('cve'))
     for test_file, cve in zip(response_data, cves):
         test_path_data = os.path.join(Path.cwd(), 'test_data', test_file)
         with open(test_path_data) as js:
