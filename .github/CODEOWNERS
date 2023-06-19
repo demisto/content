@@ -60,7 +60,6 @@
 /Packs/CommonDashboards/ @michalgold @idovandijk
 /Packs/ContentManagement/ @mmhw
 
-
 # Build related
 .circleci/config.yml @yucohen
 .gitlab/ci/* @yucohen
@@ -82,6 +81,7 @@ Tests/scripts/lock_cloud_machines.py @daryakoval
 # SDK Related
 .gitlab/ci/sdk-nightly.yml @dorschw
 Utils/trigger_nightly_sdk_build.sh @dorschw
+.pre-commit-config_template.yaml @dorschw @ilaner
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @dansterenson
