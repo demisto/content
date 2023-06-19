@@ -101,8 +101,8 @@ class LegacyClient(BaseClient):
 
 class Client:
     @logger
-    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str, auth_mode: str, tenant_id: str = None,
-                 enc_key: str = None, headers=None):
+    def __init__(self, app_id: str, verify: bool, proxy: bool, endpoint_type: str, base_url: str, auth_mode: str,
+                 tenant_id: str = None, enc_key: str = None, headers=None):
         if headers is None:
             headers = {}
         self.auth_mode = auth_mode
@@ -121,6 +121,13 @@ class Client:
                 integration_context.update(current_refresh_token=refresh_token)
                 set_integration_context(integration_context)
 
+            if self.auth_mode == 'device code flow':
+                resource = MICROSOFT_DEFENDER_FOR_APPLICATION_API[endpoint_type]
+                token_retrieval_url = f'{TOKEN_RETRIEVAL_ENDPOINTS[endpoint_type]}/organizations/oauth2/v2.0/token'
+            else:
+               resource = None
+               token_retrieval_url = None
+
             client_args = assign_params(
                 base_url=base_url,
                 verify=verify,
@@ -132,12 +139,11 @@ class Client:
                 # flow and most of the same arguments should be set, as we're !not! using OProxy.
 
                 auth_id=app_id,
-                grant_type=CLIENT_CREDENTIALS if self.auth_mode == 'client credentials' else DEVICE_CODE,
+                grant_type=CLIENT_CREDENTIALS if self.client_credentials else DEVICE_CODE,
 
                 # used for device code flow
-                resource='https://api.security.microsoft.com' if self.auth_mode == 'device code flow' else None,
-                token_retrieval_url='https://login.windows.net/organizations/oauth2/v2.0/token'
-                if self.auth_mode == 'device code flow' else None,
+                resource=resource,
+                token_retrieval_url=token_retrieval_url,
                 # used for client credentials flow
                 tenant_id=tenant_id,
                 enc_key=enc_key
@@ -932,6 +938,8 @@ def main():  # pragma: no cover
         verify = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
+        endpoint_type_name = params.get('endpoint_type', 'Worldwide')
+        endpoint_type = MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE[endpoint_type_name]
         token = params.get('creds_token', {}).get('password', '') or params.get('token', '')
         base_url = f'{params.get("url")}/api/v1'
         client = Client(
@@ -939,13 +947,14 @@ def main():  # pragma: no cover
             verify=verify,
             base_url=base_url,
             proxy=proxy,
+            endpoint_type=endpoint_type,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_mode=auth_mode,
             headers={'Authorization': f'Token {token}'}
         )
 
-        LOG(f'Command being called is {command}')
+        demisto.debug(f'Command being called is {command}')
 
         if command == 'test-module':
             result = module_test(client, params.get('isFetch'), params.get('custom_filter'))

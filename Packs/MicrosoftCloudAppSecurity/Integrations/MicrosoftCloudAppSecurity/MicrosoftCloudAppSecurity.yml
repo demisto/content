@@ -17,6 +17,19 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+- additionalinfo: |-
+    More information can be found on the integration page -  #
+# FIXME https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+  defaultvalue: Worldwide
+  display: Endpoint Type
+  name: endpoint_type
+  required: false
+  type: 15
+  section: Connect
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
 - display: Server URL (e.g., https://example.net)
   name: url
   required: true
