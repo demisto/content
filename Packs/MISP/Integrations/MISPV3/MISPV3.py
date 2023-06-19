@@ -556,6 +556,34 @@ def add_user_to_misp(demisto_args: dict = {}):
         return CommandResults(readable_output=human_readable, raw_response=response)
 
 
+def get_organizations_info():
+    """
+    Display organization ids and names.
+    """
+    organizations = PYMISP.organisations()
+    org_info = []
+    for organization in organizations:
+        org_id = organization.get('Organisation').get('id')
+        org_name = organization.get('Organisation').get('name')
+        if org_id and org_name:
+            org_info.append({'organisation_name':org_name, 'organisation_id': org_id})
+    return CommandResults(raw_response=org_info)
+
+
+def get_role_info():
+    """
+    Display role ids and names.
+    """
+    roles = PYMISP.roles()
+    role_info = []
+    for role in roles:
+        role_name = role.get('Role').get('name')
+        role_id = role.get('Role').get('id')
+        if role_name and role_id:
+            role_info.append({'role_name': role_name, 'role_id': role_id})
+    return CommandResults(raw_response=role_info)
+
+
 def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
     """Adding attribute to a given MISP event object
     This function can be called as an independence command or as part of another command (create event for example)
@@ -1682,6 +1710,10 @@ def main():
             return_results(warninglist_command(args))
         elif command == "misp-add-user":
             return_results(add_user_to_misp(args))
+        elif command == "misp-get-organization-info":
+            return_results(get_organizations_info())
+        elif command == "misp-get-role-info":
+            return_results(get_role_info())
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:
