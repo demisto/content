@@ -2269,7 +2269,6 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     if (incident_time := last_run.get('first_behavior_incident_time')) and \
        (incident_time_date := dateparser.parse(incident_time)):
         updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
-    updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
 
     return [updated_last_run_detections, updated_last_run_incidents]
 
@@ -2285,7 +2284,11 @@ def fetch_incidents():
     if not isinstance(last_run, list):
         last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
+    current_fetch_info_detections.pop("offset", None)
+
     current_fetch_info_incidents: dict = last_run[1]
+    current_fetch_info_incidents.pop("offset", None)
+    
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH

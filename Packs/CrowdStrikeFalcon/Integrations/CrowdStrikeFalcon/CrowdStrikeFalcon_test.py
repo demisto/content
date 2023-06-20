@@ -2205,28 +2205,8 @@ class TestFetch:
                                           'incident_offset': 4,
                                           })
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:20:11Z', 'offset': 4, 'limit': 2},
-                                                          {'time': '2020-09-04T09:22:10Z', 'last_fetched_incident': '3',
-                                                           'offset': 4}]
-
-    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
-        """
-        Tests the correct flow of fetch
-        Given:
-            `getLastRun` which holds only `first_behavior_time`
-        When:
-            2 results are returned (which equals the FETCH_LIMIT)
-        Then:
-            The `time` changed to the last detection that fetched and an `offset` of 2 is added.
-        """
-
-        mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{'time': '2020-09-04T09:16:10Z'}, {}])
-        from CrowdStrikeFalcon import fetch_incidents
-
-        fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:20:11Z',
-                                                             'offset': 2, 'limit': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:20:11Z', 'limit': 2},
+                                                          {'time': '2020-09-04T09:22:10Z'}]
 
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         """
@@ -2248,8 +2228,7 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:16:11Z',
-                                                             'offset': 0, 'limit': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:16:11Z', 'limit': 2}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2345,15 +2324,6 @@ class TestIncidentFetch:
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
 
-    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
-        mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{}, {'time': '2020-09-04T09:16:10Z'}])
-        from CrowdStrikeFalcon import fetch_incidents
-
-        fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
-                                                             'offset': 2, 'last_fetched_incident': 'ldt:1', 'limit': 2}
-
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       'offset': 2}])
@@ -2363,7 +2333,7 @@ class TestIncidentFetch:
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
-                                                             'last_fetched_incident': 'ldt:1', 'offset': 0, 'limit': 2}
+                                                             'limit': 2}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
         """Tests the addition of incident_type field to the context
