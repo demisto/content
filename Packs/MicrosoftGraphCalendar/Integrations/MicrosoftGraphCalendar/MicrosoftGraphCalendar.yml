@@ -44,6 +44,7 @@ configuration:
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
   name:  credentials_certificate_thumbprint
