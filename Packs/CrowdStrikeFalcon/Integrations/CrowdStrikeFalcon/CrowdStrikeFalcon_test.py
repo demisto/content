@@ -5386,15 +5386,16 @@ class mocker_gql_client:
         self.index = 0
 
     def execute(self, idp_query, variable_values):
-        if not 'after' in variable_values or self.expected_after == variable_values.get('after', ""):
+        if 'after' not in variable_values or self.expected_after == variable_values.get('after', ""):
             response = self.mock_responses[self.index]
             self.index += 1
             return response
 
+
 @pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
 def test_list_identity_entities_command(mocker, test_case):
-    from CrowdStrikeFalcon import list_identity_entities_command, create_gql_client
-    import CrowdStrikeFalcon as CrowdStrikeFalcon
+    from CrowdStrikeFalcon import list_identity_entities_command
+    import CrowdStrikeFalcon
     """
         Given:
         - test case that point to the relevant test case in the json test data which include:

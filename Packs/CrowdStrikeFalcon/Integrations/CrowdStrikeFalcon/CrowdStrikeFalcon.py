@@ -4874,6 +4874,7 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
         readable_output=f'The Quarantined File with IDs {ids} was successfully updated.',
     )
 
+
 def build_cs_falcon_filter(custom_filter: str | None = None, **filter_args) -> str:
     """Creates an FQL syntax filter from a dictionary and a custom built filter
 
@@ -5359,6 +5360,7 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
 
     return command_results
 
+
 def list_identity_entities_command(args: dict) -> CommandResults:
     """List identity entities
     Args:
@@ -5485,6 +5487,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
         fetch_schema_from_transport=True,
     )
     return client
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
