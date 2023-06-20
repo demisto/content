@@ -13,7 +13,6 @@ defusedxml = "^0.7.1"
 demisto_sdk = "1.16.0"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
-flake8 = "^4.0.1"
 dateparser = "^1.1.8"
 
 [tool.poetry.group.linters.dependencies]
