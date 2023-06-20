@@ -11,7 +11,7 @@ var sendRequest = function(method, url, body) {
             Body: body,
             Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
             Username: account_sid,
-            auth_token: auth_token
+            Password: auth_token
         },
         params.insecure,
         params.proxy
