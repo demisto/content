@@ -2,6 +2,7 @@
     "name": "Ansible Linux",
     "description": "Manage and control Linux hosts.",
     "support": "xsoar",
+    "hidden": true,
     "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
