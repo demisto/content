@@ -385,18 +385,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.155"
+version = "1.26.156"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.26.155-py3-none-any.whl", hash = "sha256:dd15823e8c0554d98c18584d9a6a0342c67611c1114ef61495934c2e560f632c"},
-    {file = "boto3-1.26.155.tar.gz", hash = "sha256:2d4095e2029ce5ceccb25591f13e55aa5b8ba17794de09963654bd9ced45158f"},
+    {file = "boto3-1.26.156-py3-none-any.whl", hash = "sha256:455b6e1f12768b21b5f3990cf1fadeed9bf1c6b36e5a7a303352b927f530c434"},
+    {file = "boto3-1.26.156.tar.gz", hash = "sha256:3a60283676399ae94b49b7a170fb0f42ca2ddcde490988fb0af7fd5a64440ab8"},
 ]
 
 [package.dependencies]
-botocore = ">=1.29.155,<1.30.0"
+botocore = ">=1.29.156,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -405,14 +405,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.155"
+version = "1.29.156"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.29.155-py3-none-any.whl", hash = "sha256:32d5da68212e10c060fd484f41df4f7048fc7731ccd16fd00e37b11b6e841142"},
-    {file = "botocore-1.29.155.tar.gz", hash = "sha256:7fbb7ebba5f645c9750fe557b1ea789d40017a028cdaa2c22fcbf06d4a4d3c1d"},
+    {file = "botocore-1.29.156-py3-none-any.whl", hash = "sha256:44b26a5468402bb9e5028d8f9ef2eba973cde016979aa72f87db32ef9000dab4"},
+    {file = "botocore-1.29.156.tar.gz", hash = "sha256:21d0c2cb1461f2676e41a896e6e551c7da09e923f416322182520851b179ebda"},
 ]
 
 [package.dependencies]
@@ -5113,14 +5113,14 @@ starkbank-ecdsa = ">=2.0.1"
 
 [[package]]
 name = "setuptools"
-version = "67.8.0"
+version = "68.0.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-67.8.0-py3-none-any.whl", hash = "sha256:5df61bf30bb10c6f756eb19e7c9f3b473051f48db77fddbe06ff2ca307df9a6f"},
-    {file = "setuptools-67.8.0.tar.gz", hash = "sha256:62642358adc77ffa87233bc4d2354c4b2682d214048f500964dbe760ccedf102"},
+    {file = "setuptools-68.0.0-py3-none-any.whl", hash = "sha256:11e52c67415a381d10d6b462ced9cfb97066179f0e871399e006c4ab101fc85f"},
+    {file = "setuptools-68.0.0.tar.gz", hash = "sha256:baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"},
 ]
 
 [package.extras]
@@ -6558,4 +6558,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "7f3db56ed43c41bfacf2c0c4b79272cbe3e40d174a3f3291f0b3270bf9a5513f"
+content-hash = "21b646884675e42cea11ec7f4d4ece1099f5927f4d393c91b3cdeb554c5f363d"
