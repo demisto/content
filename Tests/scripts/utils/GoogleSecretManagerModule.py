@@ -59,7 +59,7 @@ class GoogleSecreteManagerModule:
                 labels = dict(secret.labels)
             except Exception as e:
                 labels = {}
-                logging.error(f'Error the secret: {secret.name} has no labels, got the error: {e}')
+                logging.error(f'Error the secret {secret.name} has no labels, got the error: {e}')
             secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
