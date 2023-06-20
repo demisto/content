@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 21aaed67-8b83-4255-8f91-5686ea984c61
+    taskid: 21aaed67-8b83-4255-8f91-5686ea984c62
     type: start
     task:
-      id: 21aaed67-8b83-4255-8f91-5686ea984c61
+      id: 21aaed67-8b83-4255-8f91-5686ea984c62
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -31,6 +32,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 5c5c9851-198d-4275-8860-8886f4dc899a
@@ -49,12 +51,6 @@ tasks:
     scriptarguments:
       attachIDs:
         simple: ${File.EntryID}
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: test
       to:
@@ -74,6 +70,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 371db546-d62c-437e-8ae5-b5d62b48cde1
@@ -90,21 +87,14 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      body: {}
       filename:
         simple: test_file
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
-      username: {}
     separatecontext: false
     view: |-
       {
@@ -120,6 +110,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 81e8e117-3c88-42c4-8bab-e87a8e9fbe91
@@ -131,6 +122,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -149,6 +141,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 0c7e82c3-ac71-42ae-801d-9d492d673f7c
@@ -166,15 +159,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      attachCIDs: {}
       attachIDs:
         simple: bad
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: Bad Email That Fails
       to:
@@ -195,6 +181,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 1ce3f82a-9aea-4edc-8891-ee721c063342
@@ -208,15 +195,8 @@ tasks:
       iscommand: true
       brand: EWS v2
     scriptarguments:
-      attachCIDs: {}
       attachIDs:
         simple: ${File.EntryID}
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: test
       to:
@@ -236,6 +216,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 3e9a3f05-6619-4700-86e7-57ca4e3ae7e3
@@ -255,10 +236,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -274,6 +251,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
