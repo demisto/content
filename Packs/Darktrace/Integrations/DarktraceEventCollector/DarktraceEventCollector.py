@@ -27,7 +27,9 @@ DARKTRACE_API_ERRORS = {
     'UNDETERMINED_ERROR': 'Darktrace was unable to process your request.',
     'FAILED_TO_PARSE': 'N/A'
 }
-
+DEFAULT_LIMIT = 10
+DEFAULT_STARTTIME = 10
+DEFAULT_ENDTIME = 10
 """*****CLIENT CLASS*****
 Wraps all the code that interacts with the Darktrace API."""
 
@@ -63,22 +65,22 @@ class Client(BaseClient):
             **(headers or {}),
         }
 
-        try:
-            res = self._http_request(
-                method,
-                url_suffix=query_uri,
-                params=params,
-                data=data,
-                json_data=json,
-                resp_type='response',
-                headers=headers,
-                error_handler=self.error_handler,
-            )
-            if res.status_code not in [200, 204]:
-                raise Exception('Your request failed with the following error: ' + str(res.content)
-                                + '. Response Status code: ' + str(res.status_code))
-        except Exception as e:
-            raise Exception(e)
+        res = self._http_request(
+            method,
+            url_suffix=query_uri,
+            params=params,
+            data=data,
+            json_data=json,
+            resp_type='response',
+            headers=headers,
+            error_handler=self.error_handler,
+        )
+        return self.parse_respone(res)
+
+    def parse_respone(self, res: requests.Response):
+        if res.status_code not in [200, 204]:
+            raise Exception('Your request failed with the following error: ' + str(res.content)
+                            + '. Response Status code: ' + str(res.status_code))
         try:
             return res.json()
         except Exception as e:
@@ -160,8 +162,11 @@ def add_time_field(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 def convert_to_timestamp(date: Optional[datetime]) -> int:
     """Converts datetime to timestamp"""
-    if date and isinstance(date, datetime):
-        return int(date.timestamp())
+    if date:
+        if isinstance(date, datetime):
+            return int(date.timestamp())
+        elif isinstance(date, int):
+            return int(date)
     return 0
 
 
@@ -184,7 +189,7 @@ def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
 
 def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
                  start_time: int, end_time: int) -> \
-    Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """
@@ -192,9 +197,11 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
     demisto.debug(f'Getting events from: {timestamp_to_datestring(start_time)}, till: {timestamp_to_datestring(end_time)}')
     retrieve_events = client.get_events(start_time, end_time)
     demisto.debug(f'Fetched {len(retrieve_events)} events.')
+
     # filtering events
     retrieve_events = filter_events(retrieve_events, int(last_run.get('last_fetch_pid', 0)), max_fetch)
     demisto.debug(f'Limiting to {len(retrieve_events)} events.')
+
     # setting last run object
     if retrieve_events:
         # extracting last fetch time and last fetched events.
@@ -206,17 +213,18 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
     return retrieve_events, last_run
 
 
-def get_events_command(client: Client, args: Dict[str, str], first_fetch_time: Optional[datetime],
-                       last_run: Dict[str, Any]) -> \
-    Tuple[List[Dict[str, Any]], CommandResults]:
+def get_events_command(client: Client, args: Dict[str, str], first_fetch_time_timestamp: int) -> \
+        Tuple[List[Dict[str, Any]], CommandResults]:
     """
-
+        Gets events from Darktrace API.
     """
-    limit = arg_to_number(args.get('limit'))
-    start_time = convert_to_timestamp(arg_to_datetime(arg=args.get('start_time', first_fetch_time), arg_name='start_time'))
-    end_time = convert_to_timestamp(arg_to_datetime(args.get('end_time', datetime_to_string(datetime.now()))))
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    start_time = convert_to_timestamp(
+        arg_to_datetime(arg=args.get('start_time'), arg_name='start_time')) or first_fetch_time_timestamp
+    end_time = convert_to_timestamp(arg_to_datetime(arg=args.get('end_time'), arg_name='end_time')) or convert_to_timestamp(
+        datetime.now())
 
-    events, _ = fetch_events(client, limit, last_run, start_time, end_time)
+    events, _ = fetch_events(client=client, max_fetch=limit, last_run={}, start_time=start_time, end_time=end_time)
     if events:
         return add_time_field(events), CommandResults(readable_output=tableToMarkdown("Open Incidents", events),
                                                       raw_response=events)
@@ -236,8 +244,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
-    first_fetch_time = params.get('first_fetch', '3 days ago')
-    first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(first_fetch_time))
+    first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(params.get('first_fetch', '3 days ago')))
     tokens = (public_api_token, private_api_token)
 
     demisto.debug(f'Command being called is {demisto.command()}')
@@ -256,8 +263,7 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'darktrace-get-events':
             events, results = get_events_command(client=client,
                                                  args=args,
-                                                 first_fetch_time=first_fetch_time,
-                                                 last_run={})
+                                                 first_fetch_time_timestamp=first_fetch_time_timestamp)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
