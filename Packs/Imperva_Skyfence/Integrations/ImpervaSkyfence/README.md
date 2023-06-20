@@ -1,5 +1,5 @@
 The Imperva Skyfence Cloud Gateway is a Cloud Access Security Broker (CASB) that provides visibility and control over sanctioned and unsanctioned cloud apps to enable their safe and productive use.
-This integration was integrated and tested with version xx of Imperva Skyfence
+This integration was integrated and tested with version 1.0.8 of Imperva Skyfence
 
 ## Configure Imperva Skyfence on Cortex XSOAR
 
