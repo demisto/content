@@ -134,6 +134,7 @@ response_detection = {"cid": "20879a8064904ecfbb62c118a6a19411",
 
 remote_incident_id = 'inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd'
 remote_detection_id = 'ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668'
+remote_idp_detection_id = 'ind:20879a8064904ecfbb62c118a6a19411:26DF54C9-8803-4F97-AD22-A725EE820EA9'
 
 # remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
 get_remote_incident = (remote_incident_id,

@@ -18,17 +18,17 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-PARAMS = demisto.params()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 IDP_DETECTION = "IDP Detection"
-CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
-SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
+CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
+SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
+SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
+    demisto.params()['url']
 # Should we use SSL
-USE_SSL = not PARAMS.get('insecure', False)
+USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
-FETCH_TIME = PARAMS.get('fetch_time', '3 days')
+FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 BYTE_CREDS = '{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')
 # Headers to be sent in requests
 HEADERS = {
@@ -38,7 +38,7 @@ HEADERS = {
 }
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
-INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
+INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -288,7 +288,7 @@ class IncidentType(Enum):
     IDP_DETECTION = 'ind'
 
 
-MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(PARAMS.get('mirror_direction'))
+MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
@@ -2125,7 +2125,7 @@ def get_remote_idp_detection_data(remote_incident_id):
 
 
 def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
-    if PARAMS.get('close_incident'):
+    if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
         elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}):
@@ -2133,7 +2133,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
 
 
 def set_xsoar_detection_entries(updated_object: Dict[str, Any], entries: List, remote_detection_id: str):
-    if PARAMS.get('close_incident'):
+    if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
         elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
@@ -2141,7 +2141,7 @@ def set_xsoar_detection_entries(updated_object: Dict[str, Any], entries: List, r
 
 
 def set_xsoar_idp_detection_entries(updated_object: Dict[str, Any], entries: List, remote_detection_id: str):
-    if PARAMS.get('close_incident'):
+    if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
         elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM_IDP.keys()) - {'closed'}):
@@ -2298,7 +2298,7 @@ def close_in_cs_falcon(delta: Dict[str, Any]) -> bool:
     incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
     """
     closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
-    return PARAMS.get('close_in_cs_falcon') and any(field in delta for field in closing_fields)
+    return demisto.params().get('close_in_cs_falcon') and any(field in delta for field in closing_fields)
 
 
 def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
@@ -2427,7 +2427,7 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
     updated_last_run_incidents['offset'] = last_run.get('incident_offset')
 
-    return [updated_last_run_detections, updated_last_run_incidents]
+    return [updated_last_run_detections, updated_last_run_incidents, {}]
 
 
 def fetch_incidents():
@@ -2443,8 +2443,8 @@ def fetch_incidents():
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
     current_fetch_info_idp_detections: dict = last_run[2]
-    fetch_incidents_or_detections = PARAMS.get('fetch_incidents_or_detections')
-    look_back = int(PARAMS.get('look_back', 0))
+    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
+    look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
                                                                 first_fetch=FETCH_TIME,
@@ -2456,7 +2456,7 @@ def fetch_incidents():
         incident_type = 'detection'
         last_fetch_time, offset, _, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
 
-        fetch_query = PARAMS.get('fetch_query')
+        fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
             fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
@@ -2500,7 +2500,7 @@ def fetch_incidents():
         last_incident_fetched = current_fetch_info_incidents.get('last_fetched_incident')
         new_last_incident_fetched = ''
 
-        fetch_query = PARAMS.get('incidents_fetch_query')
+        fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
             fetch_query = "start:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
@@ -2554,7 +2554,7 @@ def fetch_incidents():
         latest_fetched_idp_detection = None
         last_fetch_time, offset, _, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_idp_detections)
         last_idp_detection_fetched = current_fetch_info_incidents.get('last_fetched_idp_detection')
-        fetch_query = PARAMS.get('idp_detections_fetch_query', "")
+        fetch_query = demisto.params().get('idp_detections_fetch_query', "")
         filter = f"product:'idp'+created_timestamp:>'{last_fetch_time}'"
         if fetch_query:
             filter += f"+{fetch_query}"
@@ -4077,7 +4077,7 @@ def test_module():
         get_token(new_token=True)
     except ValueError:
         return 'Connection Error: The URL or The API key you entered is probably incorrect, please try again.'
-    if PARAMS.get('isFetch'):
+    if demisto.params().get('isFetch'):
         try:
             fetch_incidents()
         except ValueError:
@@ -5377,7 +5377,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             variables[key] = args.get(key)
     for key in ls_args_keys_ls:
         if key in args:
-            variables[key] = args.get(key).split(",")
+            variables[key] = args.get(key, "").split(",")
     if "enabled" in args:
         variables["enabled"] = argToBoolean(args.get("enabled"))
     idp_query = gql("""
