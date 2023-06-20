@@ -64,7 +64,7 @@ def get_secrets_from_gsm(branch_name: str, options, yml_pack_ids: list[str]) -> 
             # If the dev secret is not in the changed packs it's a new secret
             if not replaced:
                 secrets.append(dev_secret)
-    print('++++++++++++++++++++++++++++++++++')
+    print('+++++++++++++++++++++++++++++++++++')
     print(f'secrets post merge: {secrets}')
     secret_file = {
         "username": options.user,
