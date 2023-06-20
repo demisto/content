@@ -1312,7 +1312,8 @@ script:
   type: python
 tests:
 - pyEWS_Test
-- EWS V2 Send Mail Test
+- EWS V2 Send Mail Test 1
+- EWS V2 Send Mail Test 11
 - EWS V2 Send Mail Test 2
 defaultmapperin: EWS v2-mapper
 defaultclassifier: EWS v2
