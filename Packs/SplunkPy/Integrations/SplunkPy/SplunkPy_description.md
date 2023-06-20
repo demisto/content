@@ -4,17 +4,17 @@ Use the SplunkPy integration to fetch incidents from Splunk ES, and query result
 
 To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
 To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens).
-
+ 
 There are two main use cases for the SplunkPy integration. Refer to the following sections based on your needs.
 - [Splunk Enterprise Security Users](#splunk-enterprise-security-users)
-- [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users)
-
+ - [Splunk non-Enterprise Security Users](#splunk-non-enterprise-security-users)
+ 
 ***
 # Splunk Enterprise Security Users
 
 ## Fetching notable events
 The integration allows for fetching Splunk notable events using a default query. The query can be changed and modified to support different Splunk use cases. (See [Existing users](#existing-users)).
-Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
+ Palo Alto highly recommends reading the [Ingest Incidents from a SIEM Using Splunk article](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Tutorials-6.x/Ingest-Incidents-from-a-SIEM-Using-Splunk) before starting to use this integration.
 This article will help you configure your Splunk integration, set up a basic flow, and start ingesting incidents from Splunk to Cortex XSOAR.
 
 ### How to configure
@@ -28,9 +28,9 @@ You do not need to specify the classifier as all Splunk incidents are ingested a
 8. Under Mapper (outgoing), select **Splunk - Notable Generic Outgoing Mapper**.
 
 9. Type the Host -ip, username, password, and Port.
-10. Keep the Get notable events EQ query as is, as we use the Notable macro when ingesting events. You can create a more granular search by specifying specific conditions such as specific security domain, event ID, etc.
+ 10. Keep the Get notable events EQ query as is, as we use the Notable macro when ingesting events. You can create a more granular search by specifying specific conditions such as specific security domain, event ID, etc.
 11. Keep the defaults for fetch limit, first fetch timestamp, earliest time to fetch, and latest time to fetch.
-12. To add mirroring in both environments, in the Incident Mirroring Direction field, select **Incoming and Outgoing**.
+ 12. To add mirroring in both environments, in the Incident Mirroring Direction field, select **Incoming and Outgoing**.
 Outgoing mirroring is recommended for Cortex XSOAR version 6.2 and above. If you enable mirroring, you need to add the timezone of the Splunk server (in minutes). For example, if using GMT and the timezone is GMT +3 hours, set the timezone to +180. For UTC, set the timezone to 0. Set this only if the Splunk server is different than the Cortex XSOAR server. This is relevant only for fetching notable events.
 13. Select *Close Mirrored XSOAR Incident* and *Close Mirrored Splunk Notable Event*, so when closing in one environment, it closes in the other.
 14. In the Enrichment Types field, select *Asset*, *Drilldown* and *Identity*.
@@ -38,11 +38,11 @@ This enrichment provides additional information about assets, drilldown, and ide
 15. Fetch backwards window - this backward window is for cases where there is a gap between the event occurrence time and the event index time on the server.
 In Splunk, there is often a delay between the time an incident is created (the event's "occurrence time") and the time it is actually searchable in Splunk and visible in the index (the event's "index time").
 This delay can be caused by an inefficient Splunk architecture, causing higher event indexing latency. However, it can also be "by design", e.g., if some endpoints / machines that generate Splunk events are usually offline.
-Another point to note is that Splunk's searches are based on the occurrence time behind the scenes. Meaning, Splunk itself uses occurrence time as its determining factor for bucket division and search.
+ Another point to note is that Splunk's searches are based on the occurrence time behind the scenes. Meaning, Splunk itself uses occurrence time as its determining factor for bucket division and search.
 Therefore, we can't use index time as our primary search key without making the searches inefficient.
 The backwards window is a way for you to configure the longest delay you would like to support.
 This parameter determines the size of the occurrence time "sliding window" we will support in our queries. For example, if set for 2 hours, we will always search for events that occurred up to 2 hours ago (and will of course ignore duplicates).
-However, there is obviously a price - the larger the window, the longer it will take for fetch queries to complete.
+ However, there is obviously a price - the larger the window, the longer it will take for fetch queries to complete.
 The best value to set depends on the delays that you see in your system (consult with your Splunk expert / master), the number of events in your system, and other network properties.
 Use this parameter with careful consideration.
 16. Click **Test** and then **Save & exit**.
@@ -53,7 +53,7 @@ Use this parameter with careful consideration.
 
 ### Enriching Notable Events
 This integration allows 3 types of enrichments for fetched notables: Drilldown, Asset, and Identity.
-
+ 
 #### Enrichment types
 1. **Drilldown search enrichment**: Fetches the drilldown search configured by the user in the rule name that triggered the notable event and performs this search. The results are stored in the context of the incident under the **Drilldown** field.
 2. **Asset search enrichment**: Runs the following query:
@@ -62,7 +62,7 @@ where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** a
 3. **Identity search enrichment**: Runs the following query
 *`| inputlookup identity_lookup_expanded where identity=$IDENTITY_VALUE*
 where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** from the fetched notable event. The results are stored in the context of the incident under the **Identity** field.
-
+ 
 #### How to configure
 1. Configure the integration to fetch incidents (see the Integration documentation for details).
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
@@ -107,7 +107,7 @@ To set up mirroring:
    By default, only Notables closed with a "Closed" label will be mirrored. You can specify specific statuses (comma-separated) in the *Additional Splunk status labels to close on mirror (Incoming Mirroring)*, and enable the *Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and to add additional statuses to the mirroring process.
 6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
 7. Fill in the **timezone** integration parameter with the timezone the Splunk server is using.
-Newly fetched incidents will be mirrored in the chosen direction.
+ Newly fetched incidents will be mirrored in the chosen direction.
 **Note: This will not affect existing incidents.**
 
 ### Existing users
@@ -120,7 +120,7 @@ Users who wish to enrich or mirror fetched notables and have already used the in
 ```
 search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain)
 ```
-
+ 
 # Splunk non-Enterprise Security Users
 
 ### Configure Splunk to Produce Alerts for SplunkPy for non-ES Splunk Users
@@ -128,21 +128,21 @@ search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval 
 Palo Alto recommends that you configure Splunk to produce basic alerts that the SplunkPy integration can ingest, by creating a summary index in which alerts are stored. The SplunkPy integration can then query that index for incident ingestion. It is not recommended to use the Cortex XSOAR application with Splunk for routine event consumption because this method is not able to be monitored and is not scalable.
 
 1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
-2. Build a query to return relevant alerts.
+ 2. Build a query to return relevant alerts.
 ![image](./../../doc_files/build-query.png)
-3. Identify the fields list from the Splunk query and save it to a local file.
-![image](./../../doc_files/identify-fields-list.png)
+ 3. Identify the fields list from the Splunk query and save it to a local file.
+ ![image](./../../doc_files/identify-fields-list.png)
 4. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
-Use the following naming convention: (demisto_fields_{type}).
+ Use the following naming convention: (demisto_fields_{type}).
 ![image](./../../doc_files/micro-name.png)
-![image](./../../doc_files/macro.png)
+ ![image](./../../doc_files/macro.png)
 5. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros). 
 ![image](./../../doc_files/scheduled-search.png)
 6. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
-![image](./../../doc_files/summary-index.png)
+ ![image](./../../doc_files/summary-index.png)
 7. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
 ![image](./../../doc_files/incident_type.png)
-8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
+ 8. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
    1. Click your classifier.
    2. Select your instance.
@@ -155,12 +155,15 @@ Use the following naming convention: (demisto_fields_{type}).
    2. Select your instance.
    3. Click the __Choose data path__ link for the field you want to map.
    4. Click the data from the Splunk fields to map it to Cortex XSOAR.
-![image](./../../doc_files/mapping.png)
+ ![image](./../../doc_files/mapping.png)
 10. (Optional) Create custom fields.
-11. Build a playbook and assign it as the default for this incident type.
+ 11. Build a playbook and assign it as the default for this incident type.
 
 ### Constraints
 The following features are not supported in non-ES (Enterprise Security) Splunk.
 - Incident Mirroring
 - Enrichment.
 - Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
+
+
+ ---
