@@ -7,33 +7,41 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: |-
-    The United States: api-us.security.microsoft.com
-    Europe: api-eu.security.microsoft.com
-    The United Kingdom: api-uk.security.microsoft.co
-  defaultvalue: https://api.security.microsoft.com
-  display: Endpoint URI
-  name: url
-  required: true
-  type: 0
+    When selecting the Custom option, the Server URL parameter must be filled. More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+  defaultvalue: Worldwide
+  display: Endpoint Type
+  name: endpoint_type
+  required: false
+  type: 15
   section: Connect
-- additionalinfo: The Client (Application) ID to use to connect.
-  display: Client (Application) ID
-  name: client_id
-  required: true
-  type: 0
-  section: Connect
-- displaypassword: Client Secret
-  name: credentials
-  required: true
-  type: 9
-  hiddenusername: true
-  section: Connect
+  options:
+  - Worldwide
+  - EU Geo Proximity
+  - UK Geo Proximity
+  - US Geo Proximity
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Custom
+  advanced: true
 - display: Tenant ID
   name: tenant_id
   required: true
   type: 0
   section: Connect
-  advanced: true
+  advanced: false
+- name: client_id
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: The Client (Application) ID to use to connect.
+  display: Client (Application) ID
+- name: credentials
+  required: true
+  type: 9
+  section: Connect
+  displaypassword: Client Secret
+  hiddenusername: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -61,13 +69,23 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- defaultvalue: 'true'
-  display: Verify SSL Certificate
+- display: Server URL (e.g., https://api.securitycenter.microsoft.com)
+  name: url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+  hidden: false
+  additionalinfo: |-
+    More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+- display: Verify SSL Certificate
   name: verify
   required: false
   type: 8
   section: Connect
   advanced: true
+  defaultvalue: 'true'
+  hidden: false
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -113,7 +131,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.56641
+  dockerimage: demisto/pydantic-jwt3:1.0.0.63835
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
