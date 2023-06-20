@@ -167,8 +167,8 @@ tasks:
     task:
       id: 869ba2b6-659c-4c6b-8236-9d288efaf33f
       version: -1
-      name: Check if the source URL was provided
-      description: Check if the source URL was provided.
+      name: Check if the source URL was provided and check if a EDL object was specified.
+      description: Check if the source URL was provided and check if a EDL object was specified.
       type: condition
       iscommand: false
       brand: ""
@@ -186,10 +186,15 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: EDLObjectName
+              simple: inputs.EDLObjectName
             iscontext: true
           right:
             value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
     - label: Create New Object
       condition:
       - - operator: isNotEmpty
@@ -339,6 +344,12 @@ tasks:
       TSGID:
         complex:
           root: inputs.TSGID
+      IPListName:
+        complex:
+          root: inputs.IPListName
+      URLListName:
+        complex:
+          root: inputs.URLListName
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -507,7 +518,7 @@ inputs:
 - key: URL
   value: {}
   required: false
-  description: The source URL. If the type is ip, url or domain, a value must be provided.
+  description: The source URL for the External Dynamic List. If the chosen type is ip/url/domain, this value must be provided.
   playbookInputQuery:
 - key: EDLObjectName
   value: {}
@@ -524,7 +535,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Possible values:
+    Possible values (Choose only 1):
     domain,ip,url,predefined_ip,predefined_url
   playbookInputQuery:
 - key: AutoCommit
@@ -536,6 +547,21 @@ inputs:
     False -> Manual push will be required.
     Else --> Will ignore the push section and continue the playbook.
   playbookInputQuery:
+- key: IPListName
+  value: {}
+  required: false
+  description: |-
+    The predefined IP list. If the type is predefined_ip, a value must be provided.
+    Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
+  playbookInputQuery: null
+- key: URLListName
+  value: {}
+  required: false
+  description: |-
+    The predefined URL list. If the type is predefined_url, a value must be provided.
+
+    Possible value:
+    panw–auth-portal-exclude-list
 outputs:
 - contextPath: PrismaSase.CandidateConfig
   description: Configuration job object.

@@ -378,6 +378,21 @@ tasks:
       tsg_id:
         complex:
           root: inputs.TSGID
+      value:
+        complex:
+          root: inputs.URL
+          filters:
+            - - operator: notIn
+                left:
+                  value:
+                    simple: inputs.URL
+                  iscontext: true
+                right:
+                  value:
+                    simple: PrismaSase.CustomURLCategory.list
+                  iscontext: true
+          transformers:
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
