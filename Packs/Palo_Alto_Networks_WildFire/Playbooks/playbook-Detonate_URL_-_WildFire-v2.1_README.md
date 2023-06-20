@@ -8,11 +8,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
+GenericPolling
 
 ### Integrations
 
-* Palo_Alto_Networks_WildFire_v2
+Palo_Alto_Networks_WildFire_v2
 
 ### Scripts
 
@@ -30,7 +30,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | URL of the webpage or file url to detonate. The URL is taken from the context. | URL.Data | Optional |
+| URL | URL of the webpage or file URL to detonate. The URL is taken from the context. | URL.Data | Optional |
 | Interval | Duration for executing the polling \(in minutes\). | 1 | Optional |
 | Timeout | The duration after which to stop polling and to resume the playbook \(in minutes\). | 60 | Optional |
 | ReportFileType | The resource type to download. Default is PDF. XML is also possible. |  | Optional |
@@ -41,22 +41,22 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore | The DBotScore object | unknown |
-| DBotScore.Score | The actual score | number |
-| File.Size | File size | number |
-| File.MD5 | MD5 hash | string |
-| File.SHA1 | SHA1 hash | string |
-| File.Type | File type e.g. "PE" | string |
-| File.SHA256 | SHA256 hash | string |
-| File.EntryID | The Entry ID of the sample | string |
+| DBotScore | The DBotScore object. | unknown |
+| DBotScore.Score | The actual score. | number |
+| File.Size | File size. | number |
+| File.MD5 | MD5 hash. | string |
+| File.SHA1 | SHA1 hash. | string |
+| File.Type | File type, e.g., "PE". | string |
+| File.SHA256 | SHA256 hash. | string |
+| File.EntryID | The entry ID of the sample. | string |
 | File.Malicious.Vendor | For malicious files, the vendor that determined that the file is malicious. | string |
-| File.Name | Filename | string |
+| File.Name | File.name. | string |
 | File.Malicious.Description | For malicious files, the reason the vendor determined that the file is malicious. | string |
 | DBotScore.Indicator | The indicator we tested. | string |
 | DBotScore.Type | The type of indicator. | string |
 | DBotScore.Vendor | Vendor used to calculate the score. | string |
 | IP.Address | IPs relevant to the sample. | string |
-| File | The File object. | unknown |
+| File | The file object. | unknown |
 | InfoFile | The report file object. | unknown |
 | InfoFile.EntryID | The EntryID of the report file. | string |
 | InfoFile.Extension | The extension of the report file. | string |
