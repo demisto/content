@@ -1,6 +1,6 @@
 id: Launch Job - Ansible Tower
 version: -1
-name: Launch Job - Ansible Tower
+name: Launch Job - Ansible Automation Controller
 description: Generic polling playbook to launch a specific job template. Returns the
   job status when the job finishes running.
 starttaskid: "0"
@@ -41,7 +41,7 @@ tasks:
     task:
       id: 53c43873-5710-43ad-81bf-81963629ccf6
       version: -1
-      name: is Ansible Tower enabled?
+      name: is Ansible Automation Controller enabled?
       description: ''
       type: condition
       iscommand: false

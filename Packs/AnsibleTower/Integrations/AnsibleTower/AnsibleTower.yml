@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 description: Scale IT automation, manage complex deployments, and speed productivity.
-display: Ansible Tower
+display: Ansible Automation Controller
 name: AnsibleTower
 script:
   commands:

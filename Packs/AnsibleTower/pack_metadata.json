@@ -1,5 +1,5 @@
 {
-    "name": "Ansible Tower",
+    "name": "Ansible Automation Controller",
     "description": "Scale IT automation, manage complex deployments and speed productivity.",
     "support": "xsoar",
     "currentVersion": "1.0.32",
