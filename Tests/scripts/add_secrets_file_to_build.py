@@ -10,6 +10,12 @@ from pathlib import Path
 
 
 def get_git_diff(branch_name: str, repo) -> list[str]:
+    """
+    Gets the diff from master using git
+    :param branch_name: the name of the
+    :param secret_name: if it's used as a secret name or not
+    :return: the name after it's been transformed to a GSM supported format
+    """
     changed_files: list[str] = []
 
     previous_commit = 'origin/master'
