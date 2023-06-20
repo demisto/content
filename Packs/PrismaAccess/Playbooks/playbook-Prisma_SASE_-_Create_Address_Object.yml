@@ -457,7 +457,7 @@ inputs:
   playbookInputQuery:
 - key: Type
   value: {}
-  required: false
+  required: true
   description: |-
     IP Netmask (value: ip_netmask): IP address or a network using the slash notation - ip_address/mask.
     IP Range (value: ip_range): Range of IP addresses using the notation ip_address-ip_address.
