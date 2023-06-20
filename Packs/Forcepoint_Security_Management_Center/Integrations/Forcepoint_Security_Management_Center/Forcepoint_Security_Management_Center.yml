@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Forcepoint_Security_Management_Center
+  id: Forcepoint Security Management Center
   version: -1
 configuration:
 - display: Server URL
@@ -28,7 +28,7 @@ configuration:
   type: 8
 description: 'Will be added later'
 display: 'Forcepoint Security Management Center'
-name: Forcepoint Security Management Center
+name: Forcepoint_Security_Management_Center
 script:
   commands:
   - arguments:
@@ -39,7 +39,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The list addresses to create.
+      description: A comma-separated list of IP addresses
       isArray: false
       name: addresses
       required: false
@@ -50,20 +50,20 @@ script:
       required: false
     description: 'Creates an IP List.'
     execution: false
-    name: forcepoint-smc-address-create
+    name: forcepoint-smc-ip-list-create
     outputs:
-    - contextPath: ForcepointSMC.Address.Name
+    - contextPath: ForcepointSMC.IPList.Name
       description: 'The name of the IPList'
       type: String
-    - contextPath: ForcepointSMC.Address.Addresses
+    - contextPath: ForcepointSMC.IPList.Addresses
       description: 'The list of addresses in the IPList'
       type: Unknown
-    - contextPath: ForcepointSMC.Address.Comment
+    - contextPath: ForcepointSMC.IPList.Comment
       description: 'The comment of the IPList'
       type: String
   - arguments:
     - default: false
-      description: The name of the address.
+      description: The name of the ip list.
       isArray: false
       name: name
       required: true
@@ -74,7 +74,7 @@ script:
       name: addresses
       required: false
     - default: false
-      description: The comment to add to the address.
+      description: The comment to add to the ip list.
       isArray: false
       name: comment
       required: false
@@ -86,15 +86,15 @@ script:
       defaultvalue: false
     description: 'Updates an IP List.'
     execution: false
-    name: forcepoint-smc-address-update
+    name: forcepoint-smc-ip-list-update
     outputs:
-    - contextPath: ForcepointSMC.Address.Name
+    - contextPath: ForcepointSMC.IPList.Name
       description: 'The name of the IPList'
       type: String
-    - contextPath: ForcepointSMC.Address.Addresses
+    - contextPath: ForcepointSMC.IPList.Addresses
       description: 'The list of addresses in the IPList'
       type: Unknown
-    - contextPath: ForcepointSMC.Address.Comment
+    - contextPath: ForcepointSMC.IPList.Comment
       description: 'The comment of the IPList'
       type: String
   - arguments:
@@ -118,15 +118,15 @@ script:
       defaultvalue: false
     description: 'Lists the IP Lists in the system.'
     execution: false
-    name: forcepoint-smc-address-list
+    name: forcepoint-smc-ip-list-list
     outputs:
-    - contextPath: ForcepointSMC.Address.Name
+    - contextPath: ForcepointSMC.IPList.Name
       description: 'The name of the IPList'
       type: String
-    - contextPath: ForcepointSMC.Address.Addresses
+    - contextPath: ForcepointSMC.IPList.Addresses
       description: 'The list of addresses in the IPList'
       type: Unknown
-    - contextPath: ForcepointSMC.Address.Comment
+    - contextPath: ForcepointSMC.IPList.Comment
       description: 'The comment of the IPList'
       type: String
   - arguments:
@@ -138,14 +138,193 @@ script:
       secret: false
     description: 'Deletes an IP List.'
     execution: false
-    name: forcepoint-smc-address-delete
+    name: forcepoint-smc-ip-list-delete
     outputs:
-    - contextPath: ForcepointSMC.Address.Name
+    - contextPath: ForcepointSMC.IPList.Name
       description: 'The name of the IPList'
       type: String
-    - contextPath: ForcepointSMC.Address.Deleted
+    - contextPath: ForcepointSMC.IPList.Deleted
       description: 'Was the IP List deleted or not'
       type: Boolean
+  - arguments:
+    - default: false
+      description: The name of a specific host to fetch. 
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The limit on the returned number Hosts. Default value is 50.
+      isArray: false
+      name: limit
+      defaultvalue: 50
+      required: false
+    - default: false
+      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+      defaultvalue: false
+    description: 'Lists the Hosts in the system.'
+    execution: false
+    name: forcepoint-smc-host-list
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: 'The name of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Address
+      description: 'The address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.IPv6_address
+      description: 'The IPv6 address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Secondary_address
+      description: 'The secondary address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Comment
+      description: 'The comment of the host.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of a specific host to fetch. 
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The address of the host. Cannot be combined with the ipv6_address argument.
+      isArray: false
+      name: address
+      required: false
+    - default: false
+      description: The IPv6 address of the host. Cannot be combined with the address argument.
+      isArray: false
+      name: ipv6_address
+      required: false
+      defaultvalue: false
+    - default: false
+      description: The secondary_address of the host. A comma separated list.
+      isArray: true
+      name: secondary_address
+      required: false
+      defaultvalue: false
+    - default: false
+      description: The comment to add to the host.
+      isArray: false
+      name: comment
+      required: false
+    description: 'Creates a new Host.'
+    execution: false
+    name: forcepoint-smc-host-create
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: 'The name of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Address
+      description: 'The address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.IPv6_address
+      description: 'The IPv6 address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Secondary_address
+      description: 'The secondary address of the host.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Host.Comment
+      description: 'The comment of the host.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of a specific host to fetch. 
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The address of the host. Cannot be combined with the ipv6_address argument.
+      isArray: false
+      name: address
+      required: false
+    - default: false
+      description: The IPv6 address of the host. Cannot be combined with the address argument.
+      isArray: false
+      name: ipv6_address
+      required: false
+      defaultvalue: false
+    - default: false
+      description: The secondary_address of the host. A comma separated list.
+      isArray: true
+      name: secondary_address
+      required: false
+      defaultvalue: false
+    - default: false
+      description: The comment to add to the host.
+      isArray: false
+      name: comment
+      required: false
+    - default: false
+      description: If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False.
+      isArray: false
+      name: is_overwrite
+      required: false
+      defaultvalue: false
+    description: 'Updates a host.'
+    execution: false
+    name: forcepoint-smc-host-update
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: 'The name of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Address
+      description: 'The address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.IPv6_address
+      description: 'The IPv6 address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Secondary_address
+      description: 'The secondary address of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Host.Comment
+      description: 'The comment of the host.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the host to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: 'Deletes a host.'
+    execution: false
+    name: forcepoint-smc-address-host
+    outputs:
+    - contextPath: ForcepointSMC.Host.Name
+      description: 'The name of the Host'
+      type: String
+    - contextPath: ForcepointSMC.Host.Deleted
+      description: 'Was the host deleted or not'
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the domain to create. 
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The comment to add to the domain.
+      isArray: false
+      name: comment
+      required: false
+    description: 'Creates a new Domain.'
+    execution: false
+    name: forcepoint-smc-domain-create
+    outputs:
+    - contextPath: ForcepointSMC.Domain.Name
+      description: 'The name of the host.'
+      type: String
+    - contextPath: ForcepointSMC.Domain.Comment
+      description: 'The comment of the host.'
+      type: String
   isfetch: false
   runonce: false
   script: '-'
