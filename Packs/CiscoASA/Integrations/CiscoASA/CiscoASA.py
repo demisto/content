@@ -144,7 +144,7 @@ class Pagination:
             remaining_items = page_size
             offset = (page - 1) * page_size + (0 if self.start_count_from_zero else 1)
         else:
-            remaining_items = limit
+            remaining_items = page_size or limit
             offset = None
 
         return remaining_items, offset
