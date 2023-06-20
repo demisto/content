@@ -59,7 +59,7 @@ def test_module(client: SMBClient):
 def smb_upload(client: SMBClient, args: dict):
     hostname = args.get('hostname')
     path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = fr'\\{hostname or client.hostname}\{path}'
     username = args.get('username')
     password = args.get('password')
     entryID = args.get('entryID')
@@ -89,7 +89,7 @@ def smb_upload(client: SMBClient, args: dict):
 def smb_download(client: SMBClient, args: dict):
     hostname = args.get('hostname')
     path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = fr'\\{hostname or client.hostname}\{path}'
     username = args.get('username')
     password = args.get('password')
 
@@ -104,7 +104,7 @@ def smb_download(client: SMBClient, args: dict):
 def smb_remove_file(client: SMBClient, args: dict):
     hostname = args.get('hostname')
     path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = fr'\\{hostname or client.hostname}\{path}'
     username = args.get('username')
     password = args.get('password')
 
@@ -119,7 +119,7 @@ def list_dir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = fr'\\{hostname or client.hostname}\{path}'
 
     client.create_session(hostname, username, password)
     entries = list(scandir(path))
@@ -151,7 +151,7 @@ def smb_mkdir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = fr'\\{hostname or client.hostname}\{path}'
 
     client.create_session(hostname, username, password)
 
@@ -165,7 +165,7 @@ def smb_rmdir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = fr'\\{hostname or client.hostname}\{path}'
 
     client.create_session(hostname, username, password)
     rmdir(path)
