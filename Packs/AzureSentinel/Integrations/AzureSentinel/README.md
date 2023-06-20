@@ -2335,7 +2335,7 @@ Lists all resource groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | A comma-separated list of subscription IDs. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional | 
+| subscription_id | The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional | 
 | tag | The tag name. Input should be `{“Tag Name:Tag Value”}``. Operator is “equals”. | Optional | 
 | limit | The maximum number of items to return. Default is 50. | Optional | 
 
