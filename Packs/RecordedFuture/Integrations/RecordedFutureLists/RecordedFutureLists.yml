@@ -192,7 +192,7 @@ script:
     - name: list_ids
       required: true
       description: Recorded Future list ids, separated by commas.
-    outputs: 
+    outputs:
     - contextPath: RecordedFuture.List.id
       description: Unique id of the list in Recorded Future
       type: String
@@ -211,6 +211,6 @@ script:
     - contextPath: RecordedFuture.List.Entities.id
       description: Unique id of the entity in Recorded Future
       type: String
-    fromversion: 6.5.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
