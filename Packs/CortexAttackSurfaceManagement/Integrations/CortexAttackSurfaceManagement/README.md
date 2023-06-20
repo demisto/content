@@ -1130,7 +1130,7 @@ Starts a new Remediation Confirmation Scan or gets an existing scan ID
 
 #### Base Command
 
-`asm-start-remediation_confirmation_scan`
+`asm-start-remediation-confirmation-scan`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

@@ -975,6 +975,14 @@ inputs:
   required: false
   description: IP address of service
   playbookInputQuery:
+- key: ASMRuleID
+  value:
+    complex:
+      root: alert
+      accessor: asmattacksurfaceruleid
+  required: true
+  description: Attack Surface Management Rule ID.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
