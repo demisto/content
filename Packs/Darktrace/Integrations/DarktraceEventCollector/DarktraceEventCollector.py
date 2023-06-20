@@ -158,6 +158,13 @@ def add_time_field(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return events
 
 
+def convert_to_timestamp(date: Optional[datetime]) -> int:
+    """Converts datetime to timestamp"""
+    if date and isinstance(date, datetime):
+        return int(date.timestamp())
+    return 0
+
+
 """*****COMMAND FUNCTIONS****"""
 
 
@@ -175,15 +182,15 @@ def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
     return 'ok'
 
 
-def fetch_events(client: Client, max_fetch: int, first_fetch_time: float, last_run: Dict[str, Any]) -> Tuple[
-        List[Dict[str, Any]], Dict[str, Any]]:
+def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
+                 start_time: int, end_time: int) -> \
+    Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """
-    start_time = last_run.get('last_fetch_time', first_fetch_time)
-    end_time = datetime.now()
-    demisto.debug(f'Getting events from: {timestamp_to_datestring(start_time)}, till: {end_time}')
-    retrieve_events = client.get_events(start_time, end_time.timestamp())
+    start_time = last_run.get('last_fetch_time', start_time)
+    demisto.debug(f'Getting events from: {timestamp_to_datestring(start_time)}, till: {timestamp_to_datestring(end_time)}')
+    retrieve_events = client.get_events(start_time, end_time)
     demisto.debug(f'Fetched {len(retrieve_events)} events.')
     # filtering events
     retrieve_events = filter_events(retrieve_events, int(last_run.get('last_fetch_pid', 0)), max_fetch)
@@ -199,24 +206,39 @@ def fetch_events(client: Client, max_fetch: int, first_fetch_time: float, last_r
     return retrieve_events, last_run
 
 
+def get_events_command(client: Client, args: Dict[str, str], first_fetch_time: Optional[datetime],
+                       last_run: Dict[str, Any]) -> \
+    Tuple[List[Dict[str, Any]], CommandResults]:
+    """
+
+    """
+    limit = arg_to_number(args.get('limit'))
+    start_time = convert_to_timestamp(arg_to_datetime(arg=args.get('start_time', first_fetch_time), arg_name='start_time'))
+    end_time = convert_to_timestamp(arg_to_datetime(args.get('end_time', datetime_to_string(datetime.now()))))
+
+    events, _ = fetch_events(client, limit, last_run, start_time, end_time)
+    if events:
+        return add_time_field(events), CommandResults(readable_output=tableToMarkdown("Open Incidents", events),
+                                                      raw_response=events)
+    return [], CommandResults(readable_output='No events found')
+
+
 def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
     :return:
     :rtype:
     """
     params = demisto.params()
+    args = demisto.args()
     base_url = params.get('base_url')
     public_api_token = params.get('public_creds', {}).get('password', '')
     private_api_token = params.get('private_creds', {}).get('password', '')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
-    first_fetch_time = arg_to_datetime(arg=params.get('first_fetch', '3 days'),
-                                       arg_name='First fetch time',
-                                       required=True)
+    first_fetch_time = params.get('first_fetch', '3 days ago')
+    first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(first_fetch_time))
     tokens = (public_api_token, private_api_token)
-    if first_fetch_time and isinstance(first_fetch_time, datetime):
-        first_fetch_timestamp = first_fetch_time.timestamp()
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -230,13 +252,21 @@ def main() -> None:  # pragma: no cover
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client, first_fetch_timestamp))
-
+            return_results(test_module(client, first_fetch_time_timestamp))
+        elif demisto.command() == 'darktrace-get-events':
+            events, results = get_events_command(client=client,
+                                                 args=args,
+                                                 first_fetch_time=first_fetch_time,
+                                                 last_run={})
+            return_results(results)
+            if argToBoolean(args.get("should_push_events")):
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
         elif demisto.command() == 'fetch-events':
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client=client,
                                                 max_fetch=max_fetch,
-                                                first_fetch_time=first_fetch_timestamp,  # type: ignore
+                                                start_time=first_fetch_time_timestamp,
+                                                end_time=int(datetime.now().timestamp()),
                                                 last_run=last_run)
             if events:
                 add_time_field(events)
