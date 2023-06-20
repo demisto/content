@@ -230,37 +230,20 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
     security_group_name = args.get('security_group_name')
     security_rule_name = args.get('security_rule_name')
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
-    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
+    message = ''
+    rule_deleted = client.delete_rule(security_group_name=security_group_name,
+                                      security_rule_name=security_rule_name,
+                                      subscription_id=subscription_id,
+                                      resource_group_name=resource_group_name)
+    if rule_deleted.status_code == 204:
+        message = (f"Rule '{security_rule_name}' with resource_group_name \
+'{resource_group_name}' was not found.\n\n")
+    elif rule_deleted.status_code == 202:
+        message = (f"Rule '{security_rule_name}' with resource_group_name \
+'{resource_group_name}' was successfully deleted.\n\n")
 
-    warning_message = ''
-    success_message = ''
-    all_resource_groups_are_wrong = True
-
-    for resource_group_name in resource_group_list:
-        try:
-            rule_deleted = client.delete_rule(security_group_name=security_group_name,
-                                              security_rule_name=security_rule_name,
-                                              subscription_id=subscription_id,
-                                              resource_group_name=resource_group_name)
-            all_resource_groups_are_wrong = False
-            if rule_deleted.status_code == 204:
-                warning_message += (f"Rule '{security_rule_name}' with resource_group_name\
- '{resource_group_name}' was not found.\n\n")
-            elif rule_deleted.status_code == 202:
-                success_message += (f"Rule '{security_rule_name}' with resource_group_name\
- '{resource_group_name}' was successfully deleted.\n\n")
-
-        except Exception as e:
-            # If at least one of the resource groups is correct, we don't want to raise an error
-            # We want to continue to the next resource group and return the warning message for the wrong ones
-            warning_message += (f"Rule '{security_rule_name}' with resource_group_name\
- '{resource_group_name}' was not deleted.\
-The full error is:\n{e}\n\n")
-            # If all resource groups are wrong, we want to raise an error
-            if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
-                raise
-    return_warning(warning_message) if warning_message else None
-    return success_message
+    return message
 
 
 @ logger

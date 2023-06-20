@@ -14,16 +14,16 @@ configuration:
   section: Connect
 - display: Default Subscription ID
   name: subscription_id
-  required: false
+  required: true
   type: 0
   section: Connect
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
 - display: Default Resource Group Name
   name: resource_group_name
-  required: false
+  required: true
   type: 0
   section: Connect
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -238,7 +238,7 @@ script:
       required: false
     - default: false
       name: resource_group_name
-      description: "A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
       isArray: false
       required: false
@@ -267,7 +267,7 @@ script:
       required: false
     - default: false
       name: resource_group_name
-      description: "A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
       isArray: false
       required: false
@@ -416,7 +416,7 @@ script:
       required: false
     - default: false
       name: resource_group_name
-      description: "A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Resource Group Name'."
       type: String
       isArray: false
       required: false
@@ -684,7 +684,7 @@ script:
     name: azure-nsg-resource-group-list
     arguments:
     - default: false
-      description: "A comma separated list of the subscription ID's, optional. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
