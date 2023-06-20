@@ -134,7 +134,7 @@ class TestExtractItemOutput(unittest.TestCase):
         mcafee_mar = importlib.import_module("McAfee-MAR")
         item = {'output': {'Collector1|Key1': 'value1', 'Collector2|Key2': 'value2'}, 'created_at': '2023-06-20'}
         capitalize = True
-        expected = {'created_at': '2023-06-20', 'Key1': 'Value1', 'Key2': 'Value2'}
+        expected = {'created_at': '2023-06-20', 'Key1': 'value1', 'Key2': 'value2'}
         self.assertEqual(mcafee_mar.extract_item_output(item, capitalize), expected)
 
     def test_extract_item_output_no_pipe_in_key(self):
