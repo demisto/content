@@ -65,7 +65,7 @@ class GoogleSecreteManagerModule:
             formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
             if not secret_pack_id or labels.get('ignore') or labels.get('merged') or (ignore_dev and labels.get('dev')) or (
                 formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
-                branch_name and labels.get('branch', '') != branch_name):
+                    branch_name and labels.get('branch', '') != branch_name):
                 continue
             if with_secrets:
                 try:
