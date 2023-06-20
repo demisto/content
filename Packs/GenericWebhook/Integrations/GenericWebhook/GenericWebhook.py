@@ -66,9 +66,9 @@ async def handle_post(
     if credentials_param and (username := credentials_param.get('identifier')):
         password = credentials_param.get('password', '')
         auth_failed = False
-        header_name = None
         if username.startswith('_header'):
             header_name = username.split(':')[1]
+            secret_header = (header_name or 'Authorization').lower()
             token_auth.model.name = header_name
             if not token or not compare_digest(token, password):
                 auth_failed = True
