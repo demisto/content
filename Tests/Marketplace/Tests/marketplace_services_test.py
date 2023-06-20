@@ -14,6 +14,7 @@ from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
 from demisto_sdk.commands.common.constants import MarketplaceVersions
+from pathlib import Path
 
 # pylint: disable=no-member
 
@@ -782,6 +783,46 @@ class TestHelperFunctions:
         assert res
         assert len(pack._content_items.get('modelingrule')) == 1
 
+    def test_collect_content_items_with_same_id(self):
+        """
+        Given: pack with IncidentType, Layout with same id
+
+        When: collecting content item to upload.
+
+        Then: collect IncidentType and Layout and the up to date playbook.
+
+        """
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
+        expected_id = 'Phishing'
+
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        layout_containers = pack._content_items['layoutscontainer']
+        assert len(layout_containers) == 1
+        assert layout_containers[0]['id'] == expected_id
+
+        incident_types = pack._content_items['incidenttype']
+        assert len(incident_types) == 1
+        assert incident_types[0]['id'] == expected_id
+
+    def test_collect_content_items_only_relevant_playbook(self):
+        """
+        Given: 3 Playbook from which 2 are deprecated.
+
+        When: collecting content item to upload.
+
+        Then: collect the relevant playbook.
+
+        """
+        expected_description = "Expected description"
+        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        assert len(pack._content_items.get('playbook')) == 1
+        assert pack._content_items.get('playbook')[0]['description'] == expected_description
+
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
@@ -1215,6 +1256,26 @@ This is visible
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number, new_version=False)
+
+        assert not version_changelog
+
+    def test_create_changelog_entry_pack_with_override(self, dummy_pack):
+        """
+            Given:
+                - release notes, display version and build number
+            When:
+                - overriding the packs in bucket so pack is marked as modified
+            Then:
+                - return an empty dict
+        """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False,
+                                                                  is_override=True)
 
         assert not version_changelog
 
@@ -3341,6 +3402,29 @@ class TestCheckChangesRelevanceForMarketplace:
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
+
+
+class TestVersionsMetadataFile:
+    """ Test class to check that the versions-metadata.json file is in the correct format."""
+
+    class TestVersionsMetadataFile:
+        """ Test class to check that the versions-metadata.json file is in the correct format."""
+
+        def test_version_map(self):
+            version_map_content = GCPConfig.versions_metadata_contents.get('version_map')
+            valid_keys = {'core_packs_file', 'core_packs_file_is_locked', 'file_version', 'marketplaces'}
+            for version, core_packs_info in version_map_content.items():
+                missing_keys = set(valid_keys).difference(core_packs_info.keys()).difference({'marketplaces'})
+                unexpected_keys = set(core_packs_info.keys()).difference(valid_keys)
+                assert not missing_keys, f'The following keys are missing in version {version}: {missing_keys}.'
+                assert not unexpected_keys, f'The following invalid keys were found in version {version}: {unexpected_keys}.'
+                assert 'core_packs_file' in core_packs_info, \
+                    f'Version {version} in version_map does not include the required `core_packs_file` key.'
+                assert core_packs_info.get('core_packs_file') == f'corepacks-{version}.json', \
+                    f'corepacks file name of version {version} should be `corepacks-{version}.json` and not ' \
+                    f'`{core_packs_info.get("core_packs_file")}`.'
+                assert 'core_packs_file_is_locked' in core_packs_info, \
+                    f'Version {version} in version_map does not include the required `core_packs_file_is_locked` key.'
 
 
 @freeze_time("2023-01-01")

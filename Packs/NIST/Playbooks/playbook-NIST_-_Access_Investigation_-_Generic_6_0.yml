@@ -279,10 +279,10 @@ tasks:
       id: 6ba49d12-a2e7-40bb-85d2-2a7849adc774
       version: -1
       name: Get manager's info
-      description: Retrieve the AD account information for the manager of the source user account.
-      scriptName: ADGetUser
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
@@ -1733,46 +1733,6 @@ inputs:
   description: The Remediation SLA for the 'Containment, Eradication, and Recovery' stage (in minutes).
   playbookInputQuery:
 outputs:
-- contextPath: Account.Email.Address
-  description: The email address object associated with the Account
-  type: string
-- contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
-  type: unknown
-- contextPath: Account.ID
-  description: The unique Account DN (Distinguished Name)
-  type: string
-- contextPath: Account.Username
-  description: The Account username
-  type: string
-- contextPath: Account.Email
-  description: The email address associated with the Account
-- contextPath: Account.Type
-  description: Type of the Account entity
-  type: string
-- contextPath: Account.Groups
-  description: The groups the Account is part of
-- contextPath: Account
-  description: Account object
-  type: unknown
-- contextPath: Account.DisplayName
-  description: The Account display name
-  type: string
-- contextPath: Account.Manager
-  description: The Account's manager
-  type: string
-- contextPath: DBotScore.Indicator
-  description: The indicator value
-  type: string
-- contextPath: DBotScore.Type
-  description: The indicator's type
-  type: string
-- contextPath: DBotScore.Vendor
-  description: The indicator's vendor
-  type: string
-- contextPath: DBotScore.Score
-  description: The indicator's score
-  type: number
 - contextPath: IP
   description: The IP objects
   type: unknown
@@ -1792,6 +1752,27 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The user display name.
+- contextPath: Account.Groups
+  description: Groups for which the user is a member.
+- contextPath: Account.Manager
+  description: The user manager.
+- contextPath: Account.ID
+  description: The user distinguished name.
+- contextPath: Account.Username
+  description: The user sAMAccountName.
+- contextPath: Account.Email
+  description: The user email address.
+- contextPath: ActiveDirectory.Users.userAccountControl
+  description: The user account control flag.
+- contextPath: ActiveDirectory.Users.sAMAccountName
+  description: The user sAMAccountName.
+- contextPath: ActiveDirectory.Users.name
+  description: The user common name.
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

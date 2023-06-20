@@ -42,7 +42,6 @@ configuration:
   type: 8
 - additionalinfo: When the `override severity` parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the severity level of the indicator will be used.
   display: Overriding severity value
-  hidden: false
   name: severity
   required: true
   type: 15
@@ -58,14 +57,12 @@ configuration:
   type: 0
   additionalinfo: Supports CSV values.
   defaultvalue: Cortex XDR
-  hidden: false
 - display: Sync Query
   name: query
   required: true
   type: 0
   additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
-  hidden: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

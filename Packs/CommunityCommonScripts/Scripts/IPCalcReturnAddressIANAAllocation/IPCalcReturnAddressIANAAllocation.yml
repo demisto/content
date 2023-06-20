@@ -9,7 +9,6 @@ comment: An automation script to return address IANA information
 commonfields:
   id: IPCalcReturnAddressIANAAllocation
   version: -1
-enabled: false
 name: IPCalcReturnAddressIANAAllocation
 outputs:
 - contextPath: IPCalc.IP.Allocation.allocation

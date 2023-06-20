@@ -56,7 +56,7 @@ def get_fqdn(the_input):
     fixed = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True)
     domain = fixed or get_tld(the_input, fail_silently=True, as_object=True)
 
-    if domain and domain.tld != 'zip':
+    if domain:  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
@@ -104,6 +104,7 @@ def extract_fqdn(the_input):
     the_input = unescape_url(the_input)
 
     indicator = get_fqdn(the_input)
+    indicator = ".".join([re.sub("[^\w-]", "", part) for part in indicator.split(".")])
     return indicator
 
 
