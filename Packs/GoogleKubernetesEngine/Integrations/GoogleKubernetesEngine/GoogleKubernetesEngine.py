@@ -60,11 +60,11 @@ def handle_default_configuration():
     args |= {
         'default_project':
             args.get('default_project')
-            or params.get('default_project')
-            or params.get('credentials', {}).get('identifier'),
+            or params.get('credentials', {}).get('identifier')
+            or params.get('default_project'),
         'default_zone':
             args.get('default_zone')
-            or params.get('default_zone')
+            or params.get('default_zone'),
     }
 
     return args
