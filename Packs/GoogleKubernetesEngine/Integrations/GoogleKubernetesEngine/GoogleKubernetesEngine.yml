@@ -9,11 +9,11 @@ configuration:
   required: false
   type: 4
   hidden: true
-- name: credentials_json_creds
+- name: credentials
   required: false
   type: 9
   displaypassword: JSON credentials
-  hiddenusername: true
+  display: Default project
 - additionalinfo: Can be overwriten in commands execution.
   display: Default project
   name: default_project

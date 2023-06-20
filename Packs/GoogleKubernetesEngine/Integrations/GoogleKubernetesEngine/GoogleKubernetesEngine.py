@@ -55,14 +55,16 @@ def handle_default_configuration():
     Returns:
         dict: arguments filled with default configuration if args not configured.
     """
-    command_arguments = demisto.args()
-    integration_parameters = demisto.params()
-    default_parameters = ['project', 'zone']
-    for param in default_parameters:
-        if param not in command_arguments:
-            command_arguments[param] = integration_parameters.get(f'default_{param}')
+    args = demisto.args()
+    params = demisto.params()
+    args['default_project'] = (
+        args.get('default_project')
+        or params.get('default_project')
+        or params.get('credentials', {}).get('identifier')
+    )
+    args['default_zone'] = args.get('default_zone') or params.get('default_zone')
 
-    return command_arguments
+    return args
 
 
 def google_client_setup(json_configuration: str) -> ClusterManagerClient:
@@ -902,7 +904,7 @@ def main():
     }
     try:
         client: ClusterManagerClient = google_client_setup(json_configuration=demisto.params().get(
-            'credentials_json_creds', {}).get('password') or demisto.params().get('credentials_json'))
+            'credentials', {}).get('password') or demisto.params().get('credentials_json'))
         command_arguments = handle_default_configuration()
         readable_output, context_entry, raw_response = commands[command](client=client, **command_arguments)
 
