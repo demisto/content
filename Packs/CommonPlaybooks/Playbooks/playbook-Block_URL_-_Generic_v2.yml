@@ -1290,7 +1290,10 @@ tasks:
         complex:
           root: inputs.CustomURLCategory
       Folder:
-        simple: Shared
+        complex:
+          root: inputs.Folder
+          transformers:
+          - operator: uniq
       URL:
         complex:
           accessor: URL
@@ -1400,6 +1403,15 @@ inputs:
   required: false
   description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
   playbookInputQuery:
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
+    Remember, this input will only be used when there is no input to the CategoryName.
+    Default: Shared
+  playbookInputQuery: null
 outputs: []
 tests:
 - Send Investigation Summary Reports - Test

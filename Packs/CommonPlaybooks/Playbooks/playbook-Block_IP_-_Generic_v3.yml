@@ -3480,7 +3480,10 @@ tasks:
         complex:
           root: inputs.AutoCommit
       Folder:
-        simple: Shared
+        complex:
+          root: inputs.Folder
+          transformers:
+          - operator: uniq
       IP:
         complex:
           accessor: Final
@@ -3693,6 +3696,15 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
     Determine the Dynamic Address Group name for IPs list handling.
   playbookInputQuery:
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    For prisma SASE usage - Specify the scope for a newly created security rule to be applied.
+    Remember, this input will only be used when there is no input to the CategoryName.
+    Default: Shared
+  playbookInputQuery: null
 outputs:
 - contextPath: Aria.BlockDestSubnet.Rule
   description: The rule name/ID which was created in the system for this playbook.
@@ -3744,8 +3756,7 @@ outputs:
 - contextPath: PrismaSase.Address
   description: Created address object.
 tests:
-- Send Investigation Summary Reports - Test
-- Block IP - Generic V3_Test
+- No tests (auto formatted)
 fromversion: 6.0.0
 system: true
 contentitemexportablefields:

@@ -99,14 +99,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: a
+              simple: inputs.IP
             iscontext: true
-          right:
-            value:
-              simple: a
     continueonerrortype: ""
     view: |-
       {
