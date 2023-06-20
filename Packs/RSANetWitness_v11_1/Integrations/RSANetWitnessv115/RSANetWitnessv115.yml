@@ -41,11 +41,11 @@ configuration:
   name: import_alerts
   required: false
   type: 8
-- defaultvalue: NetWitness Incident
-  display: Incident type
+- display: Incident type
   name: incidentType
   required: false
   type: 13
+  defaultvalue: NetWitness Incident
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -87,7 +87,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Enter an incident ID to receive its full details. For example, 'INC-40'
+      description: Enter an incident ID to receive its full details. For example, 'INC-40'.
       isArray: false
       name: id
       required: false
@@ -372,7 +372,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident milestone classifier. Can be Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure
+      description: The incident milestone classifier. Can be Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure.
       isArray: false
       name: milestone
       predefined:
@@ -2130,7 +2130,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The path where the files may be present, either specify a single file path or use a wild card. for example - "C:\Users\sample\*" . To see scanned files paths use the command 'rsa-nw-snapshot-details-get'
+      description: The path where the files may be present, either specify a single file path or use a wild card. for example - "C:\Users\sample\*" . To see scanned files paths use the command 'rsa-nw-snapshot-details-get'.
       isArray: false
       name: path
       required: true
@@ -2268,7 +2268,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44
+      description: A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.
       isArray: false
       name: exclusion_list
       required: false
@@ -2303,7 +2303,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44'
+      description: 'A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.'
       isArray: false
       name: exclusion_list
       required: true
@@ -2347,7 +2347,7 @@ script:
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     execution: false
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

@@ -809,28 +809,26 @@ def endpoint_isolation_remove_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def fetch_alerts_related_incident(client: Client, incident_id: str):
+def fetch_alerts_related_incident(client: Client, incident_id: str) -> list[Any]:
     """
-    returns the alerts that are associated with an incident
-
+    Returns the alerts that are associated with an incident.
     """
+    alerts = []
     has_next = True
     page_number = 0
-    alerts = []  # type: list
 
     while has_next:
-        # call get_alerts_request(), given user arguments
-        # returns the response body on success
-        # raises an exception on failed request
-        LOG('Requesting for page {}'.format(page_number))
-        response_body = client.incident_list_alerts_request(
-            page_number=str(page_number),
-            id_=incident_id,
-            page_size=None
-        )
-        alerts.extend(response_body.get('items', []))
-        has_next = response_body.get('hasNext', False)
-        page_number += 1
+        try:
+            response_body = client.incident_list_alerts_request(
+                page_number=str(page_number),
+                id_=incident_id,
+                page_size=None
+            )
+            alerts.extend(response_body.get('items', []))
+            has_next = response_body.get('hasNext', False)
+            page_number += 1
+        except DemistoException as e:
+            raise DemistoException(f"Error occurred while fetching alerts: {str(e)}")
 
     return alerts
 
