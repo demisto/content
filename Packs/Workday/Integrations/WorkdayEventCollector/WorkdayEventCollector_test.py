@@ -12,11 +12,14 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+
 class TestFetchActivity:
-    def setup_method(self):
+    @pytest.fixture(autouse=True)
+    def create_client(self, mocker):
         self.base_url = "https://test.com"
         self.tenant_name = "test"
         self.token_url = f'{self.base_url}/ccx/oauth2/{self.tenant_name}/token'
+        mocker.patch.object(Client, 'get_access_token', return_value="1234")
         self.client = Client(base_url=self.base_url,
                              refresh_token='refresh_token',
                              client_id="test12",
@@ -77,7 +80,6 @@ class TestFetchActivity:
         """
         from WorkdayEventCollector import get_max_fetch_activity_logging
         mocker.patch.object(Client, 'get_activity_logging_request', side_effect=self.create_response_by_limit)
-        requests_mock.post(self.token_url, json={"access_token": "1234"})
         res = get_max_fetch_activity_logging(client=self.client, logging_to_fetch=loggings_to_fetch,
                                              from_date="2023-04-15T07:00:00.000Z",
                                              to_date="2023-04-16T07:00:00.000Z")
@@ -89,7 +91,7 @@ class TestFetchActivity:
 
     @pytest.mark.parametrize("args, len_of_activity_loggings, last_run",
                              DUPLICATED_ACTIVITY_LOGGINGS)
-    def test_remove_duplicated_activity_logging(self, mocker, args, len_of_activity_loggings, last_run):
+    def test_remove_duplicated_activity_logging(self, args, len_of_activity_loggings, last_run):
         """
         Given: responses with potential duplications from last fetch.
         When: running fetch command.

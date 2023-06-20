@@ -41,7 +41,7 @@ class Client(BaseClient):
         self.refresh_token = refresh_token
         self.token_url = token_url
         self.max_fetch = max_fetch
-        self.access_token = None
+        self.access_token = self.get_access_token()
 
     def get_access_token(self):
         """
@@ -57,7 +57,7 @@ class Client(BaseClient):
                                                 data=data,
                                                 auth=(self.client_id, self.client_secret))
         if workday_resp_token:
-            self.access_token = workday_resp_token.get("access_token")
+            return workday_resp_token.get("access_token")
 
     def http_request(self,
                      method: str,
@@ -68,7 +68,6 @@ class Client(BaseClient):
         """
         Overriding BaseClient http request in order to use the access token.
         """
-        # access_token = self.get_access_token()
         headers = self._headers
         headers['Authorization'] = f"Bearer {self.access_token}"
         return self._http_request(method=method,
@@ -288,7 +287,6 @@ def main() -> None:  # pragma: no cover
                 'Content-Type': 'application/json'
             },
             max_fetch=max_fetch)
-        client.get_access_token()
 
         if command == 'test-module':
             return_results(test_module(client))
