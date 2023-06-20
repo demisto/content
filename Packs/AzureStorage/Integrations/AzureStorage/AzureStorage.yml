@@ -14,15 +14,15 @@ configuration:
   section: Connect
 - display: Default Subscription ID
   name: subscription_id
-  required: false
+  required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
   section: Connect
 - display: Default Resource Group Name
   name: resource_group_name
-  required: false
+  required: true
   type: 0
-  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -1167,7 +1167,7 @@ script:
     name: azure-storage-resource-group-list
     arguments:
       - default: false
-        description: "A comma separated list of the subscription ID's, optional. Note: This argument will override the instance parameter ‘Subscription ID'."
+        description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
         isArray: false
         name: subscription_id
         required: false
