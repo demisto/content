@@ -741,9 +741,9 @@ def raw_to_rules(raw_rules):
 
         rules.append(
             {
-                'Source': rule.get('sourceAddress', {}).get('value'),
+                'Source': safe_get_all_values(obj=rule.get('sourceAddress'), key='value'),
                 'SourceService': source_services_list,
-                'Dest': rule.get('destinationAddress', {}).get('value'),
+                'Dest': safe_get_all_values(obj=rule.get('destinationAddress'), key='value'),
                 'DestService': dest_services_list,
                 'IsActive': rule.get('active'),
                 'Interface': rule.get('interface'),
@@ -757,9 +757,9 @@ def raw_to_rules(raw_rules):
             } | rule_object_mapping
         )
         if not rules[-1].get('Source'):
-            rules[-1]['Source'] = rule.get('sourceAddress', {}).get('objectId')
+            rules[-1]['Source'] = safe_get_all_values(obj=rule.get('sourceAddress'), key='objectId')
         if not rules[-1].get('Dest'):
-            rules[-1]['Dest'] = rule.get('destinationAddress', {}).get('objectId')
+            rules[-1]['Dest'] = safe_get_all_values(obj=rule.get('destinationAddress'), key='objectId')
 
     return rules
 
@@ -1063,6 +1063,31 @@ def handle_rule_configurations_setup(rule_body: dict[str, Any], args: dict[str, 
         rule_body['permit'] = arg_to_optional_bool(permit)
     if remarks := argToList(args.get('remarks')):
         rule_body['remarks'] = remarks
+
+
+def safe_get_all_values(
+    obj: list[dict[str, Any]] | dict[str, Any] | None,
+    key: str,
+    default_value: Any = None,
+) -> Any:
+    """ Get all values from a list of dicts or a dict.
+
+    Args:
+        obj (list[dict[str, Any]] | dict[str, Any] | None): The object to extract values from.
+        key (str): The key to the value to be extracted.
+        default_value (Any, optional): The default value to return in case of failure.
+            Defaults to None.
+
+    Returns:
+        Any: _description_
+    """
+    if not obj:
+        return default_value
+
+    if isinstance(obj, dict):
+        return obj.get(key, default_value)
+
+    return [item.get(key, default_value) for item in obj if key in obj]
 
 
 '''COMMANDS'''
