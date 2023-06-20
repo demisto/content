@@ -1267,10 +1267,10 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         }
 
     else:
-        demisto.debug("handle via id")
+        demisto.debug("last fetch time is empty, trying to fetch incidents by last incident id")
         latest_created_time = dateparser.parse(last_fetch_time)
         if latest_created_time is None:
-            raise DemistoException(f"{dateparser.parse(last_fetch_time)=} couldn't be parsed")
+            raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
         command_args = {
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',

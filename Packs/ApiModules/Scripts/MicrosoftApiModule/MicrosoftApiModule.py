@@ -241,9 +241,9 @@ class AzureCloud:  # pylint: disable=too-few-public-methods
     """ Represents an Azure Cloud instance """
 
     def __init__(self,
+                 origin,
                  name,
                  abbreviation,
-                 origin,
                  endpoints=None,
                  suffixes=None):
         self.name = name
@@ -254,9 +254,9 @@ class AzureCloud:  # pylint: disable=too-few-public-methods
 
 
 AZURE_WORLDWIDE_CLOUD = AzureCloud(
+    'Embedded',
     'AzureCloud',
     'com',
-    'Embedded',
     endpoints=AzureCloudEndpoints(
         management='https://management.core.windows.net/',
         resource_manager='https://management.azure.com/',
@@ -295,9 +295,9 @@ AZURE_WORLDWIDE_CLOUD = AzureCloud(
         attestation_endpoint='.attest.azure.net'))
 
 AZURE_US_GCC_CLOUD = AzureCloud(
+    'Embedded',
     'AzureUSGovernment',
     'gcc',
-    'Embedded',
     endpoints=AzureCloudEndpoints(
         management='https://management.core.usgovcloudapi.net/',
         resource_manager='https://management.usgovcloudapi.net/',
@@ -331,9 +331,9 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
 
 AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
+    'Embedded',
     'AzureUSGovernment',
     'gcc-high',
-    'Embedded',
     endpoints=AzureCloudEndpoints(
         management='https://management.core.usgovcloudapi.net/',
         resource_manager='https://management.usgovcloudapi.net/',
@@ -367,9 +367,9 @@ AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
         synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
 
 AZURE_DOD_CLOUD = AzureCloud(
+    'Embedded',
     'AzureUSGovernment',
     'dod',
-    'Embedded',
     endpoints=AzureCloudEndpoints(
         management='https://management.core.usgovcloudapi.net/',
         resource_manager='https://management.usgovcloudapi.net/',
@@ -404,9 +404,9 @@ AZURE_DOD_CLOUD = AzureCloud(
 
 
 AZURE_GERMAN_CLOUD = AzureCloud(
+    'Embedded',
     'AzureGermanCloud',
     'de',
-    'Embedded',
     endpoints=AzureCloudEndpoints(
         management='https://management.core.cloudapi.de/',
         resource_manager='https://management.microsoftazure.de',
@@ -433,9 +433,9 @@ AZURE_GERMAN_CLOUD = AzureCloud(
         mariadb_server_endpoint='.mariadb.database.cloudapi.de'))
 
 AZURE_CHINA_CLOUD = AzureCloud(
+    'Embedded',
     'AzureChinaCloud',
     'cn',
-    'Embedded',
     endpoints=AzureCloudEndpoints(
         management='https://management.core.chinacloudapi.cn/',
         resource_manager='https://management.chinacloudapi.cn',
@@ -505,13 +505,13 @@ def create_custom_azure_cloud(origin: str,
                               defaults: Optional[AzureCloud] = None,
                               endpoints: Optional[Dict] = None,
                               suffixes: Optional[Dict] = None):
-    defaults = defaults or AzureCloud(name, abbreviation, origin)
+    defaults = defaults or AzureCloud(origin, name, abbreviation)
     endpoints = endpoints or {}
     suffixes = suffixes or {}
     return AzureCloud(
+        origin,
         name or defaults.name,
         abbreviation or defaults.abbreviation,
-        origin or defaults.origin,
         endpoints=AzureCloudEndpoints(
             management=endpoints.get('management', defaults.endpoints.management),
             resource_manager=endpoints.get('resource_manager', defaults.endpoints.resource_manager),
@@ -560,19 +560,22 @@ def create_custom_azure_cloud(origin: str,
         ))
 
 
-def microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc=None):
+def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
+    log_message_append = ""
     if is_gcc:  # Backward compatible.
-        params_endpoint_type = "US GCC"
-    elif params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not params_endpoint_type:
+        endpoint_type = "US GCC"
+        log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
+    elif endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type:
         # When the integration was configured before our Azure Cloud support, the value will be None.
-        if not params_url:
-            if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
-                raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
-            raise DemistoException("Endpoint type is not set and no URL was provided.")
-    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(params_endpoint_type, 'com')  
-    params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
-    return endpoint_type, params_url
+        if not url:
+            if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+                raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+            raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
+    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(endpoint_type, 'com')
+    url = url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+    demisto.info(f"Using url:{url}, endpoint type:{endpoint_type}{log_message_append}")
+    return endpoint_type, url
 
 
 def get_azure_cloud(params, integration_name):
@@ -590,7 +593,7 @@ def get_azure_cloud(params, integration_name):
                                              })
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
-    return AZURE_CLOUDS[AzureCloudNames.WORLDWIDE]
+    return AZURE_CLOUDS[azure_cloud_arg]
 
 
 class MicrosoftClient(BaseClient):
