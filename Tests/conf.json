@@ -1743,7 +1743,12 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "EWS V2 Send Mail Test",
+            "playbookID": "EWS V2 Send Mail Test 1",
+            "instance_names": "ews_mail_sender_labdemisto"
+        },
+                {
+            "integrations": "EWS v2",
+            "playbookID": "EWS V2 Send Mail Test 11",
             "instance_names": "ews_mail_sender_labdemisto"
         },
         {
