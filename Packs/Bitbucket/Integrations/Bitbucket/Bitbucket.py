@@ -1440,7 +1440,7 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         hr_title = f'The information about the comment "{comment_id}"'
     else:
         results = check_pagination(client, response, limit)
-        hr_title = f'List of the comments on pull requestBBB "{pr_id}"'
+        hr_title = f'List of the comments on pull request "{pr_id}"'
     human_readable = []
     # After a comment on a pull request is deleted it will still appear on the response from the api.
     # Those comments can be recognized when their 'deleted' value is True.

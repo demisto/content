@@ -1710,7 +1710,7 @@ def main() -> None:
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f"{command} command is not imdfsdfsdfplemented.")
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
         return_error(str(e))
