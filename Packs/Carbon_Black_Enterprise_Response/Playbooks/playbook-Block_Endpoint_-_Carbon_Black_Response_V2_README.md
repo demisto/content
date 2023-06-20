@@ -1,4 +1,4 @@
-Deprecated. Use the `Block Endpoint - Carbon Black Response V2.1` playbook instead. Carbon Black Response - isolate an endpoint, given a hostname.
+Deprecated. Use the `Block Endpoint - Carbon Black Response V2.1` playbook instead. Carbon Black Response - isolates an endpoint for a given hostname.
 
 ## Dependencies
 
@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* carbonblack
+CarbonblackV2
 
 ### Scripts
 
-This playbook does not use any scripts.
+IsIntegrationAvailable
 
 ### Commands
 
@@ -27,7 +27,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Hostname | The hostname to isolate. | ${Endpoint.Hostname} | Optional |
+| Hostname | The hostname to isolate. |  | Optional |
+| Sensor_id | The sensor ID of the endpoint. |  | Optional |
 
 ## Playbook Outputs
 
@@ -35,8 +36,8 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.Sensors.CbSensorID | Carbon Black Response sensor IDs that have been isolated. | unknown |
-| Endpoint | The isolated enpoint. | unknown |
+| CbResponse.Sensors.CbSensorID | Carbon Black Response sensor IDs that are isolated. | unknown |
+| Endpoint | The isolated endpoint. | unknown |
 | CbResponse.Sensors.Status | Sensor status. | unknown |
 | CbResponse.Sensors.Isolated | Is sensor isolated. | unknown |
 | Endpoint.Hostname | Endpoint hostname. | unknown |
@@ -45,4 +46,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Block Endpoint - Carbon Black Response](../doc_files/Block_Endpoint_-_Carbon_Black_Response.png)
+![Block Endpoint - Carbon Black Response V2](../doc_files/Block_Endpoint_-_Carbon_Black_Response_V2.png)
