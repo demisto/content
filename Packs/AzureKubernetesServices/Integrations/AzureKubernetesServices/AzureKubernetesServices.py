@@ -210,7 +210,7 @@ def ks_subscriptions_list(client: AKSClient) -> CommandResults:
     )
 
 
-def ks_resource_group_list(client: AKSClient, params: Dict, args: Dict) -> List[CommandResults]:
+def ks_resource_group_list(client: AKSClient, params: Dict, args: Dict) -> CommandResults:
     """
     List all resource groups in the subscription.
     Args:
@@ -218,49 +218,32 @@ def ks_resource_group_list(client: AKSClient, params: Dict, args: Dict) -> List[
         args (Dict[str, Any]): command arguments.
         params (Dict[str, Any]): configuration parameters.
     Returns:
-        List of Command results with raw response, outputs and readable outputs.
+        Command results with raw response, outputs and readable outputs.
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', 50))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
-    subscription_id_list = argToList(get_from_args_or_params(params=params, args=args, key='subscription_id'))
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     filter_by_tag = arg_to_tag(tag) if tag else ''
 
-    command_results_list = []
-    warning_message = ''
-    all_subscriptions_are_wrong: bool = True
-    for subscription_id in subscription_id_list:
-        try:
-            response = client.list_resource_groups_request(subscription_id=subscription_id,
-                                                           filter_by_tag=filter_by_tag, limit=limit)
-            all_subscriptions_are_wrong = False
-            data_from_response = response.get('value', [response])
+    response = client.list_resource_groups_request(subscription_id=subscription_id,
+                                                   filter_by_tag=filter_by_tag, limit=limit)
+    data_from_response = response.get('value', [response])
 
-            readable_output = tableToMarkdown('Resource Groups List',
-                                              data_from_response,
-                                              ['name', 'location', 'tags',
-                                               'properties.provisioningState'
-                                               ],
-                                              removeNull=True, headerTransform=string_to_table_header)
-            command_results_list.append(CommandResults(
-                outputs_prefix='AzureKS.ResourceGroup',
-                outputs_key_field='id',
-                outputs=data_from_response,
-                raw_response=response,
-                readable_output=readable_output,
-            ))
-
-        except Exception as e:
-            # If at least one subscription is correct, we will not return the data of the correct subscriptions,
-            # and a warning message for the wrong subscriptions will be returned as well.
-            warning_message += f'Failed to get resource groups for subscription id "{subscription_id}". Error: {str(e)}\n\n'
-            if all_subscriptions_are_wrong and subscription_id == subscription_id_list[-1]:
-                # if all subscriptions are wrong, we will raise an exception.
-                raise
-
-    return_warning(warning_message) if warning_message else None
-    return command_results_list
+    readable_output = tableToMarkdown('Resource Groups List',
+                                      data_from_response,
+                                      ['name', 'location', 'tags',
+                                       'properties.provisioningState'
+                                       ],
+                                      removeNull=True, headerTransform=string_to_table_header)
+    return CommandResults(
+        outputs_prefix='AzureKS.ResourceGroup',
+        outputs_key_field='id',
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
 
 
 def start_auth(client: AKSClient) -> CommandResults:
@@ -283,7 +266,7 @@ def reset_auth() -> str:
     return 'Authorization was reset successfully. Run **!azure-ks-auth-start** to start the authentication process.'
 
 
-@logger
+@ logger
 def test_module(client):
     """
     Performs basic GET request to check if the API is reachable and authentication is successful.
