@@ -584,16 +584,16 @@ def get_azure_cloud(params, integration_name):
         # Backward compatibility before the azure cloud settings.
         if 'server_url' in params:
             return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
-                                             endpoints={'resource_manager': params['server_url']})
+                                             endpoints={'resource_manager': params.get('server_url') or  or 'https://management.azure.com'})
         if 'azure_ad_endpoint' in params:
             return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
                                              endpoints={
-                                                 'active_directory': params.get('azure_ad_endpoint',
-                                                                                'https://login.microsoftonline.com')
+                                                 'active_directory': params.get('azure_ad_endpoint') or
+                                                                                'https://login.microsoftonline.com'
                                              })
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
-    return AZURE_CLOUDS[azure_cloud_arg]
+   return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
 
 
 class MicrosoftClient(BaseClient):
