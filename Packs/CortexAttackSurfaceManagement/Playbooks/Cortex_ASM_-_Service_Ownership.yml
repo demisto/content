@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 0d99efe0-8385-4ba8-8c54-20595c5991f6
+    taskid: d19cd395-29e5-4b38-8e22-522bd9ca18ef
     type: regular
     task:
-      id: 0d99efe0-8385-4ba8-8c54-20595c5991f6
+      id: d19cd395-29e5-4b38-8e22-522bd9ca18ef
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
@@ -52,14 +52,14 @@ tasks:
       - "10"
     scriptarguments:
       owners:
-        simple: ${alert.asmserviceowner}
+        simple: ${alert.asmserviceownerunrankedraw}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 1070
+          "x": -50,
+          "y": 1180
         }
       }
     note: false
@@ -71,12 +71,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 814ef47f-56ba-4a23-875e-a174b7d13314
+    taskid: 15f0d68e-0fb0-405e-863c-77bc513dfc5e
     type: regular
     task:
-      id: 814ef47f-56ba-4a23-875e-a174b7d13314
+      id: 15f0d68e-0fb0-405e-863c-77bc513dfc5e
       version: -1
-      name: Back up service owners gridfield
+      name: Add service owners to unranked list
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
@@ -86,7 +86,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     scriptarguments:
       gridfield:
         simple: asmserviceownerunrankedraw
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": -20
+          "y": 20
         }
       }
     note: false
@@ -150,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6367e85d-d9ef-4e06-8504-3d263cb7d2f3
+    taskid: 82e4d1d4-d7bc-4a1a-894a-698786adcdc5
     type: condition
     task:
-      id: 6367e85d-d9ef-4e06-8504-3d263cb7d2f3
+      id: 82e4d1d4-d7bc-4a1a-894a-698786adcdc5
       version: -1
       name: Is asmserviceowner populated?
       description: Determines if the asmserviceowner field exists and if the common fields within it also exists.
@@ -231,54 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: d64a41cc-a637-43c4-8eb2-d6d99f122b10
-    type: condition
-    task:
-      id: d64a41cc-a637-43c4-8eb2-d6d99f122b10
-      version: -1
-      name: What provider is this service?
-      description: Determines which cloud provider the service is in order to direct to the correct steps for gathering data to rank owners.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      GCP:
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: GCP
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: ASM.ExternalService
-                accessor: externally_detected_providers
-            iscontext: true
-          right:
-            value:
-              simple: Google
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -50,
-          "y": 870
+          "x": 250,
+          "y": 1450
         }
       }
     note: false
@@ -304,7 +258,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "17"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -321,7 +275,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 330
+          "y": 640
         }
       }
     note: false
@@ -333,10 +287,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 05ce1338-5084-49af-8745-a83af6781f93
+    taskid: 99e95e0d-34ae-4911-8200-eae1add67f1c
     type: regular
     task:
-      id: 05ce1338-5084-49af-8745-a83af6781f93
+      id: 99e95e0d-34ae-4911-8200-eae1add67f1c
       version: -1
       name: Get external service information
       description: Get service details according to the service ID.
@@ -364,13 +318,13 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 160
+          "y": 480
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -390,7 +344,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "14"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -425,7 +379,7 @@ tasks:
       {
         "position": {
           "x": -50,
-          "y": 630
+          "y": 200
         }
       }
     note: false
@@ -435,22 +389,56 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 119258b1-6bac-4910-88c2-6da00763ea77
+    type: regular
+    task:
+      id: 119258b1-6bac-4910-88c2-6da00763ea77
+      version: -1
+      name: Look up project owners for service account
+      description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
+      scriptName: GetProjectOwners
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      external_service:
+        simple: ${ASM.ExternalService.externally_detected_providers}
+      owners:
+        simple: ${alert.asmserviceownerunrankedraw}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "14_10_#default#": 0.46,
-      "14_6_GCP": 0.47,
       "15_10_#default#": 0.2,
-      "17_10_#default#": 0.22,
-      "17_14_yes": 0.64,
+      "17_10_#default#": 0.2,
       "9_10_#default#": 0.33,
       "9_7_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 1705,
-        "width": 760,
-        "x": -140,
+        "height": 1895,
+        "width": 680,
+        "x": -50,
         "y": -380
       }
     }
@@ -460,3 +448,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
