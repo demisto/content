@@ -1213,8 +1213,6 @@ def search_exploit_command():
 
 def get_modified_remote_data_command():
     raw_args = demisto.args()
-    if not raw_args.get('lastUpdate'):
-        raw_args = {'lastUpdate': datetime.now() - timedelta(days=1)}
     args = GetModifiedRemoteDataArgs(raw_args)
     last_update = args.last_update
 
@@ -1225,22 +1223,31 @@ def get_modified_remote_data_command():
     }
     response_content = list_alerts(list_alert_params)
     modified_alerts = response_content.get("alerts", [])
-    modified_alert_ids = [alert.get("id") for alert in modified_alerts]
+    demisto.debug(f"Fetched {len(modified_alerts)} alerts with the following params: {str(list_alert_params)}")
+    modified_alert_ids = [str(alert.get("id")) for alert in modified_alerts]
 
-    return return_results(GetModifiedRemoteDataResponse(modified_alert_ids))
+    return return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids))
 
 
 def get_remote_data_command():
-    args = demisto.args()
-    remote_args = GetRemoteDataArgs(args)
-    alert_id = remote_args.remote_incident_id
+    raw_args = demisto.args()
+    args = GetRemoteDataArgs(raw_args)
+    alert_id = args.remote_incident_id
 
     response_content = get_alert(alert_id)
     alert = response_content.get("alert", {})
+    demisto.debug(f"Alert fetched with id {alert.get('id')}")
 
     entries = []
     if alert.get("status") in CLOSED_ALERT_STATUS:
-        entries.append({"Contents": {"dbotIncidentClose": True}})
+        demisto.debug(f"Incident associated with alert_id={alert_id} is being closed")
+        entries.append({
+            "Contents": {
+                "dbotIncidentClose": True,
+                "closeReason": "Other",
+                "closeNotes": "Closed in ZeroFox"
+            },
+        })
 
     return return_results(GetRemoteDataResponse(mirrored_object=alert, entries=entries))
 

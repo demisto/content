@@ -697,7 +697,7 @@ script:
     - contextPath: ZeroFox.Alert
       type: string
     description: Looks for malicious ips in ZeroFox's CTI feeds
-  - name: zerofox-search-malicious_hash
+  - name: zerofox-search-malicious-hash
     arguments:
     - name: hash
       required: true
@@ -728,6 +728,7 @@ script:
   script: '-'
   type: python
   subtype: python3
+  defaultmapperin: ZeroFox Mapping
 tests:
 - ZeroFox-Test
 fromversion: 5.0.0
