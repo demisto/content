@@ -1,6 +1,6 @@
 [MODEL: dataset = microsoft_windows_raw]
 // filter event ids based on XDRC configuration.
-filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
+filter event_id in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206", "1207")
 // xml part
 | alter accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
@@ -65,5 +65,6 @@ filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
     xdm.alert.severity = coalesce(opcode, log_level),
     xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result)),
     xdm.network.http.content_type = Content_Type,
+    xdm.observer.type=provider_name,
     xdm.event.outcome_reason = X_Frame_Options,
     xdm.network.http.referrer = referer;
