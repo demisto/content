@@ -1,6 +1,9 @@
 import json
 from pathlib import Path
 
+import urllib3.request
+from urllib3.response import HTTPResponse
+
 import demisto_client
 import pytest
 import timeout_decorator
@@ -128,7 +131,12 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
     assert bad_pack_ids[0] not in installed_packs
 
 
-def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
+@pytest.mark.parametrize('error_code,use_multithreading',
+                            [
+                                (400, True), (400, False),
+                                (500, True), (500, False),
+                            ])
+def test_search_and_install_packs_and_their_dependencies_with_error(mocker, error_code, use_multithreading: bool):
     """
     Given
     - Error when searching for a pack
@@ -140,12 +148,14 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker):
     good_pack_ids = ['HelloWorld']
 
     client = MockClient()
+    mock_response = HTTPResponse(status=error_code, body=b"Error")
 
     mocker.patch.object(script, 'install_packs')
-    mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
+    mocker.patch.object(urllib3.request.RequestMethods, 'request', return_value=mock_response)
 
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
-                                                                                      client)
+    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
+                                                                                      client=client,
+                                                                                      multithreading=use_multithreading)
     assert success is False
 
 

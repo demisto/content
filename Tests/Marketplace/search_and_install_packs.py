@@ -35,12 +35,13 @@ WLM_TASK_FAILED_ERROR_CODE = 101704
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
     """
-        Gets the id of the pack from the pack's path in GCP that is mentioned in the error msg.
+    Gets the id of the pack from the pack's path in GCP that is mentioned in the error msg.
+
     Args:
         error: path of pack in GCP.
 
     Returns:
-        The id of given pack.
+        str: The id of given pack.
     """
     return error.split('/packs/')[1].split('.zip')[0].split('/')[0]
 
@@ -321,7 +322,7 @@ def install_packs(client: demisto_client,
 
             # There are more attempts available, sleep and retry.
             logging.debug(f"failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
-            sleep(sleep_interval)
+            time.sleep(sleep_interval)
     except Exception as e:
         logging.exception(f'The request to install packs: {packs_to_install} has failed. Additional info: {str(e)}')
         SUCCESS_FLAG = False
