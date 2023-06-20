@@ -15,20 +15,12 @@ from Packs.Base.Scripts.CommonServerPython.CommonServerPython import (
     GetModifiedRemoteDataResponse,
     GetRemoteDataArgs,
     GetRemoteDataResponse,
-    SchemeTypeMapping,
-    GetMappingFieldsResponse,
     BaseClient,
 )
 
 """ IMPORTS """
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Union, cast
-
-import requests
-from urllib3 import disable_warnings
-
-# Disable insecure warnings
-disable_warnings()
+from typing import Dict, List, Union
 
 """ GLOBALS/PARAMS """
 
@@ -41,8 +33,6 @@ BASE_URL: str = (
 )
 FETCH_TIME_DEFAULT = "3 days"
 FETCH_TIME: str = demisto.params().get("fetch_time", FETCH_TIME_DEFAULT).strip()
-
-CLOSED_ALERT_STATUS = ["Closed", "Deleted"]
 
 CLOSED_ALERT_STATUS = ["Closed", "Deleted"]
 
@@ -72,8 +62,7 @@ class ZFClient(BaseClient):
     :return: Returns the content of the response received from the API.
     """
         pref_string = f"/{prefix}" if prefix else ""
-        header = dict(api= self.get_api_request_header,
-                      cti = self.get_cti_request_header).get(header)
+        header = dict(api=self.get_api_request_header, cti=self.get_cti_request_header).get(header)
         return self._http_request(
             method=method,
             url_suffix=pref_string + url_suffix,
@@ -81,7 +70,6 @@ class ZFClient(BaseClient):
             params=params,
             data=data,
         )
-
 
     def get_authorization_token(self) -> str:
         """
@@ -108,7 +96,6 @@ class ZFClient(BaseClient):
         demisto.setIntegrationContext({"token": token})
         return token
 
-
     def _is_cti_token_valid(self, token):
         url_suffix: str = "/auth/token/verify/"
         data_for_request: Dict = {"token": token}
@@ -117,7 +104,6 @@ class ZFClient(BaseClient):
         )
         return bool(response)
 
-
     def _get_new_access_token(self):
         url_suffix: str = "/auth/token/"
         data_for_request: Dict = {"username": USERNAME, "password": PASSWORD}
@@ -125,7 +111,6 @@ class ZFClient(BaseClient):
             "POST", url_suffix, data=data_for_request, continue_err=True, header={}
         )
         return response_content.get("access", "")
-
 
     def get_cti_authorization_token(self) -> str:
         """
@@ -141,7 +126,6 @@ class ZFClient(BaseClient):
         demisto.setIntegrationContext({"cti_token": token})
         return token
 
-
     def get_api_request_header(self):
         token: str = self.get_authorization_token()
         return {
@@ -149,7 +133,6 @@ class ZFClient(BaseClient):
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
-
 
     def get_cti_request_header(self):
         token: str = self.get_cti_authorization_token()
@@ -363,6 +346,7 @@ def get_entity_human_readable_outputs(contents: Dict) -> Dict:
         "ID": contents.get("ID"),
     }
 
+
 def transform_alert_human_readable_header(header: str):
     transformations = {
         "EntityName": "Protected Entity",
@@ -481,9 +465,6 @@ def open_alert_command(client, args):
     alert_id: int = dict_value_to_integer(args, "alert_id")
     open_alert(client, alert_id)
     contents: Dict = alert_contents_request(alert_id)
-    context: Dict = {
-        "ZeroFox.Alert(val.ID && val.ID === obj.ID)": {"ID": alert_id, "Status": "Open"}
-    }
     return return_results(
         CommandResults(
             readable_output=f"Successfully opened Alert {alert_id}.",
@@ -507,12 +488,6 @@ def alert_request_takedown_command(client, args):
     alert_id: int = dict_value_to_integer(args, "alert_id")
     alert_request_takedown(client, alert_id)
     contents: Dict = alert_contents_request(alert_id)
-    context: Dict = {
-        "ZeroFox.Alert(val.ID && val.ID === obj.ID)": {
-            "ID": alert_id,
-            "Status": "Takedown:Requested",
-        }
-    }
     return return_results(
         CommandResults(
             readable_output=f"Request to successfully take down Alert {alert_id}.",
@@ -536,9 +511,6 @@ def alert_cancel_takedown_command(client, args):
     alert_id: int = dict_value_to_integer(args, "alert_id")
     alert_cancel_takedown(client, alert_id)
     contents: Dict = alert_contents_request(alert_id)
-    context: Dict = {
-        "ZeroFox.Alert(val.ID && val.ID === obj.ID)": {"ID": alert_id, "Status": "Open"}
-    }
     return return_results(
         CommandResults(
             readable_output=f"Successful cancelled takedown of Alert {alert_id}.",
@@ -548,7 +520,7 @@ def alert_cancel_takedown_command(client, args):
     )
 
 
-def alert_user_assignment(client:ZFClient, alert_id: int, username: str) -> Dict:
+def alert_user_assignment(client: ZFClient, alert_id: int, username: str) -> Dict:
     """
     :param alert_id: The ID of the alert.
     :param username: The username we want to assign to the alert.
@@ -664,7 +636,7 @@ def get_alert_command(client, args):
 
 
 def create_entity(
-        client: ZFClient,
+    client: ZFClient,
     name: str,
     strict_name_matching: bool = None,
     tags: list = None,
@@ -879,7 +851,6 @@ def list_entities_command(client, args):
             human_readable: List = [
                 get_entity_human_readable_outputs(content) for content in contents
             ]
-            context: Dict = {"ZeroFox.Entity(val.ID && val.ID === obj.ID)": contents}
             headers: List = ["Name", "Type", "Policy", "Email", "Tags", "ID"]
             return_results(
                 CommandResults(
@@ -1178,59 +1149,7 @@ def search_exploit_command(client, args):
 
 
 def get_modified_remote_data_command():
-    # raw_args = demisto.args()
-    # args = GetModifiedRemoteDataArgs(raw_args)
-    # last_update = args.last_update
-    try:
-        last_update = None
-
-        if not last_update:
-            last_update = datetime.now() - timedelta(days=30)
-
-        # Get alerts created before `last_update` and modified after `last_update`
-        list_alert_params = {
-            "last_modified_min_date": str(last_update),
-            # "max_timestamp": str(last_update),
-        }
-
-        # response_content = list_alerts(list_alert_params)
-        # modified_alerts = response_content.get("alerts", [])
-        # modified_alert_ids = [alert.get("id") for alert in modified_alerts]
-        modified_alert_ids = [225749559]
-
-        demisto.debug(f"modified_alert_ids: {str(modified_alert_ids)}")
-
-        return return_results(
-            GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
-        )
-    except Exception as e:
-        raise Exception(f"There was an error {e}, skip update")
-
-
-def get_remote_data_command():
-    args = demisto.args()
-    remote_args = GetRemoteDataArgs(args)
-    alert_id = remote_args.remote_incident_id
-
-    response_content = get_alert(alert_id)
-    alert = response_content.get("alert", {})
-
-    entries = []
-    if alert.get("status") in CLOSED_ALERT_STATUS:
-        entries.append({"Contents": {"dbotIncidentClose": True}})
-
-    return return_results(GetRemoteDataResponse(mirrored_object=alert, entries=entries))
-
-
-def get_mapping_fields_command():
-    incident_type_scheme = SchemeTypeMapping(type_name="ZeroFox Mapping")
-    return GetMappingFieldsResponse(incident_type_scheme)
-
-
-def get_modified_remote_data_command():
     raw_args = demisto.args()
-    if not raw_args.get("lastUpdate"):
-        raw_args = {"lastUpdate": datetime.now() - timedelta(days=1)}
     args = GetModifiedRemoteDataArgs(raw_args)
     last_update = args.last_update
 
@@ -1239,7 +1158,12 @@ def get_modified_remote_data_command():
         "last_modified_min_date": str(last_update),
         "max_timestamp": str(last_update),
     }
-    response_content = list_alerts(list_alert_params)
+
+    try:
+        response_content = list_alerts(list_alert_params)
+    except Exception as e:
+        raise Exception(f"There was an error {e}, skip update")
+
     modified_alerts = response_content.get("alerts", [])
     demisto.debug(f"Fetched {len(modified_alerts)} alerts with the following params: {str(list_alert_params)}")
     modified_alert_ids = [str(alert.get("id")) for alert in modified_alerts]
@@ -1270,50 +1194,6 @@ def get_remote_data_command():
     return return_results(GetRemoteDataResponse(mirrored_object=alert, entries=entries))
 
 
-def get_mapping_fields_command():
-    incident_type_scheme = SchemeTypeMapping(type_name="ZeroFox Mapping")
-    return GetMappingFieldsResponse(incident_type_scheme)
-
-
-def get_modified_remote_data_command():
-    raw_args = demisto.args()
-    if not raw_args.get("lastUpdate"):
-        raw_args = {"lastUpdate": datetime.now() - timedelta(days=1)}
-    args = GetModifiedRemoteDataArgs(raw_args)
-    last_update = args.last_update
-
-    # Get alerts created before `last_update` and modified after `last_update`
-    list_alert_params = {
-        "last_modified_min_date": str(last_update),
-        "max_timestamp": str(last_update),
-    }
-    response_content = list_alerts(list_alert_params)
-    modified_alerts = response_content.get("alerts", [])
-    modified_alert_ids = [alert.get("id") for alert in modified_alerts]
-
-    return return_results(GetModifiedRemoteDataResponse(modified_alert_ids))
-
-
-def get_remote_data_command():
-    args = demisto.args()
-    remote_args = GetRemoteDataArgs(args)
-    alert_id = remote_args.remote_incident_id
-
-    response_content = get_alert(alert_id)
-    alert = response_content.get("alert", {})
-
-    entries = []
-    if alert.get("status") in CLOSED_ALERT_STATUS:
-        entries.append({"Contents": {"dbotIncidentClose": True}})
-
-    return return_results(GetRemoteDataResponse(mirrored_object=alert, entries=entries))
-
-
-def get_mapping_fields_command():
-    incident_type_scheme = SchemeTypeMapping(type_name="ZeroFox Mapping")
-    return GetMappingFieldsResponse(incident_type_scheme)
-
-
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 
@@ -1323,7 +1203,6 @@ def main():
         "fetch-incidents": fetch_incidents,
         "get-modified-remote-data": get_modified_remote_data_command,
         "get-remote-data": get_remote_data_command,
-        "get-mapping-fields": get_mapping_fields_command,
         "zerofox-get-alert": get_alert_command,
         "zerofox-alert-user-assignment": alert_user_assignment_command,
         "zerofox-close-alert": close_alert_command,
