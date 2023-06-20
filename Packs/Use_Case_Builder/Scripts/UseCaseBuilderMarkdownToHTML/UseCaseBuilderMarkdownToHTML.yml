@@ -20,7 +20,7 @@ comment: Converts Markdown to HTML.
 commonfields:
   id: UseCaseBuilderMarkdownToHTML
   version: -1
-dockerimage: demisto/bs4-py3:1.0.0.61447
+dockerimage: demisto/bs4-py3:1.0.0.63660
 enabled: true
 name: UseCaseBuilderMarkdownToHTML
 outputs:
