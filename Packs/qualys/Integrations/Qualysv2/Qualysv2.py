@@ -38,10 +38,10 @@ DATE_ARGUMENTS = {
 # Data for parsing and creating output
 COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     "qualys-purge-scan-host-data": {
-            "table_name": "Deleted report",
-            "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
-            "table_headers": ["ID"],
-            "collection_name": "ITEM_LIST"
+        "table_name": "Deleted report",
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+        "table_headers": ["ID"],
+        "collection_name": "ITEM_LIST"
     },
     "qualys-report-list": {
         "collection_name": "REPORT_LIST",
@@ -530,9 +530,9 @@ COMMANDS_CONTEXT_DATA = {
 # Information about the API request of the commands
 COMMANDS_API_DATA: Dict[str, Dict[str, str]] = {
     "qualys-purge-scan-host-data": {
-            "api_route": API_SUFFIX + "asset/host/?action=purge",
-            "call_method": "POST",
-            "resp_type": "text",
+        "api_route": API_SUFFIX + "asset/host/?action=purge",
+        "call_method": "POST",
+        "resp_type": "text",
     },
     "qualys-report-list": {
         "api_route": API_SUFFIX + "/report/?action=list",
@@ -809,8 +809,8 @@ TAG_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
 # Arguments' names of each command
 COMMANDS_ARGS_DATA: Dict[str, Any] = {
     "qualys-purge-scan-host-data": {
-            "args": ["action", "echo_request", "ids", "ips", "ag_ids", "ag_titles", "network_ids",
-            "no_vm_scan_since", "no_compliance_scan_since", "data_scope", "compliance_enabled", "os_pattern"]
+        "args": ["action", "echo_request", "ids", "ips", "ag_ids", "ag_titles", "network_ids",
+        "no_vm_scan_since", "no_compliance_scan_since", "data_scope", "compliance_enabled", "os_pattern"]
     },
     "qualys-report-list": {
         "args": ["id", "state", "user_login", "expires_before_datetime", "client_id", "client_name"],
@@ -1326,8 +1326,8 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "active",
             "scanners_in_network",
             "recurrence",
-            "end_after_mins",     
-            "iscanner_id",        
+            "end_after_mins",
+            "iscanner_id",
             "iscanner_name"
         ],
         "required_groups": [
