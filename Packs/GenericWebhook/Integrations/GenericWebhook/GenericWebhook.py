@@ -59,7 +59,6 @@ async def handle_post(
 ):
     header_name = None
     request_headers = dict(request.headers)
-    secret_header = (header_name or 'Authorization').lower()
 
     credentials_param = demisto.params().get('credentials')
 
@@ -68,7 +67,6 @@ async def handle_post(
         auth_failed = False
         if username.startswith('_header'):
             header_name = username.split(':')[1]
-            secret_header = (header_name or 'Authorization').lower()
             token_auth.model.name = header_name
             if not token or not compare_digest(token, password):
                 auth_failed = True
@@ -76,11 +74,13 @@ async def handle_post(
                                    and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
+            secret_header = (header_name or 'Authorization').lower()
             if secret_header in request_headers:
                 request_headers[secret_header] = '***'
             demisto.debug(f'Authorization failed - request headers {request_headers}')
             return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
+    secret_header = (header_name or 'Authorization').lower()
     request_headers.pop(secret_header, None)
 
     raw_json = incident.raw_json or await request.json()
