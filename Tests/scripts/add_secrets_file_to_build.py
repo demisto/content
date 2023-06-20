@@ -12,7 +12,7 @@ from pathlib import Path
 def get_git_diff(branch_name: str, repo) -> list[str]:
     """
     Gets the diff from master using git
-    :param branch_name: the name of the
+    :param branch_name: the name of the branch of the PR
     :param repo: The git repo object
     :return: a list with the changed files
     """
@@ -41,6 +41,7 @@ def get_git_diff(branch_name: str, repo) -> list[str]:
                 logging.error(f'unexpected line format '
                               f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
                               f', got {line}')
+                continue
 
         if git_status not in {'A', 'M', 'D', }:
             logging.error(f'unexpected {git_status=}, considering it as <M>odified')
@@ -53,7 +54,7 @@ def get_git_diff(branch_name: str, repo) -> list[str]:
 def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack_ids: list[str]) -> dict:
     """
     Gets the dev secrets and main secrets from GSM and merges them
-    :param branch_name: the name of the
+    :param branch_name: the name of the branch of the PR
     :param options: the parsed parameter for the script
     :param yml_pack_ids: a list of IDs of changed integrations
     :return: the list of secrets from GSM to use in the build
@@ -148,7 +149,7 @@ def options_handler(args=None) -> argparse.Namespace:
     """
     Parse the passed parameters for the script
     :param args: a list of arguments to add
-    :return: the list of IDs of integrations to search secrets for
+    :return: the parsed arguments that were passed to the script
     """
     parser = argparse.ArgumentParser(description='Utility for Importing secrets from Google Secret Manager.')
     parser.add_argument('-gpid', '--gsm_project_id', help='The project id for the GSM.')
