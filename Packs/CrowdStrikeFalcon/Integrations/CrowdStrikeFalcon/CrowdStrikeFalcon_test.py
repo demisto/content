@@ -6,8 +6,9 @@ from urllib.parse import unquote
 from _pytest.python_api import raises
 
 import demistomock as demisto
-from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus
+from CommonServerPython import outputPaths, entryTypes, DemistoException, IncidentStatus, ScheduledCommand
 from test_data import input_data
+from freezegun import freeze_time
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
@@ -3472,8 +3473,8 @@ def test_list_host_group_members(requests_mock):
     )
     command_results = list_host_group_members_command()
     expected_results = load_json('test_data/expected_list_hostgroup_members_results.json')
-    for expected_results, ectual_results in zip(expected_results, command_results.outputs):
-        assert expected_results == ectual_results
+    for expected_result, ectual_results in zip(expected_results, command_results.outputs):
+        assert expected_result == ectual_results
 
 
 def test_upload_batch_custom_ioc_command(requests_mock):
@@ -4644,3 +4645,735 @@ def test_apply_quarantine_file_action_command(requests_mock):
 
     assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
     assert mock_request.last_request.text == '{"ids": ["121212", "171717"], "comment": "Added a test comment."}'
+
+
+filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
+custom_filter = 'key1:"val1"+key2:["val3","val4"]'
+
+
+@pytest.mark.parametrize(
+    'filter_args, custom_filter, output_filter',
+    (
+        (filter_args, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]%2Bkey1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
+        (filter_args, None, 'key1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
+        ({}, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]')
+    )
+)
+def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
+    """
+    Test build_cs_falcon_filter.
+
+    Given
+        - A dictionary filter and a custom filter.
+
+    When
+        - Before an cs-falcon query.
+
+    Then
+        - Return a merged FQL filter as a single string.
+    """
+    from CrowdStrikeFalcon import build_cs_falcon_filter
+
+    result = build_cs_falcon_filter(custom_filter, **filter_args)
+
+    assert output_filter == result
+
+
+@pytest.mark.parametrize(
+    'command_args, query_result, entites_result, readable_output',
+    (
+        ({'wait_for_result': False}, [], {}, 'No scans match the arguments/filter.'),
+        ({'wait_for_result': False}, ['123456'], {'resources': [{'id': '123456'}]},
+         ('### CrowdStrike Falcon ODS Scans\n'
+          '|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|\n'
+          '|---|---|---|---|---|---|---|---|---|\n'
+          '| 123456 |  |  |  |  |  |  |  |  |\n')),
+        ({'wait_for_result': True, 'ids': '123456'}, [], {'resources': [{'status': 'pending'}]}, 'Retrieving scan results:'),
+    )
+)
+def test_cs_falcon_ODS_query_scans_command(mocker, command_args, query_result, entites_result, readable_output):
+    """
+    Test cs_falcon_ODS_query_scans_command.
+
+    Given
+        - A request for a list of ODS endpoint scans by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command or the "cs-falcon-ods-create-scan".
+
+    Then
+        - Get a list of scans from CS Falcon and poll for results if wait_for_results is True.
+    """
+
+    from CrowdStrikeFalcon import cs_falcon_ODS_query_scans_command
+
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    mocker.patch('CrowdStrikeFalcon.get_ODS_scan_ids', return_value=query_result)
+    mocker.patch('CrowdStrikeFalcon.ODS_get_scans_by_id_request', return_value=entites_result)
+
+    result = cs_falcon_ODS_query_scans_command(command_args)
+
+    assert result.readable_output == readable_output
+
+
+@pytest.mark.parametrize(
+    'input_params, call_params',
+    (
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
+    )
+)
+def test_ODS_query_scans_request(mocker, input_params, call_params):
+    """
+    Test ODS_query_scans_request.
+
+    Given
+        - A request for a list of ODS endpoint scans by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command without specifying ids.
+
+    Then
+        - Call /ods/queries/scans/v1 with a filter, limit and offset if given and return the ids in response.
+    """
+
+    from CrowdStrikeFalcon import ODS_query_scans_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_scans_request(**input_params)
+    http_request.assert_called_with('GET', f'/ods/queries/scans/v1?{call_params}')
+
+
+def test_ODS_get_scans_by_id_request(mocker):
+    """
+    Test ODS_get_scans_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/scans/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_scans_by_id_request
+
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    ODS_get_scans_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/scans/v1?{ids_string}')
+
+
+def test_map_scan_resource_to_UI(mocker):
+    """
+    Test map_scan_resource_to_UI.
+
+    Given
+        - A dictionary response from /ods/entities/scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan" command
+
+    Then
+        - Return a dict with keys corresponding the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import map_scan_resource_to_UI
+
+    resource = {
+        "id": "91000dbf0a4e4f5eb2a02528c00fa902",
+        "cid": "20879a8064904ecfbb62c118a6a19411",
+        "profile_id": "0e313756da21480c8eb5cf37da77a97a",
+        "description": "desc3456346",
+        "scan_inclusions": [
+            "*"
+        ],
+        "initiated_from": "cloud_scheduled",
+        "quarantine": True,
+        "cpu_priority": 2,
+        "preemption_priority": 15,
+        "metadata": [
+            {
+                "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                "host_scan_id": "38588c1b29aa9946a3de95e997ad7948",
+                "scan_host_metadata_id": "6aec6c04ab2e4c99b4e843637d3e37d0",
+                "filecount": {
+                    "scanned": 0,
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "skipped": 0,
+                    "traversed": 518464
+                },
+                "status": "completed",
+                "started_on": "2023-03-15T15:57:37.59543591Z",
+                "completed_on": "2023-03-15T16:02:20.845829991Z",
+                "last_updated": "2023-03-15T16:02:20.845909034Z"
+            },
+            {
+                "host_id": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "scan_host_metadata_id": "2e99e4fc7a4f4b1e9254e0af210a6994",
+                "filecount": {
+                    "scanned": 0,
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "skipped": 0,
+                    "traversed": 209
+                },
+                "status": "failed",
+                "last_updated": "2023-04-05T02:23:10.316500752Z"
+            }
+        ],
+        "filecount": {},
+        "status": "failed",
+        "host_groups": [
+            "7471ba0636b34cbb8c65fae7979a6a9b"
+        ],
+        "endpoint_notification": True,
+        "pause_duration": 2,
+        "max_duration": 2,
+        "max_file_size": 60,
+        "sensor_ml_level_detection": 2,
+        "sensor_ml_level_prevention": 2,
+        "cloud_ml_level_detection": 2,
+        "cloud_ml_level_prevention": 2,
+        "policy_setting": [
+            26439818674573,
+            26439818674574,
+        ],
+        "scan_started_on": "2023-03-15T15:57:37.59543591Z",
+        "scan_completed_on": "2023-04-18T14:56:38.527255649Z",
+        "created_on": "2023-03-15T15:57:37.59543591Z",
+        "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+        "last_updated": "2023-04-05T02:23:10.316500752Z"
+    }
+    mapped_resource = {
+        'ID': "91000dbf0a4e4f5eb2a02528c00fa902",
+        'Status': "failed",
+        'Severity': None,
+        'Description': "desc3456346",
+        'File Count': ('scanned: 0\nmalicious: 0\n'
+                       'quarantined: 0\nskipped: 0\ntraversed: 518464'
+                       '\n-\nscanned: 0\nmalicious: 0\n'
+                       'quarantined: 0\nskipped: 0\ntraversed: 209'),
+        'Hosts/Host groups': [
+            "7471ba0636b34cbb8c65fae7979a6a9b"
+        ],
+        'Start time': "2023-03-15T15:57:37.59543591Z",
+        'End time': "2023-04-18T14:56:38.527255649Z",
+        'Run by': "f7acf1bd5d3d4b40afe77546cbbaefde"
+    }
+
+    output = map_scan_resource_to_UI(resource)
+
+    assert output == mapped_resource
+
+
+@pytest.mark.parametrize(
+    'input_params, call_params',
+    (
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
+    )
+)
+def test_ODS_query_scheduled_scans_request(mocker, input_params, call_params):
+    """
+    Test ODS_query_scheduled_scans_request.
+
+    Given
+        - A request for a list of ODS endpoint scheduled scans by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scheduled-scan" command without specifying ids.
+
+    Then
+        - Call /ods/queries/scheduled-scans/v1 with a filter, limit and offset if given and return the ids in response.
+    """
+
+    from CrowdStrikeFalcon import ODS_query_scheduled_scans_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_scheduled_scans_request(**input_params)
+    http_request.assert_called_with('GET', f'/ods/queries/scheduled-scans/v1?{call_params}')
+
+
+def test_ODS_get_scheduled_scans_by_id_request(mocker):
+    """
+    Test ODS_get_scheduled_scans_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint scheduled scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scheduled-scan" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/scheduled-scans/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_scheduled_scans_by_id_request
+
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    ODS_get_scheduled_scans_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/scheduled-scans/v1?{ids_string}')
+
+
+def test_map_scheduled_scan_resource_to_UI(mocker):
+    """
+    Test map_scan_resource_to_UI.
+
+    Given
+        - A dictionary response from /ods/entities/scheduled-scans.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scheduled-scan" command
+
+    Then
+        - Return a dict with keys corresponding the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import map_scheduled_scan_resource_to_UI
+
+    resource = {
+        "id": "9055945bdfbc4b42bf7c9c16976186ca",
+        "cid": "20879a8064904ecfbb62c118a6a19411",
+        "description": "desc3456346",
+        "scan_inclusions": [
+            "*"
+        ],
+        "initiated_from": "cloud_scheduled",
+        "quarantine": True,
+        "cpu_priority": 2,
+        "preemption_priority": 15,
+        "metadata": [
+            {
+                "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                "last_updated": "2023-05-01T13:54:48.51553853Z"
+            }
+        ],
+        "status": "scheduled",
+        "host_groups": [
+            "7471ba0636b34cbb8c65fae7979a6a9b"
+        ],
+        "endpoint_notification": True,
+        "pause_duration": 2,
+        "max_duration": 2,
+        "max_file_size": 60,
+        "sensor_ml_level_detection": 2,
+        "sensor_ml_level_prevention": 2,
+        "cloud_ml_level_detection": 2,
+        "cloud_ml_level_prevention": 2,
+        "policy_setting": [
+            26439818674573,
+        ],
+        "schedule": {
+            "start_timestamp": "2023-06-15T15:57",
+            "interval": 0
+        },
+        "created_on": "2023-05-01T13:54:48.51553853Z",
+        "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+        "last_updated": "2023-05-01T13:54:48.51553853Z",
+        "deleted": False
+    }
+
+    mapped_resource = {
+        'ID': '9055945bdfbc4b42bf7c9c16976186ca',
+        'Hosts targeted': 1,
+        'Description': 'desc3456346',
+        'Host groups': ['7471ba0636b34cbb8c65fae7979a6a9b'],
+        'Start time': '2023-06-15T15:57',
+        'Created by': 'f7acf1bd5d3d4b40afe77546cbbaefde',
+    }
+
+    output = map_scheduled_scan_resource_to_UI(resource)
+
+    assert output == mapped_resource
+
+
+@pytest.mark.parametrize(
+    'input_params, call_params',
+    (
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
+    )
+)
+def test_ODS_query_scan_hosts_request(mocker, input_params, call_params):
+    """
+    Test ODS_query_scan_hosts_request.
+
+    Given
+        - A request for a list of ODS endpoint scan hosts by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan-host" command without specifying ids.
+
+    Then
+        - Call /ods/queries/scan-hosts/v1 with a filter, limit and offset if given and return the ids in response.
+    """
+
+    from CrowdStrikeFalcon import ODS_query_scan_hosts_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_scan_hosts_request(**input_params)
+    http_request.assert_called_with('GET', f'/ods/queries/scan-hosts/v1?{call_params}')
+
+
+def test_ODS_get_scan_hosts_by_id_request(mocker):
+    """
+    Test ODS_get_scan_hosts_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint scan hosts.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan-hosts" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/scan-hosts/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_scan_hosts_by_id_request
+
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    ODS_get_scan_hosts_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/scan-hosts/v1?{ids_string}')
+
+
+def test_map_scan_host_resource_to_UI(mocker):
+    """
+    Test map_scan_resource_to_UI.
+
+    Given
+        - A dictionary response from /ods/entities/scan-hosts.
+
+    When
+        - The user runs the "cs-falcon-ods-query-scan-host" command
+
+    Then
+        - Return a dict with keys corresponding the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import map_scan_host_resource_to_UI
+
+    resource = {
+        "id": "185a0ad5e159418e8927d956c1a793d8",
+        "cid": "3c74ca9ad4k43592ea2adf4ca94k4359",
+        "scan_id": "fadde07ee8a44a07988e009b3152e339",
+        "profile_id": "ddf8914cca5f4ac595272fe8122e308f",
+        "host_id": "82395m302t8zea2u25978416be1973c5",
+        "host_scan_id": "7e80aa16a44d30cb819e27144d2603b0",
+        "filecount": {
+            "scanned": 1021,
+            "malicious": 104,
+            "quarantined": 0,
+            "skipped": 9328
+        },
+        "status": "completed",
+        "severity": 70,
+        "started_on": "2022-11-01T18:54:59.39861174Z",
+        "completed_on": "2022-11-01T19:08:17.903700092Z",
+        "last_updated": "2022-11-01T19:08:17.903732519Z"
+    }
+
+    mapped_resource = {
+        'ID': "185a0ad5e159418e8927d956c1a793d8",
+        'Scan ID': "fadde07ee8a44a07988e009b3152e339",
+        'Host ID': "82395m302t8zea2u25978416be1973c5",
+        'Filecount': {
+            "scanned": 1021,
+            "malicious": 104,
+            "quarantined": 0,
+            "skipped": 9328
+        },
+        'Status': "completed",
+        'Severity': 70,
+        'Started on': "2022-11-01T18:54:59.39861174Z",
+    }
+
+    output = map_scan_host_resource_to_UI(resource)
+
+    assert output == mapped_resource
+
+
+@pytest.mark.parametrize(
+    'input_params, call_params',
+    (
+        ({'key1': 'val1', 'key2': None}, 'key1=val1'),
+        ({'key1': 'val1', 'key2': 'val2'}, 'key1=val1&key2=val2')
+    )
+)
+def test_ODS_query_malicious_files_request(mocker, input_params, call_params):
+    """
+    Test ODS_query_malicious_files_request.
+
+    Given
+        - A request for a list of ODS endpoint malicious files by id.
+
+    When
+        - The user runs the "cs-falcon-ods-query-malicious-file" command without specifying ids.
+
+    Then
+        - Call /ods/queries/malicious-files/v1 with a filter, limit and offset if given and return the ids in response.
+    """
+
+    from CrowdStrikeFalcon import ODS_query_malicious_files_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_query_malicious_files_request(**input_params)
+    http_request.assert_called_with('GET', f'/ods/queries/malicious-files/v1?{call_params}')
+
+
+def test_ODS_get_malicious_files_by_id_request(mocker):
+    """
+    Test ODS_get_malicious_files_by_id_request.
+
+    Given
+        - A request for info on ODS endpoint malicious files.
+
+    When
+        - The user runs the "cs-falcon-ods-query-malicious-files" command and we obtain a non-empty list of ids.
+
+    Then
+        - Call /ods/entities/malicious-files/v1 with the ids and return the response.
+    """
+
+    from CrowdStrikeFalcon import ODS_get_malicious_files_by_id_request
+
+    ids_list = ['<id1>', '<id2>', '<id3>']
+    ids_string = 'ids=<id1>&ids=<id2>&ids=<id3>'
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    ODS_get_malicious_files_by_id_request(ids_list)
+    http_request.assert_called_with('GET', f'/ods/entities/malicious-files/v1?{ids_string}')
+
+
+def test_map_malicious_file_resource_to_UI(mocker):
+    """
+    Test map_scan_resource_to_UI.
+
+    Given
+        - A dictionary response from /ods/entities/malicious-files.
+
+    When
+        - The user runs the "cs-falcon-ods-query-malicious-file" command
+
+    Then
+        - Return a dict with keys corresponding the cs-falcon UI.
+    """
+    from CrowdStrikeFalcon import map_malicious_file_resource_to_UI
+
+    resource = {
+        "id": "d684849d4cea435daec706e473743863",
+        "cid": "91a0649f84749a38f6d939423bed5576",
+        "scan_id": "81c8009a59be4570b5c66f8946559205",
+        "host_id": "3c7be1c5ea21849fa5c74ca9842f46a9",
+        "host_scan_id": "4f9fea030a0626ed4dc53a7dec70a100",
+        "filepath": "C:\\\\Windows\\Malicious\\Mimikatz_newzipp\\Mimikatz\\x86\\mimilib.dll",
+        "filename": "mimilib.dll",
+        "hash": "9ff1a527861a69b436b51a8d464aaee8d416e39ff1a52aee16e39b436b564a78",
+        "pattern_id": 4004,
+        "severity": 70,
+        "quarantined": True,
+        "last_updated": "2022-11-01T17:06:18.900620631Z"
+    }
+    mapped_resource = {
+        'ID': 'd684849d4cea435daec706e473743863',
+        'Scan id': '81c8009a59be4570b5c66f8946559205',
+        'Filename': 'mimilib.dll',
+        'Hash': '9ff1a527861a69b436b51a8d464aaee8d416e39ff1a52aee16e39b436b564a78',
+        'Severity': 70,
+        'Last updated': '2022-11-01T17:06:18.900620631Z',
+    }
+
+    output = map_malicious_file_resource_to_UI(resource)
+
+    assert output == mapped_resource
+
+
+@pytest.mark.parametrize(
+    'args, is_scheduled, expected_result',
+    (
+        ({'quarantine': 'false', 'schedule_interval': 'every other week',
+          'schedule_start_timestamp': 'tomorrow'}, True, {'quarantine': False}),
+        ({'cpu_priority': 'Low', 'max_duration': 1}, False, {'cpu_priority': 2, 'max_duration': 1}),
+    )
+)
+def test_make_create_scan_request_body(args, is_scheduled, expected_result):
+    """
+    Test make_create_scan_request_body.
+
+    Given
+        - Arguments to create a scan/scheduled-scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
+
+    Then
+        - Return a dict to send as the body for a create scan request.
+    """
+
+    from CrowdStrikeFalcon import make_create_scan_request_body
+
+    output = make_create_scan_request_body(args, is_scheduled)
+
+    if is_scheduled:
+        assert 'hosts' not in output
+        assert isinstance(output['schedule']['interval'], int)  # function doesn't enforce this
+    else:
+        assert 'hosts' in output
+        assert 'schedule' not in output
+
+    for key, value in expected_result.items():
+        assert output[key] == value
+
+
+@pytest.mark.parametrize(
+    'args, is_error, expected_error_info',
+    (
+        ({}, True, 'MUST set either hosts OR host_groups.'),
+        ({'hosts': 'john doe'}, True, 'MUST set either file_paths OR scan_inclusions.'),
+        ({'hosts': 'john doe', 'file_paths': '*'}, False, None),
+    )
+)
+def test_ODS_verify_create_scan_command(args, is_error, expected_error_info):
+    """
+    Test ODS_verify_create_scan_command.
+
+    Given
+        - Arguments to create a scan/scheduled-scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
+
+    Then
+        - Return a dict to send as the body for a create scan request.
+    """
+    from CrowdStrikeFalcon import ODS_verify_create_scan_command
+
+    if is_error:
+        with pytest.raises(DemistoException) as error_info:
+            ODS_verify_create_scan_command(args)
+        assert str(error_info.value) == expected_error_info
+    else:
+        ODS_verify_create_scan_command(args)
+
+
+def test_cs_falcon_ods_create_scan_command(mocker):
+    """
+    Test cs_falcon_ods_create_scan_command.
+
+    Given
+        - Arguments to create a scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
+
+    Then
+        - Create an ODS scan.
+    """
+
+    from CrowdStrikeFalcon import cs_falcon_ods_create_scan_command
+
+    mocker.patch('CrowdStrikeFalcon.ods_create_scan', return_value={'id': 'random_id'})
+    query_scans_command = mocker.patch('CrowdStrikeFalcon.cs_falcon_ODS_query_scans_command')
+
+    cs_falcon_ods_create_scan_command({'interval_in_seconds': 1, 'timeout_in_seconds': 1})
+
+    query_scans_command.assert_called_with({
+        'ids': 'random_id',
+        'wait_for_result': True,
+        'interval_in_seconds': 1,
+        'timeout_in_seconds': 1,
+    })
+
+
+def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
+    """
+    Test cs_falcon_ods_create_scheduled_scan_command.
+
+    Given
+        - Arguments to create a scheduled-scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scheduled-scan" command
+
+    Then
+        - Create a scheduled scan.
+    """
+
+    from CrowdStrikeFalcon import cs_falcon_ods_create_scheduled_scan_command
+
+    mocker.patch('CrowdStrikeFalcon.ods_create_scan', return_value={'id': 'random_id'})
+    result = cs_falcon_ods_create_scheduled_scan_command(
+        {'quarantine': 'false', 'schedule_interval': 'every other week'})
+    assert result.readable_output == 'Successfully created scheduled scan with ID: random_id'
+
+
+@pytest.mark.parametrize(
+    'args, is_scheduled, body',
+    (
+        ({'quarantine': 'false', 'schedule_interval': 'every other week',
+          'schedule_start_timestamp': 'tomorrow'}, True,
+         {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22'}}),
+        ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
+    )
+)
+@freeze_time("2020-09-26 17:22:13 UTC")
+def test_ODS_create_scan_request(mocker, args, is_scheduled, body):
+    """
+    Test ODS_create_scan_request.
+
+    Given
+        - Arguments to create a scan/scheduled-scan.
+
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
+
+    Then
+        - Create a scan/scheduled-scan.
+    """
+
+    from CrowdStrikeFalcon import ODS_create_scan_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_create_scan_request(args, is_scheduled)
+    http_request.assert_called_with('POST', f'/ods/entities/{"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
+
+
+@pytest.mark.parametrize(
+    'ids, scans_filter, url_params',
+    (
+        (['id1', 'id2'], None, 'ids=id1&ids=id2'),
+        ([], 'key1:val1+key2:val2', 'filter=key1:val1%2Bkey2:val2'),
+        (['id1', 'id2'], 'key1:val1+key2:val2', 'ids=id1&ids=id2&filter=key1:val1%2Bkey2:val2'),
+    )
+)
+def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_params):
+    """
+    Test ODS_delete_scheduled_scans_request.
+
+    Given
+        - Arguments to delete a scheduled-scans.
+
+    When
+        - The user runs the "cs-falcon-ods-delete-scheduled-scan" command
+
+    Then
+        - Delete ODS scheduled scans.
+    """
+
+    from CrowdStrikeFalcon import ODS_delete_scheduled_scans_request
+
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_delete_scheduled_scans_request(ids, scans_filter)
+    http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)
