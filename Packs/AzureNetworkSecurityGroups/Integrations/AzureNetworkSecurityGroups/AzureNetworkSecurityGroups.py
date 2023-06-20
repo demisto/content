@@ -247,7 +247,7 @@ def delete_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> str
 
 
 @ logger
-def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> List[CommandResults]:
+def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Creates a rule in a security group
     Args:
@@ -267,7 +267,7 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Lis
     priority = args.get('priority', '4096')
     description = args.get('description', '')
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
-    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
@@ -303,31 +303,15 @@ def create_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Lis
     if description:
         properties['description'] = description
 
-    Warning_message = ''
-    all_resource_groups_are_wrong = True
-    command_results_list = []
+    rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
+                              properties=properties, subscription_id=subscription_id,
+                              resource_group_name=resource_group_name)
 
-    for resource_group_name in resource_group_list:
-        try:
-            rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
-                                      properties=properties, subscription_id=subscription_id,
-                                      resource_group_name=resource_group_name)
-            all_resource_groups_are_wrong = False
-            command_results_list.append(format_rule(rule, security_rule_name))
-        except Exception as e:
-            # If at least one of the resource groups is correct, we don't want to raise an error
-            # We want to continue to the next resource group and return the warning message for the wrong ones
-            Warning_message += (f"Rule '{security_rule_name}' with resource_group_name\
- '{resource_group_name}' was not created. The full error is:\n{e}\n\n")
-            # If all resource groups are wrong, we want to raise an error
-            if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
-                raise
-    return_warning(Warning_message) if Warning_message else None
-    return command_results_list
+    return format_rule(rule, security_rule_name)
 
 
 @ logger
-def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> List[CommandResults]:
+def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     Update an existing rule.
 
@@ -354,79 +338,60 @@ def update_rule_command(client: AzureNSGClient, params: Dict, args: Dict) -> Lis
     priority = args.get('priority', '')
     description = args.get('description', '')
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
-    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    warning_message = ''
-    all_resource_groups_are_wrong = True
-    command_results_list = []
+    rule = client.get_rule(security_group=security_group_name, rule_name=security_rule_name,
+                           subscription_id=subscription_id, resource_group_name=resource_group_name)
+    properties = rule.get('properties')
 
-    for resource_group_name in resource_group_list:
-        try:
-            rule = client.get_rule(security_group=security_group_name, rule_name=security_rule_name,
-                                   subscription_id=subscription_id, resource_group_name=resource_group_name)
-            properties = rule.get('properties')
+    updated_properties = assign_params(protocol='*' if protocol == 'Any' else protocol,
+                                       access=action, priority=priority,
+                                       direction=direction, description=description)
+    if source_ports:
+        source_ports_list = argToList(source_ports)
+        if len(source_ports_list) > 1:
+            properties.pop("sourcePortRange", None)  # Can't supply both sourcePortRange and sourcePortRanges
+            updated_properties["sourcePortRanges"] = source_ports_list
+        else:
+            properties.pop("sourcePortRanges", None)  # Can't supply both sourcePortRange and sourcePortRanges
+            updated_properties["sourcePortRange"] = source_ports
 
-            updated_properties = assign_params(protocol='*' if protocol == 'Any' else protocol,
-                                               access=action, priority=priority,
-                                               direction=direction, description=description)
-            if source_ports:
-                source_ports_list = argToList(source_ports)
-                if len(source_ports_list) > 1:
-                    properties.pop("sourcePortRange", None)  # Can't supply both sourcePortRange and sourcePortRanges
-                    updated_properties["sourcePortRanges"] = source_ports_list
-                else:
-                    properties.pop("sourcePortRanges", None)  # Can't supply both sourcePortRange and sourcePortRanges
-                    updated_properties["sourcePortRange"] = source_ports
+    if destination_ports:
+        dest_ports_list = argToList(destination_ports)
+        if len(dest_ports_list) > 1:
+            properties.pop("destinationPortRange", None)  # Can't supply both destinationPortRange,destinationPortRanges
+            updated_properties['destinationPortRanges'] = dest_ports_list
+        else:
+            properties.pop("destinationPortRanges", None)  # Can't supply destinationPortRange and destinationPortRanges
+            updated_properties['destinationPortRange'] = destination_ports
 
-            if destination_ports:
-                dest_ports_list = argToList(destination_ports)
-                if len(dest_ports_list) > 1:
-                    properties.pop("destinationPortRange", None)  # Can't supply both destinationPortRange,destinationPortRanges
-                    updated_properties['destinationPortRanges'] = dest_ports_list
-                else:
-                    properties.pop("destinationPortRanges", None)  # Can't supply destinationPortRange and destinationPortRanges
-                    updated_properties['destinationPortRange'] = destination_ports
+    if destination:
+        dest_list = argToList(destination)
+        if len(dest_list) > 1:
+            properties.pop("destinationAddressPrefix", None)  # Can't supply both destinationAddressPrefix and
+            # destinationAddressPrefix
+            updated_properties['destinationAddressPrefixes'] = dest_list
+        else:
+            properties.pop("destinationAddressPrefixes", None)  # Can't supply both
+            # destinationAddressPrefixes, destinationAddressPrefixes
+            updated_properties['destinationAddressPrefix'] = '*' if destination == 'Any' else destination
 
-            if destination:
-                dest_list = argToList(destination)
-                if len(dest_list) > 1:
-                    properties.pop("destinationAddressPrefix", None)  # Can't supply both destinationAddressPrefix and
-                    # destinationAddressPrefix
-                    updated_properties['destinationAddressPrefixes'] = dest_list
-                else:
-                    properties.pop("destinationAddressPrefixes", None)  # Can't supply both
-                    # destinationAddressPrefixes, destinationAddressPrefixes
-                    updated_properties['destinationAddressPrefix'] = '*' if destination == 'Any' else destination
+    if source:
+        source_list = argToList(source)
+        if len(source_list) > 1:
+            properties.pop("sourceAddressPrefix", None)  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
+            updated_properties['sourceAddressPrefixes'] = source_list
+        else:
+            properties.pop("sourceAddressPrefixes", None)  # Can't supply both sourceAddressPrefixes,sourceAddressPrefix
+            updated_properties['sourceAddressPrefix'] = '*' if source == 'Any' else source
 
-            if source:
-                source_list = argToList(source)
-                if len(source_list) > 1:
-                    properties.pop("sourceAddressPrefix", None)  # Can't supply both sourceAddressPrefixes, sourceAddressPrefix
-                    updated_properties['sourceAddressPrefixes'] = source_list
-                else:
-                    properties.pop("sourceAddressPrefixes", None)  # Can't supply both sourceAddressPrefixes,sourceAddressPrefix
-                    updated_properties['sourceAddressPrefix'] = '*' if source == 'Any' else source
+    properties.update(updated_properties)
 
-            properties.update(updated_properties)
+    rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
+                              properties=properties, subscription_id=subscription_id,
+                              resource_group_name=resource_group_name)
 
-            rule = client.create_rule(security_group=security_group_name, rule_name=security_rule_name,
-                                      properties=properties, subscription_id=subscription_id,
-                                      resource_group_name=resource_group_name)
-            all_resource_groups_are_wrong = False
-            command_results_list.append(format_rule(rule, security_rule_name))
-
-        except Exception as e:
-            # If at least one of the resource groups is correct, we don't want to raise an error
-            # We want to continue to the next resource group and return the warning message for the wrong ones
-            warning_message += (f"Rule '{security_rule_name}' with resource_group_name \
-'{resource_group_name}' was not updated. The full error is:\n{e}\n\n")
-
-            # If all resource groups are wrong, we want to raise an error
-            if all_resource_groups_are_wrong and resource_group_name == resource_group_list[-1]:
-                raise
-
-    return_warning(warning_message) if warning_message else None
-    return command_results_list
+    return format_rule(rule, security_rule_name)
 
 
 @ logger
@@ -477,7 +442,7 @@ def nsg_subscriptions_list_command(client: AzureNSGClient) -> CommandResults:
 
 
 @ logger
-def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: Dict) -> List[CommandResults]:
+def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: Dict) -> CommandResults:
     """
     List all resource groups in the subscription.
     Args:
@@ -485,49 +450,32 @@ def nsg_resource_group_list_command(client: AzureNSGClient, params: Dict, args: 
         args (Dict[str, Any]): command arguments.
         params (Dict[str, Any]): configuration parameters.
     Returns:
-        List of Command results with raw response, outputs and readable outputs.
+        Command results with raw response, outputs and readable outputs.
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', 50))
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
-    subscription_id_list = argToList(get_from_args_or_params(params=params, args=args, key='subscription_id'))
+    subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     filter_by_tag = arg_to_tag(tag) if tag else ''
 
-    command_results_list = []
-    warning_message = ''
-    all_subscriptions_are_wrong: bool = True
-    for subscription_id in subscription_id_list:
-        try:
-            response = client.list_resource_groups_request(subscription_id=subscription_id,
-                                                           filter_by_tag=filter_by_tag, limit=limit)
-            all_subscriptions_are_wrong = False
-            data_from_response = response.get('value', [response])
+    response = client.list_resource_groups_request(subscription_id=subscription_id,
+                                                   filter_by_tag=filter_by_tag, limit=limit)
+    data_from_response = response.get('value', [response])
 
-            readable_output = tableToMarkdown('Resource Groups List',
-                                              data_from_response,
-                                              ['name', 'location', 'tags',
-                                               'properties.provisioningState'
-                                               ],
-                                              removeNull=True, headerTransform=string_to_table_header)
-            command_results_list.append(CommandResults(
-                outputs_prefix='AzureNSG.ResourceGroup',
-                outputs_key_field='id',
-                outputs=data_from_response,
-                raw_response=response,
-                readable_output=readable_output,
-            ))
-
-        except Exception as e:
-            # If at least one subscription is correct, we will not return the data of the correct subscriptions,
-            # and a warning message for the wrong subscriptions will be returned as well.
-            warning_message += f'Failed to get resource groups for subscription id "{subscription_id}". Error: {str(e)}\n\n'
-            if all_subscriptions_are_wrong and subscription_id == subscription_id_list[-1]:
-                # if all subscriptions are wrong, we will raise an exception.
-                raise
-
-    return_warning(warning_message) if warning_message else None
-    return command_results_list
+    readable_output = tableToMarkdown('Resource Groups List',
+                                      data_from_response,
+                                      ['name', 'location', 'tags',
+                                       'properties.provisioningState'
+                                       ],
+                                      removeNull=True, headerTransform=string_to_table_header)
+    return CommandResults(
+        outputs_prefix='AzureNSG.ResourceGroup',
+        outputs_key_field='id',
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
 
 
 @ logger
