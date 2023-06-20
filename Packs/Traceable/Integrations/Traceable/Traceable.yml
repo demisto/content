@@ -28,19 +28,6 @@ configuration:
     defaultvalue: "100"
     type: 0
     required: false
-  - display: Incidents Fetch Interval
-    name: incidentFetchInterval
-    defaultvalue: "5"
-    type: 19
-    required: false
-  - display: Fetch indicators
-    name: feed
-    type: 8
-    required: false
-  - display: Incident type
-    name: incidentType
-    type: 13
-    required: false
   - display: "Comma Separated Environment List To Process"
     name: environment
     type: 12
@@ -84,26 +71,10 @@ configuration:
       - HIGH
       - MEDIUM
       - LOW
-description: "[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]"
+description: "Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex Xsoar for further action."
 display: "Traceable"
 name: Traceable
 script:
-  commands:
-    - arguments:
-        - default: false
-          description: "[Enter a description of the argument, including any important information users need to know, for example, default values.]"
-          isArray: false
-          name: dummy
-          required: true
-          secret: false
-      deprecated: false
-      description: "[Enter a description of the command, including any important information users need to know, for example required permissions.]"
-      execution: false
-      name: baseintegration-dummy
-      outputs:
-        - contextPath: BaseIntegration.Output
-          description: "[Enter a description of the data returned in this output.]"
-          type: String
   isfetch: true
   isFetchSamples: true
   runonce: false
