@@ -1,6 +1,7 @@
 import pytest
+import requests
 import demistomock as demisto
-from CortexAttackSurfaceManagement import NotFoundError, ProcessingError
+from CortexAttackSurfaceManagement import NotFoundError, ProcessingError, Client
 from test_data.raw_response import (
     EXTERNAL_EXPOSURES_RESPONSE,
     EXTERNAL_EXPOSURE_RESPONSE,
@@ -10,7 +11,9 @@ from test_data.raw_response import (
     EXTERNAL_SERVICE_RESPONSE,
     INTERNET_EXPOSURE_PRE_FORMAT,
     RCS_START_SCAN_FAILURE_RESPONSE_100,
-    RCS_START_SCAN_FAILURE_RESPONSE_400,
+    RCS_GET_SCAN_FAILURE_RESPONSE_404,
+    GENERAL_API_FAILURE_RESPONSE_400,
+    GENERAL_500_WAITRESS_ERROR,
     RCS_START_SCAN_SUCCESSFUL_RESPONSE_200,
     RCS_START_SCAN_SUCCESSFUL_RESPONSE_201,
     REMEDIATION_RULES_RESPONSE,
@@ -19,7 +22,7 @@ from test_data.raw_response import (
     RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200,
     RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200,
     RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200,
-    RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500,
+    RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200
 )
 from test_data.expected_results import (
     EXTERNAL_EXPOSURES_RESULTS,
@@ -34,34 +37,63 @@ from test_data.expected_results import (
     REMEDIATION_RULES_RESULTS,
     RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESULTS_200,
     RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESULTS_200,
-    RCS_GET_SCAN_STATUS_IN_PROGRESS_RESULTS_200,
     RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200,
     RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200,
+    RCS_GET_SCAN_STATUS_OTHER_RESULTS_200
 )
 
+client = Client(
+    base_url="https://test.com/api/webapp/public_api/v1",
+    verify=False,
+    headers={
+        "HOST": "test.com",
+        "Authorization": "THISISAFAKEKEY",
+        "Content-Type": "application/json",
+    },
+    proxy=False,
+)
 
-"""Fixtures for the test cases"""
+"""Helper classes for test cases"""
 
 
-@pytest.fixture(scope="module")
-def client():
-    from CortexAttackSurfaceManagement import Client
+class MockResponse(requests.Response):
+    def __init__(self, json_data, status_code):
+        super().__init__()
+        self._json_data = json_data
+        self.status_code = status_code
 
-    client = Client(
-        base_url="https://test.com/api/webapp/public_api/v1",
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorization": "THISISAFAKEKEY",
-            "Content-Type": "application/json",
-        },
-        proxy=False,
-    )
-
-    return client
+    def json(self):
+        return self._json_data
 
 
 """Test cases"""
+
+
+def test_main(mocker):
+    """
+    When:
+        - Running the 'main' function.
+    Then:
+        Checks that the 'demisto.results' function was called once with the value 'ok'.
+    """
+    from CortexAttackSurfaceManagement import main
+
+    params = {
+        "url": "https://api-test.com",
+        "credentials": {"identifier": "test_id", "password": "test_secret"},
+    }
+    args = {}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('CortexAttackSurfaceManagement.Client.list_external_service_request',
+                 return_value=EXTERNAL_SERVICE_RESPONSE)
+
+    main()
+    assert demisto.results.call_count == 1
+    assert demisto.results.call_args[0][0] == 'ok'
 
 
 def test_format_asm_id_func():
@@ -81,27 +113,37 @@ def test_format_asm_id_func():
     assert response == INTERNET_EXPOSURE_POST_FORMAT
 
 
-# def test_general_500_error(client, requests_mock):
-#     '''
-#     Uses any one endpoint that returns a 500 error for when a response for waitress error is received.
+def test_general_500_error(requests_mock, mocker):
+    """
+    Uses any one endpoint that returns a 500 error for when a response for waitress error is received.
 
-#     Given:
-#         - Mock request for /assets/get_external_services/ that returns a 500 error and text/plain content type.
-#     When:
-#         - Running the 'start_remediation_confirmation_scan'.
-#     Then:
-#         - Checks that a NotFoundError exception is raised
-#     '''
-#     uri_for_post = "https://test.com/api/webapp/public_api/v1/assets/get_external_services/"
+    Given:
+        - Mock request for /assets/get_external_services/ that returns a 500 error and text/plain content type.
+    When:
+        - Running the 'start_remediation_confirmation_scan'.
+    Then:
+        - Checks that a NotFoundError exception is raised
+    """
 
-#     with pytest.raises(NotFoundError) as err:
-#         requests_mock.post(uri_for_post, text=GENERAL_500_WAITRESS_ERROR, status_code=500, headers={"Content-Type": "text/plain"})  # noqa: E501
-#         client.list_external_service_request(search_params=["test"])
+    mocker.patch.object(
+        demisto,
+        "demistoVersion",
+        return_value={"version": "6.8.0", "buildNumber": "12345"},
+    )
 
-#     assert type(err.value) is NotFoundError
+    requests_mock.post(
+        "https://test.com/api/webapp/public_api/v1/assets/get_external_services/",
+        json=GENERAL_500_WAITRESS_ERROR,
+        status_code=400
+    )
+
+    with pytest.raises(NotFoundError) as err:
+        client.list_external_service_request(search_params=["test"])
+
+    assert type(err.value) is NotFoundError
 
 
-def test_list_external_service_command(client, requests_mock):
+def test_list_external_service_command(requests_mock):
     """Tests list_external_service_command command function.
 
     Given:
@@ -130,7 +172,7 @@ def test_list_external_service_command(client, requests_mock):
     assert response.outputs_key_field == "service_id"
 
 
-def test_get_external_service_command(client, requests_mock):
+def test_get_external_service_command(requests_mock):
     """Tests get_external_service_command command function.
 
     Given:
@@ -157,7 +199,7 @@ def test_get_external_service_command(client, requests_mock):
     assert response.outputs_key_field == "service_id"
 
 
-def test_list_external_ip_address_range_command(client, requests_mock):
+def test_list_external_ip_address_range_command(requests_mock):
     """Tests list_external_ip_address_range_command function.
 
     Given:
@@ -184,7 +226,7 @@ def test_list_external_ip_address_range_command(client, requests_mock):
     assert response.outputs_key_field == "range_id"
 
 
-def test_get_external_ip_address_range_command(client, requests_mock):
+def test_get_external_ip_address_range_command(requests_mock):
     """Tests get_external_ip_address_range_command function.
 
     Given:
@@ -211,7 +253,7 @@ def test_get_external_ip_address_range_command(client, requests_mock):
     assert response.outputs_key_field == "range_id"
 
 
-def test_list_asset_internet_exposure_command(client, requests_mock):
+def test_list_asset_internet_exposure_command(requests_mock):
     """Tests list_asset_internet_exposure_command function.
 
     Given:
@@ -238,7 +280,7 @@ def test_list_asset_internet_exposure_command(client, requests_mock):
     assert response.outputs_key_field == "asm_ids"
 
 
-def test_get_asset_internet_exposure_command(client, requests_mock, mocker):
+def test_get_asset_internet_exposure_command(requests_mock, mocker):
     """Tests get_asset_internet_exposure_command function.
 
     Given:
@@ -271,7 +313,7 @@ def test_get_asset_internet_exposure_command(client, requests_mock, mocker):
     assert response.outputs_key_field == "asm_ids"
 
 
-def test_list_remediation_rule_command(client, requests_mock):
+def test_list_remediation_rule_command(requests_mock):
     """Tests list_remediation_rule_command function.
 
     Given:
@@ -319,8 +361,7 @@ def test_list_remediation_rule_command(client, requests_mock):
         ),
     ],
 )
-def test_start_remediation_confirmation_scan_successful_codes(
-    client,
+def test_start_remediation_confirmation_scan_successful_codes(    
     alert_internal_id,
     service_id,
     attack_surface_rule_id,
@@ -358,6 +399,30 @@ def test_start_remediation_confirmation_scan_successful_codes(
     assert response.outputs_key_field == ""
 
 
+def test_start_remediation_confirmation_scan_failure():
+    """
+    Given:
+        - Mock request for /remediation_confirmation_scanning/requests/get_or_create/ that returns a 200.
+    When:
+        - Running the 'start_remediation_confirmation_scan_command'.
+    Then:
+        - Checks that the expected outputs, outputs_prefix, and outputs_key_field is returned.
+    """
+    from CortexAttackSurfaceManagement import start_remediation_confirmation_scan_command
+
+    args = {
+        "alert_internal_id": -1,
+        "service_id": "12345abc-123a-1234-a123-efgh12345678",
+        "attack_surface_rule_id": "RdpServer",
+    }
+
+    with pytest.raises(ValueError) as err:
+        start_remediation_confirmation_scan_command(args=args, client=client)
+
+    assert type(err.value) is ValueError
+    assert str(err.value) == "Expected a non-negative integer, but got -1."
+
+
 @pytest.mark.parametrize(
     "alert_internal_id, service_id, attack_surface_rule_id, raw_results, exception_type",
     [
@@ -368,11 +433,10 @@ def test_start_remediation_confirmation_scan_successful_codes(
             RCS_START_SCAN_FAILURE_RESPONSE_100,
             ProcessingError,
         ),
-        (None, None, None, RCS_START_SCAN_FAILURE_RESPONSE_400, ProcessingError),
+        (None, None, None, GENERAL_API_FAILURE_RESPONSE_400, ProcessingError),
     ],
 )
 def test_start_remediation_confirmation_failure_codes(
-    client,
     alert_internal_id,
     service_id,
     attack_surface_rule_id,
@@ -403,6 +467,10 @@ def test_start_remediation_confirmation_failure_codes(
         headers={"Content-Type": "application/json"},
     )
 
+    error_code = raw_results.get("reply").get("err_code")
+    error_message = raw_results.get("reply").get("err_msg")
+    extra_message = raw_results.get("reply").get("err_extra")
+
     with pytest.raises(exception_type) as err:
         client.start_remediation_confirmation_scan(
             alert_internal_id=alert_internal_id,
@@ -411,42 +479,52 @@ def test_start_remediation_confirmation_failure_codes(
         )
 
     assert type(err.value) is exception_type
-    assert (str(err.value) == f"Received error message: '{raw_results.get('reply').get('err_msg', {})}'."
-            "Please check you that your inputs are correct.")
+    assert str(err.value) == f"{error_code} - Received error message: '{error_message}. {extra_message}'."
 
 
 @pytest.mark.parametrize(
-    "scan_id, expected_results, raw_response",
+    "scan_id, expected_results, raw_response, outputs_key_field",
     [
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESULTS_200,
             RCS_GET_SCAN_STATUS_SUCCESS_REMEDIATED_RESPONSE_200,
+            ""
         ),
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESULTS_200,
             RCS_GET_SCAN_STATUS_SUCCESS_UNREMEDIATED_RESPONSE_200,
+            ""
         ),
         (
             "12345abc-123a-1234-a123-efgh12345678",
-            RCS_GET_SCAN_STATUS_IN_PROGRESS_RESULTS_200,
+            None,
             RCS_GET_SCAN_STATUS_IN_PROGRESS_RESPONSE_200,
+            "scan_id"
         ),
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_FAILED_ERROR_RESULTS_200,
             RCS_GET_SCAN_STATUS_FAILED_ERROR_RESPONSE_200,
+            ""
         ),
         (
             "12345abc-123a-1234-a123-efgh12345678",
             RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESULTS_200,
             RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200,
+            ""
+        ),
+        (
+            "12345abc-123a-1234-a123-efgh12345678",
+            RCS_GET_SCAN_STATUS_OTHER_RESULTS_200,
+            RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200,
+            ""
         ),
     ],
 )
 def test_get_remediation_confirmation_scan_status_successful_codes(
-    client, scan_id, expected_results, raw_response, requests_mock, mocker
+    scan_id, expected_results, raw_response, outputs_key_field, requests_mock, mocker
 ):
     """
     Given:
@@ -478,10 +556,10 @@ def test_get_remediation_confirmation_scan_status_successful_codes(
 
     assert response.outputs == expected_results
     assert response.outputs_prefix == "ASM.RemediationScan"
-    assert response.outputs_key_field == ""
+    assert response.outputs_key_field == outputs_key_field
 
 
-def test_get_remediation_confirmation_scan_status_failure(client, requests_mock, mocker):
+def test_get_remediation_confirmation_scan_status_failure(requests_mock, mocker):
     """
     Given:
         - Mock request for /remediation_confirmation_scanning/requests/get_or_create/
@@ -499,16 +577,17 @@ def test_get_remediation_confirmation_scan_status_failure(client, requests_mock,
 
     requests_mock.post(
         "https://test.com/api/webapp/public_api/v1/remediation_confirmation_scanning/requests/get/",
-        json=RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500,
-        status_code=500,
+        json=RCS_GET_SCAN_FAILURE_RESPONSE_404,
+        status_code=400,
         headers={"Content-Type": "application/json"},
     )
 
-    # scan_id = "12345abc-123a-1234-a123-efgh12345678"
-    error_message = RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500.get("reply").get("message")  # type: ignore
+    error_code = RCS_GET_SCAN_FAILURE_RESPONSE_404.get("reply").get("err_code")
+    error_message = RCS_GET_SCAN_FAILURE_RESPONSE_404.get("reply").get("err_msg")
+    extra_message = RCS_GET_SCAN_FAILURE_RESPONSE_404.get("reply").get("err_extra")
 
     with pytest.raises(ProcessingError) as err:
         client.get_remediation_confirmation_scan_status(scan_id=None)
 
     assert type(err.value) is ProcessingError
-    assert str(err.value) == f"Received error message: '{error_message}'"
+    assert str(err.value) == f"{error_code} - Received error message: '{error_message}. {extra_message}'."

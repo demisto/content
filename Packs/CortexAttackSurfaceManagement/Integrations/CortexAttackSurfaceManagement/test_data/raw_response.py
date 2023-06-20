@@ -868,7 +868,15 @@ RCS_START_SCAN_FAILURE_RESPONSE_100 = {
     }
 }
 
-RCS_START_SCAN_FAILURE_RESPONSE_400 = {
+RCS_GET_SCAN_FAILURE_RESPONSE_404 = {
+    "reply": {
+        "err_code": 404,
+        "err_msg": "Requested resource not found while processing XDR public API",
+        "err_extra": "Scan Id does not exist - Failed to get scan"
+    }
+}
+
+GENERAL_API_FAILURE_RESPONSE_400 = {
     "reply": {
         "err_code": 400,
         "err_msg": "Bad Request. Got an invalid JSON.",
@@ -930,8 +938,8 @@ RCS_GET_SCAN_STATUS_FAILED_TIMEOUT_RESPONSE_200 = {
     }
 }
 
-RCS_GET_SCAN_STATUS_FAILURE_RESPONSE_500 = {
+RCS_GET_SCAN_STATUS_OTHER_RESPONSE_200 = {
     "reply": {
-        "message": "Failed to get scan ID status"
+        "status": "OTHER"
     }
 }

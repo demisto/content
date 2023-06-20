@@ -1,9 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 import urllib3
-
-
 from typing import Dict, Any, List
 from requests import Response  # Used to typing Response as a return from functions
 
@@ -14,11 +11,13 @@ DEFAULT_SEARCH_LIMIT = 100
 
 
 class NotFoundError(Exception):
-    """Exception raised when a 500 error is returned from the API specifically with a waitress error text"""
+    """Exception raised when an error is encountered that does
+    not have an error message, like with a waitress error"""
 
 
 class ProcessingError(Exception):
-    """Exception raised when a 500 error is returned from the API with a json body containing an error code and message"""
+    """Exception raised when a 500 error is returned from the API
+    with a json body containing an error code and message"""
 
 
 class Client(BaseClient):
@@ -271,20 +270,28 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
 
 def get_api_error(response):
+    """Raises a formatted error based on the response from the base_error file from the server.
+
+    Args:
+        response: Response object from an API endpoint.
+    Raises:
+        NotFoundError: Exception for when an API endpoint
+            returns an error that does not have a corresponding error message.
+        ProcessingError: Exception for when an API endpoint returns an error message.
+    """
     try:
         json_response = response.json()
         error_code = json_response.get("reply", {}).get("err_code", {})
         error_message = json_response.get("reply", {}).get("err_msg", {})
         extra_message = json_response.get("reply", {}).get("err_extra", {})
         rcs_err_msg = f"{error_message}. {extra_message}"
-    except Exception as err:
-        raise NotFoundError(f"Unexpected {err=}, {type(err)=}")
-    else:
-        if error_code:
-            rcs_err_msg = f"{error_message}. {extra_message}"
-            raise ProcessingError(
-                f"Received error message: '{rcs_err_msg}'."
-            )
+        response.raise_for_status()
+    except requests.exceptions.RequestException as err:
+        if "error_message" not in str(err):
+            raise ProcessingError(f"{error_code} - Received error message: '{rcs_err_msg}'.")
+    except (AttributeError, ValueError, TypeError) as err:
+        if "Forbidden" not in str(err):
+            raise NotFoundError(f"Unexpected {err=}, {type(err)=}")
 
 
 """ COMMAND FUNCTIONS """
