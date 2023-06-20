@@ -124,10 +124,12 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
         f'to retrieve support level of {pack_dirs_to_check_support_levels_labels}'
     )
     try:
+        fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
-            fork_owner=os.getenv('GITHUB_ACTOR')
+            # marketplace contributions the name of the forked owner is not the same as the name of the owner
+            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
         ):
             packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
