@@ -861,9 +861,15 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         if not alert_id or not alert_name:
             demisto.debug(f'{INTEGRATION_NAME} - Alert details are missing. {str(alert)}')
 
-        if highlights := alert.get('ioc_attr', {}).get('highlights'):
-            for i, attribute in enumerate(highlights):
+        if ioc_attr := alert.get('ioc_attr'):
+            try:
+                alert['ioc_attr'] = json.loads(ioc_attr)
+                highlights = alert['ioc_attr'].get('highlights', {})
+                for i, attribute in enumerate(highlights):
                     highlights[i] = attribute.replace("PREPREPRE", "").replace("POSTPOSTPOST", "")
+            except:
+                pass
+
 
         incident = {
             'name': incident_name,
