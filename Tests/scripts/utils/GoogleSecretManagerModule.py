@@ -12,6 +12,7 @@ class GoogleSecreteManagerModule:
     @staticmethod
     def convert_to_gsm_format(name: str) -> str:
         """
+        Convert a string to comply with GSM labels formatting(A-Z, a-z, 0-9, -, _)
         param name: the name to transform
         return: the name after it's been transformed to a GSM supported format
         """
@@ -21,6 +22,13 @@ class GoogleSecreteManagerModule:
         return name
 
     def get_secret(self, project_id: str, secret_id: str, version_id: str = 'latest') -> dict:
+        """
+        Gets a secret from GSM
+        :param project_id: the ID of the GCP project
+        :param secret_id: the ID of the secret we want to get
+        :param version_id: the version of the secret we want to get
+        :return: the secret as json5 object
+        """
         name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
         response = self.client.access_secret_version(request={"name": name})
         try:
@@ -30,8 +38,19 @@ class GoogleSecreteManagerModule:
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
             return {}
 
-    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, branch_name='',
+    def list_secrets(self, project_id: str, name_filter=None, with_secrets: bool = False, branch_name='',
                      ignore_dev: bool = True) -> list:
+        """
+        Lists secrets from GSM
+        :param project_id: the ID of the GCP project
+        :param name_filter: a secret name to filter results by
+        :param with_secrets: indicates if we want to bring the secret value(will need another API call per scret or just metadata)
+        :param branch_name: filter results according to the label 'branch'
+        :param ignore_dev: indicates whether we ignore secrets with the 'dev' label
+        :return: the secret as json5 object
+        """
+        if name_filter is None:
+            name_filter = []
         secrets = []
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
@@ -45,10 +64,10 @@ class GoogleSecreteManagerModule:
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
             if not secret_pack_id or labels.get('ignore') or labels.get('merged') or (ignore_dev and labels.get('dev')) or (
-                    formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
-                    branch_name and labels.get('branch', '') != branch_name):
+                formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
+                branch_name and labels.get('branch', '') != branch_name):
                 continue
-            if with_secret:
+            if with_secrets:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
                     secret_value['secret_name'] = secret.name
@@ -62,6 +81,11 @@ class GoogleSecreteManagerModule:
 
     @staticmethod
     def init_secret_manager_client(service_account: str) -> secretmanager.SecretManagerServiceClient:
+        """
+        Creates GSM object using a service account
+        :param service_account: the service account json as a string
+        :return: the GSM object
+        """
         try:
             client = secretmanager.SecretManagerServiceClient.from_service_account_json(
                 service_account)  # type: ignore # noqa

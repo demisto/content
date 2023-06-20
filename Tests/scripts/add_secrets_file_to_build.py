@@ -59,8 +59,8 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     :return: the list of secrets from GSM to use in the build
     """
     secret_conf = GoogleSecreteManagerModule(options.service_account)
-    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_pack_ids, with_secret=True, ignore_dev=True)
-    secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, branch_name=branch_name,
+    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_pack_ids, with_secrets=True, ignore_dev=True)
+    secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secrets=True, branch_name=branch_name,
                                            ignore_dev=False)
 
     if secrets_dev:
