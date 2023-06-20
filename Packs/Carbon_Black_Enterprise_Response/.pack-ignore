@@ -22,6 +22,8 @@ ignore=BA108,BA109,BA124
 [known_words]
 cb
 watchlists
+PREPREPRE
+POSTPOSTPOST
 
 [file:CBFindIP.yml]
 ignore=BA124
