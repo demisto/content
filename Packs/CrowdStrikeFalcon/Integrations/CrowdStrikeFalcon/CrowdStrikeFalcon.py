@@ -10,7 +10,6 @@ from enum import Enum
 from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import requests
-from dateutil.parser import parse
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
@@ -1205,7 +1204,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
 
 
 def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None,
-                         has_limit=True):
+                         has_limit=True, limit: int = INCIDENTS_PER_FETCH):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -1219,7 +1218,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
         'offset': offset,
     }
     if has_limit:
-        params['limit'] = INCIDENTS_PER_FETCH
+        params['limit'] = limit
 
     if filter_arg:
         params['filter'] = filter_arg
@@ -1250,14 +1249,14 @@ def get_detections_entities(detections_ids: List):
     return detections_ids
 
 
-def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True):
+def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True, limit=INCIDENTS_PER_FETCH):
     get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
         'sort': 'start.asc',
         'offset': offset,
     }
     if has_limit:
-        params['limit'] = INCIDENTS_PER_FETCH
+        params['limit'] = limit
 
     if filter_arg:
         params['filter'] = filter_arg
@@ -2230,16 +2229,6 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 ''' COMMANDS FUNCTIONS '''
 
 
-def get_fetch_times_and_offset(current_fetch_info: dict):
-    last_fetch_time = current_fetch_info.get('time')
-    offset = current_fetch_info.get('offset', 0)
-    if not last_fetch_time:
-        last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
-    prev_fetch = last_fetch_time
-    last_fetch_timestamp = int(parse(last_fetch_time).timestamp() * 1000)
-    return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
-
-
 def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     """This function migrated from old last run object to new last run object
 
@@ -2284,13 +2273,14 @@ def fetch_incidents():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
                                                                     first_fetch=FETCH_TIME,
                                                                     look_back=look_back)
+        fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
             fetch_query = "created_timestamp:>'{time}'+{query}".format(time=start_fetch_time, query=fetch_query)
-            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
+            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit), 'resources')
         else:
-            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time),
+            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit),
                                          'resources')
 
         if detections_ids:
@@ -2323,6 +2313,7 @@ def fetch_incidents():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
                                                                     first_fetch=FETCH_TIME,
                                                                     look_back=look_back)
+        fetch_limit = current_fetch_info_incidents.get('limit') or INCIDENTS_PER_FETCH
 
         incident_type = 'incident'
 
@@ -2330,10 +2321,10 @@ def fetch_incidents():
 
         if fetch_query:
             fetch_query = "start:>'{time}'+{query}".format(time=start_fetch_time, query=fetch_query)
-            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query), 'resources')
+            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, limit=fetch_limit), 'resources')
 
         else:
-            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=start_fetch_time),
+            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=start_fetch_time, limit=fetch_limit),
                                         'resources')
 
         if incidents_ids:
