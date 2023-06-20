@@ -5377,3 +5377,46 @@ def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_param
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_delete_scheduled_scans_request(ids, scans_filter)
     http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)
+
+
+class mocker_gql_client:
+    def __init__(self, mock_responses, expected_after):
+        self.mock_responses = mock_responses
+        self.expected_after = expected_after
+        self.index = 0
+
+    def execute(self, idp_query, variable_values):
+        if not 'after' in variable_values or self.expected_after == variable_values.get('after', ""):
+            response = self.mock_responses[self.index]
+            self.index += 1
+            return response
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_list_identity_entities_command(mocker, test_case):
+    from CrowdStrikeFalcon import list_identity_entities_command, create_gql_client
+    import CrowdStrikeFalcon as CrowdStrikeFalcon
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected_after, expected_raw_response_len, expected hr, and expected_ec.
+        - Case 1: args with limit=1, some filter args, mock_response with 1 identity entity, and an empty expected_after
+        - Case 2: args with limit=50, page=size=1, page=2 mock_response with 2 response each have 1 identity entity, and an empty expected_after that matches the endCursor of the first response.
+
+        When:
+        - Running list_identity_entities_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR, raw_response, and EC are returned.
+        - Case 1: Should return the parsed identity from the response and 1 response in the rew_response list.
+        - Case 2: Should return onle the second identity entity, and have 2 responses in the rew_response list.
+    """
+    test_data = load_json("./test_data/test_list_identity_entities_command.json").get(test_case, {})
+    expected_after = test_data.get('expected_after', "")
+    mock_responses = test_data.get('mock_responses', "")
+    mock_client = mocker_gql_client(mock_responses, expected_after)
+    mocker.patch.object(CrowdStrikeFalcon, "create_gql_client", return_value=mock_client)
+    args = test_data.get("args", {})
+    command_results = list_identity_entities_command(args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+    assert test_data.get('expected_res_len') == len(command_results.raw_response)

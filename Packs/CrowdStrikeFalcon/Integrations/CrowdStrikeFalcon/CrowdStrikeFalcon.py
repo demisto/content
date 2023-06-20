@@ -5464,7 +5464,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
         outputs_prefix='CrowdStrike.IDPEntity',
         outputs=createContext(response_to_context(identity_entities_ls), removeNull=True),
         readable_output=tableToMarkdown("Identity entities:", mapped_identity_entities_ls, headers=headers, removeNull=True),
-        raw_response=res,
+        raw_response=res_ls,
     )
 
 
