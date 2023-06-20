@@ -1787,14 +1787,19 @@ def fetch_incidents(
     if incidents:
         start_time = incidents[-1].get("occurred")
         last_run["start_time"] = start_time
-        last_run["last_minute_incident_ids"] = [
+        new_fetched_tickets = [
             json.loads(incident.get("rawJSON", {})).get("mid")
             for incident in incidents
             if incident.get("occurred") == start_time
         ]
+        if offset == 0:
+            last_run["last_minute_incident_ids"] = new_fetched_tickets
+        else:
+            last_run["last_minute_incident_ids"].extend(new_fetched_tickets)
     # In case that all the incidents where dropped
     if data_length != 0 and not incidents:
         last_run["offset"] = offset + max_fetch
+    demisto.debug(f'{last_run=}')
     return incidents, last_run
 
 
