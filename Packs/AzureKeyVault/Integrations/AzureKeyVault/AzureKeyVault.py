@@ -742,7 +742,7 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params
     return command_results
 
 
-def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
+def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     """
     Updates access policy of a key vault in the specified subscription.
 
@@ -751,7 +751,7 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
         args (Dict[str, Any]): Command arguments from XSOAR.
         params (Dict[str, Any]): Configuration parameters from XSOAR.
     Returns:
-        List of CommandResults: Command results with raw response, outputs and readable outputs.
+        CommandResults: Command results with raw response, outputs and readable outputs.
     """
     vault_name = args['vault_name']
     operation_kind = args['operation_kind']
@@ -763,43 +763,25 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     # subscription_id and resource_group_name arguments can be passed as command arguments or as configuration parameters,
     # if both are passed as arguments, the command arguments will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
-    resource_group_list = argToList(get_from_args_or_params(params=params, args=args, key='resource_group_name'))
+    resource_group_name = get_from_args_or_params(params=params, args=args, key='resource_group_name')
 
-    command_results_list = []
-    warning_message = ''
-    all_resource_groups_are_wrong = True
+    response = client.update_access_policy_request(subscription_id, resource_group_name,
+                                                   vault_name, operation_kind, object_id, keys,
+                                                   secrets, certificates, storage_accounts)
 
-    for single_resource_group in resource_group_list:
-        try:
-            response = client.update_access_policy_request(subscription_id, single_resource_group,
-                                                           vault_name, operation_kind, object_id, keys,
-                                                           secrets, certificates, storage_accounts)
+    readable_output = tableToMarkdown(f'{vault_name} Updated Access Policy',
+                                      response,
+                                      ['id', 'name', 'type', 'location'], removeNull=True,
+                                      headerTransform=string_to_table_header)
 
-            all_resource_groups_are_wrong = False
-            readable_output = tableToMarkdown(f'{vault_name} Updated Access Policy',
-                                              response,
-                                              ['id', 'name', 'type', 'location'], removeNull=True,
-                                              headerTransform=string_to_table_header)
-
-            command_results_list.append(CommandResults(
-                outputs_prefix='AzureKeyVault.VaultAccessPolicy',
-                outputs_key_field='id',
-                outputs=response,
-                raw_response=response,
-                readable_output=readable_output,
-                ignore_auto_extract=True
-            ))
-        except Exception as e:
-            # If at least one resource group is correct, we will return the response of the correct resource group
-            # and a warning message about the incorrect resource groups.
-            warning_message += f'Failed to update access policy for "{vault_name}" with \
-resource group "{single_resource_group}" and subscription id "{subscription_id}",  the full error is: {e.message}'
-            # if all resource groups are wrong, we will raise the exception
-            if all_resource_groups_are_wrong and single_resource_group == resource_group_list[-1]:
-                raise e
-
-    return_warning(warning_message) if warning_message else None
-    return command_results_list
+    return CommandResults(
+        outputs_prefix='AzureKeyVault.VaultAccessPolicy',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response,
+        readable_output=readable_output,
+        ignore_auto_extract=True
+    )
 
 
 def get_key_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
