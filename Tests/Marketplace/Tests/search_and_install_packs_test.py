@@ -280,24 +280,22 @@ MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS = '{"id":"errGetContentPack","status":400
 class TestInstallPacks:
     def test_gcp_timeout_exception(self, mocker):
         """
-
-            Given:
-                An error response noting that the installation failed due to gcp timeout
-            When:
-                installing packs on servers
-            Then:
-                Retry once again.
-                Fail completely if reoccurs after retry.
-
-            """
+        Given:
+            An error response noting that the installation failed due to gcp timeout
+        When:
+            installing packs on servers
+        Then:
+            Retry once again.
+            Fail completely if reoccurs after retry.
+        """
         http_resp = MockHttpRequest(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
+        mocker.patch('time.sleep', return_value=None)
         client = MockClient()
         assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack3'}])
 
     def test_malformed_pack_exception(self, mocker):
         """
-
         Given:
             An error response noting that the installation failed due to malformed pack
         When:
@@ -309,6 +307,7 @@ class TestInstallPacks:
         """
         http_resp = MockHttpRequest(MALFORMED_PACK_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
+        mocker.patch('time.sleep', return_value=None)
         client = MockClient()
         assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack2'}])
 

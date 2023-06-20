@@ -4,12 +4,12 @@ from functools import lru_cache
 import glob
 import json
 import os
+import time
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Lock
-from time import sleep
 from typing import List
 
 import demisto_client
@@ -138,7 +138,7 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
             SUCCESS_FLAG = False
         logging.exception(f"API call to fetch dependencies of '{pack_id}' has failed.\nError: {ex}.")
 
-    return None
+    return None  # TODO: raise error instead?
 
 
 def find_malformed_pack_id(body: str) -> List:
