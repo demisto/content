@@ -1179,7 +1179,8 @@ def device_list_automatic_pagination(request_by_device_type: Callable, client, c
     continue_pagination = True  # This will decide if we should continue requesting from the API or that we should stop
     while continue_pagination:
         query_params['maxResults'] = results_limit if results_limit <= MAX_PAGE_SIZE else MAX_PAGE_SIZE
-        query_params['pageToken'] = next_page_token
+        if next_page_token:
+            query_params['pageToken'] = next_page_token
         response = request_by_device_type(client=client, customer_id=customer_id, query_params=query_params)
         responses.append(response)
         response_mobile_devices = response.get(response_devices_list_key, [])
@@ -1210,7 +1211,8 @@ def device_list_manual_pagination(request_by_device_type: Callable, client, cust
         dict: A dictionary that holds all the relevant data for creating a CommandResult.
     """
     query_params['maxResults'] = page_size
-    query_params['pageToken'] = page_token
+    if page_token:
+        query_params['pageToken'] = page_token
     response = request_by_device_type(client=client, customer_id=customer_id, query_params=query_params)
     devices = response.get(response_devices_list_key, [])
     return {'data': devices, 'raw_response': [response], 'next_page_token': response.get('nextPageToken', '')}
