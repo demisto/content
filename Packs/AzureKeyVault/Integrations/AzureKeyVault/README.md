@@ -16,8 +16,8 @@ This integration was integrated and tested with version 2022-07-01 of AzureKeyVa
     | Private Key | False |
     | Use Azure Managed Identities | False |
     | Azure Managed Identities Client ID | False |
-    | Default Subscription ID | False |
-    | Default Resource Group Name |False |
+    | Default Subscription ID | True |
+    | Default Resource Group Name |True |
     | Fetches credentials | False |
     | Key Vault names - comma seperated list of Key Vaults to fetch secrets from. | False |
     | Secret names - comma seperated list of secrets to fetch. | False |
@@ -57,7 +57,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 | ignore_missing_vnet_service_endpoint | Specifies whether the Network Resource Provider will ignore the check if parent subnet has serviceEndpoints configured.  This allows the configuration for the Key Vault to complete without error before the configuration to the virtual network's subnet is complete. Once the subnet configuration is complete, the Cosmos account will then be accessible through the configured subnet. Network Acl property. Possible values are: . Default is True. | Optional | 
 | ip_rules | The list of IP address rules. Each rule governing the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property. |
 |subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.| Optional|
-resource_group_name|A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 
@@ -188,7 +188,7 @@ Delete the specified key vault.
 | --- | --- | --- |
 | vault_name | Key Vault name to delete. | Required | 
 |subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional
-|resource_group_name| A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
+|resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
 
 
 #### Context Output
@@ -492,7 +492,7 @@ Update access policies in a key vault in the specified subscription. The update 
 | certificates | Permissions to certificates. Possible values are: get, list, delete, create, import, update, managecontacts, getissuers, listissuers, setissuers, deleteissuers, manageissuers, recover, purge. | Optional | 
 | storage | Permissions to storage accounts. Possible values are: get, list, delete, set, update, regeneratekey, getsas, listsas, deletesas, setsas, recover, backup, restore, purge. | Optional |
 |subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional
-|resource_group_name| A comma-separated list of the resource group names. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
+|resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
 
 
 #### Context Output
@@ -1316,7 +1316,7 @@ List all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | A comma-separated list of subscription IDs. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
 | limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
