@@ -192,6 +192,7 @@ def main() -> None:
     """
 
     params = demisto.params()
+    command = demisto.command()
 
     # get the service API url
     base_url = urljoin(params.get('url'))
@@ -201,6 +202,9 @@ def main() -> None:
     secret_key = params.get('credentials', {}).get('password', '')
 
     # Fetch Params
+    """what is going to be our fetch params?
+    two intervals to events and assets? for assets created?
+    """
     first_fetch = arg_to_datetime(params.get('first_fetch', '3 days'))
 
     demisto.debug(f'Command being called is {demisto.command()}')
@@ -219,10 +223,16 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'fetch-assets':
-            last_assets_run = demisto.getLastAssetsRun()
-
-
+        elif command == 'fetch-assets':
+            last_run = demisto.getLastRun()
+            """
+            when running fetch-assets we going to get all vulnerablilies and events as well, and then return all to xsiam together
+            but why return everything all together when the only job running is fetch assets
+            assume we have one checkbox `isfetchassetsandevents' then on serverside, its translated to having `fetch-assets` 
+            and `fetch events` commands, we can get vulns with command of get vulns isn't it?
+            """
+        elif command == 'fetch-events':
+            """implement same as collector??"""
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
