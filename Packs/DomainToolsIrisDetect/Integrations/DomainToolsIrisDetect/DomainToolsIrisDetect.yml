@@ -105,7 +105,7 @@ script:
   - arguments:
     - default: false
       description: List of Iris Detect domain IDs to escalate. The domain ID can be found in the API response when querying the "new" endpoint.
-      isArray: false
+      isArray: true
       name: watchlist_domain_ids
       required: true
       secret: false
@@ -135,7 +135,7 @@ script:
   - arguments:
     - default: false
       description: List of Iris Detect domain IDs to block. The domain ID can be found in the API response when querying the "new" or "watched" endpoints.
-      isArray: false
+      isArray: true
       name: watchlist_domain_ids
       required: true
       secret: false
@@ -165,7 +165,7 @@ script:
   - arguments:
     - default: false
       description: List of Iris Detect domain IDs to watchlist. The domain ID can be found in the API response when querying the "new" endpoint.
-      isArray: false
+      isArray: true
       name: watchlist_domain_ids
       required: true
       secret: false
@@ -198,7 +198,7 @@ script:
   - arguments:
     - default: false
       description: List of Iris Detect domain IDs to ignore.
-      isArray: false
+      isArray: true
       name: watchlist_domain_ids
       required: true
       secret: false
@@ -318,7 +318,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: List of TLDs to filter domains by. E.g. top.
-      isArray: false
+      isArray: true
       name: tlds
       required: false
       secret: false
@@ -522,7 +522,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: List of TLDs to filter domains by. E.g. top.
-      isArray: false
+      isArray: true
       name: tlds
       required: false
       secret: false
@@ -741,7 +741,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: List of TLDs to filter domains by. E.g. top.
-      isArray: false
+      isArray: true
       name: tlds
       required: false
       secret: false
@@ -946,7 +946,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: List of TLDs to filter domains by. E.g. top.
-      isArray: false
+      isArray: true
       name: tlds
       required: false
       secret: false
@@ -1139,7 +1139,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: List of TLDs to filter domains by. E.g. top.
-      isArray: false
+      isArray: true
       name: tlds
       required: false
       secret: false
