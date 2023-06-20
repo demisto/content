@@ -8,8 +8,8 @@ Azure network security groups are used to filter network traffic to and from Azu
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value. | False |
-    | Default Resource Group Name |There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value.  | False |
+    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value. | True |
+    | Default Resource Group Name |There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.  | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -195,7 +195,7 @@ Delete a security rule.
 | security_group_name | The name of the security group. | Required | 
 | security_rule_name | The name of the rule to be deleted. | Required |
 |subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -233,7 +233,7 @@ Create a security rule.
 | destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
 | description | A description to add to the rule. | Optional |
 |subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -319,7 +319,7 @@ Update a security rule. If one does not exist, it will be created.
 | destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional | 
 | description | A description to add to the rule. | Optional | 
 |subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| A comma separated list of the resource group name's. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output

@@ -42,7 +42,7 @@ At end of the process you'll see a message that you've logged in successfully.
 ## Configure Azure Kubernetes Services on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Kubernetes Services Dev.
+2. Search for Azure Kubernetes Services.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -56,8 +56,8 @@ At end of the process you'll see a message that you've logged in successfully.
     | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
     | Authorization code |  | False |
     | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
-    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value. | True |
-    | Default Resource Group Name | There are two options to insert the specified value, either in the configuration or directly within the commands. It is important to note that leaving this field empty will result in the failure of the 'test' button. However, inserting values in both places will cause an override by the command value. | True |
+    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value. | True |
+    | Default Resource Group Name | There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value. | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -479,7 +479,7 @@ Gets all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | A comma separated list of the subscription ID's, optional. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
+| subscription_id | The subscription ID, optional. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
 | limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 

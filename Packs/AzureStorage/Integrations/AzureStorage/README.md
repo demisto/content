@@ -52,8 +52,8 @@ The application must have *user_impersonation* permission and must allow public 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Default Subscription ID |  | False |
-    | Default Resource Group Name |  | False |
+    | Default Subscription ID |  | True |
+    | Default Resource Group Name |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
@@ -954,7 +954,7 @@ Gets all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | A comma separated list of the subscription ID's, optional. Note: This field will override instance param 'Subscription ID'. | Optional | 
+| subscription_id | The subscription ID, optional. Note: This field will override instance param 'Subscription ID'. | Optional | 
 | limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
