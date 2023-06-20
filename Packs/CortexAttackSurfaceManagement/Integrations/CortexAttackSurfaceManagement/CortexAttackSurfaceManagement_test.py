@@ -361,7 +361,7 @@ def test_list_remediation_rule_command(requests_mock):
         ),
     ],
 )
-def test_start_remediation_confirmation_scan_successful_codes(    
+def test_start_remediation_confirmation_scan_successful_codes(
     alert_internal_id,
     service_id,
     attack_surface_rule_id,

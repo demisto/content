@@ -269,7 +269,7 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
     return formatted_response
 
 
-def get_api_error(response):
+def get_api_error(response: Response):
     """Raises a formatted error based on the response from the base_error file from the server.
 
     Args:
@@ -279,6 +279,7 @@ def get_api_error(response):
             returns an error that does not have a corresponding error message.
         ProcessingError: Exception for when an API endpoint returns an error message.
     """
+    error_code, error_message, extra_message, rcs_err_msg = "", "", "", ""
     try:
         json_response = response.json()
         error_code = json_response.get("reply", {}).get("err_code", {})
@@ -287,8 +288,10 @@ def get_api_error(response):
         rcs_err_msg = f"{error_message}. {extra_message}"
         response.raise_for_status()
     except requests.exceptions.RequestException as err:
-        if "error_message" not in str(err):
+        if "Forbidden" not in str(err):
             raise ProcessingError(f"{error_code} - Received error message: '{rcs_err_msg}'.")
+        else:
+            pass
     except (AttributeError, ValueError, TypeError) as err:
         if "Forbidden" not in str(err):
             raise NotFoundError(f"Unexpected {err=}, {type(err)=}")
