@@ -1494,31 +1494,33 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('admin_email_creds', {}).get('password') or GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
-        verify_certificate=not params.get('insecure', False)
-        proxy=params.get('proxy', False)
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(
+            params.get('admin_email_creds', {}).get('password') or params.get('user_service_account_json'))
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
 
-        headers={
+        headers = {
             'Content-Type': 'application/json'
         }
 
-        args=GSuiteClient.strip_dict(demisto.args())
+        args = GSuiteClient.strip_dict(demisto.args())
 
-        admin_email=args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email') if args.get('admin_email_creds', {}).get(
-            'identifier') or args.get('admin_email') else params.get('admin_email_creds', {}).get('identifier') or params.get('admin_email')
+        admin_email = args.get('admin_email')\
+            or params.get('admin_email_creds', {}).get('identifier')\
+            or params.get('admin_email')
 
         if admin_email and not is_email_valid(admin_email):
             raise ValueError(MESSAGES['INVALID_ADMIN_EMAIL'])
 
         # prepare client class object
-        client=Client(service_account_dict=service_account_dict, base_url='https://admin.googleapis.com/',
+        client = Client(service_account_dict=service_account_dict, base_url='https://admin.googleapis.com/',
                         verify=verify_certificate, proxy=proxy, headers=headers,
                         admin_email=admin_email
                         )
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-            result=test_module(client)
+            result = test_module(client)
             demisto.results(result)
 
         elif command in commands:
