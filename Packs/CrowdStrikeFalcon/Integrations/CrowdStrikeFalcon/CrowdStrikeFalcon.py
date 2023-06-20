@@ -1331,7 +1331,7 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
     return response
 
 
-def get_alerts_ids(filter_arg=None, offset: int = 0, has_limit=True):
+def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True):
     get_incidents_endpoint = '/alerts/queries/alerts/v1'
     params = {
         'sort': 'start.asc',
@@ -1686,6 +1686,23 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     return http_request('PATCH', '/detects/entities/detects/v2', data=data)
 
 
+def resolve_idp_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
+    """
+        Sends a resolve detection request
+        :param ids: Single or multiple ids in an array string format
+        :param status: New status of the detection
+        :param assigned_to_uuid: uuid to assign the detection to
+        :param show_in_ui: Boolean flag in string format (true/false)
+        :param comment: Optional comment to add to the detection
+        :return: Resolve detection response json
+    """
+    data = {
+        "action_parameters": [{"name": "update_status", "value": "closed"}],
+        "ids": ids
+    }
+    return http_request('POST', '/alerts/entities/alerts/v2', data=data)
+
+
 def contain_host(ids):
     """
         Contains host(s) with matching ids
@@ -1827,6 +1844,13 @@ def update_detection_request(ids: List[str], status: str) -> Dict:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
+
+
+def update_idp_detection_request(ids: List[str], status: str) -> Dict:
+    if status not in STATUS_TEXT_TO_NUM_IDP.keys():
+        raise DemistoException(f'CrowdStrike Falcon Error: '
+                               f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM_IDP.keys()}')
+    return resolve_idp_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
 
 
 def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
@@ -2018,7 +2042,7 @@ def get_remote_data_command(args: Dict[str, Any]):
         elif incident_type == IncidentType.IDP_DETECTION:
             mirrored_data, updated_object = get_remote_idp_detection_data(remote_incident_id)
             if updated_object:
-                demisto.debug(f'Update IDP detection {mirrored_data} with fields: {updated_object}')
+                demisto.debug(f'Update IDP detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_idp_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
         else:
@@ -2097,18 +2121,7 @@ def get_remote_idp_detection_data(remote_incident_id):
 
     updated_object: Dict[str, Any] = {'incident_type': IDP_DETECTION}
     set_updated_object(updated_object, mirrored_data, ['status'])
-    # last_updated = dateparser.parse(last_updated, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}).strftime('%Y-%m-%dT%H:%M:%S.%fZ')  # noqa: E501
-    # filter = f"updated_timestamp:>'{last_updated}'+status:'closed'+product:'idp'"
-    # mirrored_data = http_request(
-    #     'GET',
-    #     "/alerts/queries/alerts/v1",
-    #     params={"filter": filter}
-    # ).get('resources', [])
-
-    # updated_object: Dict[str, Any] = {'incident_type': IDP_DETECTION,
-    #                                   'id': mirrored_data,
-    #                                   'status': 'closed'}
-    # return mirrored_data, updated_object
+    return mirrored_data, updated_object
 
 
 def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
@@ -2131,7 +2144,7 @@ def set_xsoar_idp_detection_entries(updated_object: Dict[str, Any], entries: Lis
     if PARAMS.get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
-        elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM_IDP.keys()) - {'Closed'}):
+        elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM_IDP.keys()) - {'closed'}):
             reopen_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
 
 
@@ -2218,6 +2231,11 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     for detection_id in raw_detections:
         modified_ids_to_mirror.append(str(detection_id))
 
+    raw_idp_detections = get_idp_detections_ids(filter_arg=f"updated_timestamp:>'{last_update_timestamp}'+product:'idp'",
+                                                has_limit=False).get('resources', [])
+    for raw_idp_detection in raw_idp_detections:
+        modified_ids_to_mirror.append(str(raw_idp_detection))
+
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
@@ -2249,6 +2267,11 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
 
             elif incident_type == IncidentType.DETECTION:
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f'Detection updated successfully. Result: {result}')
+
+            elif incident_type == IncidentType.IDP_DETECTION:
+                result = update_remote_idp_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
@@ -2287,6 +2310,19 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
     elif 'status' in delta:
         demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
         return str(update_detection_request([detection_id], delta.get('status')))
+
+    return ''
+
+
+def update_remote_idp_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
+        demisto.debug(f'Closing detection with remote ID {detection_id} in remote system.')
+        return str(update_idp_detection_request([detection_id], 'closed'))
+
+    # status field in CS Falcon is mapped to State field in XSOAR
+    elif 'status' in delta:
+        demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(update_idp_detection_request([detection_id], delta.get('status')))
 
     return ''
 
@@ -2519,10 +2555,10 @@ def fetch_incidents():
         last_fetch_time, offset, _, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_idp_detections)
         last_idp_detection_fetched = current_fetch_info_incidents.get('last_fetched_idp_detection')
         fetch_query = PARAMS.get('idp_detections_fetch_query', "")
-        filter = f"updated_timestamp:>'{last_fetch_time}'"
+        filter = f"product:'idp'+created_timestamp:>'{last_fetch_time}'"
         if fetch_query:
             filter += f"+{fetch_query}"
-        idp_detections_ids = demisto.get(get_alerts_ids(filter_arg=filter, offset=offset), 'resources')
+        idp_detections_ids = demisto.get(get_idp_detections_ids(filter_arg=filter, offset=offset), 'resources')
         if idp_detections_ids:
             raw_res = get_idp_detection_entities(idp_detections_ids)
             if "resources" in raw_res:
