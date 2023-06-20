@@ -64,6 +64,12 @@ script:
       - method
     - name: limit
       description: Limits the amount of returned results
+    - name: include
+      required: false
+      description: Include all search results, default is to exclude all lists owned by System user.
+      auto: PREDEFINED
+      predefined:
+      - all
     outputs:
     - contextPath: RecordedFuture.List.id
       description: Unique id of the list in Recorded Future
