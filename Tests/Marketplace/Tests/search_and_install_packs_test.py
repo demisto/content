@@ -132,10 +132,10 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
 
 
 @pytest.mark.parametrize('error_code,use_multithreading',
-                            [
-                                (400, True), (400, False),
-                                (500, True), (500, False),
-                            ])
+                         [
+                             (400, True), (400, False),
+                             (500, True), (500, False),
+                         ])
 def test_search_and_install_packs_and_their_dependencies_with_error(mocker, error_code, use_multithreading: bool):
     """
     Given

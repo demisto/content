@@ -321,7 +321,7 @@ def install_packs(client: demisto_client,
                     raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
+            logging.debug(f"Failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
             time.sleep(sleep_interval)
     except Exception as e:
         logging.exception(f'The request to install packs: {packs_to_install} has failed. Additional info: {str(e)}')
