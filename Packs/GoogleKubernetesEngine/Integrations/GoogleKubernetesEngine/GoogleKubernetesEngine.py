@@ -57,12 +57,15 @@ def handle_default_configuration():
     """
     args = demisto.args()
     params = demisto.params()
-    args['default_project'] = (
-        args.get('default_project')
-        or params.get('default_project')
-        or params.get('credentials', {}).get('identifier')
-    )
-    args['default_zone'] = args.get('default_zone') or params.get('default_zone')
+    args |= {
+        'default_project':
+            args.get('default_project')
+            or params.get('default_project')
+            or params.get('credentials', {}).get('identifier'),
+        'default_zone':
+            args.get('default_zone')
+            or params.get('default_zone')
+    }
 
     return args
 
