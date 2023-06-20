@@ -49,7 +49,8 @@ def load_certificate():
     """ Loads the certificate and passphrase from the configuration """
     cert = demisto.params()["certificate"]
     cert = base64.b64decode(cert)
-    passphrase = demisto.params()["passphrase"] if "passphrase" in demisto.params() else ""
+    passphrase = demisto.params().get('passphrase_creds', {}).get(
+        'password') or demisto.params().get("passphrase") if "passphrase" in demisto.params() else ""
     return cert, passphrase
 
 
