@@ -11107,18 +11107,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
             events = [json.dumps(event) for event in events]
             data_format = 'json'
         # Separating each event with a new line
         data = '\n'.join(events)
-
-    elif isinstance(events, str):
-        amount_of_events = len(events.split('\n'))
-
-    else:
+    elif not isinstance(events, str):
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
                                 'list.').format(type_events=type(events)))
     if not data_format:
@@ -11170,7 +11165,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     client = BaseClient(base_url=xsiam_url)
     data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
-    amount_of_events = 0
     for data_chunk in data_chunks:
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
