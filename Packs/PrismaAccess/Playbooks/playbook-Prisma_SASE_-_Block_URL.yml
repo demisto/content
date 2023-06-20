@@ -133,9 +133,6 @@ tasks:
       folder:
         complex:
           root: inputs.Folder
-      id:
-        complex:
-          root: inputs.CategoryName
       name:
         complex:
           root: inputs.CategoryName

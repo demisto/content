@@ -367,8 +367,8 @@ tasks:
     task:
       id: 0bb91649-69cd-4eff-8741-15f147c5f3f4
       version: -1
-      name: Complete this task to push the configuration
-      description: Complete this task to push the configuration.
+      name: Choose to commit and push configuration
+      description: Choose to commit and push configuration
       type: condition
       iscommand: false
       brand: ""
@@ -459,10 +459,10 @@ inputs:
   value: {}
   required: false
   description: |-
-    IP Netmask: IP address or a network using the slash notation - ip_address/mask.
-    IP Range: Range of IP addresses using the notation ip_address-ip_address.
-    IP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask.
-    FQDN: Domain name.
+    IP Netmask (value: ip_netmask): IP address or a network using the slash notation - ip_address/mask.
+    IP Range (value: ip_range): Range of IP addresses using the notation ip_address-ip_address.
+    IP Wildcard (value: ip_wildcard): IP wildcard address in the format of an IPv4 address followed by a slash and a mask.
+    FQDN (value: fqdn): Domain name.
   playbookInputQuery:
 - key: limit
   value:
