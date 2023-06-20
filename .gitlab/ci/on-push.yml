@@ -566,11 +566,9 @@ test-upload-flow:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  variables:
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
   stage: unittests-and-validations
   script:
-    - |
+    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
     - section_start "Checks Whether to Trigger a Test Upload"
     - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
     - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
@@ -607,4 +605,35 @@ test-upload-flow:
     - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
+
+handle-dev-secrets:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+  stage: unittests-and-validations
+  script:
+    - |
+    - section_start "Checks Whether to Trigger a Test Upload"
+    - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
+    - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
+    - echo "No upload-flow related files were modified, skipping upload test"
+    - exit 0
+    - fi
+    - echo "Found modified files that should be tested in upload-flow"
+    - section_end "Checks Whether to Trigger a Test Upload"
+
+    - section_start "Create Testing Branch"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
+    - echo $BRANCH
+    - section_end "Create Testing Branch"
+
+
+
 
