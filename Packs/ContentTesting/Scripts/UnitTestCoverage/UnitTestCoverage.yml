@@ -1,5 +1,6 @@
 args:
 - name: playbook
+  description: ""
 comment: |
   Assesses the tasks executed in a playbook during the content testing process.
 commonfields:
