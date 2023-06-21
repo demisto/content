@@ -10,16 +10,34 @@ configuration:
   type: 0
 - display: Client token
   name: clientToken
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Access token
   name: accessToken
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Client secret
   name: clientSecret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: Client token
+  name:  credentials_client_token
+  required: false
+  hiddenusername: true
+  type: 9
+- displaypassword: Access token
+  name:  credentials_access_token
+  required: false
+  hiddenusername: true
+  type: 9
+- displaypassword: Client secret
+  name:  credentials_client_secret
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -1330,7 +1348,7 @@ script:
     outputs:
     - contextPath: Akamai.SiteShieldMaps
       description: Akamai SiteShield Maps
-  dockerimage: demisto/akamai:1.0.0.57618
+  dockerimage: demisto/akamai:1.0.0.62965
   runonce: false
   script: ''
   subtype: python3
