@@ -1,7 +1,7 @@
 commonfields:
   id: Salesforce Event Collector
   version: -1
-name: Salesforce Event Collector
+name: Salesforce Event Collector (Deprecated)
 display: Salesforce Event Collector
 category: Analytics & SIEM
 deprecated: true
