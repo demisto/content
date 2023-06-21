@@ -3,7 +3,6 @@ alter xdm.source.user.identifier = replex(_USER_ID_ ,"\"",""),
     xdm.target.module.path = replex(_URI_ ,"\"",""),
     xdm.event.duration = to_integer(multiply(to_integer(replex(_RUN_TIME_ ,"\"","")),1000)),
     xdm.source.ipv4 = arrayindex(regextract(_SOURCE_IP_ ,"(\d+\.\d+\.\d+\.\d+)"),0),
-    xdm.source.host.ipv4_addresses = arraycreate(arrayindex(regextract(_SOURCE_IP_ ,"(\d+\.\d+\.\d+\.\d+)"),0)),
     xdm.source.user.username = replex(_USER_NAME_ ,"\"",""),
     xdm.source.user.user_type = if(_USER_TYPE_ in ("Standard","PowerPartner","PowerCustomerSuccess","Guest","CustomerSuccess","CspLitePortal","CsnOnly"),XDM_CONST.USER_TYPE_REGULAR ,_USER_TYPE_ = "SelfService",XDM_CONST.USER_TYPE_SERVICE_ACCOUNT ,to_string(replex(_USER_TYPE_ ,"\"",""))),
     xdm.event.type = replex(_EVENT_TYPE_ ,"\"",""),
@@ -15,7 +14,8 @@ alter xdm.source.user.identifier = replex(_USER_ID_ ,"\"",""),
     xdm.observer.version = replex(_API_VERSION_ ,"\"",""),
     xdm.event.outcome_reason = replex(_LOGIN_STATUS_ ,"\"",""),
     xdm.source.host.os = replex(_PLATFORM_TYPE_ ,"\"",""),
-    xdm.auth.auth_method = replex(_AUTHENTICATION_METHOD_REFERENCE_ ,"\"","");
+    xdm.auth.auth_method = replex(_AUTHENTICATION_METHOD_REFERENCE_ ,"\"",""),
+    xdm.observer.version = replex(_CLIENT_VERSION_ ,"\"","");
 
 [MODEL: dataset = salesforce_audit_raw]
 alter xdm.event.operation_sub_type = Action,
