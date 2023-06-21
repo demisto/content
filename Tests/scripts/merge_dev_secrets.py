@@ -21,33 +21,28 @@ def get_latest_merged() -> list[dict]:
     return response.json()
 
 
-def run(options: argparse.Namespace):
-    secret_conf = GoogleSecreteManagerModule('options.service_account')
-    # secret_conf = GoogleSecreteManagerModule(options.service_account)
-    latest_pr_merges = get_latest_merged()
-    secrets = secret_conf.list_secrets(options.gsm_project_id, with_secrets=True, ignore_dev=False, ignore_merged=True)
-    dev_secrets_to_merge = get_dev_secrets_to_merge(latest_pr_merges, secrets)
+def merge_dev_secrets(dev_secrets_to_merge, gsm_project_id, secret_conf):
     for dev_secret_name in dev_secrets_to_merge:
 
         # Get dev secret value(we use list to get more info for the secret)
-        dev_secret_value = secret_conf.list_secrets(options.gsm_project_id, with_secrets=True, name_filter=[dev_secret_name],
+        dev_secret_value = secret_conf.list_secrets(gsm_project_id, with_secrets=True, name_filter=[dev_secret_name],
                                                     ignore_dev=False)
         labels = dev_secret_value[0].get('labels', {})
         labels['merged'] = str(int(datetime.timestamp(datetime.now())))
         main_secret_name = dev_secret_name.split('__')[1]
         try:
             # Checks if the main secret exist in our store
-            secret_conf.get_secret(options.gsm_project_id, main_secret_name)
+            secret_conf.get_secret(gsm_project_id, main_secret_name)
 
         except google.api_core.exceptions.NotFound:
             # Adding new main secret to store
-            secret_conf.create_secret(options.gsm_project_id, main_secret_name)
+            secret_conf.create_secret(gsm_project_id, main_secret_name)
             logging.debug(f'Adding new secret: {main_secret_name}')
 
         # Add a new version to master secret
-        secret_conf.add_secret_version(options.gsm_project_id, main_secret_name, json5.dumps(dev_secret_value, quote_keys=True))
+        secret_conf.add_secret_version(gsm_project_id, main_secret_name, json5.dumps(dev_secret_value, quote_keys=True))
         # Add the merged label to dev secret
-        secret_conf.update_secret(options.gsm_project_id, dev_secret_name, labels)
+        secret_conf.update_secret(gsm_project_id, dev_secret_name, labels)
         logging.debug(f'dev secret {dev_secret_name} was merged to main store')
 
 
@@ -58,6 +53,15 @@ def get_dev_secrets_to_merge(latest_pr_merges, secrets):
                                                                                                latest_pr_merges]:
             secrets_to_update.append(secret.get('secret_name'))
     return secrets_to_update
+
+
+def run(options: argparse.Namespace):
+    secret_conf = GoogleSecreteManagerModule('options.service_account')
+    # secret_conf = GoogleSecreteManagerModule(options.service_account)
+    latest_pr_merges = get_latest_merged()
+    secrets = secret_conf.list_secrets(options.gsm_project_id, with_secrets=True, ignore_dev=False, ignore_merged=True)
+    dev_secrets_to_merge = get_dev_secrets_to_merge(latest_pr_merges, secrets)
+    merge_dev_secrets(dev_secrets_to_merge, options.gsm_project_id, secret_conf)
 
 
 def options_handler(args=None) -> argparse.Namespace:
