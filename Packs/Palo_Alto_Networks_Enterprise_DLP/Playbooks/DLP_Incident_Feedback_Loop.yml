@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: DLP Incident Feedback Loop
-description: Collects feedback from user  about blocked files. Optionally, automates the approval process of an exemption request.
+description: Collects feedback from user  about blocked files.
 starttaskid: "0"
 tasks:
   "0":
@@ -454,12 +454,13 @@ tasks:
       '#none#':
       - "76"
       - "89"
+      - "111"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1300,
+          "x": 1550,
           "y": -400
         }
       }
@@ -495,7 +496,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "87"
+      - "90"
     scriptarguments:
       Username:
         complex:
@@ -513,7 +514,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1035,
+          "x": 1055,
           "y": -260
         }
       }
@@ -902,59 +903,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "87":
-    id: "87"
-    taskid: 5714a472-0aad-40d6-888a-ca54dba6375c
-    type: condition
-    task:
-      id: 5714a472-0aad-40d6-888a-ca54dba6375c
-      description: ""
-      version: -1
-      name: User was found?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "84"
-      "yes":
-      - "88"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Account
-                accessor: DisplayName
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1035,
-          "y": -80
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: e2a7a642-e34c-4450-8648-d234c95b7985
+    taskid: 4875253f-3fc0-43db-80c4-7a617507787f
     type: regular
     task:
-      id: e2a7a642-e34c-4450-8648-d234c95b7985
+      id: 4875253f-3fc0-43db-80c4-7a617507787f
       version: -1
-      name: Set user details for layout
+      name: Set incident fields in layout
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -964,6 +920,12 @@ tasks:
       '#none#':
       - "84"
     scriptarguments:
+      dlpdetections:
+        complex:
+          root: DLP.Report.DataPatternMatches.Detections
+          accessor: detection
+          transformers:
+          - operator: StringifyArray
       employeedisplayname:
         complex:
           root: Account
@@ -995,7 +957,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1310,
+          "x": 1550,
           "y": 110
         }
       }
@@ -1055,7 +1017,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1575,
+          "x": 1550,
           "y": -260
         }
       }
@@ -1068,13 +1030,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 03a76bf4-d062-4966-8c83-a2cfa571702f
+    taskid: 48608092-6aec-4486-82fa-4cf6f87951cb
     type: condition
     task:
-      id: 03a76bf4-d062-4966-8c83-a2cfa571702f
+      id: 48608092-6aec-4486-82fa-4cf6f87951cb
       description: ""
       version: -1
-      name: Any failed logins found in the past 24h?
+      name: Any results?
       type: condition
       iscommand: false
       brand: ""
@@ -1105,11 +1067,25 @@ tasks:
           right:
             value: {}
           ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: DisplayName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DLP.Report.DataPatternMatches.Detections
+                accessor: detection
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1575,
+          "x": 1550,
           "y": -80
         }
       }
@@ -1970,6 +1946,45 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 3579d335-de3c-429b-8904-445f8e3b2c21
+    type: regular
+    task:
+      id: 3579d335-de3c-429b-8904-445f8e3b2c21
+      version: -1
+      name: Get file report
+      description: Fetches DLP reports associated with a report ID.
+      script: '|||pan-dlp-get-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      fetch_snippets:
+        simple: "true"
+      report_id:
+        complex:
+          root: incident
+          accessor: pandlpreportid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1981,8 +1996,6 @@ view: |-
       "80_41_Approve": 0.64,
       "80_81_Deny": 0.58,
       "80_82_#default#": 0.49,
-      "87_84_#default#": 0.22,
-      "87_88_yes": 0.42,
       "90_84_#default#": 0.1,
       "90_88_yes": 0.43,
       "93_11_#default#": 0.1,
@@ -1996,7 +2009,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4905,
-        "width": 2950,
+        "width": 3060,
         "x": -640,
         "y": -600
       }
@@ -2004,8 +2017,7 @@ view: |-
   }
 inputs:
 - key: ApprovalTarget
-  value:
-    simple: Manual
+  value: {}
   required: false
   description: |-
     Can be either empty or one of the following:
@@ -2052,7 +2064,7 @@ inputs:
   playbookInputQuery:
 - key: ApproverMessageApp
   value:
-    simple: Email
+    simple: Slack
   required: false
   description: |-
     The communication method with the approver.
