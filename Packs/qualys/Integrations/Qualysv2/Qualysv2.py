@@ -809,7 +809,8 @@ TAG_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
 # Arguments' names of each command
 COMMANDS_ARGS_DATA: Dict[str, Any] = {
     "qualys-purge-scan-host-data": {
-        "args": ["action", "echo_request", "ids", "ips", "ag_ids", "ag_titles", "network_ids", "no_vm_scan_since", "no_compliance_scan_since", "data_scope", "compliance_enabled", "os_pattern"]
+        "args": ["action", "echo_request", "ids", "ips", "ag_ids", "ag_titles", "network_ids", "no_vm_scan_since",
+            "no_compliance_scan_since", "data_scope", "compliance_enabled", "os_pattern"]
     },
     "qualys-report-list": {
         "args": ["id", "state", "user_login", "expires_before_datetime", "client_id", "client_name"],
