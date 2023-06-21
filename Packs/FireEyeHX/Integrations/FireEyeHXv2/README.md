@@ -2107,8 +2107,11 @@ Create a new indicator.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| category | The indicator category. | Required | 
+| --- | --- |----------|
+| category | The indicator category. | Required |
+| display_name | Display Name for the Indicator. | Optional |
+| description | Description for the Indicator. | Optional |
+| platforms | Select Platform for the Indicator. If not selected, Indicator will be created for all platforms. | Optional |
 
 
 #### Context Output
