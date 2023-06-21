@@ -69,7 +69,7 @@ def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
 
     with ChangeCWD('Utils/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
         assert get_packs_support_level_label(
-            file_paths=['test_files/Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
+            file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
         ) == 'Xsoar Support Level'
 
     assert checkout_mocker.call_args.kwargs['fork_owner'] == expected_fork_owner
