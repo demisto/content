@@ -1,6 +1,6 @@
 var sendRequest = function(method, url, body) {
-    var account_sid = (params.credentials_token!== undefined)? params.credentials_token.identifier : params.sid;
-    var auth_token = (params.credentials_token!== undefined)? params.credentials_token.password : params.token;
+    var account_sid = params.credentials_token?.identifier || params.sid;
+    var auth_token = params.credentials_token?.password || params.token;
     if (!(account_sid && auth_token)){
         throw('Account SID and Auth token must be provided.');
     }
