@@ -14,8 +14,7 @@ alter xdm.source.user.identifier = replex(_USER_ID_ ,"\"",""),
     xdm.observer.version = replex(_API_VERSION_ ,"\"",""),
     xdm.event.outcome_reason = replex(_LOGIN_STATUS_ ,"\"",""),
     xdm.source.host.os = replex(_PLATFORM_TYPE_ ,"\"",""),
-    xdm.auth.auth_method = replex(_AUTHENTICATION_METHOD_REFERENCE_ ,"\"",""),
-    xdm.observer.version = replex(_CLIENT_VERSION_ ,"\"","");
+    xdm.auth.auth_method = replex(_AUTHENTICATION_METHOD_REFERENCE_ ,"\"","");
 
 [MODEL: dataset = salesforce_audit_raw]
 alter xdm.event.operation_sub_type = Action,
