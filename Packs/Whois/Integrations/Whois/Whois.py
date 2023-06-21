@@ -8787,6 +8787,7 @@ def main():
             )
             is_rate_limited = has_rate_limited_result(cmd_res)
 
+            # TODO not sure this is the desired behavior
             # Return an error if rate limiting is not suppressed
             # and whether one of the requests failed because of rate limiting
             if not rate_limit_errors_suppressed and is_rate_limited:

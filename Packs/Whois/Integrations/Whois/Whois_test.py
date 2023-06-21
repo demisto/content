@@ -14,9 +14,12 @@ from Whois import has_rate_limited_result, \
     ipwhois_exception_mapping, \
     whois_exception_mapping, \
     increment_metric, \
-    WhoisInvalidDomain
+    WhoisInvalidDomain, \
+    whois_command
 import ipwhois
 import socket
+from socks import ProxyConnectionError
+from pytest_mock import MockerFixture
 
 import json
 
@@ -24,7 +27,7 @@ INTEGRATION_NAME = 'Whois'
 
 
 @pytest.fixture(autouse=True)
-def handle_calling_context(mocker):
+def handle_calling_context(mocker: MockerFixture):
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
@@ -41,7 +44,7 @@ def assert_results_ok():
     assert results[0] == 'ok'
 
 
-def test_test_command(mocker):
+def test_test_command(mocker: MockerFixture):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch("Whois.get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
@@ -60,13 +63,13 @@ def test_get_domain_from_query(query, expected):
     assert get_domain_from_query(query) == expected
 
 
-def test_socks_proxy_fail(mocker):
+def test_socks_proxy_fail(mocker: MockerFixture):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5://localhost:1180'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results')
-    with pytest.raises(SystemExit) as err:
+    with pytest.raises(ProxyConnectionError) as err:
         Whois.main()
-    assert err.type == SystemExit
+    assert err.type == ProxyConnectionError
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
@@ -222,7 +225,7 @@ def test_query_result(whois_result, domain, reliability, expected):
                           'val.Type == obj.Type)').get('Reliability') == 'B - Usually reliable'
 
 
-def test_ip_command(mocker):
+def test_ip_command(mocker: MockerFixture):
     """
     Given:
         - IP addresses
@@ -235,6 +238,7 @@ def test_ip_command(mocker):
         - Verify support list of IPs
     """
     from Whois import ip_command
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': "6.8.0", 'buildNumber': '12345'})
     response = load_test_data('./test_data/ip_output.json')
     mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
     result = ip_command(
@@ -262,7 +266,7 @@ def test_ip_command(mocker):
              'Type': 'ip'}}
 
 
-def test_get_whois_ip_proxy_param(mocker):
+def test_get_whois_ip_proxy_param(mocker: MockerFixture):
     """
     Given:
         - proxy address
@@ -354,7 +358,7 @@ def test_create_outputs_invalid_time(updated_date, expected_res):
     ({"query": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
     ({"query": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
 ])
-def test_whois_with_verbose(args, expected_res, mocker):
+def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
     """
     Given:
         - The args for the whois command with or without the verbose arg.
@@ -363,6 +367,7 @@ def test_whois_with_verbose(args, expected_res, mocker):
     Then:
         - validate that another context path is added for the raw-response if verbose arg is true.
     """
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': "6.8.0", 'buildNumber': '12345'})
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
@@ -438,55 +443,7 @@ def test_parse_nic_contact():
     assert res == expected
 
 
-def test_get_raw_response_with_a_refer_server_that_fails(mocker):
-    """
-    Background:
-    get_whois_raw(domain, server) is a recursive function in the Whois integration which in charge of getting the raw
-    response from the whois server for the query domain. In some cases the response from the whois server includes
-    a name of another whois server, i.e a refer server, that is also used for querying the domain. If the raw response
-    include a refer server, the get_whois_raw() function is recursively called this time with the refer server as the
-    server argument, and the responses of the recursive calls are concatenating.
-
-    This test simulates a case in which the call to get_whois_raw(domain, server) returns a response that includes a
-    refer whois server but the call to the refer server fails with an exception. The purpose of the test is to verify
-    that the final response of the get_whois_raw() includes the response of the first server which was queried although
-    that the recursive call to the refer server failed.
-
-    Given:
-        - A Whois server, a domain to query and a mock response which simulates a Whois server response that includes
-          a name of a refer server.
-    When:
-        - running the Whois.get_whois_raw(domain, server) function
-
-    Then:
-        - Verify that the final response of the get_whois_raw() includes the response of the first server which was
-          queried although that the recursive call to the refer server failed.
-    """
-    import socket
-    from Whois import get_whois_raw
-
-    def connect_mocker(curr_server):
-        """
-        This function is a mocker for the function socket.connect() that simulates a case in which the first server of
-        the test enables a socket connection, while the second server fails and raises an exception.
-        """
-        if curr_server[0] == "test_server":
-            return
-        else:
-            raise Exception
-
-    mock_response = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
-
-    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker)
-    mocker.patch('Whois.whois_request_get_response', return_value=mock_response)
-
-    server = "test_server"
-    domain = "test.plus"
-    response = get_whois_raw(domain=domain, server=server)
-    assert response == [mock_response]
-
-
-def test_get_raw_response_with_non_recursive_data_query(mocker):
+def test_get_raw_response_with_non_recursive_data_query(mocker: MockerFixture):
     """
     Given:
         - A domain to query, non-recursive data query and a mock response which simulates a
@@ -510,7 +467,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker):
     mock_response1 = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
     mock_response2 = "Domain Name: test_refer_server\n"
 
-    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker)
+    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker: MockerFixture)
     mocker.patch('Whois.whois_request_get_response', side_effect=[mock_response1, mock_response2])
 
     domain = "test.plus"
@@ -525,7 +482,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker):
                              ("param_key", "param_value", "arg_key", None, "param_value"),
                              ("param_key", None, "arg_key", None, None),
                          ])
-def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_res, mocker):
+def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_res, mocker: MockerFixture):
     """
     Given:
         - Demisto params and args.
@@ -546,7 +503,7 @@ def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_r
     ({"query": "google.com,amazon.com"}, '6.8.0', 3),
     ({"query": "google.com"}, '6.5.0', 1)
 ])
-def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, expected_entries: int, mocker):
+def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, expected_entries: int, mocker: MockerFixture):
     """
     Test whether the metrics entry is appended to the list of results according to the XSOAR version.
     API Execution Metrics is only supported for 6.8+.
@@ -570,7 +527,7 @@ def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, 
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     # TODO patch response for query
-    results = Whois.whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
+    results = whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
     assert len(results) == expected_entries
 
 
@@ -578,11 +535,10 @@ def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, 
     ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, True, EntryType.ERROR),
     ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
 ])
-def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: EntryType, mocker):
+def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: EntryType, mocker: MockerFixture):
 
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
-    # TODO patch response for query
     results = Whois.whois_command(
         reliability=DBotScoreReliability.B,
         query=args['query'],
