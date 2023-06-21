@@ -1,10 +1,8 @@
 RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the XSOAR Enterprise platform.
 
-This integration was integrated and tested with version 11.5 of RSANetWitness.
+This integration was integrated and tested with version 12.2 of RSANetWitness.
 
 The integration supports version 11.5 and higher.
-
-Note: This is a beta integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 
 ## Changes compared to V11.1
 ### Changes in commands
@@ -51,10 +49,10 @@ Commands affected by this limitation are:
 * ***rsa-nw-scan-stop-request***
 * ***rsa-nw-system-dump-download-request***
 
-## Configure RSA NetWitness v11.5 (Beta) on Cortex XSOAR
+## Configure RSA NetWitness on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RSA NetWitness v11.5 (Beta).
+2. Search for RSA NetWitness.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -69,6 +67,8 @@ Commands affected by this limitation are:
     | Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example, 12 hours, 7 days\) | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
+    | On 'Fetch incidents' import all alerts related to the incident | | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -718,17 +718,17 @@ Retrieves host information for a specific endpoint. To use this command, service
         "MACAddress": [
             "111::111:11:111:11"
         ],
-        "Vendor": "RSA NetWitness 11.5 Response"
+        "Vendor": "RSA NetWitness Response"
     }
 }
 ```
 
 #### Human Readable Output
 
->### RSA NetWitness 11.5 -  Endpoint: 1
+>### RSA NetWitness -  Endpoint: 1
 >|Hostname|ID|IPAddress|MACAddress|Vendor|
 >|---|---|---|---|---|
->| hostName | 1 | ['1.1.1.1'] | 111::111:11:111:11 | RSA NetWitness 11.5 Response |
+>| hostName | 1 | ['1.1.1.1'] | 111::111:11:111:11 | RSA NetWitness Response |
 
 
 ### rsa-nw-snapshots-list-for-host
@@ -1693,7 +1693,8 @@ Initiates the MFT download to the endpoint server.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | agent_id | The host agent ID. | Required | 
-| service_id | The service ID of the endpoint server to be connected. | Optional | 
+| service_id | The service ID of the endpoint server to be connected. | Optional |
+| path | Drive or NTFS Mount path for which MFT is requested. | Optional |
 
 
 #### Context Output

@@ -566,10 +566,10 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
             hostname=host.get('hostName'),
             ip_address=ips,
             mac_address=mac_addresses,
-            vendor='RSA NetWitness 11.5 Response')
+            vendor='RSA NetWitness Response')
 
         endpoint_context = endpoint_entry.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        md = tableToMarkdown(f'RSA NetWitness 11.5 -  Endpoint: {host.get("agentId")}', endpoint_context)
+        md = tableToMarkdown(f'RSA NetWitness -  Endpoint: {host.get("agentId")}', endpoint_context)
 
         command_results.append(CommandResults(
             readable_output=md,
@@ -849,7 +849,7 @@ def fetch_incidents(client: Client, params: dict) -> list:
                 if alerts_ids := [alert.get('id') for alert in alerts]:
                     item['alerts_ids'] = alerts_ids
 
-        incident = {"name": f"RSA NetWitness 11.5 {item.get('id')} - {item.get('title')}",
+        incident = {"name": f"RSA NetWitness {item.get('id')} - {item.get('title')}",
                     "occurred": item.get('created'),
                     "rawJSON": json.dumps(item)}
         # items arrived from last to first - change order

@@ -51,7 +51,7 @@ configuration:
   required: false
   type: 8
 description: The RSA NetWitness integration provides system log, network, and endpoint visibility for real-time collection, detection, and automated response with the Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract critical data and effectively run security operations automated playbooks.
-display: RSANetWitness v11.5
+display: RSANetWitness
 name: RSANetWitnessv115
 script:
   commands:
