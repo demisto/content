@@ -1,38 +1,38 @@
 from CommonServerPython import IncidentStatus, EntryType
 
 response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
-                                "cid": "24ab288b109b411aba970e570d1ddf58",
-                                "host_ids": [
+                     "cid": "24ab288b109b411aba970e570d1ddf58",
+                     "host_ids": [
                                     "afb5d1512a00480f53e9ad91dc3e4b55"
-                                ],
-                                "hosts": [
-                                    {"device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
-                                     "cid": "24ab288b109b411aba970e570d1ddf58",
-                                     "agent_load_flags": "0",
-                                     "agent_local_time": "2020-05-06T23:36:34.594Z",
-                                     "agent_version": "5.28.10902.0",
-                                     "bios_manufacturer": "Apple Inc.",
-                                     "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
-                                     "config_id_base": "65994753",
-                                     "config_id_build": "10902",
-                                     "config_id_platform": "4",
-                                     "external_ip": "1.1.1.1",
-                                     "hostname": "SFO-M-Y81WHJ",
-                                     "first_seen": "2019-05-10T17:20:39Z",
-                                     "last_seen": "2020-05-17T16:59:42Z",
-                                     "local_ip": "1.1.1.1",
-                                     "mac_address": "86-89-ad-65-d0-30",
-                                     "major_version": "18",
-                                     "minor_version": "7",
-                                     "os_version": "Mojave (10.14)",
-                                     "platform_id": "1",
-                                     "platform_name": "Mac",
-                                     "product_type_desc": "Workstation",
-                                     "status": "normal",
-                                     "system_manufacturer": "Apple Inc.",
-                                     "system_product_name": "MacBookPro15,1",
-                                     "modified_timestamp": "2020-05-17T16:59:56Z"}
-                                ],
+                     ],
+                     "hosts": [
+                         {"device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
+                          "cid": "24ab288b109b411aba970e570d1ddf58",
+                          "agent_load_flags": "0",
+                          "agent_local_time": "2020-05-06T23:36:34.594Z",
+                          "agent_version": "5.28.10902.0",
+                          "bios_manufacturer": "Apple Inc.",
+                          "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
+                          "config_id_base": "65994753",
+                          "config_id_build": "10902",
+                          "config_id_platform": "4",
+                          "external_ip": "1.1.1.1",
+                          "hostname": "SFO-M-Y81WHJ",
+                          "first_seen": "2019-05-10T17:20:39Z",
+                          "last_seen": "2020-05-17T16:59:42Z",
+                          "local_ip": "1.1.1.1",
+                          "mac_address": "86-89-ad-65-d0-30",
+                          "major_version": "18",
+                          "minor_version": "7",
+                          "os_version": "Mojave (10.14)",
+                          "platform_id": "1",
+                          "platform_name": "Mac",
+                          "product_type_desc": "Workstation",
+                          "status": "normal",
+                          "system_manufacturer": "Apple Inc.",
+                          "system_product_name": "MacBookPro15,1",
+                          "modified_timestamp": "2020-05-17T16:59:56Z"}
+                     ],
                      "created": "2020-05-17T17:30:38Z",
                      "start": "2020-05-17T17:30:38Z",
                      "end": "2020-05-17T17:30:38Z",
@@ -40,10 +40,10 @@ response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a
                      "status": 20,
                      "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z",
                      "description": "Objectives in this incident: Keep Access. Techniques: External Remote Services. "
-                                               "Involved hosts and end users: SFO-M-Y81WHJ.",
+                     "Involved hosts and end users: SFO-M-Y81WHJ.",
                      "tags": [
                                     "Objective/Keep Access"
-                                ],
+                     ],
                      "fine_score": 38}
 
 response_detection = {"cid": "20879a8064904ecfbb62c118a6a19411",
