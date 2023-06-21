@@ -357,9 +357,6 @@
                         ]
                     }
                 },
-                "Behavior": {
-                    "simple": "behaviors"
-                },
                 "CMD line": {
                     "simple": "behaviors.cmdline"
                 },
