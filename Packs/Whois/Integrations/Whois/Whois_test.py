@@ -10,7 +10,11 @@ import sys
 from typing import List, Dict, Type, Tuple
 
 from CommonServerPython import DBotScoreReliability, CommandResults, EntryType, ExecutionMetrics, ErrorTypes
-from Whois import has_rate_limited_result, ipwhois_exception_mapping, whois_exception_mapping, increment_metric, WhoisInvalidDomain, WhoisEmptyResponse
+from Whois import has_rate_limited_result, \
+    ipwhois_exception_mapping, \
+    whois_exception_mapping, \
+    increment_metric, \
+    WhoisInvalidDomain
 import ipwhois
 import socket
 
@@ -346,8 +350,10 @@ def test_create_outputs_invalid_time(updated_date, expected_res):
     assert res[0]['Updated Date'] == expected_res
 
 
-@pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
-                                                ({"query": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)])
+@pytest.mark.parametrize('args, expected_res', [
+    ({"query": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
+    ({"query": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
+])
 def test_whois_with_verbose(args, expected_res, mocker):
     """
     Given:
