@@ -336,7 +336,7 @@ def main():
     cb_custom_id = params.get('credentials_api_token_custom_id', {}).get('password') or params.get('custom_id')
     cb_org_key = params.get('credentials_api_token_org_key', {}).get('password') or params.get('org_key')
     if not(cb_custom_key and cb_custom_id and cb_org_key):
-        return_error('Custom Key, Custom ID and Organization Key must be provided.')
+        raise DemistoException('Custom Key, Custom ID and Organization Key must be provided.')
     verify_certificate = not params.get('insecure', True)
     handle_proxy()
 
