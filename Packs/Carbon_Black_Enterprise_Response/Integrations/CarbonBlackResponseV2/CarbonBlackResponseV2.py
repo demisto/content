@@ -867,8 +867,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
                 highlights = alert['ioc_attr'].get('highlights', {})
                 for i, attribute in enumerate(highlights):
                     highlights[i] = attribute.replace("PREPREPRE", "").replace("POSTPOSTPOST", "")
-            except Exception as e:
-                demisto.debug(e)
+            except Exception:
+                pass
 
         incident = {
             'name': incident_name,
