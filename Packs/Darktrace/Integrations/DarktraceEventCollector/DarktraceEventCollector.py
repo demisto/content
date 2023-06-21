@@ -28,6 +28,8 @@ DARKTRACE_API_ERRORS = {
     'FAILED_TO_PARSE': 'N/A'
 }
 DEFAULT_LIMIT = 10
+DEFAULT_MAX_FETCH = 1000
+DEFAULT_FIRST_FETCH = '3 days'
 DEFAULT_STARTTIME = 10
 DEFAULT_ENDTIME = 10
 """*****CLIENT CLASS*****
@@ -189,7 +191,7 @@ def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
 
 def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
                  start_time: int, end_time: int) -> \
-        Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """
@@ -214,7 +216,7 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
 
 
 def get_events_command(client: Client, args: Dict[str, str], first_fetch_time_timestamp: int) -> \
-        Tuple[List[Dict[str, Any]], CommandResults]:
+    Tuple[List[Dict[str, Any]], CommandResults]:
     """
         Gets events from Darktrace API.
     """
@@ -238,23 +240,19 @@ def main() -> None:  # pragma: no cover
     """
     params = demisto.params()
     args = demisto.args()
-    base_url = params.get('base_url')
-    public_api_token = params.get('public_creds', {}).get('password', '')
-    private_api_token = params.get('private_creds', {}).get('password', '')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    max_fetch = arg_to_number(params.get('max_fetch')) or 1000
-    first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(params.get('first_fetch', '3 days ago')))
-    tokens = (public_api_token, private_api_token)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
-
     try:
+        public_api_token = params.get('public_creds', {}).get('password', '')
+        private_api_token = params.get('private_creds', {}).get('password', '')
+        max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
+        first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(params.get('first_fetch', DEFAULT_FIRST_FETCH)))
+
+        demisto.debug(f'Command being called is {demisto.command()}')
+
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            auth=tokens
+            base_url=params.get('base_url'),
+            verify=not params.get('insecure', False),
+            proxy=params.get('proxy', False),
+            auth=(public_api_token, private_api_token)
         )
 
         if demisto.command() == 'test-module':
@@ -281,7 +279,6 @@ def main() -> None:  # pragma: no cover
                     demisto.setLastRun(new_last_run)
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

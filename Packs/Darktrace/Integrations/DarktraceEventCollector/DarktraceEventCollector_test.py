@@ -1,5 +1,5 @@
 from freezegun import freeze_time
-
+import demistomock as demisto
 import io
 import json
 import pytest
@@ -10,7 +10,16 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@pytest.fixture
+def mock_params(mocker, params=None):
+    if params is None:
+        params = {'first_fetch': '3 days', 'max_fetch': '2', 'insecure': True,
+                  'proxy': False, 'base_url': '"https://mock.darktrace.com"',
+                  'public_creds': {'password': 'example_pub'},
+                  'private_creds': {'password': 'example_pri'}}
+    mocker.patch.object(demisto, "params", return_value=params)
+
+
+@pytest.fixture(autouse=True)
 def client(mocker):
     from DarktraceEventCollector import Client
 
@@ -82,6 +91,44 @@ def test_convert_to_timestamp(mock_date, expected_res):
     parsed_date = convert_to_timestamp(date=arg_to_datetime(mock_date))
     assert parsed_date == expected_res
 
+
+def test_test_module_ok(client, mocker):
+    from DarktraceEventCollector import test_module
+    params = {"max_fetch": "1", "first_fetch": "3 days"}
+    mock_params(mocker, params)
+    assert test_module(client, params.get('first_fetch')) == "ok"
+
+
+@pytest.mark.parametrize(
+    "params,error_msg",
+    [
+        (
+            {"max_fetch": "1", "first_fetch": ""},
+            'Failed to execute test-module command.\nError:\n"" is not a valid date'
+        ),
+        (
+            {"max_fetch": "not a number", "first_fetch": "3 days"},
+            'Failed to execute test-module command.\nError:\n"not a number" is not a valid number'
+        ),
+        (
+            {"max_fetch": "1", "first_fetch": "not a date"},
+            'Failed to execute test-module command.\nError:\n"not a date" is not a valid date'
+        ),
+    ], ids=["empty_str_first_fetch", "invalid_max_fetch", "invalid_first_fetch"]
+)
+def test_test_module_failure(mocker, params, error_msg):
+    """
+    Given: different assignments for integration parameters.
+    When: Running test-module command.
+    Then: Make sure the correct message is returned.
+    """
+    from DarktraceEventCollector import main
+
+    mock_params(mocker, params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_error = mocker.patch('DarktraceEventCollector.return_error')
+    main()
+    assert return_error.call_args[0][0] == error_msg
 # def test_get_events_command_parse_time_argument_correctly(client, mock_args):
 #     """
 #     Given: A mock Darktrace client.
