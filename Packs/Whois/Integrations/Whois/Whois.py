@@ -7,6 +7,7 @@ import sys
 import socks
 import ipwhois
 from typing import Dict, List, Optional, Type
+import urllib
 
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
@@ -7170,8 +7171,8 @@ def has_rate_limited_result(cmd_results: List[CommandResults]) -> bool:
     """
 
     for c in cmd_results:
-        # type: ignore
-        if c.entry_type == EntryType.ERROR and c.outputs and 'reason' in c.outputs and c.outputs['reason'] == "quota_error":
+        
+        if c.entry_type == EntryType.ERROR and c.outputs and 'reason' in c.outputs.keys() and c.outputs['reason'] == "quota_error":  # type: ignore
             return True
         else:
             continue
@@ -8710,7 +8711,7 @@ def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: b
     return append_metrics(execution_metrics=execution_metrics, results=results)
 
 
-def test_command() -> str:
+def test_command():
     test_domain = 'google.co.uk'
     demisto.debug(f"Testing module using domain '{test_domain}'...")
     whois_result = get_whois(test_domain)
@@ -8770,7 +8771,7 @@ def main():
     try:
         results: List[CommandResults] = []
         if command == 'ip':
-            ip: str = args.get('ip')
+            ip = args.get('ip', '')
             rate_limit_retry_count: int = arg_to_number(get_param_or_arg(
                 param_key='rate_limit_retry_count', arg_key='rate_limit_retry_count'), arg_name="rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT
             rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(
