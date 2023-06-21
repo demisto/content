@@ -1,4 +1,3 @@
-
 import contextlib
 from functools import lru_cache
 import glob
@@ -14,12 +13,14 @@ from typing import List
 
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
+from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
 from google.cloud.storage import Bucket
 from packaging.version import Version
 from urllib3.exceptions import HTTPWarning, HTTPError
 
 from Tests.Marketplace.marketplace_constants import (IGNORED_FILES,
+                                                     PACKS_FOLDER,
                                                      PACKS_FULL_PATH,
                                                      GCPConfig, Metadata)
 from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
@@ -31,6 +32,25 @@ PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH
                                      r'+\.zip$')
 SUCCESS_FLAG = True
 WLM_TASK_FAILED_ERROR_CODE = 101704
+
+
+def is_pack_deprecated(pack_id: str) -> bool:
+    """
+    Check whether the pack is deprecated by checking its 'pack_metadata.json' file.
+    Tests are not being collected for deprecated packs and the pack is not installed in the build process.
+
+    Args:
+        pack_id (str): ID of the pack to check.
+
+    Returns:
+        bool: True if the pack is deprecated, False otherwise
+    """
+    pack_metadata_path = Path(PACKS_FOLDER) / pack_id / PACK_METADATA_FILENAME
+
+    if not pack_metadata_path.is_file():
+        return True
+
+    return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
 
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
@@ -354,10 +374,11 @@ def search_pack_and_its_dependencies(client: demisto_client,
         batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
     """
+    is_post_update = os.getenv('‘BUCKET_UPLOAD’')  # Function is called during bucket upload (not pre-update)
     api_data = get_pack_dependencies(client, pack_id, lock)
-    pack_data = api_data["packs"][0]
+    pack_data = api_data['packs'][0]
 
-    if pack_data["extras"]["pack"]["deprecated"]:
+    if pack_data['extras']['pack']['deprecated']:
         logging.debug(f'Pack {pack_id} is hidden. Skipping installation and not searching for dependencies.')
 
     current_packs_to_install = [
@@ -378,7 +399,10 @@ def search_pack_and_its_dependencies(client: demisto_client,
         logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
 
         for dependency in dependencies_data:
-            if dependency.get("deprecated"):
+            # If running on pre-update, we want to check using API data.
+            # if running on post-update, we want to check the files locally on the branch.
+            if (not is_post_update and dependency.get("deprecated")) or \
+                (is_post_update and is_pack_deprecated(dependency.get("id"))):
                 logging.critical(f"Pack '{pack_id}' depends on pack {dependency.get('id')} "
                                  'which is a deprecated pack.')
                 global SUCCESS_FLAG
@@ -517,7 +541,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
             # Check if the server version is greater than the minimum server version required for this pack or if the
             # pack is hidden (deprecated):
             if ('Master' in server_version or Version(server_version) >= Version(server_min_version)) and \
-                    not hidden:
+                not hidden:
                 logging.debug(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
             else:
