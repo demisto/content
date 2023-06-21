@@ -18,7 +18,6 @@ from Whois import has_rate_limited_result, \
     whois_command
 import ipwhois
 import socket
-from socks import ProxyConnectionError
 from pytest_mock import MockerFixture
 
 import json
@@ -67,9 +66,9 @@ def test_socks_proxy_fail(mocker: MockerFixture):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5://localhost:1180'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results')
-    with pytest.raises(ProxyConnectionError) as err:
+    with pytest.raises(SystemExit) as err:
         Whois.main()
-    assert err.type == ProxyConnectionError
+    assert err.type == SystemExit
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
@@ -467,7 +466,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker: MockerFixture):
     mock_response1 = "Domain Name: test.plus\n WHOIS Server: whois.test.com/\n"
     mock_response2 = "Domain Name: test_refer_server\n"
 
-    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker: MockerFixture)
+    mocker.patch.object(socket.socket, 'connect', side_effect=connect_mocker)
     mocker.patch('Whois.whois_request_get_response', side_effect=[mock_response1, mock_response2])
 
     domain = "test.plus"
