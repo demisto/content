@@ -31,6 +31,14 @@ def handle_path(path):
     return path.strip('\\/')
 
 
+def create_share_path(hostname, path):
+    """
+    Create a path to the shared folder according to the smbprotocol convention: '\\server\share'.
+    For reference see https://github.com/jborean93/smbprotocol/blob/master/examples/high-level/directory-management.py
+    """
+    return fr'\\{hostname}\{path}'
+
+
 class SMBClient:
     def __init__(self, hostname, user, password, encrypt, port):
         self.hostname = hostname
@@ -59,7 +67,7 @@ def test_module(client: SMBClient):
 def smb_upload(client: SMBClient, args: dict):
     hostname = args.get('hostname')
     path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = create_share_path(hostname or client.hostname, path)
     username = args.get('username')
     password = args.get('password')
     entryID = args.get('entryID')
@@ -89,7 +97,7 @@ def smb_upload(client: SMBClient, args: dict):
 def smb_download(client: SMBClient, args: dict):
     hostname = args.get('hostname')
     path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = create_share_path(hostname or client.hostname, path)
     username = args.get('username')
     password = args.get('password')
 
@@ -104,7 +112,7 @@ def smb_download(client: SMBClient, args: dict):
 def smb_remove_file(client: SMBClient, args: dict):
     hostname = args.get('hostname')
     path = handle_path(args.get('file_path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = create_share_path(hostname or client.hostname, path)
     username = args.get('username')
     password = args.get('password')
 
@@ -119,7 +127,7 @@ def list_dir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = create_share_path(hostname or client.hostname, path)
 
     client.create_session(hostname, username, password)
     entries = list(scandir(path))
@@ -151,7 +159,7 @@ def smb_mkdir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = create_share_path(hostname or client.hostname, path)
 
     client.create_session(hostname, username, password)
 
@@ -165,7 +173,7 @@ def smb_rmdir(client: SMBClient, args: dict):
     username = args.get('username')
     password = args.get('password')
     path = handle_path(args.get('path'))
-    path = os.path.join(hostname or client.hostname, path)
+    path = create_share_path(hostname or client.hostname, path)
 
     client.create_session(hostname, username, password)
     rmdir(path)
