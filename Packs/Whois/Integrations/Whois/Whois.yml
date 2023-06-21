@@ -93,7 +93,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: false
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
