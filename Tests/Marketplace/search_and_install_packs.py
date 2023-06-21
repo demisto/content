@@ -408,12 +408,20 @@ def search_pack_and_its_dependencies(client: demisto_client,
             dependency_id = dependency['id']
             # If running on pre-update, we want to check using API data.
             # if running on post-update, we want to check the files locally on the branch.
-            if (not is_post_update and dependency.get("deprecated")) or \
-               (is_post_update and is_pack_deprecated(dependency_id)):
+            if is_post_update:
+                logging.info(f'Checking if pack {dependency_id} is deprecated (using pack metadata).')
+                is_deprecated = is_pack_deprecated(dependency_id)
+
+            else:
+                logging.info(f'Checking if pack {dependency_id} is deprecated (using Marketplace API).')
+                is_deprecated = dependency.get('deprecated')
+
+            if is_deprecated:
                 logging.critical(f"Pack '{pack_id}' depends on pack {dependency_id} "
                                  'which is a deprecated pack.')
                 global SUCCESS_FLAG
                 SUCCESS_FLAG = False
+
             else:
                 current_packs_to_install.append(dependency)
 
