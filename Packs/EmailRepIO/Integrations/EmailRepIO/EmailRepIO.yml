@@ -157,7 +157,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.

@@ -196,7 +196,7 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
     demisto_params = demisto.params()
     api_key = demisto_params.get('credentials', {}).get('password') or demisto_params.get('apikey')
@@ -243,5 +243,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
