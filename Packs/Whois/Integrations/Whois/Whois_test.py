@@ -36,9 +36,9 @@ def load_test_data(json_path):
 
 
 def assert_results_ok():
-    assert demisto.results.call_count == 1
+    assert demisto.results.call_count == 1  # type: ignore
     # call_args is tuple (args list, kwargs). we only need the first one
-    results = demisto.results.call_args[0]
+    results = demisto.results.call_args[0]  # type: ignore
     assert len(results) == 1
     assert results[0] == 'ok'
 
@@ -69,9 +69,9 @@ def test_socks_proxy_fail(mocker: MockerFixture):
     with pytest.raises(SystemExit) as err:
         Whois.main()
     assert err.type == SystemExit
-    assert demisto.results.call_count == 1
+    assert demisto.results.call_count == 1  # type: ignore
     # call_args is tuple (args list, kwargs). we only need the first one
-    results = demisto.results.call_args[0]
+    results = demisto.results.call_args[0]  # type: ignore
     assert len(results) == 1
     assert "Exception thrown calling command" in results[0]['Contents']
 
@@ -249,8 +249,8 @@ def test_ip_command(mocker: MockerFixture):
     )
     assert len(result) == 3
     assert result[0].outputs_prefix == 'Whois.IP'
-    assert result[0].outputs.get('query') == '4.4.4.4'
-    assert result[0].indicator.to_context() == {
+    assert result[0].outputs.get('query') == '4.4.4.4'  # type: ignore
+    assert result[0].indicator.to_context() == {  # type: ignore
         'IP(val.Address && val.Address == obj.Address)': {
             'Organization': {'Name': u'LVLT-STATIC-4-4-16'},
             'FeedRelatedIndicators': [{'type': 'CIDR', 'description': None, 'value': u'4.4.0.0/16'}],
@@ -496,13 +496,13 @@ def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_r
     assert expected_res == Whois.get_param_or_arg(param_key, arg_key)
 
 
-@pytest.mark.parametrize('args,demisto_version,expected_entries', [
-    ({"query": "google.com"}, '6.8.0', 2),
-    ({"query": "127.0.0.1"}, '6.8.0', 2),
-    ({"query": "google.com,amazon.com"}, '6.8.0', 3),
-    ({"query": "google.com"}, '6.5.0', 1)
+@pytest.mark.parametrize('args,execution_metrics_supported,expected_entries', [
+    ({"query": "google.com"}, True, 2),
+    ({"query": "127.0.0.1"}, True, 2),
+    ({"query": "google.com,amazon.com"}, True, 3),
+    ({"query": "google.com"}, False, 1)
 ])
-def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, expected_entries: int, mocker: MockerFixture):
+def test_execution_metrics_appended(args: Dict[str, str], execution_metrics_supported: bool, expected_entries: int, mocker: MockerFixture):
     """
     Test whether the metrics entry is appended to the list of results according to the XSOAR version.
     API Execution Metrics is only supported for 6.8+.
@@ -522,9 +522,9 @@ def test_execution_metrics_appended(args: Dict[str, str], demisto_version: str, 
         - Case D: 1 entries are expected (1 for query, no execution metrics since it's not supported).
 
     """
-    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': demisto_version, 'buildNumber': '12345'})
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
     # TODO patch response for query
     results = whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
     assert len(results) == expected_entries
@@ -538,6 +538,7 @@ def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: En
 
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
+    # TODO patch response for query
     results = Whois.whois_command(
         reliability=DBotScoreReliability.B,
         query=args['query'],
@@ -628,7 +629,7 @@ def test_exception_type_to_metrics(
         caught_exception=exception_caught
     )
 
-    for metrics in actual.metrics.execution_metrics:
+    for metrics in actual.metrics.execution_metrics:  # type: ignore
         if (metrics['Type'], metrics['APICallsCount']) == expected:
             actual_type = metrics['Type']
             actual_count = metrics['APICallsCount']

@@ -8528,7 +8528,7 @@ def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_count: int, rate_limit_wait_seconds: int, should_error: bool = False) -> List[CommandResults]:
+def ip_command(ips: str, reliability: str, rate_limit_retry_count: int, rate_limit_wait_seconds: int, should_error: bool = False) -> List[CommandResults]:
     """
     Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
     Sets API execution metrics functionality (if supported) and adds them to the list of CommandResults.
@@ -8626,7 +8626,7 @@ def ip_command(ips: str, reliability: DBotScoreReliability, rate_limit_retry_cou
     return append_metrics(execution_metrics=execution, results=results)
 
 
-def whois_command(reliability: DBotScoreReliability, query: str, is_recursive: bool, should_error: bool = False, verbose: bool = False) -> List[CommandResults]:
+def whois_command(reliability: str, query: str, is_recursive: bool, should_error: bool = False, verbose: bool = False) -> List[CommandResults]:
     """
     Runs Whois domain query.
     If the `with_error` integration instance configuration is set, the command will terminate on the first error encountered.
