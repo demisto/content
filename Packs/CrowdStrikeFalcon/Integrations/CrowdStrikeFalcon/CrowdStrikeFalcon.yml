@@ -4506,7 +4506,7 @@ script:
       - contextPath: CrowdStrike.IDPEntity.EmailAddresses
         description: The identity entity email address.
         type: String
-  dockerimage: demisto/py3-tools:1.0.0.64013
+  dockerimage: devdemisto/py3-tools:1.0.0.64052
   isfetch: true
   ismappable: true
   isremotesyncin: true

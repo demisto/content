@@ -1331,7 +1331,7 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
     return response
 
 
-def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True):
+def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True, limit=INCIDENTS_PER_FETCH):
     """
         Send a request to retrieve IDP detections IDs.
 
@@ -1352,7 +1352,7 @@ def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True):
         'filter': filter_arg
     }
     if has_limit:
-        params['limit'] = INCIDENTS_PER_FETCH
+        params['limit'] = limit
 
     response = http_request('GET', get_incidents_endpoint, params)
     return response
@@ -2479,7 +2479,7 @@ def fetch_incidents():
     current_fetch_info_incidents: dict = last_run[1]
     current_fetch_info_idp_detections: dict = last_run[2]
     current_fetch_info_incidents.pop("offset", None)
-    
+
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
