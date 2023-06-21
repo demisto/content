@@ -354,8 +354,9 @@ tasks:
 
           We need your feedback: </br>
 
-          Your upload of "${inputs.file_name}" on "${incident.app}" App was blocked due to company policy. </br>
-          This file contains sensitive information which violates "${inputs.data_profile_name}" policy. </br></br>
+          Your activity on "${incident.app}" was blocked due to company policy. </br>
+          The data in this activity contains sensitive information which violates ${inputs.data_profile_name}" policy. </br>
+          filename - "${inputs.file_name}" </br></br>
 
           ${inputs.Snippets}
 

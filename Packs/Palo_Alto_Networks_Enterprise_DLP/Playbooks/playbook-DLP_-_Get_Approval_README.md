@@ -14,14 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
+* IsIntegrationAvailable
 * MicrosoftTeamsAsk
 * SlackAskV2
-* IsIntegrationAvailable
 
 ### Commands
 
-* slack-get-user-details
 * setIncident
+* slack-get-user-details
 
 ## Playbook Inputs
 

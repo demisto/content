@@ -1,9 +1,7 @@
 id: DLP - Get User Feedback
-version: 6
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: DLP - Get User Feedback
-description: Get the user feedback on a blocked file, whether it is false or true
-  positive and if an exemption is needed.
+description: Get the user feedback on a blocked file, whether it is false or true positive and if an exemption is needed.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -311,8 +310,7 @@ tasks:
       id: ed465bf1-d399-4964-8d83-755bf6ae769e
       version: -1
       name: Get eligibility for exemption
-      description: Determines whether exemption can be granted on incidents from a
-        certain data profile.
+      description: Determines whether exemption can be granted on incidents from a certain data profile.
       script: '|||pan-dlp-exemption-eligible'
       type: regular
       iscommand: true
@@ -694,6 +692,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -841,6 +840,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -990,6 +990,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -1095,31 +1096,31 @@ inputs:
   value: {}
   required: false
   description: The display name of the user.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MessageApp
   value: {}
   required: false
-  description: "Choose the application to communicate with the users.\nAvailable options:\n-
-    Slack \n- Microsoft Teams"
-  playbookInputQuery: null
+  description: "Choose the application to communicate with the users.\nAvailable options:\n- Slack \n- Microsoft Teams"
+  playbookInputQuery:
 - key: SendMailInstance
   value: {}
   required: false
-  description: The name of the instance to be used when executing the "send-mail"
-    command in the playbook. In case it will be empty, all available instances will
-    be used (default).
-  playbookInputQuery: null
+  description: The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
+  playbookInputQuery:
 - key: UserEmail
   value: {}
   required: false
   description: The user email address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Detections
   value: {}
   required: false
   description: Detected violation snippets.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: UserRequestedExemption
   type: unknown
   description: Whether the user requested exemption or not.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
