@@ -93,7 +93,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
-def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> dict | None:
+def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> dict:
     """
     Get the pack's required dependencies.
 
@@ -137,8 +137,6 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
         with lock:
             SUCCESS_FLAG = False
         logging.exception(f"API call to fetch dependencies of '{pack_id}' has failed.\nError: {ex}.")
-
-    return None  # TODO: raise error instead?
 
 
 def find_malformed_pack_id(body: str) -> List:
@@ -355,63 +353,60 @@ def search_pack_and_its_dependencies(client: demisto_client,
             If false - install all packs in one batch.
         batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
-
-    Returns:
-        list: A list of packs to be installed, in the request format.
     """
-    if api_data := get_pack_dependencies(client, pack_id, lock):
-        pack_data = api_data["packs"][0]
+    api_data = get_pack_dependencies(client, pack_id, lock)
+    pack_data = api_data["packs"][0]
 
-        if pack_data["extras"]["pack"]["deprecated"]:
-            logging.debug(f'Pack {pack_id} is hidden. Skipping installation and not searching for dependencies.')
+    if pack_data["extras"]["pack"]["deprecated"]:
+        logging.debug(f'Pack {pack_id} is hidden. Skipping installation and not searching for dependencies.')
 
-        current_packs_to_install = [
-            get_pack_installation_request_data(pack_id=pack_id,
-                                               pack_version=pack_data['extras']['pack']['currentVersion'])
-        ]
-        dependencies_data: list[dict] = [{'id': pack_id,
-                                          'version': pack_data['extras']['pack']['currentVersion'],
-                                          'deprecated': False}]
+    current_packs_to_install = [
+        get_pack_installation_request_data(pack_id=pack_id,
+                                           pack_version=pack_data['extras']['pack']['currentVersion'])
+    ]
+    dependencies_data: list[dict] = [{'id': pack_id,
+                                      'version': pack_data['extras']['pack']['currentVersion'],
+                                      'deprecated': False}]
 
-        create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
-                                           dependants_ids=[pack_id],
-                                           dependencies_data=dependencies_data,
-                                           checked_packs=[pack_id])
+    create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
+                                       dependants_ids=[pack_id],
+                                       dependencies_data=dependencies_data,
+                                       checked_packs=[pack_id])
 
-        if dependencies_data:
-            dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
-            logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
+    if dependencies_data:
+        dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
+        logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
 
-            for dependency in dependencies_data:
-                if dependency.get("deprecated"):
-                    logging.critical(f"Pack {pack_id} depends on pack {dependency.get('id')} "
-                                     f'which is a deprecated pack.')
-                    global SUCCESS_FLAG
-                    SUCCESS_FLAG = False
-                else:
-                    current_packs_to_install.append(dependency)
+        for dependency in dependencies_data:
+            if dependency.get("deprecated"):
+                logging.critical(f"Pack '{pack_id}' depends on pack {dependency.get('id')} "
+                                 'which is a deprecated pack.')
+                global SUCCESS_FLAG
+                SUCCESS_FLAG = False
+            else:
+                current_packs_to_install.append(dependency)
 
-        lock.acquire()
+    lock.acquire()
 
-        if not multithreading:
-            if batch_packs_install_request_body is None:
-                batch_packs_install_request_body = []
-            if pack_and_its_dependencies := {
-                p['id']: p
-                for p in current_packs_to_install
-                if p['id'] not in collected_dependencies
-            }:
-                collected_dependencies += pack_and_its_dependencies
-                pack_and_its_dependencies_as_list = list(pack_and_its_dependencies.values())
-                packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
-                batch_packs_install_request_body.append(pack_and_its_dependencies_as_list)
-        else:
-            for pack in current_packs_to_install:
-                if pack['id'] not in packs_to_install:
-                    packs_to_install.append(pack['id'])
-                    installation_request_body.append(pack)
+    if not multithreading:
+        if batch_packs_install_request_body is None:
+            batch_packs_install_request_body = []
+        if pack_and_its_dependencies := {
+            p['id']: p
+            for p in current_packs_to_install
+            if p['id'] not in collected_dependencies
+        }:
+            collected_dependencies += pack_and_its_dependencies
+            pack_and_its_dependencies_as_list = list(pack_and_its_dependencies.values())
+            packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
+            batch_packs_install_request_body.append(pack_and_its_dependencies_as_list)
+    else:
+        for pack in current_packs_to_install:
+            if pack['id'] not in packs_to_install:
+                packs_to_install.append(pack['id'])
+                installation_request_body.append(pack)
 
-        lock.release()
+    lock.release()
 
 
 def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> str:
