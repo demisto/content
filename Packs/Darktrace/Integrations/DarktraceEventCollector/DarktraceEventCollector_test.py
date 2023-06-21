@@ -92,11 +92,14 @@ def test_convert_to_timestamp(mock_date, expected_res):
     assert parsed_date == expected_res
 
 
+@freeze_time("2023-06-20 13:40:00 UTC")
 def test_test_module_ok(client, mocker):
-    from DarktraceEventCollector import test_module
+    from DarktraceEventCollector import test_module, convert_to_timestamp
+    from CommonServerPython import arg_to_datetime
     params = {"max_fetch": "1", "first_fetch": "3 days"}
+
     mock_params(mocker, params)
-    assert test_module(client, params.get('first_fetch')) == "ok"
+    assert test_module(client, convert_to_timestamp(arg_to_datetime(params.get('first_fetch')))) == "ok"
 
 
 @pytest.mark.parametrize(

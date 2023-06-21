@@ -1,7 +1,6 @@
 import hashlib
 import hmac
 import json
-import traceback
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
@@ -175,12 +174,12 @@ def convert_to_timestamp(date: Optional[datetime]) -> int:
 """*****COMMAND FUNCTIONS****"""
 
 
-def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
+def test_module(client: Client, first_fetch_time: int) -> str:
     """
      Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
     try:
-        client.get_events(start_time=first_fetch_time, end_time=datetime.now().timestamp())
+        client.get_events(start_time=first_fetch_time, end_time=int(datetime.now().timestamp()))
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -191,7 +190,7 @@ def test_module(client: Client, first_fetch_time: Optional[float]) -> str:
 
 def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
                  start_time: int, end_time: int) -> \
-    Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """
@@ -216,7 +215,7 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
 
 
 def get_events_command(client: Client, args: Dict[str, str], first_fetch_time_timestamp: int) -> \
-    Tuple[List[Dict[str, Any]], CommandResults]:
+        Tuple[List[Dict[str, Any]], CommandResults]:
     """
         Gets events from Darktrace API.
     """
