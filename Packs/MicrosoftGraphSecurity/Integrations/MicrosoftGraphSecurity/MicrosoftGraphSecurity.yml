@@ -79,10 +79,7 @@ configuration:
   section: Connect
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -126,21 +123,18 @@ configuration:
 - defaultvalue: 1 day
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
-  hidden: false
   name: fetch_time
   required: false
   type: 0
   section: Collect
 - defaultvalue: '10'
   display: Max incidents per fetch
-  hidden: false
   name: fetch_limit
   required: false
   type: 0
   section: Collect
 - display: Fetch incidents of the given providers only.
   additionalinfo: Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provider}". If empty, incidents of all providers will be fetched.
-  hidden: false
   name: fetch_providers
   required: false
   type: 0
@@ -148,7 +142,6 @@ configuration:
   advanced: true
 - display: Fetch incidents of the given service sources only.
   additionalinfo: Relevant only for Alerts v2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity",. If empty, incidents of all providers will be fetched.
-  hidden: false
   name: fetch_service_sources
   required: false
   type: 0
@@ -156,7 +149,6 @@ configuration:
   advanced: true
 - display: Fetched incidents filter
   additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
-  hidden: false
   name: fetch_filter
   required: false
   type: 0
@@ -813,7 +805,7 @@ script:
       required: true
       secret: false
       type: string
-    deprecated: False
+    deprecated: false
     description: Relevant only for Alerts v2. create a comment for an existing alert.
     execution: false
     name: msg-create-alert-comment

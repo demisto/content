@@ -20,14 +20,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '3'
-      - '4'
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 740,
+          "y": -680
         }
       }
     note: false
@@ -37,6 +36,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '3':
     id: '3'
     taskid: 48450f6a-9b2d-481b-8844-e16ac557dfca
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 190
+          "x": 520,
+          "y": 300
         }
       }
     note: false
@@ -71,6 +71,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '4':
     id: '4'
     taskid: 36e343d9-fef3-4656-8c31-1d284c9e5476
@@ -94,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 190
+          "x": 960,
+          "y": 300
         }
       }
     note: false
@@ -105,6 +106,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '5':
     id: '5'
     taskid: 0bd570e4-be9b-4078-85c3-b3327f53134d
@@ -121,8 +123,259 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 360
+          "x": 740,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "6":
+    id: "6"
+    taskid: f1d5ee51-377a-499a-85bf-14bc1b816d5c
+    type: condition
+    task:
+      id: f1d5ee51-377a-499a-85bf-14bc1b816d5c
+      version: -1
+      name: Check if the device is online
+      description: Check if the device is online
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Status
+            iscontext: true
+          right:
+            value:
+              simple: Online
+          ignorecase: true
+      - - operator: in
+          left:
+            value:
+              simple: Endpoint.ID
+            iscontext: true
+          right:
+            value:
+              simple: inputs.DeviceId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: fc7c593b-2e96-40de-8d2e-1a29f22325d3
+    type: condition
+    task:
+      id: fc7c593b-2e96-40de-8d2e-1a29f22325d3
+      version: -1
+      name: Check if device ID provided
+      description: Check if device ID provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e6b26677-133f-4eb5-8b9a-33d85675a350
+    type: regular
+    task:
+      id: e6b26677-133f-4eb5-8b9a-33d85675a350
+      version: -1
+      name: Get Device Status
+      description: Searches for a device that matches the query.
+      script: '|||cs-falcon-search-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        complex:
+          root: inputs.DeviceId
+          transformers:
+          - operator: uniq
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Provide an Endpoint ID.Answers.0
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": -35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 30e8ac38-3a63-43f7-8a36-eb9b807f2015
+    type: collection
+    task:
+      id: 30e8ac38-3a63-43f7-8a36-eb9b807f2015
+      version: -1
+      name: Provide an Endpoint ID
+      description: Provide an Endpoint ID
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which endpoints would you like to enrich?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide an Endpoint ID
+      description: This incident contains no endpoint IDs. Please provide single or multiple endpoint IDs to proceed with endpoint enrichment.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7b1c7d74-71a4-46e3-871e-ea7a118a314d
+    type: regular
+    task:
+      id: 7b1c7d74-71a4-46e3-871e-ea7a118a314d
+      version: -1
+      name: Set the endpoint IDs to the incident field
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      agentsid:
+        complex:
+          root: Provide an Endpoint ID.Answers.0
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Provide an Endpoint ID.Answers.0
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -210
         }
       }
     note: false
@@ -137,10 +390,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 375,
-        "width": 780,
-        "x": 240,
-        "y": 50
+        "height": 1225,
+        "width": 850,
+        "x": 490,
+        "y": -680
       }
     }
   }
@@ -154,5 +407,15 @@ outputs:
 - contextPath: CrowdStrike.Command
   description: The results of the forensics commands.
   type: string
+- contextPath: CrowdStrike.Device
+  description: CrowdStrike Device's information.
+  type: unknown
+- contextPath: Endpoint
+  description: Device's information.
+  type: unknown
 tests:
- -  Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data
+- Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data
+- Test - CrowdStrike Falcon
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
