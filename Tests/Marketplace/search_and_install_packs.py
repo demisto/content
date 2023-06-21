@@ -113,7 +113,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
-def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> dict:
+def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> dict | None:
     """
     Get the pack's required dependencies.
 
@@ -123,7 +123,7 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
         lock (Lock): A lock object.
 
     Returns:
-        dict: API response data for the /search/dependencies endpoint.
+        dict | None: API response data for the /search/dependencies endpoint. None if the request failed.
     """
     global SUCCESS_FLAG
 
@@ -147,16 +147,18 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
         logging.debug(f"Succeeded to fetch dependencies for pack '{pack_id}'.\nResponse: '{json.dumps(response_data)}'")
         return response_data
 
-    except ApiException as api_ex:
+    except ApiException as ex:
         with lock:
             SUCCESS_FLAG = False
         logging.exception(f"API request to fetch dependencies of pack '{pack_id}' has failed.\n"
-                          f"Response code '{api_ex.status}'\nResponse: '{api_ex.body}'\nResponse Headers: '{api_ex.headers}'")
+                          f"Response code '{ex.status}'\nResponse: '{ex.body}'\nResponse Headers: '{ex.headers}'")
 
     except Exception as ex:
         with lock:
             SUCCESS_FLAG = False
         logging.exception(f"API call to fetch dependencies of '{pack_id}' has failed.\nError: {ex}.")
+
+    return None
 
 
 def find_malformed_pack_id(body: str) -> List:
@@ -374,8 +376,12 @@ def search_pack_and_its_dependencies(client: demisto_client,
         batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
     """
-    is_post_update = os.getenv('‘BUCKET_UPLOAD’')  # Function is called during bucket upload (not pre-update)
     api_data = get_pack_dependencies(client, pack_id, lock)
+
+    if not api_data:
+        return  # If an error response was returned, the information has already been logged on 'get_pack_dependencies'.
+
+    is_post_update = os.getenv('BUCKET_UPLOAD')  # Function is called during post-update
     pack_data = api_data['packs'][0]
 
     if pack_data['extras']['pack']['deprecated']:
@@ -399,11 +405,12 @@ def search_pack_and_its_dependencies(client: demisto_client,
         logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
 
         for dependency in dependencies_data:
+            dependency_id = dependency['id']
             # If running on pre-update, we want to check using API data.
             # if running on post-update, we want to check the files locally on the branch.
             if (not is_post_update and dependency.get("deprecated")) or \
-                (is_post_update and is_pack_deprecated(dependency.get("id"))):
-                logging.critical(f"Pack '{pack_id}' depends on pack {dependency.get('id')} "
+               (is_post_update and is_pack_deprecated(dependency_id)):
+                logging.critical(f"Pack '{pack_id}' depends on pack {dependency_id} "
                                  'which is a deprecated pack.')
                 global SUCCESS_FLAG
                 SUCCESS_FLAG = False
@@ -540,8 +547,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
             hidden = pack_metadata.get(Metadata.HIDDEN, False)
             # Check if the server version is greater than the minimum server version required for this pack or if the
             # pack is hidden (deprecated):
-            if ('Master' in server_version or Version(server_version) >= Version(server_min_version)) and \
-                not hidden:
+            if ('Master' in server_version or Version(server_version) >= Version(server_min_version)) and not hidden:
                 logging.debug(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
             else:
