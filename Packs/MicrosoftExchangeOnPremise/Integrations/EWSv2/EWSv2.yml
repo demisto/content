@@ -1016,8 +1016,8 @@ script:
       name: query
       required: true
       secret: false
-    deprecated: false
-    description: Starts a compliance search.
+    deprecated: true
+    description: This command is deprecated. Use the o365-sc-start-search command from Security And Compliance V2 instead. Starts a compliance search.
     execution: false
     name: ews-o365-start-compliance-search
     outputs:
@@ -1045,8 +1045,8 @@ script:
       - 'False'
       required: false
       secret: false
-    deprecated: false
-    description: Returns the status and results of a compliance search.
+    deprecated: true
+    description: This command is deprecated. Use the o365-sc-get-search command Security And Compliance V2 instead. Returns the status and results of a compliance search.
     execution: false
     name: ews-o365-get-compliance-search
     outputs:
@@ -1069,8 +1069,8 @@ script:
       name: search-name
       required: true
       secret: false
-    deprecated: false
-    description: Purges the results found in the compliance search.
+    deprecated: true
+    description: This command is deprecated. Use the o365-sc-new-search-action command from Security And Compliance V2. Purges the results found in the compliance search.
     execution: false
     name: ews-o365-purge-compliance-search-results
     outputs:
@@ -1084,8 +1084,8 @@ script:
       name: search-name
       required: true
       secret: false
-    deprecated: false
-    description: Removes the compliance search.
+    deprecated: true
+    description: This command is deprecated. Use the o365-sc-remove-search command from Security And Compliance V2. Removes the compliance search.
     execution: false
     name: ews-o365-remove-compliance-search
     outputs:
@@ -1099,8 +1099,8 @@ script:
       name: search-name
       required: true
       secret: false
-    deprecated: false
-    description: Checks the status of the purge operation on the compliance search.
+    deprecated: true
+    description: This command is deprecated. Use the o365-sc-get-search-action command from Security And Compliance V2 instead .Checks the status of the purge operation on the compliance search.
     execution: false
     name: ews-o365-get-compliance-search-purge-status
     outputs:
@@ -1301,19 +1301,20 @@ script:
     description: Replies to an email using EWS.
     execution: false
     name: reply-mail
-  dockerimage: demisto/py-ews:1.0.0.49868
+  dockerimage: demisto/py-ews:5.0.2.63879
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - pyEWS_Test
 - EWS V2 Send Mail Test
 - EWS V2 Send Mail Test 2
+- EWS Public Folders Test
 defaultmapperin: EWS v2-mapper
 defaultclassifier: EWS v2
 fromversion: 5.0.0
