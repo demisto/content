@@ -1,5 +1,6 @@
 !taegis-create-comment comment="This is a test comment" parent_id="c2e09554-833e-41a1-bc9d-8160aec0d70d"
 !taegis-create-investigation priority=1 description="XSOAR Created Investigation"
+!taegis-add-evidence-to-investigation id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f alerts="alert://priv:crowdstrike:11772:1677742145475:07e2d9cc-0a04-55ec-890a-97f39d63698e"
 !taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
 !taegis-fetch-alerts
 !taegis-fetch-alerts offset=5 limit=5 cql_query="from alert status='OPEN' and severity >= 0.6"

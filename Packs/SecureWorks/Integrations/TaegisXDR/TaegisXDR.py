@@ -140,6 +140,58 @@ class Client(BaseClient):
 """ COMMANDS """
 
 
+def add_evidence_to_investigation_command(client: Client, env: str, args=None):
+    """
+    Add events or alert evidence to an investigation
+    """
+
+    if not args.get("id"):
+        raise ValueError("Cannot add evidence to investigation, id cannot be empty")
+    if not args.get("alerts") and not args.get("events") and not args.get("alert_query"):
+        raise ValueError("Cannot add evidence to investigation. alerts, events, or alert_query must be defined")
+
+    variables: dict = {
+        "input": {
+            "investigationId": args.get("id"),
+            "alerts": split_and_trim(args.get("alerts", [])),
+            "events": split_and_trim(args.get("events", [])),
+            "alertsSearchQuery": args.get("alert_query", ""),
+        }
+    }
+
+    fields: str = args.get("fields") or "investigationId"
+
+    query = """
+    mutation addEvidenceToInvestigation($input: AddEvidenceToInvestigationInput!) {
+      addEvidenceToInvestigation(input: $input) {
+        %s
+      }
+    }
+    """ % (fields)
+
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        investigation = result["data"]["addEvidenceToInvestigation"]
+        investigation["url"] = generate_id_url(env, "investigations", investigation["investigationId"])
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to create investigation: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.InvestigationEvidenceUpdate",
+        outputs_key_field="investigationId",
+        outputs=investigation,
+        readable_output=tableToMarkdown(
+            "Taegis Investigation Evidence",
+            investigation,
+            removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def create_comment_command(client: Client, env: str, args=None):
     if not args.get("comment"):
         raise ValueError("Cannot create comment, comment cannot be empty")
@@ -1350,6 +1402,7 @@ def main():
 
     commands: Dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
+        "taegis-add-evidence-to-investigation": add_evidence_to_investigation_command,
         "taegis-create-comment": create_comment_command,
         "taegis-create-investigation": create_investigation_command,
         "taegis-execute-playbook": execute_playbook_command,

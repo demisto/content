@@ -20,6 +20,42 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
+### taegis-add-evidence-to-investigation
+
+#### Base Command
+
+`!taegis-add-evidence-to-investigation`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The investigation id to update | True |
+| alerts | A list of alert IDs to add to an investigation | False |
+| events | A list of event IDs to add to an investigation | False |
+| alert_query | A Taegis CQL query for alerts to add to the investigation | False |
+
+At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
+
+#### Command Example
+
+```
+`!taegis-add-evidence-to-investigation` id=c207ca4c-8a78-4408-a056-49f05d6eb77d alerts="alert://priv:crowdstrike:11772:1677742145475:07e2d9cc-0a04-55ec-890a-97f39d63698e"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "InvestigationEvidenceUpdate": {
+            "investigationId": "c207ca4c-8a78-4408-a056-49f05d6eb77d"
+        }
+    }
+}
+```
+
+
 ### taegis-archive-investigation
 
 #### Base Command
