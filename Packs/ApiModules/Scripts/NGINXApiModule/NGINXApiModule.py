@@ -1,4 +1,5 @@
 
+from pathlib import Path
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -65,9 +66,9 @@ server {
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
         proxy_read_timeout $timeout;
-        proxy_connect_timeout 1800;
-        proxy_send_timeout 1800;
-        send_timeout 1800;
+        proxy_connect_timeout 3600;
+        proxy_send_timeout 3600;
+        send_timeout 3600;
     }
 }
 
@@ -90,7 +91,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    timeout: str = params.get('timeout') or '1800'
+    timeout: str = params.get('timeout') or '3600'
     ssl = ''
     sslcerts = ''
     serverport = port + 1
@@ -169,10 +170,10 @@ def nginx_log_process(nginx_process: subprocess.Popen):
             return
         if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
             log_access = True
-            os.rename(NGINX_SERVER_ACCESS_LOG, old_access)
+            Path(NGINX_SERVER_ACCESS_LOG).rename(old_access)
         if os.path.getsize(NGINX_SERVER_ERROR_LOG):
             log_error = True
-            os.rename(NGINX_SERVER_ERROR_LOG, old_error)
+            Path(NGINX_SERVER_ERROR_LOG).rename(old_error)
         if log_access or log_error:
             # nginx rolls the logs when getting sigusr1
             nginx_process.send_signal(int(SIGUSR1))
@@ -184,7 +185,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                     end = start + len(lines)
                     demisto.info(f'nginx access log ({start}-{end-1}): ' + ''.join(lines))
                     start = end
-            os.unlink(old_access)
+            Path(old_access).unlink()
         if log_error:
             with open(old_error, 'rt') as f:
                 start = 1
@@ -192,7 +193,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                     end = start + len(lines)
                     demisto.error(f'nginx error log ({start}-{end-1}): ' + ''.join(lines))
                     start = end
-            os.unlink(old_error)
+            Path(old_error).unlink()
     except Exception as e:
         demisto.error(f'Failed nginx log processing: {e}. Exception: {traceback.format_exc()}')
 
@@ -326,6 +327,9 @@ def run_long_running(params: Dict = None, is_test: bool = False):
         error_message = str(e)
         demisto.error(f'An error occurred: {error_message}. Exception: {traceback.format_exc()}')
         demisto.updateModuleHealth(f'An error occurred: {error_message}')
+        if isinstance(e, ValueError) and "Try to write when connection closed" in error_message:
+            # This indicates that the XSOAR platform is unreachable, and there is no way to recover from this, so we need to exit.
+            sys.exit(1)  # pylint: disable=E9001
         raise ValueError(error_message)
 
     finally:

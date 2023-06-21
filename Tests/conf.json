@@ -21,6 +21,18 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
+        },
+        {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Endpoint_Investigation"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test_Playbook-Cortex_XDR_Malware_-_Incident Enrichment"
         },
@@ -667,6 +679,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Netmiko",
+            "playbookID": "Netmiko_test"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
@@ -1067,6 +1083,7 @@
         {
             "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-test",
+            "instance_names": "Tenable_SC_secman_api_key",
             "timeout": 240
         },
         {
@@ -1184,11 +1201,6 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "timeout": 3600
-        },
-        {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable-sc-scan-test",
-            "timeout": 600
         },
         {
             "integrations": "google-vault",
@@ -3136,6 +3148,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "timeout": 1200
         },
         {
@@ -3767,7 +3780,8 @@
         {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Isolate and unisolate endpoint - test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 150
         },
         {
             "integrations": "VirusTotal - Premium (API v3)",
@@ -4796,6 +4810,7 @@
         {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -4958,7 +4973,8 @@
             "integrations": "Azure Sentinel",
             "fromversion": "5.5.0",
             "is_mockable": false,
-            "playbookID": "TestAzureSentinelPlaybookV2"
+            "playbookID": "TestAzureSentinelPlaybookV2",
+            "instance_names": "azure_sentinel_dev"
         },
         {
             "integrations": "AnsibleAlibabaCloud",
@@ -5098,6 +5114,7 @@
         {
             "playbookID": "Get Original Email - EWS v2 - test",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -5420,6 +5437,13 @@
         {
           "integrations":  "Cylance Protect v2",
           "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+        },
+        {
+            "integrations": [
+                "LOLBAS Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "FeedLOLBas_test"
         }
     ],
     "skipped_tests": {
@@ -5566,7 +5590,6 @@
         "Elasticsearch_v2_test-v8": "CRTX-61980",
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
-        "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
         "AD v2 - debug-mode": "No credentials",
         "Google-KMS-test": "No instance",
@@ -5598,7 +5621,8 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266"
+        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266",
+        "EWS_O365_test": "Issue CIAC-6753"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5642,7 +5666,7 @@
         "ArcSight Logger": "No instance - Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
-        "Prisma Access": "No instance - Instance will be provided soon by Lior and Prasen - Issue 27112",
+        "Prisma Access": "No instance - Issue CRTX-84209",
         "AlphaSOC Network Behavior Analytics": "No instance",
         "IsItPhishing": "No instance",
         "Verodin": "No instance",
@@ -5708,7 +5732,6 @@
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "FortinetFortiwebVM": "No instance - developed by Qmasters",
         "_comment2": "~~~ UNSTABLE ~~~",
-        "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",

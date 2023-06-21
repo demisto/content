@@ -1,0 +1,91 @@
+{
+    "test_case_1": {
+        "mock_response": {
+            "error_code": 0, "error_msg": "", "response": [], "timestamp": 1684668050, "type": "regular", "warnings": []
+        },
+        "expected_hr": "### Tenable.sc Scan Zones\n|ID|Name|\n|---|---|\n| 0 | All Zones |\n",
+        "expected_ec": [{
+            "ID": 0, "Name": "All Zones"
+          }]
+    },
+    "test_case_2": {
+        "mock_response": {"error_code":0,"error_msg":"","response":[{"SCI":{"description":"This Tenable.sc system","id":"1","name":"Local"},"activeScanners":1,
+        "createdTime":"1673270031","description":"","id":"1","ipList":"ip","modifiedTime":"1676369613","name":"Default Scan Zone","organizations":[],
+        "scanners":[{"description":"","id":"2","name":"RHEL6 Scanner","status":"1"}],"totalScanners":1,"uuid":"uuid"},
+        {"SCI":{"description":"This Tenable.sc system","id":"1","name":"Local"},"activeScanners":1,"createdTime":"1676464328","description":"","id":"3","ipList":"ip2",
+        "modifiedTime":"1676464328","name":"Windows","organizations":[],"scanners":[{"description":"","id":"2","name":"RHEL6 Scanner","status":"1"}],"totalScanners":1,
+        "uuid":"uuid2"}],"timestamp":1684668642,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan Zones\n|ID|Name|IPList|activeScanners|\n|---|---|---|---|\n| 1 | Default Scan Zone | ip | 1 |\n| 3 | Windows | ip2 | 1 |\n### Tenable.sc Scanners\n|ID|Name|Status|\n|---|---|---|\n| 2 | RHEL6 Scanner | 1 |\n",
+        "expected_ec": [
+            {
+              "ID": "1",
+              "IPList": "ip",
+              "Name": "Default Scan Zone",
+              "Scanner": [
+                {
+                  "Description": "",
+                  "ID": "2",
+                  "Name": "RHEL6 Scanner",
+                  "Status": "1"
+                }
+              ],
+              "activeScanners": 1
+            },
+            {
+              "ID": "3",
+              "IPList": "ip2",
+              "Name": "Windows",
+              "Scanner": [
+                {
+                  "Description": "",
+                  "ID": "2",
+                  "Name": "RHEL6 Scanner",
+                  "Status": "1"
+                }
+              ],
+              "activeScanners": 1
+            }
+          ]
+        
+    },
+    "test_case_3": {
+        "mock_response": {"error_code":0,"error_msg":"","response":[{"SCI":{"description":"This Tenable.sc system","id":"1","name":"Local"},"activeScanners":1,
+        "createdTime":"1673270031","description":"","id":"1","ipList":"ip","modifiedTime":"1676369613","name":"Default Scan Zone","organizations":[],
+        "scanners":[{"description":"","id":"1","name":"RHEL6 Scanner","status":"1"}],"totalScanners":1,"uuid":"uuid"},
+        {"SCI":{"description":"This Tenable.sc system","id":"1","name":"Local"},"activeScanners":1,"createdTime":"1676464328","description":"","id":"3","ipList":"ip2",
+        "modifiedTime":"1676464328","name":"Windows","organizations":[],"scanners":[{"description":"","id":"2","name":"RHEL6 Scanner","status":"1"}],"totalScanners":1,
+        "uuid":"uuid2"}],"timestamp":1684668642,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan Zones\n|ID|Name|IPList|activeScanners|\n|---|---|---|---|\n| 1 | Default Scan Zone | ip | 1 |\n| 3 | Windows | ip2 | 1 |\n### Tenable.sc Scanners\n|ID|Name|Status|\n|---|---|---|\n| 1 | RHEL6 Scanner | 1 |\n| 2 | RHEL6 Scanner | 1 |\n",
+        "expected_ec": [
+            {
+              "ID": "1",
+              "IPList": "ip",
+              "Name": "Default Scan Zone",
+              "Scanner": [
+                {
+                  "Description": "",
+                  "ID": "1",
+                  "Name": "RHEL6 Scanner",
+                  "Status": "1"
+                }
+              ],
+              "activeScanners": 1
+            },
+            {
+              "ID": "3",
+              "IPList": "ip2",
+              "Name": "Windows",
+              "Scanner": [
+                {
+                  "Description": "",
+                  "ID": "2",
+                  "Name": "RHEL6 Scanner",
+                  "Status": "1"
+                }
+              ],
+              "activeScanners": 1
+            }
+          ]
+        
+    }
+}
