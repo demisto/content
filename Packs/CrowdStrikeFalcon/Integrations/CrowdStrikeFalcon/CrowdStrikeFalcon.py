@@ -2251,7 +2251,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 ''' COMMANDS FUNCTIONS '''
 
 
-def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
+def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
     """This function migrated from old last run object to new last run object
 
     Args:
@@ -2260,17 +2260,22 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     Returns:
         list[dict]: New last run object.
     """
-    updated_last_run_detections: dict[str, str | None] = {}
-    if (detection_time := last_run.get('first_behavior_detection_time')) and \
-       (detection_time_date := dateparser.parse(detection_time)):
-        updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
+    if isinstance(last_run, list):
+        for last_run_type in last_run:
+            last_run_type.pop("offset", None)
+        return last_run
+    else:
+        updated_last_run_detections: dict[str, str | None] = {}
+        if (detection_time := last_run.get('first_behavior_detection_time')) and \
+                (detection_time_date := dateparser.parse(detection_time)):
+            updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
 
-    updated_last_run_incidents: dict[str, str | None] = {}
-    if (incident_time := last_run.get('first_behavior_incident_time')) and \
-       (incident_time_date := dateparser.parse(incident_time)):
-        updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
+        updated_last_run_incidents: dict[str, str | None] = {}
+        if (incident_time := last_run.get('first_behavior_incident_time')) and \
+                (incident_time_date := dateparser.parse(incident_time)):
+            updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
 
-    return [updated_last_run_detections, updated_last_run_incidents]
+        return [updated_last_run_detections, updated_last_run_incidents]
 
 
 def fetch_incidents():
@@ -2281,14 +2286,10 @@ def fetch_incidents():
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
         last_run = [{}, {}]
-    if not isinstance(last_run, list):
-        last_run = migrate_last_run(last_run)
+    last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
-    current_fetch_info_detections.pop("offset", None)
-
     current_fetch_info_incidents: dict = last_run[1]
-    current_fetch_info_incidents.pop("offset", None)
-    
+
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
@@ -2327,12 +2328,12 @@ def fetch_incidents():
                 if occurred:
                     detection["occurred"] = occurred.strftime(DATE_FORMAT)
                     demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} occurred at {detection['occurred']}")
-            last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
-                                              fetch_limit=fetch_limit,
-                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
-                                              look_back=look_back,
-                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
-            current_fetch_info_detections.update(last_run)
+            updated_last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
+                                                      fetch_limit=fetch_limit,
+                                                      start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                      look_back=look_back,
+                                                      created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+            current_fetch_info_detections.update(updated_last_run)
 
     if 'Incidents' in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
@@ -2367,12 +2368,12 @@ def fetch_incidents():
                 if occurred:
                     incident["occurred"] = occurred.strftime(DATE_FORMAT)
                     demisto.debug(f"CrowdStrikeFalconMsg: Incident {incident['name']} occurred at {incident['occurred']}")
-            last_run = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
-                                              fetch_limit=fetch_limit,
-                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
-                                              look_back=look_back,
-                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
-            current_fetch_info_incidents.update(last_run)
+            updated_last_run = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
+                                                      fetch_limit=fetch_limit,
+                                                      start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                      look_back=look_back,
+                                                      created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+            current_fetch_info_incidents.update(updated_last_run)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
