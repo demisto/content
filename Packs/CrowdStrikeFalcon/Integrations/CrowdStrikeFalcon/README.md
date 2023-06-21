@@ -6137,3 +6137,46 @@ There is no context output for this command.
 >|Scan ID|
 >|---|
 >| 9acf0c069d3d4a5b82badb170966e77c |
+
+### cs-falcon-list-identity-entities
+
+***
+List identity entities.
+
+#### Base Command
+
+`cs-falcon-list-identity-entities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | API type. Possible values are: USER, ENDPOINT. | Required | 
+| sort_key | The sort key to sort by. Possible values are: RISK_SCORE, PRIMARY_DISPLAY_NAME, SECONDARY_DISPLAY_NAME, MOST_RECENT_ACTIVITY, ENTITY_ID. | Optional | 
+| sort_order | Default ascending. The sort order. Possible values are: DESCENDING, ASCENDING. Default is ASCENDING. | Optional | 
+| entity_id | Comma separated list of entity ids to look for. | Optional | 
+| primary_display_name | Primary display name to filter by. | Optional | 
+| secondary_display_name | Secondary display name to filter by. | Optional | 
+| max_risk_score_severity | The maximum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional | 
+| min_risk_score_severity | The minimum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional | 
+| enabled | Wether to get only enabled or disabled identity entities. Possible values are: true, false. | Optional | 
+| email | Filter by mail. | Optional | 
+| next_token | endCursor. | Optional | 
+| page_size | Default is 50. The limist is 1000. The page size. Default is 50. | Optional | 
+| page | Default is 1. The page number. | Optional | 
+| limit | The maximum identity entities to list. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IDPEntity.IsHuman | Boolean | Wether the identity entity is human made. | 
+| CrowdStrike.IDPEntity.IsProgrammatic | Boolean | Wether the identity entity is programmatic made. | 
+| CrowdStrike.IDPEntity.IsAdmin | String | Wether the identity entity is admin made. | 
+| CrowdStrike.IDPEntity.PrimaryDisplayName | String | The identity entity pirmary display name. | 
+| CrowdStrike.IDPEntity.RiskFactors.Type | Unknown | The identity entity risk factor type. | 
+| CrowdStrike.IDPEntity.RiskFactors.Severity | Unknown | The identity entity risk factor severity. | 
+| CrowdStrike.IDPEntity.RiskScore | Number | The identity entity risk score. | 
+| CrowdStrike.IDPEntity.RiskScoreSeverity | String | The identity entity risk score severity. | 
+| CrowdStrike.IDPEntity.SecondaryDisplayName | String | The identity entity secondary display name. | 
+| CrowdStrike.IDPEntity.EmailAddresses | String | The identity entity email address. | 
