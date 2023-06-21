@@ -4,6 +4,7 @@ import os
 import json
 from datetime import datetime
 from typing import Any, Generator, Iterable, Optional, Tuple, Union
+from pathlib import Path
 
 from git import Repo
 
@@ -154,7 +155,7 @@ class ChangeCWD:
     """
 
     def __init__(self, directory):
-        self.current = os.getcwd()
+        self.current = Path().cwd()
         self.directory = directory
 
     def __enter__(self):
