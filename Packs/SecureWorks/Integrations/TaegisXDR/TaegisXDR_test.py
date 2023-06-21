@@ -23,6 +23,7 @@ from TaegisXDR import (
     archive_investigation_command,
     unarchive_investigation_command,
     update_alert_status_command,
+    add_evidence_to_investigation_command,
     create_sharelink_command,
     test_module as connectivity_test,
 )
@@ -579,6 +580,40 @@ def test_update_alert_status(requests_mock):
     client = mock_client(requests_mock, UPDATE_ALERT_STATUS_BAD_RESPONSE)
     with pytest.raises(ValueError, match="Failed to locate/update alert"):
         assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_add_evidence_to_investigation(requests_mock):
+    """Tests taegis-add-evidence-to-investigation command function
+    """
+    alerts = ["alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"]
+
+    client = mock_client(requests_mock, TAEGIS_ADD_EVIDENCE_TO_INVESTIGATION_RESPONSE)
+    args = {
+        "id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"],
+        "alerts": alerts,
+    }
+    response = add_evidence_to_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    assert response.outputs["investigationId"] == args["id"]
+
+    args = {}
+
+    # investigation_id not set
+    with pytest.raises(ValueError, match="Cannot add evidence to investigation, id cannot be empty"):
+        assert add_evidence_to_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["id"] = UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]
+
+    # alerts not set
+    with pytest.raises(ValueError, match="Cannot add evidence to investigation. alerts, events, or alert_query must be defined"):
+        assert add_evidence_to_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["alerts"] = alerts
+
+    # Unknown error
+    client = mock_client(requests_mock, {"errors": [{"message": "Unknown Error"}]})
+    with pytest.raises(ValueError, match="Failed to create investigation"):
+        assert add_evidence_to_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_create_sharelink(requests_mock):

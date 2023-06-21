@@ -432,6 +432,14 @@ UPDATE_ALERT_STATUS_BAD_RESPONSE = {
     ]
 }
 
+TAEGIS_ADD_EVIDENCE_TO_INVESTIGATION_RESPONSE = {
+    "data": {
+        "addEvidenceToInvestigation": {
+            "investigationId": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]
+        },
+    }
+}
+
 CREATE_SHARELINK_RESPONSE = {
     "data": {
         "createShareLink": {
