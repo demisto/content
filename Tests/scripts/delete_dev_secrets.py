@@ -21,12 +21,12 @@ def get_secrets_to_delete(options: argparse.Namespace, secret_conf: GoogleSecret
             timestamp = datetime.fromtimestamp(int(secret.labels.get('merged')))
             now = datetime.now()
             delta = timedelta(days=ttl)
-            print(f'{ttl=}')
-            print(f'{now=}')
-            print(f'{timestamp + delta}')
-            print(f'{timestamp=}')
+            print(f'ttl={ttl}')
+            print(f'now={now}')
+            print(f'timestamp + delta={timestamp + delta}')
+            print(f'timestamp={timestamp}')
             if now >= timestamp + delta:
-                secret_conf.delete_secret(options.gsm_project_id, secret.name)
+                secrets_to_delete.append(secret.name)
         else:
             continue
     print(f'{secrets_to_delete=}')
