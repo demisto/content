@@ -18,11 +18,6 @@ configuration:
   type: 4
   required: false
   hidden: true
-- name: clientid_creds
-  type: 9
-  required: false
-  displaypassword: Client ID
-  hiddenusername: true
 - display: Client Secret
   name: clientSecret
   type: 4
@@ -30,8 +25,8 @@ configuration:
   defaultvalue: ''
   hidden: true
 - displaypassword: Client Secret
-  hiddenusername: true
-  name: clientsecret_creds
+  display: Client ID
+  name: credentials
   required: false
   type: 9
 - display: Trust any certificate (not secure)
