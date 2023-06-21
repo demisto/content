@@ -10,7 +10,7 @@ configuration:
   type: 0
 - display: Certificate (Base64 encoded)
   name: certificate
-  required: true
+  required: false
   type: 12
 - display: Certificate Passphrase
   name: passphrase
@@ -21,6 +21,11 @@ configuration:
   required: false
   type: 9
   displaypassword: Certificate Passphrase
+  hiddenusername: true
+- name: certificate_creds
+  required: false
+  type: 9
+  displaypassword: Certificate (Base64 encoded)
   hiddenusername: true
 - display: Use system proxy settings
   name: proxy

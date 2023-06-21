@@ -48,11 +48,11 @@ def load_server_url():
 def load_certificate():
     """ Loads the certificate and passphrase from the configuration """
     params = demisto.params()
-    cert = params["certificate"]
+    cert = params.get('certificate_creds', {}).get('password') or params.get("certificate")
     cert = base64.b64decode(cert)
     passphrase = params.get('passphrase_creds', {}).get('password') or params.get("passphrase", "")
     return cert, passphrase
-
+    
 
 def load_severities():
     possible_severities = ["Emergency", "Critical", "Warning", "Informational"]
