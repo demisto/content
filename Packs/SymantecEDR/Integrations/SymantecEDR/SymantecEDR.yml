@@ -75,6 +75,20 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: Symantec EDR (On Prem) endpoints help to detect threats in your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify, and contain all impacted endpoints while investigating threats using a choice of on-premises.
 display: Symantec Endpoint Detection and Response (EDR) - On Prem
 name: SymantecEDR
@@ -1806,29 +1820,32 @@ script:
     execution: false
     name: file
     outputs:
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: File.MD5
-        description: MD5 hash of the file submitted for analysis.
-        type: String
-      - contextPath: File.SHA1
-        description: SHA1 hash of the file submitted for analysis.
-        type: String
-      - contextPath: File.SHA256
-        description: SHA256 hash of the file submitted for analysis.
-        type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file submitted for analysis.
+      type: String
     polling: true
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

@@ -2265,11 +2265,31 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
              result.
      """
     sha2 = args.get('file', '')
+    reliability = args.get('integration_reliability', 'B - Usually reliable')
     response_verdict = client.get_sandbox_verdict_for_file(sha2) | client.get_file_entity(sha2)
     # Sandbox verdict
     title = "Sandbox Verdict"
+    indicator = None
     if response_verdict:
         readable_output = generic_readable_output([response_verdict], title)
+        verdict_to_score_dict = {
+            'clean': Common.DBotScore.GOOD,
+            'file_type_unrecognized': Common.DBotScore.SUSPICIOUS,
+            'malware': Common.DBotScore.BAD
+        }
+        score = verdict_to_score_dict.get(response_verdict.get('verdict', '').lower(), Common.DBotScore.NONE)
+        dbot_score = Common.DBotScore(
+            indicator=sha2,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=INTEGRATION_CONTEXT_NAME,
+            score=score,
+            malicious_description=response_verdict.get('verdict', ''),
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        )
+        indicator = Common.File(
+            sha256=sha2,
+            dbot_score=dbot_score
+        )
     else:
         readable_output = f'{title} does not have data to present.'
 
@@ -2278,7 +2298,8 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
         outputs_key_field='sha2',
         outputs=response_verdict,
-        raw_response=response_verdict
+        raw_response=response_verdict,
+        indicator=indicator
     )
 
 
@@ -2495,6 +2516,8 @@ def main() -> None:
         fetch_comments = params.get('isIncidentComment', False)
         fetch_status = argToList(params.get('fetch_status', 'New'))
         fetch_priority = argToList(params.get('fetch_priority', 'High,Medium'))
+        reliability = params.get('integration_reliability', '')
+        args['integration_reliability'] = reliability
 
         client = Client(base_url=server_url, verify=verify_certificate, proxy=proxy, client_id=client_id,
                         client_secret=client_secret, first_fetch=first_fetch_time, fetch_limit=fetch_limit,

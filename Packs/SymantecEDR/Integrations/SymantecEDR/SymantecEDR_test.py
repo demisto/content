@@ -53,6 +53,7 @@ HEADER_LIST = util_load_json('test_data/header_list.json')
 SANDBOX_ISSUE_COMMAND = util_load_json('test_data/sandbox_issue_command.json')
 SANDBOX_STATUS_COMMAND = util_load_json('test_data/sandbox_status_command.json')
 SANDBOX_VERDICT_COMMAND = util_load_json('test_data/sandbox_verdict_command.json')
+DEFAULT_RELIABILITY = 'B - Usually reliable'
 
 
 @pytest.mark.parametrize('expected_result', ['12345678'])
@@ -1212,20 +1213,38 @@ def test_check_sandbox_status(mocker, raw_response, expected):
     assert context_detail == expected
 
 
-@pytest.mark.parametrize('raw_response, expected', [(SANDBOX_VERDICT_COMMAND, SANDBOX_VERDICT_COMMAND)])
-def test_get_sandbox_verdict(mocker, raw_response, expected):
+BAD_SANDBOX_VERDICT = SANDBOX_VERDICT_COMMAND.copy()
+BAD_SANDBOX_VERDICT["verdict"] = "malware"
+SUSPICIOUS_SANDBOX_VERDICT = SANDBOX_VERDICT_COMMAND.copy()
+SUSPICIOUS_SANDBOX_VERDICT["verdict"] = "file_type_unrecognized"
+
+
+@pytest.mark.parametrize('raw_response, expected, expected_dbot_score', [(SANDBOX_VERDICT_COMMAND,
+                                                                          SANDBOX_VERDICT_COMMAND,
+                                                                          Common.DBotScore.GOOD),
+                                                                         (BAD_SANDBOX_VERDICT,
+                                                                          BAD_SANDBOX_VERDICT,
+                                                                          Common.DBotScore.BAD),
+                                                                         (SUSPICIOUS_SANDBOX_VERDICT,
+                                                                          SUSPICIOUS_SANDBOX_VERDICT,
+                                                                          Common.DBotScore.SUSPICIOUS)])
+def test_get_sandbox_verdict(mocker, raw_response, expected, expected_dbot_score):
     """
     Tests get_sandbox_verdict status function.
         Given:
             - mocker object.
             - raw_response test data.
             - expected output.
+            - different verdicts.
+            - expected DBot score.
         When:
             - Running the 'get_sandbox_verdict'.
         Then:
-            -  Checks the output of the command function with the expected output.
+            - Checks the output of the command function with the expected output.
+            - Assert the DBotScore returned is as expected.
     """
-    args = {"sha2": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164'}
+    args = {"sha2": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164',
+            "integration_reliability": DEFAULT_RELIABILITY}
     mocker.patch.object(client, 'get_sandbox_verdict_for_file', side_effect=[raw_response])
     mocker.patch.object(client, 'get_file_entity', side_effect=[raw_response])
     command_results = get_sandbox_verdict(client, args)
@@ -1233,6 +1252,36 @@ def test_get_sandbox_verdict(mocker, raw_response, expected):
     # results is CommandResults list
     context_detail = command_results.raw_response
     assert context_detail == expected
+    assert command_results.indicator.dbot_score.score == expected_dbot_score
+    assert command_results.indicator.dbot_score.indicator_type == DBotScoreType.FILE
+    assert command_results.indicator.dbot_score.integration_name == INTEGRATION_CONTEXT_NAME
+    assert command_results.indicator.dbot_score.reliability == DEFAULT_RELIABILITY
+
+
+@pytest.mark.parametrize("reliability",
+                         ["A+ - 3rd party enrichment",
+                          "A - Completely reliable",
+                          "B - Usually reliable",
+                          "C - Fairly reliable",
+                          "D - Not usually reliable",
+                          "E - Unreliable",
+                          "F - Reliability cannot be judged"])
+def test_email_different_reliability(mocker, reliability):
+    """
+    Given:
+        - Different source reliability param
+    When:
+        - Running file command
+    Then:
+        - Ensure the reliability specified is returned.
+    """
+    args = {"sha2": '1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164',
+            "integration_reliability": reliability}
+    mocker.patch.object(client, 'get_sandbox_verdict_for_file', side_effect=[SANDBOX_VERDICT_COMMAND])
+    mocker.patch.object(client, 'get_file_entity', side_effect=[SANDBOX_VERDICT_COMMAND])
+    command_results = get_sandbox_verdict(client, args)
+
+    assert command_results.indicator.dbot_score.reliability == reliability
 
 
 @pytest.mark.parametrize('query_type, query_value, expected_result', [
