@@ -106,7 +106,6 @@ filter
     xdm.source.process.command_line = coalesce(arraystring(json_extract_array(objectCmd, "$."), ", "), processCmd),
     xdm.target.module.filename = coalesce(objectFileName, objectName),
     xdm.source.process.executable.signer = processSigner,
-    xdm.observer.product = pver,
     xdm.network.http.url = request,
     xdm.source.user_agent = requestClientApplication,
     xdm.alert.name = threatName,
