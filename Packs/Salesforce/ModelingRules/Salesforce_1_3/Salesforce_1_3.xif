@@ -21,7 +21,6 @@ alter xdm.event.operation_sub_type = Action,
     xdm.event.description = Display,
     xdm.source.user.identifier = CreatedById,
     xdm.target.resource.id = Id,
-    xdm.source.user.username = DelegateUser,
     xdm.event.type = json_extract_scalar("$.type",attributes ),
     xdm.source.user.username = CreatedByIssuer,
     xdm.target.user.username = DelegateUser;

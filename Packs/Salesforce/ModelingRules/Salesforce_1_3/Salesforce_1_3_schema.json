@@ -15,6 +15,12 @@
       },"DelegateUser": {
           "type": "string",
           "is_array": false
+      },"CreatedByIssuer": {
+          "type": "string",
+          "is_array": false
+      },"attributes": {
+          "type": "string",
+          "is_array": false
       }
   },"salesforce_login_raw": {
       "_USER_ID_": {
@@ -48,6 +54,18 @@
           "type": "string",
           "is_array": false
       },"_DB_TOTAL_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_PLATFORM_TYPE_": {
+          "type": "string",
+          "is_array": false
+      },"_LOGIN_STATUS_": {
+          "type": "string",
+          "is_array": false
+      },"_API_VERSION_": {
+          "type": "string",
+          "is_array": false
+      },"_LOGIN_KEY_": {
           "type": "string",
           "is_array": false
       }
