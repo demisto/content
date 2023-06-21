@@ -23,7 +23,7 @@ def get_secrets_to_delete(options: argparse.Namespace, secret_conf: GoogleSecret
             delta = timedelta(days=ttl)
             print(f'{ttl=}')
             print(f'{now=}')
-            print(f'{delta=}')
+            print(f'{timestamp + delta}')
             print(f'{timestamp=}')
             if now >= timestamp + delta:
                 secret_conf.delete_secret(options.gsm_project_id, secret.name)
