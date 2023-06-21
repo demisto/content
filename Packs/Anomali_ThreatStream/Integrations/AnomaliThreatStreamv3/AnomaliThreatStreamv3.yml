@@ -2448,8 +2448,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence
-        entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
+      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
       isArray: false
       name: source_confidence_weight
       required: false
@@ -2563,13 +2562,42 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of tags. For example, tag1,tag2.
+      description: A comma-separated list of tags applied to the imported observables. For example, tag1,tag2.
       isArray: false
       name: tags
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
+      isArray: false
+      name: tags_tlp
+      predefined:
+      - Red
+      - Amber
+      - Green
+      - White
+      required: false
+      secret: false
+    - default: false
+      description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
+      isArray: false
+      name: expiration_ts
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'inactive'
+      description: Whether the import job must be approved from the ThreatStream user interface before observables become active. When default_state is set to active, observables become active upon submission, without requiring approval. In these cases, an import job is created on ThreatStream which is automatically approved.
+      isArray: false
+      name: default_state
+      predefined:
+      - active
+      - inactive
+      required: false
+      secret: false
     deprecated: false
-    description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL.'
+    description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL. You must have the Approve Import privilege in order to import observables through the API with default_state set to active.'
     execution: false
     name: threatstream-import-indicator-with-approval
     outputs:
@@ -2588,14 +2616,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence
-        entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
+      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
       isArray: false
       name: source_confidence_weight
       required: false
       secret: false
     - default: false
-      description: The time stamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00.
+      description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
       isArray: false
       name: expiration_ts
       required: false
@@ -2612,7 +2639,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of tags. For example, tag1,tag2.
+      description: 'A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags.'
       isArray: false
       name: tags
       required: false
@@ -2653,6 +2680,18 @@ script:
       description: The “meta” section will be added to this json, and we will send this json to the api endpoint.
       isArray: false
       name: indicators_json
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
+      isArray: false
+      name: tags_tlp
+      predefined:
+      - Red
+      - Amber
+      - Green
+      - White
       required: false
       secret: false
     deprecated: false
@@ -7299,7 +7338,7 @@ script:
     execution: false
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
-  dockerimage: demisto/py3-tools:1.0.0.61931
+  dockerimage: demisto/py3-tools:1.0.0.63856
   feed: false
   isfetch: false
   longRunning: false
