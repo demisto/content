@@ -1811,37 +1811,37 @@ script:
     name: uptycs-get-carves
     outputs:
     - contextPath: Uptycs.Carves.id
-      description: Uptycs carves ID.
+      description: Uptycs id of the carved file.
       type: string
     - contextPath: Uptycs.Carves.assetId
-      description: Uptycs asset ID.
+      description: Uptycs id of the asset.
       type: string
     - contextPath: Uptycs.Carves.path
-      description: Path of carved file.
+      description: File path to the carved file.
       type: string
     - contextPath: Uptycs.Carves.createdAt
-      description: Date/time that the file was carved.
+      description: Time at which the file was carved.
       type: date
     - contextPath: Uptycs.Carves.updatedAt
-      description: Date/time that the file carve was updated.
+      description: Time at which the carve was updated.
       type: date
     - contextPath: Uptycs.Carves.status
-      description: status of carve in the Uptycs database.
+      description: Status of carve in Uptycs database.
       type: string
     - contextPath: Uptycs.Carves.assetHostName
       description: Hostname in the Uptycs database.
       type: string
     - contextPath: Uptycs.Carves.offset
-      description: carved file size offset.
+      description: Carved file size offset.
       type: number
     - contextPath: Uptycs.Carves.length
-      description: carved file size length
+      description: Carved file size length.
       type: number
     - contextPath: Uptycs.Carves.deletedUserName
-      description: deleted user name
+      description: Deleted user name.
       type: string
     - contextPath: Uptycs.Carves.deleted_at
-      description: Date/time that the carve was deleted from Uptycs.
+      description: Time at which the carve was deleted.
       type: date
   - arguments:
     - default: false
@@ -1856,7 +1856,7 @@ script:
     name: uptycs-get-carves-link
     outputs:
     - contextPath: Uptycs.CarvesLink.url
-      description: Uptycs carves url
+      description: Url of the carved file
       type: string
   - arguments:
     - default: false
@@ -1876,40 +1876,40 @@ script:
     arguments:
     - name: asset_id
       required: true
-      description: Uptycs asset_id
+      description: Uptycs asset id
       isArray: false
       secret: false
       default: false
     outputs:
     - contextPath: Uptycs.Asset.hostName
-      description: Uptycs asset host name
+      description: Hostname in Uptycs DB
       type: string
     - contextPath: Uptycs.Asset.location
-      description: Uptycs asset location
+      description: Host location
       type: string
     - contextPath: Uptycs.Asset.gateway
-      description: Uptycs asset gateway
+      description: Gateway ip
       type: string
     - contextPath: Uptycs.Asset.cpuBrand
-      description: Uptycs asset cpu brand
+      description: Cpu brand
       type: string
     - contextPath: Uptycs.Asset.hardwareModel
-      description: Uptycs asset hardware model
+      description: Hardware model
       type: string
     - contextPath: Uptycs.Asset.hardwareVendor
-      description: Uptycs asset hardware vendor
+      description: Hardware vendor
       type: string
     - contextPath: Uptycs.Asset.cores
-      description: number of cores
+      description: Number of cores
       type: number
     - contextPath: Uptycs.Asset.logicalCores
-      description: number of logical cores
+      description: Number of logical cores
       type: number
     - contextPath: Uptycs.Asset.memoryMb
-      description: memory in Mb
+      description: Memory in Mb
       type: number
     - contextPath: Uptycs.Asset.os
-      description: os
+      description: os installed on asset (Windows, Linux, Mac OS X)
       type: string
     - contextPath: Uptycs.Asset.osVersion
       description: os version
@@ -1921,13 +1921,13 @@ script:
       description: os key
       type: string
     - contextPath: Uptycs.Asset.osqueryVersion
-      description: os query version
+      description: Uptycs osquery version
       type: string
     - contextPath: Uptycs.Asset.status
-      description: status
+      description: status of host
       type: string
     - contextPath: Uptycs.Asset.arch
-      description: cpu architecture
+      description: Host cpu architecture
       type: string
     - contextPath: Uptycs.Asset.agentVersion
       description: Uptycs agent version
@@ -1936,22 +1936,22 @@ script:
       description: Uptycs agent quarantine status
       type: string
     - contextPath: Uptycs.Asset.osDisplay
-      description: os version detailed
+      description: os version detailed info
       type: string
     - contextPath: Uptycs.Asset.tags
-      description: asset tags
+      description: Uptycs asset tags
       type: string
     - contextPath: Uptycs.Asset.disabled
-      description: disabled status
+      description: Asset disabled status
       type: boolean
     - contextPath: Uptycs.Asset.objectGroupId
       description: Uptycs object group id
       type: string
     - contextPath: Uptycs.Asset.lastEnrolledAt
-      description: last enrolled at time
-      type: string
+      description: Last enrolled at time
+      type: date
     - contextPath: Uptycs.Asset.live
-      description: live status
+      description: Asset live status
       type: boolean
   - name: uptycs-get-tag
     description: Return Uptycs asset tag details.
@@ -1966,64 +1966,64 @@ script:
       default: false
     outputs:
     - contextPath: Uptycs.tag.tag
-      description: tag
+      description: Tag name in Uptycs DB
       type: string
     - contextPath: Uptycs.tag.resourceType
-      description: resourceType
+      description: Tag resource type
       type: string
     - contextPath: Uptycs.tag.seedId
-      description: seedId
+      description: Uptycs seed id
       type: string
     - contextPath: Uptycs.tag.key
-      description: key
+      description: Tag key
       type: string
     - contextPath: Uptycs.tag.value
-      description: value
+      description: Tag value
       type: string
     - contextPath: Uptycs.tag.flagProfileId
-      description: flagProfileId
+      description: Uptycs flag profile id
       type: string
     - contextPath: Uptycs.tag.customProfileId
-      description: customProfileId
+      description: Uptycs custom profile id
       type: string
     - contextPath: Uptycs.tag.complianceProfileId
-      description: complianceProfileId
+      description: Uptycs compliance profile id
       type: string
     - contextPath: Uptycs.tag.processBlockRuleId
-      description: processBlockRuleId
+      description: Uptycs process block rule id
       type: string
     - contextPath: Uptycs.tag.dnsBlockRuleId
-      description: dnsBlockRuleId
+      description: Uptycs dns block rule id
       type: string
     - contextPath: Uptycs.tag.windowsDefenderPreferenceId
-      description: windowsDefenderPreferenceId
+      description: Windows Defender Preference Id
       type: string
     - contextPath: Uptycs.tag.createdBy
-      description: createdBy
+      description: Id of creator
       type: string
     - contextPath: Uptycs.tag.updatedBy
-      description: updatedBy
+      description: Id of last modifier
       type: string
     - contextPath: Uptycs.tag.createdAt
-      description: createdAt
+      description: Created at time
       type: date
     - contextPath: Uptycs.tag.updatedAt
-      description: updatedAt
+      description: Updated at time
       type: date
     - contextPath: Uptycs.tag.status
-      description: status
+      description: Status of tag
       type: string
     - contextPath: Uptycs.tag.source
-      description: source
+      description: Source of tag
       type: string
     - contextPath: Uptycs.tag.system
-      description: system
+      description: Status of system
       type: boolean
     - contextPath: Uptycs.tag.custom
-      description: custom
+      description: Status of custom
       type: boolean
     - contextPath: Uptycs.tag.tagRuleId
-      description: tagRuleId
+      description: Uptycs tag rule id
       type: string
   - name: uptycs-get-tags
     description: Return a list of Uptycs asset tags with details.
@@ -2044,13 +2044,13 @@ script:
       default: false
     outputs:
     - contextPath: Uptycs.tags.id
-      description: Uptycs tag id
+      description: Tag id in Uptycs DB
       type: string
     - contextPath: Uptycs.tags.tag
-      description: Uptycs tag
+      description: Tag name in Uptycs DB
       type: string
     - contextPath: Uptycs.tags.resourceType
-      description: Uptycs resourceType
+      description: Tag resource type
       type: string
     - contextPath: Uptycs.tags.seedId
       description: Uptycs seed id
@@ -2062,49 +2062,49 @@ script:
       description: Uptycs tag value
       type: string
     - contextPath: Uptycs.tags.flagProfileId
-      description: Uptycs flagProfileId
+      description: Uptycs flag profile id
       type: string
     - contextPath: Uptycs.tags.customProfileId
-      description: Uptycs customProfileId
+      description: Uptycs custom profile id
       type: string
     - contextPath: Uptycs.tags.complianceProfileId
-      description: Uptycs complianceProfileId
+      description: Uptycs compliance profile id
       type: string
     - contextPath: Uptycs.tags.processBlockRuleId
-      description: Uptycs processBlockRuleId
+      description: Uptycs process block rule id
       type: string
     - contextPath: Uptycs.tags.dnsBlockRuleId
-      description: Uptycs dnsBlockRuleId
+      description: Uptycs dns block rule id
       type: string
     - contextPath: Uptycs.tags.windowsDefenderPreferenceId
-      description: Uptycs windowsDefenderPreferenceId
+      description: Windows Defender Preference Id
       type: string
     - contextPath: Uptycs.tags.createdBy
-      description: createdBy
+      description: Id of tag creator
       type: string
     - contextPath: Uptycs.tags.updatedBy
-      description: updatedBy
+      description: Id of last modifier
       type: string
     - contextPath: Uptycs.tags.createdAt
-      description: createdAt
+      description: Created at time
       type: date
     - contextPath: Uptycs.tags.updatedAt
-      description: updatedAt
+      description: Updated at time
       type: date
     - contextPath: Uptycs.tags.status
-      description: status
+      description: status of tag
       type: string
     - contextPath: Uptycs.tags.source
-      description: source
+      description: source of tag
       type: string
     - contextPath: Uptycs.tags.system
-      description: system
+      description: system status
       type: boolean
     - contextPath: Uptycs.tags.custom
-      description: custom
+      description: custom status
       type: boolean
     - contextPath: Uptycs.tags.tagRuleId
-      description: tagRuleId
+      description: Uptycs tag rule id
       type: string
   - name: uptycs-delete-tag
     description: Delete an Uptycs asset tag.
@@ -2124,46 +2124,46 @@ script:
     arguments: []
     outputs:
     - contextPath: Uptycs.lookuptables.id
-      description: id
+      description: Uptycs id of look up table
       type: string
     - contextPath: Uptycs.lookuptables.seedId
-      description: seedId
+      description: Uptycs seed id
       type: string
     - contextPath: Uptycs.lookuptables.name
-      description: name
+      description: Look up table name
       type: string
     - contextPath: Uptycs.lookuptables.description
-      description: description
+      description: Description of the table
       type: string
     - contextPath: Uptycs.lookuptables.active
-      description: active
+      description: Active status of the table
       type: boolean
     - contextPath: Uptycs.lookuptables.idField
-      description: idField
+      description: Uptycs id field
       type: string
     - contextPath: Uptycs.lookuptables.rowCount
-      description: rowCount
+      description: Row count of table
       type: number
     - contextPath: Uptycs.lookuptables.forRuleEngine
-      description: forRuleEngine
+      description: Status of flag forRuleEngine
       type: boolean
     - contextPath: Uptycs.lookuptables.createdBy
-      description: createdBy
+      description: Id of creator
       type: string
     - contextPath: Uptycs.lookuptables.updatedBy
-      description: updatedBy
+      description: Id of last modifier
       type: string
     - contextPath: Uptycs.lookuptables.createdAt
-      description: createdAt
-      type: string
+      description: Created at time
+      type: date
     - contextPath: Uptycs.lookuptables.updatedAt
-      description: updatedAt
-      type: string
+      description: Updated at time
+      type: date
     - contextPath: Uptycs.lookuptables.dataLookupTable
-      description: dataLookupTable
+      description: Data look up table name
       type: string
     - contextPath: Uptycs.lookuptables.fetchRowsquery
-      description: fetchRowsquery
+      description: Query used to fetch rows
       type: string
   - name: uptycs-get-lookuptable
     description: Get an Uptycs lookup table details.
@@ -2172,49 +2172,49 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: table id
+      description: Id of table in Uptycs DB
       isArray: false
       secret: false
       default: false
     outputs:
     - contextPath: Uptycs.lookuptable.seedId
-      description: seedId
+      description: Uptycs seed id
       type: string
     - contextPath: Uptycs.lookuptable.name
-      description: name
+      description: Look up table name
       type: string
     - contextPath: Uptycs.lookuptable.description
-      description: description
+      description: Description of the table
       type: string
     - contextPath: Uptycs.lookuptable.active
-      description: active
+      description: Active status of the table
       type: boolean
     - contextPath: Uptycs.lookuptable.idField
-      description: idField
+      description: Uptycs id field
       type: string
     - contextPath: Uptycs.lookuptable.rowCount
-      description: rowCount
+      description: Row count of table
       type: number
     - contextPath: Uptycs.lookuptable.forRuleEngine
-      description: forRuleEngine
+      description: Status of flag forRuleEngine
       type: boolean
     - contextPath: Uptycs.lookuptable.createdBy
-      description: createdBy
+      description: Id of creator
       type: string
     - contextPath: Uptycs.lookuptable.updatedBy
-      description: updatedBy
+      description: Id of last modifier
       type: string
     - contextPath: Uptycs.lookuptable.createdAt
-      description: createdAt
-      type: string
+      description: Created at time
+      type: date
     - contextPath: Uptycs.lookuptable.updatedAt
-      description: updatedAt
-      type: string
+      description: Updated at time
+      type: date
     - contextPath: Uptycs.lookuptable.dataLookupTable
-      description: dataLookupTable
+      description: Data look up table name
       type: string
     - contextPath: Uptycs.lookuptable.fetchRowsquery
-      description: fetchRowsquery
+      description: Query used to fetch rows
       type: string
   - name: uptycs-create-lookuptable
     description: Create a new Uptycs lookup table.
@@ -2229,7 +2229,7 @@ script:
       default: false
     - name: id_field
       required: true
-      description: Id field
+      description: Id field for the table
       isArray: false
       secret: false
       default: false
@@ -2247,10 +2247,10 @@ script:
       default: false
     outputs:
     - contextPath: Uptycs.lookuptable.id
-      description: table id
+      description: Id of lookup table in Uptycs DB
       type: string
     - contextPath: Uptycs.lookuptable.name
-      description: table name
+      description: Name of the created lookup table
       type: string
   - name: uptycs-edit-lookuptable
     description: Edit an Uptycs lookup table.
@@ -2279,7 +2279,7 @@ script:
       auto: PREDEFINED
       defaultValue: true
       required: false
-      description: Enable or disable the table with boolean flag true or false
+      description: Enable or disable the table with a boolean flag of true or false.
       isArray: false
       secret: false
       default: false
@@ -2297,7 +2297,7 @@ script:
     arguments:
     - name: table_id
       required: true
-      description: table id
+      description: Table id in Uptycs DB
       isArray: false
       secret: false
       default: false

@@ -2602,24 +2602,24 @@ Get the list of carves file from a specific path.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | retrieve carves from a specific path | Optinal |
+| path | Retrieve carves from a specific path | Optional |
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Uptycs.Carves.id | string | id of the carved file |
-| Uptycs.Carves.assetId | string | id of the asset |
-| Uptycs.Carves.path | string | file path to the carved file |
-| Uptycs.Carves.createdAt | date | time at which the file was carved |
-| Uptycs.Carves.updatedAt | date | time at which the carve was updated |
-| Uptycs.Carves.status | string | status of carve |
-| Uptycs.Carves.assetHostName | string | hostname of the asset |
-| Uptycs.Carves.offset | number | file size offset |
-| Uptycs.Carves.length | number | file size |
-| Uptycs.Carves.deletedUserName | number | dleted user name |
-| Uptycs.Carves.deleted_at | number | time at which the carve was deleted |
+| Uptycs.Carves.id | string | Uptycs id of the carved file |
+| Uptycs.Carves.assetId | string | Uptycs id of the asset |
+| Uptycs.Carves.path | string | File path to the carved file |
+| Uptycs.Carves.createdAt | date | Time at which the file was carved |
+| Uptycs.Carves.updatedAt | date | Time at which the carve was updated |
+| Uptycs.Carves.status | string | Status of carve in Uptycs database |
+| Uptycs.Carves.assetHostName | string | Hostname in the Uptycs database |
+| Uptycs.Carves.offset | number | Carved file size offset |
+| Uptycs.Carves.length | number | Carved file size length |
+| Uptycs.Carves.deletedUserName | number | Deleted user name |
+| Uptycs.Carves.deleted_at | number | Time at which the carve was deleted |
 
 ##### Command Example
 `uptycs-get-carves path="/etc/"`
@@ -2730,7 +2730,7 @@ Get an Uptycs asset details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Uptycs asset_id | Required |
+| asset_id | Uptycs asset id | Required |
 
 
 ##### Context Output
@@ -2743,23 +2743,24 @@ Get an Uptycs asset details.
 | Uptycs.Asset.cpuBrand | string | Cpu brand |
 | Uptycs.Asset.hardwareModel | string | Hardware model |
 | Uptycs.Asset.hardwareVendor | string | Hardware vendor |
+| Uptycs.Asset.cores | number | Number of cores |
 | Uptycs.Asset.logicalCores | number | Number of logical cores |
 | Uptycs.Asset.memoryMb | number | Memory in mb |
 | Uptycs.Asset.os | string | os installed on asset (Windows, Linux, Mac OS X) |
 | Uptycs.Asset.os_version | string | os version |
 | Uptycs.Asset.osFlavor | string | os flavor |
 | Uptycs.Asset.osKey | string | os key |
-| Uptycs.Asset.osqueryVersion | string | osquery version |
+| Uptycs.Asset.osqueryVersion | string | Uptycs osquery version |
 | Uptycs.Asset.status | string | status of host |
-| Uptycs.Asset.arch | string | cpu architecture |
+| Uptycs.Asset.arch | string | Host cpu architecture |
 | Uptycs.Asset.agentVersion | string | Uptycs agent version |
 | Uptycs.Asset.quarantinedStatus | string | Uptycs agent quarantine status |
-| Uptycs.Asset.osDisplay | string | os version detailed |
-| Uptycs.Asset.tags | string | asset tags |
-| Uptycs.Asset.disabled | boolean | disabled status |
+| Uptycs.Asset.osDisplay | string | os version detailed info|
+| Uptycs.Asset.tags | string | Uptycs asset tags |
+| Uptycs.Asset.disabled | boolean | Asset disabled status |
 | Uptycs.Asset.objectGroupId | string | Uptycs object group id |
-| Uptycs.Asset.lastEnrolledAt | date | last enrolled at time |
-| Uptycs.Asset.live | boolean | live status |
+| Uptycs.Asset.lastEnrolledAt | date | Last enrolled at time |
+| Uptycs.Asset.live | boolean | Asset live status |
 
 
 ##### Command Example
@@ -2833,20 +2834,20 @@ Return Uptycs asset tag details
 | Uptycs.tag.key | string | Tag key |
 | Uptycs.tag.value | string | Tag value |
 | Uptycs.tag.flagProfileId | string | Uptycs flag profile id |
-| Uptycs.tag.customProfileId | string | Uptycs custom profile id  |
-| Uptycs.tag.complianceProfileId | string | Uptycs compliance profile id  |
-| Uptycs.tag.processBlockRuleId | string | Uptycs process block rule id  |
+| Uptycs.tag.customProfileId | string | Uptycs custom profile id |
+| Uptycs.tag.complianceProfileId | string | Uptycs compliance profile id |
+| Uptycs.tag.processBlockRuleId | string | Uptycs process block rule id |
 | Uptycs.tag.dnsBlockRuleId | string | Uptycs dns block rule id  |
-| Uptycs.tag.windowsDefenderPreferenceId | string | Windows Defender Preference Id  |
-| Uptycs.tag.createdBy | string | id of creator |
-| Uptycs.tag.updatedBy | string | id of last modifier |
-| Uptycs.tag.createdAt | date | created at time |
-| Uptycs.tag.updatedAt | date | updated at time |
-| Uptycs.tag.status | string | status of tag |
-| Uptycs.tag.source | string | source of tag |
-| Uptycs.tag.system | boolean | system |
-| Uptycs.tag.custom | boolean | custom |
-| Uptycs.tag.tagRuleId | string | Uptycs tag rule id  |
+| Uptycs.tag.windowsDefenderPreferenceId | string | Windows Defender Preference Id |
+| Uptycs.tag.createdBy | string | Id of creator |
+| Uptycs.tag.updatedBy | string | Id of last modifier |
+| Uptycs.tag.createdAt | date | Created at time |
+| Uptycs.tag.updatedAt | date | Updated at time |
+| Uptycs.tag.status | string | Status of tag |
+| Uptycs.tag.source | string | Source of tag |
+| Uptycs.tag.system | boolean | Status of system |
+| Uptycs.tag.custom | boolean | Status of custom |
+| Uptycs.tag.tagRuleId | string | Uptycs tag rule id |
 
 
 ##### Command Example
@@ -2907,25 +2908,26 @@ Return a list of Uptycs asset tags with details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Uptycs.tags.id | string | Tag id in Uptycs DB |
 | Uptycs.tags.tag | string | Tag name in Uptycs DB |
 | Uptycs.tags.resourceType | string | Tag resource type |
 | Uptycs.tags.seedId | string | Uptycs seed id |
-| Uptycs.tags.key | string | Tag key |
-| Uptycs.tags.value | string | Tag value |
+| Uptycs.tags.key | string | Uptycs tag key |
+| Uptycs.tags.value | string | Uptycs tag value |
 | Uptycs.tags.flagProfileId | string | Uptycs flag profile id |
 | Uptycs.tags.customProfileId | string | Uptycs custom profile id  |
-| Uptycs.tags.complianceProfileId | string | Uptycs compliance profile id  |
-| Uptycs.tags.processBlockRuleId | string | Uptycs process block rule id  |
+| Uptycs.tags.complianceProfileId | string | Uptycs compliance profile id |
+| Uptycs.tags.processBlockRuleId | string | Uptycs process block rule id |
 | Uptycs.tags.dnsBlockRuleId | string | Uptycs dns block rule id  |
-| Uptycs.tags.windowsDefenderPreferenceId | string | Windows Defender Preference Id  |
-| Uptycs.tags.createdBy | string | id of creator |
-| Uptycs.tags.updatedBy | string | id of last modifier |
-| Uptycs.tags.createdAt | date | created at time |
-| Uptycs.tags.updatedAt | date | updated at time |
+| Uptycs.tags.windowsDefenderPreferenceId | string | Windows Defender Preference Id |
+| Uptycs.tags.createdBy | string | Id of tag creator |
+| Uptycs.tags.updatedBy | string | Id of last modifier |
+| Uptycs.tags.createdAt | date | Created at time |
+| Uptycs.tags.updatedAt | date | Updated at time |
 | Uptycs.tags.status | string | status of tag |
 | Uptycs.tags.source | string | source of tag |
-| Uptycs.tags.system | boolean | system |
-| Uptycs.tags.custom | boolean | custom |
+| Uptycs.tags.system | boolean | system status |
+| Uptycs.tags.custom | boolean | custom status |
 | Uptycs.tags.tagRuleId | string | Uptycs tag rule id  |
 
 
@@ -3008,8 +3010,8 @@ Create a new Uptycs lookup table.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | name of a lookup table | Required |
-| id_field | id field for the table | Required |
+| name | Name of a lookup table | Required |
+| id_field | Id field for the table | Required |
 | description | Description of a lookup table. | Optional |
 | filename | The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI. | Required |
 
@@ -3017,8 +3019,8 @@ Create a new Uptycs lookup table.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Uptycs.lookuptable.id | string | id of lookup table in Uptycs DB |
-| Uptycs.lookuptable.name | string | name of lookup table |
+| Uptycs.lookuptable.id | string | Id of lookup table in Uptycs DB |
+| Uptycs.lookuptable.name | string | Name of the created lookup table |
 
 ##### Command Example
 `uptycs-create-lookuptable name="test_table" id_field="remote_address" description="look up table with remote address"`
@@ -3084,7 +3086,7 @@ Edit an Uptycs lookup table
 | table_id | Look up table id. | Required |
 | name | Name of a lookup table. | Optional |
 | description | A lookup table description. | Optional |
-| active | Enable or disable the table with boolean flag true or false | Optional |
+| active | Enable or disable the table with a boolean flag of true or false. | Optional |
 
 ##### Context Output
 
@@ -3135,11 +3137,25 @@ Get an Uptycs lookup table details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | table id | Required |
+| table_id | Id of table in Uptycs DB | Required |
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.lookuptable.seedId | string | Uptycs seed id |
+| Uptycs.lookuptable.name | string | Look up table name |
+| Uptycs.lookuptable.description | string | Description of the table |
+| Uptycs.lookuptable.active | boolean | Active status of the table |
+| Uptycs.lookuptable.idField | string | Uptycs id field |
+| Uptycs.lookuptable.rowCount | number | Row count of table |
+| Uptycs.lookuptable.forRuleEngine | boolean | Status of flag forRuleEngine |
+| Uptycs.lookuptable.createdBy | string | Id of creator |
+| Uptycs.lookuptable.updatedBy | string | Id of last modifier |
+| Uptycs.lookuptable.createdAt | date | Created at time |
+| Uptycs.lookuptable.updatedAt | date | Updated at time |
+| Uptycs.lookuptable.dataLookupTable | string | Data look up table name |
+| Uptycs.lookuptable.fetchRowsquery | string | Query used to fetch rows |
 
 ##### Command Example
 `uptycs-get-lookuptable table_id="984d4a7a-9f3a-580a-a3ef-2841a561669b"`
@@ -3188,7 +3204,22 @@ There are no arguments for this command.
 
 ##### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.lookuptable.id | string | Uptycs id of look up table |
+| Uptycs.lookuptable.seedId | string | Uptycs seed id |
+| Uptycs.lookuptable.name | string | Look up table name |
+| Uptycs.lookuptable.description | string | Description of the table |
+| Uptycs.lookuptable.active | boolean | Active status of the table |
+| Uptycs.lookuptable.idField | string | Uptycs id field |
+| Uptycs.lookuptable.rowCount | number | Row count of table |
+| Uptycs.lookuptable.forRuleEngine | boolean | Status of flag forRuleEngine |
+| Uptycs.lookuptable.createdBy | string | Id of creator |
+| Uptycs.lookuptable.updatedBy | string | Id of last modifier |
+| Uptycs.lookuptable.createdAt | date | Created at time |
+| Uptycs.lookuptable.updatedAt | date | Updated at time |
+| Uptycs.lookuptable.dataLookupTable | string | Data look up table name |
+| Uptycs.lookuptable.fetchRowsquery | string | Query used to fetch rows |
 
 ##### Command Example
 `uptycs-get-lookuptables`
@@ -3235,7 +3266,7 @@ Delete an Uptycs lookup table
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_id | table id | Required |
+| table_id | Table id in Uptycs DB | Required |
 
 
 ##### Context Output
