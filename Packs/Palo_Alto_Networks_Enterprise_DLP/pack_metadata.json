@@ -18,5 +18,8 @@
         "xsoar",
         "marketplacev2"
     ],
-    "itemPrefix": "PAN"
+    "itemPrefix": [
+        "PAN",
+        "DLP"
+    ]
 }
