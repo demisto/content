@@ -264,7 +264,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "usecasecontainmentsteps",
+                                "fieldId": "usecasebuilderusecasecontainmentsteps",
                                 "height": 22,
                                 "id": "e3a10830-cb5a-11ed-b65c-030bc2f7f1a6",
                                 "index": 0,
@@ -1305,7 +1305,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_usecasecontainmentsteps",
+                        "fieldId": "incident_usecasebuilderusecasecontainmentsteps",
                         "isVisible": true
                     },
                     {
