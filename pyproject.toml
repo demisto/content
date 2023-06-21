@@ -11,7 +11,7 @@ defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
 demisto_sdk = "1.17.0"
-requests = "^2.22.0"
+requests = "^2.31.0"
 pre-commit = "^2.20.0"
 
 [tool.poetry.group.linters.dependencies]
