@@ -19,7 +19,7 @@ configuration:
   required: false
   hidden: true
 - display: API ID
-  name: apiid_creds
+  name: creds
   type: 9
   required: false
   displaypassword: API key
