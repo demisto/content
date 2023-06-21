@@ -353,9 +353,12 @@ def main():
     try:
         LOG('command is %s' % (demisto.command(),))
         params = demisto.params()
+        demisto.debug(f'###### demisto.debug | params are: {params}')
         server = params.get('url', '').rstrip('/')
         creds = params.get('credentials')
+        demisto.debug(f'###### demisto.debug | creds: {creds}')
         username, password = (creds.get('identifier'), creds.get('password')) if creds else (None, None)
+        demisto.debug(f'###### demisto.debug | username: {username}, password: {password}')
         insecure = not params.get('insecure')
         tags = argToList(params.get('feedTags'))
         tlp_color = params.get('tlp_color')
@@ -366,6 +369,7 @@ def main():
         fetch_time = params.get('fetch_time', '3 days')
         query = params.get('es_query')
         api_id, api_key = extract_api_from_username_password(username, password)
+        demisto.debug(f'###### demisto.debug | api_id: {api_id}, api_key: {api_key}')
         client = ElasticsearchClient(insecure, server, username, password, api_key, api_id, time_field, time_method,
                                      fetch_index, fetch_time, query, tags, tlp_color)
         src_val = params.get('src_val')
