@@ -199,7 +199,7 @@ FETCH_ASSETS_BAD_RESPONSE = {
 
 CREATE_COMMENT_RESPONSE = {
     "data": {
-        "createComment": {
+        "addCommentToInvestigation": {
             "id": TAEGIS_COMMENT["id"],
         }
     }

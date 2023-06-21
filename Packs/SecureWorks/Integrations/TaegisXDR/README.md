@@ -98,12 +98,12 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | comment | The comment string to add to the investigation | True |
-| parent_id | The investigation ID to add the comment to | True |
+| id | The investigation ID to add the comment to | True |
 
 #### Command Example
 
 ```
-!taegis-create-comment comment="This is a test comment" parent_id="219da0ee-8642-4363-827c-8a6fbd479082"
+!taegis-create-comment comment="This is a test comment" id="219da0ee-8642-4363-827c-8a6fbd479082"
 ```
 
 #### Context Example

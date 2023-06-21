@@ -208,38 +208,30 @@ def create_comment_command(client: Client, env: str, args=None):
     if not args.get("comment"):
         raise ValueError("Cannot create comment, comment cannot be empty")
 
-    if not args.get("parent_id"):
-        raise ValueError("Cannot create comment, parent_id cannot be empty")
+    if not args.get("id"):
+        raise ValueError("Cannot create comment, id cannot be empty")
 
-    parent_type = args.get("parent_type", "investigation").lower()
-    if parent_type not in COMMENT_TYPES:
-        raise ValueError(
-            f"The provided comment parent type, {parent_type}, is not valid. "
-            f"Supported Parent Types Values: {COMMENT_TYPES}"
-        )
+    fields: str = args.get("fields") or "id"
 
     query = """
-    mutation createComment ($comment: CommentInput!) {
-        createComment(comment: $comment) {
-            id
+    mutation addCommentToInvestigation($input: AddCommentToInvestigationInput!) {
+        addCommentToInvestigation(input: $input) {
+            %s
         }
     }
-    """
+    """ % (fields)
 
     variables = {
-        "comment": {
+        "input": {
             "comment": args.get("comment"),
-            "parent_id": args.get("parent_id"),
-            "parent_type": parent_type,
-            "section_id": args.get("section_id", ""),
-            "section_type": args.get("section_type", ""),
+            "id": args.get("id"),
         }
     }
 
     result = client.graphql_run(query=query, variables=variables)
 
     try:
-        comment = result["data"]["createComment"]
+        comment = result["data"]["addCommentToInvestigation"]
     except (KeyError, TypeError):
         raise ValueError(f"Failed to create comment: {result['errors'][0]['message']}")
 

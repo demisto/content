@@ -144,25 +144,19 @@ def test_create_comment(requests_mock):
     with pytest.raises(ValueError, match="Cannot create comment, comment cannot be empty"):
         assert create_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
 
-    # parent_id not set
-    with pytest.raises(ValueError, match="Cannot create comment, parent_id cannot be empty"):
-        assert create_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args={"comment": "test"})
+    # id not set
+    with pytest.raises(ValueError, match="Cannot create comment, id cannot be empty"):
+        assert create_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args={"comment": "Test comment"})
 
     args = {
-        "comment": FETCH_COMMENT_RESPONSE["data"]["comment"]["comment"],
-        "parent_id": FETCH_COMMENT_RESPONSE["data"]["comment"]["parent_id"],
-        "parent_type": "bad_parent_type",
+        "comment": "Test Comment",
+        "id": "12345-12345-12345",
+        "fields": "id",
     }
 
-    # Invalid parent type
-    with pytest.raises(ValueError, match="The provided comment parent type, bad_parent_type, is not valid."):
-        assert create_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-
-    args["parent_type"] = "investigation"
-
-    #  # Successful fetch - Comment created
+    # Successful fetch - Comment created
     response = create_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs == CREATE_COMMENT_RESPONSE["data"]["createComment"]
+    assert response.outputs == CREATE_COMMENT_RESPONSE["data"]["addCommentToInvestigation"]
 
     # Comment creation failed
     client = mock_client(requests_mock, CREATE_UPDATE_COMMENT_BAD_RESPONSE)

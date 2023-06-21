@@ -214,37 +214,49 @@ script:
       description: The ID of the comment to fetch
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.Comment
       description: Return the comment
     description: Fetch comment by comment ID
   - name: taegis-fetch-comments
     arguments:
-    - name: parent_id
+    - name: id
       required: true
-      description: The ID of the parent related to the comments
-    - name: parent_type
-      description: The parent type that the comments belong to
-      defaultValue: investigation
+      description: The ID of the investigation related to the comments
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: page
+      description: The page number for fetching comments
+      defaultValue: "0"
+    - name: page_size
+      description: Number of comments to return
+      defaultValue: "10"
+    - name: order_direction
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      description: The order direction when performing a search
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.Comments
       description: A list of comments to return
-    description: Fetch comments by Parent Type and ID
+    description: Fetch comments by Investigation ID
   - name: taegis-create-comment
     arguments:
     - name: comment
       required: true
       description: The comment string to add to the parent
-    - name: parent_id
+    - name: id
       required: true
-      description: The parent that the comment is being added to
-    - name: parent_type
-      description: The parent type that the comment is being added to
-      defaultValue: investigation
+      description: The investigation that the comment is being added to
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.CommentCreate
       description: The created comment information
