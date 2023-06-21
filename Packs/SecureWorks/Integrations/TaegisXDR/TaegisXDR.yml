@@ -13,6 +13,7 @@ configuration:
   options:
   - US1
   - US2
+  - US3
   - EU
   additionalinfo: Used to determine the URL and API endpoint to utilize for your tenant
 - display: Trust any certificate (not secure)
