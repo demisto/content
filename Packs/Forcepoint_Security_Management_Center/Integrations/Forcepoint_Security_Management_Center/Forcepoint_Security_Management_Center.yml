@@ -295,7 +295,7 @@ script:
       secret: false
     description: 'Deletes a host.'
     execution: false
-    name: forcepoint-smc-address-host
+    name: forcepoint-smc-host-list
     outputs:
     - contextPath: ForcepointSMC.Host.Name
       description: 'The name of the Host'
@@ -325,6 +325,52 @@ script:
     - contextPath: ForcepointSMC.Domain.Comment
       description: 'The comment of the host.'
       type: String
+  - arguments:
+    - default: false
+      description: The name of a specific domain to fetch. 
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The limit on the returned number Hosts. Default value is 50.
+      isArray: false
+      name: limit
+      defaultvalue: 50
+      required: false
+    - default: false
+      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+      defaultvalue: false
+    description: 'Lists the Domains in the system.'
+    execution: false
+    name: forcepoint-smc-domain-list
+    outputs:
+    - contextPath: ForcepointSMC.Domain.Name
+      description: 'The name of the domain.'
+      type: String
+    - contextPath: ForcepointSMC.Domain.Comment
+      description: 'The comment of the domain.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the domain to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: 'Deletes a host.'
+    execution: false
+    name: forcepoint-smc-domain-delete
+    outputs:
+    - contextPath: ForcepointSMC.Domain.Name
+      description: 'The name of the Domain'
+      type: String
+    - contextPath: ForcepointSMC.Domain.Deleted
+      description: 'Was the domain deleted or not'
+      type: Boolean
   isfetch: false
   runonce: false
   script: '-'
