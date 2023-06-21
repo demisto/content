@@ -398,7 +398,7 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: yaraAction
+      - name: yara_action
         description: YARA ruleset action
         isArray: false
         required: true
@@ -409,17 +409,17 @@ script:
           - 'DELETE RULESET'
           - 'GET RULESET INFO'
           - 'GET RULESET TEXT'
-      - name: rulesetName
+      - name: ruleset_name
         description: Name of the YARA ruleset
         isArray: false
         required: true
         secret: false
-      - name: rulesetText
+      - name: ruleset_text
         description: Text of the YARA ruleset
         isArray: false
         required: false
         secret: false
-      - name: sampleAvailable
+      - name: sample_available
         description: Return only samples that are available for download to the user. Must be boolean.
         isArray: false
         required: false
@@ -442,7 +442,7 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: timeFormat
+      - name: time_format
         description: Define the time format that is used
         isArray: false
         required: true
@@ -451,8 +451,8 @@ script:
         predefined:
           - 'utc'
           - 'timestamp'
-      - name: timeValue
-        description: Time value in the defined format
+      - name: time_value
+        description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
         isArray: false
         required: true
         secret: false
@@ -465,7 +465,7 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: yaraRetroAction
+      - name: yara_retro_action
         description: YARA retro hunt action
         isArray: false
         required: true
@@ -476,7 +476,7 @@ script:
           - 'START RETRO HUNT'
           - 'CHECK STATUS'
           - 'CANCEL RETRO HUNT'
-      - name: rulesetName
+      - name: ruleset_name
         description: Name of the YARA ruleset
         isArray: false
         required: true
@@ -499,7 +499,7 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: timeFormat
+      - name: time_format
         description: Define the time format that is used
         isArray: false
         required: true
@@ -508,8 +508,8 @@ script:
         predefined:
           - 'utc'
           - 'timestamp'
-      - name: timeValue
-        description: Time value in the defined format
+      - name: time_value
+        description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
         isArray: false
         required: true
         secret: false
@@ -541,7 +541,7 @@ script:
         isArray: false
         required: true
         secret: false
-      - name: maxResults
+      - name: max_results
         description: Maximum number of returned results
         defaultValue: 5000
         isArray: false
@@ -561,7 +561,7 @@ script:
         isArray: false
         required: true
         secret: false
-      - name: extendedResults
+      - name: extended_results
         description: Return extended results
         defaultValue: true
         isArray: false
@@ -582,7 +582,7 @@ script:
           - 'SUSPICIOUS'
           - 'KNOWN'
           - 'UNKNOWN'
-      - name: lastAnalysis
+      - name: last_analysis
         description: Return results from the last analysis
         defaultValue: false
         isArray: false
@@ -592,18 +592,18 @@ script:
         predefined:
           - 'true'
           - 'false'
-      - name: analysisId
+      - name: analysis_id
         description: Return results from a specific analysis
         isArray: false
         required: false
         secret: false
-      - name: resultsPerPage
+      - name: results_per_page
         description: Number of results per query
         defaultValue: 1000
         isArray: false
         required: false
         secret: false
-      - name: maxResults
+      - name: max_results
         description: Maximum number of results
         defaultValue: 5000
         isArray: false
@@ -618,13 +618,13 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: resultsPerPage
+      - name: results_per_page
         description: Number of results per query
         defaultValue: 1000
         isArray: false
         required: false
         secret: false
-      - name: maxResults
+      - name: max_results
         description: Maximum number of results
         defaultValue: 5000
         isArray: false
@@ -639,7 +639,7 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: timeFormat
+      - name: time_format
         description: Define the time format that is used
         isArray: false
         required: true
@@ -648,18 +648,18 @@ script:
         predefined:
           - 'utc'
           - 'timestamp'
-      - name: startTime
-        description: Time value in the defined format
+      - name: start_time
+        description: Time value in the defined format. 'utc' format is 'YYYY-MM-DDThh:mm:ss' and 'timestamp' is a Unix timestamp.
         isArray: false
         required: true
         secret: false
-      - name: resultsPerPage
+      - name: results_per_page
         description: Number of results per query
         defaultValue: 1000
         isArray: false
         required: false
         secret: false
-      - name: maxResults
+      - name: max_results
         description: Maximum number of results
         defaultValue: 5000
         isArray: false
@@ -669,7 +669,7 @@ script:
       - contextPath: ReversingLabs.url_analyses_feed_from_date
         description: ''
         type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.61528
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.63751
   feed: false
   isfetch: false
   longRunning: false

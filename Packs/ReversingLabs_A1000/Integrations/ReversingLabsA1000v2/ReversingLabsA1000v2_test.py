@@ -1,6 +1,7 @@
 import json
 import io
-from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output
+from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
+    classification_to_score, url_report_output, domain_report_output, ip_report_output
 import demistomock as demisto
 import pytest
 
@@ -39,6 +40,37 @@ def test_a1000_get_classification_output():
     assert result.to_context() == test_context
 
 
+def test_url_report_output():
+    test_response = util_load_json("TestData/a1000_url_report.json")
+    test_context = util_load_json("TestData/a1000_url_report_context.json")
+
+    result = url_report_output(url="http://195.133.11.16/push", response_json=test_response)
+
+    assert result.to_context() == test_context
+
+
+def test_domain_report_output():
+    test_response = util_load_json("TestData/a1000_domain_report.json")
+    test_context = util_load_json("TestData/a1000_domain_report_context.json")
+
+    result = domain_report_output(domain="index.hr", response_json=test_response)
+
+    assert result.to_context() == test_context
+
+
+def test_ip_report_output():
+    test_response = util_load_json("TestData/a1000_ip_report.json")
+    test_context = util_load_json("TestData/a1000_ip_report_context.json")
+
+    result = ip_report_output(ip="8.8.4.4", response_json=test_response)
+
+    assert result.to_context() == test_context
+
+
+def test_classification_to_score():
+    assert classification_to_score("MALICIOUS") == 3
+
+
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, mode='r') as f:
         return json.loads(f.read())
