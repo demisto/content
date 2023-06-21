@@ -5,9 +5,10 @@ from those surfaced by Cortex ASM Enrichment.
 """
 
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Iterable
 import traceback
 from itertools import groupby
+import math
 
 STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
 
@@ -29,9 +30,13 @@ def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Sort owners by ranking score
+    Sort owners by ranking score and use data-driven algorithm to return the top k,
+    where k is a dynamic value based on the relative scores
+
+    See _get_k for hyperparameters that can be used to adjust the target value of k
     """
-    return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)
+    k = _get_k(scores=(owner['Ranking Score'] for owner in owners))
+    return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)[:k]
 
 
 def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -137,6 +142,54 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
                 continue
         deduped.append(owner)
     return deduped
+
+
+def _get_k(
+    scores: Iterable[float],
+    target_k: int = 5,
+    k_tol: int = 2,
+    a_tol: float = 1.0,
+    min_score_proportion: float = 0.75
+) -> int:
+    """
+    Return a value of k such that:
+    - target_k >= k <= target_k + k_tol
+    - the top k scores comprise minimum specified proportion of the total score mass
+
+    See unit tests in RankServiceOwners_test.py for a more detailed specification of the
+    expected behavior.
+
+    Notable hyperparameters and where they come from:
+
+    :param target_k: the value of k we are roughly targeting (set by discussion with PM)
+    :param k_tol: our tolerance for k, or how many additional owners above `target_k` we are willing to show
+        (set by intuition/discussion with PM)
+    :param a_tol: max expected absolute different between two scores in the same "tier"
+        (set by somewhat arbitrarily/by intuition; see unit tests)
+    :param min_score_proportion: the targeted min proportion of the score mass
+        (identified using a gridsearch over values to find best outcome on unit tests)
+    """
+    # get up to target_k scores that comprise the desired score proportion
+    scores_desc = list(sorted(scores, reverse=True))
+    min_score_proportion = sum(scores_desc) * min_score_proportion
+    k = 0
+    cumulative_score = 0.0
+    while cumulative_score < min_score_proportion and k < target_k:
+        cumulative_score += scores_desc[k]
+        k += 1
+
+    # score values are likely groupable into "tiers"; try to find a cutoff between tiers
+    # look for the end of the next element's tier (may be the current or next tier),
+    # where a tier is (arbitrarily) defined by an absolute difference of `a_tol`
+    tier_index = k
+    while tier_index < len(scores_desc) and math.isclose(scores_desc[tier_index], scores_desc[tier_index - 1], abs_tol=a_tol):
+        tier_index += 1
+
+    # add additional score(s) if within tolerance for k
+    if math.isclose(target_k, tier_index, abs_tol=k_tol):
+        k = tier_index
+
+    return k
 
 
 def main():
