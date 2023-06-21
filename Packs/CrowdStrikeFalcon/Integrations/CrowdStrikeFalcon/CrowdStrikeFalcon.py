@@ -2477,8 +2477,10 @@ def fetch_incidents():
     current_fetch_info_detections.pop("offset", None)
 
     current_fetch_info_incidents: dict = last_run[1]
-    current_fetch_info_idp_detections: dict = last_run[2]
     current_fetch_info_incidents.pop("offset", None)
+
+    current_fetch_info_idp_detections: dict = last_run[2]
+    current_fetch_info_idp_detections.pop("offset", None)
 
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
@@ -2490,6 +2492,7 @@ def fetch_incidents():
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
 
     if 'Detections' in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
+        fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
@@ -2567,51 +2570,39 @@ def fetch_incidents():
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
     if "IDP Detection" in fetch_incidents_or_detections:
-        latest_fetched_idp_detection = None
-        last_idp_detection_fetched = current_fetch_info_incidents.get('last_fetched_idp_detection')
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_idp_detections,
+                                                                    first_fetch=FETCH_TIME,
+                                                                    look_back=look_back)
+        fetch_limit = current_fetch_info_idp_detections.get('limit') or INCIDENTS_PER_FETCH
         fetch_query = demisto.params().get('idp_detections_fetch_query', "")
-        filter = f"product:'idp'+created_timestamp:>'{last_fetch_time}'"
+        filter = f"product:'idp'+created_timestamp:>'{start_fetch_time}'"
+
         if fetch_query:
             filter += f"+{fetch_query}"
-        idp_detections_ids = demisto.get(get_idp_detections_ids(filter_arg=filter, offset=offset), 'resources')
+        idp_detections_ids = demisto.get(get_idp_detections_ids(filter_arg=filter, limit=fetch_limit), 'resources')
         if idp_detections_ids:
             raw_res = get_idp_detection_entities(idp_detections_ids)
             if "resources" in raw_res:
                 for idp_detection in demisto.get(raw_res, "resources"):
                     idp_detection['incident_type'] = IDP_DETECTION
                     idp_detection_to_context = idp_detection_to_incident_context(idp_detection)
-                    idp_detection_date = idp_detection_to_context['last_updated']
-
-                    idp_detection_date_timestamp = int(parse(idp_detection_date).timestamp() * 1000)
-
-                    # Update last run and add incident if the incident is newer than last fetch
-                    if idp_detection_date_timestamp > last_fetch_timestamp:
-                        last_fetch_timestamp = idp_detection_date_timestamp
-                        latest_fetched_idp_detection = idp_detection_date
-                        new_last_idp_detection_fetched = idp_detection.get('id')
-
-                    if last_idp_detection_fetched != idp_detection.get('id'):
-                        idp_detections.append(idp_detection_to_context)
-
-            if len(idp_detections) == INCIDENTS_PER_FETCH:
-                current_fetch_info_idp_detections['offset'] = offset + INCIDENTS_PER_FETCH
-            else:
-                current_fetch_info_idp_detections['offset'] = 0
-            current_fetch_info_idp_detections['last_fetched_idp_detection'] = new_last_idp_detection_fetched
+                    idp_detections.append(idp_detection_to_context)
 
             idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
                                                                       last_run=current_fetch_info_idp_detections,
-                                                                      fetch_limit=fetch_limit, id_field='name')
+                                                                      fetch_limit=fetch_limit, id_field='name')            
+
             for idp_detection in idp_detections:
                 if occurred := dateparser.parse(idp_detection["occurred"]):
                     idp_detection["occurred"] = occurred.strftime(DATE_FORMAT)
-        latest_fetched_idp_detection = datetime.now().strftime(DATE_FORMAT) if not latest_fetched_idp_detection else \
-            latest_fetched_idp_detection
-        current_fetch_info_idp_detections = {
-            "time": latest_fetched_idp_detection,
-            "offset": offset
-        }
-        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
+                    demisto.debug(f"CrowdStrikeFalconMsg: Incident {idp_detection['name']} occurred at {idp_detection['occurred']}")
+            last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=incidents,
+                                              fetch_limit=fetch_limit,
+                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                              look_back=look_back,
+                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+            current_fetch_info_idp_detections.update(last_run)
+            demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
 
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections])
     return incidents + detections + idp_detections
