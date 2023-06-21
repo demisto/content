@@ -17,7 +17,6 @@ args:
 - name: new
   description: The new value of the changed field
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 marketplaces:
 - xsoar

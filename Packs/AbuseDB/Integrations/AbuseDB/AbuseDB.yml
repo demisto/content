@@ -13,14 +13,12 @@ configuration:
   type: 0
   section: Connect
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Key (v2)
   hiddenusername: true
   section: Connect
 - display: API Key (v2)
   name: apikey
-  required: false
   type: 4
   hidden: true
   section: Connect
@@ -42,32 +40,27 @@ configuration:
 - defaultvalue: '80'
   display: Minimum score threshold
   name: threshold
-  required: false
   type: 0
   section: Collect
   advanced: true
 - display: Maximum reports age (in days)
   name: days
-  required: false
   type: 0
   defaultvalue: '30'
   section: Collect
   advanced: true
 - display: Disregard quota errors
   name: disregard_quota
-  required: false
   type: 8
   section: Collect
   advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
@@ -81,7 +74,6 @@ script:
       description: The IP address to check (CSV supported).
       isArray: true
       name: ip
-      required: false
     - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
       name: days
@@ -270,7 +262,6 @@ script:
     - contextPath: AbuseIPDB.Categories
       description: The list of AbuseIPDB categories.
       type: string
-  runonce: false
   script: ''
   subtype: python3
   type: python

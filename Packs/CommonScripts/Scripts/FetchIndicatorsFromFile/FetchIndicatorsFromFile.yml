@@ -1,25 +1,17 @@
 args:
-- default: false
-  description: The file entry_id from which to fetch the indicators.
-  isArray: false
+- description: The file entry_id from which to fetch the indicators.
   name: entry_id
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'True'
   description: Whether to auto-detect the indicator type from the file.
-  isArray: false
   name: auto_detect
   predefined:
   - 'True'
   - 'False'
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Sets a default indicator type.
-  isArray: false
   name: default_type
   predefined:
   - CVE
@@ -39,47 +31,21 @@ args:
   - ssdeep
   - URL
   - Account
-  required: false
-  secret: false
-- default: false
-  description: The maximum number of indicators to fetch. If this argument is not specified, will parse the entire file.
-  isArray: false
+- description: The maximum number of indicators to fetch. If this argument is not specified, will parse the entire file.
   name: limit
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: The index for the first indicator to fetch.
-  isArray: false
   name: offset
-  required: false
-  secret: false
-- default: false
-  defaultValue: '1'
+- defaultValue: '1'
   description: Only for spreadsheet files. The column number in the spreadsheet that contains the indicators. The first column number is 1. If this argument is not specified, will use at the first column.
-  isArray: false
   name: indicator_column_number
-  required: false
-  secret: false
-- default: false
-  description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators from. If this argument is not specified, will fetch from the first sheet of the workbook.
-  isArray: false
+- description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators from. If this argument is not specified, will fetch from the first sheet of the workbook.
   name: sheet_name
-  required: false
-  secret: false
-- default: false
-  description: Only for spreadsheet files. The column number in the spreadsheet that contains the indicator types. The first column number is 1.
-  isArray: false
+- description: Only for spreadsheet files. The column number in the spreadsheet that contains the indicator types. The first column number is 1.
   name: indicator_type_column_number
-  required: false
-  secret: false
-- default: false
-  defaultValue: '1'
+- defaultValue: '1'
   description: Only for spreadsheet files. The starting row of the spreadsheet to fetch from. The first row is 1.
-  isArray: false
   name: starting_row
-  required: false
-  secret: false
 comment: Fetches indicators from a file. Supports TXT, XLS, XLSX, CSV, DOC and DOCX file types.
 commonfields:
   id: FetchIndicatorsFromFile
@@ -94,7 +60,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - indicators
 timeout: '0'

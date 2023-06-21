@@ -1,8 +1,8 @@
 args:
-  - default: true
-    isArray: true
-    name: value
-    description: An array of strings input
+- default: true
+  isArray: true
+  name: value
+  description: An array of strings input
 comment: Converts a simple Array into a textual comma separated string
 commonfields:
   id: ArrayToCSV
@@ -13,15 +13,14 @@ contentitemexportablefields:
 enabled: true
 name: ArrayToCSV
 runas: DBotWeakRole
-runonce: false
 script: ""
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.10.9.45313
 tags:
-  - transformer
-  - general
+- transformer
+- general
 type: python
 fromversion: 6.0.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)

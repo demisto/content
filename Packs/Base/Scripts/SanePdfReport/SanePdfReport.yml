@@ -1,74 +1,36 @@
 args:
 - default: true
   description: sane report json file contents base64
-  isArray: false
   name: sane_pdf_report_base64
   required: true
-  secret: false
-- default: false
-  defaultValue: portrait
+- defaultValue: portrait
   description: orientation of the report
-  isArray: false
   name: orientation
-  required: false
-  secret: false
-- default: false
-  defaultValue: A4
+- defaultValue: A4
   description: the paper size of the report
-  isArray: false
   name: paperSize
-  required: false
-  secret: false
-- default: false
-  defaultValue: '4000'
+- defaultValue: '4000'
   description: timeout for the report generation execution time
-  isArray: false
   name: resourceTimeout
-  required: false
-  secret: false
-- default: false
-  defaultValue: pdf
+- defaultValue: pdf
   description: type of report generated
-  isArray: false
   name: reportType
-  required: false
-  secret: false
-- default: false
-  description: customer's logo
-  isArray: false
+- description: customer's logo
   name: customerLogo
-  required: false
-  secret: false
-- default: false
-  description: demito's logo
-  isArray: false
+- description: demito's logo
   name: demistoLogo
-  required: false
-  secret: false
-- default: false
-  defaultValue: 'false'
+- defaultValue: 'false'
   description: flag to use headers in the report or not
-  isArray: false
   name: disableHeaders
-  required: false
-  secret: false
-- default: false
-  defaultValue: '300'
+- defaultValue: '300'
   description: table text max length
-  isArray: false
   name: tableTextMaxLength
-  required: false
-  secret: false
-- default: false
-  defaultValue: 'false'
+- defaultValue: 'false'
   predefined:
   - 'true'
   - 'false'
   description: use server preformatted time string in time section
-  isArray: false
   name: forceServerFormattedTimeString
-  required: false
-  secret: false
 comment: Parse Sane-json-reports and export them as pdf files (used internally).
 commonfields:
   id: SanePdfReports
@@ -77,7 +39,6 @@ enabled: true
 name: SanePdfReports
 script: '-'
 subtype: python3
-system: false
 tags:
 - sane-pdf-reports
 - sane-reports
@@ -86,8 +47,6 @@ timeout: '0'
 type: python
 dockerimage: demisto/sane-pdf-reports:1.0.0.62999
 runas: DBotWeakRole
-runonce: false
 tests:
 - No Test
-deprecated: false
 fromversion: 5.5.0

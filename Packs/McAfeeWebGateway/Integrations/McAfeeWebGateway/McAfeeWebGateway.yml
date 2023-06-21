@@ -25,11 +25,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: useproxy
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -118,7 +116,6 @@ script:
       required: true
       description: Entry Position in table
     description: Delete an entry from a list
-  runonce: false
 tests:
 - McAfeeWebGatewayTest
 fromversion: 5.0.0

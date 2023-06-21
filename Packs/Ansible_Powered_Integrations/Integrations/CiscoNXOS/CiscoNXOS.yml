@@ -56,7 +56,6 @@ script:
       - enabled
       - disabled
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -97,7 +96,6 @@ script:
     - description: Alternate TCP port TACACS Server or keyword 'default'.
       name: tacacs_port
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -244,7 +242,6 @@ script:
       - default
       - ef
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -273,7 +270,6 @@ script:
       - egress
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -297,7 +293,6 @@ script:
     - description: The banner text that should be present in the remote device running configuration. This argument accepts a multiline string, with no empty lines. Requires `state=present`.
       name: text
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specifies whether or not the configuration is present in the current devices active running configuration.
       name: state
@@ -367,7 +362,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -491,7 +485,6 @@ script:
     - description: Set BGP keepalive timer.
       name: timer_bgp_keepalive
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -584,7 +577,6 @@ script:
     - description: Filters routes rejected by the route-map and does not download them to the RIB.
       name: table_map_filter
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -601,8 +593,7 @@ script:
     - description: BGP autonomous system number. Valid values are string, Integer in ASPLAIN or ASDOT notation.
       name: asn
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: Name of the VRF. The name 'default' is a valid VRF representing the global bgp.
       name: vrf
     - description: Neighbor Identifier. Valid values are string. Neighbors may use IPv4 or IPv6 notation, with or without prefix length.
@@ -671,7 +662,6 @@ script:
     - description: Specify source interface of BGP session and updates.
       name: update_source
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -688,8 +678,7 @@ script:
     - description: BGP autonomous system number. Valid values are String, Integer in ASPLAIN or ASDOT notation.
       name: asn
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: Name of the VRF. The name 'default' is a valid VRF representing the global bgp.
       name: vrf
     - description: Neighbor Identifier. Valid values are string. Neighbors may use IPv4 or IPv6 notation, with or without prefix length.
@@ -794,7 +783,6 @@ script:
     - description: Weight value. Valid values are an integer value or 'default'.
       name: weight
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -815,16 +803,13 @@ script:
       required: true
     - description: Specifies what to evaluate from the output of the command and what conditionals to apply.  This argument will cause the task to wait for a particular conditional to be true before moving forward.   If the conditional is not true by the configured retries, the task fails.  See examples.
       name: wait_for
-    - default: false
-      defaultValue: all
+    - defaultValue: all
       description: The `match` argument is used in conjunction with the `wait_for` argument to specify the match policy.  Valid values are `all` or `any`.  If the value is set to `all` then all conditionals in the `wait_for` must be satisfied.  If the value is set to `any` then only one of the values must be satisfied.
       name: match
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Specifies the number of retries a command should by tried before it is considered failed.  The command is run on the target device every retry and evaluated against the `wait_for` conditionals.
       name: retries
-    - default: false
-      defaultValue: "1"
+    - defaultValue: "1"
       description: Configures the interval in seconds to wait between retries of the command.  If the command does not pass the specified conditional, the interval indicates how to long to wait before trying the command again.
       name: interval
     description: Run arbitrary command on Cisco NXOS devices
@@ -847,7 +832,6 @@ script:
     - description: The ordered set of commands to append to the end of the command stack if a change needs to be made.  Just like with `before` this allows the playbook designer to append a set of commands to be executed after the command set.
       name: after
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the matching of the set of commands against the current device config.  If match is set to `line`, commands are matched line by line.  If match is set to `strict`, command lines are matched with respect to position.  If match is set to `exact`, command lines must be an equal match.  Finally, if match is set to `none`, the module will not attempt to compare the source configuration with the running configuration on the remote device.
       name: match
@@ -857,7 +841,6 @@ script:
       - exact
       - none
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the configuration on the device.  If the replace argument is set to `line` then the modified lines are pushed to the device in configuration mode.  If the replace argument is set to `block` then the entire command block is pushed to the device in configuration mode if any line is not correct. replace `config` is supported only on Nexus 9K device.
       name: replace
@@ -865,18 +848,15 @@ script:
       - line
       - block
       - config
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: This argument will cause the module to create a full backup of the current `running-config` from the remote device before any changes are made. If the `backup_options` value is not given, the backup file is written to the `backup` folder in the playbook root directory or role root directory, if playbook is part of an ansible role. If the directory does not exist, it is created.
       name: backup
     - description: The module, by default, will connect to the remote device and retrieve the current running-config to use as a base for comparing against the contents of source.  There are times when it is not desirable to have the task get the current running-config for every task in a playbook.  The `running_config` argument allows the implementer to pass in the configuration to use as the base config for comparison.
       name: running_config
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: The `defaults` argument will influence how the running-config is collected from the device.  When the value is set to true, the command used to collect the running-config is append with the all keyword.  When the value is set to false, the command is issued without the all keyword
       name: defaults
     - auto: PREDEFINED
-      default: false
       defaultValue: never
       description: When changes are made to the device running-configuration, the changes are not copied to non-volatile storage by default.  Using this argument will change that before.  If the argument is set to `always`, then the running-config will always be copied to the startup-config and the `modified` flag will always be set to True.  If the argument is set to `modified`, then the running-config will only be copied to the startup-config if it has changed since the last save to startup-config.  If the argument is set to `never`, the running-config will never be copied to the startup-config.  If the argument is set to `changed`, then the running-config will only be copied to the startup-config if the task has made a change. `changed` was added in Ansible 2.6.
       name: save_when
@@ -886,7 +866,6 @@ script:
       - modified
       - changed
     - auto: PREDEFINED
-      default: false
       defaultValue: startup
       description: |-
         When using the `ansible-playbook --diff` command line argument the module can generate diffs against different sources.
@@ -935,7 +914,6 @@ script:
     - description: Sets the route-target 'export' extended communities.
       name: route_target_export
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -949,8 +927,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: '!config'
+    - defaultValue: '!config'
       description: When supplied, this argument will restrict the facts collected to a given subset.  Possible values for this argument include all, hardware, config, legacy, and interfaces.  Can specify a list of values to include a larger subset.  Values can also be used with an initial `M(!`) to specify that a specific subset should not be collected.
       name: gather_subset
     - description: When supplied, this argument will restrict the facts collected to a given subset. Possible values for this argument include all and the resources like interfaces, vlans etc. Can specify a list of values to include a larger subset. Values can also be used with an initial `M(!`) to specify that a specific subset should not be collected. Valid subsets are 'all', 'bfd_interfaces', 'lag_interfaces', 'telemetry', 'vlans', 'lacp', 'lacp_interfaces', 'interfaces', 'l3_interfaces', 'l2_interfaces', 'lldp_global'.
@@ -966,7 +943,6 @@ script:
       name: feature
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: enabled
       description: Desired state of the feature.
       name: state
@@ -1003,7 +979,6 @@ script:
       - any_other
       - maintenance
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1028,7 +1003,6 @@ script:
       - normal
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1049,7 +1023,6 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: "1"
       description: HSRP version.
       name: version
@@ -1075,7 +1048,6 @@ script:
       - text
       - md5
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1096,7 +1068,6 @@ script:
     - description: Restarts the igmp process (using an exec config command).
       name: restart
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -1150,12 +1121,10 @@ script:
       name: oif_source
     - description: Configure prefixes and sources for static outgoing interface (OIF). This is a list of dict where each dict has source and prefix defined or just prefix if source is not needed. The specified values will be configured on the device and if any previous prefix/sources exist, they will be removed. Keyword 'default' is also accepted which removes all existing prefix/sources.
       name: oif_ps
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Restart IGMP. This is NOT idempotent as this is action only.
       name: restart
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -1181,7 +1150,6 @@ script:
     - description: Global IGMPv3 Report Suppression and Proxy Reporting.
       name: v3_report_supp
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1201,7 +1169,6 @@ script:
     - description: Name of the kickstart image file on flash. (Not required on all Nexus platforms)
       name: kickstart_image_file
     - auto: PREDEFINED
-      default: false
       defaultValue: "no"
       description: |-
         Upgrade using In Service Software Upgrade (ISSU). (Supported on N5k, N7k, N9k platforms)
@@ -1274,7 +1241,6 @@ script:
     - description: Specifies the message_digest password. Valid value is a string.
       name: message_digest_password
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -1292,7 +1258,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -1312,7 +1277,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1332,7 +1296,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1352,7 +1315,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1371,7 +1333,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1391,7 +1352,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1408,7 +1368,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the LLDP configuration. If value is `present` lldp will be enabled else if it is `absent` it will be disabled.
       name: state
@@ -1426,7 +1385,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -1467,7 +1425,6 @@ script:
     - description: List of logging definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the logging configuration.
       name: state
@@ -1504,8 +1461,7 @@ script:
       - microseconds
       - milliseconds
       - seconds
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Remove any switch logging configuration that does not match what has been configured Not supported for ansible_connection local. All nxos-logging tasks must use the same ansible_connection type.
       name: purge
     description: Manage logging on network devices
@@ -1534,7 +1490,6 @@ script:
     - description: Local source interface from which NTP messages are sent. Must be fully qualified interface name or keyword 'default'
       name: source_int
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1553,7 +1508,6 @@ script:
     - description: MD5 String.
       name: md5string
     - auto: PREDEFINED
-      default: false
       defaultValue: text
       description: Whether the given md5string is in cleartext or has been encrypted. If in cleartext, the device will encrypt it before storing it.
       name: auth_type
@@ -1561,7 +1515,6 @@ script:
       - text
       - encrypt
     - auto: PREDEFINED
-      default: false
       defaultValue: "false"
       description: Whether the given key is required to be supplied by a time source for the device to synchronize to the time source.
       name: trusted_key
@@ -1575,7 +1528,6 @@ script:
       - "on"
       - "off"
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1596,7 +1548,6 @@ script:
     - description: Sets whether NTP logging is enabled on the device.
       name: logging
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -1610,48 +1561,38 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "80"
+    - defaultValue: "80"
       description: Configure the port with which the HTTP server will listen on for requests.  By default, NXAPI will bind the HTTP service to the standard HTTP port 80.  This argument accepts valid port values in the range of 1 to 65535.
       name: http_port
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Controls the operating state of the HTTP protocol as one of the underlying transports for NXAPI.  By default, NXAPI will enable the HTTP transport when the feature is first configured.  To disable the use of the HTTP transport, set the value of this argument to False.
       name: http
-    - default: false
-      defaultValue: "443"
+    - defaultValue: "443"
       description: Configure the port with which the HTTPS server will listen on for requests.  By default, NXAPI will bind the HTTPS service to the standard HTTPS port 443.  This argument accepts valid port values in the range of 1 to 65535.
       name: https_port
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Controls the operating state of the HTTPS protocol as one of the underlying transports for NXAPI.  By default, NXAPI will disable the HTTPS transport when the feature is first configured.  To enable the use of the HTTPS transport, set the value of this argument to True.
       name: https
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: The NXAPI feature provides a web base UI for developers for entering commands.  This feature is initially disabled when the NXAPI feature is configured for the first time.  When the `sandbox` argument is set to True, the developer sandbox URL will accept requests and when the value is set to False, the sandbox URL is unavailable. This is supported on NX-OS 7K series.
       name: sandbox
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The `state` argument controls whether or not the NXAPI feature is configured on the remote device.  When the value is `present` the NXAPI feature configuration is present in the device running-config.  When the values is `absent` the feature configuration is removed from the running-config.
       name: state
       predefined:
       - present
       - absent
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Controls the use of whether strong or weak ciphers are configured. By default, this feature is disabled and weak ciphers are configured.  To enable the use of strong ciphers, set the value of this argument to True.
       name: ssl_strong_ciphers
-    - default: false
-      defaultValue: "True"
+    - defaultValue: "True"
       description: Controls the use of the Transport Layer Security version 1.0 is configured.  By default, this feature is enabled.  To disable the use of TLSV1.0, set the value of this argument to True.
       name: tlsv1_0
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Controls the use of the Transport Layer Security version 1.1 is configured.  By default, this feature is disabled.  To enable the use of TLSV1.1, set the value of this argument to True.
       name: tlsv1_1
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Controls the use of the Transport Layer Security version 1.2 is configured.  By default, this feature is disabled.  To enable the use of TLSV1.2, set the value of this argument to True.
       name: tlsv1_2
     description: Manage NXAPI configuration on an NXOS device.
@@ -1665,7 +1606,6 @@ script:
       name: ospf
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -1679,8 +1619,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: Name of the resource instance. Valid value is a string. The name 'default' is a valid VRF representing the global OSPF.
       name: vrf
     - description: Name of the OSPF instance.
@@ -1722,7 +1661,6 @@ script:
     - description: Setting to `yes` will suppress routing update on interface.
       name: passive_interface
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of ospf vrf configuration.
       name: state
@@ -1767,8 +1705,7 @@ script:
     - description: Full name of the interface such as Ethernet1/33.
       name: interface
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Enable/disable sparse-mode on the interface.
       name: sparse
     - auto: PREDEFINED
@@ -1803,8 +1740,7 @@ script:
       predefined:
       - prefix
       - routemap
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Configures interface to be a boundary of a PIM domain.
       name: border
     - description: Configures a neighbor policy for filtering adjacencies.
@@ -1816,7 +1752,6 @@ script:
       - prefix
       - routemap
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -1842,7 +1777,6 @@ script:
     - description: Group range is treated in PIM bidirectional mode.
       name: bidir
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1861,8 +1795,7 @@ script:
     - description: IP address or hostname (resolvable by switch) of remote node.
       name: dest
       required: true
-    - default: false
-      defaultValue: "5"
+    - defaultValue: "5"
       description: Number of packets to send.
       name: count
     - description: Source IP Address or hostname (resolvable by switch)
@@ -1870,7 +1803,6 @@ script:
     - description: Outgoing VRF.
       name: vrf
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines if the expected result is success or fail.
       name: state
@@ -1884,8 +1816,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Safeguard boolean. Set to true if you're sure you want to reboot.
       name: confirm
     description: Reboot a network device.
@@ -1909,14 +1840,12 @@ script:
     - description: Name of the RPM package.
       name: pkg
       required: true
-    - default: false
-      defaultValue: bootflash
+    - defaultValue: bootflash
       description: The remote file system of the device. If omitted, devices that support a file_system parameter will use their default values.
       name: file_system
     - description: List of RPM/patch definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: If the state is present, the rpm will be installed, If the state is absent, it will be removed.
       name: state
@@ -1979,12 +1908,10 @@ script:
       name: element_key1
     - description: Specify the tags used to distinguish among row entries, to be used when `action=add`.
       name: element_key2
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Specify to locally store a new created snapshot, to be used when `action=create`.
       name: save_snapshot_locally
-    - default: false
-      defaultValue: ./
+    - defaultValue: ./
       description: Specify the path of the file where new created snapshot or snapshots comparison will be stored, to be used when `action=create` and `save_snapshot_locally=true` or `action=compare`.
       name: path
     description: Manage snapshots of the running states of selected features.
@@ -2008,7 +1935,6 @@ script:
     - description: ACL name to filter snmp requests or keyword 'default'.
       name: acl
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2026,7 +1952,6 @@ script:
       name: contact
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2060,8 +1985,7 @@ script:
       - priv
     - description: Community string or v3 username.
       name: community
-    - default: false
-      defaultValue: "162"
+    - defaultValue: "162"
       description: UDP port number (0-65535).
       name: udp
     - auto: PREDEFINED
@@ -2077,7 +2001,6 @@ script:
     - description: Source interface. Must be fully qualified interface name. If state = absent, the interface is removed.
       name: src_intf
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource. If state = present, the host is added to the configuration. If only vrf and/or vrf_filter and/or src_intf are given, they will be added to the existing host configuration. If state = absent, the host is removed if community parameter is given. It is possible to remove only vrf and/or src_int and/or vrf_filter by providing only those parameters and no community parameter.
       name: state
@@ -2095,7 +2018,6 @@ script:
       name: location
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2145,7 +2067,6 @@ script:
       - all
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: enabled
       description: Manage the state of the resource.
       name: state
@@ -2177,7 +2098,6 @@ script:
     - description: Enables AES-128 bit encryption when using privacy password.
       name: encrypt
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2197,8 +2117,7 @@ script:
     - description: Next hop address or interface of static route. If interface, it must be the fully-qualified interface name.
       name: next_hop
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: VRF for static route.
       name: vrf
     - description: Route tag value (numeric) or keyword 'default'.
@@ -2212,7 +2131,6 @@ script:
     - description: Track value (range 1 - 512). Track must already be configured on the device before adding the route.
       name: track
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2239,7 +2157,6 @@ script:
     - description: Specifies the mtu, must be an integer or keyword 'default'.
       name: system_mtu
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the configuration values in the device's current active configuration.  When set to `present`, the values should be configured in the device active configuration and when set to `absent` the values should not be in the device active configuration
       name: state
@@ -2257,7 +2174,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: Final configuration state
       name: state
@@ -2280,12 +2196,10 @@ script:
       - disabled
     - description: Message time in seconds for UDLD packets or keyword 'default'.
       name: msg_time
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Ability to reset all ports shut down by UDLD. 'state' parameter cannot be 'absent' when this is present.
       name: reset
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource. When set to 'absent', aggressive and msg_time are set to their default values.
       name: state
@@ -2311,7 +2225,6 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2332,7 +2245,6 @@ script:
     - description: The password to be configured on the network device. The password needs to be provided in cleartext and it will be encrypted on the device. Please note that this option is not same as `provider password`.
       name: configured_password
     - auto: PREDEFINED
-      default: false
       defaultValue: always
       description: Since passwords are encrypted in the device running config, this argument will instruct the module when to change the password.  When set to `always`, the password will always be updated in the device and when set to `on_create` the password will be updated only if the username is created.
       name: update_password
@@ -2343,12 +2255,10 @@ script:
       name: role
     - description: The `sshkey` argument defines the SSH public key to configure for the username.  This argument accepts a valid SSH key value.
       name: sshkey
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: The `purge` argument instructs the module to consider the resource definition absolute.  It will remove any previously configured usernames on the device with the exception of the `admin` user which cannot be deleted per nxos constraints.
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The `state` argument configures the state of the username definition as it relates to the device operational configuration.  When set to `present`, the username(s) should be configured in the device active configuration and when set to `absent` the username(s) should not be in the device active configuration
       name: state
@@ -2366,7 +2276,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -2395,8 +2304,7 @@ script:
         Destination (remote) IP address used for peer keepalive link
         pkl_dest is required whenever pkl options are used.
       name: pkl_dest
-    - default: false
-      defaultValue: management
+    - defaultValue: management
       description: |-
         VRF used for peer keepalive link
         The VRF must exist on the device before using pkl_vrf.
@@ -2445,7 +2353,6 @@ script:
     - description: Set to true/false for peer link config on associated portchannel.
       name: peer_link
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -2464,7 +2371,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: up
       description: Administrative state of the VRF.
       name: admin_state
@@ -2481,12 +2387,10 @@ script:
       name: associated_interfaces
     - description: List of VRFs definitions.
       name: aggregate
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: Purge VRFs not defined in the `aggregate` parameter.
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -2495,8 +2399,7 @@ script:
       - absent
     - description: Description of the VRF or keyword 'default'.
       name: description
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Time in seconds to wait before checking for the operational state on remote device. This wait is applicable for operational state arguments.
       name: delay
     description: Manages global VRF configuration.
@@ -2519,7 +2422,6 @@ script:
     - description: Enable/Disable the EVPN route-target 'auto' setting for both import and export target communities.
       name: route_target_both_auto_evpn
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -2540,7 +2442,6 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -2560,16 +2461,13 @@ script:
     - description: Full name of interface that is being managed for VRRP.
       name: interface
       required: true
-    - default: false
-      defaultValue: "1"
+    - defaultValue: "1"
       description: Time interval between advertisement or 'default' keyword
       name: interval
-    - default: false
-      defaultValue: "100"
+    - defaultValue: "100"
       description: VRRP priority or 'default' keyword
       name: priority
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: "yes"
       description: Enable/Disable preempt.
       name: preempt
     - description: VRRP virtual IP address or 'default' keyword
@@ -2577,7 +2475,6 @@ script:
     - description: Clear text authentication string or 'default' keyword
       name: authentication
     - auto: PREDEFINED
-      default: false
       defaultValue: shutdown
       description: Used to enable or disable the VRRP process.
       name: admin_state
@@ -2586,7 +2483,6 @@ script:
       - no shutdown
       - default
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -2613,7 +2509,6 @@ script:
     - description: VTP password
       name: vtp_password
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource
       name: state
@@ -2663,7 +2558,6 @@ script:
     - description: Configures ingress replication protocol as bgp for all VNIs This is available on NX-OS 9K series running 9.2.x or higher.
       name: global_ingress_replication_bgp
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -2701,7 +2595,6 @@ script:
     - description: Overrides the global ARP suppression config. This is available on NX-OS 9K series running 9.2.x or higher.
       name: suppress_arp_disable
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
@@ -2711,7 +2604,6 @@ script:
     description: Creates a Virtual Network Identifier member (VNI)
     name: nxos-vxlan-vtep-vni
   dockerimage: demisto/ansible-runner:1.0.0.21184
-  runonce: false
   script: ''
   subtype: python3
   type: python

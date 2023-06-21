@@ -8,7 +8,6 @@ dockerimage: demisto/python3:3.10.6.33415
 enabled: true
 name: EmailSLABreach
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

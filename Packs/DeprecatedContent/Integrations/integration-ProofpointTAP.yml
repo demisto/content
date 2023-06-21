@@ -27,35 +27,28 @@ configuration:
   name: threatType
   defaultvalue: ""
   type: 0
-  required: false
 - display: 'A string specifying which threat statuses will be returned in the data. If no value is specified, active and cleared threats are returned. The following values are accepted: active, cleared, falsePositive'
   name: threatStatus
   defaultvalue: ""
   type: 0
-  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Events to fetch (All, Issues, Blocked Clicks,  Permitted Clicks,  Blocked Messages, Delivered Messages)
   name: eventTypes
   defaultvalue: All
   type: 0
-  required: false
 script:
   script: >-
     /**
@@ -478,7 +471,6 @@ script:
       defaultValue: All
     description: Fetch events for all click and message relating to known threats within the specified time period. Details as per clicks/blocked.
   isfetch: true
-  runonce: false
 tests:
 - No test
 fromversion: 5.0.0

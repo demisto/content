@@ -22,37 +22,31 @@ configuration:
   name: file_threshold
   defaultvalue: "65"
   type: 0
-  required: false
 - display: CVE Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the CVE malicious.
   name: cve_threshold
   defaultvalue: "65"
   type: 0
-  required: false
 - display: IP Threshold
   additionalinfo: Minimum risk score from RF to consider the IP malicious.
   name: ip_threshold
   defaultvalue: "65"
   type: 0
-  required: false
 - display: Domain Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the domain malicious.
   name: domain_threshold
   defaultvalue: "65"
   type: 0
-  required: false
 - display: URL Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the URL malicious.
   name: url_threshold
   defaultvalue: "65"
   type: 0
-  required: false
 - display: Vulnerability Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the vulnerability critical.
   name: vulnerability_threshold
   defaultvalue: "65"
   type: 0
-  required: false
 - display: Collective Insights
   name: collective_insights
   defaultvalue: "On"
@@ -66,48 +60,39 @@ configuration:
   name: unsecure
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   defaultvalue: "false"
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
 - display: Rule names to fetch alerts by
   additionalinfo: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.
   name: rule_names
-  required: false
   type: 12
 - display: Alert Statuses to include in the fetch
   name: fetch_statuses
-  required: false
   type: 0
   additionalinfo: 'Comma-separated alert statuses (e.g. "unassigned,assigned,pending,actionable,no-action,tuning"). If empty, the default value of "no-action" will be used.'
   defaultvalue: "no-action"
 - display: Update alert status on fetch.
   name: update_status
   defaultvalue: "true"
-  required: false
   type: 8
   additionalinfo: If selected, alerts with a status of 'no-action' will be updated to 'pending' once fetched by the integration.
 - display: First fetch time
   additionalinfo: 'Format: <number> <time unit>, e.g., "12 hours", "7 days", "3 months", "1 year".'
   defaultvalue: 24 hours
   name: first_fetch
-  required: false
   type: 0
 - name: incidentType
   display: 'Incident type'
-  required: false
   type: 13
   defaultvalue: Recorded Future Alert
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
-  required: false
   type: 0
 - display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
@@ -121,7 +106,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 - name: feedExpirationPolicy
   display: ''
@@ -131,17 +115,14 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
 - display: Incidents Fetch Interval
   name: feedExpirationInterval
   defaultvalue: "20160"
-  required: false
   type: 1
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
-  required: false
   type: 19
 script:
   script: '-'
@@ -622,7 +603,6 @@ script:
     arguments:
     - name: profile
       description: Depending on what profile you choose you will get different related entities matching the given profile.
-      required: false
       auto: PREDEFINED
       defaultValue: "All"
       predefined:
@@ -651,18 +631,15 @@ script:
       - yes
       - no
       description: Whether to fetch related entity data. Can be "yes" or "no".
-      required: false
     - name: fetch_analyst_notes
       auto: PREDEFINED
       predefined:
       - yes
       - no
       description: Whether to fetch analyst notes. Can be "yes" or "no".
-      required: false
       defaultValue: "no"
     - name: fetch_riskyCIDRips
       auto: PREDEFINED
-      required: false
       predefined:
       - no
       - yes
@@ -2809,10 +2786,8 @@ script:
     description: Search for a malware by specified filters.
     arguments:
     - name: freetext
-      required: false
       description: Part of malware name or ID to search for.
     - name: limit
-      required: false
       description: How many records to retrieve (default = 10).
     outputs:
     - contextPath: RecordedFuture.Malware.id
@@ -2829,7 +2804,6 @@ script:
       type: date
 
   isfetch: true
-  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0

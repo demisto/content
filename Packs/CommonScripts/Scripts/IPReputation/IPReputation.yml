@@ -15,7 +15,6 @@ args:
   default: true
   description: IP address to look up
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 marketplaces:
 - xsoar

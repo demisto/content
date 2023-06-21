@@ -29,12 +29,10 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 script:
   script: >-
     //DICTIONARIES//
@@ -1223,6 +1221,5 @@ script:
       - pdf
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Deprecated, use detonate playbook instead
-  runonce: false
 tests:
 - No test

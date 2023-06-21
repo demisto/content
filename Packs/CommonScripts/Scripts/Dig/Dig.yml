@@ -19,7 +19,6 @@ commonfields:
 dockerimage: demisto/netutils:1.0.0.43061
 enabled: true
 name: Dig
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

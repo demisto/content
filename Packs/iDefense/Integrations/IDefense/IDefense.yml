@@ -21,12 +21,10 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: ""
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -165,5 +163,4 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
     description: Get specific indicator reputation
-  runonce: false
 fromversion: 5.0.0

@@ -9,7 +9,6 @@ commonfields:
   version: -1
 name: ShowCampaignIncidentsOwners
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'

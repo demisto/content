@@ -8,7 +8,6 @@ args:
   description: Input list.
   isArray: true
 - name: current
-  required: false
   description: Current aggregation state.
   isArray: true
 outputs:
@@ -31,7 +30,6 @@ outputs:
   description: The CI Asset value
   type: string
 script: '-'
-system: false
 tags: []
 timeout: '0'
 type: python

@@ -13,11 +13,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - defaultvalue: default
   display: Viper Project
@@ -42,7 +40,6 @@ script:
     description: Search for sample with file hash
     name: viper-search
   dockerimage: demisto/python3:3.9.8.24399
-  runonce: false
   script: ''
   subtype: python3
   type: python

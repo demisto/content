@@ -1,17 +1,11 @@
 args:
 - default: true
   description: The data for which to calculate entropy.
-  isArray: false
   name: data
   required: true
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: The minimum entropy value. Default is 0.
-  isArray: false
   name: minimum_entropy
-  required: false
-  secret: false
 comment: Calculates the entropy for the given data.
 commonfields:
   id: CalculateEntropy
@@ -26,7 +20,6 @@ outputs:
   type: Number
 script: '-'
 subtype: python3
-system: false
 tags:
 - entropy
 timeout: '0'

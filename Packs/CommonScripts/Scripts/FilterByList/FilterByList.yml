@@ -3,44 +3,26 @@ args:
   description: The item to look for in the list.
   isArray: true
   name: values
-  required: false
-  secret: false
-- default: false
-  defaultValue: Indicators Whitelist
+- defaultValue: Indicators Whitelist
   description: Name of the list against which to check the value. The default is the Indicators Whitelist.
-  isArray: false
   name: listname
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'No'
   description: Whether to ignore the case of the item for which you are searching. Default is "No".
-  isArray: false
   name: ignorecase
   predefined:
   - 'yes'
   - 'no'
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'No'
   description: Whether to match the exact item in the list, or look for any string that contains it. Default is "No".
-  isArray: false
   name: matchexact
   predefined:
   - 'yes'
   - 'no'
-  required: false
-  secret: false
-- default: false
-  defaultValue: ','
+- defaultValue: ','
   description: A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
-  isArray: false
   name: delimiter
-  required: false
-  secret: false
 comment: Checks whether the specified item is in a list. The default list is the Demisto Indicators Whitelist.
 commonfields:
   id: FilterByList
@@ -59,13 +41,11 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - whitelist
 timeout: '0'
 type: python
 runas: DBotWeakRole
-runonce: false
 tests:
 - FilterByList - Test
 fromversion: 5.0.0

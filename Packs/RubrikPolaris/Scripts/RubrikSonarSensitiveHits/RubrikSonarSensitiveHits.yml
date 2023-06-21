@@ -5,7 +5,6 @@ commonfields:
 dockerimage: demisto/python3:3.10.11.61265
 name: RubrikSonarSensitiveHits
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

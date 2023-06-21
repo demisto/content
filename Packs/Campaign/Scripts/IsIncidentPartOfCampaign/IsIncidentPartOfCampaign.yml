@@ -22,7 +22,6 @@ outputs:
   description: The incident campaign's ID for the campaign that is linked to at least one  of the given incidents.
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.11.54132
 fromversion: 5.5.0
 tests:

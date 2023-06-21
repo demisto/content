@@ -16,11 +16,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Integration to pull assets and other ASM related information.
 display: Cortex Attack Surface Management
@@ -371,7 +369,6 @@ script:
       description: Date the rule was created.
       type: Date
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   script: ''
   subtype: python3
   type: python

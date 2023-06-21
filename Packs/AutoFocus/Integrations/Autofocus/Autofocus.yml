@@ -5,9 +5,7 @@ name: Autofocus
 display: Palo Alto AutoFocus (Deprecated)
 deprecated: true
 category: Data Enrichment & Threat Intelligence
-description: Deprecated. Use the Palo Alto Networks AutoFocus v2 integration instead.
-  Palo Alto Networks AutoFocus enables you to distinguish the most important threats
-  from everyday commodity attacks.
+description: Deprecated. Use the Palo Alto Networks AutoFocus v2 integration instead. Palo Alto Networks AutoFocus enables you to distinguish the most important threats from everyday commodity attacks.
 configuration:
 - display: Server URL
   name: server
@@ -28,12 +26,10 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -250,19 +246,10 @@ script:
       description: Should we display coverage
       defaultValue: "true"
     - name: sections
-      description: 'comma-separated list of sections to display: apk_app_icon, apk_app_name,
-        apk_cert_file, apk_certificate_id, apk_defined_activity, apk_defined_intent_filter,
-        apk_defined_receiver, apk_defined_sensor, apk_defined_service, apk_digital_signer,
-        apk_embedded_library, apk_embeded_url, apk_internal_file, apk_isrepackaged,
-        apk_packagename, apk_requested_permission, apk_sensitive_api_call, apk_suspicious_behavior,
-        apk_suspicious_file, apk_suspicious_pattern, apk_suspicious_action_monitored,
-        apk_suspicious_file, apk_suspicious_string, apk_version_num, behavior_type,
-        connection, coverage, dns, file, http, japi, mac_embedded_url, misc, mutex,
-        process, registry, service, user_agent'
+      description: 'comma-separated list of sections to display: apk_app_icon, apk_app_name, apk_cert_file, apk_certificate_id, apk_defined_activity, apk_defined_intent_filter, apk_defined_receiver, apk_defined_sensor, apk_defined_service, apk_digital_signer, apk_embedded_library, apk_embeded_url, apk_internal_file, apk_isrepackaged, apk_packagename, apk_requested_permission, apk_sensitive_api_call, apk_suspicious_behavior, apk_suspicious_file, apk_suspicious_pattern, apk_suspicious_action_monitored, apk_suspicious_file, apk_suspicious_string, apk_version_num, behavior_type, connection, coverage, dns, file, http, japi, mac_embedded_url, misc, mutex, process, registry, service, user_agent'
       defaultValue: file
     - name: platforms
-      description: 'comma-separated list of platforms: win7, winxp, android, staticAnalyzer,
-        mac'
+      description: 'comma-separated list of platforms: win7, winxp, android, staticAnalyzer, mac'
     description: Retrieve the sample analysis
   - name: file
     arguments:
@@ -302,7 +289,6 @@ script:
       description: The reason for the score (if any)
       type: string
     description: Check file reputation of the given hash
-  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0

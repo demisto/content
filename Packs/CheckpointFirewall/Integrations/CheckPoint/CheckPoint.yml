@@ -5,8 +5,7 @@ name: Check Point
 display: Check Point Firewall (Deprecated)
 deprecated: true
 category: Network Security
-description: Deprecated. Use the Check Point Firewall v2 integration instead. Manage
-  Check Point firewall via API
+description: Deprecated. Use the Check Point Firewall v2 integration instead. Manage Check Point firewall via API
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -27,12 +26,10 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -55,9 +52,7 @@ script:
       description: Type of the object
       type: string
     - contextPath: CheckpointFWRule.Action
-      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
-        depends on the details-level field of the request. This table shows the level
-        of detail shown when details-level is set to standard
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.ActionSetting
       description: Action settings
@@ -66,9 +61,7 @@ script:
       description: Custom fields
       type: string
     - contextPath: CheckpointFWRule.Data
-      description: How much details are returned depends on the details-level field
-        of the request. This table shows the level of detail shown when details-level
-        is set to standard
+      description: How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.Data.Name
       description: Object name. Should be unique in domain.
@@ -89,9 +82,7 @@ script:
       description: True if negate is set for data
       type: string
     - contextPath: CheckpointFWRule.Destination
-      description: Collection of Network objects identified by the name or UID. How
-        much details are returned depends on the details-level field of the request.
-        This table shows the level of detail shown when details-level is set to standard
+      description: Collection of Network objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.DestinationNegate
       description: True if negate is set for destination.
@@ -154,9 +145,7 @@ script:
       description: Type of the object
       type: string
     - contextPath: CheckpointFWRule.Action
-      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
-        depends on the details-level field of the request. This table shows the level
-        of detail shown when details-level is set to standard
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.ActionSetting
       description: Action settings
@@ -165,9 +154,7 @@ script:
       description: Custom fields
       type: string
     - contextPath: CheckpointFWRule.Data
-      description: How much details are returned depends on the details-level field
-        of the request. This table shows the level of detail shown when details-level
-        is set  to standard
+      description: How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set  to standard
       type: string
     - contextPath: CheckpointFWRule.Data.Name
       description: Object name. Should be unique in domain
@@ -188,9 +175,7 @@ script:
       description: True if negate is set for data
       type: string
     - contextPath: CheckpointFWRule.Destination
-      description: Collection of Network objects identified by the name or UID. How
-        much details are returned depends on the details-level field of the request.
-        This table shows the level of detail shown when details-level is set to standard
+      description: Collection of Network objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.DestinationNegate
       description: True if negate is set for destination
@@ -228,8 +213,7 @@ script:
     - contextPath: CheckpointFWRule.Hits.Value
       description: Value of hits
       type: string
-    description: Set attributes of an access rule object configured in Checkpoint
-      FW
+    description: Set attributes of an access rule object configured in Checkpoint FW
   - name: checkpoint-task-status
     arguments:
     - name: task_id
@@ -258,8 +242,7 @@ script:
       description: Domain type
       type: string
     - contextPath: CheckpointFWTask.LastUpdateTime
-      description: Last update date and time represented in international ISO 8601
-        format
+      description: Last update date and time represented in international ISO 8601 format
       type: string
     - contextPath: CheckpointFWTask.MetaInfo.CreationTime
       description: Object creation time
@@ -274,8 +257,7 @@ script:
       description: Object last modification time
       type: string
     - contextPath: CheckpointFWTask.MetaInfo.LockStatus
-      description: Object lock state. It's not allowed to edit objects locked by other
-        session.
+      description: Object lock state. It's not allowed to edit objects locked by other session.
       type: string
     - contextPath: CheckpointFWTask.MetaInfo.ValidationStatus
       description: Object validation state - ok, info, warning, error
@@ -287,8 +269,7 @@ script:
       description: Read only
       type: string
     - contextPath: CheckpointFWTask.StartTime
-      description: Start time date and time represented in international ISO 8601
-        format.
+      description: Start time date and time represented in international ISO 8601 format.
       type: string
     - contextPath: CheckpointFWTask.Status
       description: Task status
@@ -297,14 +278,10 @@ script:
       description: Is suppressed
       type: string
     - contextPath: CheckpointFWTask.Tags
-      description: Collection of tag objects identified by the name or UID. How much
-        details are returned depends on the details-level field of the request. This
-        table shows the level of detail shown when details-level is set to standard
+      description: Collection of tag objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWTask.Details
-      description: Task details. How much details are returned depends on the details-level
-        field of the request. This table shows the level of detail shown when details-level
-        is set to standard
+      description: Task details. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWTask.ID
       description: Asynchronous task unique identifier
@@ -359,10 +336,8 @@ script:
       - to
       - from
       - both
-      description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is
-        "both".
+      description: Whether to block traffic "to" or "from" the IPs, or "both". Default     is "both".
     - name: rulename
-      required: false
       description: Base name for added rules inside checkpoint db
       deprecated: true
     - name: ipname
@@ -379,9 +354,7 @@ script:
       description: Type of the object
       type: string
     - contextPath: CheckpointFWRule.Action
-      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
-        depends on the details-level field of the request. This table shows the level
-        of detail shown when details-level is set to standard
+      description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.ActionSetting
       description: Action settings
@@ -390,9 +363,7 @@ script:
       description: Custom fields
       type: string
     - contextPath: CheckpointFWRule.Data
-      description: How much details are returned depends on the details-level field
-        of the request. This table shows the level of detail shown when details-level
-        is set to standard
+      description: How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.Data.Name
       description: Object name. Should be unique in domain
@@ -413,9 +384,7 @@ script:
       description: True if negate is set for data
       type: string
     - contextPath: CheckpointFWRule.Destination
-      description: Collection of Network objects identified by the name or UID. How
-        much details are returned depends on the details-level field of the request.
-        This table shows the level of detail shown when details-level is set to standard
+      description: Collection of Network objects identified by the name or UID. How much details are returned depends on the details-level field of the request. This table shows the level of detail shown when details-level is set to standard
       type: string
     - contextPath: CheckpointFWRule.DestinationNegate
       description: True if negate is set for destination
@@ -456,8 +425,7 @@ script:
     description: Block one or more IP addresses using Checkpoint Firewall
   - name: checkpoint
     arguments: []
-    description: Use Check Point's Management API (requires management server R80
-      or later). Specifying 'command'=<API command> is mandatory
+    description: Use Check Point's Management API (requires management server R80 or later). Specifying 'command'=<API command> is mandatory
   - name: checkpoint-delete-rule
     arguments:
     - name: uid
@@ -469,7 +437,6 @@ script:
       default: true
       description: e.g. Network
     description: Delete rule from firewall
-  runonce: false
 tests:
 - No tests - deprecated
 fromversion: 5.0.0

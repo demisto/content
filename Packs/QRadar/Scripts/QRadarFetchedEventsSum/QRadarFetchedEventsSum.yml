@@ -1,5 +1,4 @@
-comment: This display the amount of fetched events vs the total amount of events in
-  the offense.
+comment: This display the amount of fetched events vs the total amount of events in the offense.
 commonfields:
   id: QRadarFetchedEventsSum
   version: -1
@@ -7,7 +6,6 @@ dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: QRadarFetchedEventsSum
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

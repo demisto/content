@@ -20,11 +20,9 @@ configuration:
   name: proxy
   defaultvalue: ""
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 script:
   script: ''
   type: javascript

@@ -22,10 +22,9 @@ args:
   default: true
   description: Message to send
 scripttarget: 0
-runonce: false
 tests:
 - No test
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2

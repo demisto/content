@@ -2,8 +2,7 @@ args:
 - description: CSV of role names to enumerate
   name: roles
   required: true
-comment: The script will enumerate any provided role names and output the list of
-  users for each role.
+comment: The script will enumerate any provided role names and output the list of users for each role.
 commonfields:
   id: EnumerateRoles
   version: -1
@@ -18,7 +17,6 @@ outputs:
   description: List of users in the role
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

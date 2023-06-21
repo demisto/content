@@ -4,8 +4,7 @@ commonfields:
 name: Windows Remote Management
 display: Windows Remote Management (Beta)
 category: Endpoint
-description: Uses the Python pywinrm library and commands to execute either a process
-  or using Powershell scripts.
+description: Uses the Python pywinrm library and commands to execute either a process or using Powershell scripts.
 configuration:
 - display: Credentials
   name: credentials
@@ -25,13 +24,11 @@ configuration:
 - display: Realm
   name: realm
   type: 0
-  required: false
   additionalinfo: Default realm to use for Kerberos based authentication
 - display: Decode codec (default is utf_8)
   name: decode
   defaultvalue: utf_8
   type: 15
-  required: false
   options:
   - ascii
   - big5
@@ -126,8 +123,7 @@ script:
   - name: winrm-run-process
     arguments:
     - name: hostname
-      description: The hostname to run the command on. This will override the default
-        hostname specified in the instance.
+      description: The hostname to run the command on. This will override the default hostname specified in the instance.
     - name: command
       required: true
       description: Command to execute
@@ -221,8 +217,7 @@ script:
       - utf_16_le
       - utf_7
       - utf_8
-      description: Decode codec to use when decoding command outputs (overrides value
-        set in the instance)
+      description: Decode codec to use when decoding command outputs (overrides value set in the instance)
     outputs:
     - contextPath: WinRM.Process
       description: Process object of the WinRM command
@@ -237,11 +232,9 @@ script:
   - name: winrm-run-powershell
     arguments:
     - name: hostname
-      description: The hostname to run the command on. This will override the default
-        hostname specified in the instance.
+      description: The hostname to run the command on. This will override the default hostname specified in the instance.
     - name: entryID
-      description: The entry ID of the powershell script to run (overrides scriptname
-        and script)
+      description: The entry ID of the powershell script to run (overrides scriptname and script)
     - name: script
       description: The powershell script to execute (requires code, not a file input)
     - name: scriptname
@@ -334,8 +327,7 @@ script:
       - utf_16_le
       - utf_7
       - utf_8
-      description: Decode codec to use when decoding command outputs (overrides value
-        set in the instance)
+      description: Decode codec to use when decoding command outputs (overrides value set in the instance)
     outputs:
     - contextPath: WinRM.Powershell.Output
       description: STDOUT of the WinRM command
@@ -345,7 +337,6 @@ script:
       description: Status code of the WInRM command
     description: Executes a Powershell script on the endpoint
   dockerimage: demisto/winrm:1.0.0.13142
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

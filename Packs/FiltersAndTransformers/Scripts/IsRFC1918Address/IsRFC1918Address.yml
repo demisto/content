@@ -11,14 +11,11 @@ comment: A filter that determines whether an IPv4 address is in the private RFC-
 enabled: true
 args:
 - name: value
-  required: false
   default: true
   description: The IPv4 address to check.
 - name: left
-  required: false
   description: The IPv4 address to check (can be used instead of the value argument).
 scripttarget: 0
-runonce: false
 dockerimage: demisto/netutils:1.0.0.24101
 runas: DBotWeakRole
 tests:

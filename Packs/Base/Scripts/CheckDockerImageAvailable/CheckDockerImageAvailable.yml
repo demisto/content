@@ -27,7 +27,6 @@ args:
   description: Trust any certificate (not secure)
   defaultValue: "no"
 scripttarget: 0
-runonce: false
 tests:
 - CheckDockerImageAvailableTest
 runas: DBotWeakRole

@@ -3,20 +3,13 @@ args:
   default: true
   defaultValue: 'false'
   description: Whether to retrieve all users, including users who are out of the office. If "true" will retrieve all users. If "false", will only retrieve users who are not out of office. Default is "false".
-  isArray: false
   name: include_OOO_users
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
-- default: false
-  defaultValue: OOO List
+- defaultValue: OOO List
   description: The name of the out-of-office XSOAR list. Default is "OOO List".
-  isArray: false
   name: listname
-  required: false
-  secret: false
 comment: Retrieves users who are currently on call.
 commonfields:
   id: GetUsersOnCall
@@ -24,7 +17,6 @@ commonfields:
 name: GetUsersOnCall
 script: '-'
 subtype: python3
-system: false
 tags:
 - Shift Management
 - widget

@@ -1,10 +1,7 @@
 args:
-- default: false
-  description: The compliance alert raw JSON
-  isArray: false
+- description: The compliance alert raw JSON
   name: alert_raw_json
   required: true
-  secret: false
 tags:
 - Prisma Cloud Compute
 comment: Parse Cloud Discovery alert raw JSON data
@@ -93,7 +90,6 @@ outputs:
   type: Date
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.10.48392

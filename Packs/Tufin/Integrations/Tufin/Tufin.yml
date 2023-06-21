@@ -20,36 +20,29 @@ configuration:
   name: SecureChange-Server
   defaultvalue: ""
   type: 0
-  required: false
 - display: SecureChange User Credentials
   name: SecureChange-User
   defaultvalue: ""
   type: 9
-  required: false
 - display: SecureApp IP or FQDN
   name: SecureApp-Server
   defaultvalue: ""
   type: 0
-  required: false
 - display: SecureApp User Credentials
   name: SecureApp-User
   defaultvalue: ""
   type: 9
-  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Maximum number of rules returned from device durring a policy search
   name: MaxRules
   defaultvalue: "100"
   type: 0
-  required: false
 script:
   script: ''
   type: python
@@ -281,8 +274,7 @@ script:
       type: string
     description: Get SecureApp application connections
   dockerimage: demisto/netutils:1.0.0.24101
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:
-  - no tests
+- no tests

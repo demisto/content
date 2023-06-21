@@ -76,7 +76,6 @@ outputs:
   description: Authority country
   type: string
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 dockerimage: demisto/python3:3.9.8.24399
 subtype: python3

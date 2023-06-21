@@ -26,8 +26,7 @@ args:
   - "4"
   description: The incident severity to increase the incident to. Can be "Unknown", "Informational", "Low", "Medium", "High", "Critical", "0", "0.5", "1", "2", "3", or "4".
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
-  - IncreaseIncidentSeverity-Test
+- IncreaseIncidentSeverity-Test

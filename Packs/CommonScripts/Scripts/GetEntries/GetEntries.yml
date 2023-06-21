@@ -32,7 +32,6 @@ outputs:
   description: Last modified time of the entry
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.7.33922
 runas: DBotWeakRole
 fromversion: 6.5.0

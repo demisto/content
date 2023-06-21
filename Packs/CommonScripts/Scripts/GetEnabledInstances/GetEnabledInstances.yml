@@ -9,7 +9,6 @@ outputs:
 - contextPath: EnabledInstances
   description: A list of integration instance names that are currently enabled.
 runas: DBotRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

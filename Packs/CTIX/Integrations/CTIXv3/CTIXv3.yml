@@ -25,11 +25,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -42,7 +40,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
 script:
   script: ""
@@ -1184,11 +1181,9 @@ script:
     - name: source
       type: string
       description: The source of the threat data
-      required: false
     - name: collection
       type: string
       description: The collection to store the threat data in
-      required: false
     outputs:
     - contextPath: CTIX.ThreatDataGetCreate.Found.analyst_score
       description: Analyst score of the indicator
@@ -1408,8 +1403,6 @@ script:
     arguments:
     - name: object_id
       description: if set, this will only retrieve Notes associated with the Threat Data object with ID=`object_id`
-      required: false
-      isArray: false
     - name: page
       description: the page number of the Notes to look up, default is the first page
       defaultValue: "1"
@@ -1484,7 +1477,6 @@ script:
     - name: id
       description: "the id of the Note"
       required: true
-      isArray: false
       default: true
     outputs:
     - contextPath: CTIX.Note.created
@@ -1553,15 +1545,11 @@ script:
     - name: text
       description: the text that you want the note to have
       required: true
-      isArray: false
       default: true
     - name: object_id
       description: if set, will associate Note to the Threat Data object with the provided ID
-      required: false
-      isArray: false
     - name: object_type
       description: only required if `object_id` is set, used to specify the type of object `object_id` is
-      required: false
       auto: PREDEFINED
       predefined:
       - indicator
@@ -1651,19 +1639,13 @@ script:
     - name: id
       description: "the id of the Note"
       required: true
-      isArray: false
       default: true
     - name: text
       description: the updated text that you want the note to have
-      required: false
-      isArray: false
     - name: object_id
       description: if set, will associate Note to the Threat Data object with the provided ID
-      required: false
-      isArray: false
     - name: object_type
       description: only required if `object_id` is set, used to specify the type of object `object_id` is
-      required: false
       auto: PREDEFINED
       predefined:
       - indicator
@@ -1753,7 +1735,6 @@ script:
     - name: id
       description: "the id of the Note"
       required: true
-      isArray: false
       default: true
     outputs:
     - contextPath: CTIX.Note.deletion.details
@@ -1774,16 +1755,11 @@ script:
       - DELETE
     - name: endpoint
       description: URL suffix of the API call to CTIX
-      isArray: false
       required: true
     - name: body
       description: any data you would like to pass, in JSON format
-      isArray: false
-      required: false
     - name: params
       description: any parameters you would like to pass, in JSON format
-      isArray: false
-      required: false
   - name: ctix-get-vulnerability-data
     description: Lookup vulnerability info
     arguments:
@@ -1794,7 +1770,6 @@ script:
       default: true
     - name: extra_fields
       description: "A comma separated list of extra fields to return in the response"
-      required: false
       isArray: true
     outputs:
     - contextPath: CTIX.VulnerabilityLookup.cpes
@@ -1837,7 +1812,6 @@ script:
       default: true
     - name: extra_fields
       description: "A comma separated list of extra fields to return in the response"
-      required: false
       isArray: true
     outputs:
     - contextPath: CTIX.VulnerabilityLookup.cpes
@@ -1883,7 +1857,6 @@ script:
       description: The actual score.
       type: Number
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   subtype: python3
 tests:
 - No tests (auto formatted)

@@ -33,7 +33,6 @@ args:
   description: Indicates whether to use one-time entitlement or a persistent one
   defaultValue: "false"
 scripttarget: 0
-runonce: false
 dependson:
   must:
   - mattermost-send

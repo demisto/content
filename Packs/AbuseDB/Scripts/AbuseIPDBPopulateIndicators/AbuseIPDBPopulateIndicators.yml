@@ -24,7 +24,6 @@ dependson:
   - '|||abuseipdb-get-blacklist'
   - Builtin|||createNewIndicator
 timeout: 900ns
-runonce: false
 runas: DBotWeakRole
 tests:
 - AbuseIPDB PopulateIndicators Test

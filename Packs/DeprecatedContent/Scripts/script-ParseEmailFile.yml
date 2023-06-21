@@ -3441,7 +3441,6 @@ args:
   default: true
   description: Entry ID with the Email as a file in msg or eml format
 scripttarget: 0
-runonce: false
 deprecated: true
 runas: DBotWeakRole
 fromversion: 5.0.0

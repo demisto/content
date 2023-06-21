@@ -21,7 +21,6 @@ dockerimage: demisto/python3:3.10.11.54132
 enabled: true
 name: ConvertUTCEpochTimeToTimeStamp
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -11,8 +11,7 @@ configuration:
   defaultvalue: use.cloudshare.com
   type: 0
   required: true
-  additionalinfo: This is usually use.cloudshare.com unless your using some mock or
-    proxy
+  additionalinfo: This is usually use.cloudshare.com unless your using some mock or proxy
 - display: API ID
   name: api_id
   type: 4
@@ -26,11 +25,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -52,20 +49,15 @@ script:
       description: Returns all environments visible to the user.
       defaultValue: "false"
     - name: ownerEmail
-      description: Optional. Filters results by the environment owner's email address,
-        where {ownerEmail} is the environment owner's email address.
+      description: Optional. Filters results by the environment owner's email address, where {ownerEmail} is the environment owner's email address.
     - name: classId
-      description: Optional. Filters results to include only environments created
-        for a specified class, including instructor and student environments, where
-        {classId} is the ID of the class.
+      description: Optional. Filters results to include only environments created for a specified class, including instructor and student environments, where {classId} is the ID of the class.
     - name: brief
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: 'Optional. Whether to return a less detailed or more detailed response.
-        {brief_value} can be: true (default) - Returns less detail. false - Returns
-        more detail.'
+      description: 'Optional. Whether to return a less detailed or more detailed response. {brief_value} can be: true (default) - Returns less detail. false - Returns more detail.'
       defaultValue: "true"
     outputs:
     - contextPath: CloudShare.Environments.projectId
@@ -120,9 +112,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Returns only projects in which the user is allowed to create a
-        class. The minimum user level allowed to create classes is set per project
-        and can be changed by project manager users.
+      description: Returns only projects in which the user is allowed to create a class. The minimum user level allowed to create classes is set per project and can be changed by project manager users.
       defaultValue: "false"
     outputs:
     - contextPath: CloudShare.Projects.name
@@ -211,28 +201,20 @@ script:
     - contextPath: CloudShare.Project.Policies.projectId
       description: Project ID
       type: string
-    description: Retrieves all environment policies available in a specified project.
-      Environment policies define how long an environment will run, when it will be
-      deleted, and what happens to it when it has been idle for a certain length of
-      time.
+    description: Retrieves all environment policies available in a specified project. Environment policies define how long an environment will run, when it will be deleted, and what happens to it when it has been idle for a certain length of time.
   - name: cloudshare-get-project-blueprints
     arguments:
     - name: projectId
       required: true
       description: The Id of the project.
     - name: regionId
-      description: The ID of a region. Returns all blueprints that have default snapshots
-        on the specified region.  If unspecified, returns all blueprints in the project
-        on all regions.
+      description: The ID of a region. Returns all blueprints that have default snapshots on the specified region.  If unspecified, returns all blueprints in the project on all regions.
     - name: defaultSnapshot
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: ' If set to true – get the default snapshot for every blueprint.
-        The returned JSON will contain a property ‘CreateFromVersions’, which is an
-        array of one element – the default snapshot. If unspecified, default is false
-        (don’t return the default snapshot).'
+      description: ' If set to true – get the default snapshot for every blueprint. The returned JSON will contain a property ‘CreateFromVersions’, which is an array of one element – the default snapshot. If unspecified, default is false (don’t return the default snapshot).'
       defaultValue: "false"
     outputs:
     - contextPath: CloudShare.Projects.Blueprints.id
@@ -701,8 +683,7 @@ script:
     - contextPath: CloudShare.Classes.CustomFields.value
       description: Value
       type: unknown
-    description: Retrieves any custom class creation fields defined in a specified
-      project.
+    description: Retrieves any custom class creation fields defined in a specified project.
   - name: cloudshare-get-classes-detailed
     arguments:
     - name: classId
@@ -891,8 +872,7 @@ script:
     - contextPath: CloudShare.Classes.Students.id
       description: ID
       type: string
-    description: Retrieves all the details of a specified class, including full student
-      data.
+    description: Retrieves all the details of a specified class, including full student data.
   - name: cloudshare-get-classes-instructors
     arguments:
     - name: policyId
@@ -908,40 +888,32 @@ script:
     - contextPath: CloudShare.Classes.Instructors.email
       description: Email
       type: string
-    description: Retrieves project member users who can be assigned to classes as
-      instructors
+    description: Retrieves project member users who can be assigned to classes as instructors
   - name: cloudshare-create-class
     arguments:
     - name: PolicyId
       required: true
-      description: The ID of the policy to apply to the class. The policy will control
-        the runtime and storage time of each student’s environment and what will happen
-        to the environment when it is inactive.
+      description: The ID of the policy to apply to the class. The policy will control the runtime and storage time of each student’s environment and what will happen to the environment when it is inactive.
     - name: BlueprintId
       required: true
-      description: The ID of the blueprint to base the class on. Students who attend
-        the class will be served environments based on this blueprint.
+      description: The ID of the blueprint to base the class on. Students who attend the class will be served environments based on this blueprint.
     - name: ProjectId
       required: true
-      description: The ID of the project in which the class will be created. The specified
-        blueprint and instructor must be from the same project.
+      description: The ID of the project in which the class will be created. The specified blueprint and instructor must be from the same project.
     - name: InstructorVupId
       required: true
-      description: The ID of the project member user to assign to the class as the
-        instructor.
+      description: The ID of the project member user to assign to the class as the instructor.
     - name: RegionId
       description: The ID of the region the class should be created in.
     - name: StartDate
       required: true
-      description: The date and time at which to start the class, in MM/DD/YYYY HH:MM
-        AM/PM format.
+      description: The date and time at which to start the class, in MM/DD/YYYY HH:MM AM/PM format.
     - name: TimeZoneId
       required: true
       description: The ID of the timezone for the startDate.
     - name: StudentPassphrase
       required: true
-      description: The passphrase that students will need to enter in order to attend
-        the class
+      description: The passphrase that students will need to enter in order to attend the class
     - name: UseCustomInvitationEmail
       auto: PREDEFINED
       predefined:
@@ -956,17 +928,12 @@ script:
       - "0"
       - "1"
       - "2"
-      description: 'This option controls access by students and instructor to a lab
-        before scheduled class time. Possible values: 0 - Allow lab access before
-        class (default). 1 - Allow lab access before class for instructor only. 2
-        - No early access allowed.'
+      description: 'This option controls access by students and instructor to a lab before scheduled class time. Possible values: 0 - Allow lab access before class (default). 1 - Allow lab access before class for instructor only. 2 - No early access allowed.'
       defaultValue: "0"
     - name: CustomInvitationEmailSubject
-      description: The subject line of the custom student invitation email. Used if
-        UseCustomInvitationEmail is set to true.
+      description: The subject line of the custom student invitation email. Used if UseCustomInvitationEmail is set to true.
     - name: CustomInvitationEmailBody
-      description: The body of the custom student invitation email. Used if UseCustomInvitationEmail
-        is set to true.
+      description: The body of the custom student invitation email. Used if UseCustomInvitationEmail is set to true.
     - name: PermitAccessToNonRegisteredStudent
       auto: PREDEFINED
       predefined:
@@ -975,17 +942,11 @@ script:
       description: Whether to permit users to self register as students for the class.
       defaultValue: "false"
     - name: MaxStudents
-      description: 'Numeric. The maximum number of students allowed in the class (can
-        be null). Maximum value: 60'
+      description: 'Numeric. The maximum number of students allowed in the class (can be null). Maximum value: 60'
     - name: address
-      description: 'The location of the class (JSON dictionary) including keys: state,
-        address1, address2, zipCode, city,  country (To retrieve valid values for
-        country, use cloudshare-get-classes-countries)'
+      description: 'The location of the class (JSON dictionary) including keys: state, address1, address2, zipCode, city,  country (To retrieve valid values for country, use cloudshare-get-classes-countries)'
     - name: CustomFieldsValues
-      description: Specifies input values for custom fields defined for class creation
-        in the project. Mandatory if project forces validation of custom fields. Fields
-        and valid values depend on custom fields structure for the project. To retrieve
-        custom fields structure for the project, use cloudshare-get-classes-customfields
+      description: Specifies input values for custom fields defined for class creation in the project. Mandatory if project forces validation of custom fields. Fields and valid values depend on custom fields structure for the project. To retrieve custom fields structure for the project, use cloudshare-get-classes-customfields
     - name: enableSteps
       auto: PREDEFINED
       predefined:
@@ -998,27 +959,23 @@ script:
       predefined:
       - "false"
       - "true"
-      description: Whether students can change steps independently. Applies when enableSteps
-        is set to true.
+      description: Whether students can change steps independently. Applies when enableSteps is set to true.
       defaultValue: "false"
     - name: steps
-      description: A list of class steps (JSON dictionaries) for a multi-step class.
-        Must be provided if enableSteps is set to true.
+      description: A list of class steps (JSON dictionaries) for a multi-step class. Must be provided if enableSteps is set to true.
     - name: selfPaced
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Creates a Self-Paced Class that allows a student to enter class
-        at a time convenient to them.
+      description: Creates a Self-Paced Class that allows a student to enter class at a time convenient to them.
       defaultValue: "false"
     - name: allowMultipleStudentLogin
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: When set to true, allows for more than one environment activation
-        per student.
+      description: When set to true, allows for more than one environment activation per student.
       defaultValue: "false"
     outputs:
     - contextPath: CloudShare.Classes.id
@@ -1059,16 +1016,13 @@ script:
   - name: cloudshare-modify-class
     arguments:
     - name: instructorVupId
-      description: The ID of the project member user to assign to the class as the
-        instructor.
+      description: The ID of the project member user to assign to the class as the instructor.
     - name: startDate
-      description: The date and time at which to start the class, in MM/DD/YYYY HH:MM
-        AM/PM format.
+      description: The date and time at which to start the class, in MM/DD/YYYY HH:MM AM/PM format.
     - name: timeZoneId
       description: The ID of the timezone for the startDate.
     - name: studentPassphrase
-      description: The passphrase that students will need to enter in order to attend
-        the class
+      description: The passphrase that students will need to enter in order to attend the class
     - name: useCustomInvitationEmail
       auto: PREDEFINED
       predefined:
@@ -1082,17 +1036,12 @@ script:
       - "0"
       - "1"
       - "2"
-      description: 'This option controls access by students and instructor to a lab
-        before scheduled class time. Possible values: 0 - Allow lab access before
-        class (default). 1 - Allow lab access before class for instructor only. 2
-        - No early access allowed.'
+      description: 'This option controls access by students and instructor to a lab before scheduled class time. Possible values: 0 - Allow lab access before class (default). 1 - Allow lab access before class for instructor only. 2 - No early access allowed.'
       defaultValue: "0"
     - name: customInvitationEmailSubject
-      description: The subject line of the custom student invitation email. Used if
-        UseCustomInvitationEmail is set to true.
+      description: The subject line of the custom student invitation email. Used if UseCustomInvitationEmail is set to true.
     - name: customInvitationEmailBody
-      description: The body of the custom student invitation email. Used if UseCustomInvitationEmail
-        is set to true.
+      description: The body of the custom student invitation email. Used if UseCustomInvitationEmail is set to true.
     - name: permitAccessToNonRegisteredStudent
       auto: PREDEFINED
       predefined:
@@ -1101,32 +1050,24 @@ script:
       description: Whether to permit users to self register as students for the class.
       defaultValue: "false"
     - name: maxStudents
-      description: 'Numeric. The maximum number of students allowed in the class (can
-        be null). Maximum value: 60'
+      description: 'Numeric. The maximum number of students allowed in the class (can be null). Maximum value: 60'
     - name: address
-      description: 'The location of the class (JSON dictionary) including keys: state,
-        address1, address2, zipCode, city,  country (To retrieve valid values for
-        country, use cloudshare-get-classes-countries)'
+      description: 'The location of the class (JSON dictionary) including keys: state, address1, address2, zipCode, city,  country (To retrieve valid values for country, use cloudshare-get-classes-countries)'
     - name: customFieldsValues
-      description: Specifies input values for custom fields defined for class creation
-        in the project. Mandatory if project forces validation of custom fields. Fields
-        and valid values depend on custom fields structure for the project. To retrieve
-        custom fields structure for the project, use cloudshare-get-classes-customfields
+      description: Specifies input values for custom fields defined for class creation in the project. Mandatory if project forces validation of custom fields. Fields and valid values depend on custom fields structure for the project. To retrieve custom fields structure for the project, use cloudshare-get-classes-customfields
     - name: selfPaced
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: Creates a Self-Paced Class that allows a student to enter class
-        at a time convenient to them.
+      description: Creates a Self-Paced Class that allows a student to enter class at a time convenient to them.
       defaultValue: "false"
     - name: allowMultipleStudentLogin
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: When set to true, allows for more than one environment activation
-        per student.
+      description: When set to true, allows for more than one environment activation per student.
       defaultValue: "false"
     - name: classId
       required: true
@@ -1285,8 +1226,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: Whether to return the details of the VMs in each student’s environment
-        as well as other details.
+      description: Whether to return the details of the VMs in each student’s environment as well as other details.
       defaultValue: "false"
     outputs:
     - contextPath: CloudShare.Students.status
@@ -1359,8 +1299,7 @@ script:
     - contextPath: CloudShare.Students.VMs.name
       description: Name
       type: string
-    description: Retrieves information about a student in a class, including the student’s
-      environment and VMs
+    description: Retrieves information about a student in a class, including the student’s environment and VMs
   - name: cloudshare-delete-student
     arguments:
     - name: classId
@@ -1398,8 +1337,7 @@ script:
       required: true
       description: The ID of the student.
     - name: email
-      description: The student’s email address. This can be changed as long as the
-        student did not yet log in.
+      description: The student’s email address. This can be changed as long as the student did not yet log in.
     - name: firstName
       description: The student’s first name.
     - name: lastName
@@ -1631,8 +1569,7 @@ script:
     - contextPath: CloudShare.Environments.VMs.consoleToken
       description: Console token
       type: string
-    description: Uses the vanity name or FQDN of a VM to retrieve details of an environment
-      and its VMs
+    description: Uses the vanity name or FQDN of a VM to retrieve details of an environment and its VMs
   - name: cloudshare-get-env-extended-token
     arguments:
     - name: sponsoredLoginToken
@@ -1720,30 +1657,21 @@ script:
     - contextPath: CloudShare.Environments.VMs.consoleToken
       description: Console token
       type: string
-    description: Uses a sponsored login token to retrieve details of an environment
-      along with VM information
+    description: Uses a sponsored login token to retrieve details of an environment along with VM information
   - name: cloudshare-get-env-multiple-resources
     arguments:
     - name: subscriptionId
-      description: Specifies a user subscription, where {subscriptionID} is the ID
-        of the subscription. Provide the subscription if the user is a member of multiple
-        subscriptions.
+      description: Specifies a user subscription, where {subscriptionID} is the ID of the subscription. Provide the subscription if the user is a member of multiple subscriptions.
     - name: starttime
       required: true
-      description: Specifies the start of the time range, where {starttime_value}
-        is the start of the time range in the format ISO 8601. For example, "2017-01-01"
+      description: Specifies the start of the time range, where {starttime_value} is the start of the time range in the format ISO 8601. For example, "2017-01-01"
     - name: endtime
       required: true
-      description: Specifies the end of the time range, where {endtime_value} is the
-        end of the time range in the format ISO 8601. For example, “2017-02-01“.
+      description: Specifies the end of the time range, where {endtime_value} is the end of the time range in the format ISO 8601. For example, “2017-02-01“.
     - name: skip
-      description: 'Optional. Specifies to skip the first {skip_value} records, where
-        {skip_value} is an integer (default: 0). Can be used iteratively in conjunction
-        with take to view distinct sets of environment records.'
+      description: 'Optional. Specifies to skip the first {skip_value} records, where {skip_value} is an integer (default: 0). Can be used iteratively in conjunction with take to view distinct sets of environment records.'
     - name: take
-      description: 'Optional. Limits the number of records returned, where {take_value}
-        is the maximum number of records to return. Integer (default: 1000, maximum:
-        1000).'
+      description: 'Optional. Limits the number of records returned, where {take_value} is the maximum number of records to return. Integer (default: 1000, maximum: 1000).'
     outputs:
     - contextPath: CloudShare.EnvironmentResources.sponsoredLoginToken
       description: Sponsored login token
@@ -1766,10 +1694,7 @@ script:
     - contextPath: CloudShare.EnvironmentResources.id
       description: ID
       type: string
-    description: Retrieves all environments that were active in a specified time range,
-      and their resource usage. Each environment record includes total run time, total
-      RAM-GB Hours, max disk usage and the sponsored token that was used to create
-      the environment, if applicable.
+    description: Retrieves all environments that were active in a specified time range, and their resource usage. Each environment record includes total run time, total RAM-GB Hours, max disk usage and the sponsored token that was used to create the environment, if applicable.
   - name: cloudshare-extend-env
     arguments:
     - name: envId
@@ -1787,8 +1712,7 @@ script:
     - name: envId
       required: true
       description: Specifies the environment, where {envId} is the environment’s ID.
-    description: Resumes an environment that was previously suspended, returning it
-      to active running state
+    description: Resumes an environment that was previously suspended, returning it to active running state
   - name: cloudshare-revert-env
     arguments:
     - name: envId
@@ -1796,8 +1720,7 @@ script:
       description: Specifies the environment, where {envId} is the environment’s ID.
     - name: snapshotId
       required: true
-      description: Specifies the snapshot to which to revert the environment, where
-        {snapshotId} is the snapshot’s ID.
+      description: Specifies the snapshot to which to revert the environment, where {snapshotId} is the snapshot’s ID.
     description: Reverts an environment to a specified snapshot
   - name: cloudshare-suspend-env
     arguments:
@@ -1816,9 +1739,7 @@ script:
       - view
       - edit
       - owner
-      description: Specifies a type of permission to access the environment. Returns
-        an error (status code 500) if the requesting user does not have the specified
-        permission level. Otherwise, returns the environment properties.
+      description: Specifies a type of permission to access the environment. Returns an error (status code 500) if the requesting user does not have the specified permission level. Otherwise, returns the environment properties.
     outputs:
     - contextPath: CloudShare.Environments.projectId
       description: Project ID
@@ -1847,8 +1768,7 @@ script:
     - contextPath: CloudShare.Environments.teamId
       description: Team ID
       type: string
-    description: Retrieves properties of an environment and enables verification of
-      the requesting user’s permissions to the environment
+    description: Retrieves properties of an environment and enables verification of the requesting user’s permissions to the environment
   - name: cloudshare-delete-env
     arguments:
     - name: envID
@@ -1859,14 +1779,10 @@ script:
     arguments:
     - name: environment
       required: true
-      description: Specifies details (JSON) of the environment to create. Please refer
-        to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/ for
-        the format
+      description: Specifies details (JSON) of the environment to create. Please refer to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/ for the format
     - name: itemsCart
       required: true
-      description: Specifies templates (JSON array) from which to build the environment.
-        Please refer to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/
-        for the format.
+      description: Specifies templates (JSON array) from which to build the environment. Please refer to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/ for the format.
     outputs:
     - contextPath: CloudShare.Environments.resources.cpuCount
       description: CPU count
@@ -1945,9 +1861,7 @@ script:
       description: The ID of the environment.
     - name: itemsCart
       required: true
-      description: Specifies templates (JSON array) of VMs to add to the environment.
-        Please refer to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/
-        for the format.
+      description: Specifies templates (JSON array) of VMs to add to the environment. Please refer to https://docs.cloudshare.com/rest-api/v3/environments/envs/post-envs/ for the format.
     outputs:
     - contextPath: CloudShare.Environments.resources.cpuCount
       description: CPU count
@@ -2072,10 +1986,7 @@ script:
     - contextPath: CloudShare.VM.Remote.clearTextPassword
       description: Clear text password
       type: string
-    description: Retrieves the content of a .rdp file that provides remote desktop
-      access to the specified VM. An .rdp file comprising the returned content opens
-      a remote desktop session to the VM from a Windows machine. It can also be used
-      on Linux with FreeRDP or on Mac with Microsoft Remote Access.
+    description: Retrieves the content of a .rdp file that provides remote desktop access to the specified VM. An .rdp file comprising the returned content opens a remote desktop session to the VM from a Windows machine. It can also be used on Linux with FreeRDP or on Mac with Microsoft Remote Access.
   - name: cloudshare-execute-vm-command
     arguments:
     - name: vmId
@@ -2165,8 +2076,7 @@ script:
     - contextPath: CloudShare.Folders.projectFolders.usagePercentage
       description: Usage percentage
       type: string
-    description: Retrieves the user’s cloud folder and the user’s projects’ project
-      folder(s)
+    description: Retrieves the user’s cloud folder and the user’s projects’ project folder(s)
   - name: cloudshare-get-env-cloud-folders
     arguments:
     - name: EnvId
@@ -2212,20 +2122,15 @@ script:
       predefined:
       - "0"
       - "1"
-      description: 'Filters the results by type of template. Possible values: 0 -
-        Returns blueprints only. 1 - Returns VM templates only.'
+      description: 'Filters the results by type of template. Possible values: 0 - Returns blueprints only. 1 - Returns VM templates only.'
     - name: projectId
-      description: Filters the results to include only blueprints that belong to a
-        specific project.
+      description: Filters the results to include only blueprints that belong to a specific project.
     - name: regionId
-      description: Filters the results to include only templates that belong to a
-        specific region.
+      description: Filters the results to include only templates that belong to a specific region.
     - name: skip
-      description: Specifies to skip the first {skip} records, where {skip} is an
-        integer
+      description: Specifies to skip the first {skip} records, where {skip} is an integer
     - name: take
-      description: 'Limits the number of records returned, where {take_value} is the
-        maximum number of records to return. Integer (default: 1000, maximum: 1000).'
+      description: 'Limits the number of records returned, where {take_value} is the maximum number of records to return. Integer (default: 1000, maximum: 1000).'
     outputs:
     - contextPath: CloudShare.Templates.name
       description: Name
@@ -2497,19 +2402,13 @@ script:
       type: number
     - contextPath: CloudShare.Snapshots.regions
       description: Regions
-    description: Retrieves all snapshots contained in a specified environment’s blueprint.
-      A blueprint can contain up to five snapshots, with newer snapshots displacing
-      the oldest snapshots in the blueprint.
+    description: Retrieves all snapshots contained in a specified environment’s blueprint. A blueprint can contain up to five snapshots, with newer snapshots displacing the oldest snapshots in the blueprint.
   - name: cloudshare-mark-default-snapshot
     arguments:
     - name: snapshotID
       required: true
       description: The ID of the snapshot that you want to mark as default.
-    description: Marks a specified snapshot as the default snapshot in its containing
-      blueprint.  New environments created from a blueprint are based on the default
-      snapshot in the blueprint. This request enables you to change which snapshot
-      is the default snapshot in a given blueprint so that new environments will be
-      based on the snapshot of your choice.
+    description: Marks a specified snapshot as the default snapshot in its containing blueprint.  New environments created from a blueprint are based on the default snapshot in the blueprint. This request enables you to change which snapshot is the default snapshot in a given blueprint so that new environments will be based on the snapshot of your choice.
   - name: cloudshare-take-snapshot-env
     arguments:
     - name: envId
@@ -2521,26 +2420,15 @@ script:
     - name: description
       description: A description for the new snapshot.
     - name: newBlueprintName
-      description: A name to assign to a new blueprint. If specified, the snapshot
-        is created in a new blueprint with the specified name, rather than in the
-        default environment blueprint. Must be null if there is not yet at least one
-        snapshot in the default environment blueprint. If specified, otherBlueprintId
-        must be null. If both newBlueprintName and otherBlueprintId are null, the
-        snapshot is created in the default environment blueprint.
+      description: A name to assign to a new blueprint. If specified, the snapshot is created in a new blueprint with the specified name, rather than in the default environment blueprint. Must be null if there is not yet at least one snapshot in the default environment blueprint. If specified, otherBlueprintId must be null. If both newBlueprintName and otherBlueprintId are null, the snapshot is created in the default environment blueprint.
     - name: otherBlueprintId
-      description: The ID of an existing blueprint. If specified, the snapshot is
-        created in the specified blueprint rather than in the default environment
-        blueprint. Must be null if there is not yet at least one snapshot in the default
-        environment blueprint. If specified, newBlueprintName must be null. If both
-        newBlueprintName and otherBlueprintId are null, the snapshot is created in
-        the default environment blueprint.
+      description: The ID of an existing blueprint. If specified, the snapshot is created in the specified blueprint rather than in the default environment blueprint. Must be null if there is not yet at least one snapshot in the default environment blueprint. If specified, newBlueprintName must be null. If both newBlueprintName and otherBlueprintId are null, the snapshot is created in the default environment blueprint.
     - name: setAsDefault
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Defaults to true. If true, the new snapshot is marked as the default
-        snapshot in the containing blueprint.
+      description: Defaults to true. If true, the new snapshot is marked as the default snapshot in the containing blueprint.
       defaultValue: "true"
     description: Takes a snapshot of an environment
   - name: cloudshare-get-teams
@@ -2556,28 +2444,22 @@ script:
   - name: cloudshare-invite-user-poc
     arguments:
     - name: policyId
-      description: The ID of the environment policy to assign to the environment created
-        for the end user as part of the POC. The policy will govern the life cycle
-        of the end user’s environment.
+      description: The ID of the environment policy to assign to the environment created for the end user as part of the POC. The policy will govern the life cycle of the end user’s environment.
     - name: blueprintId
       required: true
-      description: The ID of the blueprint based on which the end user’s environment
-        will be created (this is the POC’s blueprint).
+      description: The ID of the blueprint based on which the end user’s environment will be created (this is the POC’s blueprint).
     - name: OwningProjectMemberId
       required: true
-      description: The ID of the project member user to whom the end user will be
-        assigned
+      description: The ID of the project member user to whom the end user will be assigned
     - name: opportunity
       required: true
-      description: The name of the business opportunity to be associated with the
-        end user
+      description: The name of the business opportunity to be associated with the end user
     - name: validForDays
       required: true
       description: The number of days to keep the invitation valid for
     - name: email
       required: true
-      description: The recipient’s email. The invitation will be sent to the specified
-        email.
+      description: The recipient’s email. The invitation will be sent to the specified email.
     - name: firstName
       required: true
       description: The recipient’s first name
@@ -2591,16 +2473,12 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates whether an end user can set email when accepting the
-        invitation. Default is true.
+      description: Indicates whether an end user can set email when accepting the invitation. Default is true.
       defaultValue: "true"
     - name: customEmailSubject
-      description: The subject of the email. The invitation will be sent with the
-        specified custom email subject. This value will override the custom email
-        subject in the UI.
+      description: The subject of the email. The invitation will be sent with the specified custom email subject. This value will override the custom email subject in the UI.
     - name: customEmailBody
-      description: The body of the email. The invitation will be sent with the specified
-        custom email body. This value will override the custom email body in the UI.
+      description: The body of the email. The invitation will be sent with the specified custom email body. This value will override the custom email body in the UI.
     outputs:
     - contextPath: CloudShare.Invites.invitationDetailsUrl
       description: Invitation details URL
@@ -2611,9 +2489,7 @@ script:
     - contextPath: CloudShare.Invites.message
       description: Message
       type: string
-    description: Invite an end user to a POC, based on a specified blueprint, and
-      assigns a specific project member user to be the owning project member for the
-      end user.  A policy ID, blueprint ID and owning project member ID must be specified.
+    description: Invite an end user to a POC, based on a specified blueprint, and assigns a specific project member user to be the owning project member for the end user.  A policy ID, blueprint ID and owning project member ID must be specified.
   - name: cloudshare-get-poc-invitations
     arguments:
     - name: from
@@ -2621,16 +2497,13 @@ script:
     - name: sentBy
       description: Filter based on who sent the invite (default is anyone).
     - name: skip
-      description: 'Specifies to skip the first {skip} records, where {skip} is an
-        integer (default: 0). Can be used iteratively in conjunction with take to
-        view distinct sets of template records.'
+      description: 'Specifies to skip the first {skip} records, where {skip} is an integer (default: 0). Can be used iteratively in conjunction with take to view distinct sets of template records.'
     - name: sortBy
       description: The filed to sort by
     - name: statusCategory
       description: The status categoey to filter by
     - name: take
-      description: 'Limits the number of records returned, where {take} is the maximum
-        number of records to return. Integer (default: 1000, maximum: 1000).'
+      description: 'Limits the number of records returned, where {take} is the maximum number of records to return. Integer (default: 1000, maximum: 1000).'
     outputs:
     - contextPath: CloudShare.POCInvites.blueprintShortId
       description: Blueprint short ID
@@ -2679,7 +2552,6 @@ script:
       type: string
     description: Retrieves POC invitations sent.
   dockerimage: demisto/cloudshare:1.0.0.14120
-  runonce: false
   subtype: python3
 beta: true
 fromversion: 6.0.0

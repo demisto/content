@@ -1,10 +1,6 @@
 args:
-- default: false
-  description: The name of the ML model to export to a file.
-  isArray: false
+- description: The name of the ML model to export to a file.
   name: modelName
-  required: false
-  secret: false
 comment: 'Exports an existing ML model to a file. '
 commonfields:
   id: ExportMLModel
@@ -13,12 +9,10 @@ enabled: true
 name: ExportMLModel
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
-runonce: false
 tags:
 - ml
 tests:

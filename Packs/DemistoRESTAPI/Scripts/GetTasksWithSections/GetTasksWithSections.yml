@@ -1,10 +1,6 @@
 args:
-- default: false
-  description: Incident ID to create the task table.
-  isArray: false
+- description: Incident ID to create the task table.
   name: investigation_id
-  required: false
-  secret: false
 commonfields:
   id: GetTasksWithSections
   version: -1
@@ -57,7 +53,6 @@ outputs:
   description: Name of the user who completed the task
   type: string
 scripttarget: 0
-runonce: false
 sensitive: true
 tests:
 - GetTasksWithSections SetIRProcedures end to end test

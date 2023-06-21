@@ -9,7 +9,6 @@ dockerimage: demisto/python3:3.10.5.31928
 enabled: true
 name: SalesforceCaseStatusPicklist
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

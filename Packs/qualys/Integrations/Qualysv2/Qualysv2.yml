@@ -15,11 +15,9 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys v2
@@ -2671,7 +2669,6 @@ script:
     name: qualys-asset-tag-delete
 
   dockerimage: demisto/python3:3.10.11.61265
-  runonce: false
   script: ''
   subtype: python3
   type: python

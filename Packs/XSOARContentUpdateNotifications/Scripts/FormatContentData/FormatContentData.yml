@@ -9,7 +9,6 @@ dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: FormatContentData
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

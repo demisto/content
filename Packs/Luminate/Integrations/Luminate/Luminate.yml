@@ -24,11 +24,9 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
 script:
   script: ''
   type: python
@@ -104,7 +102,6 @@ script:
     description: Getting Access logs from for SSH traffic
   dockerimage: demisto/luminate:1.0.0.14061
   isfetch: true
-  runonce: false
 fromversion: 5.0.0
 tests:
 - No Test

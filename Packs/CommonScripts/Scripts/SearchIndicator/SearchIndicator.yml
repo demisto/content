@@ -34,7 +34,6 @@ outputs:
 - contextPath: foundIndicators.verdict
   description: The human readable score/verdict of the Indicator.
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

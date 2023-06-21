@@ -5,7 +5,6 @@ commonfields:
 enabled: true
 name: iot-security-vuln-post-processing
 script: '-'
-system: false
 tags:
 - iot
 - post-processing

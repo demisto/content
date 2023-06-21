@@ -1,28 +1,17 @@
 args:
-- default: false
-  description: "ID of the entry that contains the ML model to import.\t"
-  isArray: false
+- description: "ID of the entry that contains the ML model to import.\t"
   name: entryID
   required: true
-  secret: false
-- default: false
-  defaultValue: phishing_model
+- defaultValue: phishing_model
   description: The model name in which the ML model will be saved.
-  isArray: false
   name: modelName
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: mlModel
   description: The method for storing the imported model.
-  isArray: false
   name: modelStoreType
   predefined:
   - mlModel
   - list
-  required: false
-  secret: false
 comment: 'Imports a file that contains an ML model. '
 commonfields:
   id: ImportMLModel
@@ -31,14 +20,12 @@ enabled: true
 name: ImportMLModel
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests
 fromversion: 5.0.0

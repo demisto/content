@@ -22,7 +22,6 @@ scripttarget: 0
 dependson:
   must:
   - demisto-api-multipart
-runonce: false
 runas: DBotWeakRole
 tests:
 - DemistoUploadFileToIncident Test

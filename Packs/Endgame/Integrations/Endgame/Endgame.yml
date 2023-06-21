@@ -4,8 +4,7 @@ commonfields:
 name: Endgame
 display: Endgame
 category: Endpoint
-description: Endpoint protection built to stop advanced attacks before damage and
-  loss occurs
+description: Endpoint protection built to stop advanced attacks before damage and loss occurs
 configuration:
 - display: 'Server URL (Example: https://me.endgame.com:2443)'
   name: url
@@ -21,12 +20,10 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -47,19 +44,13 @@ script:
       description: API key
     - name: deployment_profile
       required: true
-      description: The ID of the sensor profile to be deployed. To get the ID, run
-        the `!endgame-get-deployment-profiles` command.
+      description: The ID of the sensor profile to be deployed. To get the ID, run the `!endgame-get-deployment-profiles` command.
     - name: endpoints_transaction_id
-      description: The ID of the last transaction. To get the ID, run the `!endgame-get-unmanaged-endpoints`
-        command or the `endgame-get-endpoint-status` command. The value is available
-        from the ${EndGame.TransactionID} context key.
+      description: The ID of the last transaction. To get the ID, run the `!endgame-get-unmanaged-endpoints` command or the `endgame-get-endpoint-status` command. The value is available from the ${EndGame.TransactionID} context key.
     - name: endpoint_ids
-      description: The IDs of endpoints to be deployed. Must also provide IPs. To
-        get the IDs, run the `!endgame-get-unmanaged-endpoints` command, and copy
-        the ID (not to be confused with the machine ID).
+      description: The IDs of endpoints to be deployed. Must also provide IPs. To get the IDs, run the `!endgame-get-unmanaged-endpoints` command, and copy the ID (not to be confused with the machine ID).
     - name: endpoint_ips
-      description: The IP addresses of endpoints to be deployed. Must also provide
-        IDs.
+      description: The IP addresses of endpoints to be deployed. Must also provide IDs.
     outputs:
     - contextPath: EndGame.Deployment.DeploymentProfile
       description: The deployed sensor profile

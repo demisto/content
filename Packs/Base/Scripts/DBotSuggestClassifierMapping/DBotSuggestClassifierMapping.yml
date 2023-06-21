@@ -1,30 +1,15 @@
 args:
-- default: false
-  description: The incident samples (raw events).
-  isArray: false
+- description: The incident samples (raw events).
   name: incidentSamples
   required: true
-  secret: false
-- default: false
-  description: Incidents fields to consider on matching.
-  isArray: false
+- description: Incidents fields to consider on matching.
   name: incidentFields
-  required: false
-  secret: false
-- default: false
-  description: The current mapper.
-  isArray: false
+- description: The current mapper.
   name: currentMapper
-  required: false
-  secret: false
-- default: false
-  description: The type of the incident samples.
-  isArray: false
+- description: The type of the incident samples.
   name: incidentSamplesType
   predefined:
   - ''
-  required: false
-  secret: false
 comment: Deprecated. No available replacement. Suggests a classifier mapping based on an advanced name matching algorithm.
 commonfields:
   id: DBotSuggestClassifierMapping
@@ -32,7 +17,6 @@ commonfields:
 name: DBotSuggestClassifierMapping
 script: '-'
 subtype: python2
-system: false
 tags:
 - ml
 timeout: '0'

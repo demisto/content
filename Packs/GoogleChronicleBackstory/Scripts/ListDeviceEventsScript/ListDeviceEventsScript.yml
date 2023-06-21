@@ -1,12 +1,9 @@
 args:
 - default: true
   description: Host Name, IP Address or MAC Address of the asset.
-  isArray: false
   name: asset_identifier
   required: true
-  secret: false
-comment: List all of the events discovered within your enterprise on a particular
-  device within 2 hours earlier than the current time.
+comment: List all of the events discovered within your enterprise on a particular device within 2 hours earlier than the current time.
 commonfields:
   id: ListDeviceEvents
   version: -1
@@ -20,20 +17,16 @@ outputs:
   description: The GMT timestamp when the event was generated.
   type: Date
 - contextPath: GoogleChronicleBackstory.Events.collectedTimestamp
-  description: The GMT timestamp when the event was collected by the vendor's local
-    collection infrastructure.
+  description: The GMT timestamp when the event was collected by the vendor's local collection infrastructure.
   type: Date
 - contextPath: GoogleChronicleBackstory.Events.description
   description: Human-readable description of the event.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.productEventType
-  description: Short, descriptive, human-readable, and product-specific event name
-    or type.
+  description: Short, descriptive, human-readable, and product-specific event name or type.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.productLogId
-  description: A vendor-specific event identifier to uniquely identify the event (a
-    GUID). Users might use this identifier to search the vendor's proprietary console
-    for the event in question.
+  description: A vendor-specific event identifier to uniquely identify the event (a GUID). Users might use this identifier to search the vendor's proprietary console for the event in question.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.productName
   description: Specifies the name of the product.
@@ -42,8 +35,7 @@ outputs:
   description: Specifies the version of the product.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.urlBackToProduct
-  description: URL linking to a relevant website where you can view more information
-    about this specific event or the general event category.
+  description: URL linking to a relevant website where you can view more information about this specific event or the general event category.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.vendorName
   description: Specifies the product vendor's name.
@@ -70,8 +62,7 @@ outputs:
   description: IP address associated with a network connection.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.principal.port
-  description: Source or destination network port number when a specific network connection
-    is described within an event.
+  description: Source or destination network port number when a specific network connection is described within an event.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.principal.mac
   description: MAC addresses associated with a device.
@@ -146,8 +137,7 @@ outputs:
   description: Stores the registry key associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.principal.registry.registryValueName
-  description: Stores the name of the registry value associated with an application
-    or system component.
+  description: Stores the name of the registry value associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.principal.registry.registryValueData
   description: Stores the data associated with a registry value.
@@ -183,8 +173,7 @@ outputs:
   description: Stores the user ID.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.principal.user.windowsSid
-  description: Stores the Microsoft Windows security identifier (SID) associated with
-    a user.
+  description: Stores the Microsoft Windows security identifier (SID) associated with a user.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.target.assetId
   description: Vendor-specific unique device identifier.
@@ -208,8 +197,7 @@ outputs:
   description: IP address associated with a network connection.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.target.port
-  description: Source or destination network port number when a specific network connection
-    is described within an event.
+  description: Source or destination network port number when a specific network connection is described within an event.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.target.mac
   description: One or more MAC addresses associated with a device.
@@ -284,8 +272,7 @@ outputs:
   description: Stores the registry key associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.target.registry.registryValueName
-  description: Stores the name of the registry value associated with an application
-    or system component.
+  description: Stores the name of the registry value associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.target.registry.registryValueData
   description: Stores the data associated with a registry value.
@@ -321,8 +308,7 @@ outputs:
   description: Stores the user ID.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.target.user.windowsSid
-  description: Stores the Microsoft Windows security identifier (SID) associated with
-    a user.
+  description: Stores the Microsoft Windows security identifier (SID) associated with a user.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.intermediary.assetId
   description: Vendor-specific unique device identifier.
@@ -346,8 +332,7 @@ outputs:
   description: IP address associated with a network connection.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.intermediary.port
-  description: Source or destination network port number when a specific network connection
-    is described within an event.
+  description: Source or destination network port number when a specific network connection is described within an event.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.intermediary.mac
   description: One or more MAC addresses associated with a device.
@@ -422,8 +407,7 @@ outputs:
   description: Stores the registry key associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.intermediary.registry.registryValueName
-  description: Stores the name of the registry value associated with an application
-    or system component.
+  description: Stores the name of the registry value associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.intermediary.registry.registryValueData
   description: Stores the data associated with a registry value.
@@ -459,8 +443,7 @@ outputs:
   description: Stores the user ID.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.intermediary.user.windowsSid
-  description: Stores the Microsoft Windows security identifier (SID) associated with
-    a user.
+  description: Stores the Microsoft Windows security identifier (SID) associated with a user.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.src.assetId
   description: Vendor-specific unique device identifier.
@@ -484,8 +467,7 @@ outputs:
   description: IP address associated with a network connection.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.src.port
-  description: Source or destination network port number when a specific network connection
-    is described within an event.
+  description: Source or destination network port number when a specific network connection is described within an event.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.src.mac
   description: One or more MAC addresses associated with a device.
@@ -560,8 +542,7 @@ outputs:
   description: Stores the registry key associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.src.registry.registryValueName
-  description: Stores the name of the registry value associated with an application
-    or system component.
+  description: Stores the name of the registry value associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.src.registry.registryValueData
   description: Stores the data associated with a registry value.
@@ -597,8 +578,7 @@ outputs:
   description: Stores the user ID.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.src.user.windowsSid
-  description: Stores the Microsoft Windows security identifier (SID) associated with
-    a user.
+  description: Stores the Microsoft Windows security identifier (SID) associated with a user.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.observer.assetId
   description: Vendor-specific unique device identifier.
@@ -622,8 +602,7 @@ outputs:
   description: IP address associated with a network connection.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.observer.port
-  description: Source or destination network port number when a specific network connection
-    is described within an event.
+  description: Source or destination network port number when a specific network connection is described within an event.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.observer.mac
   description: One or more MAC addresses associated with a device.
@@ -698,8 +677,7 @@ outputs:
   description: Stores the registry key associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.observer.registry.registryValueName
-  description: Stores the name of the registry value associated with an application
-    or system component.
+  description: Stores the name of the registry value associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.observer.registry.registryValueData
   description: Stores the data associated with a registry value.
@@ -735,8 +713,7 @@ outputs:
   description: Stores the user ID.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.observer.user.windowsSid
-  description: Stores the Microsoft Windows security identifier (SID) associated with
-    a user.
+  description: Stores the Microsoft Windows security identifier (SID) associated with a user.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.about.assetId
   description: Vendor-specific unique device identifier.
@@ -760,8 +737,7 @@ outputs:
   description: IP address associated with a network connection.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.about.port
-  description: Source or destination network port number when a specific network connection
-    is described within an event.
+  description: Source or destination network port number when a specific network connection is described within an event.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.about.mac
   description: One or more MAC addresses associated with a device.
@@ -836,8 +812,7 @@ outputs:
   description: Stores the registry key associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.about.registry.registryValueName
-  description: Stores the name of the registry value associated with an application
-    or system component.
+  description: Stores the name of the registry value associated with an application or system component.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.about.registry.registryValueData
   description: Stores the data associated with a registry value.
@@ -873,8 +848,7 @@ outputs:
   description: Stores the user ID.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.about.user.windowsSid
-  description: Stores the Microsoft Windows security identifier (SID) associated with
-    a user.
+  description: Stores the Microsoft Windows security identifier (SID) associated with a user.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.applicationProtocol
   description: Indicates the network application protocol.
@@ -925,8 +899,7 @@ outputs:
   description: Client identifier.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dhcp.seconds
-  description: Seconds elapsed since the client began the address acquisition/renewal
-    process.
+  description: Seconds elapsed since the client began the address acquisition/renewal process.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dhcp.sname
   description: Name of the server which the client has requested to boot from.
@@ -962,8 +935,7 @@ outputs:
   description: Set to true if the event is a DNS response.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.opcode
-  description: Stores the DNS OpCode used to specify the type of DNS query (standard,
-    inverse, server status, etc.).
+  description: Stores the DNS OpCode used to specify the type of DNS query (standard, inverse, server status, etc.).
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.recursionAvailable
   description: Set to true if a recursive DNS lookup is available.
@@ -972,8 +944,7 @@ outputs:
   description: Set to true if a recursive DNS lookup is requested.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.responseCode
-  description: Stores the DNS response code as defined by RFC 1035, Domain Names -
-    Implementation and Specification.
+  description: Stores the DNS response code as defined by RFC 1035, Domain Names - Implementation and Specification.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.truncated
   description: Set to true if this is a truncated DNS response.
@@ -988,64 +959,55 @@ outputs:
   description: Stores the code specifying the type of the query.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.binaryData
-  description: Stores the raw bytes of any non-UTF8 strings that might be included
-    as part of a DNS response.
+  description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.class
   description: Stores the code specifying the class of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.data
-  description: Stores the payload or response to the DNS question for all responses
-    encoded in UTF-8 format.
+  description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.name
   description: Stores the name of the owner of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.ttl
-  description: Stores the time interval for which the resource record can be cached
-    before the source of the information should again be queried.
+  description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.type
   description: Stores the code specifying the type of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.binaryData
-  description: Stores the raw bytes of any non-UTF8 strings that might be included
-    as part of a DNS response.
+  description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.class
   description: Stores the code specifying the class of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.data
-  description: Stores the payload or response to the DNS question for all responses
-    encoded in UTF-8 format.
+  description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.name
   description: Stores the name of the owner of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.ttl
-  description: Stores the time interval for which the resource record can be cached
-    before the source of the information should again be queried.
+  description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.type
   description: Stores the code specifying the type of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.binaryData
-  description: Stores the raw bytes of any non-UTF8 strings that might be included
-    as part of a DNS response.
+  description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.class
   description: Stores the code specifying the class of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.data
-  description: Stores the payload or response to the DNS question for all responses
-    encoded in UTF-8 format.
+  description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.name
   description: Stores the name of the owner of the resource record.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.ttl
-  description: Stores the time interval for which the resource record can be cached
-    before the source of the information should again be queried.
+  description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.type
   description: Stores the code specifying the type of the resource record.
@@ -1081,17 +1043,13 @@ outputs:
   description: Stores the URL for the HTTP referer.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.http.responseCode
-  description: Stores the HTTP response status code, which indicates whether a specific
-    HTTP request has been successfully completed.
+  description: Stores the HTTP response status code, which indicates whether a specific HTTP request has been successfully completed.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.network.http.useragent
-  description: Stores the User-Agent request header which includes the application
-    type, operating system, software vendor or software version of the requesting
-    software user agent.
+  description: Stores the User-Agent request header which includes the application type, operating system, software vendor or software version of the requesting software user agent.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.authentication.authType
-  description: Type of system an authentication event is associated with (Chronicle
-    UDM).
+  description: Type of system an authentication event is associated with (Chronicle UDM).
   type: String
 - contextPath: GoogleChronicleBackstory.Events.authentication.mechanism
   description: Mechanism(s) used for authentication.
@@ -1106,16 +1064,13 @@ outputs:
   description: Specify a security category.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.securityResult.confidence
-  description: Specify a confidence with regards to a security event as estimated
-    by the product.
+  description: Specify a confidence with regards to a security event as estimated by the product.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.securityResult.confidenceDetails
-  description: Additional detail with regards to the confidence of a security event
-    as estimated by the product vendor.
+  description: Additional detail with regards to the confidence of a security event as estimated by the product vendor.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.securityResult.priority
-  description: Specify a priority with regards to a security event as estimated by
-    the product vendor.
+  description: Specify a priority with regards to a security event as estimated by the product vendor.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.securityResult.priorityDetails
   description: Vendor-specific information about the security result priority.
@@ -1127,8 +1082,7 @@ outputs:
   description: Name of the security rule.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.securityResult.severity
-  description: Severity of a security event as estimated by the product vendor using
-    values defined by the Chronicle UDM.
+  description: Severity of a security event as estimated by the product vendor using values defined by the Chronicle UDM.
   type: String
 - contextPath: GoogleChronicleBackstory.Events.securityResult.severityDetails
   description: Severity for a security event as estimated by the product vendor.
@@ -1141,14 +1095,12 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - enhancement
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.9.40422
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 dependson:

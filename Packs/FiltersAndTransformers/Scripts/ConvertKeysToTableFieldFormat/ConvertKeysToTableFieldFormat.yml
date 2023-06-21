@@ -19,6 +19,5 @@ args:
   required: true
   description: Object to convert
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0

@@ -13,7 +13,6 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Username
   name: authentication
   type: 9
@@ -22,7 +21,6 @@ configuration:
   name: port
   defaultvalue: "22"
   type: 0
-  required: false
   additionalinfo: Defaults to 22
 script:
   script: ''
@@ -57,7 +55,6 @@ script:
       required: true
     description: Upload a file to a path on the SFTP Server
   dockerimage: demisto/netmiko:1.0.0.62777
-  runonce: false
   subtype: python3
 fromversion: 6.2.0
 tests:

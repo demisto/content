@@ -14,8 +14,7 @@ args:
   default: true
   description: Incident ID to get tasks from
 - name: states
-  description: 'Comma separated list of states. Possible values: New, InProgress,
-    Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks)'
+  description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks)'
 outputs:
 - contextPath: Tasks
   description: The entire task object
@@ -32,8 +31,7 @@ outputs:
   description: Task owner
   type: string
 - contextPath: Tasks.state
-  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting,
-    Blocked, and empty string for not started)
+  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started)
   type: string
 - contextPath: Tasks.scriptId
   description: Task related script (empty if manual)
@@ -54,7 +52,6 @@ outputs:
   description: Task completed by (username)
   type: string
 scripttarget: 0
-runonce: false
 sensitive: true
 tests:
 - No test

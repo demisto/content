@@ -1,10 +1,6 @@
 args:
-- default: false
-  description: The war room entry ID of the configuration file.
-  isArray: false
+- description: The war room entry ID of the configuration file.
   name: configuration_file_entry_id
-  required: false
-  secret: false
 comment: Configurtaion loader for the Content Management pack.
 commonfields:
   id: ConfigurationSetup
@@ -34,7 +30,6 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - configuration
 - Content Management

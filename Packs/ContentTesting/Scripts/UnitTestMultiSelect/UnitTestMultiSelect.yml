@@ -9,7 +9,6 @@ enabled: true
 name: UnitTestMultiSelect
 comment: ""
 runas: Administrator
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

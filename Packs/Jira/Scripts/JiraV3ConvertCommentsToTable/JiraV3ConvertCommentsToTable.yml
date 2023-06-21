@@ -5,7 +5,6 @@ comment: This script is used to convert Jira comments to a table.
 name: JiraV3ConvertCommentsToTable
 outputs: []
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'

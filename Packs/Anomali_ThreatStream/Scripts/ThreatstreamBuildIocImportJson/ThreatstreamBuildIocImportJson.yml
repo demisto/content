@@ -1,70 +1,31 @@
 args:
-- default: false
-  description: A comma-separated list of emails.
+- description: A comma-separated list of emails.
   isArray: true
   name: email_values
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of MD5 hashes.
+- description: A comma-separated list of MD5 hashes.
   isArray: true
   name: md5_values
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of IPs.
+- description: A comma-separated list of IPs.
   isArray: true
   name: ip_values
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of URLs.
+- description: A comma-separated list of URLs.
   isArray: true
   name: url_values
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of domains.
+- description: A comma-separated list of domains.
   isArray: true
   name: domain_values
-  required: false
-  secret: false
-- default: false
-  description: The indicator type (Itype) of the emails provided. By default the type will be “Malware Email” (mal_email).
-  isArray: false
+- description: The indicator type (Itype) of the emails provided. By default the type will be “Malware Email” (mal_email).
   name: email_indicator_type
-  required: false
-  secret: false
-- default: false
-  description: The indicator type (Itype) of the hashes provided. By default the type will be “Malware MD5” (mal_md5).
-  isArray: false
+- description: The indicator type (Itype) of the hashes provided. By default the type will be “Malware MD5” (mal_md5).
   name: md5_indicator_type
-  required: false
-  secret: false
-- default: false
-  description: The indicator type (Itype) of the ip provided. By default the type will be “Malware IP” (mal_ip).
-  isArray: false
+- description: The indicator type (Itype) of the ip provided. By default the type will be “Malware IP” (mal_ip).
   name: ip_indicator_type
-  required: false
-  secret: false
-- default: false
-  description: The indicator type (Itype) of the URLs  provided. By default the type will be “Malware URL” (mal_url).
-  isArray: false
+- description: The indicator type (Itype) of the URLs  provided. By default the type will be “Malware URL” (mal_url).
   name: url_indicator_type
-  required: false
-  secret: false
-- default: false
-  description: The indicator type (Itype) of the domains provided. By default the type will be “Malware Domain” (mal_domain).
-  isArray: false
+- description: The indicator type (Itype) of the domains provided. By default the type will be “Malware Domain” (mal_domain).
   name: domain_indicator_type
-  required: false
-  secret: false
-- default: false
-  description: The indicators query, based lucene search syntax.
-  isArray: false
+- description: The indicators query, based lucene search syntax.
   name: indicator_query
-  required: false
-  secret: false
 comment: "Builds A JSON array based on the values provided by the user for the 'threatstream-import-indicator-without-approval' command."
 commonfields:
   id: ThreatstreamBuildIocImportJson
@@ -75,7 +36,6 @@ outputs:
   description: The string output represents a JSON object.
   type: String
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'

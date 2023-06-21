@@ -28,7 +28,6 @@ script:
     description: Send WhatsApp Message
     name: send-whatsapp
   dockerimage: demisto/python3:3.10.7.33922
-  runonce: false
   script: ''
   subtype: python3
   type: python

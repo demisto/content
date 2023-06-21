@@ -6,7 +6,6 @@ configuration:
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 description: Read QR Code from image file.
 display: QR Code Reader - goqr.me
@@ -27,7 +26,6 @@ script:
     - contextPath: GoQRCodeData.seq
       description: sequence numbers read from code
   dockerimage: demisto/python3:3.10.5.31928
-  runonce: false
   script: ''
   subtype: python3
   type: python

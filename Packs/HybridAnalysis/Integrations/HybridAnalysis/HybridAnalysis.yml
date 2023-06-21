@@ -16,15 +16,12 @@ configuration:
   name: apiKey
   defaultvalue: ""
   type: 4
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: javascript
@@ -431,7 +428,6 @@ script:
       type: string
     description: Returns the scan results of the given URL ID.
     deprecated: true
-  runonce: false
 tests:
 - No tests (deprecated)
 deprecated: true

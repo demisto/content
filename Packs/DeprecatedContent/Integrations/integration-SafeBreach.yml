@@ -200,7 +200,6 @@ script:
       type: number
     description: Fetch the breach simulation results
     deprecated: true
-  runonce: false
 tests:
 - No tests - deprecated. Test was moved to NonCircleTests folder.
 fromversion: 5.0.0

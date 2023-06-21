@@ -4,13 +4,11 @@ commonfields:
   version: -1
 name: SetIRProceduresMarkdown
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'
 type: python
 runas: DBotRole
-runonce: false
 subtype: python3
 tests:
 - GetTasksWithSections SetIRProcedures end to end test

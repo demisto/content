@@ -16,7 +16,6 @@ dockerimage: demisto/powershell:7.2.1.26295
 enabled: true
 name: VersionEqualTo
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 tags:

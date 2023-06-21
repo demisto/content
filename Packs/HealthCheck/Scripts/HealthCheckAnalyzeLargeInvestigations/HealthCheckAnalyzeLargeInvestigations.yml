@@ -19,7 +19,6 @@ subtype: python3
 type: python
 dockerimage: demisto/python3:3.10.10.48392
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

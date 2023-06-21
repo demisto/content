@@ -13,11 +13,9 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 description: Block URLs, domains and file hashes.
 display: Netskope (API v2)
@@ -158,7 +156,6 @@ script:
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
   dockerimage: demisto/python3:3.9.9.25564
-  runonce: false
   script: ''
   subtype: python3
   type: python

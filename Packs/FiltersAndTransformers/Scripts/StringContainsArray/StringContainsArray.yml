@@ -16,7 +16,6 @@ args:
 - name: right
   description: The array of substrings to search in the string, e.g., ["string1","string2"]
 scripttarget: 0
-runonce: false
 tests:
 - StringContainsArray_test
 fromversion: 5.0.0

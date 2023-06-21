@@ -4,12 +4,7 @@ commonfields:
 name: ArcusTeam
 display: ArcusTeam
 category: Data Enrichment & Threat Intelligence
-description: 'The ArcusTeam API allows the user to inspect connected devices'' attack
-  surface. By feeding device identifiers and the software it runs: DeviceTotal will
-  return a map of the device’s attack surface. DeviceTotal was built from the ground
-  up in order to provide complete visibility into connected devices and mitigate 3rd
-  party risk. DeviceTotal can continuously identify & predict such that the connected
-  device security posture is being assessed, prioritized and mitigated effectively.'
+description: 'The ArcusTeam API allows the user to inspect connected devices'' attack surface. By feeding device identifiers and the software it runs: DeviceTotal will return a map of the device’s attack surface. DeviceTotal was built from the ground up in order to provide complete visibility into connected devices and mitigate 3rd party risk. DeviceTotal can continuously identify & predict such that the connected device security posture is being assessed, prioritized and mitigated effectively.'
 configuration:
 - display: Server URL (e.g. https://web.prod.arcusteam.com)
   name: url
@@ -30,11 +25,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -172,7 +165,6 @@ script:
       type: string
     description: ' Retrieve CVEs for an ArcusTeam device'
   dockerimage: demisto/python3:3.10.11.54132
-  runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:

@@ -31,11 +31,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: '-'
   type: python
@@ -296,5 +294,4 @@ script:
     execution: true
     outputs: []
   dockerimage: demisto/carbon-black-cloud:1.0.0.61452
-  runonce: false
   subtype: python3

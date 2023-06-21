@@ -18,7 +18,6 @@ outputs:
 - contextPath: RetrievePlaybooksAndIntegrations.Integrations
   description: Names of all Integrations used
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

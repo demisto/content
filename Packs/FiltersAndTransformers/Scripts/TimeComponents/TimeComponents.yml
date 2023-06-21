@@ -97,7 +97,6 @@ args:
   description: The name of a key to choose which time component to return
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.8.37753
 runas: DBotWeakRole
 fromversion: 6.5.0
