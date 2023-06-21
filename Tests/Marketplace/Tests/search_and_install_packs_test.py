@@ -116,6 +116,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
 
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
+    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)  # Relevant only for post-update unit-tests
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
                                                                                       client=client,
