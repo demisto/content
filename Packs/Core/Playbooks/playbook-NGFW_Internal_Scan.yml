@@ -221,7 +221,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 840
+          "y": 1340
         }
       }
     note: false
@@ -316,7 +316,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 980
+          "y": 1480
         }
       }
     note: false
@@ -342,7 +342,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "11"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -389,7 +389,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1150
+          "y": 1650
         }
       }
     note: false
@@ -419,7 +419,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1290
+          "y": 1790
         }
       }
     note: false
@@ -464,7 +464,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1460
+          "y": 1960
         }
       }
     note: false
@@ -495,7 +495,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 1630
+          "y": 2130
         }
       }
     note: false
@@ -522,7 +522,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1990
+          "y": 2490
         }
       }
     note: false
@@ -553,7 +553,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1810
+          "y": 2310
         }
       }
     note: false
@@ -640,18 +640,192 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6dbec345-05c5-4203-8c12-1b2ab81410d8
+    type: regular
+    task:
+      id: 6dbec345-05c5-4203-8c12-1b2ab81410d8
+      version: -1
+      name: Set Incident Severity to High
+      description: commands.local.cmd.set.parent.incident.field
+      script: Builtin|||setParentIncidentField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: manual_severity
+      value:
+        simple: high
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3e3cd67a-5288-4489-8697-11ddbd6c6c5f
+    type: condition
+    task:
+      id: 3e3cd67a-5288-4489-8697-11ddbd6c6c5f
+      version: -1
+      name: Should open a ticket automatically in a ticketing system?
+      description: Checks whether to open a ticket automatically in a ticketing system.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldOpenTicket
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 9c16cf70-885d-4b45-8333-5722e50f131a
+    type: playbook
+    task:
+      id: 9c16cf70-885d-4b45-8333-5722e50f131a
+      version: -1
+      name: Ticket Management - Generic
+      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      playbookName: Ticket Management - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      CommentToAdd:
+        complex:
+          root: inputs.CommentToAdd
+      ZendeskAssigne:
+        complex:
+          root: inputs.ZendeskAssigne
+      ZendeskCollaborators:
+        complex:
+          root: inputs.ZendeskCollaborators
+      ZendeskPriority:
+        complex:
+          root: inputs.ZendeskPriority
+      ZendeskRequester:
+        complex:
+          root: inputs.ZendeskRequester
+      ZendeskStatus:
+        complex:
+          root: inputs.ZendeskStatus
+      ZendeskSubject:
+        complex:
+          root: inputs.ZendeskSubject
+      ZendeskTags:
+        complex:
+          root: inputs.ZendeskTags
+      ZendeskType:
+        complex:
+          root: inputs.ZendeskType
+      addCommentPerEndpoint:
+        complex:
+          root: inputs.addCommentPerEndpoint
+      description:
+        complex:
+          root: inputs.description
+      serviceNowAssignmentGroup:
+        complex:
+          root: inputs.serviceNowAssignmentGroup
+      serviceNowCategory:
+        complex:
+          root: inputs.serviceNowCategory
+      serviceNowImpact:
+        complex:
+          root: inputs.serviceNowImpact
+      serviceNowSeverity:
+        complex:
+          root: inputs.serviceNowSeverity
+      serviceNowShortDescription:
+        complex:
+          root: inputs.serviceNowShortDescription
+      serviceNowTicketType:
+        complex:
+          root: inputs.serviceNowTicketType
+      serviceNowUrgency:
+        complex:
+          root: inputs.serviceNowUrgency
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "15_11_yes": 0.57,
       "15_16_#default#": 0.46,
       "18_19_#default#": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 2195,
-        "width": 990,
-        "x": 60,
+        "height": 2695,
+        "width": 1250,
+        "x": -200,
         "y": -140
       }
     }
@@ -684,6 +858,107 @@ inputs:
   value: {}
   required: false
   description: Whether to execute endpoint isolation automatically or manually.
+  playbookInputQuery:
+- key: ShouldOpenTicket
+  value:
+    simple: "False"
+  required: false
+  description: Whether to open a ticket automatically in a ticketing system. (True/False).
+  playbookInputQuery:
+- key: serviceNowShortDescription
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: A short description of the ticket.
+  playbookInputQuery:
+- key: serviceNowImpact
+  value: {}
+  required: false
+  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+  playbookInputQuery:
+- key: serviceNowUrgency
+  value: {}
+  required: false
+  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+  playbookInputQuery:
+- key: serviceNowSeverity
+  value: {}
+  required: false
+  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  playbookInputQuery:
+- key: serviceNowTicketType
+  value: {}
+  required: false
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery:
+- key: serviceNowCategory
+  value: {}
+  required: false
+  description: The category of the ServiceNow ticket.
+  playbookInputQuery:
+- key: serviceNowAssignmentGroup
+  value: {}
+  required: false
+  description: The group to which to assign the new ticket.
+  playbookInputQuery:
+- key: ZendeskPriority
+  value: {}
+  required: false
+  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  playbookInputQuery:
+- key: ZendeskRequester
+  value: {}
+  required: false
+  description: The user who requested this ticket.
+  playbookInputQuery:
+- key: ZendeskStatus
+  value: {}
+  required: false
+  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  playbookInputQuery:
+- key: ZendeskSubject
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: The value of the subject field for this ticket.
+  playbookInputQuery:
+- key: ZendeskTags
+  value: {}
+  required: false
+  description: The array of tags applied to this ticket.
+  playbookInputQuery:
+- key: ZendeskType
+  value: {}
+  required: false
+  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  playbookInputQuery:
+- key: ZendeskAssigne
+  value: {}
+  required: false
+  description: The agent currently assigned to the ticket.
+  playbookInputQuery:
+- key: ZendeskCollaborators
+  value: {}
+  required: false
+  description: The users currently CC'ed on the ticket.
+  playbookInputQuery:
+- key: description
+  value:
+    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+  required: false
+  description: The ticket description.
+  playbookInputQuery:
+- key: addCommentPerEndpoint
+  value:
+    simple: "True"
+  required: false
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  playbookInputQuery:
+- key: CommentToAdd
+  value:
+    simple: '${alert.name}. Alert ID: ${alert.id}'
+  required: false
+  description: Comment for the ticket.
   playbookInputQuery:
 outputs: []
 tests:
