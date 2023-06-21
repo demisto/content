@@ -11,7 +11,7 @@ var sendRequest = function(args) {
     var queryArgs = {};
     var argKeys = Object.keys(args);
     var key =  params.credentials_api_key !== null ? params.credentials_api_key.password : params.key;
-    if (key !== null)
+    if (!key)
         return('API key must be provided.');
     for (var i = 0; i < argKeys.length; i++) {
         queryArgs[argKeys[i].replace('-','_')] = args[argKeys[i]];
