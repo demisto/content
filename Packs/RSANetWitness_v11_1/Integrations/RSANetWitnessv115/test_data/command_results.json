@@ -475,7 +475,7 @@
       "hasNext": false,
       "hasPrevious": false
     },
-    "HumanReadable": "### RSA NetWitness 11.5 -  Endpoint: 1\n|Hostname|ID|IPAddress|MACAddress|Vendor|\n|---|---|---|---|---|\n| host_name | 1 | ['1.1.1.1'] | 01:11:11:AA:11:11 | RSA NetWitness 11.5 Response |\n",
+    "HumanReadable": "### RSA NetWitness -  Endpoint: 1\n|Hostname|ID|IPAddress|MACAddress|Vendor|\n|---|---|---|---|---|\n| host_name | 1 | ['1.1.1.1'] | 01:11:11:AA:11:11 | RSA NetWitness Response |\n",
     "EntryContext": {
       "Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)": [
         {
@@ -489,7 +489,7 @@
           "MACAddress": [
             "01:11:11:AA:11:11"
           ],
-          "Vendor": "RSA NetWitness 11.5 Response"
+          "Vendor": "RSA NetWitness Response"
         }
       ]
     },
