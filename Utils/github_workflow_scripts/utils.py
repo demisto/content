@@ -145,3 +145,20 @@ class Checkout:  # pragma: no cover
         """Checks out the previous branch"""
         self.repo.git.checkout(self._original_branch)
         print(f"Checked out to original branch {self._original_branch}")
+
+
+class ChangeCWD:
+    """
+    Temporary changes the cwd to the given dir and then reverts it.
+    Use with 'with' statement.
+    """
+
+    def __init__(self, directory):
+        self.current = os.getcwd()
+        self.directory = directory
+
+    def __enter__(self):
+        os.chdir(self.directory)
+
+    def __exit__(self, *args):
+        os.chdir(self.current)
