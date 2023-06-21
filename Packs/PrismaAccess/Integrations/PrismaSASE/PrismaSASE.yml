@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Palo Alto Networks - Prisma SASE
+  id: Palo Alto Networks - Prisma SASE Dev
   version: -1
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
@@ -36,8 +36,8 @@ configuration:
   section: Connect
   advanced: true
 description: Provides commands for interaction with Prisma SASE API.
-display: Palo Alto Networks - Prisma SASE
-name: Palo Alto Networks - Prisma SASE
+display: Palo Alto Networks - Prisma SASE Dev
+name: Palo Alto Networks - Prisma SASE Dev
 script:
   commands:
   - arguments:
@@ -796,8 +796,6 @@ script:
       description: Address name.
       type: String
   - arguments:
-    - description: The name of the object to use as a filter.
-      name: name
     - description: ID of the address object to delete.
       name: object_id
       default: false
@@ -810,6 +808,8 @@ script:
     execution: false
     name: prisma-sase-address-object-delete
   - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
     - default: false
       description: The specific address object to return. If not specified, all addresses will be returned.
       isArray: false
