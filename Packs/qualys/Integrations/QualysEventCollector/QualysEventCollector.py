@@ -254,6 +254,7 @@ def get_detections_from_hosts(hosts):
             elif isinstance(detections_list, dict):
                 new_detection = copy.deepcopy(host)
                 new_detection['DETECTION'] = detections_list
+                del new_detection['DETECTION_LIST']
                 fetched_events.append(new_detection)
         else:
             del host['DETECTION_LIST']
@@ -302,12 +303,15 @@ def get_host_list_detections_events(client, last_run, max_fetch) -> tuple[Option
     host_list_events = handle_host_list_detection_result(host_list_detections) or []
     next_run = host_list_events[0].get('LAST_VM_SCANNED_DATE') if host_list_events else last_run
 
-    edited_host_detections = get_detections_from_hosts(host_list_events)
-    demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} events.')
+    if next_run == last_run:
+        edited_host_detections = []
+    else:
+        edited_host_detections = get_detections_from_hosts(host_list_events)
+        demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} events.')
 
-    edited_host_detections = remove_events_before_last_scan(edited_host_detections, last_run)
+        edited_host_detections = remove_events_before_last_scan(edited_host_detections, last_run)
 
-    add_fields_to_events(edited_host_detections, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
+        add_fields_to_events(edited_host_detections, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
 
     next_run_dict = {
         'host_list_detection': next_run,
