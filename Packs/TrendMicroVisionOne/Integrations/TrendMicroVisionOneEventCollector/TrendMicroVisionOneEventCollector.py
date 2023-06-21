@@ -651,7 +651,7 @@ def get_workbench_logs(
                     _entity['provenance'] = ','.join(provenance)
                 if (entity_value := _entity.get('entityValue')) and isinstance(entity_value, dict):
                     if (_ips := entity_value.get('ips')) and isinstance(_ips, list):
-                        _ips = ','.join(_ips)
+                        entity_value['ips'] = ','.join(_ips)
 
     workbench_cache_time_field_name = LastRunTimeCacheTimeFieldNames.WORKBENCH.value
     workbench_log_type = LogTypes.WORKBENCH.value
