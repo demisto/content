@@ -56,12 +56,10 @@ configuration:
   type: 0
 - additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
-  hidden: false
   name: use_legacy_sessions
   required: false
   type: 8
-description: Service management suite that comprises ticketing, workflow automation,
-  and notification.
+description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
 name: OTRS
 script:
