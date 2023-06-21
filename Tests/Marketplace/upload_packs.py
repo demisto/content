@@ -26,7 +26,7 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
-from Tests.Marketplace.pack_readme_handler import replace_readme_urls, download_readme_images_from_url_data_list
+from Tests.Marketplace.pack_readme_handler import replace_readme_urls, download_readme_images_from_artifacts
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -345,50 +345,6 @@ def upload_index_to_storage(index_folder_path: str,
                 os.path.join(artifacts_dir, f'{index_name}.json'),
             )
         shutil.rmtree(index_folder_path)
-
-
-def init_index_v2(storage_base_path: str, extract_destination_path: str, storage_bucket, index_folder_path: str) -> tuple:
-    """
-    Args:
-        storage_base_path (str): The storage base path.
-        extract_destination_path (str): Extract_destination path.
-        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
-        index_folder_path (str): The path to the local folder of the index file.
-    Returns:
-        index_v2_local_path (str): The path to the local folder of the index_v2.
-        index_v2_blob (Blob): google cloud storage object that represents index_v2.zip blob.
-    """
-    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
-    index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
-    index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
-    shutil.copytree(index_folder_path, index_v2_local_path)
-    return index_v2_local_path, index_v2_blob
-
-
-def upload_index_v2(index_folder_path: str,
-                    extract_destination_path: str,
-                    index_blob: Any,
-                    index_name: str = GCPConfig.INDEX_V2_NAME):
-    """
-    Args:
-        index_folder_path (str): The path to the index_v2 folder.
-        extract_destination_path (str),
-        index_blob (Blob) : The blob to upload to.
-        index_name (str): Index_name
-    """
-    index_zip_name = os.path.basename(index_folder_path)
-    index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
-                                         root_dir=extract_destination_path, base_dir=index_zip_name)
-
-    try:
-        index_blob.upload_from_filename(index_zip_path)
-        logging.success(f"Finished uploading {index_name}.zip to storage.")
-    except Exception:
-        logging.exception(f"Failed in uploading {index_name}.")
-        sys.exit(1)
-    finally:
-        shutil.rmtree(index_folder_path)
-
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
                             artifacts_dir: str, storage_base_path: str, marketplace: str = 'xsoar'):
@@ -1249,8 +1205,10 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
+    artifact_folder_path = Path(packs_artifacts_path).parent
+    uploaded_packs_dir = Path(artifact_folder_path / f'uploaded_packs-{"id_set" if id_set else "graph"}')
+    readme_images_data = Path(artifact_folder_path / 'readme_images.json')
 
-    uploaded_packs_dir = Path(packs_artifacts_path).parent / f'uploaded_packs-{"id_set" if id_set else "graph"}'
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow
     if storage_bucket_name:
@@ -1483,18 +1441,7 @@ def main():
                        previous_commit_hash=previous_commit_hash,
                        landing_page_sections=statistics_handler.landing_page_sections)
 
-    logging.info('Starting initialize index_v2')
-    index_v2_local_path, index_v2_blob = init_index_v2(storage_base_path, extract_destination_path,
-                                                       storage_bucket, index_folder_path)
-
-    logging.info('Starting to replace the readme images urls in index_V2')
-    replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
-                        marketplace=marketplace, index_v2=True)
-
-    readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
-                                                                    storage_base_path=storage_base_path,
-                                                                    marketplace=marketplace)
-    download_readme_images_from_url_data_list(readme_urls_data_list, storage_bucket=storage_bucket)
+    download_readme_images_from_artifacts(readme_images_data, storage_bucket=storage_bucket)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,
@@ -1504,14 +1451,6 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path)
                             )
 
-    logging.info('Staring to upload index v2')
-
-    upload_index_v2(index_folder_path=index_v2_local_path,
-                    extract_destination_path=extract_destination_path,
-                    index_blob=index_v2_blob,
-                    index_name=GCPConfig.INDEX_V2_NAME)
-
-    logging.info('Finished uploading index v2')
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
