@@ -567,12 +567,12 @@ def incident_to_incident_context(incident):
 
 def idp_detection_to_incident_context(idp_detection):
     """
-            Creates an incident context of a incident.
+            Creates an incident context of an IDP detection.
 
-            :type incident: ``dict``
-            :param incident: Single detection object
+            :type idp_detection: ``dict``
+            :param idp_detection: Single IDP detection object
 
-            :return: Incident context representation of a incident
+            :return: Incident context representation of an IDP detection.
             :rtype ``dict``
         """
     add_mirroring_fields(idp_detection)
@@ -1332,6 +1332,19 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
 
 
 def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True):
+    """
+        Send a request to retrieve IDP detections IDs.
+
+        :type filter_arg: ``str``
+        :param filter_arg: The filter to add to the query.
+        :type offset: ``int``
+        :param offset: The offset for the query.
+        :type has_limit: ``bool``
+        :param has_limit: Wether there's limit param to add to the query.
+
+        :return: The response.
+        :rtype ``dict``
+    """
     get_incidents_endpoint = '/alerts/queries/alerts/v1'
     params = {
         'sort': 'start.asc',
@@ -1342,7 +1355,6 @@ def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True):
         params['limit'] = INCIDENTS_PER_FETCH
 
     response = http_request('GET', get_incidents_endpoint, params)
-    demisto.debug(f"cs falcon: {response=}")
     return response
 
 
@@ -1357,6 +1369,15 @@ def get_incidents_entities(incidents_ids: List):
 
 
 def get_idp_detection_entities(incidents_ids: List):
+    """
+        Send a request to retrieve IDP detection entities.
+
+        :type incidents_ids: ``list``
+        :param incidents_ids: The list of ids to search their entities.
+
+        :return: The response.
+        :rtype ``dict``
+    """
     ids_json = {'ids': incidents_ids}
     response = http_request(
         'POST',
