@@ -1,4 +1,4 @@
-This playbook uploads, detonates, and analyzes URLs for the CrowdStrike Falcon Intelligence Sandbox.
+Deprecated. Use cs-fx-submit-url command instead. This playbook uploads, detonates, and analyzes URLs for the CrowdStrike Falcon Intelligence Sandbox.
 
 ## Dependencies
 

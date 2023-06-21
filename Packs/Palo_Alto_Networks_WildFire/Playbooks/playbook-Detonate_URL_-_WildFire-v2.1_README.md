@@ -1,4 +1,4 @@
-Detonate a URL using the WFire integration. This playbook returns relevant reports for a submitted URL and URL reputation to the context data.
+Deprecated. Use wildfire-upload-url command instead. Detonate a URL using the WFire integration. This playbook returns relevant reports for a submitted URL and URL reputation to the context data.
 
 ## Dependencies
 

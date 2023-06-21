@@ -2,6 +2,7 @@ id: Detonate URL - WildFire v2.1
 version: -1
 name: Detonate URL - WildFire v2.1
 fromversion: 6.8.0
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":
@@ -266,4 +267,4 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Detonate a URL using the WFire integration. This playbook returns relevant reports for a submitted URL and URL reputation to the context data.
+description: Deprecated. Use wildfire-upload-url command instead. Detonate a URL using the WFire integration. This playbook returns relevant reports for a submitted URL and URL reputation to the context data.
