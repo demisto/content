@@ -12,7 +12,7 @@ def get_secrets_to_delete(options: argparse.Namespace, secret_conf: GoogleSecret
     :return: a list of secret IDs to delete
     """
 
-    secrets = secret_conf.list_secrets(options.gsm_project_id, with_secrets=False, ignore_dev=False)
+    secrets = secret_conf.list_secrets(options.gsm_project_id, with_secrets=False, ignore_dev=False, ignore_merged=False)
     print(f'{secrets=}')
     secrets_to_delete = []
     ttl = int(options.secret_ttl)

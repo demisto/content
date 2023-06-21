@@ -50,14 +50,14 @@ class GoogleSecreteManagerModule:
             return {}
 
     def list_secrets(self, project_id: str, name_filter=None, with_secrets: bool = False, branch_name='',
-                     ignore_dev: bool = True) -> list:
+                     ignore_dev: bool = True, ignore_merged: bool = True) -> list:
         """
         Lists secrets from GSM
         :param project_id: the ID of the GCP project
         :param name_filter: a secret name to filter results by
         :param with_secrets: indicates if we want to bring the secret value(will need another API call per scret or just metadata)
         :param branch_name: filter results according to the label 'branch'
-        :param ignore_dev: indicates whether we ignore secrets with the 'dev' label
+        :param ignore_merged: indicates whether we ignore secrets with the 'merged' label
         :return: the secret as json5 object
         """
         if name_filter is None:
@@ -75,6 +75,7 @@ class GoogleSecreteManagerModule:
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
             if not secret_pack_id or labels.get('ignore') or (ignore_dev and labels.get('dev')) or (
+                ignore_merged and labels.get('merged')) or (
                 not ignore_dev and not labels.get('dev')) or (
                 formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
                 branch_name and labels.get('branch', '') != branch_name):
