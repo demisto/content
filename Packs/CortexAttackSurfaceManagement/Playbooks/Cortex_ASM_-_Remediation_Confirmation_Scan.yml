@@ -45,10 +45,10 @@ tasks:
       version: -1
       name: Start Remediation Confirmation Scan
       description: Starts a new Remediation Confirmation Scan or gets an existing scan ID
-      script: '|||asm-start-remediation-confirmation-scan'
+      script: Cortex Attack Surface Management|||asm-start-remediation-confirmation-scan
       type: regular
       iscommand: true
-      brand: ""
+      brand: Cortex Attack Surface Management
     nexttasks:
       '#none#':
       - "2"
@@ -453,10 +453,10 @@ tasks:
       version: -1
       name: Poll for status from Remediation Confirmation Scan
       description: Get status of an existing remediation confirmation scan.
-      script: Cortex Attack Surface Management - RCS|||asm-get-remediation-confirmation-scan-status
+      script: Cortex Attack Surface Management|||asm-get-remediation-confirmation-scan-status
       type: regular
       iscommand: true
-      brand: Cortex Attack Surface Management - RCS
+      brand: Cortex Attack Surface Management
     nexttasks:
       '#none#':
       - "7"
