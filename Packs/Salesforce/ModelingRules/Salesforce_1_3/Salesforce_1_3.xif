@@ -10,14 +10,22 @@ alter xdm.source.user.identifier = replex(_USER_ID_ ,"\"",""),
     xdm.source.user_agent = replex(_BROWSER_TYPE_ ,"\"",""),
     xdm.network.tls.cipher = replex(_CIPHER_SUITE_ ,"\"",""),
     xdm.network.tls.protocol_version = replex(_TLS_PROTOCOL_ ,"\"",""),
-    xdm.database.response_time = to_integer(replex(_DB_TOTAL_TIME_ ,"\"",""));
+    xdm.database.response_time = to_integer(replex(_DB_TOTAL_TIME_ ,"\"","")),
+    xdm.logon.logon_guid = replex(_LOGIN_KEY_ ,"\"",""),
+    xdm.observer.version = replex(_API_VERSION_ ,"\"",""),
+    xdm.event.outcome_reason = replex(_LOGIN_STATUS_ ,"\"",""),
+    xdm.source.host.os = replex(_PLATFORM_TYPE_ ,"\"",""),
+    xdm.auth.auth_method = replex(_AUTHENTICATION_METHOD_REFERENCE_ ,"\"","");
 
 [MODEL: dataset = salesforce_audit_raw]
 alter xdm.event.operation_sub_type = Action,
     xdm.event.description = Display,
     xdm.source.user.identifier = CreatedById,
     xdm.target.resource.id = Id,
-    xdm.source.user.username = DelegateUser;
+    xdm.source.user.username = DelegateUser,
+    xdm.event.type = json_extract_scalar("$.type",attributes ),
+    xdm.source.user.username = CreatedByIssuer,
+    xdm.target.user.username = DelegateUser;
 
 [MODEL: dataset = salesforce_eventlogfile_raw]
 alter method = coalesce(replex(_METHOD_ ,"\"",""),replex(_HTTP_METHOD_,"\"","")),

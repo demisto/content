@@ -1,6 +1,5 @@
+## Salesforce
+The Cortex XSIAM data collector can collect Audit Trail and Security Monitoring event logs from Salesforce.com.
+
 ## Collect Events from Vendor
-To configure the collector for Salesforce, follow the XDR documentation:
-
-https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-and-Data-from-Salesforce.com
-
-https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Logs-and-Data-from-Salesforce.com
+To configure the collector for Salesforce, follow the XDR documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-and-Data-from-Salesforce.com).

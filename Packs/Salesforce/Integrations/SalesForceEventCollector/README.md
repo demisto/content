@@ -1,5 +1,4 @@
 Deprecated. Use XSIAM/XDR Salesforce integration instead.
-This integration was integrated and tested with version xx of Salesforce Event Collector
 
 ## Configure Salesforce Event Collector on Cortex XSOAR
 
