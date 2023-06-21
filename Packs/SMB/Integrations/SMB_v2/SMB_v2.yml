@@ -1,8 +1,8 @@
 commonfields:
-  id: Server Message Block (SMB) v2
+  id: Server Message Block (SMB) v2 - fix
   version: -1
-name: Server Message Block (SMB) v2
-display: Server Message Block (SMB) v2
+name: Server Message Block (SMB) v2 - fix
+display: Server Message Block (SMB) v2 - fix
 category: Utilities
 description: Files and Directories management with an SMB server. Supports SMB2 and SMB3 protocols.
 configuration:
