@@ -4421,7 +4421,7 @@ script:
       - 'DESCENDING'
       - 'ASCENDING'
       auto: PREDEFINED
-      defaultvalue: ASCENDING
+      defaultValue: ASCENDING
     - description: Comma separated list of entity ids to look for.
       name: entity_id
       required: false
