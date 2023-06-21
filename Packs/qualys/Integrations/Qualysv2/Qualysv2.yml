@@ -1,4 +1,4 @@
-category: Utilities
+category: Vulnerability Management
 commonfields:
   id: QualysV2
   version: -1
@@ -2670,7 +2670,7 @@ script:
     description: Delete an existing asset tag.
     name: qualys-asset-tag-delete
 
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.11.61265
   runonce: false
   script: ''
   subtype: python3

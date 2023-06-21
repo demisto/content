@@ -28,17 +28,9 @@
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         },
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
-        },
         "MicrosoftGraphListener": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail Single User"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
         },
         "MailSenderNew": {
             "mandatory": false,
