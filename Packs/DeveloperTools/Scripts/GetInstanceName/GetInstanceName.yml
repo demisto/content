@@ -15,7 +15,6 @@ comment: Given an integration name, returns the instance name.
 commonfields:
   id: GetInstanceName
   version: -1
-enabled: false
 name: GetInstanceName
 outputs:
 - contextPath: Instances.integrationName

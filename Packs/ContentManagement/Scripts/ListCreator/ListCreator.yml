@@ -14,7 +14,6 @@ args:
 commonfields:
   id: ListCreator
   version: -1
-enabled: false
 name: ListCreator
 comment: List Creator for the Content Management pack.
 outputs:
