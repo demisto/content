@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Palo Alto Networks - Prisma SASE Dev
+  id: Palo Alto Networks - Prisma SASE
   version: -1
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
@@ -36,8 +36,8 @@ configuration:
   section: Connect
   advanced: true
 description: Provides commands for interaction with Prisma SASE API.
-display: Palo Alto Networks - Prisma SASE Dev
-name: Palo Alto Networks - Prisma SASE Dev
+display: Palo Alto Networks - Prisma SASE
+name: Palo Alto Networks - Prisma SASE
 script:
   commands:
   - arguments:
