@@ -2836,9 +2836,6 @@ def create_indicator_command(client: Client, args: Dict[str, Any]) -> CommandRes
         else:
             payload['platforms'] = [args.get('platforms')]
 
-    #For dev purpose only
-    demisto.log(str(payload))
-
     response = client.new_indicator_request(category, payload)
 
     md_table = tableToMarkdown('FireEye HX New Indicator created successfully', {'ID': response.get('data').get('_id')})
