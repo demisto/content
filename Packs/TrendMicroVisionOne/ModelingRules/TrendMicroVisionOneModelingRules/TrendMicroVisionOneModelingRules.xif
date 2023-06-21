@@ -147,7 +147,7 @@ filter
     xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ", "), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ", "), json_extract_scalar(detail, "$.src")),
     xdm.source.host.mac_addresses = json_extract_array(detail, "$.endpointMacAddress"),
     xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
-    xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ", "),
+    xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSignerValid"), if("@element" = "true", SIGNED_VERIFIED, "@element" = "false", SIGNED_INVALID, "@element" != "false" and "@element" != "true", STATUS_UNKNOWN)), ", "),
     xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ", "),
     xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ", "),
     xdm.event.original_event_type = event_type;
