@@ -12,7 +12,6 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-
 class TestFetchActivity:
     @pytest.fixture(autouse=True)
     def create_client(self, mocker):
