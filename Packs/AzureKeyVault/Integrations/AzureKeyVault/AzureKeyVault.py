@@ -5,11 +5,11 @@ import requests
 from datetime import datetime
 import copy
 
+from MicrosoftApiModule import *  # noqa: E402
+
 APP_NAME = 'azure-key-vault'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 AUTHORIZATION_CODE = 'authorization_code'
-MANAGEMENT_RESOURCE = 'https://management.azure.com'
-VAULT_RESOURCE = 'https://vault.azure.net'
 VAULT_NAME_CONTEXT_FIELD = 'key_vault_name'
 
 DEFAULT_LIMIT = 50
@@ -24,20 +24,22 @@ class KeyVaultClient:
     def __init__(self, tenant_id: str, client_id: str, client_secret: str,
                  subscription_id: str, resource_group_name: str,
                  verify: bool, proxy: bool, certificate_thumbprint: Optional[str], private_key: Optional[str],
-                 managed_identities_client_id: Optional[str] = None):
-
+                 managed_identities_client_id: Optional[str] = None,
+                 azure_cloud: Optional[AzureCloud] = None):
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=client_id,
             enc_key=client_secret,
-            token_retrieval_url=f'https://login.microsoftonline.com/{tenant_id}/oauth2/token',
+            token_retrieval_url=urljoin(self.azure_cloud.endpoints.active_directory, f'/{tenant_id}/oauth2/token'),
             app_name=APP_NAME,
-            base_url=f'https://management.azure.com/subscriptions/{subscription_id}/'
-                     f'resourceGroups/{resource_group_name}/providers/Microsoft.KeyVault',
+            base_url=urljoin(self.azure_cloud.endpoints.resource_manager,
+                             f'/subscriptions/{subscription_id}/resourceGroups/'
+                             f'{resource_group_name}/providers/Microsoft.KeyVault'),
             verify=verify,
             proxy=proxy,
             multi_resource=True,
-            resources=[MANAGEMENT_RESOURCE, VAULT_RESOURCE],
+            resources=[self.get_management_resource(), self.get_vault_resource()],
             resource='',
             scope='',
             tenant_id=tenant_id,
@@ -47,17 +49,25 @@ class KeyVaultClient:
             managed_identities_client_id=managed_identities_client_id,
         )
 
+    def get_vault_resource(self) -> str:
+        return self.azure_cloud.endpoints.keyvault
+
+    def get_management_resource(self) -> str:
+        return self.azure_cloud.endpoints.resource_manager
+
     def http_request(self, method: str, url_suffix: str = None, full_url: str = None,
                      params: dict = None,
                      data: dict = None,
-                     resource: str = MANAGEMENT_RESOURCE):
+                     resource: Optional[str] = None):
         """
         Wrapper to MicrosoftClient http_request method.
 
         """
+        resource = resource or self.get_management_resource()
         if not params:
             params = {}
-        params['api-version'] = '2019-09-01' if resource == MANAGEMENT_RESOURCE else '7.2'
+
+        params['api-version'] = '2019-09-01' if resource == self.get_management_resource() else '7.2'
         res = self.ms_client.http_request(method=method,
                                           url_suffix=url_suffix,
                                           full_url=full_url,
@@ -105,7 +115,7 @@ class KeyVaultClient:
             enabled_for_template_deployment (bool): permission for Azure Resource Manager to retrieve secrets.
             default_action (str): The default action.
             bypass (str): bypass network rules.Network acl property.Default is 'AzureServices'.
-            vnet_subnet_id:(str): Full resource id of a vnet subnet.
+            vnet_subnet_id (str): Full resource id of a vnet subnet.
             ignore_missing_vnet_service_endpoint (bool): NRP will ignore the check.
             ip_rules (List[str],optional) : The list of IP address rules.
 
@@ -219,11 +229,11 @@ class KeyVaultClient:
             Dict[str, Any]: API response from Azure.
         """
 
-        url = f'https://{vault_name}.vault.azure.net/keys/{key_name}'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/keys/{key_name}'
         if key_version:
             url = url + f'/{key_version}'
         response = self.http_request(
-            'GET', full_url=url, resource=VAULT_RESOURCE)
+            'GET', full_url=url, resource=self.get_vault_resource())
 
         return response
 
@@ -239,11 +249,11 @@ class KeyVaultClient:
             Dict[str, Any]: API response from Azure.
 
         """
-        url = f'https://{vault_name}.vault.azure.net/keys'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/keys'
         response = self.http_request(
-            'GET', full_url=url, resource=VAULT_RESOURCE)
+            'GET', full_url=url, resource=self.get_vault_resource())
 
-        return self.get_entities_independent_of_pages(response, limit, offset, VAULT_RESOURCE)
+        return self.get_entities_independent_of_pages(response, limit, offset, self.get_vault_resource())
 
     def delete_key_request(self, vault_name: str, key_name: str) -> Dict[str, Any]:
         """
@@ -256,9 +266,9 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: response json
         """
-        url = f'https://{vault_name}.vault.azure.net/keys/{key_name}'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/keys/{key_name}'
         response = self.http_request(
-            'DELETE', full_url=url, resource=VAULT_RESOURCE)
+            'DELETE', full_url=url, resource=self.get_vault_resource())
 
         return response
 
@@ -273,11 +283,11 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = f'https://{vault_name}.vault.azure.net/secrets/{secret_name}'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/secrets/{secret_name}'
         if secret_version:
             url = url + f'/{secret_version}'
         response = self.http_request(
-            'GET', full_url=url, resource=VAULT_RESOURCE)
+            'GET', full_url=url, resource=self.get_vault_resource())
 
         return response
 
@@ -293,11 +303,11 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = f'https://{vault_name}.vault.azure.net/secrets'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/secrets'
         response = self.http_request(
-            'GET', full_url=url, resource=VAULT_RESOURCE)
+            'GET', full_url=url, resource=self.get_vault_resource())
 
-        return self.get_entities_independent_of_pages(response, limit, offset, VAULT_RESOURCE)
+        return self.get_entities_independent_of_pages(response, limit, offset, self.get_vault_resource())
 
     def delete_secret_request(self, vault_name: str, secret_name: str) -> Dict[str, Any]:
         """
@@ -310,9 +320,9 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = f'https://{vault_name}.vault.azure.net/secrets/{secret_name}'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/secrets/{secret_name}'
         response = self.http_request(
-            'DELETE', full_url=url, resource=VAULT_RESOURCE)
+            'DELETE', full_url=url, resource=self.get_vault_resource())
         return response
 
     def get_certificate_request(self, vault_name: str,
@@ -328,12 +338,12 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = f'https://{vault_name}.vault.azure.net/certificates/{certificate_name}'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/certificates/{certificate_name}'
         if certificate_version:
             url = url + f'/{certificate_version}'
         response = self.http_request(
             'GET', full_url=url,
-            resource=VAULT_RESOURCE)
+            resource=self.get_vault_resource())
 
         return response
 
@@ -349,12 +359,12 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: response json
         """
-        url = f'https://{vault_name}.vault.azure.net/certificates'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/certificates'
 
         response = self.http_request(
-            'GET', full_url=url, resource=VAULT_RESOURCE)
+            'GET', full_url=url, resource=self.get_vault_resource())
 
-        return self.get_entities_independent_of_pages(response, limit, offset, VAULT_RESOURCE)
+        return self.get_entities_independent_of_pages(response, limit, offset, self.get_vault_resource())
 
     def get_certificate_policy_request(self, vault_name: str, certificate_name: str) -> Dict[str, Any]:
         """
@@ -362,14 +372,14 @@ class KeyVaultClient:
 
         Args:
             vault_name (str): Key Vault name.
-            certificate_name (str): the name of the certificate to retrieve it's policy.
+            certificate_name (str): the name of the certificate to retrieve its policy.
 
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = f'https://{vault_name}.vault.azure.net/certificates/{certificate_name}/policy'
+        url = f'https://{vault_name}{self.azure_cloud.suffixes.keyvault_dns}/certificates/{certificate_name}/policy'
         response = self.http_request(
-            'GET', full_url=url, resource=VAULT_RESOURCE)
+            'GET', full_url=url, resource=self.get_vault_resource())
 
         return response
 
@@ -437,7 +447,6 @@ class KeyVaultClient:
                                 enabled_for_disk_encryption: bool,
                                 enabled_for_template_deployment: bool, sku_name: str,
                                 permissions: Dict[str, Any], network_acls: Dict[str, Any]):
-
         """
         Configure the properties of a vault on create or update command.
 
@@ -468,7 +477,7 @@ class KeyVaultClient:
         return properties
 
     def get_entities_independent_of_pages(self, first_page: Dict[str, Any], limit: int, offset: int,
-                                          resource: str = MANAGEMENT_RESOURCE) -> List[dict]:
+                                          resource: Optional[str] = None) -> List[dict]:
         """
         List the entities according to the offset and limit arguments,
         following the first API call to the endpoint.
@@ -480,11 +489,12 @@ class KeyVaultClient:
             first_page (Dict[str, Any]): The first list of entities which returned by the first API call.
             limit (int): limit on the number of entities to retrieve to the user.
             offset (int): first index to return from.
-            resource (str): Azure resource. Default is MANAGEMENT_RESOURCE.
+            resource (str | None): Azure resource. Default's to management resource.
 
         Returns:
             List[dict]: List of Key Vaults/Keys/Secrets/Certificates.
         """
+        resource = resource or self.get_management_resource()
         entities = first_page.get('value')
         next_page_url = first_page.get('nextLink')
         # more entities to get
@@ -509,7 +519,7 @@ class KeyVaultClient:
                 "password": secret_value,
                 "name": f'{key_vault_name}/{secret_name}'
             }
-        except Exception:  # in case the secret does not exists in the vault
+        except Exception:  # in case the secret does not exist in the vault
             return None
 
 
@@ -1119,8 +1129,8 @@ def test_module(client: KeyVaultClient) -> None:
          None
      """
     try:
-        client.ms_client.get_access_token(resource=MANAGEMENT_RESOURCE)
-        client.ms_client.get_access_token(resource=VAULT_RESOURCE)
+        client.ms_client.get_access_token(resource=client.get_management_resource())
+        client.ms_client.get_access_token(resource=client.get_vault_resource())
         client.list_key_vaults_request(1, 0)
         # fetch_credentials(client,[''],[''],'xsoar-test-vault/test-sec-1')
         return_results('ok')
@@ -1272,12 +1282,12 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     identifier = args.get('identifier')
+    client_secret = params.get('client_secret', {}).get('password')
+    azure_cloud = get_azure_cloud(params, "AzureKeyVault")
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
-
     try:
-        client_secret = params.get('client_secret')
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         if not managed_identities_client_id and not client_secret and not (certificate_thumbprint and private_key):
@@ -1296,7 +1306,8 @@ def main() -> None:
                                                 proxy=proxy,
                                                 certificate_thumbprint=certificate_thumbprint,
                                                 private_key=private_key,
-                                                managed_identities_client_id=managed_identities_client_id
+                                                managed_identities_client_id=managed_identities_client_id,
+                                                azure_cloud=azure_cloud,
                                                 )
 
         commands = {
@@ -1328,8 +1339,6 @@ def main() -> None:
     except Exception as e:
         return_error(str(e))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ["builtins", "__main__"]:
     main()
