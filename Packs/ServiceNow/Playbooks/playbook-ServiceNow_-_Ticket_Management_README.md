@@ -39,6 +39,7 @@ This playbook does not use any scripts.
 | addCommentPerEndpoint | Whether to add a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
 | serviceNowShortDescription | A short description of the ticket. |  | Optional |
 | Action | Whether to open a new ticket or to add a new comment. Possible values: NewTicket/AddComment. |  | Optional |
+| serviceNowAssignmentGroup | The group to which to assign the new ticket. |  | Optional |
 
 ## Playbook Outputs
 
