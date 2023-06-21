@@ -109,13 +109,13 @@ Gets the Slack bot message to send to the user for gathering feedback.
 `pan-dlp-slack-message`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user | The name of the user that receives this message. | Required | 
-| file_name | The name of the file that triggered the incident. | Required | 
-| data_profile_name | The data profile name associated with the incident. | Required | 
-| snippets | The snippets of the violation. | Optional | 
-| app_name | The name of the application that performed the upload. | Required | 
+| **Argument Name** | **Description**                                          | **Required** |
+| --- |----------------------------------------------------------| --- |
+| user | The name of the user that receives this message.         | Required | 
+| file_name | The name of the file that triggered the incident.        | Required | 
+| data_profile_name | The data profile name associated with the incident.      | Required | 
+| snippets | The snippets of the violation.                           | Optional | 
+| app_name | The name of the application that performed the activity. | Required | 
 
 
 #### Context Output
