@@ -5413,6 +5413,7 @@ def test_list_identity_entities_command(mocker, test_case):
         - Case 2: Should return onle the second identity entity, and have 2 responses in the rew_response list.
     """
     from CrowdStrikeFalcon import list_identity_entities_command
+    import CrowdStrikeFalcon
     test_data = load_json("./test_data/test_list_identity_entities_command.json").get(test_case, {})
     expected_after = test_data.get('expected_after', "")
     mock_responses = test_data.get('mock_responses', "")
