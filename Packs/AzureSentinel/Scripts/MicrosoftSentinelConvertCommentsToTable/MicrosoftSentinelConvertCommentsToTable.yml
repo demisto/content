@@ -1,7 +1,6 @@
 commonfields:
   id: MicrosoftSentinelConvertCommentsToTable
   version: -1
-enabled: false
 comment: This script is used to convert comments to a table.
 name: MicrosoftSentinelConvertCommentsToTable
 outputs:

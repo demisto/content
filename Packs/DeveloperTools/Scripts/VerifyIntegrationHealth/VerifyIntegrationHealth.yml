@@ -9,7 +9,6 @@ comment: Checks for existing errors in a given integration.
 commonfields:
   id: VerifyIntegrationHealth
   version: -1
-enabled: false
 name: VerifyIntegrationHealth
 outputs:
 - contextPath: IntegrationHealth.isHealthy
