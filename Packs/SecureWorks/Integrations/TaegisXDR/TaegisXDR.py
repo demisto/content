@@ -71,12 +71,14 @@ class Client(BaseClient):
         base_url: str,
         proxy: bool = False,
         verify: bool = True,
+        tenant_id: str = "",
     ) -> None:
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.base_url = base_url
         self._client_id = client_id
         self._client_secret = client_secret
         self.verify = verify
+        self.tenant_id = tenant_id
         return
 
     def auth(self) -> None:
@@ -93,7 +95,10 @@ class Client(BaseClient):
         )
 
         token = response.get("access_token", None)
-        self._auth_header = {"Authorization": f"Bearer {token}"}
+        self._auth_header = {
+            "Authorization": f"Bearer {token}",
+            "x-tenant-context": self.tenant_id,
+        }
 
         return
 
@@ -1365,6 +1370,7 @@ def main():
         "test-module": test_module,
     }
 
+    ARGS = demisto.args()
     PARAMS = demisto.params()
     try:
         if command not in commands:
@@ -1382,6 +1388,7 @@ def main():
             base_url=ENV_URLS[environment]["api"],
             proxy=PARAMS.get("proxy", False),
             verify=verify_cert,
+            tenant_id=ARGS.get("tenant_id"),
         )
         client.auth()
 
@@ -1392,7 +1399,7 @@ def main():
         elif command == "fetch-incidents":
             commands[command](client=client, max_fetch=PARAMS.get("max_fetch"), include_assets=PARAMS.get("include_assets"))
         else:
-            return_results(commands[command](client=client, env=environment, args=demisto.args()))
+            return_results(commands[command](client=client, env=environment, args=ARGS))
     except Exception as e:
         error_string = str(e)
         demisto.error(f"Error running command: {e}")

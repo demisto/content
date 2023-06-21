@@ -81,6 +81,8 @@ script:
     - name: offset
       description: The results to start with
       defaultValue: "0"
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Alerts
       description: List of Taegis alerts
@@ -119,6 +121,8 @@ script:
       - "5"
       description: The priority of the investigation (1-5)
       defaultValue: "2"
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Investigation
       description: The investigation ID that was created
@@ -153,6 +157,8 @@ script:
       description: The type of service desk id (e.g. XSOAR)
     - name: assignee_id
       description: The auth0 ID of a user, in 'auth0|12345' format
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation
@@ -168,6 +174,8 @@ script:
     - name: page_size
       description: Number of alerts per investigation query
       defaultValue: "10"
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.InvestigationAlerts
       description: List of alerts related to a Taegis investigation
@@ -179,6 +187,8 @@ script:
       description: The ID of the playbook instance to execute
     - name: inputs
       description: JSON Object of optional playbook inputs
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Execution
       description: The playbook execution ID
@@ -190,6 +200,8 @@ script:
     - name: id
       required: true
       description: Playbook execution ID
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.PlaybookExecution
       description: Returns related execution information
@@ -199,6 +211,8 @@ script:
     - name: id
       required: true
       description: The ID of the comment to fetch
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Comment
       description: Return the comment
@@ -211,6 +225,8 @@ script:
     - name: parent_type
       description: The parent type that the comments belong to
       defaultValue: investigation
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Comments
       description: A list of comments to return
@@ -226,6 +242,8 @@ script:
     - name: parent_type
       description: The parent type that the comment is being added to
       defaultValue: investigation
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.CommentCreate
       description: The created comment information
@@ -238,6 +256,8 @@ script:
     - name: comment
       required: true
       description: String to update/replace the comment with
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.CommentUpdate
       description: The comment update results
@@ -256,6 +276,8 @@ script:
     - name: page_size
       description: Results to return per page
       defaultValue: "10"
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Users
       description: The located user(s)
@@ -265,6 +287,8 @@ script:
     - name: id
       required: true
       description: ID of investigation to update
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.ArchivedInvestigation
       description: The results from archiving an investigation
@@ -274,6 +298,8 @@ script:
     - name: id
       required: true
       description: ID of investigation to update
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.UnarchivedInvestigation
       description: The results from unarchiving an investigation
@@ -296,6 +322,8 @@ script:
       description: The status to update the alert with
     - name: reason
       description: A simple comment/reason for the status change
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.AlertStatusUpdate
       description: The result of the alert status update
@@ -328,6 +356,8 @@ script:
       description: Filter assets by sensor version
     - name: username
       description: Filter assets by username
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.Assets
       description: A list of located assets
@@ -340,6 +370,8 @@ script:
     - name: reason
       required: true
       description: A reason for the isolation
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     outputs:
     - contextPath: TaegisXDR.AssetIsolation
       description: Results from the asset isolation
