@@ -2,9 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - display: Host - IP (x.x.x.x)
   name: host
@@ -65,7 +62,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
+- display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. (Set only if the Splunk server is different than the Cortex XSOAR server.) Relevant only for fetching and mirroring notable events.
   name: timezone
   required: false
   type: 0
@@ -112,8 +109,6 @@ configuration:
   required: false
   type: 15
   section: Collect
-  hidden:
-  - marketplacev2
 - additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
@@ -122,8 +117,6 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  hidden:
-  - marketplacev2
 - display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
   name: close_extra_labels
   required: false
@@ -144,8 +137,6 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  hidden:
-  - marketplacev2
   additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
 - display: Trust any certificate (not secure)
@@ -173,6 +164,7 @@ configuration:
   advanced: true
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
+  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   required: false
@@ -626,7 +618,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.62919
+  dockerimage: demisto/splunksdk-py3:1.0.0.63759
   isfetch: true
   ismappable: true
   isremotesyncin: true

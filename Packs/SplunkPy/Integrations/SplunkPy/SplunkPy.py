@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import hashlib
 import io
 import json
@@ -5,14 +8,14 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto
+
 import pytz
 import requests
 import splunklib.client as client
 import splunklib.results as results
 from splunklib.data import Record
 import urllib3
-from CommonServerPython import *  # noqa: F401
+
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 urllib3.disable_warnings()
@@ -1220,7 +1223,7 @@ def get_last_update_in_splunk_time(last_update):
 
     try:
         splunk_timezone = int(params['timezone'])
-    except (KeyError, ValueError, TypeError):
+    except (KeyError, ValueError):
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
 
@@ -2147,11 +2150,10 @@ def splunk_results_command(service: client.Service):
     try:
         job = service.job(sid)
     except HTTPError as error:
-        msg = error.message if hasattr(error, 'message') else str(error)
-        if error.status == 404:
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':  # pylint: disable=no-member
             demisto.results("Found no job for sid: {}".format(sid))
         else:
-            return_error(msg, error)
+            return_error(error.message, error)  # pylint: disable=no-member
     else:
         for result in results.ResultsReader(job.results(count=limit)):
             if isinstance(result, results.Message):
@@ -2358,10 +2360,6 @@ def test_module(service: client.Service) -> None:
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
             for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
-
-                if isinstance(item, results.Message):
-                    continue
-
                 if EVENT_ID not in item:
                     if MIRROR_DIRECTION.get(params.get('mirror_direction')):
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
@@ -2614,12 +2612,12 @@ def get_connection_args() -> dict:
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-
+    print("TEST")
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = argToBoolean(params.get('proxy', False))
+    proxy = argToBoolean(params.get('proxy'))
 
     connection_args = get_connection_args()
 
@@ -2631,9 +2629,6 @@ def main():  # pragma: no cover
         connection_args['splunkToken'] = password
         auth_token = password
     else:
-        if '@_basic' in username:
-            username = username.split('@_basic')[0]
-            connection_args['basic'] = True
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True
