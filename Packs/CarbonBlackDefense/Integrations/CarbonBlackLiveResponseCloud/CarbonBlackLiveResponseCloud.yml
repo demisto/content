@@ -11,22 +11,43 @@ configuration:
 - display: Server URL
   name: url
   type: 0
-  required: true
+  required: false
   additionalinfo: The URL used to access the Carbon Black Cloud.
 - display: Custom Key
   name: custom_key
   type: 4
-  required: true
+  required: false
+  hidden: true
+  additionalinfo: The custom key to use for the connection.
+- displaypassword: Custom Key
+  name:  credentials_custom_key
+  required: false
+  hiddenusername: true
+  type: 9
   additionalinfo: The custom key to use for the connection.
 - display: Custom ID
   name: custom_id
   type: 4
-  required: true
+  required: false
+  hidden: true
+  additionalinfo: The custom ID to use for the connection.
+- displaypassword: Custom ID
+  name:  credentials_custom_id
+  required: false
+  hiddenusername: true
+  type: 9
   additionalinfo: The custom ID to use for the connection.
 - display: Organization Key
   name: org_key
   type: 4
-  required: true
+  required: false
+  hidden: true
+  additionalinfo: The organization key to use for the connection.
+- displaypassword: Organization Key
+  name:  credentials_org_key
+  required: false
+  hiddenusername: true
+  type: 9
   additionalinfo: The organization key to use for the connection.
 - display: Trust any certificate (not secure)
   name: insecure
@@ -295,6 +316,6 @@ script:
     description: Performs a memory dump operation on the remote machine.
     execution: true
     outputs: []
-  dockerimage: demisto/carbon-black-cloud:1.0.0.61452
+  dockerimage: demisto/carbon-black-cloud:1.0.0.63664
   runonce: false
   subtype: python3
