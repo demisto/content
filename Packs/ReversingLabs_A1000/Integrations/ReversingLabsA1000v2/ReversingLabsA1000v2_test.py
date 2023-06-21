@@ -1,5 +1,4 @@
 import json
-import io
 from ReversingLabsA1000v2 import a1000_report_output, list_extracted_files_output, get_classification_output, \
     classification_to_score, url_report_output, domain_report_output, ip_report_output
 import demistomock as demisto
