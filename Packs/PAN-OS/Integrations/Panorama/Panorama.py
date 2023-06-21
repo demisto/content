@@ -7261,6 +7261,8 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     anti_spy_ware_name = args.get('anti_spyware_profile_name')
     edl = args.get('dns_signature_source')
     action = args.get('action')
+    ipv4_address = args.get('ipv4', 'pan-sinkhole-default-ip')
+    ipv6_adderss = args.get('ipv6', '::1')
     packet_capture = args.get('packet_capture', 'disable')
 
     # for Panorama instance
@@ -7275,6 +7277,7 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
                    f'<entry name="{edl}"><packet-capture>{packet_capture}</packet-capture>'
                    f'<action><{action}/></action></entry>'
                    f'</lists>'
+                   f'<sinkhole><ipv4-address>{ipv4_address}</ipv4-address><ipv6-address>{ipv6_adderss}</ipv6-address></sinkhole>'
                    f'</botnet-domains>'
     }
     if VSYS:  # if it's a firewall instance, modify the xpath param
