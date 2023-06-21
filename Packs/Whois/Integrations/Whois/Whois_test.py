@@ -502,7 +502,12 @@ def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_r
     ({"query": "google.com,amazon.com"}, True, 3),
     ({"query": "google.com"}, False, 1)
 ])
-def test_execution_metrics_appended(args: Dict[str, str], execution_metrics_supported: bool, expected_entries: int, mocker: MockerFixture):
+def test_execution_metrics_appended(
+    args: Dict[str, str],
+    execution_metrics_supported: bool,
+    expected_entries: int,
+    mocker: MockerFixture
+):
     """
     Test whether the metrics entry is appended to the list of results according to the XSOAR version.
     API Execution Metrics is only supported for 6.8+.
@@ -510,15 +515,15 @@ def test_execution_metrics_appended(args: Dict[str, str], execution_metrics_supp
     Given: Arguments passed to the `whois` command.
 
     When:
-        - Case A: 1 valid domain is passed to 6.8.0.
-        - Case B: 1 invalid domain is passed to 6.8.0.
-        - Case C: 2 valid domains are passed to 6.8.0.
-        - Case D: 1 valid domain is passed to 6.5.0.
+        - Case A: 1 valid domain is passed to v > 6.8.0.
+        - Case B: 1 invalid domain is passed to v > 6.8.0.
+        - Case C: 2 valid domains are passed to v > 6.8.0.
+        - Case D: 1 valid domain is passed to v < 6.8.0.
 
     Then:
         - Case A: 2 entries are expected (1 for query, 1 for execution metrics).
         - Case B: 2 entries are expected (1 for query, 1 for execution metrics).
-        - Case C: 3 entries are expected (1 for query, 1 for execution metrics).
+        - Case C: 3 entries are expected (2 for queries, 1 for execution metrics).
         - Case D: 1 entries are expected (1 for query, no execution metrics since it's not supported).
 
     """
