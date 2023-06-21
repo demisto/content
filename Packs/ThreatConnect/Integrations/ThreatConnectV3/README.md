@@ -30,7 +30,7 @@ For more information - click [here](https://training.threatconnect.com/learn/art
     | Tags filter for the fetch | Free text box to add comma-separated tags to filter the fetched incidents by. | False |
     | Group Type filter for the fetch | The group type to filter the fetched incidents by. | False |
     | Status filter for the fetch | The status to filter the fetched incidents by \(if not field will fetch all statuses\). | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | | True |
+    | First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year) |  | True |
     | Incident Metadata | The metadata to collect. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Rating Threshold for Malicious Indicators (needed for reputation calculation) | Rating Threshold for Malicious Indicators, it is necessary to calculate reputation. | False |
@@ -209,7 +209,7 @@ Retrieves a list of all indicators.
 | owner | A comma-separated list of results filtered by the owner of the indicator. | Optional | 
 | page | The page to take the results from. | Optional | 
 | limit | The maximum number of results that can be returned. The default is 500. | Optional | 
-
+| fields_to_return | Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes. | Optional | 
 
 #### Context Output
 
