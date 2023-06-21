@@ -166,11 +166,11 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data.
       type: String
+      description: Reliability of the source providing the intelligence data.
     - contextPath: EmailRepIO.Email.email
       type: String
-      description: The email address that was queried.
+      description: 'The email address that was queried.'
     - contextPath: EmailRepIO.Email.reputation
       type: String
       description: 'The reputation of the email. Possible values are: "high", "medium", "low", and "none".'
@@ -206,7 +206,7 @@ script:
       description: The last date the email was observed in a breach, credential leak, or exhibiting malicious or spammy behavior. Displays "never" if the email was never observed in a breach, credential leak, or exhibiting malicious or spammy behavior.
     - contextPath: EmailRepIO.Email.details.domain_exists
       type: Boolean
-      description: Whether the domain is a valid domain.
+      description: 'Whether the domain is a valid domain.'
     - contextPath: EmailRepIO.Email.details.domain_reputation
       type: String
       description: 'The reputation of the domain. Possible values are: "high", "medium", "low", and "n/a". Displays "n/a" if the domain is a free_provider, disposable, or doesn’t exist.'
@@ -298,7 +298,7 @@ script:
     description: Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
     execution: false
     name: emailrepio-email-address-report
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
