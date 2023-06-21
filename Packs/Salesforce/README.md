@@ -1,4 +1,5 @@
-#### Administration Guides Salesforce
+## Collect Events from Vendor
+To configure the collector for Salesforce, follow the XDR documentation:
 
 https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-and-Data-from-Salesforce.com
 
