@@ -2299,7 +2299,8 @@ def fetch_incidents():
     if 'Detections' in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=look_back)
+                                                                    look_back=look_back,
+                                                                    date_format=DATE_FORMAT)
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
@@ -2339,7 +2340,8 @@ def fetch_incidents():
     if 'Incidents' in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=look_back)
+                                                                    look_back=look_back,
+                                                                    date_format=DATE_FORMAT)
         fetch_limit = current_fetch_info_incidents.get('limit') or INCIDENTS_PER_FETCH
 
         incident_type = 'incident'
