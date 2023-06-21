@@ -2637,7 +2637,7 @@ Get the list of carves file from a specific path.
             "status": "FINISHED",
             "assetHostName": "uptycs-testhost",
             "offset": 0,
-            "length": 197
+            "length": 197,
             "deletedUserName": null,
             "deletedAt": null
         }
