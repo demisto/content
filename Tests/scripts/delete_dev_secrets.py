@@ -41,7 +41,7 @@ def delete_secrets(gsm_project_id, secret_conf, secrets_to_delete):
 def run(options: argparse.Namespace):
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets_to_delete = get_secrets_to_delete(options, secret_conf)
-    # logging.debug(f'Deleting the secrets: {secrets_to_delete}')
+    #     logging.debug(f'Deleting the secrets: {secrets_to_delete}')
     print(f'Deleting the secrets: {secrets_to_delete}')
     # delete_secrets(options.gsm_project_id, secret_conf, secrets_to_delete)
 
