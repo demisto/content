@@ -10,7 +10,6 @@ from enum import Enum
 from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import requests
-from dateutil.parser import parse
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 # Disable insecure warnings
@@ -1310,7 +1309,8 @@ def get_detections_entities(detections_ids: List):
     return detections_ids
 
 
-def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True, limit=INCIDENTS_PER_FETCH):
+def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True,
+                      limit=INCIDENTS_PER_FETCH):
     get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
         'sort': 'start.asc',
@@ -2590,12 +2590,13 @@ def fetch_incidents():
 
             idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
                                                                       last_run=current_fetch_info_idp_detections,
-                                                                      fetch_limit=fetch_limit, id_field='name')            
+                                                                      fetch_limit=fetch_limit, id_field='name')
 
             for idp_detection in idp_detections:
                 if occurred := dateparser.parse(idp_detection["occurred"]):
                     idp_detection["occurred"] = occurred.strftime(DATE_FORMAT)
-                    demisto.debug(f"CrowdStrikeFalconMsg: Incident {idp_detection['name']} occurred at {idp_detection['occurred']}")
+                    demisto.debug(
+                        f"CrowdStrikeFalconMsg: Incident {idp_detection['name']} occurred at {idp_detection['occurred']}")
             last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=incidents,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
