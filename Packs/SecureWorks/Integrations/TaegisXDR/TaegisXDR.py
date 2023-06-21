@@ -21,6 +21,8 @@ ALERT_STATUSES = set((
     "OPEN",
     "TRUE_POSITIVE_BENIGN",
     "TRUE_POSITIVE_MALICIOUS",
+    "OTHER",
+    "SUPPRESSED",
 ))
 ASSET_SEARCH_FIELDS = ((
     "endpoint_type",
