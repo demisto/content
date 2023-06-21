@@ -1707,18 +1707,18 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     return http_request('PATCH', '/detects/entities/detects/v2', data=data)
 
 
-def resolve_idp_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
+def resolve_idp_detection(ids, status):
     """
-        Sends a resolve detection request
-        :param ids: Single or multiple ids in an array string format
-        :param status: New status of the detection
-        :param assigned_to_uuid: uuid to assign the detection to
-        :param show_in_ui: Boolean flag in string format (true/false)
-        :param comment: Optional comment to add to the detection
-        :return: Resolve detection response json
+        Send a request to update IDP detection status.
+        :type ids: ``list``
+        :param ids: The list of ids to update.
+        :type status: ``str``
+        :param status: The new status to set.
+        :return: The response.
+        :rtype ``dict``
     """
     data = {
-        "action_parameters": [{"name": "update_status", "value": "closed"}],
+        "action_parameters": [{"name": "update_status", "value": status}],
         "ids": ids
     }
     return http_request('POST', '/alerts/entities/alerts/v2', data=data)
@@ -1868,10 +1868,19 @@ def update_detection_request(ids: List[str], status: str) -> Dict:
 
 
 def update_idp_detection_request(ids: List[str], status: str) -> Dict:
+    """
+        Manage the status to send to update to for IDP detections.
+        :type ids: ``list``
+        :param ids: The list of ids to update.
+        :type status: ``str``
+        :param status: The new status to set.
+        :return: The response.
+        :rtype ``dict``
+    """
     if status not in STATUS_TEXT_TO_NUM_IDP.keys():
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM_IDP.keys()}')
-    return resolve_idp_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
+    return resolve_idp_detection(ids=ids, status=status)
 
 
 def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
@@ -2130,9 +2139,15 @@ def get_remote_detection_data(remote_incident_id: str):
 
 def get_remote_idp_detection_data(remote_incident_id):
     """
-    Called every time get-remote-data command runs on an IDP detection.
-    Gets the relevant detection entity from the remote system (CrowdStrike Falcon). The remote system returns a list with this
-    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+        Gets the relevant IDP detection entity from the remote system (CrowdStrike Falcon).
+
+        :type remote_incident_id: ``str``
+        :param remote_incident_id: The incident id to return its information.
+
+        :return: The IDP detection entity.
+        :rtype ``dict``
+        :return: The object with the updated fields.
+        :rtype ``dict``
     """
     mirrored_data_list = get_idp_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
@@ -2336,6 +2351,16 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
 
 
 def update_remote_idp_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
+    """
+        Sends the request the request to update the relevant IDP detection entity.
+
+        :type updated_object: ``dict``
+        :param updated_object: The updated IDP detection entity.
+        :type entries: ``list``
+        :param entries: The XSOAR entries list to update.
+        :type remote_detection_id: ``str``
+        :param remote_detection_id: The incident id to update.
+    """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing detection with remote ID {detection_id} in remote system.')
         return str(update_idp_detection_request([detection_id], 'closed'))
