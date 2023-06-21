@@ -431,3 +431,14 @@ UPDATE_ALERT_STATUS_BAD_RESPONSE = {
         }
     ]
 }
+
+CREATE_SHARELINK_RESPONSE = {
+    "data": {
+        "createShareLink": {
+            "createdTime": "2023-06-12T15:59:45.526512Z",
+            "id": "73a223f4-76d5-448a-8281-a361a2c2ce74",
+            "linkRef": "7a021411-01b6-4101-843e-c14218063c02",
+            "linkTarget": ""
+        }
+    }
+}

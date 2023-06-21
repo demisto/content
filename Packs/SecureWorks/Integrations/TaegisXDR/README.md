@@ -151,6 +151,39 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 ```
 
 
+### taegis-create-sharelink
+
+#### Base Command
+
+`!taegis-create-sharelink`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the Taegis element to create a sharelink to | True |
+| type | The type of Taegis element to create a sharelink with | True |
+
+#### Command Example
+
+```
+!taegis-create-sharelink type=investigationId id=219da0ee-8642-4363-827c-8a6fbd479082
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "ShareLink": {
+            "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
+            "url": "https://ctpx.secureworks.com/share/593fa115-abad-4a52-9fc4-2ec403a8a1e4"
+        }
+    }
+}
+```
+
+
 ### taegis-execute-playbook
 
 #### Base Command

@@ -53,6 +53,18 @@ INVESTIGATION_STATUSES = set((
     "Closed: Not Vulnerable",
     "Closed: Threat Mitigated",
 ))
+SHARELINK_TYPES = set((
+    "alertId",
+    "connectorId",
+    "connectionId",
+    "endpointDetails",
+    "eventId",
+    "investigationId",
+    "queryId",
+    "playbookTemplateId",
+    "playbookInstanceId",
+    "playbookExecutionId",
+))
 INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type", "assignee_id"))
 
 
@@ -279,6 +291,64 @@ def create_investigation_command(client: Client, env: str, args=None):
             "Taegis Investigation",
             investigation,
             removeNull=True,
+            url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def create_sharelink_command(client: Client, env: str, args=None):
+    """
+    Create a ShareLink to an investigation or alert
+    """
+
+    if not args.get("id"):
+        raise ValueError("Cannot create ShareLink, id cannot be empty")
+    if not args.get("type"):
+        raise ValueError("Cannot create ShareLink, type cannot be empty")
+    if args["type"] not in SHARELINK_TYPES:
+        raise ValueError((
+            f"The provided ShareLink type, {args['type']}, is not valid for creating a ShareLink. "
+            f"Supported Type Values: {SHARELINK_TYPES}"))
+
+    variables: dict = {
+        "sharelink": {
+            "linkRef": args["id"],
+            "linkType": args["type"],
+        }
+    }
+
+    if args.get("tenant_id"):
+        variables["tenant_id"] = args["tenant_id"]
+
+    fields: str = args.get("fields") or "id createdTime"
+
+    query = """
+    mutation ($sharelink: ShareLinkCreateInput!) {
+        createShareLink (input: $sharelink) {
+            %s
+        }
+    }
+    """ % (fields)
+
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        link_result = result["data"]["createShareLink"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to create ShareLink: {result['errors'][0]['message']}")
+
+    # Create tge
+    link_result.update({"url": generate_id_url(env, "share", link_result["id"])})
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.ShareLink",
+        outputs_key_field="id",
+        outputs=link_result,
+        readable_output=tableToMarkdown(
+            "Taegis ShareLink",
+            link_result,
             url_keys=("url"),
         ),
         raw_response=result,
@@ -1405,6 +1475,7 @@ def main():
         "taegis-add-evidence-to-investigation": add_evidence_to_investigation_command,
         "taegis-create-comment": create_comment_command,
         "taegis-create-investigation": create_investigation_command,
+        "taegis-create-sharelink": create_sharelink_command,
         "taegis-execute-playbook": execute_playbook_command,
         "taegis-fetch-alerts": fetch_alerts_command,
         "taegis-fetch-assets": fetch_assets_command,

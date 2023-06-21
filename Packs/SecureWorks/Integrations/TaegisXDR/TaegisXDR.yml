@@ -386,6 +386,32 @@ script:
     - contextPath: TaegisXDR.Endpoint
       description: Results from fetching the endpoint information
     description: Fetch endpoint information
+  - name: taegis-create-sharelink
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the alert, investigation, etc
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - alertId
+      - investigationId
+      - queryId
+      - endpointDetails
+      - playbookTemplateId
+      - playbookInstanceId
+      - playbookExecutionId
+      - connectorId
+      - connectionId
+      - eventId
+      description: The type of Taegis element to create the ShareLink against
+    - name: fields
+      description: The fields to return from the query
+    outputs:
+    - contextPath: TaegisXDR.ShareLink
+      description: Results from creating the ShareLink
+    description: Create a ShareLink to a Taegis element, such as an alert or investigation
   - name: taegis-add-evidence-to-investigation
     arguments:
     - name: id

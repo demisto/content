@@ -23,6 +23,7 @@ from TaegisXDR import (
     archive_investigation_command,
     unarchive_investigation_command,
     update_alert_status_command,
+    create_sharelink_command,
     test_module as connectivity_test,
 )
 
@@ -578,3 +579,36 @@ def test_update_alert_status(requests_mock):
     client = mock_client(requests_mock, UPDATE_ALERT_STATUS_BAD_RESPONSE)
     with pytest.raises(ValueError, match="Failed to locate/update alert"):
         assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_create_sharelink(requests_mock):
+    """Tests taegis-create-sharelink function
+    """
+
+    client = mock_client(requests_mock, CREATE_SHARELINK_RESPONSE)
+
+    args = {"tenant_id": "123456"}
+
+    # id not set
+    with pytest.raises(ValueError, match="Cannot create ShareLink, id cannot be empty"):
+        assert create_sharelink_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # type not set
+    args["id"] = UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]
+    with pytest.raises(ValueError, match="Cannot create ShareLink, type cannot be empty"):
+        assert create_sharelink_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Unknown type
+    args["type"] = "BAD_TYPE"
+    with pytest.raises(ValueError, match="The provided ShareLink type, BAD_TYPE, is not valid for creating a ShareLink."):
+        assert create_sharelink_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Successful Creation
+    args["type"] = "investigationId"
+    response = create_sharelink_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == CREATE_SHARELINK_RESPONSE["data"]["createShareLink"]["id"]
+
+    # Unknown error
+    client = mock_client(requests_mock, {"errors": [{"message": "Unknown Error"}]})
+    with pytest.raises(ValueError, match="Failed to create ShareLink"):
+        assert create_sharelink_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
