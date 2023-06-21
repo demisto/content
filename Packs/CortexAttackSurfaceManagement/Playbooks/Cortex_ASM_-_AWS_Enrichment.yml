@@ -914,11 +914,11 @@ tasks:
     nexttasks:
       '#default#':
       - "20"
-      Unclaimed S3 Bucked:
+      Unclaimed S3 Bucket:
       - "23"
     separatecontext: false
     conditions:
-    - label: Unclaimed S3 Bucked
+    - label: Unclaimed S3 Bucket
       condition:
       - - operator: inList
           left:
