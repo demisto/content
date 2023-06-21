@@ -15,7 +15,10 @@ from Whois import has_rate_limited_result, \
     whois_exception_mapping, \
     increment_metric, \
     WhoisInvalidDomain, \
-    whois_command
+    whois_command, \
+    get_domain_from_query, \
+    ip_command, \
+    get_root_server
 import ipwhois
 import socket
 from pytest_mock import MockerFixture
@@ -58,7 +61,6 @@ def test_test_command(mocker: MockerFixture):
      ("app.XSOAR.test", "app.XSOAR.test")]
 )
 def test_get_domain_from_query(query, expected):
-    from Whois import get_domain_from_query
     assert get_domain_from_query(query) == expected
 
 
@@ -236,8 +238,7 @@ def test_ip_command(mocker: MockerFixture):
         - Verify the result is as expected
         - Verify support list of IPs
     """
-    from Whois import ip_command
-    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': "6.8.0", 'buildNumber': '12345'})
+    mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
     response = load_test_data('./test_data/ip_output.json')
     mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
     result = ip_command(
@@ -366,7 +367,7 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
     Then:
         - validate that another context path is added for the raw-response if verbose arg is true.
     """
-    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': "6.8.0", 'buildNumber': '12345'})
+    mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
@@ -642,3 +643,48 @@ def test_exception_type_to_metrics(
 
     assert actual_type == expected[0]
     assert actual_count == expected[1]
+
+
+@pytest.mark.parametrize("domain,expected", [
+    ("google.com", "whois.verisign-grs.com"),
+    ("github.dev", "whois.nic.google"),
+    ("whois.verisign-grs.com", "")
+])
+def test_get_root_server(domain: str, expected: str):
+    """
+    Test to get the root server from the domain. The root server resolution is handled inside
+    ``Whois`` by `tlds` and `dble_ext` dictionaries.
+
+    Given: a domain.
+    # TODO complete
+    When: the domain is google.com
+
+    Then:
+
+    """
+
+    actual = get_root_server(domain)
+    actual == expected
+
+
+@pytest.mark.parametrize("domain", [
+    ("com"),
+    ("1.1.1.1"),
+])
+def test_get_root_server_invalid_domain(domain: str):
+    """
+    Test to get the root server from the domain when an invalid domain is supplied. 
+
+    Given: a domain.
+
+    When:
+        - Case A: An `str` that has no '.' in it.
+        - Case B: An IP address.
+
+    Then:
+        - `WhoisInvalidDomain` expected
+
+    """
+
+    with pytest.raises(WhoisInvalidDomain):
+        get_root_server(domain)

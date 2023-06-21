@@ -7171,7 +7171,6 @@ def has_rate_limited_result(cmd_results: List[CommandResults]) -> bool:
     """
 
     for c in cmd_results:
-        
         if c.entry_type == EntryType.ERROR and c.outputs and 'reason' in c.outputs.keys() and c.outputs['reason'] == "quota_error":  # type: ignore
             return True
         else:
@@ -7219,14 +7218,16 @@ def increment_metric(execution_metrics: ExecutionMetrics, mapping: Dict[type, st
         - `caught_exception` (``Exception``): The exception caught.
     """
 
-    demisto.debug(f"Exception of type '{caught_exception}' caught. Trying to find the matching Execution Metric attribute to increment...")
+    demisto.debug(
+        f"Exception of type '{caught_exception}' caught. Trying to find the matching Execution Metric attribute to increment...")
     try:
         metric_attribute = mapping[caught_exception]
         execution_metrics.__setattr__(metric_attribute, execution_metrics.__getattribute__(metric_attribute) + 1)
-    
+
     # Treat any other exception as a ErrorTypes.GENERAL_ERROR
     except Exception as e:
-        demisto.debug(f"Exception attempting to find and update execution metric attribute: {str(e)}. Defaulting to GENERAL_ERROR...")
+        demisto.debug(
+            f"Exception attempting to find and update execution metric attribute: {str(e)}. Defaulting to GENERAL_ERROR...")
         execution_metrics.general_error += 1
 
     finally:
@@ -7326,19 +7327,20 @@ def get_root_server(domain):
 
     demisto.debug(f"Attempting to get root server from domain '{domain}'...")
     try:
-        ext = domain.split(".")[-1]
+        (_, tld) = domain.rsplit(".", 1)
         for dble in dble_ext:
             if domain.endswith(dble):
-                ext = dble
+                tld = dble
 
-        if ext in list(tlds.keys()):
-            entry = tlds[ext]
+        if tld in list(tlds.keys()):
+            entry = tlds[tld]
             host = entry["host"]
             return host
+        else:
+            raise WhoisInvalidDomain(f"Can't parse the root server from domain '{domain}'")
 
-    except (KeyError, TypeError) as e:
+    except (KeyError, TypeError, ValueError) as e:
         demisto.error(f"Could not get root server from domain '{domain}': {e.__class__.__name__} {e}")
-        # raise WhoisInvalidDomain(f"{e.__class__.__name__}: Can't parse the root server from domain '{domain}'") from e
         raise WhoisInvalidDomain(f"Can't parse the root server from domain '{domain}'")
 
 
@@ -8673,9 +8675,9 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             results.append(result)
 
         except Exception as e:
-            # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
+            # FIXME Figure out why the caught exception is not Whois type (but TypeError/KeyError)
             demisto.error(f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}'")
-            
+
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
@@ -8694,7 +8696,7 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             if should_error:
                 results.append(CommandResults(
                     outputs=output,
-                    # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
+                    # FIXME Figure out why the caught exception is not Whois type (but TypeError/KeyError)
                     readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
                     entry_type=EntryType.ERROR,
                     raw_response=str(e)
@@ -8702,7 +8704,7 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             else:
                 results.append(CommandResults(
                     outputs=output,
-                    # TODO Figure out why the caught exception is not Whois type (but TypeError/KeyError)
+                    # FIXME Figure out why the caught exception is not Whois type (but TypeError/KeyError)
                     readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
                     entry_type=EntryType.WARNING,
                     raw_response=str(e)
