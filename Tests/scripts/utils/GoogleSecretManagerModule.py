@@ -49,6 +49,39 @@ class GoogleSecreteManagerModule:
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
             return {}
 
+    def update_secret(self, project_id: str, secret_id: str, labels=None) -> None:
+        """
+
+        :param project_id: The project ID for GCP
+        :param secret_id: The name of the secret in GSM
+        :param labels: A dict with the labels we want to add to th secret
+
+        """
+        if labels is None:
+            labels = {}
+        name = self.client.secret_path(project_id, secret_id)
+        secret = {"name": name, "labels": labels}
+        update_mask = {"paths": ["labels"]}
+        self.client.update_secret(
+            request={"secret": secret, "update_mask": update_mask}
+        )
+
+    def add_secret_version(self, project_id: str, secret_id: str, payload: dict) -> None:
+        """
+        Add a new secret version to the given secret with the provided payload.
+        """
+
+        parent = self.client.secret_path(project_id, secret_id)
+
+        payload = payload.encode("UTF-8")
+
+        self.client.add_secret_version(
+            request={
+                "parent": parent,
+                "payload": {"data": payload},
+            }
+        )
+
     def list_secrets(self, project_id: str, name_filter=None, with_secrets: bool = False, branch_name='',
                      ignore_dev: bool = True, ignore_merged: bool = True) -> list:
         """
@@ -57,6 +90,7 @@ class GoogleSecreteManagerModule:
         :param name_filter: a secret name to filter results by
         :param with_secrets: indicates if we want to bring the secret value(will need another API call per scret or just metadata)
         :param branch_name: filter results according to the label 'branch'
+        :param ignore_dev: indicates whether we ignore secrets with the 'dev' label
         :param ignore_merged: indicates whether we ignore secrets with the 'merged' label
         :return: the secret as json5 object
         """
@@ -66,19 +100,18 @@ class GoogleSecreteManagerModule:
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
+
             try:
                 labels = dict(secret.labels)
             except Exception as e:
                 labels = {}
                 logging.error(f'Error the secret: {secret.name} has no labels, got the error: {e}')
-            secret_pack_id = labels.get('pack_id')
+            search_ids = [s for s in name_filter]
             logging.debug(f'Getting the secret: {secret.name}')
-            formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
-            if not secret_pack_id or labels.get('ignore') or (ignore_dev and labels.get('dev')) or (
-                ignore_merged and labels.get('merged')) or (
-                not ignore_dev and not labels.get('dev')) or (
-                formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
-                branch_name and labels.get('branch', '') != branch_name):
+            if not labels.get('pack_id') or labels.get('ignore') or (ignore_dev and labels.get('dev')) or (
+                ignore_merged and labels.get('merged')) or (not ignore_dev and not labels.get('dev')) or (
+                branch_name and labels.get('branch', '') != branch_name) or (
+                    search_ids and secret.name not in search_ids):
                 continue
             if with_secrets:
                 try:
@@ -102,8 +135,9 @@ class GoogleSecreteManagerModule:
         :return: the GSM object
         """
         try:
-            client = secretmanager.SecretManagerServiceClient.from_service_account_json(
-                service_account)  # type: ignore # noqa
+            # client = secretmanager.SecretManagerServiceClient.from_service_account_json(
+            #     service_account)  # type: ignore # noqa
+            client = secretmanager.SecretManagerServiceClient()
             return client
         except Exception as e:
             logging.error(f'Could not create GSM client, error: {e}')

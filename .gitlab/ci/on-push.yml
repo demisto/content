@@ -620,7 +620,7 @@ handle-dev-secrets:
   script:
     - |
     - python3 ./Tests/scripts/delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpid "$GSM_PROJECT_ID"  -ttl "1" >> $ARTIFACTS_FOLDER/del_test.txt
-    - echo $BRANCH >> $ARTIFACTS_FOLDER/branch.txt
-    - echo $BRANCH
+#    - python3 ./Tests/scripts/delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpid "$GSM_PROJECT_ID"  >> $ARTIFACTS_FOLDER/merge_test.txt
+
 
 
