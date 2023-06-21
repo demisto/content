@@ -2070,7 +2070,7 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
         return IncidentType.DETECTION
-    if remote_incident_id[0:3] == IncidentType.IDP_DETECTION.value or f":{IncidentType.IDP_DETECTION.value}:" in remote_incident_id:
+    if remote_incident_id[0:3] == (idp_val := IncidentType.IDP_DETECTION.value) or f":{idp_val}:" in remote_incident_id:
         return IncidentType.IDP_DETECTION
 
 

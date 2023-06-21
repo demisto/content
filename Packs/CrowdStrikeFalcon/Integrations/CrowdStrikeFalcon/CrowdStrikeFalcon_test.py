@@ -2375,7 +2375,7 @@ class TestIncidentFetch:
             "incident_type": "incident" is in raw result returned by the indicator
 
         """
-        mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',}, {}])
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z'}, {}])
         from CrowdStrikeFalcon import fetch_incidents
         incidents = fetch_incidents()
         for incident in incidents:
@@ -3990,13 +3990,14 @@ def test_get_modified_remote_data_command(mocker):
     mock_get_detections = mocker.patch('CrowdStrikeFalcon.get_fetch_detections',
                                        return_value={'resources': [input_data.remote_detection_id]})
     mock_get_idp_detections = mocker.patch('CrowdStrikeFalcon.get_idp_detections_ids',
-                                       return_value={'resources': [input_data.remote_idp_detection_id]})
+                                           return_value={'resources': [input_data.remote_idp_detection_id]})
     last_update = '2022-03-08T08:17:09Z'
     result = get_modified_remote_data_command({'lastUpdate': last_update})
     assert mock_get_incidents.call_args.kwargs['last_updated_timestamp'] == last_update
     assert mock_get_detections.call_args.kwargs['last_updated_timestamp'] == last_update
     assert last_update in mock_get_idp_detections.call_args.kwargs['filter_arg']
-    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id, input_data.remote_idp_detection_id]
+    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id,
+                                            input_data.remote_idp_detection_id]
 
 
 @pytest.mark.parametrize('status',
@@ -5402,7 +5403,8 @@ def test_list_identity_entities_command(mocker, test_case):
         - test case that point to the relevant test case in the json test data which include:
           args, response mock, expected_after, expected_raw_response_len, expected hr, and expected_ec.
         - Case 1: args with limit=1, some filter args, mock_response with 1 identity entity, and an empty expected_after
-        - Case 2: args with limit=50, page=size=1, page=2 mock_response with 2 response each have 1 identity entity, and an empty expected_after that matches the endCursor of the first response.
+        - Case 2: args with limit=50, page=size=1, page=2 mock_response with 2 response each have 1 identity entity,
+        and an empty expected_after that matches the endCursor of the first response.
 
         When:
         - Running list_identity_entities_command.
