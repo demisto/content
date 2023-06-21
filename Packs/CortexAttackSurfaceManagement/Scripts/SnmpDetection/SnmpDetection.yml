@@ -12,10 +12,11 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.10.48392
 enabled: true
+deprecated: true
 name: SnmpDetection
 outputs:
 - contextPath: SnmpDetection
-  description: Checks if SNMP version is enabled and gets the versions running
+  description: Deprecated. No available replacement.
 runas: DBotWeakRole
 runonce: false
 script: ''

@@ -85,7 +85,6 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Remediation](#cortex-asm---remediation)
   - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
   - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-  - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
 - Automation Scripts
@@ -93,7 +92,6 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [GetProjectOwners](#getprojectowners)
   - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
-  - [SnmpDetection](#snmpdetection)
 
 ### Playbooks
 
@@ -123,7 +121,7 @@ A playbook that returns "RemediationAction" options based on meeting "Automated 
 
 #### Cortex ASM - Detect Service
 
-A playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP, SNMP).
+A playbook that utilizes the Remediation Confirmation Scan service to check for mitigated vulnerabilities.
 
 ![Cortex ASM - Detect Service](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Detect_Service.png)
 
@@ -192,12 +190,6 @@ A playbook that given the IP address enriches ServiceNow CMDB information releva
 
 ![Cortex ASM - ServiceNow CMDB Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
 
-#### Cortex ASM - SNMP Check
-
-A playbook that given the IP address checks if SNMP is enabled or not and returns versions running.
-
-![Cortex ASM - SNMP Check](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_SNMP_Check.png)
-
 #### Cortex ASM - Splunk Enrichment
 
 A playbook that given the IP address enriches Splunk information relevant to ASM alerts.
@@ -237,8 +229,3 @@ This automation parses a GCP service account email for the project ID, then look
 An automation that is used to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
 
 ![RemediationPathRuleEvaluation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/RemediationPathRuleEvaluation.png)
-
-#### SnmpDetection
-
-An automation that checks if SNMP is enabled or not and gets the running version on the remote server.
-![SnmpDetection](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
