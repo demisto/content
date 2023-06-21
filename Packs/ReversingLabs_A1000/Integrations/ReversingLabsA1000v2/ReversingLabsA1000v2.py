@@ -464,23 +464,25 @@ def url_report_output(url, response_json):
     reputation_statistics = reputations.get("statistics")
     reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
 
-    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}\n ## Analysis\n ### Statistics\n **Unknown**: {analysis_statistics.get("unknown")}
+    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}
+    \n## Third party reputation statistics\n **Total**: {reputation_statistics.get("total")}
+    **Malicious**: {reputation_statistics.get("malicious")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    \n## Analysis statistics\n **Unknown**: {analysis_statistics.get("unknown")}
     **Suspicious**: {analysis_statistics.get("suspicious")}
     **Malicious**: {analysis_statistics.get("malicious")}
     **Goodware**: {analysis_statistics.get("goodware")}
     **Total**: {analysis_statistics.get("total")}
-    
     \n**First analysis**: {analysis.get("first_analysis")}
     **Analysis count**: {analysis.get("analysis_count")}
     """
+
+    markdown = f"{markdown}\n ## Third party reputation sources\n"
+    markdown = f"{markdown}\n {reputation_sources}"
+
     markdown = f"{markdown}\n {last_analysis}"
     markdown = f"{markdown}\n {analysis_history}"
-    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Total**: {reputation_statistics.get("total")}
-    **Malicious**: {reputation_statistics.get("malicious")}
-    **Clean**: {reputation_statistics.get("clean")}
-    **Undetected**: {reputation_statistics.get("undetected")}
-    """
-    markdown = f"{markdown}\n {reputation_sources}"
 
     d_bot_score = classification_to_score(classification.upper())
 
@@ -533,10 +535,17 @@ def domain_report_output(domain, response_json):
 
     reputations = response_json.get("third_party_reputations")
     reputation_statistics = reputations.get("statistics")
-    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
+    reputation_sources = tableToMarkdown("Third party reputation sources", reputations.get("sources"))
 
     markdown = f"""## ReversingLabs A1000 Domain Report for {domain}\n **Modified time**: {response_json.get("modified_time")}"""
     markdown = f"{markdown}\n {top_threats}"
+
+    markdown = f"""{markdown}\n ### Third party reputation statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+
     markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
     **Suspicious**: {file_statistics.get("suspicious")}
     **Malicious**: {file_statistics.get("malicious")}
@@ -544,17 +553,22 @@ def domain_report_output(domain, response_json):
     **Total**: {file_statistics.get("total")}
     \n**Last DNS records time**: {response_json.get("last_dns_records_time")}
     """
+
     markdown = f"{markdown}\n {last_dns_records}"
-    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Malicious**: {reputation_statistics.get("malicious")}
-    **Undetected**: {reputation_statistics.get("undetected")}
-    **Clean**: {reputation_statistics.get("clean")}
-    **Total**: {reputation_statistics.get("total")}
-    """
+
     markdown = f"{markdown}\n {reputation_sources}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
 
     indicator = Common.Domain(
         domain=domain,
-        dbot_score=0
+        dbot_score=dbot_score
     )
 
     results = CommandResults(
@@ -571,7 +585,7 @@ def get_ip_report(a1000):
     """
     Get a report for a submitted IP address
     """
-    ip = demisto.getArg("ipAddress")
+    ip = demisto.getArg("ip_address")
 
     try:
         response = a1000.network_ip_addr_report(ip_addr=ip)
@@ -590,21 +604,24 @@ def ip_report_output(ip, response_json):
 
     reputations = response_json.get("third_party_reputations")
     reputation_statistics = reputations.get("statistics")
-    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
+    reputation_sources = tableToMarkdown("Third party reputation sources", reputations.get("sources"))
 
     markdown = f"""## ReversingLabs A1000 IP Address Report for {ip}\n **Modified time**: {response_json.get("modified_time")}"""
     markdown = f"{markdown}\n {top_threats}"
+
+    markdown = f"""{markdown}\n ### Third party reputation statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+
     markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
     **Suspicious**: {file_statistics.get("suspicious")}
     **Malicious**: {file_statistics.get("malicious")}
     **Goodware**: {file_statistics.get("goodware")}
     **Total**: {file_statistics.get("total")}
     """
-    markdown = f"""{markdown}\n ## Third party reputations\n ### Statistics\n **Malicious**: {reputation_statistics.get("malicious")}
-    **Undetected**: {reputation_statistics.get("undetected")}
-    **Clean**: {reputation_statistics.get("clean")}
-    **Total**: {reputation_statistics.get("total")}
-    """
+
     markdown = f"{markdown}\n {reputation_sources}"
 
     dbot_score = Common.DBotScore(
@@ -634,11 +651,11 @@ def get_files_from_ip(a1000):
     """
     Get a list of hashes and classifications for files found on the requested IP address.
     """
-    ip = demisto.getArg("ipAddress")
-    extended = argToBoolean(demisto.getArg("extendedResults"))
+    ip = demisto.getArg("ip_address")
+    extended = argToBoolean(demisto.getArg("extended_results"))
     classification = demisto.getArg("classification")
-    page_size = int(demisto.getArg("pageSize"))
-    max_results = int(demisto.getArg("maxResults"))
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = a1000.network_files_from_ip_aggregated(
@@ -689,9 +706,9 @@ def get_ip_domain_resolutions(a1000):
     """
     Get a list of IP-to-domain resolutions.
     """
-    ip = demisto.getArg("ipAddress")
-    page_size = int(demisto.getArg("pageSize"))
-    max_results = int(demisto.getArg("maxResults"))
+    ip = demisto.getArg("ip_address")
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = a1000.network_ip_to_domain_aggregated(
@@ -740,9 +757,9 @@ def get_urls_from_ip(a1000):
     """
     Get a list of URL-s hosted on an IP address.
     """
-    ip = demisto.getArg("ipAddress")
-    page_size = int(demisto.getArg("pageSize"))
-    max_results = int(demisto.getArg("maxResults"))
+    ip = demisto.getArg("ip_address")
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = a1000.network_urls_from_ip_aggregated(

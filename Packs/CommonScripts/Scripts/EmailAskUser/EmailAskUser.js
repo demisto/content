@@ -85,9 +85,12 @@ if (!renderBody) {
 
 if (addresses.length > 0) {
     // prepare args and run send-mail
-    emailArgs = args;
-    emailArgs.to = addresses.join(',');
-    emailArgs.subject = subject;
+    emailArgs = {
+        to: addresses.join(','),
+        subject: subject,
+        bodyType: bodyType,
+        renderBody: renderBody,
+    };
     if (bodyType === 'html') {
         emailArgs.htmlBody = message;
     } else {
@@ -105,9 +108,6 @@ if (addresses.length > 0) {
     if (args.bcc) {
         emailArgs.bcc = args.bcc;
     }
-
-    emailArgs.bodyType = bodyType;
-    emailArgs.renderBody = renderBody;
 
     return executeCommand('send-mail', emailArgs);
 

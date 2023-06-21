@@ -1,6 +1,6 @@
 import json
 from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_output, file_analysis_output, \
-    rha1_analytics_output, uri_statistics_output, url_report_output
+    rha1_analytics_output, uri_statistics_output, url_report_output, imphash_similarity_output
 import demistomock as demisto
 import pytest
 
@@ -69,5 +69,14 @@ def test_url_report_output():
     test_context = load_json("TestData/url_report_context.json")
 
     result = url_report_output(response_json=test_report, url=url)
+
+    assert result.to_context() == test_context
+
+
+def test_imphash_similarity_output():
+    test_report = load_json("TestData/imphash_report.json")
+    test_context = load_json("TestData/imphash_context.json")
+
+    result = imphash_similarity_output(imphash="f34d5f2d4577ed6d9ceec516c1f5a744", response=test_report)
 
     assert result.to_context() == test_context

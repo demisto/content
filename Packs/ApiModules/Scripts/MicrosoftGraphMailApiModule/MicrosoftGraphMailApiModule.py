@@ -791,7 +791,8 @@ class GraphMailUtils:
         'conversationId': 'ConversationID',
         'isRead': 'IsRead',
         'isDraft': 'IsDraft',
-        'internetMessageId': 'MessageID'
+        'internetMessageId': 'MessageID',
+        'categories': 'Categories',
     }
 
     @staticmethod

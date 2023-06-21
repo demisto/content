@@ -383,7 +383,7 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: ipAddress
+      - name: ip_address
         description: IP address string
         default: true
         isArray: false
@@ -398,13 +398,13 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: ipAddress
+      - name: ip_address
         description: IP address string
         default: true
         isArray: false
         required: true
         secret: false
-      - name: extendedResults
+      - name: extended_results
         description: Return extended results
         defaultValue: true
         isArray: false
@@ -415,13 +415,13 @@ script:
         isArray: false
         required: false
         secret: false
-      - name: pageSize
+      - name: page_size
         description: Number of results per query page
         defaultValue: 500
         isArray: false
         required: false
         secret: false
-      - name: maxResults
+      - name: max_results
         description: Maximum number of returned results
         defaultValue: 5000
         isArray: false
@@ -436,19 +436,19 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: ipAddress
+      - name: ip_address
         description: IP address string
         default: true
         isArray: false
         required: true
         secret: false
-      - name: pageSize
+      - name: page_size
         description: Number of results per query page
         defaultValue: 500
         isArray: false
         required: false
         secret: false
-      - name: maxResults
+      - name: max_results
         description: Maximum number of returned results
         defaultValue: 5000
         isArray: false
@@ -463,19 +463,19 @@ script:
     deprecated: false
     execution: false
     arguments:
-      - name: ipAddress
+      - name: ip_address
         description: IP address string
         default: true
         isArray: false
         required: true
         secret: false
-      - name: pageSize
+      - name: page_size
         description: Number of results per query page
         defaultValue: 500
         isArray: false
         required: false
         secret: false
-      - name: maxResults
+      - name: max_results
         description: Maximum number of returned results
         defaultValue: 5000
         isArray: false
@@ -485,7 +485,7 @@ script:
       - contextPath: ReversingLabs.a1000_ip_urls
         description: A1000 URL-s hosted on an IP address
         type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.58984
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.63751
   feed: false
   isfetch: false
   longRunning: false

@@ -901,10 +901,10 @@ def yara_ruleset_command():
         user_agent=USER_AGENT
     )
 
-    yara_action = demisto.getArg("yaraAction")
-    ruleset_name = demisto.getArg("rulesetName")
-    ruleset_text = demisto.getArg("rulesetText")
-    sample_available = demisto.getArg("sampleAvailable")
+    yara_action = demisto.getArg("yara_action")
+    ruleset_name = demisto.getArg("ruleset_name")
+    ruleset_text = demisto.getArg("ruleset_text")
+    sample_available = demisto.getArg("sample_available")
 
     if yara_action == "CREATE RULESET":
         if ruleset_text:
@@ -978,8 +978,8 @@ def yara_matches_feed_command():
         user_agent=USER_AGENT
     )
 
-    time_format = demisto.getArg("timeFormat")
-    time_value = demisto.getArg("timeValue")
+    time_format = demisto.getArg("time_format")
+    time_value = demisto.getArg("time_value")
 
     try:
         response = yara.yara_matches_feed(
@@ -1025,8 +1025,8 @@ def yara_retro_actions_command():
         user_agent=USER_AGENT
     )
 
-    retro_action = demisto.getArg("yaraRetroAction")
-    ruleset_name = demisto.getArg("rulesetName")
+    retro_action = demisto.getArg("yara_retro_action")
+    ruleset_name = demisto.getArg("ruleset_name")
 
     if retro_action == "ENABLE RETRO HUNT":
         try:
@@ -1082,8 +1082,8 @@ def yara_retro_matches_feed_command():
         user_agent=USER_AGENT
     )
 
-    time_format = demisto.getArg("timeFormat")
-    time_value = demisto.getArg("timeValue")
+    time_format = demisto.getArg("time_format")
+    time_value = demisto.getArg("time_value")
 
     try:
         response = yara.yara_retro_matches_feed(
@@ -1156,7 +1156,7 @@ def imphash_similarity_command():
     )
 
     imphash = demisto.getArg("imphash")
-    max_results = int(demisto.getArg("maxResults"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = imphash_similarity.get_imphash_index_aggregated(
@@ -1193,14 +1193,14 @@ def url_downloaded_files_command():
     )
 
     url = demisto.getArg("url")
-    extended = argToBoolean(demisto.getArg("extendedResults"))
+    extended = argToBoolean(demisto.getArg("extended_results"))
     classification = demisto.getArg("classification")
-    last_analysis = argToBoolean(demisto.getArg("lastAnalysis"))
-    analysis_id = demisto.getArg("analysisId")
+    last_analysis = argToBoolean(demisto.getArg("last_analysis"))
+    analysis_id = demisto.getArg("analysis_id")
     if analysis_id:
         analysis_id = int(analysis_id)
-    results_per_page = int(demisto.getArg("resultsPerPage"))
-    max_results = int(demisto.getArg("maxResults"))
+    results_per_page = int(demisto.getArg("results_per_page"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = url_ti.get_downloaded_files_aggregated(
@@ -1214,7 +1214,7 @@ def url_downloaded_files_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        exit(0)
+        sys.exit()
     except Exception as e:
         return_error(str(e))
 
@@ -1238,8 +1238,8 @@ def url_latest_analyses_feed_command():
         user_agent=USER_AGENT
     )
 
-    results_per_page = int(demisto.getArg("resultsPerPage"))
-    max_results = int(demisto.getArg("maxResults"))
+    results_per_page = int(demisto.getArg("results_per_page"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = url_ti.get_latest_url_analysis_feed_aggregated(
@@ -1248,7 +1248,7 @@ def url_latest_analyses_feed_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        exit(0)
+        sys.exit()
     except Exception as e:
         return_error(str(e))
 
@@ -1279,10 +1279,10 @@ def url_analyses_feed_from_date_command():
         user_agent=USER_AGENT
     )
 
-    time_format = demisto.getArg("timeFormat")
-    start_time = demisto.getArg("startTime")
-    results_per_page = int(demisto.getArg("resultsPerPage"))
-    max_results = int(demisto.getArg("maxResults"))
+    time_format = demisto.getArg("time_format")
+    start_time = demisto.getArg("start_time")
+    results_per_page = int(demisto.getArg("results_per_page"))
+    max_results = int(demisto.getArg("max_results"))
 
     try:
         response = url_ti.get_url_analysis_feed_from_date_aggregated(
@@ -1293,7 +1293,7 @@ def url_analyses_feed_from_date_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        exit(0)
+        sys.exit()
     except Exception as e:
         return_error(str(e))
 

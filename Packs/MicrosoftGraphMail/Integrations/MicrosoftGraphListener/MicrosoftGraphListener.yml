@@ -324,8 +324,6 @@ script:
     - description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
       name: attachCIDs
-    - description: Email address of the sender.
-      name: from
     - deprecated: true
       description: flag for rate limit retry
       isArray: false
@@ -415,8 +413,6 @@ script:
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
       name: attach_cids
       isArray: true
-    - description: The email address from which to reply.
-      name: from
     - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true
       name: replyTo
@@ -759,7 +755,7 @@ script:
     execution: false
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.57063
+  dockerimage: demisto/crypto:1.0.0.58768
   isfetch: true
   runonce: false
   script: ''

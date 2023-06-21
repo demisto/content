@@ -535,7 +535,7 @@ def main() -> None:
     api_key = params.get('apikey')
     project_id = params.get('project_id')
     is_by_host = params.get('issue_grouping') == 'By Host'
-    expand_issues = params.get('expand_issues') == 'True'
+    expand_issues = params.get('expand_issues', False)
     incident_limit = int(params.get('max_fetch', DEFAULT_HOST_LIMIT))
     min_severity = params.get('min_severity', DEFAULT_MIN_SEVERITY)
 

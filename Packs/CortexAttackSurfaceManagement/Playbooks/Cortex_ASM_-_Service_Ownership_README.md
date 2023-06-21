@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* GCP-IAM
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -20,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* gcp-iam-project-iam-policy-get
+This playbook does not use any integration commands.
 
 ## Playbook Inputs
 

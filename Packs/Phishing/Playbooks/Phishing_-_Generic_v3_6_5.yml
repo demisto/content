@@ -133,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -347.5,
-          "y": 4670
+          "x": -410,
+          "y": 5040
         }
       }
     note: false
@@ -210,7 +210,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 630
+          "y": 800
         }
       }
     note: false
@@ -279,7 +279,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "223"
     scriptarguments:
       body:
         simple: |-
@@ -330,7 +330,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "53"
+      - "222"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -625,8 +625,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -347.5,
-          "y": 4835
+          "x": -410,
+          "y": 5205
         }
       }
     note: false
@@ -855,7 +855,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - "223"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -947,7 +947,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 450
+          "y": 620
         }
       }
     note: false
@@ -1879,6 +1879,16 @@ tasks:
                 root: incident
                 accessor: reporteremailaddress
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     - label: yes - phishing
       condition:
       - - operator: isNotEmpty
@@ -1888,6 +1898,16 @@ tasks:
                 root: incident
                 accessor: reporteremailaddress
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1967,7 +1987,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "223"
       "Yes":
       - "16"
     separatecontext: false
@@ -1983,6 +2003,16 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -3339,8 +3369,138 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 4185
+          "x": 890,
+          "y": 4180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "222":
+    id: "222"
+    taskid: 8b370acf-362f-45b2-81f6-10f886fb4d58
+    type: condition
+    task:
+      id: 8b370acf-362f-45b2-81f6-10f886fb4d58
+      version: -1
+      name: Engage with the user?
+      description: Checks whether to inform the user about the verdict of the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserEngagement
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reporteremailaddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "223":
+    id: "223"
+    taskid: 04046165-90c9-4bcc-8aad-fdf13f03568c
+    type: condition
+    task:
+      id: 04046165-90c9-4bcc-8aad-fdf13f03568c
+      version: -1
+      name: Pause to manually perform additional actions?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "224"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.TakeManualActions
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 4700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "224":
+    id: "224"
+    taskid: 29be8530-7a2a-4454-81cf-90f3478b7c8b
+    type: regular
+    task:
+      id: 29be8530-7a2a-4454-81cf-90f3478b7c8b
+      version: -1
+      name: Take manual actions
+      description: 'Take notes and additional necessary manual actions before continuing. Once this task will be completed, the incident will be closed.'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 4870
         }
       }
     note: false
@@ -3360,8 +3520,8 @@ view: |-
       "137_52_#default#": 0.16,
       "149_148_yes - phishing": 0.66,
       "149_27_#default#": 0.21,
-      "151_16_Yes": 0.57,
-      "151_8_#default#": 0.22,
+      "151_16_Yes": 0.72,
+      "151_223_#default#": 0.19,
       "152_28_yes": 0.38,
       "153_155_yes": 0.44,
       "153_84_#default#": 0.1,
@@ -3372,6 +3532,9 @@ view: |-
       "179_84_#default#": 0.1,
       "214_215_yes": 0.37,
       "218_84_#default#": 0.48,
+      "222_53_yes": 0.42,
+      "222_56_#default#": 0.17,
+      "223_224_yes": 0.47,
       "33_149_yes": 0.18,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
@@ -3379,7 +3542,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5410,
+        "height": 5780,
         "width": 3142.5,
         "x": -1782.5,
         "y": -510
@@ -3561,6 +3724,22 @@ inputs:
   description: |-
     This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.
     The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
+  playbookInputQuery:
+- key: UserEngagement
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Specify whether to engage with the user via email for investigation updates.
+    Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement.
+  playbookInputQuery:
+- key: TakeManualActions
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Specify whether to stop the playbook to take additional action before closing the incident.
+    Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done.
   playbookInputQuery:
 outputs: []
 tests:

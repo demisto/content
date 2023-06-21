@@ -204,3 +204,20 @@ Tag a user as leaving employee in Reco
 
 There is no context output for this command.
 
+
+### reco-get-link-to-user-overview-page
+
+***
+Get link to user overview page in Reco
+
+#### Base Command
+
+`reco-get-link-to-user-overview-page`
+
+#### Input
+
+| **Argument Name** | **Description**                                                             | **Required** |
+|-------------------|-----------------------------------------------------------------------------| --- |
+| entity_id         | Email address of the user to get the link to the user overview page in Reco. | Required |
+| link_type         | Type of the link                                                            | Required |
+

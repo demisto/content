@@ -1,0 +1,44 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "Data_Value",
+        "Type": "IpAddresses",
+        "Sources": [
+            {
+                "Name": "BotScout",
+                "ConfidenceLevel": 2
+            }
+        ],
+        "SystemTags": [
+            "Installation",
+            "bot"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Low",
+            "Score": 10,
+            "Origin": "system"
+        },
+        "IpDetails": {
+            "Country": "N/A",
+            "ASN": 0,
+            "ASDescription": "N/A"
+        },
+        "RelatedHashes": {
+            "downloaded": [],
+            "communicating": [],
+            "referencing": []
+        },
+        "Resolutions": []
+    }
+}

@@ -166,7 +166,7 @@ def parse_mail_parts(parts):
     html = ''
     attachments = []  # type: list
     for part in parts:
-        if 'multipart' in part['mimeType']:
+        if 'multipart' in part['mimeType'] and part.get('parts'):
             part_body, part_html, part_attachments = parse_mail_parts(
                 part['parts'])
             body += part_body
