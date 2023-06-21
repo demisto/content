@@ -5,6 +5,7 @@ import shutil
 import urllib.parse
 import fileinput
 import re
+import json
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -101,7 +102,7 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: s
     return urls_list
 
 
-def download_readme_images_from_url_data_list(readme_urls_data_list: list, storage_bucket):
+def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, storage_bucket):
     """
     Iterates over the readme_url_data_list and calls the download_readme_image_from_url_and_upload_to_gcs
     Args:
@@ -109,10 +110,15 @@ def download_readme_images_from_url_data_list(readme_urls_data_list: list, stora
                                         and then uplaoded to storage.
         storage_bucket: The storage bucket to upload the images to.
     """
-    for readme_url_data in readme_urls_data_list:
-        readme_original_url = readme_url_data.get('original_read_me_url')
-        gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
-        image_name = str(readme_url_data.get('image_name'))
+    with open(readme_urls_data_dict_path, 'r') as f:
+        # reading the file generated in the sdk of all the packs readme images data.
+        readme_urls_data_dict = json.load(f)
+
+    for pack_name in readme_urls_data_dict:
+        for readme_url_data in readme_urls_data_dict[pack_name]:
+            readme_original_url = readme_url_data.get('original_read_me_url')
+            gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
+            image_name = str(readme_url_data.get('image_name'))
 
         download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
                                                          gcs_storage_path,

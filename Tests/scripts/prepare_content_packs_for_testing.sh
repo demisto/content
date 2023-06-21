@@ -26,9 +26,10 @@ else
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XPANSE_BUCKET
 
   elif [[ "$MARKETPLACE_TYPE" == "xsoar-saas" ]]; then
-    GCS_PRODUCTION_BUCKET=$GCP
+    GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XSOAR_SAAS_BUCKET
   fi
 fi
+# We can freely use these buckets since its only reading the prod to the circle-ci bucket.
 
 echo "Preparing content packs for testing ..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
