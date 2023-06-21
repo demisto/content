@@ -4,7 +4,8 @@ commonfields:
 name: Salesforce Event Collector
 display: Salesforce Event Collector
 category: Analytics & SIEM
-description: Salesforce logs event collector integration for XSIAM.
+deprecated: true
+description: Deprecated. Use XSIAM/XDR Salesforce integration instead.
 configuration:
 - display: Server URL
   name: url
