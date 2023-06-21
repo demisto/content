@@ -1,5 +1,6 @@
 id: Test - CrowdStrike Falcon
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Test - CrowdStrike Falcon
 fromversion: 5.0.0
 description: Crowd strike test playbook
@@ -7,15 +8,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 63f0ec94-cdf5-43e3-82d8-cb5e07b14e55
+    taskid: eb60c852-c5eb-45f0-8ac2-10d54169d97e
     type: start
     task:
-      id: 63f0ec94-cdf5-43e3-82d8-cb5e07b14e55
+      id: eb60c852-c5eb-45f0-8ac2-10d54169d97e
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -37,16 +37,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fb7e4c8b-86c4-442b-8323-2229a51c1ec8
+    taskid: cef00189-6da1-414a-833b-8a10a0483b78
     type: regular
     task:
-      id: fb7e4c8b-86c4-442b-8323-2229a51c1ec8
+      id: cef00189-6da1-414a-833b-8a10a0483b78
       version: -1
       name: Fetch from instance
+      scriptName: FetchFromInstance
       type: regular
       iscommand: false
       brand: ""
-      script: FetchFromInstance
     scriptarguments:
       brand_name:
         simple: CrowdstrikeFalcon
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 01509d9c-f86c-446a-84e4-994f59eefbb9
+    taskid: 0157d8d2-2256-47a1-8dcc-2b43ec7e3d5b
     type: regular
     task:
-      id: 01509d9c-f86c-446a-84e4-994f59eefbb9
+      id: 0157d8d2-2256-47a1-8dcc-2b43ec7e3d5b
       version: -1
       name: Get detections by filter with extended
       script: '|||cs-falcon-search-detection'
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 586a8ab9-0a9f-4ea4-850f-c3d802c83c07
+    taskid: 1d9c6133-2cd1-45fa-86da-9483ecbca2dd
     type: condition
     task:
-      id: 586a8ab9-0a9f-4ea4-850f-c3d802c83c07
+      id: 1d9c6133-2cd1-45fa-86da-9483ecbca2dd
       version: -1
       name: Assert detections were fetched
       type: condition
@@ -149,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9aacfea8-9aaf-4de3-8be2-ed7259992580
+    taskid: 47d7ed3f-dd4f-47fd-84a2-7e4a7abe4775
     type: regular
     task:
-      id: 9aacfea8-9aaf-4de3-8be2-ed7259992580
+      id: 47d7ed3f-dd4f-47fd-84a2-7e4a7abe4775
       version: -1
       name: Get behavior
       script: '|||cs-falcon-get-behavior'
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 82fcc044-ac7c-44d2-83f2-9b9f3a9d27d3
+    taskid: 1837d9c9-4ac7-46fb-8d02-f72d976ec7e7
     type: condition
     task:
-      id: 82fcc044-ac7c-44d2-83f2-9b9f3a9d27d3
+      id: 1837d9c9-4ac7-46fb-8d02-f72d976ec7e7
       version: -1
       name: Assert scenario is not empty
       type: condition
@@ -227,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 6bb5d323-ba2b-4862-859b-03d6e3054e64
+    taskid: c76cca75-d811-4247-8f56-648bf822e8f4
     type: regular
     task:
-      id: 6bb5d323-ba2b-4862-859b-03d6e3054e64
+      id: c76cca75-d811-4247-8f56-648bf822e8f4
       version: -1
       name: Get multiple devices
       script: '|||cs-falcon-search-device'
@@ -261,10 +261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 445a8778-5f73-4adc-81a0-9bcbac770e1b
+    taskid: c19a832a-63ee-4a40-835d-06d27b257d1e
     type: condition
     task:
-      id: 445a8778-5f73-4adc-81a0-9bcbac770e1b
+      id: c19a832a-63ee-4a40-835d-06d27b257d1e
       version: -1
       name: Assert devices were fetched
       type: condition
@@ -306,10 +306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 078fb3bf-39d4-4cdc-8fce-bdcff432c7bf
+    taskid: a9d2fa9a-a95a-4900-80d2-9dd8f0d2a0ab
     type: regular
     task:
-      id: 078fb3bf-39d4-4cdc-8fce-bdcff432c7bf
+      id: a9d2fa9a-a95a-4900-80d2-9dd8f0d2a0ab
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -324,6 +324,7 @@ tasks:
       - "68"
       - "91"
       - "96"
+      - "127"
     scriptarguments:
       all:
         simple: "yes"
@@ -345,10 +346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: ac5b10e3-f508-424a-883d-196797ac8654
+    taskid: 7110a8e5-4057-4c43-8a4f-77887125b863
     type: regular
     task:
-      id: ac5b10e3-f508-424a-883d-196797ac8654
+      id: 7110a8e5-4057-4c43-8a4f-77887125b863
       version: -1
       name: Search for IOCs
       description: Returns a list of your uploaded IOCs that match the search criteria.
@@ -380,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 70bec7e9-c051-4e9b-816b-63670f1b1891
+    taskid: 5fed85d3-8088-49db-8cda-9739eaf22b8f
     type: condition
     task:
-      id: 70bec7e9-c051-4e9b-816b-63670f1b1891
+      id: 5fed85d3-8088-49db-8cda-9739eaf22b8f
       version: -1
       name: Assert domains were fetched
       type: condition
@@ -418,10 +419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 9816137d-9839-4644-8bd5-86bbce7b9c0e
+    taskid: fc05b460-0d85-402b-8f09-b63459767165
     type: regular
     task:
-      id: 9816137d-9839-4644-8bd5-86bbce7b9c0e
+      id: fc05b460-0d85-402b-8f09-b63459767165
       version: -1
       name: Create test IOC
       description: Uploads an indicator for CrowdStrike to monitor.
@@ -467,10 +468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b9f2efe0-bf15-41ff-8ace-957670382486
+    taskid: 27956712-0a93-4015-8e76-3cfcc3f48ef3
     type: regular
     task:
-      id: b9f2efe0-bf15-41ff-8ace-957670382486
+      id: 27956712-0a93-4015-8e76-3cfcc3f48ef3
       version: -1
       name: Update IOC
       description: Updates an indicator for CrowdStrike to monitor.
@@ -508,10 +509,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e4098a50-5053-4472-8d49-bd199dab0cf3
+    taskid: 7453816a-21c1-43ab-8895-0df757376a92
     type: condition
     task:
-      id: e4098a50-5053-4472-8d49-bd199dab0cf3
+      id: 7453816a-21c1-43ab-8895-0df757376a92
       version: -1
       name: Assert IOC was updated
       type: condition
@@ -565,10 +566,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c0be529f-dc74-46de-8b90-66f2296e277e
+    taskid: 601e4d37-82f0-45ed-868d-fdc52c4ce6f7
     type: regular
     task:
-      id: c0be529f-dc74-46de-8b90-66f2296e277e
+      id: 601e4d37-82f0-45ed-868d-fdc52c4ce6f7
       version: -1
       name: Delete test IOC
       description: Deletes a monitored indicator.
@@ -600,10 +601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 15530325-c0fd-4e6a-8c8b-24e72a3f576b
+    taskid: d22825b3-9e42-4146-8a8d-b8926d3677ad
     type: regular
     task:
-      id: 15530325-c0fd-4e6a-8c8b-24e72a3f576b
+      id: d22825b3-9e42-4146-8a8d-b8926d3677ad
       version: -1
       name: Clear CrowdStrike.IOC context
       description: Delete field from context
@@ -635,13 +636,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 3500cd2e-c887-4635-846a-5a0e27934de3
+    taskid: cdd6abf8-26d7-4226-8424-263ed5278e67
     type: regular
     task:
-      id: 3500cd2e-c887-4635-846a-5a0e27934de3
+      id: cdd6abf8-26d7-4226-8424-263ed5278e67
       version: -1
       name: Get just created test IOC
-      description: Gets the full definition of one or more indicators that you are watching.
+      description: Gets the full definition of one or more indicators that you are
+        watching.
       script: '|||cs-falcon-get-custom-ioc'
       type: regular
       iscommand: true
@@ -672,10 +674,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 14d9b6a7-436b-42ce-8422-1d17726570c0
+    taskid: 2a12044d-94f7-49bf-846e-645aadc524cd
     type: condition
     task:
-      id: 14d9b6a7-436b-42ce-8422-1d17726570c0
+      id: 2a12044d-94f7-49bf-846e-645aadc524cd
       version: -1
       name: Assert IOC was fetched
       type: condition
@@ -723,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c8559b3f-ee03-44ee-8bd9-2a296096b076
+    taskid: a045eafa-2a47-4bcd-8e22-6820e64a7c83
     type: regular
     task:
-      id: c8559b3f-ee03-44ee-8bd9-2a296096b076
+      id: a045eafa-2a47-4bcd-8e22-6820e64a7c83
       version: -1
       name: Check device count for IOC
       description: Number of hosts that observed the given IOC.
@@ -760,10 +762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: e4604338-3df4-48fb-88fc-6d5c15cfce17
+    taskid: 611a06d5-24fe-46c0-831b-6cab32457bb6
     type: condition
     task:
-      id: e4604338-3df4-48fb-88fc-6d5c15cfce17
+      id: 611a06d5-24fe-46c0-831b-6cab32457bb6
       version: -1
       name: Assert Device ID was fetched correctly
       type: condition
@@ -817,10 +819,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 42c068c6-1e32-4e41-8ea5-7f9b14dc6c40
+    taskid: 712b3818-8b1c-4d9f-8d0e-fd9aad1e45cf
     type: regular
     task:
-      id: 42c068c6-1e32-4e41-8ea5-7f9b14dc6c40
+      id: 712b3818-8b1c-4d9f-8d0e-fd9aad1e45cf
       version: -1
       name: Run Script
       description: Runs a script on the agent host.
@@ -858,10 +860,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 46df9216-8b66-4800-8faf-6ca260c684e9
+    taskid: 0faa5ee5-738e-46ab-8229-f343f951c367
     type: condition
     task:
-      id: 46df9216-8b66-4800-8faf-6ca260c684e9
+      id: 0faa5ee5-738e-46ab-8229-f343f951c367
       version: -1
       name: Verify script results
       type: condition
@@ -899,16 +901,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 58490291-ea4c-49e7-89c2-94ee862888bd
+    taskid: 19c15462-b196-4b87-85e5-005fceec4b06
     type: regular
     task:
-      id: 58490291-ea4c-49e7-89c2-94ee862888bd
+      id: 19c15462-b196-4b87-85e5-005fceec4b06
       version: -1
       name: Delete CrowdStrike.HostGroup Context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
-      scriptName: DeleteContext
     nexttasks:
       '#none#':
       - "55"
@@ -933,10 +935,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 7525ed94-a279-43ab-860d-844f11094a54
+    taskid: 8e11d68c-584e-488d-8ad4-548a6d5cb05c
     type: regular
     task:
-      id: 7525ed94-a279-43ab-860d-844f11094a54
+      id: 8e11d68c-584e-488d-8ad4-548a6d5cb05c
       version: -1
       name: cs-falcon-create-host-group
       description: Create a host group.
@@ -972,10 +974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 038ba43f-13d4-460d-8a33-ed17c4040f09
+    taskid: 424fd4b6-98f2-4d2c-8aad-818c0cec0893
     type: condition
     task:
-      id: 038ba43f-13d4-460d-8a33-ed17c4040f09
+      id: 424fd4b6-98f2-4d2c-8aad-818c0cec0893
       version: -1
       name: Verify Outputs
       type: condition
@@ -1051,10 +1053,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 1dcff6ec-8d6b-40e5-8d3e-7a2edc6aa874
+    taskid: dd5fcf7e-b43b-48c1-8e74-0f8761107a5f
     type: regular
     task:
-      id: 1dcff6ec-8d6b-40e5-8d3e-7a2edc6aa874
+      id: dd5fcf7e-b43b-48c1-8e74-0f8761107a5f
       version: -1
       name: cs-falcon-update-host-group
       description: Update a host group.
@@ -1090,10 +1092,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 951287dd-c39e-4ae7-8599-e77661fdcba4
+    taskid: 575a11c9-ece2-458e-81fc-141bdcc9c3b9
     type: condition
     task:
-      id: 951287dd-c39e-4ae7-8599-e77661fdcba4
+      id: 575a11c9-ece2-458e-81fc-141bdcc9c3b9
       version: -1
       name: Verify Outputs
       type: condition
@@ -1172,10 +1174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: d04385fc-fd81-49f8-8672-19ae9950db99
+    taskid: ca30f249-83e2-442a-85b9-1a829fd7793a
     type: regular
     task:
-      id: d04385fc-fd81-49f8-8672-19ae9950db99
+      id: ca30f249-83e2-442a-85b9-1a829fd7793a
       version: -1
       name: cs-falcon-list-host-group-members
       description: Get the list of host group members.
@@ -1204,10 +1206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 6fa54dc0-e6e6-4fd1-86c8-c0898bcef88b
+    taskid: 4ee9c919-b4df-4045-8144-328b5737d408
     type: condition
     task:
-      id: 6fa54dc0-e6e6-4fd1-86c8-c0898bcef88b
+      id: 4ee9c919-b4df-4045-8144-328b5737d408
       version: -1
       name: Verify Outputs
       type: condition
@@ -1282,10 +1284,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 869cfdcd-c99d-4e4c-833e-2b9e76bc25cf
+    taskid: 0a52653a-82ef-476e-8aa1-7f8ef8b59287
     type: regular
     task:
-      id: 869cfdcd-c99d-4e4c-833e-2b9e76bc25cf
+      id: 0a52653a-82ef-476e-8aa1-7f8ef8b59287
       version: -1
       name: cs-falcon-add-host-group-members
       description: Add host group members.
@@ -1319,10 +1321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: f391dccd-f0ab-40c9-89d4-e37337720f70
+    taskid: bfad148d-c2ce-41f4-8de4-8080455617a1
     type: condition
     task:
-      id: f391dccd-f0ab-40c9-89d4-e37337720f70
+      id: bfad148d-c2ce-41f4-8de4-8080455617a1
       version: -1
       name: Verify Outputs
       type: condition
@@ -1392,10 +1394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: d04330c5-e1b8-4f45-89b3-85382e0b7ee1
+    taskid: fc397ef6-850d-49d0-8c98-47119ef81ac7
     type: regular
     task:
-      id: d04330c5-e1b8-4f45-89b3-85382e0b7ee1
+      id: fc397ef6-850d-49d0-8c98-47119ef81ac7
       version: -1
       name: cs-falcon-remove-host-group-members
       description: Remove host group members.
@@ -1429,10 +1431,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 705e9377-bf15-41d8-8e1c-6f33b842f7b2
+    taskid: 9057b998-3d4e-4348-8123-fe23625c3f39
     type: regular
     task:
-      id: 705e9377-bf15-41d8-8e1c-6f33b842f7b2
+      id: 9057b998-3d4e-4348-8123-fe23625c3f39
       version: -1
       name: delete CrowdStrike.Device context
       description: Delete field from context
@@ -1464,10 +1466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: cffb5a8e-1d87-49ca-8225-bb0f385e3785
+    taskid: 9eb544b1-f908-4b16-869c-db9da89d5a0a
     type: regular
     task:
-      id: cffb5a8e-1d87-49ca-8225-bb0f385e3785
+      id: 9eb544b1-f908-4b16-869c-db9da89d5a0a
       version: -1
       name: list-host-group-members
       description: Get the list of host group members
@@ -1499,10 +1501,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: b746139b-3b0c-45c9-8118-2f482e56d7fa
+    taskid: 0252d4d5-0a1f-4cff-8d32-364aee1aaedf
     type: condition
     task:
-      id: b746139b-3b0c-45c9-8118-2f482e56d7fa
+      id: 0252d4d5-0a1f-4cff-8d32-364aee1aaedf
       version: -1
       name: Verify Outputs
       type: condition
@@ -1577,10 +1579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 30bea5db-c14d-4118-8e44-ac30a9c86a67
+    taskid: 1a7805ee-b89a-46e6-8da6-0168cf8d8f29
     type: regular
     task:
-      id: 30bea5db-c14d-4118-8e44-ac30a9c86a67
+      id: 1a7805ee-b89a-46e6-8da6-0168cf8d8f29
       version: -1
       name: get incidents
       description: Lists incident summaries.
@@ -1609,10 +1611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 580af843-8e42-4598-82e4-701e5e8321c8
+    taskid: 39a4a66b-c362-49d5-847f-a0878251cad1
     type: regular
     task:
-      id: 580af843-8e42-4598-82e4-701e5e8321c8
+      id: 39a4a66b-c362-49d5-847f-a0878251cad1
       version: -1
       name: cs-falcon-resolve-incident
       description: Resolve incidents.
@@ -1646,16 +1648,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: a16385a2-6daf-4563-8574-83a54af1bfa7
+    taskid: f28861ab-08e8-4fb1-883c-795e010b79e6
     type: title
     task:
-      id: a16385a2-6daf-4563-8574-83a54af1bfa7
+      id: f28861ab-08e8-4fb1-883c-795e010b79e6
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1674,10 +1675,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 0a505600-f96b-48c0-82cd-f2383dff4519
+    taskid: f98fae5d-23c2-4b67-896b-0945cd073ce1
     type: regular
     task:
-      id: 0a505600-f96b-48c0-82cd-f2383dff4519
+      id: f98fae5d-23c2-4b67-896b-0945cd073ce1
       version: -1
       name: list hostgroups (for resetting)
       description: List the available host groups.
@@ -1710,10 +1711,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 4606d647-1aa9-441f-84ae-f06ec8577f08
+    taskid: 2b3bc241-e34e-46da-80d7-64ea8370cb1a
     type: regular
     task:
-      id: 4606d647-1aa9-441f-84ae-f06ec8577f08
+      id: 2b3bc241-e34e-46da-80d7-64ea8370cb1a
       version: -1
       name: delete host groups  test_tes (for resetting)
       description: Delete the requested host groups.
@@ -1756,10 +1757,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: a852bb99-0bbd-4282-84e9-0b1b723bd667
+    taskid: 0fd6347a-b5b9-4743-8f0e-c72e225e3911
     type: regular
     task:
-      id: a852bb99-0bbd-4282-84e9-0b1b723bd667
+      id: 0fd6347a-b5b9-4743-8f0e-c72e225e3911
       version: -1
       name: delete CrowdStrike.HostGroup context
       description: Delete field from context
@@ -1791,10 +1792,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: cb43394e-5335-4026-8dd6-52952f668b77
+    taskid: f61bdad1-42bb-4398-8249-50a1ca2d2404
     type: regular
     task:
-      id: cb43394e-5335-4026-8dd6-52952f668b77
+      id: f61bdad1-42bb-4398-8249-50a1ca2d2404
       version: -1
       name: cs-falcon-list-host-groups
       description: List the available host groups.
@@ -1823,10 +1824,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 6bfe5f32-c09c-4591-8e22-b87ae4eeaec7
+    taskid: 38358efe-b792-41c2-84b0-8527a8e54d8d
     type: condition
     task:
-      id: 6bfe5f32-c09c-4591-8e22-b87ae4eeaec7
+      id: 38358efe-b792-41c2-84b0-8527a8e54d8d
       version: -1
       name: Verify Outputs
       type: condition
@@ -1905,10 +1906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 37708239-15d0-4aa8-886b-e658ccbbdf58
+    taskid: 47eeefab-df61-4b3f-835d-25a071c54cd2
     type: regular
     task:
-      id: 37708239-15d0-4aa8-886b-e658ccbbdf58
+      id: 47eeefab-df61-4b3f-835d-25a071c54cd2
       version: -1
       name: cs-falcon-delete-host-groups
       description: Delete the requested host groups.
@@ -1951,10 +1952,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 39cc23f2-3f8c-426c-8e0c-b4876f08898b
+    taskid: 128b6e91-2c7a-4b14-8bb6-fa13a94b38ae
     type: regular
     task:
-      id: 39cc23f2-3f8c-426c-8e0c-b4876f08898b
+      id: 128b6e91-2c7a-4b14-8bb6-fa13a94b38ae
       version: -1
       name: Delete CrowdStrike.HostGroup Context
       description: Delete field from context
@@ -1986,10 +1987,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: ff2054da-8ab3-45eb-8b88-554bece24378
+    taskid: 62dfd535-d837-49c3-8af7-5227ecfa5c70
     type: regular
     task:
-      id: ff2054da-8ab3-45eb-8b88-554bece24378
+      id: 62dfd535-d837-49c3-8af7-5227ecfa5c70
       version: -1
       name: list host groups
       description: List the available host groups.
@@ -2018,10 +2019,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 7ab4f14b-a709-40c0-8923-2578cfd7bcdd
+    taskid: ce898f3e-0a55-4ddf-881a-cbac17722a9f
     type: condition
     task:
-      id: 7ab4f14b-a709-40c0-8923-2578cfd7bcdd
+      id: ce898f3e-0a55-4ddf-881a-cbac17722a9f
       version: -1
       name: Verify Deleted
       type: condition
@@ -2066,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 865b9254-63fe-4c02-8ae9-aff680d36a85
+    taskid: c734ea32-eae5-43ff-8a0e-95a5be090236
     type: condition
     task:
-      id: 865b9254-63fe-4c02-8ae9-aff680d36a85
+      id: c734ea32-eae5-43ff-8a0e-95a5be090236
       version: -1
       name: check if test_tes in the list
       type: condition
@@ -2116,10 +2117,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 18624bfd-3ce1-4deb-84e6-118f43892cee
+    taskid: 5988cce6-ebb1-4ead-83a8-d307120239b8
     type: regular
     task:
-      id: 18624bfd-3ce1-4deb-84e6-118f43892cee
+      id: 5988cce6-ebb1-4ead-83a8-d307120239b8
       version: -1
       name: delete host_group test_test (for resetting)
       description: Delete the requested host groups.
@@ -2162,10 +2163,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 7418b9af-9bed-448e-8708-eb3cbd79f49b
+    taskid: cd1e53a9-7724-4035-8e10-0bf20789b5ea
     type: condition
     task:
-      id: 7418b9af-9bed-448e-8708-eb3cbd79f49b
+      id: cd1e53a9-7724-4035-8e10-0bf20789b5ea
       version: -1
       name: check if test_test in the list
       type: condition
@@ -2212,16 +2213,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: fc88eadc-4751-42ca-8263-88906c6ab424
+    taskid: 76ba89dd-8ad8-42ca-862e-6b54b5b3cb29
     type: title
     task:
-      id: fc88eadc-4751-42ca-8263-88906c6ab424
+      id: 76ba89dd-8ad8-42ca-862e-6b54b5b3cb29
       version: -1
       name: Delete Test Host Groups
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -2243,10 +2243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 166d8d7c-b407-4781-88d3-7b1e52c431be
+    taskid: 30bdcf23-f98f-4b48-8c7b-68af2bc935e8
     type: regular
     task:
-      id: 166d8d7c-b407-4781-88d3-7b1e52c431be
+      id: 30bdcf23-f98f-4b48-8c7b-68af2bc935e8
       version: -1
       name: Delete CrowdStrike.Incidents Context
       description: Delete field from context
@@ -2278,10 +2278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 5e4bf11d-2fa9-410b-834d-cc1ce4220893
+    taskid: fe13f950-a715-4d1b-83bc-9dfc7ab345db
     type: regular
     task:
-      id: 5e4bf11d-2fa9-410b-834d-cc1ce4220893
+      id: fe13f950-a715-4d1b-83bc-9dfc7ab345db
       version: -1
       name: Get Incidents
       description: Lists incident summaries.
@@ -2310,10 +2310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 49d36f4b-5a0e-4ff9-819d-75991ab6819f
+    taskid: 530c8ebd-74c5-413d-828b-37938e0612af
     type: condition
     task:
-      id: 49d36f4b-5a0e-4ff9-819d-75991ab6819f
+      id: 530c8ebd-74c5-413d-828b-37938e0612af
       version: -1
       name: Verify Resolved
       type: condition
@@ -2351,10 +2351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 2af057c2-1322-42fb-828a-2fc7a82881db
+    taskid: 65adb487-fbcd-46b6-8015-a8fe7b7fc023
     type: regular
     task:
-      id: 2af057c2-1322-42fb-828a-2fc7a82881db
+      id: 65adb487-fbcd-46b6-8015-a8fe7b7fc023
       version: -1
       name: 'Clear CrowdStrike.Detection context '
       scriptName: DeleteContext
@@ -2385,10 +2385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: a602bf50-12c5-45a4-87e2-c90d972768b4
+    taskid: 32792735-705d-4354-8663-dbc031f7bcd3
     type: regular
     task:
-      id: a602bf50-12c5-45a4-87e2-c90d972768b4
+      id: 32792735-705d-4354-8663-dbc031f7bcd3
       version: -1
       name: Get detections by filter without extended
       script: '|||cs-falcon-search-detection'
@@ -2419,10 +2419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: b50c534a-de63-4e1a-8592-7154f71ae5da
+    taskid: fa086b3a-f8ff-405e-87d7-b2bf20ee0e86
     type: condition
     task:
-      id: b50c534a-de63-4e1a-8592-7154f71ae5da
+      id: fa086b3a-f8ff-405e-87d7-b2bf20ee0e86
       version: -1
       name: Check Extended Data
       type: condition
@@ -2459,16 +2459,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 2523f18e-155e-4d87-8829-6190b1bb3d0c
+    taskid: f3950a70-2e80-4829-8d67-52cf5d452266
     type: title
     task:
-      id: 2523f18e-155e-4d87-8829-6190b1bb3d0c
+      id: f3950a70-2e80-4829-8d67-52cf5d452266
       version: -1
       name: RTR Commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "64"
@@ -2490,13 +2489,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 42ef8945-5824-4706-8a50-ea5eb66be964
+    taskid: cbeb6e06-5ad8-491d-8c20-379b03df140b
     type: regular
     task:
-      id: 42ef8945-5824-4706-8a50-ea5eb66be964
+      id: cbeb6e06-5ad8-491d-8c20-379b03df140b
       version: -1
       name: RTR Get List Processes
-      description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
+      description: Executes an RTR active-responder ps command to get a list of active
+        processes across the given host.
       script: '|||cs-falcon-rtr-list-processes'
       type: regular
       iscommand: true
@@ -2525,13 +2525,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 4733ede3-01e6-4bc0-806a-40acc0764505
+    taskid: 5f6d2c70-fcf6-4859-869a-8b70cd7923ee
     type: regular
     task:
-      id: 4733ede3-01e6-4bc0-806a-40acc0764505
+      id: 5f6d2c70-fcf6-4859-869a-8b70cd7923ee
       version: -1
       name: RTR Get List Netstat
-      description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
+      description: Executes an RTR active-responder netstat command to get a list
+        of network status and protocol statistics across the given host.
       script: '|||cs-falcon-rtr-list-network-stats'
       type: regular
       iscommand: true
@@ -2560,13 +2561,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 04546cd4-e333-4c7f-81ab-c5465fb2d27f
+    taskid: 0e858121-b627-4af2-82f4-0f4405477d5f
     type: regular
     task:
-      id: 04546cd4-e333-4c7f-81ab-c5465fb2d27f
+      id: 0e858121-b627-4af2-82f4-0f4405477d5f
       version: -1
       name: RTR Read Registry
-      description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
+      description: Executes an RTR active-responder read registry keys command across
+        the given hosts. This command is valid only for Windows hosts.
       script: '|||cs-falcon-rtr-read-registry'
       type: regular
       iscommand: true
@@ -2597,13 +2599,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 1ccf6352-7d57-41e8-8f0b-f1e71f192578
+    taskid: dd1b234a-c656-4f5f-8098-4828392c8331
     type: regular
     task:
-      id: 1ccf6352-7d57-41e8-8f0b-f1e71f192578
+      id: dd1b234a-c656-4f5f-8098-4828392c8331
       version: -1
       name: RTR Get List Scheduled Tasks
-      description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
+      description: Executes an RTR active-responder netstat command to get a list
+        of scheduled tasks across the given host. This command is valid only for Windows
+        hosts.
       script: '|||cs-falcon-rtr-list-scheduled-tasks'
       type: regular
       iscommand: true
@@ -2632,13 +2636,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: f01819d3-4f5a-4924-80a1-5524e2e598bf
+    taskid: 4775cbd1-d329-4272-8203-94588be27ca9
     type: regular
     task:
-      id: f01819d3-4f5a-4924-80a1-5524e2e598bf
+      id: 4775cbd1-d329-4272-8203-94588be27ca9
       version: -1
       name: cs-falcon-spotlight-search-vulnerability
-      description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
+      description: Retrieve vulnerability details according to the selected filter.
+        Each request requires at least one filter parameter. Supported with CrowdStrike
+        Spotlight license.
       script: '|||cs-falcon-spotlight-search-vulnerability'
       type: regular
       iscommand: true
@@ -2671,10 +2677,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 85d1694f-1173-48dc-8914-72f71f59a1c3
+    taskid: b97a83e8-8dc4-4f1f-87cc-ca68b61ad2ec
     type: condition
     task:
-      id: 85d1694f-1173-48dc-8914-72f71f59a1c3
+      id: b97a83e8-8dc4-4f1f-87cc-ca68b61ad2ec
       version: -1
       name: verify search-vulnerability
       type: condition
@@ -2709,13 +2715,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: c3f66379-af35-4b3a-82fb-b8f732780144
+    taskid: 0ed162a3-ca88-4603-83ae-6680fd2879a7
     type: regular
     task:
-      id: c3f66379-af35-4b3a-82fb-b8f732780144
+      id: 0ed162a3-ca88-4603-83ae-6680fd2879a7
       version: -1
       name: cs-falcon-spotlight-list-host-by-vulnerability
-      description: Retrieve vulnerability details for a specific ID and host. Supported with CrowdStrike Spotlight license.
+      description: Retrieve vulnerability details for a specific ID and host. Supported
+        with CrowdStrike Spotlight license.
       script: '|||cs-falcon-spotlight-list-host-by-vulnerability'
       type: regular
       iscommand: true
@@ -2746,10 +2753,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 17cf88b1-dc73-447a-8798-134347158323
+    taskid: fb9d3a96-9b06-433f-8eed-2a9ec32c2d07
     type: condition
     task:
-      id: 17cf88b1-dc73-447a-8798-134347158323
+      id: fb9d3a96-9b06-433f-8eed-2a9ec32c2d07
       version: -1
       name: verify host_by_vulnerability
       type: condition
@@ -2784,10 +2791,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: f5a0b03d-36fb-4b9d-8c74-8503b0efa692
+    taskid: 530be960-6470-4347-8c09-753351f51432
     type: regular
     task:
-      id: f5a0b03d-36fb-4b9d-8c74-8503b0efa692
+      id: 530be960-6470-4347-8c09-753351f51432
       version: -1
       name: generate string to create a ioc name
       description: Generates random string
@@ -2827,10 +2834,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: cf1f8850-ddce-4a73-8c02-097bc0989bd8
+    taskid: 2194d108-5c97-4182-8281-c3412cf883a8
     type: regular
     task:
-      id: cf1f8850-ddce-4a73-8c02-097bc0989bd8
+      id: 2194d108-5c97-4182-8281-c3412cf883a8
       version: -1
       name: set ioc name
       description: Set a value in context under the key you entered.
@@ -2864,10 +2871,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 558a6711-5dd9-4cb2-8e2d-e92146bd88d6
+    taskid: 7c8b1048-7b9a-4fc5-8ded-fd60f24b4f75
     type: condition
     task:
-      id: 558a6711-5dd9-4cb2-8e2d-e92146bd88d6
+      id: 7c8b1048-7b9a-4fc5-8ded-fd60f24b4f75
       version: -1
       name: Assert IOC was created
       type: condition
@@ -2902,10 +2909,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 621ced3b-82b7-4a20-856d-b1851c41633c
+    taskid: 95c9b6aa-6a2f-4311-8da9-351157568e0d
     type: regular
     task:
-      id: 621ced3b-82b7-4a20-856d-b1851c41633c
+      id: 95c9b6aa-6a2f-4311-8da9-351157568e0d
       version: -1
       name: Clear CrowdStrike.IOC context
       description: Delete field from context
@@ -2917,10 +2924,10 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      keysToKeep:
-        simple: ioc_value
       key:
         simple: CrowdStrike.IOC
+      keysToKeep:
+        simple: ioc_value
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2939,10 +2946,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: cce96ba4-8825-430e-8719-7c9bd078295a
+    taskid: 13ae447b-dbfd-4044-8778-ce6ce43f0750
     type: regular
     task:
-      id: cce96ba4-8825-430e-8719-7c9bd078295a
+      id: 13ae447b-dbfd-4044-8778-ce6ce43f0750
       version: -1
       name: Create ML exclusion
       description: Create an ML exclusion.
@@ -2978,13 +2985,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 3c732686-8d66-416a-8e29-363a638b8096
+    taskid: 79d3e0ff-92c3-445a-81f0-7cd25abbc18c
     type: regular
     task:
-      id: 3c732686-8d66-416a-8e29-363a638b8096
+      id: 79d3e0ff-92c3-445a-81f0-7cd25abbc18c
       version: -1
       name: Update ML exclusion
-      description: Updates an ML exclusions. At least one argument is required in addition of the ID argument.
+      description: Updates an ML exclusions. At least one argument is required in
+        addition of the ID argument.
       script: '|||cs-falcon-update-ml-exclusion'
       type: regular
       iscommand: true
@@ -3017,13 +3025,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 10158b6f-22a9-41ef-8c1f-8c919eedf06d
+    taskid: 660ec33c-ff59-43c0-88c4-2c533e838dbb
     type: regular
     task:
-      id: 10158b6f-22a9-41ef-8c1f-8c919eedf06d
+      id: 660ec33c-ff59-43c0-88c4-2c533e838dbb
       version: -1
       name: Search ML exclusion
-      description: Get a list of ML Exclusions by specifying their IDs, value, or a specific filter.
+      description: Get a list of ML Exclusions by specifying their IDs, value, or
+        a specific filter.
       script: '|||cs-falcon-search-ml-exclusion'
       type: regular
       iscommand: true
@@ -3054,10 +3063,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 100c73eb-a5d1-4fc2-8ed1-6cc0951e86a7
+    taskid: ca7068d3-6a68-4c5c-8f5b-5cf8ee604bee
     type: condition
     task:
-      id: 100c73eb-a5d1-4fc2-8ed1-6cc0951e86a7
+      id: ca7068d3-6a68-4c5c-8f5b-5cf8ee604bee
       version: -1
       name: Verify exclusion search results
       type: condition
@@ -3094,10 +3103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: d61006f6-6cfa-4683-8487-a8495fa32bc7
+    taskid: 013b76f0-9df6-464e-8f08-f725d1678e49
     type: regular
     task:
-      id: d61006f6-6cfa-4683-8487-a8495fa32bc7
+      id: 013b76f0-9df6-464e-8f08-f725d1678e49
       version: -1
       name: Delete ML exclusion
       description: Delete the ML exclusions by id.
@@ -3131,10 +3140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 89eed4bf-e79e-4268-8465-22f4be161ba0
+    taskid: 8985297f-c34b-4787-86a8-f68e316d0fa6
     type: regular
     task:
-      id: 89eed4bf-e79e-4268-8465-22f4be161ba0
+      id: 8985297f-c34b-4787-86a8-f68e316d0fa6
       version: -1
       name: Create IOA exclusion
       description: Create an IOA exclusion.
@@ -3174,13 +3183,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: b98fc939-2ceb-4aaf-8789-a1a692e0d487
+    taskid: 7983ac69-8334-4859-805a-c214c94034c3
     type: regular
     task:
-      id: b98fc939-2ceb-4aaf-8789-a1a692e0d487
+      id: 7983ac69-8334-4859-805a-c214c94034c3
       version: -1
       name: Update IOA exclusion
-      description: Updates an IOA exclusion. At least one argument is required in addition of the ID argument.
+      description: Updates an IOA exclusion. At least one argument is required in
+        addition of the ID argument.
       script: '|||cs-falcon-update-ioa-exclusion'
       type: regular
       iscommand: true
@@ -3213,10 +3223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 9dda1242-e422-450f-8b60-bbf5602f3add
+    taskid: 61a6da48-7283-4e59-8df3-514c57eea02c
     type: regular
     task:
-      id: 9dda1242-e422-450f-8b60-bbf5602f3add
+      id: 61a6da48-7283-4e59-8df3-514c57eea02c
       version: -1
       name: Search IOA exclusion
       description: Get a list of IOA Exclusions by specifying their IDs or a filter
@@ -3250,10 +3260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 8770bcca-4699-4b5f-8a19-0c382b392d35
+    taskid: 1efa30a4-f777-4cfc-81d7-168107c31a40
     type: condition
     task:
-      id: 8770bcca-4699-4b5f-8a19-0c382b392d35
+      id: 1efa30a4-f777-4cfc-81d7-168107c31a40
       version: -1
       name: Verify exclusion search results
       type: condition
@@ -3290,10 +3300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 08b17fc9-5df1-4512-82c4-7dfd56b67a66
+    taskid: 3cd53b96-12a6-48fc-8fd9-43d4f806f35e
     type: regular
     task:
-      id: 08b17fc9-5df1-4512-82c4-7dfd56b67a66
+      id: 3cd53b96-12a6-48fc-8fd9-43d4f806f35e
       version: -1
       name: Delete IOA exclusion
       description: Delete the IOA exclusions by id.
@@ -3327,10 +3337,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: df84d05f-3b33-4558-8f41-5d5e0f7c86b6
+    taskid: a92c176a-dec6-4b64-8134-582d9fa98db3
     type: regular
     task:
-      id: df84d05f-3b33-4558-8f41-5d5e0f7c86b6
+      id: a92c176a-dec6-4b64-8134-582d9fa98db3
       version: -1
       name: List quarantined file
       description: Get quarantine file metadata by specified ids or a filter.
@@ -3362,16 +3372,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 33c5655f-2adb-4a92-86e9-a92cca4d85d4
+    taskid: 91ffb331-610e-4e1e-82f9-013cfdd0ba17
     type: title
     task:
-      id: 33c5655f-2adb-4a92-86e9-a92cca4d85d4
+      id: 91ffb331-610e-4e1e-82f9-013cfdd0ba17
       version: -1
       name: Exclusion commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "94"
@@ -3393,10 +3402,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 6afdaafc-ec16-4e8c-881d-4f38638d5b0e
+    taskid: a38a9ec0-e55a-47d5-81ff-46d25f377ada
     type: condition
     task:
-      id: 6afdaafc-ec16-4e8c-881d-4f38638d5b0e
+      id: a38a9ec0-e55a-47d5-81ff-46d25f377ada
       version: -1
       name: Verify outputs
       type: condition
@@ -3433,10 +3442,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: b295b94a-7e2c-43b0-8940-6db3f2bb1a39
+    taskid: b8b9f32c-26e0-4166-81e9-3e733b19b171
     type: regular
     task:
-      id: b295b94a-7e2c-43b0-8940-6db3f2bb1a39
+      id: b8b9f32c-26e0-4166-81e9-3e733b19b171
       version: -1
       name: Delete ML exclusion
       description: Delete the ML exclusions by id.
@@ -3471,13 +3480,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: 224602f9-1d00-4a92-8896-d17a58c02e6e
+    taskid: 311ede80-1f6b-4b96-8aff-f5f261b5ba4a
     type: regular
     task:
-      id: 224602f9-1d00-4a92-8896-d17a58c02e6e
+      id: 311ede80-1f6b-4b96-8aff-f5f261b5ba4a
       version: -1
       name: Search ML exclusion
-      description: Get a list of ML Exclusions by specifying their IDs, value, or a specific filter.
+      description: Get a list of ML Exclusions by specifying their IDs, value, or
+        a specific filter.
       script: '|||cs-falcon-search-ml-exclusion'
       type: regular
       iscommand: true
@@ -3506,10 +3516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: 9a4baabd-7437-46e7-8617-2edfef80d7fb
+    taskid: 755d12be-4bc7-4f31-8b29-0be6c1706d44
     type: regular
     task:
-      id: 9a4baabd-7437-46e7-8617-2edfef80d7fb
+      id: 755d12be-4bc7-4f31-8b29-0be6c1706d44
       version: -1
       name: Delete context ML exclusion
       description: |-
@@ -3546,16 +3556,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: db1f1a62-9e1a-4ccb-836b-4a84ad4b07fb
+    taskid: af225937-faed-40a3-862c-4928a1ac83b9
     type: title
     task:
-      id: db1f1a62-9e1a-4ccb-836b-4a84ad4b07fb
+      id: af225937-faed-40a3-862c-4928a1ac83b9
       version: -1
       name: ODS commands
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "98"
@@ -3577,10 +3586,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: 139e4271-7c2e-46c5-8a46-34a9dc5df2ec
+    taskid: f9f911b3-af7a-4086-84e4-41c47243279e
     type: regular
     task:
-      id: 139e4271-7c2e-46c5-8a46-34a9dc5df2ec
+      id: f9f911b3-af7a-4086-84e4-41c47243279e
       version: -1
       name: list hostgroups
       description: List the available host groups.
@@ -3612,10 +3621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: b0654947-9b4d-4ae9-8173-bc1a8fedd116
+    taskid: 38c84584-f42b-4e6f-8324-a96350926794
     type: regular
     task:
-      id: b0654947-9b4d-4ae9-8173-bc1a8fedd116
+      id: 38c84584-f42b-4e6f-8324-a96350926794
       version: -1
       name: Create Scheduled Scan command
       description: Create an ODS scheduled scan.
@@ -3671,10 +3680,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "101":
     id: "101"
-    taskid: 845c26a9-66c7-4fcb-823d-914bdf6865b7
+    taskid: ab8cec70-75e7-4249-8a41-b3a780fff0c7
     type: regular
     task:
-      id: 845c26a9-66c7-4fcb-823d-914bdf6865b7
+      id: ab8cec70-75e7-4249-8a41-b3a780fff0c7
       version: -1
       name: Query Scheduled Scan Command
       description: Retrieve ODS scheduled scan details.
@@ -3706,10 +3715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: 28eb8064-f361-467e-8ea1-c857be3c3b8a
+    taskid: 555706f8-77b8-4368-807c-853bf5ab9393
     type: regular
     task:
-      id: 28eb8064-f361-467e-8ea1-c857be3c3b8a
+      id: 555706f8-77b8-4368-807c-853bf5ab9393
       version: -1
       name: Query Malicious Files Command
       description: Retrieve ODS malicious file details.
@@ -3738,10 +3747,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 6d396f25-6015-410f-81f5-4cd0086fbc8d
+    taskid: 27e7c86e-34ea-4182-8a06-3ffe16cc72d5
     type: regular
     task:
-      id: 6d396f25-6015-410f-81f5-4cd0086fbc8d
+      id: 27e7c86e-34ea-4182-8a06-3ffe16cc72d5
       version: -1
       name: Query Scan Hosts
       description: Retrieve ODS scan host details.
@@ -3777,10 +3786,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: 1298f423-d553-42dd-80e0-e8c5021a286e
+    taskid: 96534a7e-8e90-4293-8f45-74645590d44c
     type: regular
     task:
-      id: 1298f423-d553-42dd-80e0-e8c5021a286e
+      id: 96534a7e-8e90-4293-8f45-74645590d44c
       version: -1
       name: Delete Scheduled Scan
       description: Delete ODS scheduled scans.
@@ -3812,10 +3821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: d06be9a2-164c-49ca-83a6-522c70a6eebe
+    taskid: ebffbb16-7c4d-40e9-86d8-5cad1313aabe
     type: regular
     task:
-      id: d06be9a2-164c-49ca-83a6-522c70a6eebe
+      id: ebffbb16-7c4d-40e9-86d8-5cad1313aabe
       version: -1
       name: Clear Scheduled Scans
       description: |-
@@ -3854,10 +3863,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: d94fe8de-aa77-41bf-8355-24f4c8a144ac
+    taskid: 7f270bea-1c7d-4b11-8d37-11af9bec4f30
     type: regular
     task:
-      id: d94fe8de-aa77-41bf-8355-24f4c8a144ac
+      id: 7f270bea-1c7d-4b11-8d37-11af9bec4f30
       version: -1
       name: Create Scan Command
       description: Create an ODS scan and wait for results.
@@ -3897,10 +3906,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: 4ae06232-b364-4d25-8922-f5b93b52f3b2
+    taskid: 779ae6fb-e7e9-4cae-80e8-ea854e1f5e99
     type: regular
     task:
-      id: 4ae06232-b364-4d25-8922-f5b93b52f3b2
+      id: 779ae6fb-e7e9-4cae-80e8-ea854e1f5e99
       version: -1
       name: Query Scan Command
       description: Retrieve ODS scan details.
@@ -3936,10 +3945,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: d3842de6-82ba-41c4-813c-323ad314e925
+    taskid: f6e0d66b-2a40-4865-8045-452133b6ff78
     type: condition
     task:
-      id: d3842de6-82ba-41c4-813c-323ad314e925
+      id: f6e0d66b-2a40-4865-8045-452133b6ff78
       version: -1
       name: Verify Scheduled Scan Created
       type: condition
@@ -3974,10 +3983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "118":
     id: "118"
-    taskid: 2412c6fa-02b8-45ea-88e9-7a3400ff680d
+    taskid: 222e3bf8-b76c-4e93-8691-b2f00bd178b7
     type: condition
     task:
-      id: 2412c6fa-02b8-45ea-88e9-7a3400ff680d
+      id: 222e3bf8-b76c-4e93-8691-b2f00bd178b7
       version: -1
       name: Verify Scan Created
       type: condition
@@ -4020,10 +4029,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "119":
     id: "119"
-    taskid: 6e144002-d1f8-4768-8863-5e3ed3cae1f1
+    taskid: e21522bd-5484-4eb4-80ea-8b5dbace8dad
     type: regular
     task:
-      id: 6e144002-d1f8-4768-8863-5e3ed3cae1f1
+      id: e21522bd-5484-4eb4-80ea-8b5dbace8dad
       version: -1
       name: Clear Scans
       description: |-
@@ -4062,10 +4071,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "120":
     id: "120"
-    taskid: 3ebfd93d-1a43-4cd3-8b34-dcd8072ae2dd
+    taskid: b566b8cb-5225-4085-8eb0-7c67acd89e06
     type: condition
     task:
-      id: 3ebfd93d-1a43-4cd3-8b34-dcd8072ae2dd
+      id: b566b8cb-5225-4085-8eb0-7c67acd89e06
       version: -1
       name: Verify Query Scheduled Scans
       type: condition
@@ -4110,10 +4119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "121":
     id: "121"
-    taskid: 3202adcd-b739-4ac1-8187-36f0186162dc
+    taskid: b68b8c39-2bf8-4484-8022-be9523592075
     type: condition
     task:
-      id: 3202adcd-b739-4ac1-8187-36f0186162dc
+      id: b68b8c39-2bf8-4484-8022-be9523592075
       version: -1
       name: Verify Query Scan
       type: condition
@@ -4153,10 +4162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: 59395c90-e03e-4be7-8ba7-272888468504
+    taskid: 391600d5-68e7-4475-8487-f1d675fe04b0
     type: condition
     task:
-      id: 59395c90-e03e-4be7-8ba7-272888468504
+      id: 391600d5-68e7-4475-8487-f1d675fe04b0
       version: -1
       name: Verify Scan Deleted
       type: condition
@@ -4191,10 +4200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "123":
     id: "123"
-    taskid: b4a5a345-ba65-4f51-83d6-fc4b291966ed
+    taskid: 6b69d662-1dd4-4d48-8c3c-f1c4306b3ac3
     type: regular
     task:
-      id: b4a5a345-ba65-4f51-83d6-fc4b291966ed
+      id: 6b69d662-1dd4-4d48-8c3c-f1c4306b3ac3
       version: -1
       name: Query Scheduled Scan With Id
       description: Retrieve ODS scheduled scan details.
@@ -4226,10 +4235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "124":
     id: "124"
-    taskid: 4127a500-71f3-4eaa-8893-5ba1e0772b13
+    taskid: 97f6c327-cdec-4dc5-88ba-9d64d0c2d4dd
     type: regular
     task:
-      id: 4127a500-71f3-4eaa-8893-5ba1e0772b13
+      id: 97f6c327-cdec-4dc5-88ba-9d64d0c2d4dd
       version: -1
       name: Clear Scheduled Scans
       description: |-
@@ -4268,10 +4277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "125":
     id: "125"
-    taskid: e3d61e64-9167-4972-860a-05be8910eb4a
+    taskid: 778b6b6e-ae93-4333-8007-0801b193358e
     type: condition
     task:
-      id: e3d61e64-9167-4972-860a-05be8910eb4a
+      id: 778b6b6e-ae93-4333-8007-0801b193358e
       version: -1
       name: Verify Query Scan Hosts
       type: condition
@@ -4309,13 +4318,124 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: 0913d54a-5e2f-4dc9-8cc3-b2de800cb668
+    type: regular
+    task:
+      id: 0913d54a-5e2f-4dc9-8cc3-b2de800cb668
+      version: -1
+      name: cs-falcon-list-identity-entities
+      description: List identity entities.
+      script: '|||cs-falcon-list-identity-entities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "128"
+    scriptarguments:
+      max_risk_score_severity:
+        simple: HIGH
+      sort_key:
+        simple: PRIMARY_DISPLAY_NAME
+      type:
+        simple: USER
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 9615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 2a113003-53ae-4590-829f-2f2b5e1c2a02
+    type: title
+    task:
+      id: 2a113003-53ae-4590-829f-2f2b5e1c2a02
+      version: -1
+      name: GQL commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "126"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 5a2be6b6-6b97-4431-8557-0484179a3e16
+    type: condition
+    task:
+      id: 5a2be6b6-6b97-4431-8557-0484179a3e16
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.IDPEntity
+                accessor: primaryDisplayName
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2760,
+          "y": 9790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 9980,
-        "width": 2662.5,
+        "width": 3090,
         "x": 50,
         "y": 50
       }
