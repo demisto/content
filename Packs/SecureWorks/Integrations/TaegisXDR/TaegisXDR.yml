@@ -488,6 +488,8 @@ script:
     - name: id
       required: true
       description: The endpoint ID to fetch
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
       description: The fields to return from the query
     outputs:
