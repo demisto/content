@@ -1,11 +1,17 @@
-from google.cloud import secretmanager
 import json5
+
+from enum import Enum
+from google.cloud import secretmanager
 from Tests.scripts.utils import logging_wrapper as logging
 
 SPECIAL_CHARS = [' ', '(', '(', ')', '.', '']
 
 
 class GoogleSecreteManagerModule:
+    class SecretsFilter(Enum):
+        MASTER_SECRETS = 1
+        BRANCH_SECRETS = 2
+
     def __init__(self, service_account_file: str):
         self.client = self.init_secret_manager_client(service_account_file)
 
@@ -39,14 +45,14 @@ class GoogleSecreteManagerModule:
             return {}
 
     def list_secrets(self, project_id: str, name_filter=None, with_secrets: bool = False, branch_name='',
-                     ignore_dev: bool = True) -> list:
+                     secrets_type: SecretsFilter = SecretsFilter.MASTER_SECRETS) -> list:
         """
         Lists secrets from GSM
         :param project_id: the ID of the GCP project
         :param name_filter: a secret name to filter results by
         :param with_secrets: indicates if we want to bring the secret value(will need another API call per scret or just metadata)
         :param branch_name: filter results according to the label 'branch'
-        :param ignore_dev: indicates whether we ignore secrets with the 'dev' label
+        :param secrets_type: indicates whether we ignore secrets with the 'dev' label
         :return: the secret as json5 object
         """
         if name_filter is None:
@@ -62,10 +68,11 @@ class GoogleSecreteManagerModule:
                 logging.error(f'Error the secret {secret.name} has no labels, got the error: {e}')
             secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
-            formatted_integration_search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
-            if not secret_pack_id or labels.get('ignore') or labels.get('merged') or (ignore_dev and labels.get('dev')) or (
-                formatted_integration_search_ids and secret_pack_id not in formatted_integration_search_ids) or (
-                    branch_name and labels.get('branch', '') != branch_name):
+            search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
+            # Check if the secret comply to the function filter params
+            if not secret_pack_id or labels.get('ignore') or labels.get('merged') or (
+                secrets_type == self.SecretsFilter.MASTER_SECRETS and labels.get('dev')) or (
+                    search_ids and secret_pack_id not in search_ids) or (branch_name and labels.get('branch', '') != branch_name):
                 continue
             if with_secrets:
                 try:

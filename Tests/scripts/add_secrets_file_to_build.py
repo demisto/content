@@ -60,25 +60,26 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     :return: the list of secrets from GSM to use in the build
     """
     secret_conf = GoogleSecreteManagerModule(options.service_account)
-    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_pack_ids, with_secrets=True, ignore_dev=True)
-    secrets_dev = secret_conf.list_secrets(options.gsm_project_id, with_secrets=True, branch_name=branch_name,
+    master_secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_pack_ids, with_secrets=True, secrets_type=Secret)
+    branch_secrets = secret_conf.list_secrets(options.gsm_project_id, with_secrets=True, branch_name=branch_name,
                                            ignore_dev=False)
 
-    if secrets_dev:
-        for dev_secret in secrets_dev:
+    if branch_secrets:
+        for dev_secret in branch_secrets:
             replaced = False
-            for i in range(len(secrets)):
-                if dev_secret['name'] == secrets[i]['name']:
-                    secrets[i] = dev_secret
+            for i in range(len(master_secrets)):
+                if dev_secret['name'] == master_secrets[i]['name']:
+                    master_secrets[i] = dev_secret
                     replaced = True
+                    break
             # If the dev secret is not in the changed packs it's a new secret
             if not replaced:
-                secrets.append(dev_secret)
+                master_secrets.append(dev_secret)
 
     secret_file = {
         "username": options.user,
         "userPassword": options.password,
-        "integrations": secrets
+        "integrations": master_secrets
     }
     return secret_file
 
