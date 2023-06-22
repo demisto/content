@@ -52,7 +52,7 @@ def load_certificate():
     cert = base64.b64decode(cert)
     passphrase = params.get('passphrase_creds', {}).get('password') or params.get("passphrase", "")
     return cert, passphrase
-    
+
 
 def load_severities():
     possible_severities = ["Emergency", "Critical", "Warning", "Informational"]
