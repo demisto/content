@@ -314,18 +314,6 @@ get_spans_for_trace_id = """{
 
 class Helper:
     @staticmethod
-    def apiname_to_filename_prefix(apiname: str):
-        return (
-            apiname.lower()
-            .replace(" ", "_")
-            .replace("/", "_")
-            .replace("{", "")
-            .replace("}", "")
-            .replace("-", "_")
-            .replace("%", "")
-        )
-
-    @staticmethod
     def get_specific_yaml_config(config: dict):
         config_name = config["use_config"]
         for config_item in config["config_list"]:
@@ -460,45 +448,8 @@ class Helper:
             _obj = _obj[el]
         return False
 
-    @staticmethod
-    def convert_results_to_csv(results: dict, filename: str):
-        with open(filename, "w") as f:
-            f.write("Session ID, Token Type, Auth Type, Call Count\n")
-            for item in results["explore"]["results"]:
-                session_id = item["sessionId"]["value"]
-                tags_session_token_type = item["tags_session_token_type"]["value"]
-                tags_traceableai_auth_types = (
-                    '"'
-                    + item["tags_traceableai_auth_types"]["value"][1:-1].replace(
-                        '"', ""
-                    )
-                    + '"'
-                )
-                count_calls = item["count_calls"]["value"]
-                op = (
-                    session_id
-                    + ","
-                    + tags_session_token_type
-                    + ","
-                    + tags_traceableai_auth_types
-                    + ","
-                    + str(count_calls)
-                )
-
-                # print(op)
-                f.write(op + "\n")
-
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
     REQUESTS_TIMEOUT = 60
 
     def __init__(
@@ -751,78 +702,23 @@ class Client(BaseClient):
 
         return events
 
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
 
 """ HELPER FUNCTIONS """
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
 """ COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
     message: str = ""
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
         message = "ok"
     except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(
-            e
-        ):  # TODO: make sure you capture authentication errors
+        if "Forbidden" in str(e) or "Authorization" in str(e):
             message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
     return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
-    dummy = args.get("dummy", None)
-    if not dummy:
-        raise ValueError("dummy not specified")
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix="BaseIntegration",
-        outputs_key_field="",
-        outputs=result,
-    )
-
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 def fetch_incidents(client: Client, last_run, first_fetch_time):
