@@ -1398,41 +1398,48 @@ def update_comment_command(client: Client, env: str, args=None):
 
 
 def update_investigation_command(client: Client, env: str, args=None):
-    investigation_id = args.get("id")
-    if not investigation_id:
-        raise ValueError("Cannot fetch investigation without investigation_id defined")
+    if not args.get("id"):
+        raise ValueError("Cannot fetch investigation without id defined")
 
-    if args.get("assignee_id"):
-        if not args["assignee_id"].startswith("auth0") and args["assignee_id"] != "@secureworks":
-            raise ValueError("assignee_id MUST be in 'auth0|12345' format or '@secureworks'")
+    fields: str = args.get("fields") or "id shortId"
 
     query = """
-    mutation ($investigation_id: ID!, $investigation: UpdateInvestigationInput!) {
-        updateInvestigation(investigation_id: $investigation_id, investigation: $investigation) {
-            id
+    mutation updateInvestigationV2($input: UpdateInvestigationV2Input!) {
+        updateInvestigationV2(input: $input) {
+            %s
         }
     }
-    """
-    variables = {"investigation_id": investigation_id, "investigation": dict()}
+    """ % (fields)
+
+    variables = {"input": {"id": args.get("id")}}
 
     for field in INVESTIGATION_UPDATE_FIELDS:
         if not args.get(field):
             continue
 
+        if field == "assigneeId":
+            if not args["assigneeId"].startswith("auth0") and args["assigneeId"] != "@secureworks":
+                raise ValueError("assigneeId MUST be in 'auth0|12345' format or '@secureworks'")
+        if field == "priority" and not 0 < arg_to_number(args.get("priority")) < 5:
+            raise ValueError("Priority must be between 1-4")
         if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
             raise ValueError((
                 f"The provided status, {args['status']}, is not valid for updating an investigation. "
                 f"Supported Status Values: {INVESTIGATION_STATUSES}"))
+        if field == "type" and args.get("type") not in INVESTIGATION_TYPES:
+            raise ValueError((
+                f"The provided type, {args['type']}, is not valid for updating an investigation. "
+                f"Supported Type Values: {INVESTIGATION_TYPES}"))
 
-        variables["investigation"][field] = args.get(field)
+        variables["input"][field] = args.get(field)
 
-    if not variables["investigation"]:
+    if len(variables["input"]) < 2:
         raise ValueError(f"No valid investigation fields provided. Supported Update Fields: {INVESTIGATION_UPDATE_FIELDS}")
 
     result = client.graphql_run(query=query, variables=variables)
 
     try:
-        investigation = result["data"]["updateInvestigation"]
+        investigation = result["data"]["updateInvestigationV2"]
         investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
     except (KeyError, TypeError):
         raise ValueError(f"Failed to locate/update investigation: {result['errors'][0]['message']}")

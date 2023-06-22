@@ -183,32 +183,49 @@ script:
       required: true
       description: The investigation ID to update
     - name: priority
-      description: The priority of the investigation (1-5)
-    - name: key_findings
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      description: The priority of the investigation
+    - name: keyFindings
       description: The Key Findings field of the investigation
     - name: status
       auto: PREDEFINED
       predefined:
-      - Open
-      - Active
-      - Awaiting Action
-      - Suspended
-      - 'Closed: Authorized Activity'
-      - 'Closed: Confirmed Security Incident'
-      - 'Closed: False Positive Alert'
-      - 'Closed: Inconclusive'
-      - 'Closed: Informational'
-      - 'Closed: Not Vulnerable'
-      - 'Closed: Threat Mitigated'
+      - OPEN
+      - ACTIVE
+      - AWAITING_ACTION
+      - SUSPENDED
+      - CLOSED_AUTHORIZED_ACTIVITY
+      - CLOSED_CONFIRMED_SECURITY_INCIDENT
+      - CLOSED_FALSE_POSITIVE_ALERT
+      - CLOSED_INCONCLUSIVE
+      - CLOSED_INFORMATIONAL
+      - CLOSED_NOT_VULNERABLE
+      - CLOSED_THREAT_MITIGATED
       description: New status for the investigation
-    - name: service_desk_id
-      description: An ticket or ID for to an external system for reference
-    - name: service_desk_type
-      description: The type of service desk id (e.g. XSOAR)
-    - name: assignee_id
+    - name: assigneeId
       description: The auth0 ID of a user, in 'auth0|12345' format
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - SECURITY_INVESTIGATION
+      - INCIDENT_RESPONSE
+      - THREAT_HUNT
+      - MANAGED_XDR_THREAT_HUNT
+      - CTU_THREAT_HUNT
+      - MANAGED_XDR_ELITE_THREAT_HUNT
+      - SECUREWORKS_INCIDENT_RESPONSE
+      description: The type of investigation
+    - name: title
+      description: The title of the investigation
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
       description: ID of the updated Taegis investigation

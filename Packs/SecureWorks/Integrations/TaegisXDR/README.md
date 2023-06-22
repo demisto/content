@@ -762,12 +762,11 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Investigation ID to update | True |
-| key_findings | | False |
+| title | The title of the investigation | False |
+| keyFindings | The investigation Key Findings | False |
 | prioirity | The priority of the Investigation (1-5) | False |
-| service_desk_id | An ID or ticket # to relate to an Investigation | False |
-| service_desk_type | The type of id related to an investigation (e.g. Jira) | False |
 | status | The current status of the Investigation | False |
-| assignee_id | The id of a user to assign, in `auth0|12345` format | False |
+| assigneeId | The id of a user to assign, in `auth0|12345` format | False |
 
 Note: At least 1 of the above inputs (in addition to id) must be defined
 
@@ -788,7 +787,7 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
 #### Command Example
 
 ```
-!taegis-update-investigation id="936c1cc1-db8f-430c-837c-1c914fcca35a" priority=3 status="Open" service_desk_id="XDR-1234" service_desk_type="Jira"
+!taegis-update-investigation id="936c1cc1-db8f-430c-837c-1c914fcca35a" priority=3 status="OPEN"
 ```
 
 #### Context Example

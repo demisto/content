@@ -413,24 +413,13 @@ def test_update_investigation(requests_mock):
     """Tests taegis-update-investigation command function
     """
     client = mock_client(requests_mock, UPDATE_INVESTIGATION_RESPONSE)
-    args = {
-        "id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"],
-        "description": "Test Investigation Updated",
-        "priority": 2,
-        "status": "Active",
-    }
-    response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    args = {}
 
-    assert response.outputs["id"] == args["id"]
-
-    # investigation_id not set
-    with pytest.raises(ValueError, match="Cannot fetch investigation without investigation_id defined"):
-        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
-
-    # Investigation update failure
-    client = mock_client(requests_mock, FETCH_COMMENTS_BAD_RESPONSE)
-    with pytest.raises(ValueError, match="Failed to locate/update investigation"):
+    # id not set
+    with pytest.raises(ValueError, match="Cannot fetch investigation without id defined"):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["id"] = UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]
 
     # Invalid investigation status
     args["status"] = "BadStatus"
@@ -438,16 +427,45 @@ def test_update_investigation(requests_mock):
     with pytest.raises(ValueError, match=bad_status):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
-    # Invalid Assignee ID Format
-    args["assignee_id"] = "BadAssigneeIDFormat"
-    invalid_fields = r"assignee_id MUST be in 'auth0|12345' format or '@secureworks'"
-    with pytest.raises(ValueError, match=invalid_fields):
+    args["status"] = "ACTIVE"
+
+    # Invalid assigneeId Format
+    args["assigneeId"] = "BadAssigneeIDFormat"
+    with pytest.raises(ValueError, match="assigneeId MUST be in 'auth0|12345' format or '@secureworks'"):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["assigneeId"] = "@secureworks"
+
+    # Invalid priority
+    args["priority"] = 10
+    with pytest.raises(ValueError, match="Priority must be between 1-4"):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["priority"] = 1
+
+    # Invalid type
+    args["type"] = "BAD_TYPE"
+    with pytest.raises(ValueError, match="The provided type, BAD_TYPE, is not valid for updating an investigation."):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     # No valid update fields set
-    args = {"id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigation"]["id"]}
-    invalid_fields = r"No valid investigation fields provided. Supported Update Fields:.*"
-    with pytest.raises(ValueError, match=invalid_fields):
+    args = {"id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]}
+    with pytest.raises(ValueError, match="No valid investigation fields provided. Supported Update Fields"):
+        assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Successful Update
+    args = {
+        "id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"],
+        "title": "Test Investigation Updated",
+        "priority": 2,
+        "status": "ACTIVE",
+    }
+    response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
+
+    # Investigation update failure
+    client = mock_client(requests_mock, FETCH_COMMENTS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to locate/update investigation"):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
