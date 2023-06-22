@@ -29,5 +29,8 @@ The following parameters can be used to customize what Events should be exported
 ## Incident Types
 The integration generates _Exploit_ type of Inidents.
 
+## Official Traceable Documentation
+[https://docs.traceable.ai/](https://docs.traceable.ai/)
+
 ## Issues?
-Reach out to support@traceable.ai
+Reach out to [support@traceable.ai](mailto:support@traceable.ai)
