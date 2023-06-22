@@ -492,7 +492,10 @@ class TestFetchEvents:
     def test_get_observed_attack_techniques_logs_with_last_run(self, mocker, client: Client):
         """
         Given:
-         - no last run
+         - last_run={
+                'oat_detection_logs_time': '2023-01-01T14:00:00Z',
+                'found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+            }
          - limit = 500
          - 200 oat events
 
@@ -527,6 +530,82 @@ class TestFetchEvents:
         assert len(observed_attack_techniques_logs) == 185
         assert updated_last_run == {'oat_detection_logs_time': '2023-01-01T14:59:59Z', 'found_oat_logs': [200]}
         assert observed_attack_techniques_logs[-1]['_time'] == '2023-01-01T14:59:59Z'
+
+    def test_get_search_detection_logs_no_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - no last run
+         - limit = 500
+         - 1000 search detection events
+
+        When:
+         - running get_search_detection_logs function
+
+        Then:
+         - make sure only 500 events are returned
+         - make sure latest observed attack technique event is saved in
+           the search_detection_logs_time without adding 1 second to it.
+         - make sure in the cache we will have event with 500 id as its the event that happened in the last second.
+        """
+        from TrendMicroVisionOneEventCollector import get_search_detection_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_search_detection_logs=1000)
+        )
+
+        search_detection_logs, updated_last_run = get_search_detection_logs(
+            client=client,
+            first_fetch='1 month ago',
+            last_run={},
+            limit=500,
+            date_range_for_oat_and_search_logs=365
+        )
+
+        assert len(search_detection_logs) == 500
+        assert updated_last_run == {'search_detection_logs_time': '2023-01-01T14:43:19Z', 'found_search_detection_logs': [500]}
+        assert search_detection_logs[-1]['_time'] == '2023-01-01T14:43:19Z'
+
+    def test_get_search_detection_logs_with_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - {'search_detection_logs_time': '2023-01-01T14:43:19Z', 'found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7]}
+         - limit = 500
+         - 200 detection events
+
+        When:
+         - running get_search_detection_logs function
+
+        Then:
+         - make sure only 193 events are returned
+         - make sure latest search detection log event time is saved in
+           the search_detection_logs_time without adding 1 second to it.
+         - make sure in the cache we will have event with 200 id as its the event that happened in the last second.
+        """
+        from TrendMicroVisionOneEventCollector import get_search_detection_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(
+                num_of_search_detection_logs=200, last_search_detection_logs='2023-01-01T14:00:00Z'
+            )
+        )
+
+        search_detection_logs, updated_last_run = get_search_detection_logs(
+            client=client,
+            first_fetch='1 month ago',
+            last_run={'search_detection_logs_time': '2023-01-01T14:43:19Z', 'found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7]},
+            limit=500,
+            date_range_for_oat_and_search_logs=365
+        )
+
+        assert len(search_detection_logs) == 193
+        assert updated_last_run == {'search_detection_logs_time': '2023-01-01T14:59:59Z', 'found_search_detection_logs': [200]}
+        assert search_detection_logs[-1]['_time'] == '2023-01-01T14:59:59Z'
 
 
 @pytest.mark.parametrize(
