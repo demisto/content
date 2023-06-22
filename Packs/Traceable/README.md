@@ -4,4 +4,4 @@ This Pack provides an integration to consume the Incidents from the Threat Activ
 - Based on the Integration Configuration pull the Threat Activities detected by the Traceable Platform into Cortex Xsoar as Incidents
 - Ability to only pull in selected Activities narrowed by `Security Score Category`, `Threat Category`, `IP Reputation Level`, `IP Abuse Velocity`
 
-_For more information, visit the [Cortex XSOAR Developer Docs](./Integrations/Traceable/README.md)_
+_For more information, visit the [Traceable Official Website](https://www.traceable.ai/)_
