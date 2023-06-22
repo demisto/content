@@ -285,15 +285,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "numberoffailedlogons",
-                                "height": 22,
-                                "id": "fe02be90-e2c9-11ed-b2df-c75bb402add1",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "sourceusername",
                                 "height": 22,
                                 "id": "03cb7510-e2ca-11ed-b2df-c75bb402add1",
