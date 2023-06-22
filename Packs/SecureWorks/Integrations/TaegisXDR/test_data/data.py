@@ -225,7 +225,9 @@ FETCH_COMMENT_RESPONSE = {
 
 FETCH_COMMENTS_RESPONSE = {
     "data": {
-        "commentsByParent": [TAEGIS_COMMENT]
+        "commentsV2": {
+            "comments": [TAEGIS_COMMENT]
+        },
     }
 }
 
@@ -243,7 +245,7 @@ FETCH_COMMENTS_BAD_RESPONSE = {
 
 UPDATE_COMMENT_RESPONSE = {
     "data": {
-        "updateComment": {
+        "updateInvestigationComment": {
             "id": TAEGIS_COMMENT["id"],
         }
     }

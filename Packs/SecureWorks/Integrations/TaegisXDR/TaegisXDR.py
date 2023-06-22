@@ -1359,24 +1359,26 @@ def update_comment_command(client: Client, env: str, args=None):
     if not args.get("comment"):
         raise ValueError("Cannot update comment, comment cannot be empty")
 
+    fields: str = args.get("fields") or "id"
+
     query = """
-    mutation updateComment ($comment_id: ID!, $comment: CommentUpdate!) {
-        updateComment(comment_id: $comment_id, comment: $comment) {
-            id
+    mutation updateInvestigationComment($input: UpdateInvestigationCommentInput!) {
+        updateInvestigationComment(input: $input) {
+            %s
         }
     }
-    """
+    """ % (fields)
     variables = {
-        "comment_id": args.get("id"),
-        "comment": {
-            "comment": args.get("comment")
-        },
+        "input": {
+            "commentId": args.get("id"),
+            "comment": args.get("comment"),
+        }
     }
 
     result = client.graphql_run(query=query, variables=variables)
 
     try:
-        comment = result["data"]["updateComment"]
+        comment = result["data"]["updateInvestigationComment"]
     except (KeyError, TypeError):
         raise ValueError(f"Failed to locate/update comment: {result['errors'][0]['message']}")
 
