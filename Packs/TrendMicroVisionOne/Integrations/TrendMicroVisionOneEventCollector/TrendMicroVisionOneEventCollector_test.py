@@ -437,7 +437,9 @@ class TestFetchEvents:
         mocker.patch.object(
             BaseClient,
             '_http_request',
-            side_effect=_http_request_side_effect_decorator(num_of_workbench_logs=200)
+            side_effect=_http_request_side_effect_decorator(
+                num_of_workbench_logs=200, last_workbench_time='2023-01-01T14:00:00Z'
+            )
         )
 
         workbench_logs, updated_last_run = get_workbench_logs(
@@ -448,9 +450,84 @@ class TestFetchEvents:
         )
 
         assert len(workbench_logs) == 192
-        assert updated_last_run == {'workbench_logs_time': '2023-01-01T15:02:20Z', 'found_workbench_logs': [200]}
-        assert workbench_logs[-1]['_time'] == '2023-01-01T15:02:20Z'
-        
+        assert updated_last_run == {'workbench_logs_time': '2023-01-01T14:03:20Z', 'found_workbench_logs': [200]}
+        assert workbench_logs[-1]['_time'] == '2023-01-01T14:03:20Z'
+
+    def test_get_observed_attack_techniques_logs_no_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - no last run
+         - limit = 500
+         - 1000 oat events
+
+        When:
+         - running get_observed_attack_techniques_logs function
+
+        Then:
+         - make sure only 500 events are returned
+         - make sure latest observed attack technique event is saved in the oat_detection_logs_time without adding 1 second to it.
+         - make sure in the cache we will have event with 500 id as its the event that happened in the last second.
+        """
+        from TrendMicroVisionOneEventCollector import get_observed_attack_techniques_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_oat_logs=1000)
+        )
+
+        observed_attack_techniques_logs, updated_last_run = get_observed_attack_techniques_logs(
+            client=client,
+            first_fetch='1 month ago',
+            last_run={},
+            limit=500,
+            date_range_for_oat_and_search_logs=365
+        )
+
+        assert len(observed_attack_techniques_logs) == 500
+        assert updated_last_run == {'oat_detection_logs_time': '2023-01-01T14:51:39Z', 'found_oat_logs': [500]}
+        assert observed_attack_techniques_logs[-1]['_time'] == '2023-01-01T14:51:39Z'
+
+    def test_get_observed_attack_techniques_logs_with_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - no last run
+         - limit = 500
+         - 200 oat events
+
+        When:
+         - running get_observed_attack_techniques_logs function
+
+        Then:
+         - make sure only 185 events are returned
+         - make sure latest observed attack technique event is saved in the oat_detection_logs_time without adding 1 second to it.
+         - make sure in the cache we will have event with 500 id as its the event that happened in the last second.
+        """
+        from TrendMicroVisionOneEventCollector import get_observed_attack_techniques_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_oat_logs=200, last_oat_time='2023-01-01T14:00:00Z')
+        )
+
+        observed_attack_techniques_logs, updated_last_run = get_observed_attack_techniques_logs(
+            client=client,
+            first_fetch='1 month ago',
+            last_run={
+                'oat_detection_logs_time': '2023-01-01T14:00:00Z',
+                'found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+            },
+            limit=500,
+            date_range_for_oat_and_search_logs=365
+        )
+
+        assert len(observed_attack_techniques_logs) == 185
+        assert updated_last_run == {'oat_detection_logs_time': '2023-01-01T14:59:59Z', 'found_oat_logs': [200]}
+        assert observed_attack_techniques_logs[-1]['_time'] == '2023-01-01T14:59:59Z'
+
 
 @pytest.mark.parametrize(
     "last_run_time, first_fetch, log_type_time_field_name, start_time, expected_start_and_end_date_times",
