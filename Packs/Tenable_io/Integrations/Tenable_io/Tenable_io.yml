@@ -13,17 +13,21 @@ configuration:
   required: false
   type: 4
   hidden: true
+- displaypassword: Access key
+  name:  credentials_access_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Secret key
   name: secret-key
   required: false
   type: 4
   hidden: true
-- display: Access key
-  name: credentials_key
+- displaypassword: secret key
+  name:  credentials_secret_key
   required: false
+  hiddenusername: true
   type: 9
-  displaypassword: Secret key
-  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false

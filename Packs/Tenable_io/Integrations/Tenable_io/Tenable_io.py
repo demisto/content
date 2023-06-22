@@ -139,8 +139,8 @@ severity_to_text = [
     'Critical']
 
 BASE_URL = demisto.params()['url']
-ACCESS_KEY = demisto.params().get('credentials_key', {}).get('identifier') or demisto.params()['access-key']
-SECRET_KEY = demisto.params().get('credentials_key', {}).get('password') or demisto.params()['secret-key']
+ACCESS_KEY = demisto.params().get('credentials_access_key', {}).get('password') or demisto.params()['access-key']
+SECRET_KEY = demisto.params().get('credentials_secret_key', {}).get('password') or demisto.params()['secret-key']
 USER_AGENT_HEADERS_VALUE = 'Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)'
 AUTH_HEADERS = {'X-ApiKeys': f"accessKey={ACCESS_KEY}; secretKey={SECRET_KEY}"}
 NEW_HEADERS = {
