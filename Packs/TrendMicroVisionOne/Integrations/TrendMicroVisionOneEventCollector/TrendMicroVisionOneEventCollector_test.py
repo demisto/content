@@ -40,6 +40,9 @@ def create_any_type_logs(
     extra_seconds: int = 0,
     ascending_order: bool = False,
 ):
+    """
+    Create mocks of any type of log based on multiple parameters
+    """
     last_event_fetch_time = last_event_fetch_time or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
     if ascending_order:
         return [
@@ -74,8 +77,10 @@ def create_logs_mocks(
     url_suffix,
     top: int = 10,
     extra_seconds: int = 0,
-):
-
+) -> Dict:
+    """
+    Create mocks of any type of log, then returns the logs and pagination link if needed to proceed.
+    """
     url_params = get_url_params(url)
     top = arg_to_number(url_params.get('top')) or top
     fetched_amount_of_events = arg_to_number(url_params.get('fetchedAmountOfEvents')) or 0
@@ -110,6 +115,9 @@ def _http_request_side_effect_decorator(
     num_of_search_detection_logs: int = 0,
     num_of_audit_logs: int = 0
 ):
+    """
+    general side effect function for creating logs from any type.
+    """
     def _http_request_side_effect(**kwargs):
         full_url = kwargs.get('full_url') or ''
         params = kwargs.get('params') or {}
