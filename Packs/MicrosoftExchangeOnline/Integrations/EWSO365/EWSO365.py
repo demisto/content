@@ -2,6 +2,7 @@ import random
 import string
 import subprocess
 from typing import Dict
+from xml.sax import SAXParseException
 
 import dateparser
 import chardet
@@ -272,11 +273,9 @@ class EWSClient:
             item_ids = [item_ids]
         items = [Item(id=x) for x in item_ids]
         result = list(account.fetch(ids=items))
-        result = [x for x in result if not isinstance(x, ErrorItemNotFound)]
+        result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
         if len(result) != len(item_ids):
-            raise Exception(
-                "One or more items were not found. Check the input item ids"
-            )
+            raise Exception("One or more items were not found/malformed. Check the input item ids")
         return result
 
     def get_item_from_mailbox(self, account, item_id):
@@ -816,6 +815,11 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if value:
             raw_dict[list_dict_field] = [parse_object_as_dict(x) for x in value]
 
+    for list_str_field in ["categories"]:
+        value = getattr(item, list_str_field, None)
+        if value:
+            raw_dict[list_str_field] = value
+
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
@@ -844,6 +848,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
             "body",
             "folder_path",
             "is_read",
+            "categories"
         ]
 
         if "id" in raw_dict:
@@ -2124,6 +2129,13 @@ def parse_incident_from_item(item):     # pragma: no cover
                 except TypeError as e:
                     if str(e) != "must be string or buffer, not None":
                         raise
+                    continue
+                except SAXParseException as e:
+                    # TODO: When a fix is released, we will need to bump the library version.
+                    #  https://github.com/ecederstrand/exchangelib/issues/1200
+                    demisto.debug(f'An XML error occurred while loading an attachments content.'
+                                  f'\nMessage ID is {item.id}'
+                                  f'\nError: {e.getMessage()}')
                     continue
             else:
                 # other item attachment

@@ -84,7 +84,7 @@ tags:
 - pdf
 timeout: '0'
 type: python
-dockerimage: demisto/sane-pdf-reports:1.0.0.58997
+dockerimage: demisto/sane-pdf-reports:1.0.0.62999
 runas: DBotWeakRole
 runonce: false
 tests:

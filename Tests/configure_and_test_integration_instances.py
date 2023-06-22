@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import argparse
 import ast
@@ -94,17 +93,22 @@ class Server:
         self.user_name = None
         self.password = None
         self.name = ''
+        self.build_number = 'unknown'
+
+    def get_custom_user_agent(self):
+        return f"demisto-py/dev (Build:{self.build_number})"
 
 
 class CloudServer(Server):
 
-    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
+    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name, build_number=''):
         super().__init__()
         self.name = name
         self.api_key = api_key
         self.server_numeric_version = server_numeric_version
         self.base_url = base_url
         self.xdr_auth_id = xdr_auth_id
+        self.build_number = build_number
         self.__client = None
         # we use client without demisto username
         os.environ.pop('DEMISTO_USERNAME', None)
@@ -124,12 +128,15 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
+        custom_user_agent = self.get_custom_user_agent()
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
 
 class XSOARServer(Server):
 
-    def __init__(self, internal_ip, port, user_name, password):
+    def __init__(self, internal_ip, port, user_name, password, build_number=''):
         super().__init__()
         self.__ssh_client = None
         self.__client = None
@@ -137,6 +144,7 @@ class XSOARServer(Server):
         self.ssh_tunnel_port = port
         self.user_name = user_name
         self.password = password
+        self.build_number = build_number
 
     def __str__(self):
         return self.internal_ip
@@ -153,6 +161,9 @@ class XSOARServer(Server):
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
+        custom_user_agent = self.get_custom_user_agent()
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -279,7 +290,7 @@ class Build(ABC):
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
                             marketplace_buckets=None):
-        pass
+        raise NotImplementedError
 
     def check_if_new_to_marketplace(self, diff: str) -> bool:
         """
@@ -394,9 +405,6 @@ class Build(ABC):
         #  END CHANGE ON LOCAL RUN  #
 
     def configure_server_instances(self, tests_for_iteration, all_new_integrations, modified_integrations):
-        """
-
-        """
         modified_module_instances = []
         new_module_instances = []
         testing_client = self.servers[0].client
@@ -571,7 +579,8 @@ class XSOARBuild(Build):
         self.servers = [XSOARServer(internal_ip,
                                     port,
                                     self.username,
-                                    self.password) for internal_ip, port in self.server_to_port_mapping.items()]
+                                    self.password,
+                                    self.ci_build_number) for internal_ip, port in self.server_to_port_mapping.items()]
 
     @property
     def proxy(self) -> MITMProxy:
@@ -762,7 +771,7 @@ class CloudBuild(Build):
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
-                                    self.cloud_machine)]
+                                    self.cloud_machine, self.ci_build_number)]
         self.marketplace_tag_name: str = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
         self.marketplace_buckets = options.marketplace_buckets
@@ -1163,6 +1172,18 @@ def set_integration_params(build,
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        if integration['name'] == "Core REST API" and build.is_cloud:
+            integration_params[0]['params'] = {  # type: ignore
+                "url": build.base_url,
+                "creds_apikey": {
+                    "identifier": str(build.xdr_auth_id),
+                    "password": build.api_key,
+                },
+                "auth_method": "Standard",
+                "insecure": True,
+                "proxy": False,
+            }
+
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1220,7 +1241,7 @@ def set_module_params(param_conf, integration_params):
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials':
+        if key == 'credentials' or key == "creds_apikey":
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1637,7 +1658,7 @@ def test_pack_zip(content_path, target, packs: list = None):
                 continue
             test = test.name
             with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
+                if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'

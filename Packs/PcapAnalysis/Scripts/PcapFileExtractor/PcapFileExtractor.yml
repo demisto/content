@@ -12,8 +12,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The WPA password. By providing the password you will be able to decrypt.
-    Can be password or ssid:password.
+  description: The WPA password. By providing the password you will be able to decrypt. Can be password or ssid:password.
   isArray: false
   name: wpa_password
   required: false
@@ -26,8 +25,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of file extensions to include/exclude for example,
-    image/gif.'
+  description: 'A comma-separated list of file extensions to include/exclude for example, image/gif.'
   isArray: false
   name: types
   required: false
@@ -35,8 +33,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: inclusive
-  description: Is the type/extensions list inclusive or exclusive. Can be "inclusive"
-    or "exclusive". Default is "inclusive".
+  description: Is the type/extensions list inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
   isArray: false
   name: inclusive_or_exclusive
   predefined:
@@ -45,15 +42,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of MIME file types to include/exclude, for
-    example, image/png. Can not combine with the extensions argument.'
+  description: 'A comma-separated list of MIME file types to include/exclude, for example, image/png. Can not combine with the extensions argument.'
   isArray: false
   name: types
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of file extensions to include/exclude, for
-    example, image/png. Can not combine with the types argument.'
+  description: 'A comma-separated list of file extensions to include/exclude, for example, image/png. Can not combine with the types argument.'
   isArray: false
   name: extensions
   required: false
@@ -62,7 +57,6 @@ comment: This automation extracts all possible files from a PCAP file.
 commonfields:
   id: PcapFileExtractor
   version: -1
-enabled: false
 name: PcapFileExtractor
 outputs:
 - contextPath: PcapExtractedFiles.FileName
