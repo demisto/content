@@ -197,7 +197,7 @@ def generate_indicator(data: dict) -> Common.CVE:
     """
 
     cve_id = data.get('id', '')
-    if cpe := data.get("vulnerable_product", '')
+    if cpe := data.get("vulnerable_product", ''):
         tags, relationships = parse_cpe(cpe, cve_id)
 
     else:
