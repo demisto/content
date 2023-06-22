@@ -517,9 +517,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         }
         """ % (fields)
 
-        if type(variables["ids"]) == str:
-            variables["ids"] = variables["ids"].split(",")  # alerts://id1,alerts://id2
-        variables["ids"] = [x.strip() for x in variables["ids"]]  # Ensure no whitespace
+        variables["ids"] = split_and_trim(variables["ids"])
     else:
         field = "alertsServiceSearch"
         query = """
