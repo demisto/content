@@ -1,5 +1,5 @@
 import pytest
-from PwnedV2 import pwned_domain_command, pwned_username_command
+from PwnedV2 import pwned_domain_command, pwned_username_command, pwned_email_command
 import PwnedV2
 from requests_mock import ANY
 import demistomock as demisto
@@ -108,7 +108,10 @@ def test_pwned_commands(command, args, response, expected_result, mocker):
     - create the context
     validate the expected_result and the created context
     """
-    mocker.patch.object(demisto, 'params', return_value={'integrationReliability': 'A - Completely reliable'})
+    PwnedV2.API_KEY = 'test'
+    mocker.patch.object(demisto, 'params', return_value={
+                        'integrationReliability': 'A - Completely reliable',
+                        'credentials_api_key': {"password": "test"}})
     mocker.patch('PwnedV2.http_request', return_value=response)
     md_list, ec_list, api_email_res_list = command(args)
     for hr, outputs, raw in zip(md_list, ec_list, api_email_res_list):
@@ -119,12 +122,101 @@ def test_rate_limited(mocker, requests_mock):
     # mock all requests with retry and provide a huge timeout
     requests_mock.get(ANY, status_code=429,
                       text='{ "statusCode": 429, "message": "Rate limit is exceeded. Try again in 20 seconds." }')
+    mocker.patch.object(demisto, 'params', return_value={'credentials_api_key': {'password': 'test'}})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     return_error_mock.side_effect = ValueError(RETURN_ERROR_TARGET)
     PwnedV2.MAX_RETRY_ALLOWED = 10
+    PwnedV2.API_KEY = 'test'
     PwnedV2.set_retry_end_time()
     with pytest.raises(ValueError, match=RETURN_ERROR_TARGET):
         PwnedV2.pwned_email(['test@test.com'])
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     assert 'Max retry time' in return_error_mock.call_args[0][0]
+
+
+def test_valid_emails(mocker):
+    """
+    Given:
+    - A list of valid email addresses.
+
+    When:
+    - Calling the pwned_email_command function.
+
+    Then:
+    - Ensure the function returns the expected output.
+    """
+    email_list = ['test1@example.com', 'test2@example.com']
+    api_email_res_list = [{'Title': 'Breach1', 'Domain': 'example.com', 'PwnCount': 100, 'IsVerified': True,
+                           'BreachDate': '2021-01-01T00:00:00Z', 'Description': '<p>Breach description</p>',
+                           'DataClasses': ['Emails', 'Passwords']}, None]
+    api_paste_res_list = [[{'Source': 'Paste1', 'Title': 'Paste Title', 'Id': '1234', 'Date': '2021-01-01T00:00:00Z',
+                            'EmailCount': 10}], []]
+    expected_md_list = [
+        '### Have I Been Pwned query for email: *test1@example.com*\n'
+        '#### Breach1 (example.com): 100 records breached [Verified breach]\n'
+        'Date: **2021-01-01**\n\n'
+        'Breach description\n'
+        'Data breached: **Emails,Passwords**\n'
+        '\n'
+        'The email address was found in the following "Pastes":\n'
+        '| ID | Title | Date | Source | Amount of emails in paste |\n'
+        '|----|-------|------|--------|--------------------------|\n'
+        '| 1234 | Paste Title | 2021-01-01 | Paste1 | 10 |\n',
+        '### Have I Been Pwned query for email: *test2@example.com*\n'
+        'No records found'
+    ]
+    expected_ec_list = [
+        {
+            'DBotScore': {
+                'Indicator': 'test1@example.com',
+                'Type': 'email',
+                'Vendor': 'HaveIBeenPwned',
+                'Score': 3,
+                'Reliability': 'B - Usually reliable'
+            },
+            'email': {
+                'Address': 'test1@example.com',
+                'Pwned-V2': {
+                    'Compromised': {
+                        'Vendor': 'HaveIBeenPwned',
+                        'Reporters': 'Breach1, Paste1'
+                    }
+                },
+                'Malicious': {
+                    'Vendor': 'HaveIBeenPwned',
+                    'Description': 'The email has been compromised'
+                }
+            }
+        },
+        {
+            'DBotScore': {
+                'Indicator': 'test2@example.com',
+                'Type': 'email',
+                'Vendor': 'HaveIBeenPwned',
+                'Score': 0,
+                'Reliability': 'B - Usually reliable'
+            },
+            'email': {
+                'Address': 'test2@example.com',
+                'Pwned-V2': {
+                    'Compromised': {
+                        'Vendor': 'HaveIBeenPwned',
+                        'Reporters': ''
+                    }
+                }
+            }
+        }
+    ]
+
+    mocker.patch.object(demisto, 'params', return_value={'integrationReliability': 'B - Usually reliable'})
+    mocker.patch.object(demisto, 'command', return_value='pwned-email')
+    mocker.patch.object(demisto, 'args', return_value={'email': email_list})
+    mocker.patch('PwnedV2.pwned_email', return_value=(api_email_res_list, api_paste_res_list))
+    mocker.patch('PwnedV2.data_to_markdown', side_effect=expected_md_list)
+    mocker.patch('PwnedV2.email_to_entry_context', side_effect=expected_ec_list)
+
+    md_list, ec_list, api_paste_res = pwned_email_command(demisto.args())
+
+    assert md_list == expected_md_list
+    assert ec_list == expected_ec_list
