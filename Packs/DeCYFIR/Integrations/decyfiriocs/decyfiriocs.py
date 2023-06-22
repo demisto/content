@@ -40,7 +40,7 @@ THREAT_INTEL_SCORES = {
 
 
 class Client(BaseClient):
-    def get_indicator_or_threatintel_type(self, data: str):
+    def get_indicator_or_threatintel_type(self, data):
 
         if "[domain-name:value" in data:
             return FeedIndicatorType.Domain
@@ -91,14 +91,14 @@ class Client(BaseClient):
         else:
             return []
 
-    def build_relationships(self, relation_type: str, source_value: str, source_type: str, target_value: str, target_type: str):
+    def build_relationships(self, relation_type, source_value, source_type, target_value, target_type):
 
         return EntityRelationship(name=relation_type,
                                   entity_a=source_value, entity_a_type=source_type,
                                   entity_b=target_value, entity_b_type=target_type
                                   ).to_indicator()
 
-    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]):
+    def build_threat_actor_relationship_obj(self, source_data: Dict, target_data: Dict):
 
         if ThreatIntel.ObjectsNames.INTRUSION_SET is target_data.get(LABEL_TYPE):
             return self.build_relationships(EntityRelationship.Relationships.ATTRIBUTED_TO,
@@ -132,7 +132,7 @@ class Client(BaseClient):
 
         return None
 
-    def build_ioc_relationship_obj(self, ioc_data: Dict[str, str], target_data: Dict[str, str]):
+    def build_ioc_relationship_obj(self, ioc_data: Dict, target_data: Dict):
 
         return self.build_relationships(EntityRelationship.Relationships.INDICATOR_OF,
                                         ioc_data.get(LABEL_VALUE), ioc_data.get(LABEL_TYPE),
@@ -140,12 +140,11 @@ class Client(BaseClient):
 
     def add_tags(self, in_ti: Dict, data: Optional[List[str] | str]):
 
-        if 'Unknown' in data:
-            data.remove('Unknown')
-        elif 'unknown' in data:
-            data.remove('unknown')
-
         if isinstance(data, List):
+            if 'Unknown' in data:
+                data.remove('Unknown')
+            elif 'unknown' in data:
+                data.remove('unknown')
             if 'tags' in in_ti['fields']:
                 for tc in data:
                     in_ti['fields']['tags'].append(tc)
@@ -195,7 +194,7 @@ class Client(BaseClient):
                         self.add_tags(ti_data_obj, ttps_id)
 
         if data.get('aliases'):
-            if 'aliases' in ti_data_obj['fields']:
+            if 'aliases' in ti_data_obj['fields'] ['aliases']:
                 for tc in data:
                     ti_data_obj['fields']['aliases'].append(tc)
             else:
@@ -222,7 +221,8 @@ class Client(BaseClient):
             ti_data_obj['fields']['killchainphases'] = kill_chain_phases
 
         if data.get("labels"):
-            for label in data.get("labels"):
+            labels:list = data.get("labels")
+            for label in labels:
                 if isinstance(label, Dict):
                     if label.get("origin-of-country"):
                         ti_data_obj['fields']['geocountry'] = label.get("origin-of-country")
@@ -251,12 +251,12 @@ class Client(BaseClient):
         return ti_data_obj
 
     def convert_decyfir_ti_to_indicator_format(
-            self,
-            decyfir_api_key: str,
-            data: Dict,
-            tlp_color: Optional[str],
-            feed_tags: Optional[List],
-            threat_intel_type: str) -> List[Dict]:
+        self,
+        decyfir_api_key: str,
+        data: Dict,
+        tlp_color: Optional[str],
+        feed_tags: Optional[List],
+        threat_intel_type: str) -> List[Dict]:
 
         return_data = []
         ta_source_obj = {}
@@ -267,7 +267,8 @@ class Client(BaseClient):
             if threat_intel_type is ThreatIntel.ObjectsNames.THREAT_ACTOR:
                 ta_name = data.get("name")
                 # Threat actor details search API
-                ta_rel_data: List[Dict] = self.get_decyfir_api_iocs_ti_data(TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, ta_name))
+                ta_rel_data: List[Dict] = self.get_decyfir_api_iocs_ti_data(
+                    TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, ta_name))
 
                 # Threat actors relationships
                 if ta_rel_data:
@@ -302,7 +303,8 @@ class Client(BaseClient):
                         else:
                             source_ti_data_obj = ta_source_obj
 
-                        if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and source_ti_data_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID):
+                        if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and source_ti_data_obj.get(
+                            LABEL_ID) != target_ref_obj.get(LABEL_ID):
                             target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color, feed_tags)
                             return_data.append(target_ti_data_obj)
                         else:
@@ -310,7 +312,8 @@ class Client(BaseClient):
 
                         if source_ti_data_obj and target_ti_data_obj:
                             if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
+                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                                  target_ti_data_obj)
 
                                 source_ti_data_obj[LABEL_RELATIONSHIPS] = []
                                 if ti_relationships:
@@ -319,7 +322,8 @@ class Client(BaseClient):
                                     else:
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
                             else:
-                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
+                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                                  target_ti_data_obj)
                                 if ti_relationships:
                                     src_ti_relationships_data.append(ti_relationships)
 
@@ -332,12 +336,12 @@ class Client(BaseClient):
         return return_data
 
     def convert_decyfir_ti_to_indicators_formats(
-            self,
-            decyfir_api_key: str,
-            ti_data: List[Dict],
-            tlp_color: Optional[str],
-            feed_tags: Optional[List],
-            threat_intel_type: str) -> List[Dict]:
+        self,
+        decyfir_api_key: str,
+        ti_data: List[Dict],
+        tlp_color: Optional[str],
+        feed_tags: Optional[List],
+        threat_intel_type: str) -> List[Dict]:
 
         return_data = []
         for data in ti_data:
@@ -347,12 +351,12 @@ class Client(BaseClient):
         return return_data
 
     def convert_decyfir_ioc_to_indicators_formats(
-            self,
-            decyfir_api_key: str,
-            decyfir_iocs: List[Dict],
-            reputation: Optional[str],
-            tlp_color: Optional[str],
-            feed_tags: Optional[List]) -> List[Dict]:
+        self,
+        decyfir_api_key: str,
+        decyfir_iocs: List[Dict],
+        reputation: Optional[str],
+        tlp_color: Optional[str],
+        feed_tags: Optional[List]) -> List[Dict]:
 
         return_data = []
         for ioc in decyfir_iocs:
@@ -415,7 +419,8 @@ class Client(BaseClient):
             if isinstance(ioc.get("kill_chain_phases"), List):
                 self.add_tags(ioc_data, ioc.get("kill_chain_phases"))
 
-            ioc_rel_data: List[Dict] = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, decyfir_ioc_type, ioc_data.get(LABEL_VALUE)))
+            ioc_rel_data: List[Dict] = self.get_decyfir_api_iocs_ti_data(
+                IOC_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, decyfir_ioc_type, ioc_data.get(LABEL_VALUE)))
 
             if ioc_rel_data:
                 relationships_data = []
@@ -423,7 +428,9 @@ class Client(BaseClient):
                     if LABEL_INDICATOR != ioc_rel.get(LABEL_TYPE) and LABEL_RELATIONSHIP != ioc_rel.get(LABEL_TYPE):
                         in_rel_ti_data_ = self.build_threat_intel_indicator_obj(ioc_rel, tlp_color, feed_tags)
                         if ThreatIntel.ObjectsNames.THREAT_ACTOR == in_rel_ti_data_.get(LABEL_TYPE):
-                            tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, in_rel_ti_data_, tlp_color, feed_tags, ThreatIntel.ObjectsNames.THREAT_ACTOR)
+                            tis_data = self.convert_decyfir_ti_to_indicator_format(decyfir_api_key, in_rel_ti_data_, tlp_color,
+                                                                                   feed_tags,
+                                                                                   ThreatIntel.ObjectsNames.THREAT_ACTOR)
                             for t_rel_d in tis_data:
                                 return_data.append(t_rel_d)
                                 if ThreatIntel.ObjectsNames.THREAT_ACTOR == t_rel_d.get(LABEL_TYPE):
@@ -439,7 +446,8 @@ class Client(BaseClient):
             return_data.append(ioc_data)
         return return_data
 
-    def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str], feed_tags: Optional[List]):
+    def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str],
+                         feed_tags: Optional[List]):
 
         # Indicators from DeCYFIR
         iocs_data = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
@@ -449,8 +457,10 @@ class Client(BaseClient):
 
         return_data = []
         # Converting indicators & threat intel data to XSOAR indicators format
-        return_data.extend(self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color, feed_tags))
-        return_data.extend(self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags, ThreatIntel.ObjectsNames.THREAT_ACTOR))
+        return_data.extend(
+            self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color, feed_tags))
+        return_data.extend(self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags,
+                                                                         ThreatIntel.ObjectsNames.THREAT_ACTOR))
 
         return return_data
 
@@ -468,11 +478,11 @@ def test_module_command(client, decyfir_api_key):
 
 
 def fetch_indicators_command(
-        client: Client,
-        decyfir_api_key: str,
-        tlp_color: Optional[str],
-        reputation: Optional[str],
-        feed_tags: Optional[List]) -> List[Dict]:
+    client: Client,
+    decyfir_api_key: str,
+    tlp_color: Optional[str],
+    reputation: Optional[str],
+    feed_tags: Optional[List]) -> List[Dict]:
     return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags)
 
 
