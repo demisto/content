@@ -252,7 +252,8 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
                     "title": "Test Alert",
                     "description": "This is a test alert",
                     "severity": 0.5,
-                }
+                },
+                "url": "https://ctpx.secureworks.com/alerts/c4f33b53-eaba-47ac-8272-199af0f7935b"
             }
         ]
     }
@@ -536,6 +537,8 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Investigation ID to lookup | True |
+| page | Search page number [Default: 0] | False |
+| page_size | Number of results per page [Default: 10] | False |
 
 #### Command Example
 
@@ -700,6 +703,7 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 * OPEN
 * TRUE_POSITIVE_BENIGN
 * TRUE_POSITIVE_MALICIOUS
+* OTHER
 
 
 #### Command Examples
