@@ -520,12 +520,12 @@ upload-id-set-bucket:
     - .default-job-settings
   script:
     # This is needed because we still use id_set.json in other repos
-    - |
-      if [[ $TEST_UPLOAD == "true" ]] && [[ $DEMISTO_SDK_NIGHTLY == "false" ]]; then
-        echo "Skipping uploading id-set to the bucket in test upload-flow"
-        job-done
-        exit 0
-      fi
+#    - |
+#      if [[ $TEST_UPLOAD == "true" ]] && [[ $DEMISTO_SDK_NIGHTLY == "false" ]]; then
+#        echo "Skipping uploading id-set to the bucket in test upload-flow"
+#        job-done
+#        exit 0
+#      fi
 
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
