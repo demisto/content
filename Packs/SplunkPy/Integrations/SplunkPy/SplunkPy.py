@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import hashlib
 import io
 import json
@@ -5,14 +8,14 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto
+
 import pytz
 import requests
 import splunklib.client as client
 import splunklib.results as results
 from splunklib.data import Record
 import urllib3
-from CommonServerPython import *  # noqa: F401
+
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 urllib3.disable_warnings()
@@ -700,6 +703,7 @@ class Cache:
         not_yet_submitted_notables (list): The list of all notables that were fetched but not yet submitted.
         submitted_notables (list): The list of all submitted notables that needs to be handled.
     """
+
     def __init__(self, not_yet_submitted_notables=None, submitted_notables=None):
         self.not_yet_submitted_notables = not_yet_submitted_notables if not_yet_submitted_notables else []
         self.submitted_notables = submitted_notables if submitted_notables else []
@@ -2608,7 +2612,7 @@ def get_connection_args() -> dict:
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
-
+    print("TEST")
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command()
         sys.exit(0)
