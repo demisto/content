@@ -1,0 +1,1888 @@
+id: PAN-OS - DNS Sinkhole
+version: -1
+name: PAN-OS - DNS Sinkhole
+description: |-
+  This playbook creates a DNS sinkhole in a PAN-OS firewall. It does the following:
+  1. Finds a security rule that allows DNS traffic from the internal network to the internet using the "Security Policy Match" feature against traffic from the internal DNS server/s to the public DNS server.
+  2. Creates or adds an existing anti-spyware security profile to the security rule/s that were found.
+  3. Sets the External Dynamic List under the DNS Policies configuration of the security profile with the "sinkhole" action.
+  4. Creates an address object for the sinkhole address so that it can be referenced later in a deny rule (the sinkhole IP constantly rotates).
+  5. Creates a new security rule to deny traffic to the sinkhole address object, in order to generate traffic logs for the compromised hosts.
+  6. Retrieves the traffic logs for the IPs that generate traffic that is denied by the previous step.
+  7. Outputs the revealed IPs, or the full traffic logs, depending on the playbook input configuration.
+
+
+  How it works:
+  A DNS sinkhole can be used to identify infected hosts on a network where there is an internal DNS Server in-route to the firewall that causes the reference of the original source IP address of the host that first originated the query to be lost (the query is received by the Internal DNS Server, and the internal DNS Server sources a new query if the name-to-IP resolution is not locally cached).
+
+  This causes the firewall to report observations of malicious DNS queries in the Threat logs where the source IP of the malicious DNS query is the Internal DNS server, which would force the administrator to look into the DNS Server logs to try to trace down what was the infected host that originally sourced the malicious DNS query.
+
+  After a security profile with a "sinkhole" action for domains listed in our EDL is attached to a rule that allows DNS traffic, the threat logs will show that requests from our DNS server were sinkholed. However, the compromised hosts will not appear in those logs.
+  The second step is creating a new rule for denying all requests to our Sinkhole Address. Since the infected hosts received a forged DNS response from our first step they will now try to connect to the Sinkhole Address, assuming it is their C&C server. The new rule will deny the subsequent attempts of those infected hosts when they try to access the Sinkhole Address, and log them.
+
+
+  Assumptions:
+  - There is an existing External Dynamic List (EDL) that has the domain that you want to sinkhole in it.
+  - There is an internal DNS server going out through the firewall to a specific public DNS server.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f5e8c7ff-cfec-4e23-8a73-354b6c1dd7d5
+    type: start
+    task:
+      id: f5e8c7ff-cfec-4e23-8a73-354b6c1dd7d5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 178b1356-7714-44a1-851d-1a5cd90571d4
+    type: regular
+    task:
+      id: 178b1356-7714-44a1-851d-1a5cd90571d4
+      version: -1
+      name: Apply EDL to security profile and set action to Sinkhole
+      description: Sets the action for the EDL in security profile that's applied to the rule/s - to sinkhole requests to those domains.
+      script: '|||pan-os-apply-dns-signature-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      action:
+        simple: sinkhole
+      anti_spyware_profile_name:
+        complex:
+          root: AntiSpywareProfileNameApplied
+          transformers:
+          - operator: uniq
+      dns_signature_source:
+        complex:
+          root: inputs.SinkholeDomainsEDLName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3831635d-4b34-44e9-8f83-50cbfb048393
+    type: regular
+    task:
+      id: 3831635d-4b34-44e9-8f83-50cbfb048393
+      version: -1
+      name: Commit changes
+      description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+      script: '|||pan-os-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      description:
+        simple: XSOAR - DNS Sinkhole Configuration
+      interval_in_seconds:
+        simple: "10"
+      polling:
+        simple: "true"
+      timeout:
+        simple: "500"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7144b4a8-b36c-44f8-86d2-e2928ce14916
+    type: regular
+    task:
+      id: 7144b4a8-b36c-44f8-86d2-e2928ce14916
+      version: -1
+      name: Match rule to traffic from primary internal DNS to public DNS
+      description: Tries to find a rule that allows DNS traffic from the primary internal DNS server to the public DNS server.
+      script: '|||pan-os-security-policy-match'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      destination:
+        complex:
+          root: inputs.PublicDNSServerIP
+      destination-port:
+        simple: "53"
+      protocol:
+        simple: "17"
+      source:
+        complex:
+          root: inputs.PrimaryInternalDNSServerIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: c39edb3b-171b-4752-871b-50e621504fbe
+    type: regular
+    task:
+      id: c39edb3b-171b-4752-871b-50e621504fbe
+      version: -1
+      name: Create new deny rule preceding the first DNS allowing rule
+      description: |-
+        Creates a new rule to deny traffic to the sinkhole address object, before the first rule that allows DNS traffic. This in turn creates logs for the IPs making traffic to the sinkhole address.
+        It's best practice to deny traffic to the sinkhole address.
+      script: '|||pan-os-create-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action:
+        simple: deny
+      destination:
+        complex:
+          root: inputs.SinkholeAddressObjectName
+      dst:
+        complex:
+          root: RuleNamesAllowingDNS
+          transformers:
+          - operator: FirstArrayElement
+      rulename:
+        complex:
+          root: inputs.RuleNameToDenyToSinkhole
+      source:
+        simple: any
+      where:
+        simple: before
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 176ec972-3563-4802-851d-f1a2ecd7720e
+    type: title
+    task:
+      id: 176ec972-3563-4802-851d-f1a2ecd7720e
+      version: -1
+      name: Create Sinkhole Address Object
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: b84f4a7f-7829-433e-8658-d868b7fe3df6
+    type: regular
+    task:
+      id: b84f4a7f-7829-433e-8658-d868b7fe3df6
+      version: -1
+      name: Get existing sinkhole address object
+      description: Gets the sinkhole address object, if there is one.
+      script: '|||pan-os-get-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.SinkholeAddressObjectName
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 716a9a2f-6451-4813-8177-d223610abcab
+    type: regular
+    task:
+      id: 716a9a2f-6451-4813-8177-d223610abcab
+      version: -1
+      name: Create a new address object for the sinkhole address
+      description: Creates an address object for the sinkhole FQDN. This is needed because the sinkhole IP rotates, and in order to create a rule that denies traffic to it, an address object is needed.
+      script: '|||pan-os-create-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      description:
+        simple: The address that resolves to the current Palo Alto Networks Sinkhole IP, which constantly rotates.
+      fqdn:
+        simple: sinkhole.paloaltonetworks.com
+      name:
+        complex:
+          root: inputs.SinkholeAddressObjectName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 36e39093-785b-4283-8c04-a81f58ca06ec
+    type: condition
+    task:
+      id: 36e39093-785b-4283-8c04-a81f58ca06ec
+      version: -1
+      name: Can a new rule be created?
+      description: |-
+        Checks whether a new rule that allows DNS traffic from the internal DNS server/s to the public DNS server can be created.
+        The rule will be placed high in the rule list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      Yes, automatically:
+      - "55"
+      Yes, with approval:
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: Yes, automatically
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCreateRuleToAllowDNS
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Yes, with approval
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCreateRuleToAllowDNS
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.NetworkAdminEmail
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": 1345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 4d76c94d-3743-4b37-8d1f-103b02a88658
+    type: title
+    task:
+      id: 4d76c94d-3743-4b37-8d1f-103b02a88658
+      version: -1
+      name: Reveal Compromised Hosts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 32b6f9e5-4381-4d22-8d29-14198b922048
+    type: title
+    task:
+      id: 32b6f9e5-4381-4d22-8d29-14198b922048
+      version: -1
+      name: Deny Traffic to Sinkhole Address Object - Creates Logs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 072815a4-f93c-49ed-8b21-a6a5fc742f59
+    type: regular
+    task:
+      id: 072815a4-f93c-49ed-8b21-a6a5fc742f59
+      version: -1
+      name: Search for existing rule denying traffic to sinkhole
+      description: Searches for rules that apply to traffic to the sinkhole address. Although it's recommended to deny traffic to the sinkhole address, because packets are dropped anyway, the search also looks for allow rules too. This is done because the goal is to log traffic to it, so the action is irrelevant.
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.SinkholeAddressObjectName
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: (destination/member eq '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ''')'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 68ce0941-83e5-47f1-8ef3-4fdb8997a386
+    type: condition
+    task:
+      id: 68ce0941-83e5-47f1-8ef3-4fdb8997a386
+      version: -1
+      name: Does the rule already exist?
+      description: Checks whether a rule was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama.SecurityRule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.SecurityRule.Destination
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.SinkholeAddressObjectName
+                      iscontext: true
+                accessor: Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 1165898b-be5e-4426-8f67-c05d78318e7b
+    type: title
+    task:
+      id: 1165898b-be5e-4426-8f67-c05d78318e7b
+      version: -1
+      name: Query Traffic Logs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 4110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 47fb9736-cc26-4baa-8647-9bba4fbcdccd
+    type: condition
+    task:
+      id: 47fb9736-cc26-4baa-8647-9bba4fbcdccd
+      version: -1
+      name: Is there a secondary DNS server?
+      description: Checks if there's another DNS internal server configured in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SecondaryInternalDNSServerIP
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 04315d1e-bcfd-4cc8-837f-12390aa8f6ac
+    type: regular
+    task:
+      id: 04315d1e-bcfd-4cc8-837f-12390aa8f6ac
+      version: -1
+      name: Match rule to traffic from secondary internal DNS to public DNS
+      description: Tries to find a rule that allows DNS traffic from the primary internal DNS server to the public DNS server.
+      script: '|||pan-os-security-policy-match'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      destination:
+        complex:
+          root: inputs.PublicDNSServerIP
+      destination-port:
+        simple: "53"
+      protocol:
+        simple: "17"
+      source:
+        complex:
+          root: inputs.SecondaryInternalDNSServerIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 1618c361-3718-444e-81ba-bc2f3457a9f0
+    type: condition
+    task:
+      id: 1618c361-3718-444e-81ba-bc2f3457a9f0
+      version: -1
+      name: How many rules allow DNS from our internal servers?
+      description: If there are a primary and a secondary internal DNS servers, then there may be 2 separate rules that permit or block their traffic to the internet. If there are 2 rules - then the profiles of both of them will be edited and applied as needed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      One Rule For Both Servers:
+      - "54"
+      Two Rules:
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: One Rule For Both Servers
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.SecurityPolicyMatch.Rules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.SecurityPolicyMatch.Rules.Action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allow
+                    ignorecase: true
+                accessor: Name
+                transformers:
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: Two Rules
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.SecurityPolicyMatch.Rules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.SecurityPolicyMatch.Rules.Action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allow
+                    ignorecase: true
+                accessor: Name
+                transformers:
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: cf91cbb1-981c-426f-8959-1c96385c1bba
+    type: title
+    task:
+      id: cf91cbb1-981c-426f-8959-1c96385c1bba
+      version: -1
+      name: Edit Both Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 9c8c2e9f-378e-485c-8510-05a6efdcce44
+    type: playbook
+    task:
+      id: 9c8c2e9f-378e-485c-8510-05a6efdcce44
+      version: -1
+      name: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
+      description: |-
+        This playbook is used to add an Anti-Spyware security profile to a rule in PAN-OS in a safe manner. This means that it first checks if there's already a security profile attached, and if there is - it won't necessarily overwrite it.
+        In addition, it checks if there's a Security Profile Group attached, and if there is, it will try to add the Security Profile to the group safely.
+        In case we are trying to apply a Security Profile that doesn't exist yet - the playbook will create it too.
+      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      OverwriteProfileIfExists:
+        complex:
+          root: inputs.OverwriteExistingProfile
+      RuleName:
+        complex:
+          root: Panorama.SecurityPolicyMatch.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Rules.Action
+                iscontext: true
+              right:
+                value:
+                  simple: allow
+              ignorecase: true
+          accessor: Name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      SecurityProfileName:
+        complex:
+          root: inputs.SecurityProfileName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: aeb6d47e-d550-4844-8261-20cdc8dcee7b
+    type: playbook
+    task:
+      id: aeb6d47e-d550-4844-8261-20cdc8dcee7b
+      version: -1
+      name: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
+      description: |-
+        This playbook is used to add an Anti-Spyware security profile to a rule in PAN-OS in a safe manner. This means that it first checks if there's already a security profile attached, and if there is - it won't necessarily overwrite it.
+        In addition, it checks if there's a Security Profile Group attached, and if there is, it will try to add the Security Profile to the group safely.
+        In case we are trying to apply a Security Profile that doesn't exist yet - the playbook will create it too.
+      playbookName: PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      OverwriteProfileIfExists:
+        complex:
+          root: inputs.OverwriteExistingProfile
+      RuleName:
+        complex:
+          root: Panorama.SecurityPolicyMatch.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Rules.Action
+                iscontext: true
+              right:
+                value:
+                  simple: allow
+              ignorecase: true
+          accessor: Name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      SecurityProfileName:
+        complex:
+          root: inputs.SecurityProfileName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 1e165f1c-1c44-49c7-867b-fdb9f3448453
+    type: title
+    task:
+      id: 1e165f1c-1c44-49c7-867b-fdb9f3448453
+      version: -1
+      name: Edit One Rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 581e4dd8-d3f8-4ff2-8955-f483a8bfe80d
+    type: regular
+    task:
+      id: 581e4dd8-d3f8-4ff2-8955-f483a8bfe80d
+      version: -1
+      name: Create a new rule to allow DNS traffic
+      description: Creates a policy rule.
+      script: '|||pan-os-create-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      action:
+        simple: allow
+      application:
+        simple: dns
+      destination:
+        complex:
+          root: inputs.PublicDNSServerIP
+      rulename:
+        complex:
+          root: inputs.RuleNameToAllowDNS
+      source:
+        complex:
+          root: inputs.PrimaryInternalDNSServerIP
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: inputs.SecondaryInternalDNSServerIP
+                iscontext: true
+              raw: {}
+      where:
+        simple: top
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 613d04f1-888b-4f0e-80ce-3fad7d387055
+    type: regular
+    task:
+      id: 613d04f1-888b-4f0e-80ce-3fad7d387055
+      version: -1
+      name: Save rules allowing DNS in a new key
+      description: Saves the names of the security rules that allow DNS traffic outside, which were found by a session-match previously, in a new context key. This is task is done to normalize the data as we need to refer to that rule later on in the playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: RuleNamesAllowingDNS
+      value:
+        complex:
+          root: Panorama.SecurityPolicyMatch.Rules
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: edb32439-f81d-47e9-8aa5-969107c3959b
+    type: title
+    task:
+      id: edb32439-f81d-47e9-8aa5-969107c3959b
+      version: -1
+      name: Find Policy To Edit
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 88bfc3ec-a62e-4149-8491-e241d0873e60
+    type: title
+    task:
+      id: 88bfc3ec-a62e-4149-8491-e241d0873e60
+      version: -1
+      name: Apply Sinkhole Profile To Rule
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 2bfde5d1-1c68-4667-8736-32d517793e3f
+    type: regular
+    task:
+      id: 2bfde5d1-1c68-4667-8736-32d517793e3f
+      version: -1
+      name: Retrieve full traffic logs for denied requests to sinkhole
+      description: The query logs in Panorama.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      action:
+        simple: deny
+      log-type:
+        simple: traffic
+      number_of_logs:
+        simple: "5000"
+      polling:
+        simple: "true"
+      rule:
+        complex:
+          root: inputs.RuleNameToDenyToSinkhole
+      timeout:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 4610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: ca732608-62bd-4a8a-836e-ed0a9e50d2a8
+    type: condition
+    task:
+      id: ca732608-62bd-4a8a-836e-ed0a9e50d2a8
+      version: -1
+      name: Output extended logs?
+      description: Checks if full traffic logs should be outputted, or only the source IP addresses which are the IPs of the infected systems.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "74"
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.OutputLogsForDetectedIPs
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 3a157864-24c0-4d4b-816b-db97ee9f0a98
+    type: condition
+    task:
+      id: 3a157864-24c0-4d4b-816b-db97ee9f0a98
+      version: -1
+      name: Is the creation approved?
+      description: Gets approval to create a new rule that allows DNS traffic from the internal DNS server/s to the public DNS server being used. The user should know which public DNS they're using and they should provide it.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "68"
+      "Yes":
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.NetworkAdminEmail
+      subject:
+        simple: Approve creation of a new security rule in PAN-OS
+      body:
+        simple: |-
+          Please approve the creation of a new security rule in PAN-OS for the purpose of creating a DNS sinkhole. The new rule will allow new internet traffic as described below:
+          Rule name: ${inputs.RuleNameToAllowDNS}
+          From: ${inputs.PrimaryInternalDNSServerIP}   ${SecondaryInternalDNSServerIP} (internal DNS server/s)
+          To: ${inputs.PublicDNSServerIP} (public DNS server)
+          Action: Allow
+          Application: DNS
+          Location: Top
+
+          Do you want to allow the playbook to create this rule?
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 87e43b73-a731-44c9-8ed8-6650c6a2f644
+    type: regular
+    task:
+      id: 87e43b73-a731-44c9-8ed8-6650c6a2f644
+      version: -1
+      name: Create the rule manually according to description
+      description: |-
+        Please create a new security rule in PAN-OS with the following information:
+
+        Rule name: ${inputs.RuleNameToAllowDNS}
+        From: ${inputs.PrimaryInternalDNSServerIP}   ${SecondaryInternalDNSServerIP} (internal DNS server/s)
+        To: ${inputs.PublicDNSServerIP} (public DNS server)
+        Action: Allow
+        Application: DNS
+        Location: Top
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 1bd5eda5-0cfc-47d4-862a-88fb64a8c99f
+    type: regular
+    task:
+      id: 1bd5eda5-0cfc-47d4-862a-88fb64a8c99f
+      version: -1
+      name: Save new rule allowing DNS in a new key
+      description: Saves the name of the new security rule that has just been created to allow DNS traffic outside in a new context key. This is task is done to normalize the data as we need to refer to that rule later on in the playbook.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      key:
+        simple: RuleNamesAllowingDNS
+      value:
+        complex:
+          root: inputs.RuleNameToAllowDNS
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: dd0eae5e-adb5-478f-8530-91ff971ca6b5
+    type: condition
+    task:
+      id: dd0eae5e-adb5-478f-8530-91ff971ca6b5
+      version: -1
+      name: Was an address object found?
+      description: Checks whether an address object with the sinkhole FQDN was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Panorama.Addresses.FQDN
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 2f7174d6-9755-468e-8a48-3a6c840cc4d4
+    type: regular
+    task:
+      id: 2f7174d6-9755-468e-8a48-3a6c840cc4d4
+      version: -1
+      name: Wait for traffic to be made to the sinkhole
+      description: Waits for the hosts to attempt to connect to the sinkholed domains, thus creating traffic logs and revealing their IP addresses.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      seconds:
+        complex:
+          root: inputs.TimeToWaitForTraffic
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 4240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 0acacc94-1156-48a2-861b-6435fb7249de
+    type: title
+    task:
+      id: 0acacc94-1156-48a2-861b-6435fb7249de
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 4810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 0f82f5b1-ffd8-442b-8d07-4b63ecf4ae90
+    type: regular
+    task:
+      id: 0f82f5b1-ffd8-442b-8d07-4b63ecf4ae90
+      version: -1
+      name: Retrieve only IPs from denied requests to sinkhole
+      description: The query logs in Panorama.
+      script: '|||pan-os-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      action:
+        simple: deny
+      extend-context:
+        simple: DetectedIPsFromSinkhole=response.result.log.logs.entry.src
+      ignore-outputs:
+        simple: "true"
+      log-type:
+        simple: traffic
+      number_of_logs:
+        simple: "5000"
+      polling:
+        simple: "true"
+      rule:
+        complex:
+          root: inputs.RuleNameToDenyToSinkhole
+      timeout:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 4610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: ca9d57bc-b5dd-450b-8f13-8d3c06339ef6
+    type: title
+    task:
+      id: ca9d57bc-b5dd-450b-8f13-8d3c06339ef6
+      version: -1
+      name: Sinkhole Cannot Be Created
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 97d962a4-bbba-453b-89d0-e8a81d65cde3
+    type: condition
+    task:
+      id: 97d962a4-bbba-453b-89d0-e8a81d65cde3
+      version: -1
+      name: Did you create and commit the rule?
+      description: Asks the user whether they created the rule to allow DNS traffic or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "75"
+      "Yes":
+      - "69"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 2faf5424-b910-4eb7-8539-d46f8dffa8d4
+    type: condition
+    task:
+      id: 2faf5424-b910-4eb7-8539-d46f8dffa8d4
+      version: -1
+      name: Is PAN-OS enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "58"
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "36_55_Yes, automatically": 0.4,
+      "36_67_Yes, with approval": 0.46,
+      "36_75_#default#": 0.31,
+      "46_50_Two Rules": 0.64,
+      "46_54_One Rule For Both Servers": 0.5,
+      "67_55_Yes": 0.5,
+      "76_69_Yes": 0.61,
+      "76_75_No": 0.56,
+      "77_58_yes": 0.34,
+      "77_75_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4935,
+        "width": 2750,
+        "x": -1440,
+        "y": -60
+      }
+    }
+  }
+inputs:
+- key: SinkholeDomainsEDLName
+  value: {}
+  required: true
+  description: The name of the External Dynamic List in the PAN-OS next generation firewall that contains the domains that should be sinkholed.
+  playbookInputQuery:
+- key: SecurityProfileName
+  value:
+    simple: Sinkhole Anti Spyware Profile
+  required: false
+  description: |-
+    The name of the Anti-Spyware Security Profile that will be applied to the DNS related rule, in order to filter the malicious domains and facilitate the sinkhole action. The profile has to be an anti-spyware profile that the user wants the playbook to modify. The playbook will apply the EDL of the domains to sinkhole to this profile, and will apply this profile to a security rule currently allowing DNS traffic.
+    If a security profile with the specified name does not exist, it will be created automatically.
+
+    If you're not sure, leave the default value of this input.
+  playbookInputQuery:
+- key: SinkholeAddressObjectName
+  value:
+    simple: Sinkhole Address
+  required: false
+  description: |
+    The name for the sinkhole Address Object.
+    If such an address object exists, the playbook will use it to deny and log the traffic to the sinkhole address.
+    If the object does not exist, a new one with the name specified will be created.
+
+    Explanation:
+    In order to identify compromised hosts, a rule denying traffic to the sinkhole address needs to be applied. Since the sinkhole address constantly rotates, the destination for that rule should be an Address Object of type FQDN.
+  playbookInputQuery:
+- key: PrimaryInternalDNSServerIP
+  value: {}
+  required: true
+  description: The IP of the primary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our EDL.
+  playbookInputQuery:
+- key: SecondaryInternalDNSServerIP
+  value: {}
+  required: false
+  description: Optional - the IP of the secondary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our EDL.
+  playbookInputQuery:
+- key: PublicDNSServerIP
+  value: {}
+  required: true
+  description: |-
+    The IP of the public DNS server that the organization is using to resolve external domains. This is needed to find the rule that allows DNS requests so that malicious ones can be sinkholed by attaching a security profile to that rule.
+
+    If there is currently no rule to allow DNS traffic from the internal DNS server to the internet, the user will be prompted to approve the creation of a new rule that allows DNS traffic from the internal DNS server/s to the IP specified in this input's value.
+  playbookInputQuery:
+- key: RuleNameToAllowDNS
+  value:
+    simple: Allow DNS Outside - Created By XSOAR
+  required: false
+  description: |-
+    Optional - the name of the security rule that will allow DNS traffic.
+    If permission is granted and no other rule is currently allowing DNS, the playbook will create a new rule with the name specified in this value to allow DNS traffic from inside the network to the outside internet.
+  playbookInputQuery:
+- key: OutputLogsForDetectedIPs
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to output full traffic logs for the infected IPs.
+
+    If set to True, this will output the logs containing the traffic from the compromised IPs to the sinkhole address. It includes data that can be used for remediation or for deeper investigation by examining what traffic the hosts are creating.
+
+    If set to False, data from the logs will not be outputted.
+
+    Note: The IP addresses of the systems creating traffic to the sinkhole address will be outputted regardless of playbook input configurations.
+  playbookInputQuery:
+- key: AutoCreateRuleToAllowDNS
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Determines whether the playbook can automatically create a rule that specifically allows DNS traffic from the internal DNS servers to the public DNS server configured in the playbook inputs.
+    Possible values and their meanings are as follows:
+    True - create such a rule automatically if one does not exist (Warning - this will allow previously unallowed traffic).
+    False - do not create such a rule automatically.
+
+    If a value of "False" is specified, the playbook will check if the NetworkAdminEmail input is specified. If it is, the playbook will seek approval to create the rule, from the email specified in that input. If no email is specified, the playbook will abort without making any changes.
+  playbookInputQuery:
+- key: NetworkAdminEmail
+  value: {}
+  required: false
+  description: |-
+    Optional - the email of the person who should approve the creation of a new security policy rule in the firewall. If no rule allows internal DNS traffic to go outside, the playbook will send an email to the email specified in this input, asking to approve the creation of such rule.
+    If no email is specified, and the AutoCreateRuleToAllowDNS input is set to False, the playbook will abort without making any changes, as such a rule is mandatory for the flow of the playbook.
+  playbookInputQuery:
+- key: RuleNameToDenyToSinkhole
+  value:
+    simple: Deny To Sinkhole
+  required: true
+  description: |-
+    The name of the rule that will be created  to deny traffic to the sinkhole address. This is required so that traffic logs will reveal the endpoints attempting to connect to their C&C (which by the end of this playbook will be sinkholed).
+    If a rule with the specified name does not exist, one will be created. The new rule will be placed before rules that allow DNS traffic, as recommended by the PAN-OS best practices.
+  playbookInputQuery:
+- key: TimeToWaitForTraffic
+  value:
+    simple: "180"
+  required: true
+  description: The time in seconds that the playbook will wait for hosts to generate traffic to the sinkhole address, after the sinkhole configuration was completed. We recommend waiting for at least a couple of minutes in order to give the hosts the chance to create logs in the firewall.
+  playbookInputQuery:
+- key: OverwriteExistingProfile
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    Whether to overwrite the existing anti-spyware security profile that is currently applied to the rule that allows DNS traffic.
+    If set to True - if the rule already has a different anti-spyware profile applied to it, it will be overwritten with the one specified in the SecurityProfileName input.
+    If set to False - if the rule already has a different anti-spyware profile applied to it, it will use that profile and add the sinkhole action with the EDL to it.
+
+    If you are not sure whether to overwrite it or not - leave this as False, since an existing security profile may have additional logic configured to it.
+  playbookInputQuery:
+outputs:
+- contextPath: DetectedIPsFromSinkhole
+  description: The IP addresses of the hosts that attempted to connect to the sinkhole address. If your EDL contained C2C domains, then this would be a list of IP addresses of compromised hosts.
+  type: unknown
+- contextPath: Panorama.Monitor.Logs
+  type: unknown
+- contextPath: Panorama.Monitor.Logs.Action
+  description: The action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+- contextPath: Panorama.Monitor.Logs.Application
+  description: The application associated with the session.
+- contextPath: Panorama.Monitor.Logs.Category
+  description: The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware", or "benign". For other subtypes, the value is "any".
+- contextPath: Panorama.Monitor.Logs.DeviceName
+  description: The hostname of the firewall on which the session was logged.
+- contextPath: Panorama.Monitor.Logs.DestinationAddress
+  description: The original session destination IP address.
+- contextPath: Panorama.Monitor.Logs.DestinationUser
+  description: The username of the user to which the session was destined.
+- contextPath: Panorama.Monitor.Logs.DestinationCountry
+  description: The destination country or internal region for private addresses. Maximum length is 32 bytes.
+- contextPath: Panorama.Monitor.Logs.DestinationPort
+  description: The destination port utilized by the session.
+- contextPath: Panorama.Monitor.Logs.FileDigest
+  description: Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+- contextPath: Panorama.Monitor.Logs.FileName
+  description: |-
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+- contextPath: Panorama.Monitor.Logs.FileType
+  description: |-
+    Only for the WildFire subtype, all other types do not use this field.
+    Specifies the type of file that the firewall forwarded for WildFire analysis.
+- contextPath: Panorama.Monitor.Logs.FromZone
+  description: The zone from which the session was sourced.
+- contextPath: Panorama.Monitor.Logs.URLOrFilename
+  description: |-
+    The actual URL when the subtype is url.
+    The file name or file type when the subtype is file.
+    The file name when the subtype is virus.
+    The file name when the subtype is wildfire-virus.
+    The file name when the subtype is wildfire.
+    The URL or file name when the subtype is vulnerability (if applicable).
+- contextPath: Panorama.Monitor.Logs.NATDestinationIP
+  description: The post-NAT destination IP address if destination NAT was performed.
+- contextPath: Panorama.Monitor.Logs.NATDestinationPort
+  description: The post-NAT destination port.
+- contextPath: Panorama.Monitor.Logs.NATSourceIP
+  description: The post-NAT source IP address if source NAT was performed.
+- contextPath: Panorama.Monitor.Logs.NATSourcePort
+  description: The post-NAT source port.
+- contextPath: Panorama.Monitor.Logs.PCAPid
+  description: |-
+    The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+    an ID to correlate threat pcap files with extended pcaps taken as a part of
+    that flow. All threat logs will contain either a pcap_id of 0 (no associated
+    pcap), or an ID referencing the extended pcap file.
+- contextPath: Panorama.Monitor.Logs.IPProtocol
+  description: The IP protocol associated with the session.
+- contextPath: Panorama.Monitor.Logs.Recipient
+  description: |-
+    Only for the WildFire subtype, all other types do not use this field.
+    Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+- contextPath: Panorama.Monitor.Logs.Rule
+  description: The name of the rule that the session matched.
+- contextPath: Panorama.Monitor.Logs.RuleID
+  description: The ID of the rule that the session matched.
+- contextPath: Panorama.Monitor.Logs.ReceiveTime
+  description: The time the log was received at the management plane.
+- contextPath: Panorama.Monitor.Logs.Sender
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+- contextPath: Panorama.Monitor.Logs.SessionID
+  description: An internal numerical identifier applied to each session.
+- contextPath: Panorama.Monitor.Logs.DeviceSN
+  description: The serial number of the firewall on which the session was logged.
+- contextPath: Panorama.Monitor.Logs.Severity
+  description: |-
+    The severity associated with the threat. Can be "informational", "low",
+    "medium", "high", or "critical".
+- contextPath: Panorama.Monitor.Logs.SourceAddress
+  description: The original session source IP address.
+- contextPath: Panorama.Monitor.Logs.SourceCountry
+  description: |-
+    The source country or internal region for private addresses. Maximum
+    length is 32 bytes.
+- contextPath: Panorama.Monitor.Logs.SourceUser
+  description: The username of the user who initiated the session.
+- contextPath: Panorama.Monitor.Logs.SourcePort
+  description: The source port utilized by the session.
+- contextPath: Panorama.Monitor.Logs.ThreatCategory
+  description: |-
+    The threat categories used to classify different types of
+    threat signatures.
+- contextPath: Panorama.Monitor.Logs.Name
+  description: |-
+    The Palo Alto Networks identifier for the threat. A description
+    string followed by a 64-bit numerical identifier.
+- contextPath: Panorama.Monitor.Logs.ID
+  description: The Palo Alto Networks ID for the threat.
+- contextPath: Panorama.Monitor.Logs.ToZone
+  description: The zone to which the session was destined.
+- contextPath: Panorama.Monitor.Logs.TimeGenerated
+  description: The time the log was generated on the data plane.
+- contextPath: Panorama.Monitor.Logs.URLCategoryList
+  description: |-
+    A list of the URL filtering categories the firewall used to
+    enforce the policy.
+- contextPath: Panorama.Monitor.Logs.Bytes
+  description: The total log bytes.
+- contextPath: Panorama.Monitor.Logs.BytesReceived
+  description: The log bytes received.
+- contextPath: Panorama.Monitor.Logs.BytesSent
+  description: The log bytes sent.
+- contextPath: Panorama.Monitor.Logs.Vsys
+  description: The VSYS on the firewall that generated the log.
+tests:
+- palo_alto_panorama_test_pb
+- PAN-OS URL Filtering enrichment - Test
+- PAN-OS Create Or Edit Rule Test
+- PAN-OS DAG Configuration Test
+- PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely - Test
+fromversion: 6.8.0

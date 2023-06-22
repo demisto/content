@@ -1469,7 +1469,6 @@
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
             "timeout": 200
-
         },
         {
             "integrations": "WildFire-v2",
@@ -3479,7 +3478,6 @@
             "fromversion": "6.5.0",
             "timeout": 3000
         },
-
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
@@ -5407,6 +5405,11 @@
             "playbookID": "playbook-CiscoWSA_Test",
             "fromversion": "6.8.0"
         },
+                {
+            "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Safely - Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama_9.1"
+        },
         {
             "integrations": "DatadogCloudSIEM",
             "playbookID": "DatadogCloudSIEM",
@@ -5436,8 +5439,8 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-          "integrations":  "Cylance Protect v2",
-          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         },
         {
             "integrations": [
@@ -5445,7 +5448,7 @@
                 "Demisto REST API"
             ],
             "playbookID": "FeedLOLBas_test"
-        }
+        },
     ],
     "skipped_tests": {
         "CiscoWSAv2": "No instance - developed by Qmasters",
@@ -6037,7 +6040,7 @@
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
     ],
-    "reputation_tests":[
+    "reputation_tests": [
         "FormattingPerformance - Test",
         "reputations.json Test",
         "Indicators reputation-.json Test",
