@@ -18,7 +18,7 @@ def util_load_json(path: str):
 
 def test_wrong_path():
     bad_url = 'https://cve.bad_url'
-    client = Client(base_url=bad_url)
+    client = Client(base_url=bad_url, verify=False, proxy=False)
 
     with pytest.raises(DemistoException) as excinfo:
         cve_command(client, {"cve": 'cve-2000-1234'})
@@ -29,7 +29,7 @@ def test_wrong_path():
 
 def test_bad_cve_id():
     bad_cve_id = 'CVE-bad-cve'
-    client = Client(base_url=BASE_URL)
+    client = Client(base_url=BASE_URL, verify=False, proxy=False)
 
     with pytest.raises(DemistoException) as excinfo:
         cve_command(client, {'cve': bad_cve_id})
@@ -130,9 +130,9 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     """
     cves = argToList(cve_id_arg.get('cve'))
     for test_file, cve in zip(response_data, cves):
-        response = os.path.join(os.path.join(Path.cwd(), 'test_data', test_file))
+        response = util_load_json(os.path.join(os.path.join(Path.cwd(), 'test_data', test_file)))
         url_for_mock = os.path.join('https://cve.circl.lu/api/cve', cve)
         requests_mock.get(url_for_mock, json=response)
-    client = Client(base_url=BASE_URL)
+    client = Client(base_url=BASE_URL, verify=False, proxy=False)
     command_results = cve_command(client, cve_id_arg)
     assert len(command_results) == expected
