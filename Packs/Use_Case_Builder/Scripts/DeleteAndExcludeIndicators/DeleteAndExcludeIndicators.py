@@ -1,3 +1,4 @@
+import demistomock as demisto
 import re
 
 try:
