@@ -36,7 +36,7 @@ def test_incidents_info_md_happy_path(mocker):
 
     """
     # prepare
-    mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys')
+    mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys', return_value=MOCKED_INCIDENTS)
     mocker.patch('GetCampaignIncidentsInfo.get_campaign_incidents_from_context', return_value=MOCKED_INCIDENTS)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'incidents', return_value=MOCKED_INCIDENTS)
