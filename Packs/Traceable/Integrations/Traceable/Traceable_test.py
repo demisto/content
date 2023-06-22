@@ -15,8 +15,6 @@ you are implementing with your integration
 import demistomock as demisto
 import pytest
 
-# warnings.filterwarnings("ignore", category=DeprecationWarning)
-
 
 def test_fetch_incidents(mocker):
     def response_handler(*args, **kwargs):
@@ -66,19 +64,19 @@ def test_fetch_incidents(mocker):
             "value": "Matched Data: <script alert(1) /> found within ARGS:password: ${<script alert(1) />}"
           },
           "actorId": {
-            "value": "Kacey_Kub@outlook.com"
+            "value": "xxx@outlook.zz"
           },
           "actorCountry": {
             "value": "United States"
           },
           "actorIpAddress": {
-            "value": "23.128.248.23"
+            "value": "192.0.2.255"
           },
           "actorDevice": {
             "value": "null"
           },
           "apiUri": {
-            "value": "http://frontend:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com"
+            "value": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com"
           },
           "traceId": {
             "value": "a1f93e44b31be69835cfeeac4f181869"
@@ -141,9 +139,9 @@ def test_fetch_incidents(mocker):
           "protocolName": "HTTP",
           "serviceName": "frontend",
           "displaySpanName": "POST /get_user",
-          "userIdentifier": "Kacey_Kub@outlook.com",
+          "userIdentifier": "xxx@outlook.zz",
           "sessionId": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e",
-          "ipAddress": "23.128.248.23",
+          "ipAddress": "192.0.2.255",
           "userCountry": "United States",
           "userCity": "Houston",
           "userRoles": [
@@ -157,13 +155,13 @@ def test_fetch_incidents(mocker):
           "traceId": "a1f93e44b31be69835cfeeac4f181869",
           "spanTags": {
             "net.peer.port": "56453",
-            "http.url": "http://frontend:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
+            "http.url": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
             "enduser.role": "customer",
-            "net.peer.ip": "10.18.147.28",
-            "net.host.ip": "10.18.147.30",
+            "net.peer.ip": "192.0.2.255",
+            "net.host.ip": "192.0.2.255",
             "traceableai.enriched.api_type": "HTTP",
             "http.status_code": "200",
-            "enduser.id": "Kacey_Kub@outlook.com",
+            "enduser.id": "xxx@outlook.zz",
             "enduser.id.rule": "0394b434-1def-4b4b-8aa7-c7d03fb8dd57",
             "span.kind": "server",
             "traceableai.module.version": "1.0.5",
@@ -178,10 +176,10 @@ def test_fetch_incidents(mocker):
             "content-type": "application/json"
           },
           "spanResponseCookies": {},
-          "spanRequestBody": "email=Kacey_Kub@outlook.com&password=${<script alert(1) />}",
+          "spanRequestBody": "email=xxx@outlook.zz&password=${<script alert(1) />}",
           "spanRequestHeaders": {
             "content-type": "application/json",
-            "x-forwarded-for": "23.128.248.23"
+            "x-forwarded-for": "192.0.2.255"
           },
           "spanRequestCookies": {}
         }
@@ -206,9 +204,7 @@ def test_fetch_incidents(mocker):
     headers["Content-Type"] = "application/json"
     headers["Accept"] = "application/json"
 
-    client = Client(
-        base_url="https://api.eu.traceable.ai", verify=False, headers=headers
-    )
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
     # client.set_threat_category_list(threatCategoryList)
     client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
