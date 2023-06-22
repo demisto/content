@@ -225,15 +225,18 @@ script:
       - application/json
       - application/octet-stream
       description: The render type - pcap, logs, logs (csv), logs (xml) or logs (json)
-    - name: noFile
+    - name: renderToContext
+      defaultValue: "false"
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If noFile is set to True and render to application/json, this command will not create a file and instead output everything in the contextdata
+      description: |
+    If renderToContext is set to True and the render type is set to logs (json),
+    the command will not create a file with the output, it will output to the context data.
     outputs:
     - contextPath: NetWitness.Packets
-      description: Raw logs, only if noFile option is set
+      description: Raw logs. This output is only available if the renderToContext option is set to true.
     description: Stream packets back based on the input parameters provided
   - name: nw-sdk-session
     arguments:
