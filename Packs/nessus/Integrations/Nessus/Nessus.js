@@ -115,8 +115,8 @@ var jsonToEntity = function(origObj, newKeys){
 
 
 var login = function() {
-    let username = (!params.credentials)? params.credentials.identifier : params.username;
-    let password = (!params.credentials)? params.credentials.password : params.password;
+    let username = params.credentials ? params.credentials.identifier : params.username;
+    let password = params.credentials ? params.credentials.password : params.password;
     if (!(username&&password)){ 
         throw 'Username and Password must be provided';
     }
