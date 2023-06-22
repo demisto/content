@@ -363,22 +363,22 @@ def windows_device_defender_update_signatures_command(client: MsGraphClient, arg
 
 
 def clean_windows_device_command(client: MsGraphClient, args: dict) -> None:
-    keep_user_data: bool = bool(args.get('keep_user_data'))
+    keep_user_data: bool = argToBoolean(args.get('keep_user_data', True))
     device_id: str = str(args.get('device_id'))
     client.clean_windows_device(keep_user_data, device_id, 'cleanWindowsDevice')
     return_outputs('Clean windows device action activated successfully.', {}, {})
 
 
 def windows_device_defender_scan_command(client: MsGraphClient, args: dict) -> None:
-    quick_scan: bool = bool(args.get('quick_scan'))
+    quick_scan: bool = argToBoolean(args.get('quick_scan', True))
     device_id: str = str(args.get('device_id'))
     client.windows_device_defender_scan(quick_scan, device_id, 'windowsDefenderScan')
     return_outputs('Windows device defender scan action activated successfully.', {}, {})
 
 
 def wipe_device_command(client: MsGraphClient, args: dict) -> None:
-    keep_enrollment_data: bool = bool(args.get('keep_enrollment_data'))
-    keep_user_data: bool = bool(args.get('keep_user_data'))
+    keep_enrollment_data: bool = argToBoolean(args.get('keep_enrollment_data', True))
+    keep_user_data: bool = argToBoolean(args.get('keep_user_data', True))
     mac_os_unlock_code: str = str(args.get('mac_os_unlock_code', ""))
     device_id: str = str(args.get('device_id'))
     client.wipe_device(keep_enrollment_data, keep_user_data, mac_os_unlock_code, device_id, 'wipe')
@@ -387,8 +387,8 @@ def wipe_device_command(client: MsGraphClient, args: dict) -> None:
 
 def update_windows_device_account_command(client: MsGraphClient, args: dict) -> None:
     device_account_password: str = str(args.get('device_account_password'))
-    password_rotation_enabled: bool = bool(args.get('password_rotation_enabled'))
-    calendar_sync_enabled: bool = bool(args.get('calendar_sync_enabled'))
+    password_rotation_enabled: bool = argToBoolean(args.get('password_rotation_enabled', False))
+    calendar_sync_enabled: bool = argToBoolean(args.get('calendar_sync_enabled', False))
     device_account_email: str = str(args.get('device_account_email'))
     exchange_server: str = str(args.get('exchange_server'))
     session_initiation_protocal_address: str = str(args.get('session_initiation_protocal_address'))
