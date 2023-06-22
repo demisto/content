@@ -945,9 +945,6 @@ tasks:
       managername:
         complex:
           root: UserManagerDisplayName
-      numberoffailedlogons:
-        complex:
-          root: NumOfFailedLogon
       usergroups:
         complex:
           root: Account
