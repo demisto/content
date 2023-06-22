@@ -1,5 +1,6 @@
 from CommonServerPython import *
 from GetCampaignIncidentsInfo import *
+import pytest
 
 REQUIRED_KEYS = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
 STR_VAL_KEYS = ['name', 'emailfrom', 'recipients', 'created']
