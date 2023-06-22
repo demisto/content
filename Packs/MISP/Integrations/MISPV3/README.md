@@ -4269,7 +4269,11 @@ Display organization ids and names.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Organization.ID | string | MISP Ogranization ID. | 
+| MISP.Organization.NAME | string | MISP Organization Name. | 
+
 ### misp-get-role-info
 
 ***
@@ -4286,4 +4290,7 @@ Display role names and role ids.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Role.ID | string | MISP Role ID. | 
+| MISP.Role.NAME | string | MISP Role Name. | 
