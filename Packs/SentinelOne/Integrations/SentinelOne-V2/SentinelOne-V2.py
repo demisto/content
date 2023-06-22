@@ -888,7 +888,10 @@ class Client(BaseClient):
 
     def run_remote_script_request(self,
                                   account_ids: list, script_id: str, output_destination: str,
-                                  task_description: str, output_directory: str, agent_ids: list) -> dict:
+                                  task_description: str, output_directory: str, agent_ids: list,
+                                  singularity_xdr_keyword: str, singularity_xdr_url: str, api_key: str,
+                                  input_params: str, password: str, script_runtime_timeout_seconds: int,
+                                  requires_approval: bool) -> dict:
         endpoint_url = "remote-scripts/execute"
         payload = {
             "filter": {
@@ -899,7 +902,14 @@ class Client(BaseClient):
                 "taskDescription": task_description,
                 "outputDestination": output_destination,
                 "scriptId": script_id,
-                "outputDirectory": output_directory
+                "outputDirectory": output_directory,
+                "singularityxdrKeyword": singularity_xdr_keyword,
+                "singularityxdrUrl": singularity_xdr_url,
+                "apiKey": api_key,
+                "inputParams": input_params,
+                "password": password,
+                "scriptRuntimeTimeoutSeconds": script_runtime_timeout_seconds,
+                "requiresApproval": requires_approval
             }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
@@ -3038,9 +3048,18 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
     task_description = args.get("task_description", "")
     output_directory = args.get("output_directory", "")
     agent_ids = argToList(args.get("agent_ids"))
+    singularity_xdr_keyword = args.get("singularity_xdr_Keyword", "")
+    singularity_xdr_url = args.get("singularity_xdr_Url", "")
+    api_key = args.get("api_key", "")
+    input_params = args.get("input_params", "")
+    password = args.get("password", "")
+    script_runtime_timeout_seconds = int(args.get("script_runtime_timeout_seconds", 3600))
+    requires_approval = argToBoolean(args.get("requires_approval", False))
 
     run_remote_script = client.run_remote_script_request(
-        account_ids, script_id, output_destination, task_description, output_directory, agent_ids)
+        account_ids, script_id, output_destination, task_description, output_directory, agent_ids,
+        singularity_xdr_keyword, singularity_xdr_url, api_key, input_params, password, script_runtime_timeout_seconds,
+        requires_approval)
 
     return CommandResults(
         readable_output=tableToMarkdown("SentinelOne - Run Remote Script", run_remote_script, headers=headers, removeNull=True),
@@ -3402,7 +3421,7 @@ def main():
 
     IS_VERSION_2_1 = api_version == '2.1'
 
-    fetch_type = params.get('fetch_type')
+    fetch_type = params.get('fetch_type', 'Threats')
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_severity = params.get('fetch_severity', [])
     fetch_incidentStatus = params.get('fetch_incidentStatus', [])
@@ -3504,7 +3523,7 @@ def main():
 
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch'), first_fetch_time))
-        if command == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             if fetch_type:
                 fetch_dict = {
                     'fetch_type': fetch_type,
