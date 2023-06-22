@@ -10,41 +10,29 @@ configuration:
   name: url
   type: 0
   required: true
-- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) / Broker (50103)
+- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) /
+    Broker (50103)
   name: port
   type: 0
   required: true
 - display: Username
   name: username
-  defaultvalue: admin
-  type: 0
-  required: false
-  hidden: true
-- display: Password
-  name: password
-  type: 4
-  required: false
-  hidden: true
-- display: Username
-  name: user_creds
   type: 9
-  required: false
-  displaypassword: Password
+  required: true
 - display: Validate server certificate
   name: secure
-  defaultvalue: 'true'
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: 'false'
+  defaultvalue: "false"
   type: 8
   required: false
-- defaultvalue: ''
-  display: Expiration time
+- display: Expiration time
   name: expiry
-  required: false
   type: 0
+  required: false
 
 script:
   script: ''
