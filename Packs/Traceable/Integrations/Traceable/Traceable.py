@@ -1,22 +1,6 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import urllib3
 from typing import Dict, Any
@@ -912,9 +896,9 @@ def main() -> None:
         threatCategoryList = demisto.params().get("threatCategory")
         ipReputationLevelList = demisto.params().get("ipReputationLevel")
         ipAbuseVelocityList = demisto.params().get("ipAbuseVelocity")
-        limit = int(demisto.params().get("limit", 100))
+        limit = int(demisto.params().get("max_fetch", 100))
 
-        _env = demisto.params().get("limit")
+        _env = demisto.params().get("environment")
 
         environments = None
         if _env is not None and len(_env) > 0:
@@ -951,10 +935,6 @@ def main() -> None:
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == "baseintegration-dummy":
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
     except Exception as e:

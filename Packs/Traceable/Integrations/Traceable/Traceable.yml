@@ -23,11 +23,10 @@ configuration:
   defaultvalue: 7 days
   type: 0
   required: false
-- display: "Query Return Limit"
-  name: limit
-  defaultvalue: "100"
-  type: 0
+- name: max_fetch
   required: false
+  type: 0
+  defaultvalue: '100'
 - display: "Comma Separated Environment List To Process"
   name: environment
   type: 12
@@ -74,7 +73,7 @@ configuration:
 - display: Incident type
   defaultvalue: Exploit
   name: incidentType
-  required: true
+  required: false
   type: 13
 description: "Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex Xsoar for further action."
 display: "Traceable"

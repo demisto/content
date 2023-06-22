@@ -18,7 +18,7 @@ The following parameters can be used to customize what Events should be exported
 
 |Parameter name|Type|Required (Yes/No)|Default Value|Description|
 |------|------|------|------|------|
-|First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)|Short Text|No|7 days|Duration in the past to query the Events when querying for the first time.|
+|First fetch timestamp|Short Text|No|7 days|Duration in the past to query the Events when querying for the first time.|
 |Query Return Limit|Short Text|No|100|Number of records to return from Platform per query|
 |Comma Separated Environment List To Process|Long Text|No|-|Comma separated list of environments to query.|
 |Security Score Category|Multi Select|No|CRITICAL, HIGH, MEDIUM|Security Score Category to query|
