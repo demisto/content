@@ -172,218 +172,127 @@ def start_freeze_time(timestamp):
 
 class TestFetchEvents:
 
-    @pytest.mark.parametrize(
-        "last_run, integration_params, expected_updated_last_run, datetime_string_freeze_time, "
-        "num_of_workbench_logs, num_of_oat_logs, num_of_search_detection_logs, num_of_audit_logs, "
-        "num_of_expected_events",
-        [
-            (
-                {},
-                {'max_fetch': 100, 'first_fetch': '1 month ago'},
-                {
-                    'audit_logs_time': '2023-01-01T14:59:49Z',
-                    'oat_detection_logs_time': '2023-01-01T14:59:59Z',
-                    'search_detection_logs_time': '2023-01-01T14:59:59Z',
-                    'workbench_logs_time': '2023-01-01T14:59:50Z',
-                    'found_audit_logs': ['269308b9e721fbc755e03ce501642697db992274e035496577fcef470e3ea860'],
-                    'found_oat_logs': [50],
-                    'found_search_detection_logs': [50],
-                    'found_workbench_logs': [50],
-                },
-                '2023-01-01T15:00:00Z',
-                50,
-                50,
-                50,
-                50,
-                200
-            ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T14:59:58Z',
-                    'oat_detection_logs_time': '2023-01-01T14:59:59Z',
-                    'search_detection_logs_time': '2023-01-01T14:59:59Z',
-                    'workbench_logs_time': '2023-01-01T14:59:59Z',
-                    'found_audit_logs': ['8268fed996476cb055174e5b5c27fad5281c2fd7ee81cf9e9539a3a53a7ddbbe'],
-                    'found_oat_logs': [1, 2, 3],
-                    'found_search_detection_logs': [1, 2],
-                    'found_workbench_logs': [1],
-                },
-                {'max_fetch': 100},
-                {
-                    'audit_logs_time': '2023-01-01T15:00:47Z',
-                    'oat_detection_logs_time': '2023-01-01T15:00:59Z',
-                    'search_detection_logs_time': '2023-01-01T15:00:59Z',
-                    'workbench_logs_time': '2023-01-01T15:00:49Z',
-                    'found_audit_logs': ['bb5e99823e4c65cfe33692829d55a7b2df3795a0243ed4a6cc8383a04027b9a7'],
-                    'found_oat_logs': [50],
-                    'found_search_detection_logs': [50],
-                    'found_workbench_logs': [50],
-                },
-                '2023-01-01T15:01:00Z',
-                50,
-                50,
-                50,
-                50,
-                49 + 47 + 48 + 49
-            ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T15:00:58Z',
-                    'oat_detection_logs_time': '2023-01-01T15:00:56Z',
-                    'search_detection_logs_time': '2023-01-01T15:00:57Z',
-                    'workbench_logs_time': '2023-01-01T15:00:58Z',
-                    'found_audit_logs': [],
-                    'found_oat_logs': [1, 2, 3, 4],
-                    'found_search_detection_logs': [1, 2, 3],
-                    'found_workbench_logs': [1, 2],
-                },
-                {'max_fetch': 20},
-                {
-                    'audit_logs_time': '2023-01-01T15:01:17Z',
-                    'oat_detection_logs_time': '2023-01-01T15:01:59Z',
-                    'search_detection_logs_time': '2023-01-01T15:01:19Z',
-                    'workbench_logs_time': '2023-01-01T15:01:02Z',
-                    'found_audit_logs': ['da4bdff56581a841c69eb8e9fddd558e7ff25edf9f213f333db2d25fdca432d6'],
-                    'found_oat_logs': [9],
-                    'found_search_detection_logs': [20],
-                    'found_workbench_logs': [4],
-                },
-                '2023-01-01T15:02:00Z',
-                4,
-                9,
-                81,
-                55,
-                2 + 5 + 17 + 20
-            ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T15:01:17Z',
-                    'oat_detection_logs_time': '2023-01-01T15:01:59Z',
-                    'search_detection_logs_time': '2023-01-01T15:01:19Z',
-                    'workbench_logs_time': '2023-01-01T15:01:02Z',
-                    'found_audit_logs': [],
-                    'found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                    'found_search_detection_logs': [1, 2, 3],
-                    'found_workbench_logs': [1, 2, 3, 4],
-                },
-                {'max_fetch': 1000},
-                {
-                    'audit_logs_time': '2023-01-01T15:15:55Z',
-                    'oat_detection_logs_time': '2023-01-01T15:19:59Z',
-                    'search_detection_logs_time': '2023-01-01T15:19:59Z',
-                    'workbench_logs_time': '2023-01-01T15:17:46Z',
-                    'found_audit_logs': ['83197a6e76a6cbf0da30bcb3e3a8a63ed1f0319c8b7d856c7f3f5f6b444ef0d9'],
-                    'found_oat_logs': [62],
-                    'found_search_detection_logs': [102],
-                    'found_workbench_logs': [1004],
-                },
-                '2023-01-01T15:20:00Z',
-                1400,
-                62,
-                102,
-                879,
-                1000 + 52 + 99 + 879
-            ),
-            (
-                {
-                    'audit_logs_time': '2023-01-01T15:01:00Z',
-                    'oat_detection_logs_time': '2023-01-01T15:01:00Z',
-                    'search_detection_logs_time': '2023-01-01T15:01:00Z',
-                    'workbench_logs_time': '2023-01-01T15:01:00Z',
-                    'found_audit_logs': [],
-                    'found_oat_logs': [1],
-                    'found_search_detection_logs': [1, 2, 3, 4],
-                    'found_workbench_logs': [1],
-                },
-                {'max_fetch': 1000},
-                {
-                    'audit_logs_time': '2023-01-01T15:01:13Z',
-                    'oat_detection_logs_time': '2023-01-01T15:03:45Z',
-                    'search_detection_logs_time': '2023-01-01T15:03:44Z',
-                    'workbench_logs_time': '2023-01-01T15:03:45Z',
-                    'found_audit_logs': ['d6294890ed71d3399f2a5ab568738be6fe1fd5dca7d8dbcbf480d1095c7f3bb5'],
-                    'found_oat_logs': [],
-                    'found_search_detection_logs': [50],
-                    'found_workbench_logs': [],
-                },
-                '2023-01-01T15:03:45Z',
-                0,
-                0,
-                50,
-                14,
-                14 + 46
-            )
-        ],
-    )
-    def test_fetch_events_main(
-        self,
-        mocker,
-        client: Client,
-        last_run: Dict,
-        integration_params: Dict,
-        expected_updated_last_run: Dict,
-        datetime_string_freeze_time: str,
-        num_of_workbench_logs: int,
-        num_of_oat_logs: int,
-        num_of_search_detection_logs: int,
-        num_of_audit_logs: int,
-        num_of_expected_events: int
-    ):
+    def test_fetch_events_main_flow_no_last_run(self, mocker):
         """
-        Note: the max_fetch is per single log!
-
         Given:
-            - Case A: last_run={}, max_fetch=100, num_of_workbench_logs=50, num_of_oat_logs=50,
-                      num_of_search_detection_logs=50, num_of_audit_logs=50
-            - Case B: last_run=last run from Case A, max_fetch=100, num_of_workbench_logs=50, num_of_oat_logs=50,
-                      num_of_search_detection_logs=50, num_of_audit_logs=50
-            - Case C: last_run=last run from Case B, max_fetch=20, num_of_workbench_logs=4, num_of_oat_logs=9,
-                      num_of_search_detection_logs=81, num_of_audit_logs=55
-            - Case D: last_run=last run from Case C, max_fetch=1000, num_of_workbench_logs=1400, num_of_oat_logs=1123,
-                      num_of_search_detection_logs=356, num_of_audit_logs=879
-            - Case E: last_run=last run from Case D, max_fetch=1000, num_of_workbench_logs=0, num_of_oat_logs=0,
-                      num_of_search_detection_logs=50, num_of_audit_logs=14
+           - 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
+           - no last run
+           - max_fetch = 1000
+
         When:
-            - fetch-events through the main flow
+           - running fetch-events through the main flow
+
         Then:
-            - make sure the audit log last time is the last log without -1 second to it.
-            - make sure the expected_events_length is correct according to the limit of number of events from each type
-              + caching of the events from last run
+           - make sure last run is correct
+           - make sure 3000 logs were sent
 
         """
         from TrendMicroVisionOneEventCollector import main
 
-        start_freeze_time(datetime_string_freeze_time)
-        workbench_last_fetch_time = last_run.get(LastRunLogsTimeFields.WORKBENCH.value)
-        oat_last_fetch_time = last_run.get(LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value)
-        search_detection_last_fetch_time = last_run.get(LastRunLogsTimeFields.SEARCH_DETECTIONS.value)
-        audit_log_last_fetch_time = last_run.get(LastRunLogsTimeFields.AUDIT.value)
+        start_freeze_time('2023-01-01T15:00:00Z')
 
-        mocker.patch.object(demisto, 'params', return_value=integration_params)
+        mocker.patch.object(demisto, 'params', return_value={"max_fetch": 1000})
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
-        mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+        mocker.patch.object(demisto, 'getLastRun', return_value={})
         mocker.patch.object(
             BaseClient,
             '_http_request',
             side_effect=_http_request_side_effect_decorator(
-                last_workbench_time=workbench_last_fetch_time,
-                last_oat_time=oat_last_fetch_time,
-                last_search_detection_logs=search_detection_last_fetch_time,
-                last_audit_log_time=audit_log_last_fetch_time,
-                num_of_workbench_logs=num_of_workbench_logs,
-                num_of_oat_logs=num_of_oat_logs,
-                num_of_search_detection_logs=num_of_search_detection_logs,
-                num_of_audit_logs=num_of_audit_logs
+                num_of_workbench_logs=1500,
+                num_of_oat_logs=1500,
+                num_of_search_detection_logs=500,
+                num_of_audit_logs=500,
+                last_workbench_time="2023-01-01T14:00:00Z",
+                last_audit_log_time="2023-01-01T14:00:00Z"
             )
         )
 
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value=last_run)
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
         send_events_to_xsiam_mocker = mocker.patch('TrendMicroVisionOneEventCollector.send_events_to_xsiam')
         main()
 
-        assert set_last_run_mocker.call_args.args[0] == expected_updated_last_run
+        assert set_last_run_mocker.call_args.args[0] == {
+            'workbench_logs_time': '2023-01-01T14:16:40Z',
+            'found_workbench_logs': [1000],
+            'oat_detection_logs_time': '2023-01-01T14:51:39Z',
+            'found_oat_logs': [500],
+            'search_detection_logs_time': '2023-01-01T14:59:59Z',
+            'found_search_detection_logs': [500],
+            'audit_logs_time': '2023-01-01T14:08:19Z',
+            'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
+        }
+
         assert send_events_to_xsiam_mocker.call_count == 1
-        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == num_of_expected_events
+        # 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
+        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == 3000
+
+    def test_fetch_events_main_flow_with_last_run(self, mocker):
+        """
+        Given:
+           - 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
+           - no last run
+           - max_fetch = 1000
+
+        When:
+           - running fetch-events through the main flow
+
+        Then:
+           - make sure last run is correct
+           - make sure 3000 logs were sent
+
+        """
+        from TrendMicroVisionOneEventCollector import main
+
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(demisto, 'params', return_value={"max_fetch": 1000})
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(
+            demisto, 'getLastRun', return_value={
+                'workbench_logs_time': '2023-01-01T14:00:00Z',
+                'found_workbench_logs': [1, 2, 3],
+                'oat_detection_logs_time': '2023-01-01T14:00:00Z',
+                'found_oat_logs': [],
+                'search_detection_logs_time': '2023-01-01T14:00:00Z',
+                'found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                'audit_logs_time': '2023-01-01T14:00:00Z',
+                'found_audit_logs': []
+            }
+        )
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(
+                num_of_workbench_logs=1500,
+                num_of_oat_logs=1500,
+                num_of_search_detection_logs=500,
+                num_of_audit_logs=500,
+                last_workbench_time="2023-01-01T14:00:00Z",
+                last_audit_log_time="2023-01-01T14:00:00Z",
+                last_oat_time="2023-01-01T14:00:00Z",
+                last_search_detection_logs="2023-01-01T14:00:00Z"
+            )
+        )
+
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
+        send_events_to_xsiam_mocker = mocker.patch('TrendMicroVisionOneEventCollector.send_events_to_xsiam')
+        main()
+
+        assert set_last_run_mocker.call_args.args[0] == {
+            'workbench_logs_time': '2023-01-01T14:16:43Z',
+            'found_workbench_logs': [1003],
+            'oat_detection_logs_time': '2023-01-01T14:51:39Z',
+            'found_oat_logs': [500],
+            'search_detection_logs_time': '2023-01-01T14:59:59Z',
+            'found_search_detection_logs': [500],
+            'audit_logs_time': '2023-01-01T14:08:19Z',
+            'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
+        }
+        assert send_events_to_xsiam_mocker.call_count == 1
+        # 1000 workbench because we query what's in the cache + limit = 1003
+        # 491 search detections because they are removed from the cache
+        # 1000 workbench + 1000 oat + 491 search detections + 500 audit logs
+        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == 2991
 
     def test_get_workbench_logs_no_last_run(self, mocker, client: Client):
         """
