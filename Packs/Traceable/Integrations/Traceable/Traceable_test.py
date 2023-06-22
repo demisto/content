@@ -1,7 +1,4 @@
 #!/usr/bin/env python -W ignore::DeprecationWarning
-import pytest
-
-
 class Response:
     def __init__(self) -> None:
         pass
@@ -269,9 +266,8 @@ def test_errors_in_response(caplog, mocker):
     resp.text = json.dumps({"error": "error string"})
     mocked_post.return_value = resp
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
-    r = None
     try:
-        r = client.graphql_query("query")
+        client.graphql_query("query")
     except Exception as e:
         assert str(e) == "error string"
 
