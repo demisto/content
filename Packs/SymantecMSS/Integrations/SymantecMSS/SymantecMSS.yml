@@ -22,11 +22,6 @@ configuration:
   type: 9
   displaypassword: Certificate Passphrase
   hiddenusername: true
-- name: certificate_creds
-  required: false
-  type: 9
-  displaypassword: Certificate (Base64 encoded)
-  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   required: false
