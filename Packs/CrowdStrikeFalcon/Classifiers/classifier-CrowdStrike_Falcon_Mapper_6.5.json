@@ -39,6 +39,9 @@
                 "Behaviour Tactic": {
                     "simple": "behaviors.tactic"
                 },
+                "Behavior": {
+                    "simple": "behaviors"
+                },
                 "CMD line": {
                     "simple": "behaviors.cmdline"
                 },
