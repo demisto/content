@@ -227,9 +227,11 @@ class Client(BaseClient):
 
                     if label.get("target-countries"):
                         self.add_tags(ti_data_obj, label.get("target-countries"))
+                        ti_data_obj['fields']['targetcountries'] = label.get("target-countries")
 
                     if label.get("target-industries"):
                         self.add_tags(ti_data_obj, label.get("target-industries"))
+                        ti_data_obj['fields']['targetindustries'] = label.get("target-industries")
 
                     if label.get("geographies"):
                         self.add_tags(ti_data_obj, label.get("geographies"))
@@ -239,6 +241,7 @@ class Client(BaseClient):
 
                     if label.get("technologies"):
                         self.add_tags(ti_data_obj, label.get("technologies"))
+                        ti_data_obj['fields']['technologies'] = label.get("technologies")
 
         if feed_tags:
             self.add_tags(ti_data_obj, feed_tags)
