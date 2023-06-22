@@ -102,7 +102,7 @@ filter
     xdm.target.file.size = fileSize,
     xdm.network.http.referrer = httpReferer,
     xdm.alert.subcategory = malType,
-    xdm.alert.mitre_tactics = json_extract_array(replex(mitreMapping, "\"", ""), "$."),
+    xdm.alert.mitre_tactics = arraymap(json_extract_array(mitreMapping, "$."), replex("@element", "\"", "")),
     xdm.source.process.command_line = coalesce(replex(arraystring(json_extract_array(objectCmd, "$."), ", "), "\"", ""), processCmd),
     xdm.target.module.filename = coalesce(objectFileName, objectName),
     xdm.source.process.executable.signer = processSigner,
