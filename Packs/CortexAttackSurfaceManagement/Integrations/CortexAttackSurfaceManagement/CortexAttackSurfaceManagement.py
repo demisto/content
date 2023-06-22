@@ -636,7 +636,7 @@ def start_remediation_confirmation_scan_command(
     args: Dict[str, Any], client: Client
 ) -> CommandResults:
     """
-    asm-start-remediation_confirmation_scan command: Starts a new scan or gets an existing scan ID.
+    asm-start-remediation-confirmation-scan command: Starts a new scan or gets an existing scan ID.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
