@@ -109,6 +109,7 @@ class Checkout:  # pragma: no cover
             url = f"https://github.com/{fork_owner}/{repo_name}"
             try:
                 self.repo.create_remote(name=forked_remote_name, url=url)
+                print(f'Successfully created remote {forked_remote_name} for repo {url}')
             except Exception as error:
                 print(f'could not create remote from {url}, {error=}')
                 # handle the case where the name of the forked repo is not content
