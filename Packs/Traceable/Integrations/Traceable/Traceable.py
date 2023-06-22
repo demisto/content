@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 """ IMPORTS """
 
 import urllib3
-from typing import Dict, Any
+from typing import Dict
 from string import Template
 from datetime import datetime, timezone
 import logging
@@ -37,120 +37,6 @@ s.mount("https://", HTTPAdapter(max_retries=retries))
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-
-get_traces_query = """
-query GetTraces($limit: Int!, $starttime: DateTime!, $endtime: DateTime!)
-{
-  traces(
-    type: API_TRACE
-    limit: $limit
-    between: {startTime: $starttime, endTime: $endtime}
-    offset: 0
-    filterBy: [{keyExpression: {key: "environment"}, operator: IN, value: ["production"], type: ATTRIBUTE}]
-  ) {
-    results {
-      id
-      environment: attribute(expression: {key: "environment"})
-      apiName: attribute(expression: {key: "apiName"})
-      apiId: attribute(expression: {key: "apiId"})
-      isExternal: attribute(expression: {key: "isExternal"})
-      ipAddress: attribute(expression: {key: "ipAddress"})
-      requestUrl: attribute(expression: {key: "requestUrl"})
-      status: attribute(expression: {key: "status"})
-      statusCode: attribute(expression: {key: "statusCode"})
-      statusMessage: attribute(expression: {key: "statusMessage"})
-      startTime: attribute(expression: {key: "startTime"})
-    }
-    total
-  }
-}
-"""
-
-get_traces_query_template = """
-{
-  traces(
-    type: API_TRACE
-    limit: $limit
-    between: {startTime: "$starttime", endTime: "$endtime"}
-    offset: 0
-    $filter_by_clause
-  ) {
-    results {
-      id
-      environment: attribute(expression: {key: "environment"})
-      apiName: attribute(expression: {key: "apiName"})
-      apiId: attribute(expression: {key: "apiId"})
-      isExternal: attribute(expression: {key: "isExternal"})
-      ipAddress: attribute(expression: {key: "ipAddress"})
-      requestUrl: attribute(expression: {key: "requestUrl"})
-      status: attribute(expression: {key: "status"})
-      statusCode: attribute(expression: {key: "statusCode"})
-      statusMessage: attribute(expression: {key: "statusMessage"})
-      startTime: attribute(expression: {key: "startTime"})
-    }
-    total
-  }
-}
-"""
-
-get_endpoints_query = """
-query GetEndPoints($limit: Int!, $starttime: DateTime!, $endtime: DateTime!)
-{
-  entities5: entities(
-    scope: "API"
-    limit: $limit
-    between: {startTime: "$starttime", endTime: "$endtime"}
-    offset: 0
-    orderBy: [{direction: DESC, keyExpression: {key: "apiRiskScore"}}]
-    filterBy: [{keyExpression: {
-        key: "apiDiscoveryState"
-        },
-        operator: IN, value: ["DISCOVERED", "UNDER_DISCOVERY"], type: ATTRIBUTE},
-        {keyExpression: {key: "environment"}, operator: EQUALS, value: "production", type: ATTRIBUTE}]
-    includeInactive: false
-  ) {
-    results {
-      id
-      name: attribute(expression: {key: "name"})
-      isAuthenticated: attribute(expression: {key: "isAuthenticated"})
-      changeLabel: attribute(expression: {key: "changeLabel"})
-      changeLabelTimestamp: attribute(expression: {key: "changeLabelTimestamp"})
-      isExternal: attribute(expression: {key: "isExternal"})
-      labels {
-        count
-        total
-        results {
-          id
-          key
-          description
-          color
-        }
-      }
-      isLearnt: attribute(expression: {key: "isLearnt"})
-      serviceId: attribute(expression: {key: "serviceId"})
-      piiTypes: attribute(expression: {key: "piiTypes"})
-      dataTypeIds: attribute(expression: {key: "dataTypeIds"})
-      serviceName: attribute(expression: {key: "serviceName"})
-      apiRiskScore: attribute(expression: {key: "apiRiskScore"})
-      apiRiskScoreCategory: attribute(expression: {key: "apiRiskScoreCategory"})
-      riskLikelihoodFactors: attribute(expression: {key: "riskLikelihoodFactors"})
-      riskImpactFactors: attribute(expression: {key: "riskImpactFactors"})
-      numCalls: metric(expression: {key: "numCalls"}) {
-        sum {
-          value
-        }
-      }
-      errorCount: metric(expression: {key: "errorCount"}) {
-        sum {
-          value
-        }
-      }
-      lastCalledTimestamp: attribute(expression: {key: "lastCalledTimestamp"})
-    }
-    total
-  }
-}
-"""
 
 get_threat_events_query = """{
   explore(
@@ -314,14 +200,6 @@ get_spans_for_trace_id = """{
 
 class Helper:
     @staticmethod
-    def get_specific_yaml_config(config: dict):
-        config_name = config["use_config"]
-        for config_item in config["config_list"]:
-            if config_item["name"] == config_name:
-                return config_item
-        return None
-
-    @staticmethod
     def construct_filterby_expression(*clauses):
         non_null_list = [i for i in clauses if i is not None]
         return "filterBy: [" + ",".join(non_null_list) + "]"
@@ -329,30 +207,6 @@ class Helper:
     @staticmethod
     def datetime_to_string(d: datetime):
         return d.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    @staticmethod
-    def needs_quoting(s):
-        _type = type(s)
-        if _type == float or _type == int or _type == bool:
-            return False
-        else:
-            return True
-
-    @staticmethod
-    def list_to_string(items):
-        s = ""
-        start = True
-        for item in items:
-            if Helper.needs_quoting(item):
-                _s = '"' + str(item) + '"'
-            else:
-                _s = str(item)
-            if start:
-                s = _s
-                start = False
-            else:
-                s = "," + s
-        return s
 
     @staticmethod
     def construct_key_expression(key, value, _type="ATTRIBUTE", operator="IN"):
@@ -405,45 +259,12 @@ class Helper:
             raise Exception("Unknown Operator: " + operator)
 
     @staticmethod
-    def get_now_time():
-        return datetime.now()
-
-    @staticmethod
-    def date_arithmetic(time: datetime, op: str, unit: str, _delta: int):
-        d = None
-        _unit = unit.lower()
-        if _unit == "hours":
-            d = timedelta(hours=_delta)
-        elif _unit == "minutes":
-            d = timedelta(minutes=_delta)
-        elif _unit == "seconds":
-            d = timedelta(seconds=_delta)
-        elif _unit == "days":
-            d = timedelta(days=_delta)
-        elif _unit == "weeks":
-            d = timedelta(weeks=_delta)
-        elif _unit == "microseconds":
-            d = timedelta(microseconds=_delta)
-        elif _unit == "milliseconds":
-            d = timedelta(milliseconds=_delta)
-        else:
-            raise Exception("Unit: " + _unit + " unknown.")
-
-        _op = op.lower()
-        if _op == "minus":
-            return time - d
-        elif _op == "plus":
-            return time + d
-        else:
-            raise Exception("Unknown operation: " + _op)
-
-    @staticmethod
     def is_error(obj, *hierarchy):
         if obj is None:
             return True
         _obj = obj
         for el in hierarchy:
-            if _obj[el] is None:
+            if (el not in _obj) or (_obj[el] is None):
                 return True
             _obj = _obj[el]
         return False
@@ -772,10 +593,6 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
     base_url = demisto.params()["url"]
 
     # if your Client class inherits from BaseClient, SSL verification is
@@ -789,8 +606,6 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
         headers: Dict = {}
         first_fetch_time = demisto.params().get("first_fetch", "3 days").strip()
         securityScoreCategoryList = demisto.params().get("securityScoreCategory")

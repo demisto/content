@@ -1,4 +1,13 @@
 #!/usr/bin/env python -W ignore::DeprecationWarning
+import pytest
+
+
+class Response:
+    def __init__(self) -> None:
+        pass
+
+    status_code = 200
+    text: str = None
 
 
 def test_fetch_incidents(mocker):
@@ -174,13 +183,6 @@ def test_fetch_incidents(mocker):
 }"""
             return r
 
-    class Response:
-        def __init__(self) -> None:
-            pass
-
-        status_code = 200
-        text = None
-
     from Traceable import Client, fetch_incidents
     import urllib3
 
@@ -201,3 +203,78 @@ def test_fetch_incidents(mocker):
 
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert len(incidents) == 1
+
+
+def test_construct_filterby_expression():
+    from Traceable import Helper
+
+    filterBy = Helper.construct_filterby_expression("a", "b", "c")
+    assert filterBy == "filterBy: [a,b,c]"
+
+
+def test_construct_key_expression():
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", "value")
+    assert (
+        key_exp
+        == '{keyExpression: {key: "key"}, operator: IN, value: ["value"], type: ATTRIBUTE}'
+    )
+
+
+def test_is_error():
+    from Traceable import Helper
+
+    trace_results: dict = {}
+    trace_results["data"] = {}
+    trace_results["data"]["spans"] = {}
+    is_error = Helper.is_error(trace_results, "data", "spans", "results")
+    assert is_error is True
+
+
+def test_graphql_query(mocker):
+    from Traceable import Client
+    import json
+
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    mocked_post = mocker.patch("requests.post")
+    resp = Response()
+    resp.status_code = 200
+    resp.text = json.dumps({"data": "result"})
+    mocked_post.return_value = resp
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+
+    response_obj = client.graphql_query("query")
+    assert (
+        response_obj is not None
+        and "data" in response_obj
+        and response_obj["data"] == "result"
+    )
+
+
+def test_errors_in_response(caplog, mocker):
+    from Traceable import Client
+    import json
+
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    mocked_post = mocker.patch("requests.post")
+    resp = Response()
+    resp.status_code = 200
+    resp.text = json.dumps({"error": "error string"})
+    mocked_post.return_value = resp
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    r = None
+    try:
+        r = client.graphql_query("query")
+    except Exception as e:
+        assert str(e) == "error string"
+
+    is_error, result = client.errors_in_response(resp)
+    caplog.clear()
+    assert is_error is True and result == "error string"
