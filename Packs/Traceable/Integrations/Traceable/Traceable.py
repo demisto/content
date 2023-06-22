@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+""" IMPORTS """
+
 import urllib3
 from typing import Dict, Any
 from string import Template
@@ -101,7 +103,11 @@ query GetEndPoints($limit: Int!, $starttime: DateTime!, $endtime: DateTime!)
     between: {startTime: "$starttime", endTime: "$endtime"}
     offset: 0
     orderBy: [{direction: DESC, keyExpression: {key: "apiRiskScore"}}]
-    filterBy: [{keyExpression: {key: "apiDiscoveryState"}, operator: IN, value: ["DISCOVERED", "UNDER_DISCOVERY"], type: ATTRIBUTE}, {keyExpression: {key: "environment"}, operator: EQUALS, value: "production", type: ATTRIBUTE}]
+    filterBy: [{keyExpression: {
+        key: "apiDiscoveryState"
+        }, 
+        operator: IN, value: ["DISCOVERED", "UNDER_DISCOVERY"], type: ATTRIBUTE}, 
+        {keyExpression: {key: "environment"}, operator: EQUALS, value: "production", type: ATTRIBUTE}]
     includeInactive: false
   ) {
     results {
@@ -446,11 +452,11 @@ class Helper:
 
     @staticmethod
     def is_error(obj, *hierarchy):
-        if obj == None:
+        if obj is None:
             return True
         _obj = obj
         for el in hierarchy:
-            if _obj[el] == None:
+            if _obj[el] is None:
                 return True
             _obj = _obj[el]
         return False
@@ -562,7 +568,7 @@ class Client(BaseClient):
             logging.error(error)
             raise Exception(error)
 
-        if response != None and response.text != None:
+        if response is not None and response.text is not None:
             response_obj = json.loads(response.text)
             return response_obj
 

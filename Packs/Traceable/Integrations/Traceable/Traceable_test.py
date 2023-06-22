@@ -1,10 +1,6 @@
 #!/usr/bin/env python -W ignore::DeprecationWarning
 
 
-import demistomock as demisto
-import pytest
-
-
 def test_fetch_incidents(mocker):
     def response_handler(*args, **kwargs):
         data: str = kwargs["json"]["query"]
