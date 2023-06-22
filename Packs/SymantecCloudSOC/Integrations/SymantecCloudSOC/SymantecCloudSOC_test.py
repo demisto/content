@@ -3,13 +3,21 @@ from freezegun import freeze_time
 import demistomock as demisto
 from SymantecCloudSOC import Client
 import pytest
-from test_data.use_cases import response_data, response_pagination_incident, response_pagination_investigate
-from test_data.use_cases import dedup_by_id_test_case, get_first_fetch_time_params
-from test_data.use_cases import get_all_events_for_log_type_test_case_with_pagination, test_main_params, \
-    get_all_events_for_log_type_test_case_without_pagination
+import json
+import io
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+response_data = util_load_json('./test_data/test_data_dedup_by_id.json')
+response_pagination_incident = util_load_json('./test_data/test_data_pagination_incident.json')
+response_pagination_investigate = util_load_json('./test_data/test_data_pagination_investigate.json')
 
 
 def get_mocked_url(app: str, subtype: str,
@@ -131,12 +139,55 @@ def test_add_fields_to_event(event, log_type, expected_event):
     assert event == expected_event
 
 
+dedup_by_id_test_case: list = [
+    ({'last_run': '2024-01-02T23:23:59'}, [], "Investigate_logs", 100,
+     0, "2023-01-02T23:23:59", {'last_run': '2024-01-02T23:23:59'}, []),
+    ({'last_run': '2023-01-02T23:23:59'}, [], "Investigate_logs", 100,
+     0, "2022-01-02T23:23:59", {'last_run': '2023-01-02T23:23:59'}, []),
+    ({'last_run': '2023-01-02T23:23:59'},
+     [{"_id": "_id1", "incident_start_time": "2023-01-02T23:23:59"}], "Incident_logs",
+     100, 100, "2022-01-02T23:23:59", {'last_run': '2023-01-02T23:23:59', 'Incident_logs-ids': []}, []),
+    ({'last_run': '2023-01-02T23:23:59'},
+     [{"_id": "_id1", "incident_start_time": "2023-01-02T23:23:59"}], "Incident_logs",
+     100, 99, "2022-01-02T23:23:59", {'last_run': '2023-01-02T23:23:59', 'Incident_logs-ids': ["_id1"]},
+     [{'_id': '_id1', '_time': '2023-01-02T23:23:59', 'incident_start_time': '2023-01-02T23:23:59', 'type': 'Detect incident'}]),
+    ({'last_run': '2023-01-02T22:23:59'},
+     [{"_id": "_id1", "incident_start_time": "2023-01-02T23:23:59"},
+      {"_id": "_id2", "incident_start_time": "2023-01-02T23:23:59"}],
+     "Incident_logs", 100, 99, "2022-01-02T22:22:59", {'last_run': '2023-01-02T23:23:59', 'Incident_logs-ids': ["_id1"]},
+     [{'_id': '_id1', '_time': '2023-01-02T23:23:59', 'incident_start_time': '2023-01-02T23:23:59', 'type': 'Detect incident'}]),
+    ({'last_run': '2023-01-02T22:22:59'},
+     [{"_id": "_id1", "incident_start_time": "2023-01-02T22:22:59"},
+      {"_id": "_id2", "incident_start_time": "2023-01-02T23:23:59"}],
+     "Incident_logs", 100, 98, "2022-01-02T23:23:59", {'last_run': '2023-01-02T23:23:59', 'Incident_logs-ids': ["_id2"]},
+     [{'_id': '_id1', '_time': '2023-01-02T22:22:59', 'incident_start_time': '2023-01-02T22:22:59', 'type': 'Detect incident'},
+      {'_id': '_id2', '_time': '2023-01-02T23:23:59', 'incident_start_time': '2023-01-02T23:23:59', 'type': 'Detect incident'}]),
+    ({'last_run': '2023-01-02T23:22:59'},
+     [{"_id": "_id1", "incident_start_time": "2023-01-02T23:23:59"},
+      {"_id": "_id2", "incident_start_time": "2023-01-02T23:23:59"}],
+     "Incident_logs", 100, 98, "2022-01-02T23:23:59",
+     {'last_run': '2023-01-02T23:23:59', 'Incident_logs-ids': ["_id1", "_id2"]},
+     [{'_id': '_id1', '_time': '2023-01-02T23:23:59', 'incident_start_time': '2023-01-02T23:23:59', 'type': 'Detect incident'},
+      {'_id': '_id2', '_time': '2023-01-02T23:23:59', 'incident_start_time': '2023-01-02T23:23:59', 'type': 'Detect incident'}]),
+    ({'last_run': '2023-01-02T23:22:59', 'Incident_logs-ids': ["_id1", "_id2"]},
+     [{"_id": "_id1", "incident_start_time": "2023-01-02T23:22:59"},
+      {"_id": "_id2", "incident_start_time": "2023-01-02T23:22:59"}],
+     "Incident_logs", 100, 98, "2022-01-02T23:23:59",
+     {'last_run': '2023-01-02T23:22:59', 'Incident_logs-ids': ["_id1", "_id2"]}, []),
+    ({'last_run': '2023-01-02T23:22:59', 'Incident_logs-ids': ["_id1"]},
+     [{"_id": "_id1", "incident_start_time": "2023-01-02T23:22:59"},
+      {"_id": "_id2", "incident_start_time": "2023-01-02T23:22:59"}],
+     "Incident_logs", 100, 98, "2022-01-02T23:23:59", {'last_run': '2023-01-02T23:22:59', 'Incident_logs-ids': ["_id1", "_id2"]},
+     [{'_id': '_id2', '_time': '2023-01-02T23:22:59', 'incident_start_time': '2023-01-02T23:22:59', 'type': 'Detect incident'}]),
+]
+
+
 @pytest.mark.parametrize('last_run_for_log_type, log_events, log_type, max_fetch, '
                          'number_of_events, last_fetch, expected_last_run,'
                          'expected_event_list', dedup_by_id_test_case)
-def test_dedup_by_id(last_run_for_log_type, log_events, log_type,
-                     max_fetch, number_of_events, last_fetch,
-                     expected_last_run, expected_event_list):
+def test_dedup_by_id_with_last_run(last_run_for_log_type, log_events, log_type,
+                                   max_fetch, number_of_events, last_fetch,
+                                   expected_last_run, expected_event_list):
     """
         Given:
             - A last_run dict, a list of logs, type of the log, max fetch and number of events.
@@ -152,13 +203,69 @@ def test_dedup_by_id(last_run_for_log_type, log_events, log_type,
     assert list_of_events == expected_event_list
 
 
+dedup_by_id_test_case_without_last_run: list = [
+    ({}, [], "Investigate_logs", 100, 0, "2023-01-02T23:23:59", {'last_run': '2023-01-02T23:23:59'}, []),
+    ({}, [], "Incident_logs", 100, 100, "2023-01-02T23:23:59", {'last_run': '2023-01-02T23:23:59'}, []),
+    ({}, [{"_id": "_id1", "incident_start_time": "2023-01-02T23:23:59"},
+          {"_id": "_id2", "incident_start_time": "2023-01-02T23:23:59"}],
+        "Incident_logs", 100, 0, "2023-01-02T23:23:59",
+     {'last_run': '2023-01-02T23:23:59', 'Incident_logs-ids': ['_id1', '_id2']},
+     [{'_id': '_id1', '_time': '2023-01-02T23:23:59',
+       'incident_start_time': '2023-01-02T23:23:59', 'type': 'Detect incident'},
+      {'_id': '_id2', '_time': '2023-01-02T23:23:59',
+       'incident_start_time': '2023-01-02T23:23:59', 'type': 'Detect incident'}]),
+    ({}, [{"_id": "_id1", "incident_start_time": "2023-01-03T23:23:59"},
+          {"_id": "_id2", "incident_start_time": "2023-01-04T23:23:59"}],
+     "Incident_logs", 100, 0, "2023-01-02T23:23:59",
+     {'last_run': '2023-01-04T23:23:59', 'Incident_logs-ids': ['_id1', '_id2']},
+     [{'_id': '_id1', '_time': '2023-01-03T23:23:59',
+       'incident_start_time': '2023-01-03T23:23:59', 'type': 'Detect incident'},
+      {'_id': '_id2', '_time': '2023-01-04T23:23:59',
+       'incident_start_time': '2023-01-04T23:23:59', 'type': 'Detect incident'}])]
+
+
+@pytest.mark.parametrize('last_run_for_log_type, log_events, log_type, max_fetch, '
+                         'number_of_events, last_fetch, expected_last_run,'
+                         'expected_event_list', dedup_by_id_test_case_without_last_run)
+def test_dedup_by_id_without_last_run(last_run_for_log_type, log_events, log_type,
+                                      max_fetch, number_of_events, last_fetch,
+                                      expected_last_run, expected_event_list):
+    """
+        Given:
+            - A empty last_run dict, a list of logs, type of the log, max fetch and number of events.
+        When:
+            - executing dedup_by_id function.
+        Then:
+            - Ensure that the last_run object is correct and verify content of the event_list.
+    """
+    from SymantecCloudSOC import dedup_by_id
+    list_of_events, last_run_for_log_type = dedup_by_id(last_run_for_log_type, log_events, log_type,
+                                                        max_fetch, number_of_events, last_fetch)
+    assert expected_last_run == last_run_for_log_type
+    assert list_of_events == expected_event_list
+
+
+get_first_fetch_time_params = [({'first_fetch': "7 months"}, "2022-06-01T23:23:59", "2022-07-05T23:23:59"),
+                               ({'first_fetch': "5 months"}, "2022-08-01T23:23:59", "2022-08-01T23:23:59")]
+
+
 @freeze_time("2023-01-01T23:23:59")
 @pytest.mark.parametrize('first_fetch_from_params,'
                          ', expected_fetch_Incident, expected_fetch_investigation', get_first_fetch_time_params)
 def test_get_first_fetch_time(first_fetch_from_params, expected_fetch_Incident, expected_fetch_investigation):
+    """
+        Given:
+            - first fetch time from integration parameters.
+            - Case 1: The first fetch time is longer then 6 months.
+            - Case 2: The first fetch time is shorter then 6 months.
+        When:
+            - executing get_first_fetch_time function.
+        Then:
+            - Validate that the fetch_incident and the fetch_investigation are as expected.
+    """
     from SymantecCloudSOC import get_first_fetch_time
-    fetch_Incident, fetch_investigation = get_first_fetch_time(first_fetch_from_params)
-    assert fetch_Incident == expected_fetch_Incident
+    fetch_incident, fetch_investigation = get_first_fetch_time(first_fetch_from_params)
+    assert fetch_incident == expected_fetch_Incident
     assert fetch_investigation == expected_fetch_investigation
 
 
@@ -180,6 +287,16 @@ def test_create_client_with_authorization():
                                        'X-Elastica-Dbname-Resolved': 'True'}
 
 
+get_all_events_for_log_type_test_case_with_pagination: list = [
+    (26, "Incident_logs", {}, "2021-06-01T00:00:00", "2021-06-01T00:00:00",
+     response_pagination_incident["expected_event_list"][:26],
+     {'Incident_logs-ids': response_pagination_incident["expected_ids_list"][:26], 'last_run': '2021-06-01T00:00:00'}),
+    (40, "Investigate_logs", {}, "2021-06-01T00:00:00", "2021-06-01T00:00:00",
+     response_pagination_investigate["expected_event_list"][:40],
+     {'Investigate_logs-ids': response_pagination_investigate["expected_ids_list"][32:40], 'last_run': '2021-06-30T23:08:59'}),
+]
+
+
 @pytest.mark.parametrize('max_fetch, log_type, last_run,'
                          'first_fetch_time, first_fetch_time_investigate,'
                          'expected_all_events_list, expected_last_run',
@@ -187,6 +304,18 @@ def test_create_client_with_authorization():
 def test_get_all_events_for_log_type_with_pagination(max_fetch, log_type, last_run,
                                                      first_fetch_time, first_fetch_time_investigate,
                                                      expected_all_events_list, expected_last_run):
+    """
+        Given:
+            - max_fetch, log_type, last_run, first_fetch_time,
+              first_fetch_time_investigate
+            - Case 1: All the fetched events with the same creation date.
+            - Case 2: The fetched events with different creation date.
+        When:
+            - executing get_all_events_for_log_type function.
+        Then:
+            - Ensure that the pagination mechanism works as expected.
+            - Validate that the last_run and the events_list are as expected.
+    """
     from SymantecCloudSOC import get_all_events_for_log_type
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
@@ -216,8 +345,16 @@ def test_get_all_events_for_log_type_with_pagination(max_fetch, log_type, last_r
     detect_incidents_mocker_page.called_once
     detect_investigate_mocker_page.called
     detect_investigate_mocker_page.called_once
+    assert len(all_events_list) == max_fetch
     assert all_events_list == expected_all_events_list
     assert last_run_for_log_type == expected_last_run
+
+
+get_all_events_for_log_type_test_case_without_pagination: list = [
+    (3, "Investigate_logs", {}, "2021-06-01T00:00:00", "2021-06-01T00:00:00",
+     response_pagination_investigate["expected_event_list"][0:3], {
+     'Investigate_logs-ids': response_pagination_investigate["expected_ids_list"][0:3], 'last_run': '2021-06-01T00:00:00'}),
+]
 
 
 @pytest.mark.parametrize('max_fetch, log_type, last_run,'
@@ -227,6 +364,15 @@ def test_get_all_events_for_log_type_with_pagination(max_fetch, log_type, last_r
 def test_get_all_events_for_log_type_without_pagination(max_fetch, log_type, last_run,
                                                         first_fetch_time, first_fetch_time_investigate,
                                                         expected_all_events_list, expected_last_run):
+    """
+        Given:
+            - max_fetch, log_type, last_run, first_fetch_time,
+              first_fetch_time_investigate
+        When:
+            - executing get_all_events_for_log_type function.
+        Then:
+            - Validate that the last_run and the events_list are as expected.
+    """
     from SymantecCloudSOC import get_all_events_for_log_type
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
@@ -249,11 +395,36 @@ def test_get_all_events_for_log_type_without_pagination(max_fetch, log_type, las
     assert last_run_for_log_type == expected_last_run
 
 
+test_main_params: list = [
+    (3, {}, "2021-06-01T00:00:00", "2021-06-01T00:00:00",
+     {'Investigate_logs': {
+      'Investigate_logs-ids': response_pagination_investigate["expected_ids_list"][0:3], 'last_run': '2021-06-01T00:00:00'},
+      'Incident_logs': {
+      'Incident_logs-ids': response_pagination_incident["expected_ids_list"][0:3], 'last_run': '2021-06-01T00:00:00'}},
+     [{'_id': 'id0', 'created_timestamp': '2021-06-01T00:00:00', '_time': '2021-06-01T00:00:00', 'type': 'Investigate'},
+      {'_id': 'id1', 'created_timestamp': '2021-06-01T00:00:00', '_time': '2021-06-01T00:00:00', 'type': 'Investigate'},
+      {'_id': 'id2', 'created_timestamp': '2021-06-01T00:00:00', '_time': '2021-06-01T00:00:00', 'type': 'Investigate'},
+      {'_id': 'id0', 'incident_start_time': '2021-06-01T00:00:00', '_time': '2021-06-01T00:00:00', 'type': 'Detect incident'},
+      {'_id': 'id1', 'incident_start_time': '2021-06-01T00:00:00', '_time': '2021-06-01T00:00:00', 'type': 'Detect incident'},
+      {'_id': 'id2', 'incident_start_time': '2021-06-01T00:00:00', '_time': '2021-06-01T00:00:00', 'type': 'Detect incident'}
+      ])
+]
+
+
 @freeze_time("2023-01-01T23:23:59")
 @pytest.mark.parametrize('max_fetch, last_run, first_fetch_time, first_fetch_time_investigate,'
                          'expected_last_run, expected_events', test_main_params)
 def test_fetch_events_command(mocker, max_fetch, last_run, first_fetch_time, first_fetch_time_investigate,
                               expected_last_run, expected_events):
+    """
+        Given:
+            - max_fetch, log_type, last_run, first_fetch_time,
+              first_fetch_time_investigate
+        When:
+            - executing fetch_events_command function.
+        Then:
+            - Validate that the last_run and the events are as expected.
+    """
     from SymantecCloudSOC import fetch_events_command
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'params', return_value=test_params)
