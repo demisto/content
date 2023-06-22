@@ -1,5 +1,6 @@
 {
     "fromVersion": "5.5.0",
+    "marketplaces": "xsoar",
 	"id": "Review Indicators Manually",
 	"version": -1,
 	"sortValues": null,
