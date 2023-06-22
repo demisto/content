@@ -1,16 +1,14 @@
 name: Create Internal PR from Merged External PR
-#on:
-#  pull_request_target:
-#    types: [closed]
-#    branches:
-#      - contrib/**
-on: pull_request
+on:
+  pull_request_target:
+    types: [closed]
+    branches:
+      - contrib/**
 
 jobs:
   create_internal_pr:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content'
-#    if: github.repository == 'demisto/content' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.fork == true
+    if: github.repository == 'demisto/content' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.fork == true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
