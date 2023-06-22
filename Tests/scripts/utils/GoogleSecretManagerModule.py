@@ -1,6 +1,5 @@
 import json5
 
-from enum import Enum
 from google.cloud import secretmanager
 from Tests.scripts.utils import logging_wrapper as logging
 
