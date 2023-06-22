@@ -228,7 +228,7 @@ def test_update_comment(requests_mock):
 
     #  # Successful fetch - Comment created
     response = update_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs == UPDATE_COMMENT_RESPONSE["data"]["updateComment"]
+    assert response.outputs == UPDATE_COMMENT_RESPONSE["data"]["updateInvestigationComment"]
 
     # Comment creation failed
     client = mock_client(requests_mock, CREATE_UPDATE_COMMENT_BAD_RESPONSE)
@@ -306,7 +306,7 @@ def test_fetch_incidents_investigations(requests_mock):
     assert len(response) == 0
 
 
-def test_fetch_investigaton(requests_mock):
+def test_fetch_investigation(requests_mock):
     """Tests taegis-fetch-investigation command function
 
     Test fetching of a single incident
@@ -320,6 +320,7 @@ def test_fetch_investigaton(requests_mock):
 
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_INVESTIGATION
+    assert response.outputs[0]["url"] == f"{TAEGIS_URL}/investigations/{args['id']}"
 
     # Investigation not found
     client = mock_client(requests_mock, {})
@@ -327,13 +328,13 @@ def test_fetch_investigaton(requests_mock):
     assert len(response.outputs) == 0
 
 
-def test_fetch_investigatons(requests_mock):
+def test_fetch_investigations(requests_mock):
     """Tests taegis-fetch-investigations command function
 
     Test fetching of all incidents
     """
 
-    client = mock_client(requests_mock, FETCH_INVESTIGATIONS)
+    client = mock_client(requests_mock, FETCH_INVESTIGATIONS_RESPONSE)
     args = {
         "page": 0,
         "page_size": 1,
