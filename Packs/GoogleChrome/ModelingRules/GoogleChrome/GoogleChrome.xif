@@ -1,19 +1,11 @@
 [MODEL: dataset = google_workspace_chrome_raw]
-// Creating json fields with the value of the events field, organized in a key - value format.
-alter events = events -> []
-| alter parameters = to_json_string(arrayindex(events, 0)) -> parameters[]
-| alter parameters = arraymap(parameters ,concat("{","\"",json_extract_scalar(to_json_string("@element"), "$.name"),"\"", ":", "\"",json_extract_scalar(to_json_string("@element"), "$.value"),"\"", "}"))
-| alter parameters = replace(arraystring(parameters, ","),"},{", ",") -> {}
-| alter parametersint = to_json_string(arrayindex(events, 0)) -> parameters[]
-| alter parametersint = arraymap(parametersint ,concat("{","\"",json_extract_scalar(to_json_string("@element"), "$.name"),"\"", ":", "\"",json_extract_scalar(to_json_string("@element"), "$.intValue"),"\"", "}"))
-| alter parametersint = replace(arraystring(parametersint, ","),"},{", ",") -> {}
 // Extracting fields
-| alter
+alter
         device_platform = lowercase(parameters -> DEVICE_PLATFORM),
         url_category = uppercase(parameters -> URL_CATEGORY)
 // Mapping to xdm fields
 | alter
-        xdm.event.type = arrayindex(events, 0) -> name,
+        xdm.event.type = events -> name,
         xdm.event.description = parameters -> EVENT_REASON,
         xdm.event.outcome_reason = parameters -> TRIGGER_TYPE,
         xdm.source.host.device_id = parameters -> DEVICE_ID,
