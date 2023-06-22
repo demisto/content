@@ -8,7 +8,7 @@
             },
             {
                 "id": "caseinfoid",
-                "name": "Incident Info",
+                "name": "Alert Details",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -424,6 +424,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "country",
+                                "height": 26,
+                                "id": "4c8d5610-0f52-11ee-81b3-5b1a51073e91",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -542,7 +551,7 @@
                         "type": "invTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 5
                     },
                     {
                         "description": "The indicators extracted from the threat hunting results.",
@@ -559,7 +568,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 2
                     }
                 ],
                 "type": "custom"
