@@ -50,11 +50,14 @@ Returns activity loggings extracted from Workday.
 There is no context output for this command.
 
 #### Command example
+
 ```!workday-get-activity-logging limit=4 from_date=2023-04-24T07:00:00Z to_date=2023-04-24T08:00:00Z```
 
 
 #### Human Readable Output
+
 ### Activity Logging List:
+
 |Activity Action|Device Type|Ip Address|Request Time|Session Id|System Account|Target|Task Display Name|Task Id|User Activity Entry Count|User Agent|
 |---|---|---|---|---|---|---|---|--|---|---|
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 1 | 1234 | test_agent |

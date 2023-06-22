@@ -1,5 +1,5 @@
 [file:HashiCorpVault.yml]
-ignore=IN145,CJ105
+ignore=CJ105
 
 [known_words]
 HashiCorp
