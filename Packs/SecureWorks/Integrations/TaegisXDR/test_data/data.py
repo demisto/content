@@ -6,6 +6,9 @@ TAEGIS_ALERT = {
         "title": "Test Alert",
         "description": "This is a test alert",
         "severity": 0.5,
+        "created_at": {
+            "seconds": 1686083555
+        }
     },
     "url": f"{TAEGIS_URL}/alerts/alert:%2F%2Fpriv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6",
 }
@@ -55,13 +58,11 @@ TAEGIS_COMMENT = {
         "family_name": "Smith",
         "id": "auth0|000000000000000000000001",
     },
+    "athorId": "auth0|000000000000000000000001",
     "id": "ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f",
     "comment": "This is a comment in an investigation",
-    "created_at": "2022-01-01T13:04:57.17234Z",
-    "deleted_at": None,
-    "modified_at": None,
-    "parent_id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
-    "parent_type": "investigation",
+    "createdAt": "2022-01-01T13:04:57.17234Z",
+    "updatedAt": "2022-01-01T14:04:57.17234Z",
 }
 
 TAEGIS_ENDPOINT = {
