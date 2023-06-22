@@ -56,7 +56,7 @@ def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
         running get_packs_support_level_label function
 
     Then:
-        - make sure correct support label is returned and the
+        - make sure correct support label is returned.
         - fork owner that is being delivered to the Checkout branch is correct.
     """
     from Utils.github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
@@ -73,3 +73,25 @@ def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
         ) == 'Xsoar Support Level'
 
     assert checkout_mocker.call_args.kwargs['fork_owner'] == expected_fork_owner
+
+
+def test_get_packs_support_level_label_checkout_failed(mocker):
+    """
+    Given:
+        a pack
+
+    When:
+        running get_packs_support_level_label function when Checkout fails.
+
+    Then:
+        - make sure correct support label is still returned.
+    """
+    from Utils.github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
+    from Utils.github_workflow_scripts.utils import ChangeCWD
+
+    mocker.patch.object(Checkout, '__init__', return_value=Exception('Error'))
+
+    with ChangeCWD('Utils/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
+        assert get_packs_support_level_label(
+            file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
+        ) == 'Xsoar Support Level'
