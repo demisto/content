@@ -476,7 +476,6 @@ script:
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
   script: ''
   subtype: python3
   type: python

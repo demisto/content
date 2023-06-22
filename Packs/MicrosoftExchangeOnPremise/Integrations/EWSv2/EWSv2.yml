@@ -774,7 +774,6 @@ script:
       description: Query to use to find emails.
       name: query
       required: true
-      secret: false
     deprecated: true
     description: This command is deprecated. Use the o365-sc-start-search command from Security And Compliance V2 instead. Starts a compliance search.
     name: ews-o365-start-compliance-search
@@ -797,8 +796,6 @@ script:
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     deprecated: true
     description: This command is deprecated. Use the o365-sc-get-search command Security And Compliance V2 instead. Returns the status and results of a compliance search.
     name: ews-o365-get-compliance-search
