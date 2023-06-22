@@ -1,7 +1,7 @@
 {
     "name": "Traceable",
-    "description": "Traceable Threat Integration",
-    "support": "community",
+    "description": "Traceable AI API Security Platform Integration",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Mayuresh Kshirsagar, Traceable Inc",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
