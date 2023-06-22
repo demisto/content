@@ -94,6 +94,7 @@ script:
       - EXCEPTION_NOT_REQUESTED
       - OPERATIONAL_ERROR
       - SEND_NOTIFICATION_FAILURE
+      - EXCEPTION_DENIED
       description: The user feedback
     - name: user_id
       required: true

@@ -60,15 +60,15 @@ Updates a DLP incident with user feedback.
 `pan-dlp-update-incident`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | The ID of the incident to update. | Required | 
-| feedback | The user feedback. Possible values are: PENDING_RESPONSE, CONFIRMED_SENSITIVE, CONFIRMED_FALSE_POSITIVE, EXCEPTION_REQUESTED, EXCEPTION_GRANTED, EXCEPTION_NOT_REQUESTED, OPERATIONAL_ERROR, SEND_NOTIFICATION_FAILURE. | Required | 
-| user_id | The ID of the user the feedback is collected from. | Required | 
-| region | The region where the incident originated. | Optional | 
-| report_id | The DLP report ID, needed only for granting exemptions. | Optional | 
-| dlp_channel | The DLP channel, needed only for granting exemptions. | Optional | 
-| error_details | Error details if status is SEND_NOTIFICATION_FAILURE. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                           | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| incident_id | The ID of the incident to update.                                                                                                                                                                                         | Required | 
+| feedback | The user feedback. Possible values are: PENDING_RESPONSE, CONFIRMED_SENSITIVE, CONFIRMED_FALSE_POSITIVE, EXCEPTION_REQUESTED, EXCEPTION_GRANTED, EXCEPTION_NOT_REQUESTED, OPERATIONAL_ERROR, SEND_NOTIFICATION_FAILURE, EXCEPTION_DENIED. | Required | 
+| user_id | The ID of the user the feedback is collected from.                                                                                                                                                                        | Required | 
+| region | The region where the incident originated.                                                                                                                                                                                 | Optional | 
+| report_id | The DLP report ID, needed only for granting exemptions.                                                                                                                                                                   | Optional | 
+| dlp_channel | The DLP channel, needed only for granting exemptions.                                                                                                                                                                     | Optional | 
+| error_details | Error details if status is SEND_NOTIFICATION_FAILURE.                                                                                                                                                                     | Optional | 
 
 
 #### Context Output
