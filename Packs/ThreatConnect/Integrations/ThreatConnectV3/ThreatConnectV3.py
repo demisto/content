@@ -185,29 +185,6 @@ def create_context(indicators, include_dbot_score=False, fields_to_return: list 
 
         context[TC_INDICATOR_PATH].append(context_indicator)
 
-        # if 'group_associations' in ind:
-        #     if ind['group_associations']:
-        #         context[TC_INDICATOR_PATH][0]['IndicatorGroups'] = ind['group_associations']
-        #
-        # if 'indicator_associations' in ind:
-        #     if ind['indicator_associations']:
-        #         context[TC_INDICATOR_PATH][0]['IndicatorAssociations'] = ind[
-        #             'indicator_associations']
-        #
-        # if 'indicator_tags' in ind:
-        #     if ind['indicator_tags']:
-        #         context[TC_INDICATOR_PATH][0]['IndicatorTags'] = ind['indicator_tags']
-        #
-        # if 'indicator_observations' in ind:
-        #     if ind['indicator_observations']:
-        #         context[TC_INDICATOR_PATH][0]['IndicatorsObservations'] = ind[
-        #             'indicator_observations']
-        #
-        # if 'indicator_attributes' in ind:
-        #     if ind['indicator_attributes']:
-        #         context[TC_INDICATOR_PATH][0]['IndicatorAttributes'] = ind[
-        #             'indicator_attributes']
-
     context['DBotScore'] = list(indicators_dbot_score.values())
     context = {k: createContext(v)[:MAX_CONTEXT] for k, v in context.items() if v}
     return context, human_readable
@@ -312,37 +289,15 @@ def tc_delete_group_command(client: Client, args: dict) -> Any:  # pragma: no co
 def tc_get_indicators(client: Client, tag: str = '', page: str = '0', limit: str = '500', owners: str = '',
                       indicator_id: str = '', summary: str = '',
                       fields_to_return: list = None) -> Any:  # pragma: no cover
-    # owners = args.get('owner', owners)
-    # limit = args.get('limit', '500')
-    # page = args.get('page', '0')
-    # tag = args.get('tag', tag)
-    # indicator_type = args.get('type', indicator_type)
-    # indicator_id = args.get('id', indicator_id)
-    # rating_threshold = args.get('ratingThreshold', rating_threshold)
-    # confidence_threshold = args.get('confidenceThreshold', confidence_threshold)
-    # fields_to_return = fields_to_return or argToList(args.get('fields_to_return')) or []
-
-    # indicator_attributes = args.get('indicator_attributes', indicator_attributes)
-    # indicator_tags = args.get('indicator_tags', indicator_tags) or args.get('tags')
-    # indicator_observations = args.get('indicator_observations', indicator_observations)
-    # indicator_associations = args.get('indicator_associations', indicator_associations)
-    # group_associations = args.get('group_associations', group_associations)
     tql_prefix = ''
     if summary:
         summary = f' AND summary EQ "{summary}"'
         tql_prefix = '?tql='
-    # if rating_threshold:
-    #     rating_threshold = f'AND (rating > {rating_threshold}) '
-    #     tql_prefix = '?tql='
-    # if confidence_threshold:
-    #     confidence_threshold = f'AND (confidence > {confidence_threshold}) '
-    #     tql_prefix = '?tql='
+
     if tag:
         tag = f' AND tag LIKE "%{tag}%"'
         tql_prefix = '?tql='
-    # if indicator_type:
-    #     indicator_type = f' AND typeName EQ "{indicator_type}"'
-    #     tql_prefix = '?tql='
+
     if owners:
         owners = ' AND ' + create_or_query(owners, 'ownerName')
         tql_prefix = '?tql='
@@ -350,8 +305,7 @@ def tc_get_indicators(client: Client, tag: str = '', page: str = '0', limit: str
         indicator_id = ' AND ' + create_or_query(indicator_id, 'id').replace('"', '')
         tql_prefix = '?tql='
     fields = set_fields(fields_to_return)
-    # tql = f'{indicator_id}{summary}{indicator_type}{owners}{tag}{confidence_threshold}' \
-    #       f'{rating_threshold}'.replace(' AND ', '', 1)
+
     tql = f'{indicator_id}{summary}{owners}{tag}'.replace(' AND ', '', 1)
     tql = urllib.parse.quote(tql.encode('utf8'))
     url = f'/api/v3/indicators{tql_prefix}{tql}{fields}&resultStart={page}&resultLimit={limit}'
@@ -471,12 +425,6 @@ def convert_to_dict(arr: list):
     for item in arr:
         new_dict[item] = True
     return new_dict
-
-
-# def convert_to_list(dictionary: dict) -> list:
-#
-# for key, val in dictionary:
-#     if val and val != 'false'
 
 
 def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
@@ -855,11 +803,6 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
         associated_indicators = response[0].get('associatedIndicators')
         associated_groups = response[0].get('associatedGroups')
 
-        # if ec == []:
-        #    ec = {}
-        # if ec:
-        #     indicators = copy.deepcopy(ec)
-        #     indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
         return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
