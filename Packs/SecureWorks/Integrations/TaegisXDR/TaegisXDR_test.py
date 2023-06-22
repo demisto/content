@@ -185,33 +185,27 @@ def test_fetch_comment_by_id(requests_mock):
         assert fetch_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
-def test_fetch_comments_by_parent(requests_mock):
+def test_fetch_comments(requests_mock):
     """Tests taegis-fetch-comments command function
     """
     client = mock_client(requests_mock, FETCH_COMMENTS_RESPONSE)
 
     # comment_id not set
-    with pytest.raises(ValueError, match="Cannot fetch comments, missing parent_id"):
+    with pytest.raises(ValueError, match="Cannot fetch comments, missing id"):
         assert fetch_comments_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
 
     args = {
-        "parent_id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
-        "parent_type": "bad_parent_type",
+        "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
     }
 
-    # Invalid parent type
-    with pytest.raises(ValueError, match="The provided comment parent type, bad_parent_type, is not valid."):
-        assert fetch_comments_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-
     # Successful fetch
-    args["parent_type"] = "investigation"
     response = fetch_comments_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
-    assert response.outputs == FETCH_COMMENTS_RESPONSE["data"]["commentsByParent"]
+    assert response.outputs == FETCH_COMMENTS_RESPONSE["data"]["commentsV2"]["comments"]
 
     # Comment not found, bad response
     client = mock_client(requests_mock, FETCH_COMMENTS_BAD_RESPONSE)
-    with pytest.raises(ValueError, match="Failed to fetch comments:"):
-        assert fetch_comments_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    response = fetch_comments_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == []
 
 
 def test_update_comment(requests_mock):
