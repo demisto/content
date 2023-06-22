@@ -1116,7 +1116,7 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
 
 def main():  # pragma: no cover
     if not (ACCESS_KEY and SECRET_KEY):
-        return_error('Access Key and Secret Key must be provided.')
+        raise DemistoException('Access Key and Secret Key must be provided.')
     if demisto.command() == 'test-module':
         demisto.results(test_module())
     elif demisto.command() == 'tenable-io-list-scans':
