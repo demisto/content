@@ -29,13 +29,13 @@ import pytest
 def test_get_highest_support_label(support_levels, expected_support_level):
     """
     Given:
-        a list of support levels for packs that were changed
+        - a list of support levels for packs that were changed
 
     When:
-        running get_highest_support_label function
+        - running get_highest_support_label function
 
     Then:
-        make sure the highest support level is always returned
+        - make sure the highest support level is always returned
     """
     from Utils.github_workflow_scripts.handle_external_pr import get_highest_support_label
     assert get_highest_support_label(support_levels) == expected_support_level
@@ -50,10 +50,10 @@ def test_get_highest_support_label(support_levels, expected_support_level):
 def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
     """
     Given:
-        a pack and a fork owner
+        - a pack and a fork owner
 
     When:
-        running get_packs_support_level_label function
+        - running get_packs_support_level_label function
 
     Then:
         - make sure correct support label is returned.
@@ -78,10 +78,10 @@ def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
 def test_get_packs_support_level_label_checkout_failed(mocker):
     """
     Given:
-        a pack
+        - a pack
 
     When:
-        running get_packs_support_level_label function when Checkout fails.
+        - running get_packs_support_level_label function when Checkout fails.
 
     Then:
         - make sure correct support label is still returned.
