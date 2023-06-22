@@ -1,9 +1,8 @@
 name: Sync contributor base branch
-#on:
-#  schedule:
-#    # runs at minute 0 of the 0th hour every day.
-#    - cron:  '0 0 * * *'
-on: pull_request
+on:
+  schedule:
+    # runs at minute 0 of the 0th hour every day.
+    - cron:  '0 0 * * *'
 
 permissions:
   contents: read
