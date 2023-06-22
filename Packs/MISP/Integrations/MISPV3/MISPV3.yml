@@ -2529,6 +2529,10 @@ script:
       description: MISP Role Name.
       type: string
   dockerimage: demisto/pymisp2:1.0.0.63745
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: ''
   subtype: python3
