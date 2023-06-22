@@ -100,9 +100,19 @@ script:
     - name: page_size
       description: Number of investigations to return
       defaultValue: "10"
-    - name: status
-      description: A list of statuses to use when searching for investigations
-      isArray: true
+    - name: tenant_id
+      description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: query
+      description: The Taegis query string to utilize for searching investigations
+      defaultValue: deleted_at is null
+    - name: order_by
+      description: The field to order by when performing a search
+      defaultValue: created_at
+    - name: order_direction
+      description: The order direction when performing a search
+      defaultValue: desc
+    - name: fields
+      description: The fields to return in the results
     outputs:
     - contextPath: TaegisXDR.Investigations
       description: Dictionary of the located Taegis investigation

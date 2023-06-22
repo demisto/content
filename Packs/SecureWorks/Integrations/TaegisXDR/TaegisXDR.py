@@ -974,99 +974,145 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
 
 
 def fetch_investigation_command(client: Client, env: str, args=None):
-    investigation_id = args.get("id", None)
-    page = args.get("page", 0)
-    page_size = args.get("page_size", 10)
-    status = args.get("status", [])
-
-    fields = """
-        id
-        tenant_id
-        description
-        key_findings
-        alerts2 {
+    fields: str = ""
+    if args.get("id"):
+        fields = args.get("fields") or """
             id
-            suppressed
+            shortId
+            title
+            keyFindings
+            alerts
+            assets
             status
-            priority {
-                value
-            }
-            metadata {
-                title
-                description
-                created_at {
-                    seconds
-                }
-                severity
-                confidence
-            }
-        }
-        genesis_alerts2 {
-            id
-            suppressed
-            status
-            priority {
-                value
-            }
-            metadata {
-                title
-                description
-                created_at {
-                    seconds
-                }
-                severity
-                confidence
-            }
-        }
-        assignee {
-            name
-            id
-            email
-        }
-        archived_at
-        created_at
-        updated_at
-        service_desk_id
-        service_desk_type
-        latest_activity
-        priority
-        status
-        assets {
-            id
-            hostnames {
+            assignee {
                 id
-                hostname
+                family_name
+                given_name
             }
-            tags {
-                tag
+            priority
+            type
+            processing_status {
+                assets
+                events
+                alerts
             }
-        }
-        """
+            archivedAt
+            """
 
-    if investigation_id:
         query = """
-        query investigation($investigation_id: ID!) {
-            investigation(investigation_id: $investigation_id) {
+        query investigationV2($arguments: InvestigationV2Arguments!) {
+            investigationV2(arguments: $arguments) {
                 %s
             }
         }
         """ % (fields)
 
-        variables = {"investigation_id": investigation_id}
+        variables = {
+            "arguments": {
+                "id": args.get("id")
+            }
+        }
         result = client.graphql_run(query=query, variables=variables)
     else:
+        fields = args.get("fields") or """
+            id
+            tenant_id
+            description
+            key_findings
+            alerts2 {
+                id
+                suppressed
+                status
+                priority {
+                    value
+                }
+                metadata {
+                    title
+                    description
+                    created_at {
+                        seconds
+                    }
+                    severity
+                    confidence
+                }
+            }
+            genesis_alerts2 {
+                id
+                suppressed
+                status
+                priority {
+                    value
+                }
+                metadata {
+                    title
+                    description
+                    created_at {
+                        seconds
+                    }
+                    severity
+                    confidence
+                }
+            }
+            assignee {
+                name
+                id
+                email
+            }
+            archived_at
+            created_at
+            updated_at
+            service_desk_id
+            service_desk_type
+            latest_activity
+            priority
+            status
+            type
+            processingStatus {
+                assets
+                events
+                alerts
+            }
+            assets {
+                id
+                hostnames {
+                    id
+                    hostname
+                }
+                tags {
+                    tag
+                }
+            }
+            """
+
         query = """
-        query investigations($page: Int, $perPage: Int, $status: [String]) {
-            allInvestigations(page: $page, perPage: $perPage, status: $status) {
-                %s
+        query investigationsSearch(
+            $page: Int,
+            $perPage: Int,
+            $orderByField: OrderFieldInput,
+            $orderDirection: OrderDirectionInput,
+            $query: String
+        ) {
+            investigationsSearch(
+            ) {
+                totalCount
+                investigations {
+                    %s
+                }
             }
         }
         """ % (fields)
-        variables = {"page": page, "perPage": page_size, "status": status}
+        variables = {
+            "page": arg_to_number(args.get("page")) or 0,
+            "perPage": arg_to_number(args.get("page_size")) or 10,
+            "query": args.get("query", "deleted_at is null"),
+            "orderByField": args.get("order_by", "created_at"),
+            "orderDirection": args.get("order_direction", "desc")
+        }
         result = client.graphql_run(query=query, variables=variables)
 
     try:
-        investigations = [result["data"]["investigation"]] if investigation_id else result["data"]["allInvestigations"]
+        investigations = [result["data"]["investigationV2"]] if args.get("id") \
+            else result["data"]["investigationsSearch"]["investigations"]
     except (KeyError, TypeError):
         investigations = []
 

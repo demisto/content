@@ -486,7 +486,12 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID to lookup | True |
+| id | Investigation ID to lookup | False |
+| query | If not using ID, the query to utilize when searching investigations [Default: deleted_at is null] | False |
+| page | Search page number [Default: 0] | False |
+| page_size | Number of results per page [Default: 10] | False |
+| order_by | The field to order results by [Default: created_at] | False |
+| order_direction | The order direction [Default: DESCENDING] | False |
 
 #### Command Example
 
@@ -547,46 +552,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
                 "description": "Test Alert",
                 "message": "This is a test alert",
                 "severity": 0.5,
-            }
-        ]
-    }
-}
-```
-
-
-
-### taegis-fetch-investigations
-
-#### Base Command
-`!taegis-fetch-investigations`
-
-#### Inputs
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| page |  | False |
-| page_size | | False |
-
-#### Command Example
-
-```
-!taegis-fetch-investigations
-```
-
-#### Context Example
-
-```
-{
-    "TaegisXDR": {
-        "Investigations": [
-            {
-                "description": "Test Investigation",
-                "id": "c2e09554-833e-41a1-bc9d-8160aec0d70d",
-                "key_findings": "",
-                "priority": 2,
-                "service_desk_id": "",
-                "service_desk_type": "",
-                "status": "Open"
             }
         ]
     }
