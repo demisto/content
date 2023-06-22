@@ -4271,8 +4271,8 @@ Display organization ids and names.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Organization.ID | string | MISP Ogranization ID. | 
-| MISP.Organization.NAME | string | MISP Organization Name. | 
+| MISP.Organization.org_id | string | MISP Ogranization ID. | 
+| MISP.Organization.org_name | string | MISP Organization Name. | 
 
 ### misp-get-role-info
 
@@ -4292,5 +4292,5 @@ Display role names and role ids.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Role.ID | string | MISP Role ID. | 
-| MISP.Role.NAME | string | MISP Role Name. | 
+| MISP.Role.role_id | string | MISP Role ID. | 
+| MISP.Role.role_name | string | MISP Role Name. | 

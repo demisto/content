@@ -2522,10 +2522,10 @@ script:
     description: Display role names and role ids.
     name: misp-get-role-info
     outputs:
-    - contextPath: MISP.Role.ID
+    - contextPath: MISP.Role.role_id
       description: MISP Role ID.
       type: string
-    - contextPath: MISP.Role.NAME
+    - contextPath: MISP.Role.role_name
       description: MISP Role Name.
       type: string
   dockerimage: demisto/pymisp2:1.0.0.63745

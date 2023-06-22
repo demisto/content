@@ -566,15 +566,14 @@ def get_organizations_info():
         org_id = organization.get('Organisation', {}).get('id')
         org_name = organization.get('Organisation', {}).get('name')
         if org_id and org_name:
-            org_info.append({'organisation_name': org_name, 'organisation_id': org_id})
+            org_info.append({'name': org_name, 'id': org_id})
     if org_info:
-        human_readable = f"MISP Organization ids and names\n{org_info}"
+        human_readable = tableToMarkdown('MISP Organizations', org_info, headers=('id', 'name'))
     else:
         human_readable = 'There are no organization ids and names'
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISP.Organization',
-        outputs_key_field='ID',
         outputs=org_info,
         raw_response=org_info
     )
@@ -590,15 +589,14 @@ def get_role_info():
         role_name = role.get('Role', {}).get('name')
         role_id = role.get('Role', {}).get('id')
         if role_name and role_id:
-            role_info.append({'role_name': role_name, 'role_id': role_id})
+            role_info.append({'name': role_name, 'id': role_id})
     if role_info:
-        human_readable = f'MISP Role ids and names\n{role_info}'
+        human_readable = tableToMarkdown('MISP Roles', role_info, headers=('id', 'name'))
     else:
         human_readable = 'There are no role ids and names'
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='MISP.Role',
-        outputs_key_field='ID',
         outputs=role_info,
         raw_response=role_info
     )
