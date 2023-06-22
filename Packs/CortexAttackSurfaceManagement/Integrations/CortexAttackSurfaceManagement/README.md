@@ -1126,7 +1126,7 @@ Returns list of remediation path rules.
 
 ### asm-start-remediation_confirmation_scan
 ***
-Starts a new Remediation Confirmation Scan or gets an existing scan ID
+Starts a new Remediation Confirmation Scan or gets an existing scan ID.
 
 #### Base Command
 
@@ -1135,9 +1135,9 @@ Starts a new Remediation Confirmation Scan or gets an existing scan ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | The ID of the service in Xpanse associated with the Alert. | Required |
-| attack_surface_rule_id | The Xpanse attack surface rule associated with the Alert. | Required |
-| alert_internal_id | The Xpanse Alert ID. | Required |
+| service_id | The ID of the service in Cortex Xpanse associated with the alert. | Required |
+| attack_surface_rule_id | The Cortex Xpanse attack surface rule associated with the alert. | Required |
+| alert_internal_id | The Cortex Xpanse alert ID. | Required |
 
 #### Context Output
 
@@ -1169,7 +1169,7 @@ Starts a new Remediation Confirmation Scan or gets an existing scan ID
 
 ### asm-get-remediation-confirmation-scan-status
 ***
-Get status of an existing remediation confirmation scan.
+Get the status of an existing Remediation Confirmation Scan.
 
 #### Base Command
 
@@ -1184,8 +1184,8 @@ Get status of an existing remediation confirmation scan.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.RemediationScan.status| String | Status of the remediation confirmation scan. |
-| ASM.RemediationScan.result | String | Result of the remediation confirmation scan. |
+| ASM.RemediationScan.status| String | Status of the Remediation Confirmation Scan. |
+| ASM.RemediationScan.result | String | Result of the Remediation Confirmation Scan. |
 
 #### Command example
 `!asm-get-remediation-confirmation-scan-status scan_id="abcdef12-3456-789a-bcde-fgh012345678"`

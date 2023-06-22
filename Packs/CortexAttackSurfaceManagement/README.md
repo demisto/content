@@ -97,7 +97,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
 
 #### Cortex ASM - ASM Alert
 
-A playbook that enriches asset information for ASM alerts and provides means of remediation.
+A playbook that enriches asset information for ASM alerts and provides the means for remediation.
 
 ![Cortex ASM - ASM Alert](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ASM_Alert.png)
 
@@ -157,7 +157,7 @@ A playbook that given the IP address enriches Rapid7 information relevant to ASM
 
 #### Cortex ASM - Remediation Confirmation Scan
 
-A playbook that creates a ASM Remediation Confirmation Scan using an existing service ID, if the scan does not already exist; then polls for results of a scan.
+A playbook that creates an ASM Remediation Confirmation Scan using an existing service ID, if the scan does not already exist;. It then polls for results of a scan.
 
 ![Cortex ASM - Remediation Confirmation Scan](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Confirmation_Scan.png)
 #### Cortex ASM - Remediation Guidance

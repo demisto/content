@@ -44,7 +44,7 @@ tasks:
       id: 0536c203-ca10-4b73-882b-44788ff0ed47
       version: -1
       name: Start Remediation Confirmation Scan
-      description: Starts a new Remediation Confirmation Scan or gets an existing scan ID
+      description: Starts a new Remediation Confirmation Scan or gets an existing scan ID.
       script: Cortex Attack Surface Management|||asm-start-remediation-confirmation-scan
       type: regular
       iscommand: true
@@ -90,7 +90,7 @@ tasks:
       id: 86d60282-43f2-4024-81f7-a1cbed90484d
       version: -1
       name: Did the Remediation Confirmation Scan successfully start?
-      description: Conditional check for if the Remediation Confirmation Scan was successfully started or not.
+      description: Whether the Remediation Confirmation Scan was successfully started.
       type: condition
       iscommand: false
       brand: ""
@@ -174,7 +174,7 @@ tasks:
       id: 84eb0203-16c6-4e78-8cec-3221d2bbd29f
       version: -1
       name: Did the Remediation Confirmation Scan complete?
-      description: Conditional check for if the Remediation Confirmation Scan was successful or not.
+      description: Whether the Remediation Confirmation Scan was successful.
       type: condition
       iscommand: false
       brand: ""
@@ -258,7 +258,7 @@ tasks:
       id: 0e09a874-f500-44a2-83c8-93356bbb6f4e
       version: -1
       name: Set service detection grid field
-      description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -319,7 +319,7 @@ tasks:
       id: 889bc552-55a5-49ee-8446-2053eb4dcdef
       version: -1
       name: Set service detection grid field
-      description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -370,7 +370,7 @@ tasks:
       id: 1ac9bd98-f085-472c-8e72-a35c9aba7511
       version: -1
       name: Set service detection grid field
-      description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -452,7 +452,7 @@ tasks:
       id: 1ef7b368-c9f9-49d1-8c42-69712310a67c
       version: -1
       name: Poll for status from Remediation Confirmation Scan
-      description: Get status of an existing remediation confirmation scan.
+      description: Get status of an existing Remediation Confirmation Scan.
       script: Cortex Attack Surface Management|||asm-get-remediation-confirmation-scan-status
       type: regular
       iscommand: true
@@ -557,7 +557,7 @@ tasks:
       id: 975abb60-5eae-4507-844c-0f8a7cbf3b42
       version: -1
       name: Set service detection grid field
-      description: Populate asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
+      description: Populate the asmservicedetection field with "ScanNum,ScanDone,ScanResult,Timestamp,ScanState"
       scriptName: GridFieldSetup
       type: regular
       iscommand: false

@@ -1,7 +1,7 @@
 id: Cortex ASM - Detect Service
 version: -1
 name: Cortex ASM - Detect Service
-description: Playbook that looks to see if a service ID exists and choose to start a Remediation Confirmation Scan.
+description: Playbook that looks to see if a service ID exists and chooses to start a Remediation Confirmation Scan.
 starttaskid: "0"
 tasks:
   "0":
@@ -101,7 +101,7 @@ tasks:
       id: bb84f3c8-ee66-4569-89df-e1066a0d0b86
       version: -1
       name: Is there a ASM service ID?
-      description: Conditional task to check for an existing ASM service ID. The Remediation Confirmation Scan can only be used to scan existing service IDs found by Xpanse.
+      description: Conditional task to check for an existing ASM service ID. The Remediation Confirmation Scan can only be used to scan existing service IDs found by Cortex Xpanse.
       type: condition
       iscommand: false
       brand: ""

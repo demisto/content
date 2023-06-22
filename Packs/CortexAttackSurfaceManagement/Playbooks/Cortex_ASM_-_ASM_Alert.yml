@@ -398,7 +398,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Select a next step
-      description: The post migration Remediation Confirmation Scan scan wasn't conclusive, decide next steps.
+      description: The post migration Remediation Confirmation Scan wasn't conclusive. Decide the next steps.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1949,7 +1949,7 @@ tasks:
       version: -1
       name: Set remediation grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1996,7 +1996,7 @@ tasks:
       id: 757e187e-27e4-4437-8b72-f5b939bb1873
       version: -1
       name: Select remediation action (all options - S3)
-      description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
+      description: Determines the next action (remediation or ticket) based on user input. Options are based on if the ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
       type: collection
       iscommand: false
       brand: ""
@@ -2139,7 +2139,7 @@ tasks:
       id: ac999a8d-91d8-46a0-8697-0ced47317930
       version: -1
       name: Close or keep open?
-      description: Determines if alert will be closed or kept open.
+      description: Determines if the alert will be closed or kept open.
       type: condition
       iscommand: false
       brand: ""
@@ -2245,7 +2245,7 @@ tasks:
       id: 54ba2a93-2655-49ab-8cb8-556f39d32fee
       version: -1
       name: Close alert (close now)
-      description: Close the current alert because auto-close was selected,
+      description: Close the current alert because auto-close was selected.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -2319,7 +2319,7 @@ tasks:
       id: c6cfe0d1-7fed-4ecf-86f7-9bcb45af814e
       version: -1
       name: Close alert (close now) with rule match
-      description: Close the current alert because auto-close was selected,
+      description: Close the current alert because auto-close was selected.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -2465,7 +2465,7 @@ tasks:
       id: 627b4ebc-c48b-4dfd-818e-d43f4e216760
       version: -1
       name: Send remediation notification email to service owners
-      description: Send an email to service owners about the status of automated remediation action taken.
+      description: Send an email to service owners regarding the status of the automated remediation action that was taken.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -2733,7 +2733,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (triage)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2776,7 +2776,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (enrichment)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2819,7 +2819,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (analysis)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2862,7 +2862,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2905,7 +2905,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2948,7 +2948,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2991,7 +2991,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -3034,7 +3034,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -3077,7 +3077,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (remediation)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -3120,7 +3120,7 @@ tasks:
       version: -1
       name: Set playbook stage grid field (remediation)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -3400,7 +3400,7 @@ tasks:
       id: 914ba991-8dd5-4b24-873b-80f0c20d6001
       version: -1
       name: Close alert (accepted risk)
-      description: Close the current alert because service is no longer observed.
+      description: Close the current alert because the service is no longer observed.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -3437,7 +3437,7 @@ tasks:
       id: 722a8da8-13d4-438f-83c5-90fabc6c14a8
       version: -1
       name: Are there any matches from accepted risk lists?
-      description: Checks if the system ids, folders and projects are present in the accepted risk lists.
+      description: Checks if the system IDs, folders, and projects are present in the accepted risk lists.
       type: condition
       iscommand: false
       brand: ""

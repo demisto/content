@@ -789,7 +789,7 @@ tasks:
       id: 2e617b24-a1fd-47a4-885e-0af4e7e148bc
       version: -1
       name: AWS - Unclaimed S3 Bucket Validation
-      description: 'The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information. '
+      description: The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information.
       playbookName: AWS - Unclaimed S3 Bucket Validation
       type: playbook
       iscommand: false
@@ -821,7 +821,7 @@ tasks:
       id: bc2526dc-3804-438f-81f1-10e84b7c2615
       version: -1
       name: Was an S3 bucket passed back?
-      description: Determines if S3 bucket was passed back or not.
+      description: Determines if an S3 bucket was passed back or not.
       type: condition
       iscommand: false
       brand: ""
@@ -907,7 +907,7 @@ tasks:
       id: 8c61ba73-e651-4182-8736-508a9331a0a6
       version: -1
       name: What is the sub-alert type?
-      description: Determines ASM sub-alert type for different scans.
+      description: Determines the ASM sub-alert type for different scans.
       type: condition
       iscommand: false
       brand: ""

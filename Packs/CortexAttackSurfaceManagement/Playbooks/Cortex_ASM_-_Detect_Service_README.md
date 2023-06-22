@@ -1,4 +1,4 @@
-Playbook that checks to see if an existing ASM service ID is available. If it is available it will begin a Xpanse Remediation Confirmation Scan.
+Playbook that checks to see if an existing ASM service ID is available. If it is available, it will begin a Cortex Xpanse Remediation Confirmation Scan.
 
 ## Dependencies
 
