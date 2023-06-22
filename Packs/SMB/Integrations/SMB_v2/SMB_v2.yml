@@ -16,6 +16,7 @@ configuration:
 - display: Domain Controller
   name: dc
   type: 0
+  required: false
   additionalinfo: The domain controller hostname. This is useful for environments with DFS servers as it is used to identify the DFS domain information automatically.
 - display: Username
   name: credentials
@@ -155,7 +156,7 @@ script:
     - name: password
       description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Removes a directory from the given path.
-  dockerimage: demisto/smbprotocol:1.0.0.46456
+  dockerimage: demisto/smbprotocol:1.0.0.63639
   script: '-'
   type: python
   subtype: python3

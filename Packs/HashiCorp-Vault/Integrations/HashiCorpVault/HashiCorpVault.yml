@@ -23,6 +23,11 @@ configuration:
   name: token
   defaultvalue: ""
   type: 4
+  hidden: true
+- displaypassword: Authentication token
+  name:  credentials_token
+  hiddenusername: true
+  type: 9
 - display: Vault enterprise namespace
   name: namespace
   defaultvalue: ""

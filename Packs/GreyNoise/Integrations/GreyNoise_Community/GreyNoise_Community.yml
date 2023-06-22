@@ -98,7 +98,7 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-  dockerimage: demisto/greynoise:1.0.0.61972
+  dockerimage: demisto/greynoise:1.0.0.63695
   script: '-'
   subtype: python3
   type: python

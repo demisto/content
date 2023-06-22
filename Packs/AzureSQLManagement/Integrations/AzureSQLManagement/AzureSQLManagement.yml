@@ -640,7 +640,7 @@ script:
     - contextPath: AzureSQL.ResourceGroup.tags
       description: The tags attached to the resource group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.62404
+  dockerimage: demisto/crypto:1.0.0.63672
   script: '-'
   subtype: python3
   type: python
