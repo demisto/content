@@ -440,10 +440,10 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     Fetch a specific alert or a list of alerts based on a CQL Taegis query
     """
     variables: dict = {
-        "cql_query": args.get("cql_query", "from alert severity >= 0.6 and status='OPEN'"),
+        "cql_query": args.get("cql_query", "from alert severity >= 0.4 and status='OPEN'"),
         "limit": args.get("limit", 10),
         "offset": args.get("offset", 0),
-        "ids": args.get("ids", []),  # ["alerts://id1", "alerts://id2"]
+        "ids": args.get("ids", []),  # ["alert://id1", "alert://id2"]
     }
     fields: str = args.get("fields") or """
         status
@@ -922,8 +922,8 @@ def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = 
 
 def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
-    page = args.get("page", 0)
-    page_size = args.get("page_size", 10)
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size")) or 10
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
 
@@ -1146,8 +1146,8 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
 
 
 def fetch_users_command(client: Client, env: str, args=None):
-    page = int(args.get("page", 0))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size")) or 10
 
     variables: Dict[str, Any] = {
         "filters": {
@@ -1530,7 +1530,7 @@ def generate_id_url(env: str, endpoint: str, element_id: str):
 
 def main():
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Running Taegis Command: {command}')
 
     commands: Dict[str, Any] = {
         "fetch-incidents": fetch_incidents,
