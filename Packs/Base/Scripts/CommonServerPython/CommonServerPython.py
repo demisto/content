@@ -3993,11 +3993,11 @@ class Common(object):
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
-        :type vulnerable_products: ``str``
-        :param publications: A list of CPE objects
+        :type vulnerable_products: ``CPE``
+        :param vulnerable_products: A list of CPE objects
 
-        :type vulnerable_configurations: ``str``
-        :param publications: A list of CPE objects
+        :type vulnerable_configurations: ``CPE``
+        :param vulnerable_configurations: A list of CPE objects
 
         :return: None
         :rtype: ``None``

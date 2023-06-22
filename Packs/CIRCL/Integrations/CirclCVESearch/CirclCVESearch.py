@@ -1,4 +1,5 @@
 import urllib3
+import contextlib
 from typing import Dict, Any, List, Union
 import re
 
@@ -14,7 +15,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, base_url: str, verify=False, proxy=False):
+    def __init__(self, base_url: str, verify: bool, proxy: bool):
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -22,12 +23,10 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def cve_latest(self, limit) -> List[Dict[str, Any]]:
-        res = self._http_request(method='GET', url_suffix=f'/last/{limit}', timeout=60)
-        return res
+        return self._http_request(method='GET', url_suffix=f'/last/{limit}')
 
     def cve(self, cve_id) -> Dict[str, Any]:
-        res: Dict[str, Any] = self._http_request(method='GET', url_suffix=f'cve/{cve_id}', timeout=60)
-        return res or {}
+        res: Dict[str, Any] = self._http_request(method='GET', url_suffix=f'cve/{cve_id}')
 
 
 def cve_to_context(cve) -> Dict[str, str]:
@@ -61,12 +60,8 @@ def test_module(client: Client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    try:
-        cve_latest_command(client, 1)
-    except Exception as e:
-        if "Read timed out." not in str(e):
-            raise
-    return 'ok', None, None
+    cve_latest_command(client, 1)
+    return 'ok'
 
 
 def cve_latest_command(client: Client, limit) -> List[CommandResults]:
@@ -114,18 +109,14 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
     Returns:
         CVE details containing ID, CVSS, modified date, published date and description.
     """
-    cve_id = args.get('cve', '')
-    cve_ids = argToList(cve_id)
+    cve_ids = argToList(args.get('cve', ''))
     command_results: List[CommandResults] = []
 
     for _id in cve_ids:
         if not valid_cve_id_format(_id):
             raise DemistoException(f'"{_id}" is not a valid cve ID')
 
-        response = client.cve(_id)
-        if not response:
-            cr = CommandResults(readable_output=f'### No results found for cve {_id}')
-        else:
+        if response := client.cve(_id):
             data = cve_to_context(response)
             indicator = generate_indicator(response)
             cr = CommandResults(
@@ -136,6 +127,8 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
                 indicator=indicator,
                 relationships=indicator.relationships
             )
+        else:
+            cr = CommandResults(readable_output=f'### No results found for cve {_id}')
         command_results.append(cr)
 
     return command_results
@@ -166,27 +159,16 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
     for cpe in cpes:
         cpe_split = re.split('(?<!\\\):', cpe)
 
-        try:
-            vendor = cpe_split[3].capitalize().replace("\\", "").replace("_", " ")
-            if vendor:
+        with contextlib.suppress(IndexError):
+            if (vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " ")):
                 vendors.add(vendor)
 
-        except IndexError:
-            pass
-
-        try:
-            product = cpe_split[4].capitalize().replace("\\", "").replace("_", " ")
-            if product:
+        with contextlib.suppress(IndexError):
+            if (product := cpe_split[4].capitalize().replace("\\", "").replace("_", " ")):
                 products.add(product)
 
-        except IndexError:
-            pass
-
-        try:
+        with contextlib.suppress(IndexError):
             parts.add(cpe_parts[cpe_split[2]])
-
-        except IndexError:
-            pass
 
     relationships = [EntityRelationship(name="targets",
                                         entity_a=cve_id,
@@ -215,9 +197,7 @@ def generate_indicator(data: dict) -> Common.CVE:
     """
 
     cve_id = data.get('id', '')
-    cpe = data.get("vulnerable_product", '')
-
-    if cpe:
+    if cpe := data.get("vulnerable_product", '')
         tags, relationships = parse_cpe(cpe, cve_id)
 
     else:
