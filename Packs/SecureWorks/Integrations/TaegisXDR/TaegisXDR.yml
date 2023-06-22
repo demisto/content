@@ -84,6 +84,8 @@ script:
       defaultValue: "0"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.Alerts
       description: List of Taegis alerts
@@ -214,6 +216,8 @@ script:
       defaultValue: "10"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.InvestigationAlerts
       description: List of alerts related to a Taegis investigation
@@ -227,6 +231,8 @@ script:
       description: JSON Object of optional playbook inputs
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.Execution
       description: The playbook execution ID
@@ -240,6 +246,8 @@ script:
       description: Playbook execution ID
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.PlaybookExecution
       description: Returns related execution information
@@ -308,6 +316,8 @@ script:
       description: String to update/replace the comment with
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.CommentUpdate
       description: The comment update results
@@ -328,6 +338,8 @@ script:
       defaultValue: "10"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.Users
       description: The located user(s)
@@ -339,6 +351,8 @@ script:
       description: ID of investigation to update
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.ArchivedInvestigation
       description: The results from archiving an investigation
@@ -350,6 +364,8 @@ script:
       description: ID of investigation to update
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.UnarchivedInvestigation
       description: The results from unarchiving an investigation
@@ -374,6 +390,8 @@ script:
       description: A simple comment/reason for the status change
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.AlertStatusUpdate
       description: The result of the alert status update
@@ -408,6 +426,8 @@ script:
       description: Filter assets by username
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.Assets
       description: A list of located assets
@@ -422,6 +442,8 @@ script:
       description: A reason for the isolation
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.AssetIsolation
       description: Results from the asset isolation
@@ -431,6 +453,8 @@ script:
     - name: id
       required: true
       description: The endpoint ID to fetch
+    - name: fields
+      description: The fields to return from the query
     outputs:
     - contextPath: TaegisXDR.Endpoint
       description: Results from fetching the endpoint information

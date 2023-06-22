@@ -389,6 +389,7 @@ def execute_playbook_command(client: Client, env: str, args=None):
     if not playbook_id:
         raise ValueError("Cannot execute playbook, missing playbook_id")
 
+    fields: str = args.get("fields") or "id"
     query = """
     mutation executePlaybookInstance(
         $playbookInstanceId: ID!
@@ -398,10 +399,10 @@ def execute_playbook_command(client: Client, env: str, args=None):
             playbookInstanceId: $playbookInstanceId
             parameters: $parameters
         ) {
-            id
+            %s
         }
     }
-    """
+    """ % (fields)
 
     playbook_inputs = args.get("inputs", {})
 
@@ -444,59 +445,63 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         "offset": args.get("offset", 0),
         "ids": args.get("ids", []),  # ["alerts://id1", "alerts://id2"]
     }
-    fields: str = """
-            status
-            reason
-            alerts {
-                total_results
-                list {
-                    id
-                    tenant_id
-                    status
-                    suppressed
-                    suppression_rules {
-                      id
+    fields: str = args.get("fields") or """
+        status
+        reason
+        alerts {
+            total_results
+            list {
+                id
+                tenant_id
+                status
+                suppressed
+                suppression_rules {
+                  id
+                  version
+                }
+                resolution_reason
+                attack_technique_ids
+                entities{
+                  entities
+                  relationships{
+                    from_entity
+                    relationship
+                    to_entity
+                  }
+                }
+                metadata {
+                  engine {
+                    name
+                  }
+                  creator {
+                    detector {
+                      version
+                      detector_id
+                    }
+                    rule {
+                      rule_id
                       version
                     }
-                    resolution_reason
-                    attack_technique_ids
-                    entities{
-                      entities
-                      relationships{
-                        from_entity
-                        relationship
-                        to_entity
-                      }
-                    }
-                    metadata {
-                      engine {
-                        name
-                      }
-                      creator {
-                        detector {
-                          version
-                          detector_id
-                        }
-                        rule {
-                          rule_id
-                          version
-                        }
-                      }
-                      title
-                      description
-                      confidence
-                      severity
-                      created_at {
-                        seconds
-                      }
-                    }
-                    investigation_ids {
-                      id
-                    }
-                    sensor_types
+                  }
+                  title
+                  description
+                  confidence
+                  severity
+                  created_at {
+                    seconds
+                  }
                 }
+                investigation_ids {
+                  id
+                }
+                event_ids {
+                  id
+                  event_data
+                }
+                sensor_types
             }
-        """
+        }
+    """
 
     if args.get("ids"):
         field = "alertsServiceRetrieveAlertsById"
@@ -570,44 +575,47 @@ def fetch_assets_command(client: Client, env: str, args=None):
         if args.get(field):
             variables["input"][field] = args.get(field).strip()
 
+    fields: str = args.get("fields") or """
+        id
+        ingestTime
+        createdAt
+        updatedAt
+        deletedAt
+        biosSerial
+        firstDiskSerial
+        systemVolumeSerial
+        sensorVersion
+        endpointPlatform
+        architecture
+        osFamily
+        osVersion
+        osDistributor
+        osRelease
+        systemType
+        osCodename
+        kernelRelease
+        kernelVersion
+        hostnames {
+            id
+            hostname
+        },
+        tags {
+            key
+            tag
+        }
+        endpointType
+        hostId
+        sensorId
+        """
     query = """
     query searchAssetsV2($input: SearchAssetsInput!, $pagination_input: SearchAssetsPaginationInput!) {
          searchAssetsV2(input: $input, paginationInput:$pagination_input) {
            assets {
-              id
-              ingestTime
-              createdAt
-              updatedAt
-              deletedAt
-              biosSerial
-              firstDiskSerial
-              systemVolumeSerial
-              sensorVersion
-              endpointPlatform
-              architecture
-              osFamily
-              osVersion
-              osDistributor
-              osRelease
-              systemType
-              osCodename
-              kernelRelease
-              kernelVersion
-              hostnames {
-                id
-                hostname
-              },
-              tags {
-                key
-                tag
-              }
-              endpointType
-              hostId
-              sensorId
+              %s
             }
           }
         }
-    """
+    """ % (fields)
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -635,25 +643,29 @@ def fetch_comment_command(client: Client, env: str, args=None):
     if not comment_id:
         raise ValueError("Cannot fetch comment, missing comment_id")
 
+    fields: str = args.get("feilds") or """
+        author_user {
+            id
+            family_name
+            given_name
+            email_normalized
+        }
+        id
+        comment
+        modified_at
+        deleted_at
+        created_at
+        parent_id
+        parent_type
+        """
+
     query = """
     query comment ($comment_id: ID!) {
         comment(comment_id: $comment_id) {
-            author_user {
-                id
-                family_name
-                given_name
-                email_normalized
-            }
-            id
-            comment
-            modified_at
-            deleted_at
-            created_at
-            parent_id
-            parent_type
+            %s
         }
     }
-    """
+    """ % (fields)
 
     variables = {"comment_id": comment_id}
 
@@ -745,9 +757,7 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
         "id": args.get("id")
     }
 
-    query = """
-    query assetEndpointInfo($id: ID!) {
-      assetEndpointInfo(id: $id) {
+    fields: str = args.get("fields") or """
         hostId
         hostName
         actualIsolationStatus
@@ -762,9 +772,15 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
         lastConnectAddress
         lastConnectTime
         sensorVersion
+        """
+
+    query = """
+    query assetEndpointInfo($id: ID!) {
+      assetEndpointInfo(id: $id) {
+        %s
       }
     }
-    """
+    """ % (fields)
 
     result = client.graphql_run(query=query, variables=variables)
     try:
@@ -913,19 +929,23 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
 
+    fields: str = args.get("fields") or """
+        alerts {
+            id
+        }
+        alerts2 {
+            id
+        }
+        totalCount
+        """
+
     query = """
     query investigationAlerts($investigation_id: ID!, $page: Int, $perPage: Int) {
         investigationAlerts(investigation_id: $investigation_id, page: $page, perPage: $perPage) {
-            alerts {
-                id
-            }
-            alerts2 {
-                id
-            }
-            totalCount
+            %s
         }
     }
-    """
+    """ % (fields)
 
     variables = {"page": page, "perPage": page_size, "investigation_id": investigation_id}
     result = client.graphql_run(query=query, variables=variables)
@@ -1075,9 +1095,7 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     if not execution_id:
         raise ValueError("Cannot fetch playbook execution, missing execution id")
 
-    query = """
-    query playbookExecution($playbookExecutionId: ID!) {
-      playbookExecution(playbookExecutionId: $playbookExecutionId) {
+    fields: str = args.get("fields") or """
         id
         state
         instance {
@@ -1091,9 +1109,15 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
         updatedAt
         executionTime
         outputs
+        """
+
+    query = """
+    query playbookExecution($playbookExecutionId: ID!) {
+      playbookExecution(playbookExecutionId: $playbookExecutionId) {
+        %s
       }
     }
-    """
+    """ % (fields)
 
     variables = {
         "playbookExecutionId": execution_id
@@ -1134,7 +1158,7 @@ def fetch_users_command(client: Client, env: str, args=None):
             "pageOffset": page_size * page,
         }
     }
-    fields = "user_id email family_name given_name status"
+    fields: str = args.get("feilds") or "user_id email family_name given_name status"
     if args.get("id"):
         if not args["id"].startswith("auth0"):
             raise ValueError("id MUST be in 'auth0|12345' format")
@@ -1197,13 +1221,15 @@ def isolate_asset_command(client: Client, env: str, args=None):
         "reason": args.get("reason")
     }
 
+    fields: str = args.get("fields") or "id"
+
     query = """
     mutation isolateAsset ($id: ID!, $reason: String!) {
       isolateAsset (id: $id, reason: $reason) {
-        id
+        %s
       }
     }
-    """
+    """ % (fields)
 
     result = client.graphql_run(query=query, variables=variables)
 
@@ -1244,6 +1270,8 @@ def update_alert_status_command(client: Client, env: str, args=None):
         "resolution_status": args.get("status"),
     }
 
+    fields: str = args.get("fields") or "resolution_status reason"
+
     query = """
     mutation alertsServiceUpdateResolutionInfo($alert_ids: [String!], $reason: String, $resolution_status: ResolutionStatus) {
       alertsServiceUpdateResolutionInfo(
@@ -1253,11 +1281,10 @@ def update_alert_status_command(client: Client, env: str, args=None):
             resolution_status: $resolution_status
         }
       ) {
-        resolution_status
-        reason
+        %s
       }
     }
-    """
+    """ % (fields)
     result = client.graphql_run(query=query, variables=variables)
 
     try:
@@ -1384,13 +1411,15 @@ def archive_investigation_command(client: Client, env: str, args=None):
     if not investigation_id:
         raise ValueError("Cannot archive investigation, missing investigation id")
 
+    fields: str = args.get("fields") or "id"
+
     query = """
     mutation ($investigation_id: ID!) {
       archiveInvestigation(investigation_id: $investigation_id) {
-        id
+        %s
       }
     }
-    """
+    """ % (fields)
 
     variables = {"investigation_id": investigation_id}
     result = client.graphql_run(query=query, variables=variables)
@@ -1428,13 +1457,15 @@ def unarchive_investigation_command(client: Client, env: str, args=None):
     if not investigation_id:
         raise ValueError("Cannot unarchive investigation, missing investigation id")
 
+    fields: str = args.get("fields") or "id"
+
     query = """
     mutation ($investigation_id: ID!) {
       unArchiveInvestigation(investigation_id: $investigation_id) {
-        id
+        %s
       }
     }
-    """
+    """ % (fields)
 
     variables = {"investigation_id": investigation_id}
     result = client.graphql_run(query=query, variables=variables)
