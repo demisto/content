@@ -22,7 +22,7 @@ PROXY = demisto.params().get('proxy')
 def http_request(data):
     api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('api_key')
     if not api_key:
-        return_error('API key must be provided.')
+        raise DemistoException('API key must be provided.')
     headers = {
         'X-API-KEY': api_key,
     }
