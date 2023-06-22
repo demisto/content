@@ -31,7 +31,6 @@ retries = Retry(
     backoff_factor=1,
     status_forcelist=[429, 500, 502, 503, 504],
 )
-s.mount("http://", HTTPAdapter(max_retries=retries))
 s.mount("https://", HTTPAdapter(max_retries=retries))
 
 
@@ -105,8 +104,8 @@ query GetEndPoints($limit: Int!, $starttime: DateTime!, $endtime: DateTime!)
     orderBy: [{direction: DESC, keyExpression: {key: "apiRiskScore"}}]
     filterBy: [{keyExpression: {
         key: "apiDiscoveryState"
-        }, 
-        operator: IN, value: ["DISCOVERED", "UNDER_DISCOVERY"], type: ATTRIBUTE}, 
+        },
+        operator: IN, value: ["DISCOVERED", "UNDER_DISCOVERY"], type: ATTRIBUTE},
         {keyExpression: {key: "environment"}, operator: EQUALS, value: "production", type: ATTRIBUTE}]
     includeInactive: false
   ) {
