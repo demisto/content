@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Any command interacting with the Taegis Investigations or Comments APIs have been migrated to the V2 API. Most of these commands saw changes to their inputs and outputs. See Release Notes for a list of updated commands."}
