@@ -1,18 +1,40 @@
 commonfields:
   id: DeleteAndExcludeIndicators
-  version: -1
-comment: ''
-dockerimage: demisto/python3:3.10.12.63474
-enabled: true
+  version: 2
+vcShouldKeepItemLegacyProdMachine: false
 name: DeleteAndExcludeIndicators
-runas: DBotWeakRole
-runonce: false
-script: ''
+script: |-
+  import re
+
+  try:
+      indicatorValues = str(demisto.args().get('indicatorValues'))
+      reason = demisto.args().get('reason','')
+      indicatorQuery = re.sub(',', ' or ', indicatorValues)
+      searchQuery = 'value:(' + indicatorQuery + ')'
+      res = demisto.executeCommand("deleteIndicators", {"query":searchQuery,"doNotWhitelist":"false","reason":reason})
+      resp = res[0]
+      if isError(resp):
+          raise Exception(resp['Contents'])
+      else:
+          demisto.results(resp['Contents'])
+
+  except Exception as ex1:
+      return_error(str(ex1))
+type: python
+tags: []
+enabled: true
+args:
+- name: indicatorValues
+  description: Enter a command separated list of indicators to delete and exclude
+- name: reason
+  description: Reason for exclusion
 scripttarget: 0
 subtype: python3
-tags:
-- Automation
-type: python
-fromversion: 6.10.0
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
 tests:
 - Run all tests
