@@ -26,7 +26,7 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
-from Tests.Marketplace.pack_readme_handler import replace_readme_urls, download_readme_images_from_artifacts
+from Tests.Marketplace.pack_readme_handler import download_readme_images_from_artifacts
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -345,6 +345,7 @@ def upload_index_to_storage(index_folder_path: str,
                 os.path.join(artifacts_dir, f'{index_name}.json'),
             )
         shutil.rmtree(index_folder_path)
+
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
                             artifacts_dir: str, storage_base_path: str, marketplace: str = 'xsoar'):
@@ -1441,8 +1442,6 @@ def main():
                        previous_commit_hash=previous_commit_hash,
                        landing_page_sections=statistics_handler.landing_page_sections)
 
-    download_readme_images_from_artifacts(readme_images_data, storage_bucket=storage_bucket)
-
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,
                             extract_destination_path=extract_destination_path,
@@ -1457,6 +1456,7 @@ def main():
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            packs_for_current_marketplace_dict)
 
+    readme_images_dict = download_readme_images_from_artifacts(readme_images_data, storage_bucket=storage_bucket)
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
