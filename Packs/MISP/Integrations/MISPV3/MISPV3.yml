@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISP V3
+  id: MISP V3cp
   version: -1
 configuration:
 - display: MISP server URL (e.g., https://192.168.0.1)
@@ -52,8 +52,8 @@ configuration:
   required: false
   type: 0
 description: Malware information sharing platform and threat sharing.
-display: MISP v3
-name: MISP V3
+display: MISP v3cp
+name: MISP V3cp
 script:
   commands:
   - arguments:
@@ -2504,12 +2504,30 @@ script:
       required: true
     description: Adding a new user to MISP.
     name: misp-add-user
+    outputs:
+    - contextPath: MISP.User.Email
+      description: MISP User Email.
+      type: string
   - arguments: []
     description: Display organization ids and names.
     name: misp-get-organization-info
+    outputs:
+    - contextPath: MISP.Organization.ID
+      description: MISP Ogranization ID.
+      type: string
+    - contextPath: MISP.Organization.NAME
+      description: MISP Organization Name.
+      type: string
   - arguments: []
     description: Display role names and role ids.
     name: misp-get-role-info
+    outputs:
+    - contextPath: MISP.Role.ID
+      description: MISP Role ID.
+      type: string
+    - contextPath: MISP.Role.NAME
+      description: MISP Role Name.
+      type: string
   dockerimage: demisto/pymisp2:1.0.0.63745
   runonce: false
   script: ''

@@ -553,7 +553,7 @@ def add_user_to_misp(demisto_args: dict = {}):
         raise DemistoException(f'Failed to add user.\nError message: {response}')
     else:
         human_readable = f"## MISP add user\nNew user was added to MISP.\nEmail:{new_user.email}"
-        return CommandResults(readable_output=human_readable, raw_response=response)
+        return CommandResults(readable_output=human_readable, raw_response=response, outputs=response)
 
 
 def get_organizations_info():
@@ -563,11 +563,21 @@ def get_organizations_info():
     organizations = PYMISP.organisations()
     org_info = []
     for organization in organizations:
-        org_id = organization.get('Organisation').get('id')
-        org_name = organization.get('Organisation').get('name')
+        org_id = organization.get('Organisation', {}).get('id')
+        org_name = organization.get('Organisation', {}).get('name')
         if org_id and org_name:
             org_info.append({'organisation_name': org_name, 'organisation_id': org_id})
-    return CommandResults(raw_response=org_info)
+    if org_info:
+        human_readable = f"MISP Organization ids and names\n{org_info}"
+    else:
+        human_readable = 'There are no organization ids and names'
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Organization',
+        outputs_key_field='ID',
+        outputs=org_info,
+        raw_response=org_info
+    )
 
 
 def get_role_info():
@@ -577,11 +587,21 @@ def get_role_info():
     roles = PYMISP.roles()
     role_info = []
     for role in roles:
-        role_name = role.get('Role').get('name')
-        role_id = role.get('Role').get('id')
+        role_name = role.get('Role', {}).get('name')
+        role_id = role.get('Role', {}).get('id')
         if role_name and role_id:
             role_info.append({'role_name': role_name, 'role_id': role_id})
-    return CommandResults(raw_response=role_info)
+    if role_info:
+        human_readable = f'MISP Role ids and names\n{role_info}'
+    else:
+        human_readable = 'There are no role ids and names'
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Role',
+        outputs_key_field='ID',
+        outputs=role_info,
+        raw_response=role_info
+    )
 
 
 def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
