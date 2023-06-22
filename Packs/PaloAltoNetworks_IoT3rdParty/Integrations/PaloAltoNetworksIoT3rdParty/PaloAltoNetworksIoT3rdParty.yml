@@ -11,7 +11,6 @@ configuration:
   name: Customer ID
   required: false
   type: 0
-  hidden: true
 - display: Access Key
   name: Access Key
   required: false
