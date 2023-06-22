@@ -7,10 +7,7 @@ from typing import Dict, Callable, Tuple, Any, Optional, List
 from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
-try:
-    from google.cloud.container_v1 import enums as types
-except ImportError:
-    from google.cloud.container_v1 import types
+from google.cloud.container_v1 import types
 from google.oauth2 import service_account
 # Local packages
 import demistomock as demisto
