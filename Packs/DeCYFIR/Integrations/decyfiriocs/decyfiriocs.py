@@ -41,55 +41,41 @@ THREAT_INTEL_SCORES = {
 
 class Client(BaseClient):
     def get_indicator_or_threatintel_type(self, data):
+        indicator_mapping = {
+            "[domain-name:value": FeedIndicatorType.Domain,
+            "[email:value": FeedIndicatorType.Email,
+            "[ipv4-addr:value": FeedIndicatorType.IP,
+            "[ipv6-addr:value": FeedIndicatorType.IPv6,
+            "[url:value": FeedIndicatorType.URL,
+            "[file:name": FeedIndicatorType.File,
+            "[file:hashes.md5": FeedIndicatorType.File,
+            "[file:hashes.'SHA-1'": FeedIndicatorType.File,
+            "[file:hashes.'SHA-256'": FeedIndicatorType.File,
+            "[mutex:value": FeedIndicatorType.MUTEX,
+            "[host": FeedIndicatorType.Host,
+            "[cve:value": FeedIndicatorType.CVE,
+            "vulnerability": FeedIndicatorType.CVE,
+            "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+            "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+            "malware": ThreatIntel.ObjectsNames.MALWARE,
+            "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+            "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+            "tool": ThreatIntel.ObjectsNames.TOOL
+        }
 
-        if "[domain-name:value" in data:
-            return FeedIndicatorType.Domain
-        elif "[email:value" in data:
-            return FeedIndicatorType.Email
-        elif "[ipv4-addr:value" in data:
-            return FeedIndicatorType.IP
-        elif "[ipv6-addr:value" in data:
-            return FeedIndicatorType.IPv6
-        elif "[url:value" in data:
-            return FeedIndicatorType.URL
-        elif "[file:name" in data:
-            return FeedIndicatorType.File
-        elif "[file:hashes.md5" in data:
-            return FeedIndicatorType.File
-        elif "[file:hashes.'SHA-1'" in data:
-            return FeedIndicatorType.File
-        elif "[file:hashes.'SHA-256'" in data:
-            return FeedIndicatorType.File
-        elif "[mutex:value" in data:
-            return FeedIndicatorType.MUTEX
-        elif "[host" in data:
-            return FeedIndicatorType.Host
-        elif "[cve:value" in data:
-            return FeedIndicatorType.CVE
-        elif "vulnerability" in data:
-            return FeedIndicatorType.CVE
-        elif "threat-actor" in data:
-            return ThreatIntel.ObjectsNames.THREAT_ACTOR
-        elif "campaign" in data:
-            return ThreatIntel.ObjectsNames.CAMPAIGN
-        elif "malware" in data:
-            return ThreatIntel.ObjectsNames.MALWARE
-        elif "attack-pattern" in data:
-            return ThreatIntel.ObjectsNames.ATTACK_PATTERN
-        elif "intrusion-set" in data:
-            return ThreatIntel.ObjectsNames.INTRUSION_SET
-        elif "tool" in data:
-            return ThreatIntel.ObjectsNames.TOOL
-        else:
-            return ""
+        for key, value in indicator_mapping.items():
+            if key in data:
+                return value
+
+        return None
 
     def get_decyfir_api_iocs_ti_data(self, decyfir_api_path: str) -> List[Dict]:
-
         response = self._http_request(url_suffix=decyfir_api_path, method='GET', resp_type='response')
-        if response.status_code == 200:
-            return response.json() if response.content else []
-        else:
-            return []
+
+        if response.status_code == 200 and response.content:
+            return response.json()
+
+        return []
 
     def build_relationships(self, relation_type, source_value, source_type, target_value, target_type):
 
@@ -99,36 +85,23 @@ class Client(BaseClient):
                                   ).to_indicator()
 
     def build_threat_actor_relationship_obj(self, source_data: Dict, target_data: Dict):
+        relationship_mapping = {
+            ThreatIntel.ObjectsNames.INTRUSION_SET: EntityRelationship.Relationships.ATTRIBUTED_TO,
+            ThreatIntel.ObjectsNames.ATTACK_PATTERN: EntityRelationship.Relationships.USES,
+            ThreatIntel.ObjectsNames.CAMPAIGN: EntityRelationship.Relationships.USES,
+            ThreatIntel.ObjectsNames.MALWARE: EntityRelationship.Relationships.USES,
+            FeedIndicatorType.CVE: EntityRelationship.Relationships.TARGETS,
+            ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
+        }
 
-        if ThreatIntel.ObjectsNames.INTRUSION_SET is target_data.get(LABEL_TYPE):
-            return self.build_relationships(EntityRelationship.Relationships.ATTRIBUTED_TO,
-                                            target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE),
-                                            source_data.get(LABEL_VALUE), source_data.get(LABEL_TYPE))
+        target_type = target_data.get(LABEL_TYPE)
+        target_value = target_data.get(LABEL_VALUE)
+        source_type = source_data.get(LABEL_TYPE)
+        source_value = source_data.get(LABEL_VALUE)
 
-        if ThreatIntel.ObjectsNames.ATTACK_PATTERN is target_data.get(LABEL_TYPE):
-            return self.build_relationships(EntityRelationship.Relationships.USES,
-                                            source_data.get(LABEL_VALUE), source_data.get(LABEL_TYPE),
-                                            target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
-
-        if ThreatIntel.ObjectsNames.CAMPAIGN is target_data.get(LABEL_TYPE):
-            return self.build_relationships(EntityRelationship.Relationships.USES,
-                                            target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE),
-                                            source_data.get(LABEL_VALUE), source_data.get(LABEL_TYPE))
-
-        if ThreatIntel.ObjectsNames.MALWARE is target_data.get(LABEL_TYPE):
-            return self.build_relationships(EntityRelationship.Relationships.USES,
-                                            source_data.get(LABEL_VALUE), source_data.get(LABEL_TYPE),
-                                            target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
-
-        if FeedIndicatorType.CVE is target_data.get(LABEL_TYPE):
-            return self.build_relationships(EntityRelationship.Relationships.TARGETS,
-                                            source_data.get(LABEL_VALUE), source_data.get(LABEL_TYPE),
-                                            target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
-
-        if ThreatIntel.ObjectsNames.TOOL is target_data.get(LABEL_TYPE):
-            return self.build_relationships(EntityRelationship.Relationships.USES,
-                                            source_data.get(LABEL_VALUE), source_data.get(LABEL_TYPE),
-                                            target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
+        relationship = relationship_mapping.get(target_type)
+        if relationship:
+            return self.build_relationships(relationship, source_value, source_type, target_value, target_type)
 
         return None
 
@@ -139,26 +112,36 @@ class Client(BaseClient):
                                         target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
 
     def add_tags(self, in_ti: Dict, data: Optional[List[str] | str]):
+        if not data:
+            return
 
-        if isinstance(data, List):
-            if 'Unknown' in data:
-                data.remove('Unknown')
-            elif 'unknown' in data:
-                data.remove('unknown')
-            if 'tags' in in_ti['fields']:
-                for tc in data:
-                    in_ti['fields']['tags'].append(tc)
-            else:
-                in_ti['fields']['tags'] = [tag for tag in data]
-        else:
-            if 'tags' in in_ti['fields']:
-                in_ti['fields']['tags'].append(data)
-            else:
-                in_ti['fields']['tags'] = [data]
+        if isinstance(data, str):
+            data = [data]
+
+        if 'Unknown' in data:
+            data.remove('Unknown')
+        elif 'unknown' in data:
+            data.remove('unknown')
+
+        in_ti['fields'].setdefault('tags', []).extend(data)
+
+    def add_aliases(self, in_ti: Dict, data: Optional[List[str] | str]):
+        if not data:
+            return
+
+        if isinstance(data, str):
+            data = [data]
+
+        if 'Unknown' in data:
+            data.remove('Unknown')
+        elif 'unknown' in data:
+            data.remove('unknown')
+
+        in_ti['fields'].setdefault('aliases', []).extend(data)
 
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
-
         intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
+
         ti_data_obj = {
             "value": data.get("name"),
             "name": data.get("name"),
@@ -174,76 +157,70 @@ class Client(BaseClient):
             }
         }
 
-        if "xMitreAliases" in data:
-            if data.get('xMitreAliases'):
-                ti_data_obj['fields']['aliases'] = data.get('xMitreAliases')
-
-        if "xMitrePlatforms" in data:
-            if data.get('xMitrePlatforms'):
-                ti_data_obj['fields']['operatingsystemrefs'] = data.get('xMitrePlatforms')
-
-        if "xMitreDataSources" in data:
-            if isinstance(data.get("xMitreDataSources"), List):
-                self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
-
-        if "external_references" in data:
-            if isinstance(data.get("external_references"), List):
-                for ex_ref in data.get("external_references"):
-                    ttps_id: str = ex_ref.get("external_id")
-                    if ttps_id:
-                        self.add_tags(ti_data_obj, ttps_id)
+        if data.get('xMitreAliases'):
+            self.add_aliases(ti_data_obj, data.get('xMitreAliases'))
+            # ti_data_obj['fields']['aliases'] = data.get('xMitreAliases')
 
         if data.get('aliases'):
-            if 'aliases' in ti_data_obj['fields'] ['aliases']:
-                for tc in data:
-                    ti_data_obj['fields']['aliases'].append(tc)
-            else:
-                ti_data_obj['fields']['aliases'] = [tag for tag in data.get('aliases')]
+            self.add_aliases(ti_data_obj, data.get('aliases'))
+            # self.add_tags(ti_data_obj, data.get('aliases'))
+
+        if data.get('xMitrePlatforms'):
+            ti_data_obj['fields']['operatingsystemrefs'] = data.get('xMitrePlatforms')
+
+        if isinstance(data.get("xMitreDataSources"), List):
+            self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
+
+        if isinstance(data.get("external_references"), List):
+            for ex_ref in data.get("external_references"):
+                ttps_id: str = ex_ref.get("external_id")
+                if ttps_id:
+                    self.add_tags(ti_data_obj, ttps_id)
 
         if intel_type is ThreatIntel.ObjectsNames.THREAT_ACTOR:
-            ti_data_obj['fields']['threatactortypes'] = data.get('threat_actor_types')
-            ti_data_obj['fields']['secondary_motivations'] = data.get('primary_motivation')
-            ti_data_obj['fields']['primary_motivation'] = "Cyber Crime"
-            ti_data_obj['fields']['sophistication'] = "advanced"
-            ti_data_obj['fields']['resource_level'] = "team"
+            ti_data_obj['fields'].update({
+                'primary_motivation': "Cyber Crime",
+                'secondary_motivations': data.get('primary_motivation'),
+                'sophistication': "advanced",
+                'resource_level': "team",
+                'threatactortypes': data.get('threat_actor_types')
+            })
 
         if intel_type is ThreatIntel.ObjectsNames.MALWARE:
-            ti_data_obj['fields']['ismalwarefamily'] = data.get('is_family')
-            ti_data_obj['fields']['malwaretypes'] = data.get('malware_types')
+            ti_data_obj['fields'].update({
+                'ismalwarefamily': data.get('is_family'),
+                'malwaretypes': data.get('malware_types')
+            })
 
         if tlp_color:
             ti_data_obj['fields']['trafficlightprotocol'] = tlp_color
 
-        if isinstance(data.get("kill_chain_phases"), List):
-            kill_chain_phases = []
-            for kill_chain in data.get("kill_chain_phases"):
-                kill_chain_phases.append(kill_chain.get("phase_name"))
-            ti_data_obj['fields']['killchainphases'] = kill_chain_phases
+        kill_chain_phases = [phase.get('phase_name') for phase in data.get("kill_chain_phases", [])]
+        ti_data_obj['fields']['killchainphases'] = kill_chain_phases
 
-        if data.get("labels"):
-            labels:list = data.get("labels")
-            for label in labels:
-                if isinstance(label, Dict):
-                    if label.get("origin-of-country"):
-                        ti_data_obj['fields']['geocountry'] = label.get("origin-of-country")
+        labels = data.get("labels", [])
+        for label in labels:
+            if isinstance(label, Dict):
+                if label.get("origin-of-country"):
+                    ti_data_obj['fields']['geocountry'] = label.get("origin-of-country")
 
-                    if label.get("target-countries"):
-                        self.add_tags(ti_data_obj, label.get("target-countries"))
-                        ti_data_obj['fields']['targetcountries'] = label.get("target-countries")
+                if label.get("target-countries"):
+                    self.add_tags(ti_data_obj, label.get("target-countries"))
+                    ti_data_obj['fields']['targetcountries'] = label.get("target-countries")
 
-                    if label.get("target-industries"):
-                        self.add_tags(ti_data_obj, label.get("target-industries"))
-                        ti_data_obj['fields']['targetindustries'] = label.get("target-industries")
+                if label.get("target-industries"):
+                    self.add_tags(ti_data_obj, label.get("target-industries"))
+                    ti_data_obj['fields']['targetindustries'] = label.get("target-industries")
 
-                    if label.get("geographies"):
-                        self.add_tags(ti_data_obj, label.get("geographies"))
+                if label.get("geographies"):
+                    self.add_tags(ti_data_obj, label.get("geographies"))
 
-                    if label.get("industries"):
-                        self.add_tags(ti_data_obj, label.get("industries"))
+                if label.get("industries"):
+                    self.add_tags(ti_data_obj, label.get("industries"))
 
-                    if label.get("technologies"):
-                        self.add_tags(ti_data_obj, label.get("technologies"))
-                        ti_data_obj['fields']['technologies'] = label.get("technologies")
+                if label.get("technologies"):
+                    self.add_tags(ti_data_obj, label.get("technologies"))
+                    ti_data_obj['fields']['technologies'] = label.get("technologies")
 
         if feed_tags:
             self.add_tags(ti_data_obj, feed_tags)

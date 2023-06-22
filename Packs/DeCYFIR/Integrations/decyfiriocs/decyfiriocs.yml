@@ -108,4 +108,4 @@ display: DeCYFIR Indicators & Threat Intelligence
 name: decyfiriocs
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.9.0
