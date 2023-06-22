@@ -34,23 +34,37 @@ SUCCESS_FLAG = True
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
 
-def is_pack_deprecated(pack_id: str) -> bool:
+def is_pack_deprecated(pack_id: str, check_locally: bool = True, pack_api_data: dict | None = None) -> bool:
     """
-    Check whether the pack is deprecated by checking its 'pack_metadata.json' file.
-    Tests are not being collected for deprecated packs and the pack is not installed in the build process.
+    Check whether a pack is deprecated or not.
+    Can be checked locally (pack_metadata.json), or using Marketplace API response data.
 
     Args:
         pack_id (str): ID of the pack to check.
+        check_locally (bool): Whether to check locally (pack_metadata file) or not (will use Marketplace API data instead).
+        pack_api_data (dict): Marketplace API data to use if 'check_locally' is False.
+            Needs to be the API data of a specific pack item (and not the complete response with a list of packs).
 
     Returns:
         bool: True if the pack is deprecated, False otherwise
     """
-    pack_metadata_path = Path(PACKS_FOLDER) / pack_id / PACK_METADATA_FILENAME
+    if check_locally:
+        pack_metadata_path = Path(PACKS_FOLDER) / pack_id / PACK_METADATA_FILENAME
 
-    if not pack_metadata_path.is_file():
-        return True
+        if not pack_metadata_path.is_file():
+            return True
 
-    return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
+        return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
+
+    if not check_locally:
+        if pack_api_data:
+            return pack_api_data['extras']['pack']['deprecated']
+
+        else:
+            raise ValueError("'If not checking locally, 'pack_api_data' parameter must be provided.'")
+
+
+
 
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
@@ -100,14 +114,10 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         dependants = dependency.get('dependants', {})
         for dependant in dependants.keys():
             is_required = dependants[dependant].get('level', '') == 'required'
-            if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
-                dependencies_data.append({
-                    'id': dependency.get('id'),
-                    'version': dependency.get('extras', {}).get('pack', {}).get('currentVersion'),
-                    'deprecated': dependency.get('extras', {}).get('pack', {}).get('deprecated', False),
-                })
-                next_call_dependants_ids.append(dependency.get('id'))
-                checked_packs.append(dependency.get('id'))
+            if dependant in dependants_ids and is_required and dependency['id'] not in checked_packs:
+                dependencies_data.append(dependency)
+                next_call_dependants_ids.append(dependency['id'])
+                checked_packs.append(dependency['id'])
 
     if next_call_dependants_ids:
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
@@ -363,6 +373,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
     """
     Searches for the pack of the specified file path, as well as its dependencies,
     and updates the list of packs to be installed accordingly.
+    Deprecated packs don't have their tests collected, and are not installed in the build process.
 
     Args:
         client (demisto_client): The configured client to use.
@@ -379,21 +390,16 @@ def search_pack_and_its_dependencies(client: demisto_client,
     api_data = get_pack_dependencies(client, pack_id, lock)
 
     if not api_data:
-        return  # If an error response was returned, the information has already been logged on 'get_pack_dependencies'.
+        return  # If an error response was returned, error information has already been logged on 'get_pack_dependencies'.
 
-    is_post_update = os.getenv('BUCKET_UPLOAD')  # Function is called during post-update
-    pack_data = api_data['packs'][0]
+    pack_api_data = api_data['packs'][0]
 
-    if pack_data['extras']['pack']['deprecated']:
-        logging.debug(f'Pack {pack_id} is hidden. Skipping installation and not searching for dependencies.')
+    if is_pack_deprecated(pack_id=pack_id, check_locally=False, pack_api_data=pack_api_data):
+        logging.warning(f"Pack {pack_id} is deprecated (hidden) and will not be installed.")
+        return
 
-    current_packs_to_install = [
-        get_pack_installation_request_data(pack_id=pack_id,
-                                           pack_version=pack_data['extras']['pack']['currentVersion'])
-    ]
-    dependencies_data: list[dict] = [{'id': pack_id,
-                                      'version': pack_data['extras']['pack']['currentVersion'],
-                                      'deprecated': False}]
+    current_packs_to_install = [pack_api_data]
+    dependencies_data: list[dict] = []
 
     create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
                                        dependants_ids=[pack_id],
@@ -404,21 +410,24 @@ def search_pack_and_its_dependencies(client: demisto_client,
         dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
         logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
 
+        is_post_update = os.getenv('BUCKET_UPLOAD', 'false').casefold() == 'true'
+
+        if is_post_update:
+            logging.info(f"Detected post-update run mode ('BUCKET_UPLOAD'='{is_post_update}'. "
+                         f"Pack deprecation status will be checked using local pack metadata.")
+
+        else:
+            logging.info(f"Detected pre-update run mode ('BUCKET_UPLOAD'='{is_post_update}'. "
+                         f"Pack deprecation status will be checked using Marketplace API.")
+
         for dependency in dependencies_data:
             dependency_id = dependency['id']
-            # If running on pre-update, we want to check using API data.
-            # if running on post-update, we want to check the files locally on the branch.
-            if is_post_update:
-                logging.info(f'Checking if pack {dependency_id} is deprecated (using pack metadata).')
-                is_deprecated = is_pack_deprecated(dependency_id)
-
-            else:
-                logging.info(f'Checking if pack {dependency_id} is deprecated (using Marketplace API).')
-                is_deprecated = dependency.get('deprecated')
+            # If running on pre-update, we check for deprecation using API data.
+            # if running on post-update, we check for deprecation locally on the branch.
+            is_deprecated = is_pack_deprecated(pack_id=dependency_id, check_locally=is_post_update, pack_api_data=dependency)
 
             if is_deprecated:
-                logging.critical(f"Pack '{pack_id}' depends on pack {dependency_id} "
-                                 'which is a deprecated pack.')
+                logging.critical(f"Pack '{pack_id}' depends on pack '{dependency_id}' which is a deprecated pack.")
                 global SUCCESS_FLAG
                 SUCCESS_FLAG = False
 
@@ -439,11 +448,14 @@ def search_pack_and_its_dependencies(client: demisto_client,
             pack_and_its_dependencies_as_list = list(pack_and_its_dependencies.values())
             packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
             batch_packs_install_request_body.append(pack_and_its_dependencies_as_list)
-    else:
+
+    else:  # multithreading
         for pack in current_packs_to_install:
             if pack['id'] not in packs_to_install:
                 packs_to_install.append(pack['id'])
-                installation_request_body.append(pack)
+                installation_request_body.append(
+                    get_pack_installation_request_data(pack_id=pack['id'],
+                                                       pack_version=pack['extras']['pack']['currentVersion']))
 
     lock.release()
 
