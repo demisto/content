@@ -15,7 +15,13 @@ configuration:
 - display: API Key
   name: apiKey
   type: 4
-  required: true
+  required: false
+  hidden: true
+- displaypassword: API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -1431,7 +1437,7 @@ script:
   - name: get-modified-remote-data
     arguments: []
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   subtype: python3
