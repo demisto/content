@@ -1,11 +1,19 @@
+import io
 import json
 import os
 from pathlib import Path
-from CirclCVESearch import (cve_command, valid_cve_id_format, Client, generate_indicator, parse_cpe)
-from CommonServerPython import DemistoException, argToList, EntityRelationship
+
 import pytest
+from CirclCVESearch import Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format
+
+from CommonServerPython import DemistoException, EntityRelationship, argToList
 
 BASE_URL = 'https://cve.circl.lu/api/'
+
+
+def util_load_json(path: str):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_wrong_path():
@@ -42,7 +50,7 @@ def test_cve_id_validation():
             f'validation results for {cve_id}: {valid_cve_id_format(cve_id)} != {is_valid}'
 
 
-test_data = [
+TEST_DATA = [
     ({"cve": "cve-2000-1234,CVE-2020-155555"}, ['response.json', 'empty_response.json'], 2),
     ({"cve": "cve-2000-1234"}, ['response.json'], 1),
 ]
@@ -60,12 +68,8 @@ def test_indicator_creation():
         return a Common.CVE indicator type.
     """
 
-    with open(os.path.join(Path.cwd(), 'test_data', 'response.json')) as js:
-        response = json.load(js)
-
-    with open(os.path.join(Path.cwd(), 'test_data', 'indicator.json')) as js:
-        correct_indicator = json.load(js)
-
+    response = util_load_json(os.path.join(Path.cwd(), 'test_data', 'response.json'))
+    correct_indicator = util_load_json(os.path.join(Path.cwd(), 'test_data', 'indicator.json'))
     indicator = generate_indicator(response).to_context()
     assert set(indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"]) == set(
         correct_indicator["CVE(val.ID && val.ID == obj.ID)"]["Tags"])
@@ -112,7 +116,7 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
     assert [relationship.to_context() for relationship in relationships] == expected_relationships
 
 
-@pytest.mark.parametrize("cve_id_arg,response_data,expected", test_data)
+@pytest.mark.parametrize("cve_id_arg,response_data,expected", TEST_DATA)
 def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     """
     Given:
@@ -126,9 +130,7 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     """
     cves = argToList(cve_id_arg.get('cve'))
     for test_file, cve in zip(response_data, cves):
-        test_path_data = os.path.join(Path.cwd(), 'test_data', test_file)
-        with open(test_path_data) as js:
-            response = json.load(js)
+        response = os.path.join(os.path.join(Path.cwd(), 'test_data', test_file))
         url_for_mock = os.path.join('https://cve.circl.lu/api/cve', cve)
         requests_mock.get(url_for_mock, json=response)
     client = Client(base_url=BASE_URL)

@@ -3637,7 +3637,7 @@ class Common(object):
 
         def to_context(self):
             return {
-                'cpe': self.cpe,
+                'CPE': self.cpe,
             }
 
 
