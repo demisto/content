@@ -1,6 +1,6 @@
 fromversion: 6.8.0
 id: alibaba_modeling_rule
-name: Alibaba Modeling Rule
+name: Alibaba ModelingRule
 rules: ''
 schema: ''
 tags: alibaba
