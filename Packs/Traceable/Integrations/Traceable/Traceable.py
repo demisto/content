@@ -31,20 +31,27 @@ from requests.adapters import HTTPAdapter, Retry
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-logging.basicConfig(level=logging.INFO,
-                    format="[%(filename)s:%(lineno)s - %(funcName)15s() ] %(asctime)s [%(levelname)s] [%(name)s] [%(threadName)s] %(message)s",
-                    handlers=[logging.StreamHandler()])
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(filename)s:%(lineno)s - %(funcName)15s() ] %(asctime)s [%(levelname)s] [%(name)s] [%(threadName)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+)
 
 s = requests.Session()
-retries = Retry(total=30, connect=10, read=10, backoff_factor=1,
-                status_forcelist=[429, 500, 502, 503, 504])
-s.mount('http://', HTTPAdapter(max_retries=retries))
-s.mount('https://', HTTPAdapter(max_retries=retries))
+retries = Retry(
+    total=30,
+    connect=10,
+    read=10,
+    backoff_factor=1,
+    status_forcelist=[429, 500, 502, 503, 504],
+)
+s.mount("http://", HTTPAdapter(max_retries=retries))
+s.mount("https://", HTTPAdapter(max_retries=retries))
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 get_traces_query = """
 query GetTraces($limit: Int!, $starttime: DateTime!, $endtime: DateTime!)
@@ -271,7 +278,7 @@ get_threat_events_query = """{
 }
 """
 
-get_spans_for_trace_id = '''{
+get_spans_for_trace_id = """{
   spans(
     limit: $limit
     between: {
@@ -310,16 +317,24 @@ get_spans_for_trace_id = '''{
     # total
   }
 }
-'''
+"""
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Helper:
     @staticmethod
     def apiname_to_filename_prefix(apiname: str):
-        return apiname.lower().replace(" ", "_").replace("/", "_").replace("{", "").replace("}", "").replace("-", "_").replace("%", "")
+        return (
+            apiname.lower()
+            .replace(" ", "_")
+            .replace("/", "_")
+            .replace("{", "")
+            .replace("}", "")
+            .replace("-", "_")
+            .replace("%", "")
+        )
 
     @staticmethod
     def get_specific_yaml_config(config: dict):
@@ -332,7 +347,7 @@ class Helper:
     @staticmethod
     def construct_filterby_expression(*clauses):
         non_null_list = [i for i in clauses if i is not None]
-        return "filterBy: [" + ','.join(non_null_list) + "]"
+        return "filterBy: [" + ",".join(non_null_list) + "]"
 
     @staticmethod
     def datetime_to_string(d: datetime):
@@ -367,23 +382,25 @@ class Helper:
         # "filterBy: [{keyExpression: {key: \"environment\"}, operator: IN, value: [\"" + environment + "\"], type: ATTRIBUTE}]"
         if key is None:
             logging.warning("Key was None. Couldn't create Key Expression.")
-            return ''
+            return ""
         if operator == "IN":
             _value = value
             if value is not None:
                 if type(value) == str:
-                    _value = "\"" + value + "\""
+                    _value = '"' + value + '"'
                 elif type(value) == int or type(value) == float:
                     _value = value
                 elif type(value) == list and len(value) > 0:
                     if type(value[0]) == str:
-                        _value = "\"" + "\",\"".join(value) + "\""
+                        _value = '"' + '","'.join(value) + '"'
                     elif type(value[0]) == int or type(value[0]) == float:
                         _value = ",".join(value)
             else:
                 logging.warning(
-                    "Value was found None. Returning without creating Key Expression. Key: " + key)
-                return ''
+                    "Value was found None. Returning without creating Key Expression. Key: "
+                    + key
+                )
+                return ""
             return (
                 '{keyExpression: {key: "'
                 + key
@@ -416,7 +433,7 @@ class Helper:
 
     @staticmethod
     def date_arithmetic(time: datetime, op: str, unit: str, _delta: int):
-        d: timedelta = None
+        d = None
         _unit = unit.lower()
         if _unit == "hours":
             d = timedelta(hours=_delta)
@@ -461,12 +478,23 @@ class Helper:
             for item in results["explore"]["results"]:
                 session_id = item["sessionId"]["value"]
                 tags_session_token_type = item["tags_session_token_type"]["value"]
-                tags_traceableai_auth_types = "\"" + \
-                    item["tags_traceableai_auth_types"]["value"][1:-1].replace(
-                        "\"", "") + "\""
+                tags_traceableai_auth_types = (
+                    '"'
+                    + item["tags_traceableai_auth_types"]["value"][1:-1].replace(
+                        '"', ""
+                    )
+                    + '"'
+                )
                 count_calls = item["count_calls"]["value"]
-                op = session_id + "," + tags_session_token_type + "," + \
-                    tags_traceableai_auth_types + "," + str(count_calls)
+                op = (
+                    session_id
+                    + ","
+                    + tags_session_token_type
+                    + ","
+                    + tags_traceableai_auth_types
+                    + ","
+                    + str(count_calls)
+                )
 
                 # print(op)
                 f.write(op + "\n")
@@ -484,7 +512,16 @@ class Client(BaseClient):
 
     REQUESTS_TIMEOUT = 60
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, timeout=REQUESTS_TIMEOUT):
+    def __init__(
+        self,
+        base_url,
+        verify=True,
+        proxy=False,
+        ok_codes=tuple(),
+        headers=None,
+        auth=None,
+        timeout=REQUESTS_TIMEOUT,
+    ):
         if headers is None:
             headers = {}
 
@@ -519,12 +556,20 @@ class Client(BaseClient):
 
     def graphql_query(self, query, params={}, verify=False):
         response = requests.post(
-            self.url, json={"query": query, "variables": {}}, headers=self.headers, verify=verify)
+            self.url,
+            json={"query": query, "variables": {}},
+            headers=self.headers,
+            verify=verify,
+        )
 
         if response is not None and response.status_code != 200:
             if response.text is not None:
-                msg = "Error occurred: " + response.text + \
-                    " | Status Code: " + str(response.status_code)
+                msg = (
+                    "Error occurred: "
+                    + response.text
+                    + " | Status Code: "
+                    + str(response.status_code)
+                )
                 logging.error(msg)
                 raise Exception(msg)
 
@@ -537,13 +582,15 @@ class Client(BaseClient):
             response_obj = json.loads(response.text)
             return response_obj
 
-        raise Exception("Something went wrong: "
-                        + json.dumps(response, indent=2))
+        raise Exception("Something went wrong: " + json.dumps(response, indent=2))
 
     def errors_in_response(self, response):
         if response is not None and response.status_code == 200:
             response_obj: dict = json.loads(response.text)
-            return "error" in response_obj, response_obj["error"] if "error" in response_obj else None
+            return (
+                "error" in response_obj,
+                response_obj["error"] if "error" in response_obj else None,
+            )
         return True, json.dumps(response, indent=2)
 
     def get_span_for_trace_id(self, starttime, endtime, traceid=None, spanid=None):
@@ -553,21 +600,25 @@ class Client(BaseClient):
             raise Exception(msg)
         trace_id_clause = None
         if traceid is not None:
-            trace_id_clause = Helper.construct_key_expression(
-                "traceId", traceid)
+            trace_id_clause = Helper.construct_key_expression("traceId", traceid)
         span_id_clause = None
         if spanid is not None:
             span_id_clause = Helper.construct_key_expression("id", spanid)
         filter_by_clause = Helper.construct_filterby_expression(
-            trace_id_clause, span_id_clause)
-        query = Template(get_spans_for_trace_id).substitute(starttime=Helper.datetime_to_string(starttime),
-                                                            endtime=Helper.datetime_to_string(endtime),
-                                                            limit=self.limit,
-                                                            filter_by_clause=filter_by_clause)
+            trace_id_clause, span_id_clause
+        )
+        query = Template(get_spans_for_trace_id).substitute(
+            starttime=Helper.datetime_to_string(starttime),
+            endtime=Helper.datetime_to_string(endtime),
+            limit=self.limit,
+            filter_by_clause=filter_by_clause,
+        )
         logging.debug("Query is: " + query)
         return self.graphql_query(query)
 
-    def get_threat_events(self, starttime: datetime, endtime: datetime = datetime.now()):
+    def get_threat_events(
+        self, starttime: datetime, endtime: datetime = datetime.now()
+    ):
         environment_clause = None
         securityScoreCategory_clause = None
         threatCategory_clause = None
@@ -576,36 +627,49 @@ class Client(BaseClient):
 
         if self.environments is not None:
             environment_clause = Helper.construct_key_expression(
-                "environment", self.environments)
+                "environment", self.environments
+            )
 
-        if self.securityScoreCategoryList is not None and len(self.securityScoreCategoryList) > 0:
+        if (
+            self.securityScoreCategoryList is not None
+            and len(self.securityScoreCategoryList) > 0
+        ):
             securityScoreCategory_clause = Helper.construct_key_expression(
-                "securityScoreCategory", self.securityScoreCategoryList)
+                "securityScoreCategory", self.securityScoreCategoryList
+            )
 
         if self.threatCategoryList is not None and len(self.threatCategoryList) > 0:
             threatCategory_clause = Helper.construct_key_expression(
-                "threatCategory", self.threatCategoryList)
+                "threatCategory", self.threatCategoryList
+            )
 
-        if self.ipReputationLevelList is not None and len(self.ipReputationLevelList) > 0:
+        if (
+            self.ipReputationLevelList is not None
+            and len(self.ipReputationLevelList) > 0
+        ):
             ipReputationLevel_clause = Helper.construct_key_expression(
-                "ipReputationLevel", self.ipReputationLevelList)
+                "ipReputationLevel", self.ipReputationLevelList
+            )
 
         if self.ipAbuseVelocityList is not None and len(self.ipAbuseVelocityList) > 0:
             ipAbuseVelocity_clause = Helper.construct_key_expression(
-                "ipAbuseVelocity", self.ipAbuseVelocityList)
+                "ipAbuseVelocity", self.ipAbuseVelocityList
+            )
 
-        filter_by_clause = Helper.construct_filterby_expression(environment_clause,
-                                                                securityScoreCategory_clause,
-                                                                threatCategory_clause,
-                                                                ipReputationLevel_clause,
-                                                                ipAbuseVelocity_clause)
+        filter_by_clause = Helper.construct_filterby_expression(
+            environment_clause,
+            securityScoreCategory_clause,
+            threatCategory_clause,
+            ipReputationLevel_clause,
+            ipAbuseVelocity_clause,
+        )
         logging.info("Limit set to: " + str(self.limit))
-        query = Template(get_threat_events_query).substitute(limit=self.limit,
-                                                             starttime=Helper.datetime_to_string(
-                                                                 starttime),
-                                                             endtime=Helper.datetime_to_string(
-                                                                 endtime),
-                                                             filter_by_clause=filter_by_clause)
+        query = Template(get_threat_events_query).substitute(
+            limit=self.limit,
+            starttime=Helper.datetime_to_string(starttime),
+            endtime=Helper.datetime_to_string(endtime),
+            filter_by_clause=filter_by_clause,
+        )
         logging.debug("Query is: " + query)
         result = self.graphql_query(query)
         if Helper.is_error(result, "data", "explore", "results"):
@@ -625,11 +689,15 @@ class Client(BaseClient):
             for domain_event in results:
                 if Helper.is_error(domain_event, "traceId", "value"):
                     logging.warning(
-                        "Couldn't find traceId in Domain Event: " + json.dumps(domain_event, indent=2))
+                        "Couldn't find traceId in Domain Event: "
+                        + json.dumps(domain_event, indent=2)
+                    )
                     continue
                 if Helper.is_error(domain_event, "spanId", "value"):
                     logging.warning(
-                        "Couldn't find spanId in Domain Event: " + json.dumps(domain_event, indent=2))
+                        "Couldn't find spanId in Domain Event: "
+                        + json.dumps(domain_event, indent=2)
+                    )
                     continue
 
                 trace_id = domain_event["traceId"]["value"]
@@ -637,40 +705,60 @@ class Client(BaseClient):
 
                 logging.info("Forking thread for span retrieval")
 
-                future = executor.submit(self.get_span_for_trace_id, starttime=starttime,
-                                         endtime=endtime, traceid=trace_id, spanid=span_id)
+                future = executor.submit(
+                    self.get_span_for_trace_id,
+                    starttime=starttime,
+                    endtime=endtime,
+                    traceid=trace_id,
+                    spanid=span_id,
+                )
                 future_list.append((domain_event, future))
                 logging.info("Completed thread for span retrieval")
 
         for domain_event, future in future_list:
             trace_results = future.result()
             domain_event["type"] = "Exploit"
-            if domain_event["name"] is not None and domain_event["name"]["value"] is not None:
+            if (
+                domain_event["name"] is not None
+                and domain_event["name"]["value"] is not None
+            ):
                 domain_event["displayname"] = domain_event["name"]["value"]
                 domain_event["name"] = domain_event["name"]["value"]
-            if domain_event["actorCountry"] is not None and domain_event["actorCountry"]["value"] is not None:
+            if (
+                domain_event["actorCountry"] is not None
+                and domain_event["actorCountry"]["value"] is not None
+            ):
                 domain_event["country"] = domain_event["actorCountry"]["value"]
-            if domain_event["actorIpAddress"] is not None and domain_event["actorIpAddress"]["value"] is not None:
+            if (
+                domain_event["actorIpAddress"] is not None
+                and domain_event["actorIpAddress"]["value"] is not None
+            ):
                 domain_event["sourceip"] = domain_event["actorIpAddress"]["value"]
-            if domain_event["securityScoreCategory"] is not None and domain_event["securityScoreCategory"]["value"] is not None:
-                domain_event["riskscore"] = domain_event["securityScoreCategory"]["value"]
-                domain_event["severity"] = domain_event["securityScoreCategory"]["value"]
+            if (
+                domain_event["securityScoreCategory"] is not None
+                and domain_event["securityScoreCategory"]["value"] is not None
+            ):
+                domain_event["riskscore"] = domain_event["securityScoreCategory"][
+                    "value"
+                ]
+                domain_event["severity"] = domain_event["securityScoreCategory"][
+                    "value"
+                ]
 
             if Helper.is_error(trace_results, "data", "spans", "results"):
-                msg = "Error Object: " + \
-                    json.dumps(result) + ". Couldn't get the Span."
+                msg = "Error Object: " + json.dumps(result) + ". Couldn't get the Span."
                 logging.warning(msg)
             else:
-                logging.info("Found Span with id: "
-                             + span_id + ". Adding to Event.")
+                logging.info("Found Span with id: " + span_id + ". Adding to Event.")
                 domain_event["spans"] = []
                 domain_event["spans"] = trace_results["data"]["spans"]["results"]
                 events.append(domain_event)
                 if first:
                     first = False
                     logging.info("Domain Event: " + json.dumps(domain_event, indent=3))
-                logging.debug("Complete Domain Event is: "
-                              + json.dumps(domain_event, indent=2))
+                logging.debug(
+                    "Complete Domain Event is: " + json.dumps(domain_event, indent=2)
+                )
 
         return events
 
@@ -686,14 +774,15 @@ class Client(BaseClient):
         """
 
         return {"dummy": dummy}
+
     # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -710,40 +799,45 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message: str = ""
     try:
         # TODO: ADD HERE some code to test connectivity and authentication to your service.
         # This  should validate all the inputs given in the integration configuration panel,
         # either manually or by using an API that uses them.
-        message = 'ok'
+        message = "ok"
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e) or "Authorization" in str(
+            e
+        ):  # TODO: make sure you capture authentication errors
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
     return message
 
 
 # TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
+def baseintegration_dummy_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
+    dummy = args.get("dummy", None)
     if not dummy:
-        raise ValueError('dummy not specified')
+        raise ValueError("dummy not specified")
 
     # Call the Client function and get the raw response
     result = client.baseintegration_dummy(dummy)
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
+        outputs_prefix="BaseIntegration",
+        outputs_key_field="",
         outputs=result,
     )
+
+
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 def fetch_incidents(client: Client, last_run, first_fetch_time):
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get("last_fetch")
 
     # Handle first time fetch
     if last_fetch is None:
@@ -757,29 +851,33 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     demisto.info("Retrieved " + str(len(items)) + " records.")
     logging.debug("First Incident: " + json.dumps(items[0], indent=3))
     for item in items:
-        incident_created_time = datetime.fromtimestamp(item['timestamp']['value'] / 1000)
+        incident_created_time = datetime.fromtimestamp(
+            item["timestamp"]["value"] / 1000
+        )
         incident = {
-            'name': item['name'],
-            'displayname': item['displayname'],
-            'country': item['country'],
-            'sourceip': item['sourceip'],
-            'riskscore': item['riskscore'],
+            "name": item["name"],
+            "displayname": item["displayname"],
+            "country": item["country"],
+            "sourceip": item["sourceip"],
+            "riskscore": item["riskscore"],
             # 'severity': item['severity'],
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(item)
+            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "rawJSON": json.dumps(item),
         }
 
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time.replace(tzinfo=timezone.utc) > latest_created_time.replace(tzinfo=timezone.utc):
+        if incident_created_time.replace(
+            tzinfo=timezone.utc
+        ) > latest_created_time.replace(tzinfo=timezone.utc):
             latest_created_time = incident_created_time
 
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+    next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -793,31 +891,30 @@ def main() -> None:
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = demisto.params()['url']
+    base_url = demisto.params()["url"]
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not demisto.params().get("insecure", False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = demisto.params().get("proxy", False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
         headers: Dict = {}
-        first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
+        first_fetch_time = demisto.params().get("first_fetch", "3 days").strip()
         securityScoreCategoryList = demisto.params().get("securityScoreCategory")
         threatCategoryList = demisto.params().get("threatCategory")
         ipReputationLevelList = demisto.params().get("ipReputationLevel")
         ipAbuseVelocityList = demisto.params().get("ipAbuseVelocity")
-        limit = int(demisto.params().get('limit', 100))
+        limit = int(demisto.params().get("limit", 100))
 
-        _env = demisto.params().get('limit')
+        _env = demisto.params().get("limit")
 
         environments = None
         if _env is not None and len(_env) > 0:
@@ -826,15 +923,13 @@ def main() -> None:
             for _env_item in _env_list:
                 environments.append(_env_item.strip())
 
-        apikey = demisto.params().get('credentials', {}).get('password')
+        apikey = demisto.params().get("credentials", {}).get("password")
         headers["Authorization"] = apikey
         headers["Content-Type"] = "application/json"
 
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+        )
 
         client.set_security_score_category_list(securityScoreCategoryList)
         client.set_threat_category_list(threatCategoryList)
@@ -842,31 +937,34 @@ def main() -> None:
         client.set_ip_abuse_velocity_list(ipAbuseVelocityList)
         client.set_limit(limit)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+                first_fetch_time=first_fetch_time,
+            )
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
+        elif demisto.command() == "baseintegration-dummy":
             return_results(baseintegration_dummy_command(client, demisto.args()))
         # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+        )
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
