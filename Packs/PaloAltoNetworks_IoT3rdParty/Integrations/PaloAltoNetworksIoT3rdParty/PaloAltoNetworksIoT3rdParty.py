@@ -460,7 +460,8 @@ def convert_device_list_to_ise_attributes(device_list=None):
                     if field in INT_FIELDS:
                         try:
                             int_val = int(device_map[field])
-                        except Exception:
+                        except Exception as e:
+                            demisto.debug(f'int({device_map[field]}) raised {e}')
                             continue
                         zb_attributes[CISCO_ISE_FIELD_MAP[field][0]] = int_val
                         zb_attributes[CISCO_ISE_FIELD_MAP[field][1]] = int_val
