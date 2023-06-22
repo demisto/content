@@ -128,6 +128,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     xdm.target.file.size = to_integer(fileEvidence_fileDetails_fileSize),
     xdm.target.file.sha256 = fileEvidence_fileDetails_sha256,
     xdm.target.file.signer = fileEvidence_fileDetails_signer,
+    //  "type": "string", "is_array": false
     xdm.alert.mitre_techniques = mitreTechniques,
     xdm.source.host.ipv4_addresses = check_ipv4,
     xdm.source.host.ipv6_addresses = check_ipv6,
