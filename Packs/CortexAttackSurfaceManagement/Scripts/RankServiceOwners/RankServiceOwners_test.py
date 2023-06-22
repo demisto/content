@@ -455,8 +455,8 @@ def test_main(mocker, owners, expected_out, capfd):
 
 def test_get_k():
     """
-    These cases are designed to specify the intuition we are trying to implement with the algorithm.
-    They are specific to a target value of 5; if the target_k changes, these tests should update to reflect that.
+    These cases are designed to specify the intuition we are trying to implement with the algorithm
+    and verify its default hyperparameters.
     We assert that if the algorithm matches our intuition at least 80% of the time, it's probably fine.
 
     See function documentation for explanation of hyperparameters and their defaults.

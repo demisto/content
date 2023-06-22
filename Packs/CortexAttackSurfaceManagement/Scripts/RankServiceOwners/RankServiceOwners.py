@@ -159,16 +159,26 @@ def _get_k(
     See unit tests in RankServiceOwners_test.py for a more detailed specification of the
     expected behavior.
 
-    Notable hyperparameters and where they come from:
+    Notable hyperparameters (which are tuned to target_k=5) and where they come from:
 
     :param target_k: the value of k we are roughly targeting (set by discussion with PM)
     :param k_tol: our tolerance for k, or how many additional owners above `target_k` we are willing to show
         (set by intuition/discussion with PM)
     :param a_tol: max expected absolute different between two scores in the same "tier"
-        (set by somewhat arbitrarily/by intuition; see unit tests)
+        (set by intuition; see unit tests)
     :param min_score_proportion: the targeted min proportion of the score mass
         (identified using a gridsearch over values to find best outcome on unit tests)
     """
+    if target_k < 0:
+        raise ValueError("target_k must be non-negative")
+    if k_tol < 0:
+        raise ValueError("k_tol must be non-negative")
+    if a_tol < 0:
+        raise ValueError("a_tol must be non-negative")
+    if min_score_proportion < 0 or min_score_proportion > 1:
+        raise ValueError("min_score_proportion must be a value between 0 and 1")
+
+
     # get up to target_k scores that comprise the desired score proportion
     scores_desc = list(sorted(scores, reverse=True))
     min_score_proportion = sum(scores_desc) * min_score_proportion
