@@ -55,7 +55,8 @@ alter method = coalesce(replex(_METHOD_ ,"\"",""),replex(_HTTP_METHOD_,"\"",""))
     duration_field = to_integer(replex(_DURATION_ ,"\"","")),
     entity = replex(_ENTITY_ ,"\"",""),
     file_preview_type = replex(_FILE_PREVIEW_TYPE_,"\"",""),
-    device_id = if( _DEVICE_ID_ = "\"\"",null,replex(_DEVICE_ID_ ,"\"","") )
+    device_id = if( _DEVICE_ID_ = "\"\"",null,replex(_DEVICE_ID_ ,"\"","") ),
+    user_type = replex(_USER_TYPE_ ,"\"","")
 | alter xdm.target.file.path = coalesce(uri ,entry_point ),
     xdm.target.url = coalesce(url,next_link ),
     xdm.event.duration = coalesce(timefield,duration_field,run_time,totoal_ms,exec_time,execute_ms,db_cpu_time,callout_time,flow_load_time),
@@ -68,11 +69,11 @@ alter method = coalesce(replex(_METHOD_ ,"\"",""),replex(_HTTP_METHOD_,"\"",""))
     xdm.target.application.name = coalesce(app_name,prevpage_app_name),
     xdm.target.resource.name = coalesce(page_url,target_ui_element,entity),
     xdm.target.process.executable.extension = if(_QUIDDITY_ = "A", "ACS Batch Apex",_QUIDDITY_ = "B", "Bulk API and Bulk API 2.0",_QUIDDITY_ = "BA", "Start method of a Batch Apex job",_QUIDDITY_ = "C", "Scheduled Apex",_QUIDDITY_ = "CI", "Commerce Integration",_QUIDDITY_ = "DL", " Discoverable Login page",_QUIDDITY_ = "E", "Inbound Email Service",_QUIDDITY_ = "F", "Future",_QUIDDITY_ = "FC", "Function Callback",_QUIDDITY_ = "H", "Apex REST",_QUIDDITY_ = "I", "Invocable Action",_QUIDDITY_ = "K", "Quick Action",_QUIDDITY_ = "L", "Lightning",_QUIDDITY_ = "M", "Remote Action",_QUIDDITY_ = "P", "Bulk Apex jobs running in parallel",_QUIDDITY_ = "PEPC", "Platform Event Publish Callback",_QUIDDITY_ = "PI", "Post install script for a managed package",_QUIDDITY_ = "Q", "Queueable",_QUIDDITY_ = "QTXF", "Transaction Finalizer for Queueable",_QUIDDITY_ = "R", "Synchronous uncategorized (which is where all transactions not specified elsewhere end up)",_QUIDDITY_ = "S", "QueryLocator Batch Apex (Batch Apex jobs run faster when the start method returns a QueryLocator object that doesn't include related records via a subquery. See Batch Apex Best Practices in Using Batch Apex.)",_QUIDDITY_ = "TA", "Tests Async",_QUIDDITY_ = "TD", "Tests Deployment",_QUIDDITY_ = "TS", "Tests Synchronous",_QUIDDITY_ = "V", "Visualforce",_QUIDDITY_ = "W", "SOAP Webservices",_QUIDDITY_ = "X", "Execute Anonymous",to_string(_QUIDDITY_)),
-    xdm.source.host.ipv4_addresses = arraycreate(client_ip),
+    xdm.source.ipv4 = client_ip,
     xdm.source.host.device_id = device_id,
     xdm.target.file.file_type = coalesce(file_type ,media_type, file_preview_type),
     xdm.network.session_id = coalesce(record_id,device_session_id),
-    xdm.source.user.user_type = if(_USER_TYPE_ in ("Standard","PowerPartner","PowerCustomerSuccess","Guest","CustomerSuccess","CspLitePortal","CsnOnly"),XDM_CONST.USER_TYPE_REGULAR,_USER_TYPE_ = "SelfService",XDM_CONST.USER_TYPE_SERVICE_ACCOUNT ,to_string(replex(_USER_TYPE_ ,"\"",""))),
+    xdm.source.user.user_type = if(user_type in ("Standard","PowerPartner","PowerCustomerSuccess","Guest","CustomerSuccess","CspLitePortal","CsnOnly"),XDM_CONST.USER_TYPE_REGULAR,user_type = "SelfService",XDM_CONST.USER_TYPE_SERVICE_ACCOUNT ,to_string(user_type)),
     xdm.target.location.country = arrayindex(regextract(_CLIENT_GEO_ ,"\"([^\/]+)\/"),0),
     xdm.target.file.size = size_bytes,
     xdm.source.user_agent = coalesce(user_agent,browser_name),
@@ -83,4 +84,4 @@ alter method = coalesce(replex(_METHOD_ ,"\"",""),replex(_HTTP_METHOD_,"\"",""))
     xdm.database.schema = coalesce(replex(_SEARCH_QUERY_, "\"",""),replex(_SELECT_ ,"\"","")),
     xdm.database.response_time = to_integer(replex(_DB_TOTAL_TIME_ ,"\"","")),
     xdm.source.host.hostname = replex(_DEVICE_PLATFORM_,"\"",""),
-    xdm.event.type = replex(_EVENT_TYPE_,"\"","") ;
+    xdm.event.type = replex(_EVENT_TYPE_,"\"","");
