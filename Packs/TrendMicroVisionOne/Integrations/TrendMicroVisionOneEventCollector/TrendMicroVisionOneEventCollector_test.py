@@ -607,6 +607,82 @@ class TestFetchEvents:
         assert updated_last_run == {'search_detection_logs_time': '2023-01-01T14:59:59Z', 'found_search_detection_logs': [200]}
         assert search_detection_logs[-1]['_time'] == '2023-01-01T14:59:59Z'
 
+    def test_get_audit_logs_no_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - no last run
+         - limit = 500
+         - 200 audit logs
+
+        When:
+         - running get_audit_logs function
+
+        Then:
+         - make sure only 500 events are returned
+         - make sure latest audit log is saved in the audit_logs_time minus 1 second.
+         - make sure in the cache we will have event with hash of the 500 id as its the event that happened in the last second.
+        """
+        from TrendMicroVisionOneEventCollector import get_audit_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_audit_logs=1000, last_audit_log_time='2023-01-01T14:00:00Z')
+        )
+
+        audit_logs, updated_last_run = get_audit_logs(
+            client=client,
+            first_fetch='1 month ago',
+            last_run={},
+            limit=500
+        )
+
+        assert len(audit_logs) == 500
+        assert updated_last_run == {
+            'audit_logs_time': '2023-01-01T14:08:19Z',
+            'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
+        }
+        assert audit_logs[-1]['_time'] == '2023-01-01T14:08:20Z'
+
+    def test_get_audit_logs_with_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - last_run={'audit_logs_time': '2023-01-01T14:00:00Z'}
+         - limit = 500
+         - 200 audit logs
+
+        When:
+         - running get_audit_logs function
+
+        Then:
+         - make sure only 200 events are returned
+         - make sure latest audit log is saved in the audit_logs_time minus 1 second.
+         - make sure in the cache we will have event with hash of the 200 id as its the event that happened in the last second.
+        """
+        from TrendMicroVisionOneEventCollector import get_audit_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_audit_logs=200, last_audit_log_time='2023-01-01T14:00:00Z')
+        )
+
+        audit_logs, updated_last_run = get_audit_logs(
+            client=client,
+            first_fetch='1 month ago',
+            last_run={'audit_logs_time': '2023-01-01T14:00:00Z'},
+            limit=500
+        )
+
+        assert len(audit_logs) == 200
+        assert updated_last_run == {
+            'audit_logs_time': '2023-01-01T14:03:19Z',
+            'found_audit_logs': ['4410bac4975e15bc234ee627129e46665744349bb59830968a2e4769fe0afc0e']
+        }
+        assert audit_logs[-1]['_time'] == '2023-01-01T14:03:20Z'
+
 
 @pytest.mark.parametrize(
     "last_run_time, first_fetch, log_type_time_field_name, start_time, expected_start_and_end_date_times",
