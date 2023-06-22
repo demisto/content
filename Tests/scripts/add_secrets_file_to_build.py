@@ -3,10 +3,25 @@ import json5
 import pathlib
 import yaml
 
+from enum import Enum
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
 from pathlib import Path
+
+
+class FilterLabels(Enum):
+    DEV = 'dev'
+    IGNORE_SECRET = 'ignore'
+    SECRET_MERGE_TIME = 'merge'
+    PACK_ID = 'pack_id'
+
+
+class FilterOperators(Enum):
+    NONE = 'is None'
+    NOT_NONE = 'is not None'
+    EQUALS = '=='
+    NOT_EQUALS = '!='
 
 
 def get_git_diff(branch_name: str, repo) -> list[str]:
@@ -60,9 +75,14 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     :return: the list of secrets from GSM to use in the build
     """
     secret_conf = GoogleSecreteManagerModule(options.service_account)
-    labels_filter_branch = {'pack_id': '!=None', 'ignore': '==None', 'merged': '==None', 'dev': '==None'}
-    labels_filter_master = {'pack_id': '!=None', 'ignore': '==None', 'merged': '==None', 'dev': '!=None',
-                            'branch_name': f'=="{branch_name}"'}
+    labels_filter_branch = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
+                            FilterLabels.SECRET_MERGE_TIME: FilterOperators.NONE,
+                            FilterLabels.IS_DEV_BRANCH: FilterOperators.NONE}
+
+    labels_filter_master = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
+                            FilterLabels.SECRET_MERGE_TIME: FilterOperators.NONE,
+                            FilterLabels.IS_DEV_BRANCH: FilterOperators.NONE,
+                            FilterLabels.BRANCH_NAME: f'{FilterOperators.EQUALS}"{branch_name}"'}
     master_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_branch, name_filter=yml_pack_ids,
                                               with_secrets=True)
     branch_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_master, with_secrets=True)
