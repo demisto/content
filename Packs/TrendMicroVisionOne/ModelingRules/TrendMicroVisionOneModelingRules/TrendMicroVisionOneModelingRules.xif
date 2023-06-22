@@ -30,7 +30,7 @@ filter
     indicatorsValuesCommandLine = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "objectCmd", json_extract_scalar("@element", "$.value"), null)), ", "),
     indicatorsValuesExecutablePath = arraystring(arraymap(Indicators, if(json_extract_scalar("@element", "$.field") = "processFilePath", json_extract_scalar("@element", "$.value"), null)), ", "),
     originalThreatName = arraystring(arraymap(Rules, json_extract_scalar(arrayindex(json_extract_array("@element", "$.matchedFilters"), 0), "$.name")), ", "),
-    mitreTechniques = arraymap(Rules, arraystring(json_extract_array(arrayindex(json_extract_array("@element", "$.matchedFilters"), 0), "$.mitreTechniqueIds"), ", "))
+    mitreTechniques = arraymap(Rules, replex(arraystring(json_extract_array(arrayindex(json_extract_array("@element", "$.matchedFilters"), 0), "$.mitreTechniqueIds"), ", "), "\"", ""))
 
     | alter
     xdm.source.cloud.project = id,
@@ -66,11 +66,11 @@ filter
 filter
     event_type in ("search_detection")
 | alter
-    xdm.event.outcome_reason = arraystring(json_extract_array(act, "$."), ", "),
+    xdm.event.outcome_reason = replex(arraystring(json_extract_array(act, "$."), ", "), "\"", ""),
     xdm.alert.original_threat_name = behaviorCat,
     xdm.observer.unique_identifier = deviceGUID,
     xdm.target.port = dpt,
-    xdm.target.ipv4 = arraystring(json_extract_array(dst, "$."), ", "),
+    xdm.target.ipv4 = replex(arraystring(json_extract_array(dst, "$."), ", "), "\"", ""),
     xdm.source.host.device_id = endpointGUID,
     xdm.event.id = eventId,
     xdm.event.description = eventName,
@@ -80,7 +80,7 @@ filter
     xdm.source.process.executable.md5 = coalesce(objectFileHashMd5, objectFileHashSha256),
     xdm.source.process.executable.sha256 = coalesce(objectFileHashSha256, objectFileHashMd5),
     xdm.target.module.path = objectFilePath,
-    xdm.target.module.signer = arraystring(json_extract_array(objectSigner, "$."), ", "),
+    xdm.target.module.signer = replex(arraystring(json_extract_array(objectSigner, "$."), ", "), "\"", ""),
     xdm.observer.content_version = pname,
     xdm.intermediate.process.executable.path = processFilePath,
     xdm.source.process.pid = to_number(processPid),
@@ -90,27 +90,27 @@ filter
     xdm.network.application_protocol = app,
     xdm.event.type = blocking,
     xdm.alert.severity = cat,
-    xdm.source.agent.version = arraystring(json_extract_array(component,  "$."), ", "),
+    xdm.source.agent.version = replex(arraystring(json_extract_array(component,  "$."), ", "), "\"", ""),
     xdm.source.process.name = coalesce(deviceProcessName, processName),
     xdm.source.host.mac_addresses = coalesce(split(deviceMacAddress), split(endpointMacAddress), split(interestedMacAddress)),
     xdm.target.host.hostname = dhost,
     xdm.source.user.domain = domainName,
     xdm.source.host.hostname = coalesce(endpointHostName, hostName),
-    xdm.source.host.ipv4_addresses = json_extract_array(endpointIp, "$."),
-    xdm.source.process.executable.filename = arraystring(json_extract_array(fileName, "$."), ", "),
+    xdm.source.host.ipv4_addresses = json_extract_array(replex(endpointIp, "\"", ""), "$."),
+    xdm.source.process.executable.filename = replex(arraystring(json_extract_array(fileName, "$."), ", "), "\"", ""),
     xdm.source.process.executable.path = filePath,
     xdm.target.file.size = fileSize,
     xdm.network.http.referrer = httpReferer,
     xdm.alert.subcategory = malType,
-    xdm.alert.mitre_tactics = json_extract_array(mitreMapping, "$."),
-    xdm.source.process.command_line = coalesce(arraystring(json_extract_array(objectCmd, "$."), ", "), processCmd),
+    xdm.alert.mitre_tactics = json_extract_array(replex(mitreMapping, "\"", ""), "$."),
+    xdm.source.process.command_line = coalesce(replex(arraystring(json_extract_array(objectCmd, "$."), ", "), "\"", ""), processCmd),
     xdm.target.module.filename = coalesce(objectFileName, objectName),
     xdm.source.process.executable.signer = processSigner,
     xdm.network.http.url = request,
     xdm.source.user_agent = requestClientApplication,
     xdm.alert.name = threatName,
-    xdm.source.ipv6 = arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" contains ":", "@element", null)), ", "),
-    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" not contains ":", "@element", null)), ", "), arraystring(arraymap(json_extract_array(src, "$."), if("@element" contains ":", "@element", null)), ",")),
+    xdm.source.ipv6 = replex(arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" contains ":", "@element", null)), ", "), "\"", ""),
+    xdm.source.ipv4 = coalesce(replex(arraystring(arraymap(json_extract_array(mDevice, "$."), if("@element" not contains ":", "@element", null)), ", "), "\"", ""), replex(arraystring(arraymap(json_extract_array(src, "$."), if("@element" contains ":", "@element", null)), ","), "\"", "")),
     xdm.event.original_event_type = event_type;
 
 filter
@@ -143,13 +143,13 @@ filter
     xdm.alert.severity = arraystring(arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.riskLevel")), ", "),
     xdm.alert.mitre_tactics = arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTacticIds")),
     xdm.alert.mitre_techniques = arraymap(json_extract_array(filters, "$."), json_extract_scalar("@element", "$.mitreTechniqueIds")),
-    xdm.source.ipv6 = arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ", "),
-    xdm.source.ipv4 = coalesce(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ", "), arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ", "), json_extract_scalar(detail, "$.src")),
-    xdm.source.host.mac_addresses = json_extract_array(detail, "$.endpointMacAddress"),
-    xdm.source.process.executable.signer = arraystring(json_extract_array(detail, "$.processSigner"), ","),
+    xdm.source.ipv6 = replex(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" contains ":", "@element", null)), ", "), "\"", ""),
+    xdm.source.ipv4 = coalesce(replex(arraystring(arraymap(json_extract_array(endpoint, "$.ips"), if("@element" not contains ":", "@element", null)), ", "), "\"", ""), replex(arraystring(arraymap(json_extract_array(endpoint, "$.endpointIp"), if("@element" not contains ":", "@element", null)), ", "), "\"", ""), json_extract_scalar(detail, "$.src")),
+    xdm.source.host.mac_addresses = json_extract_array(detail, replex("$.endpointMacAddress", "\"", "")),
+    xdm.source.process.executable.signer = replex(arraystring(json_extract_array(detail, "$.processSigner"), ","), "\"", ""),
     xdm.source.process.executable.signature_status = arraystring(arraymap(json_extract_array(detail, "$.processSignerValid"), if("@element" = "true", SIGNED_VERIFIED, "@element" = "false", SIGNED_INVALID, "@element" != "false" and "@element" != "true", STATUS_UNKNOWN)), ", "),
-    xdm.target.module.signer = arraystring(json_extract_array(detail, "$.objectSigner"), ", "),
-    xdm.target.module.signature_status = arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ", "),
+    xdm.target.module.signer = replex(arraystring(json_extract_array(detail, "$.objectSigner"), ", "), "\"", ""),
+    xdm.target.module.signature_status = replex(arraystring(arraymap(json_extract_array(detail, "$.objectSignerValid"), if("@element" = "true", "@element", "@element" = "false", "@element")), ", "), "\"", ""),
     xdm.event.original_event_type = event_type;
 
 filter
