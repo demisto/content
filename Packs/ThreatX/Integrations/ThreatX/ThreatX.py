@@ -576,7 +576,7 @@ def main():
     BASE_URL = url + '/tx_api/v1'
 
     CUSTOMER_NAME = params.get('customer_name', None)
-    API_KEY = params.get('api_key', None)
+    API_KEY = params.get('api_key_creds', {}).get('password') or params.get('api_key', None)
     DBOT_THRESHOLD = int(params.get('dbot_threshold', 70))
     USE_SSL = not params.get('insecure')
 
