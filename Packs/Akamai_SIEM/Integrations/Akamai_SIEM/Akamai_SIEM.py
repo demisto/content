@@ -354,9 +354,9 @@ def main():
         verify=not params.get('insecure', False),
         proxy=params.get('proxy'),
         auth=EdgeGridAuth(
-            client_token=params.get('clientToken'),
-            access_token=params.get('accessToken'),
-            client_secret=params.get('clientSecret')
+            client_token=params.get('clienttoken_creds', {}).get('password') or client_token=params.get('clientToken'),
+            access_token=params.get('accesstoken_creds', {}).get('password') or access_token=params.get('accessToken'),
+            client_secret=params.get('clientsecret_creds', {}).get('password') or client_secret=params.get('clientSecret')
         )
     )
     commands = {
