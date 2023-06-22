@@ -151,5 +151,5 @@ curl --request POST \
   --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
-  --form "variables[DEMISTO_SDK_NIGHTLY]=${DEMISTO_SDK_NIGHTLY}" \
+  --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
   "$BUILD_TRIGGER_URL"
