@@ -18,7 +18,7 @@
                 "Assigned User": {
                     "simple": "assigned_to_uid"
                 },
-                "Behaviour Pattern Disposition Details": {
+                "CrowdStrike Falcon Behaviour Pattern Disposition Details": {
                     "complex": {
                         "accessor": "pattern_disposition_details",
                         "filters": [],

@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "behaviourpatterndispositiondetails",
+    "cliName": "crowdstrikefalconbehaviourpatterndispositiondetails",
     "closeForm": false,
     "columns": [
         {
@@ -303,7 +303,7 @@
     "id": "incident_behaviourpatterndispositiondetails",
     "isReadOnly": false,
     "locked": false,
-    "name": "Behaviour Pattern Disposition Details",
+    "name": "CrowdStrike Falcon Behaviour Pattern Disposition Details",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
