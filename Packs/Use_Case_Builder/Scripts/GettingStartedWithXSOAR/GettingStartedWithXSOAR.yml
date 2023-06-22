@@ -1,21 +1,21 @@
-args:
-- description: Enter a command separated list of indicators to delete and exclude
-  name: indicatorValues
-- description: Reason for exclusion
-  name: reason
 commonfields:
-  id: DeleteAndExcludeIndicators
+  id: GettingStartedWithXSOAR
   version: -1
-dockerimage: demisto/python3:3.10.10.49934
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+comment: ''
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
-name: DeleteAndExcludeIndicators
+name: GettingStartedWithXSOAR
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags:
+- Getting Started With XSOAR
 type: python
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- Run all tests
