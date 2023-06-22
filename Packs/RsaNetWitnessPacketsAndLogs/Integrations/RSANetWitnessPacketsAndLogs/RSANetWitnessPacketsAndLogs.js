@@ -506,7 +506,7 @@ function parseDownloadResponse(resp) {
             if(args && args.fileExt){
                 extension = args.fileExt;
             }
-            if (args.noFile === "true" && args.render === "application/json"){
+            if (args.renderToContext === "true" && args.render === "application/json"){
                 var jsonstr = JSON.parse(resp.Body);
                 return {
                     Type: entryTypes.note,
