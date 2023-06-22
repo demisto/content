@@ -381,12 +381,15 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| parent_id | The investigation ID to fetch comments for | True |
+| id | The investigation ID to fetch comments for | True |
+| page | Search page number [Default: 0] | False |
+| page_size | Number of results per page [Default: 10] | False |
+| order_direction | The order direction [Default: DESCENDING] | False |
 
 #### Command Example
 
 ```
-!taegis-fetch-comments parent_id=c2e09554-833e-41a1-bc9d-8160aec0d70d
+!taegis-fetch-comments id=c2e09554-833e-41a1-bc9d-8160aec0d70d
 ```
 
 #### Context Example

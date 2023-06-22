@@ -10,7 +10,7 @@
 !taegis-fetch-assets page=1 page_size=5
 !taegis-fetch-assets hostname=MyHostname01
 !taegis-fetch-comment id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
-!taegis-fetch-comments parent_id=c2e09554-833e-41a1-bc9d-8160aec0d70d
+!taegis-fetch-comments id=c2e09554-833e-41a1-bc9d-8160aec0d70d
 !taegis-fetch-endpoint id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
 !taegis-fetch-investigation
 !taegis-fetch-investigation id="936c1cc1-db8f-430c-837c-1c914fcca35a"

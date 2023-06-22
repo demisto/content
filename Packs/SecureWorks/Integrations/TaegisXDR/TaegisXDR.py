@@ -690,47 +690,48 @@ def fetch_comment_command(client: Client, env: str, args=None):
 
 
 def fetch_comments_command(client: Client, env: str, args=None):
-    if not args.get("parent_id"):
-        raise ValueError("Cannot fetch comments, missing parent_id")
+    if not args.get("id"):
+        raise ValueError("Cannot fetch comments, missing id")
 
-    parent_type = args.get("parent_type", "investigation")
-    if parent_type not in COMMENT_TYPES:
-        raise ValueError((
-            f"The provided comment parent type, {parent_type}, is not valid. "
-            f"Supported Parent Types Values: {parent_type}"
-        ))
+    fields: str = args.get("fields") or """
+        author {
+            id
+            family_name
+            given_name
+            email_normalized
+        }
+        authorId
+        id
+        comment
+        createdAt
+        updatedAt
+        """
 
     query = """
-    query commentsByParent ($parent_type: String!, $parent_id: String!) {
-        commentsByParent(parent_type: $parent_type,parent_id:$parent_id) {
-            author_user {
-                id
-                family_name
-                given_name
-                email_normalized
+    query commentsV2 ($arguments: CommentsV2Arguments!) {
+        commentsV2(arguments: $arguments) {
+            comments {
+                %s
             }
-            id
-            comment
-            modified_at
-            deleted_at
-            created_at
-            parent_id
-            parent_type
         }
     }
-    """
+    """ % (fields)
 
     variables = {
-        "parent_id": args.get("parent_id"),
-        "parent_type": parent_type
+        "arguments": {
+            "investigationId": args.get("id"),
+            "page": arg_to_number(args.get("page")) or 0,
+            "perPage": arg_to_number(args.get("page_size")) or 10,
+            "orderBy": args.get("order_direction", "DESCENDING")
+        }
     }
 
     result = client.graphql_run(query=query, variables=variables)
 
     try:
-        comments = result["data"]["commentsByParent"]
+        comments = result["data"]["commentsV2"]["comments"]
     except (KeyError, TypeError):
-        raise ValueError(f"Failed to fetch comments: {result['errors'][0]['message']}")
+        comments = []
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.Comments",
