@@ -14,8 +14,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DATE_FORMAT_SYMANTEC = '%Y-%m-%dT%H:%M:%S'
 VENDOR = 'symantec'
 PRODUCT = 'cloud_soc'
-HEADERS = {"Investigate_logs": ["_id", "user_name", "_domain", "severity", "service", "created_timestamp", "message"],
-           "Incident_logs": ["_id", "message", "incident_start_time", "service", "hosts", "locations", "severity"]}
 LOG_TYPES = {"Investigate_logs": {"app": "Investigate", "subtype": "all"},
              "Incident_logs": {"app": "Detect", "subtype": "incidents"}}
 MAX_LIMIT_PER_CALL = 1000
@@ -51,12 +49,12 @@ class Client(BaseClient):
         max_fetch = min(max_fetch, MAX_LIMIT_PER_CALL) if max_fetch else MAX_LIMIT_PER_CALL
         if next_url:
             demisto.debug(
-                f'SymantecEventCollector: Get events request full_url: {next_url} and the command is {demisto.command()}')
+                f'SymantecEventCollector: Get events request full_url: {next_url}')
             response = self._http_request(method='GET', full_url=next_url, headers=self._headers)
         else:
             params = assign_params(app=app, subtype=subtype, limit=max_fetch,
                                    created_timestamp=created_timestamp)
-            demisto.debug(f'SymantecEventCollector: Get events request params: {params} and the command is {demisto.command()}')
+            demisto.debug(f'SymantecEventCollector: Get events request params: {params}')
             response = self._http_request(method='GET', headers=self._headers, params=params)
         return response.get("logs", []), response.get("next_url")
 
@@ -120,7 +118,7 @@ def get_all_events(client: Client, first_fetch_time: str,
     """
     # Initialize an empty lists of events to return
     # Each event is a dict with a string as a key
-    demisto.debug(f'last_run in the get_all_events is {last_run} and the command is {demisto.command()}')
+    demisto.debug(f'last_run in the get_all_events is {last_run}')
     investigate_logs_events: List[Dict[str, Any]] = []
     incident_logs_events: List[Dict[str, Any]] = []
     # Initialize an empty next_run object to return for each log type
@@ -136,16 +134,14 @@ def get_all_events(client: Client, first_fetch_time: str,
             first_fetch_time=first_fetch_time,
             first_fetch_time_investigate=first_fetch_time_investigate,
         )
-        demisto.debug(f'SymantecEventCollector: Got {len(log_events)} events from log type: {log_type}'
-                      f' and the command is {demisto.command()}')
+        demisto.debug(f'SymantecEventCollector: Got {len(log_events)} events from log type: {log_type}')
         if log_type == "Investigate_logs":
             investigate_logs_events.extend(log_events)
         else:
             incident_logs_events.extend(log_events)
         new_last_run[log_type] = next_run
-        demisto.debug(f'SymantecEventCollector: Setting new last run - {next_run} for {log_type}'
-                      f' and the command is {demisto.command()}')
-    demisto.debug(f'last_run in the get_all_events is {last_run} and the command is {demisto.command()}')
+        demisto.debug(f'SymantecEventCollector: Setting new last run - {next_run} for {log_type}')
+    demisto.debug(f'last_run in the get_all_events is {last_run}')
     return investigate_logs_events, incident_logs_events, new_last_run
 
 
@@ -170,7 +166,7 @@ def get_events_command(client: Client, first_fetch_time: str,
     investigate_logs_events: list = []
     incident_logs_events: list = []
     hr = ""
-    demisto.debug(f'SymantecEventCollector: last_run is {last_run} and the command is {demisto.command()}')
+    demisto.debug(f'SymantecEventCollector: last_run is {last_run}')
     investigate_logs_events, incident_logs_events, _ = get_all_events(client, first_fetch_time,
                                                                       first_fetch_time_investigate,
                                                                       last_run, limit)
@@ -180,7 +176,7 @@ def get_events_command(client: Client, first_fetch_time: str,
             name="Investigate Logs Events",
             t=investigate_logs_events,
             headerTransform=string_to_table_header,
-            headers=HEADERS.get("Investigate_logs"),
+            headers=["_id", "user_name", "_domain", "severity", "service", "created_timestamp", "message"],
         )
     else:
         hr += "No events found for investigate logs.\n"
@@ -190,7 +186,7 @@ def get_events_command(client: Client, first_fetch_time: str,
             name="Incident Logs Events",
             t=incident_logs_events,
             headerTransform=string_to_table_header,
-            headers=HEADERS.get("Incident_logs"),
+            headers=["_id", "message", "incident_start_time", "service", "hosts", "locations", "severity"],
         )
     else:
         hr += "No events found for incident logs.\n"
@@ -213,6 +209,18 @@ def add_fields_to_event(event: dict, log_type: str) -> None:
         elif log_type == "Investigate_logs":
             event['_time'] = event.get('created_timestamp')
             event['type'] = "Investigate"
+
+
+def get_date_timestamp(str_date: str) -> datetime:
+    """
+    Dedup mechanism for the fetch to check both log_id and created_timestamp/incident_start_time
+    (since timestamp can be duplicate)
+    Args:
+        str_date (dict): A string that represents a date.
+    Returns:
+        - (datetime) A date.
+    """
+    return datetime.strptime(str_date, DATE_FORMAT_SYMANTEC)
 
 
 def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
@@ -238,14 +246,14 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
     new_events_ids = []
     new_last_run: dict = {}
     new_last_run_time: str = last_run_time
-    new_last_run_time_date = datetime.strptime(new_last_run_time, DATE_FORMAT_SYMANTEC)
+    new_last_run_time_date = get_date_timestamp(new_last_run_time)
     # The logs sort by asc by default
     if events:
         for event in events:
             if len(new_events) + number_of_events < limit:
                 event_timestamp = (event.get("incident_start_time")
                                    if log_type == "Incident_logs"
-                                   else event.get("created_timestamp"))
+                                   else event.get("created_timestamp"))  # log type is Investigate_logs
                 event_id = event.get('_id')
                 # The event we are looking at has the same timestamp as previously fetched events
                 if event_timestamp == last_run_time:
@@ -258,18 +266,18 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
                     new_events_ids.append(event_id)
                     # If the event has a timestamp newer than the saved one, we will update the last run to the
                     # current event time
-                    event_timestamp_date = datetime.strptime(event_timestamp, DATE_FORMAT_SYMANTEC)
+                    event_timestamp_date = get_date_timestamp(event_timestamp)
                     if new_last_run_time_date < event_timestamp_date:
                         new_last_run_time = event_timestamp
                     else:
                         demisto.debug(f'SymantecEventCollector: new_last_run_time is {new_last_run_time}'
                                       f'event_timestamp is {event_timestamp} and command is {demisto.command()}')
-                new_last_run_time_date = datetime.strptime(new_last_run_time, DATE_FORMAT_SYMANTEC)
+                new_last_run_time_date = get_date_timestamp(new_last_run_time)
                 add_fields_to_event(event, log_type)
 
         # If we have received events with a newer time (new_event_ids list) we save them,
         # otherwise we save the list that include the old ids together with the new event ids (last_run_ids).
-        last_run_time_date = datetime.strptime(last_run_time, DATE_FORMAT_SYMANTEC)
+        last_run_time_date = get_date_timestamp(last_run_time)
         if (last_run_time_date < new_last_run_time_date) and new_events_ids:
             new_last_run[f'{log_type}-ids'] = new_events_ids
         else:
@@ -280,8 +288,7 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
     # If we dont have any events last_run is still the last run time
     elif last_run_time:
         new_last_run["last_run"] = last_run_time
-    demisto.debug(f'SymantecEventCollector: Setting new last run - {new_last_run} for {log_type}'
-                  f' and the command is {demisto.command()}')
+    demisto.debug(f'SymantecEventCollector: Setting new last run - {new_last_run} for {log_type}')
     return new_events, new_last_run
 
 
@@ -299,7 +306,7 @@ def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, l
     Returns:
         Client: Client class to interact with Symantec Cloud SOC service API.
     """
-    demisto.debug(f'SymantecEventCollector: last_run is {last_run} and the command is {demisto.command()}')
+    demisto.debug(f'SymantecEventCollector: last_run is {last_run}')
     next_url: Optional[str] = ''
     all_events_list: list = []
     subtype = dict_safe_get(LOG_TYPES, [log_type, "subtype"])
@@ -308,8 +315,7 @@ def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, l
     last_run_for_log_type = dict_safe_get(last_run, [log_type])
     if not last_fetch:
         last_fetch = first_fetch_time_investigate if log_type == "Investigate_logs" else first_fetch_time
-        demisto.debug(f"SymantecEventCollector: last_fetch {last_fetch}; for log type: {log_type}"
-                      f" and the command is {demisto.command()}")
+        demisto.debug(f"SymantecEventCollector: last_fetch {last_fetch}; for log type: {log_type}")
     while next_url is not None and len(all_events_list) < max_fetch:
         number_of_events = len(all_events_list)
         log_events, next_url = client.get_events_request(
@@ -321,7 +327,7 @@ def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, l
         list_of_events, last_run_for_log_type = dedup_by_id(last_run_for_log_type, log_events, log_type,
                                                             max_fetch, number_of_events, last_fetch)
         all_events_list.extend(list_of_events)
-    demisto.debug(f'SymantecEventCollector: last_run is {last_run} and the command is {demisto.command()}')
+    demisto.debug(f'SymantecEventCollector: last_run is {last_run}')
     return all_events_list, last_run_for_log_type
 
 
@@ -353,7 +359,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, dic
     investigate_logs_events, incident_logs_events, new_last_run = get_all_events(client, first_fetch_time,
                                                                                  first_fetch_time_investigate,
                                                                                  last_run, max_fetch)
-    demisto.debug(f"SymantecEventCollector: Returning {len(events)} events in total and the command is {demisto.command()}")
+    demisto.debug(f"SymantecEventCollector: Returning {len(events)} events in total")
     events.extend(investigate_logs_events)
     events.extend(incident_logs_events)
     return new_last_run, events
@@ -399,12 +405,12 @@ def get_first_fetch_time(params: dict) -> tuple[str, str]:
                                                  arg_name='First fetch time',
                                                  required=True)  # type: ignore[assignment]
     first_fetch_str = first_fetch_time.strftime(DATE_FORMAT_SYMANTEC)
-    days_ago_limitation: Optional[datetime] = dateparser.parse('180 days', settings={'TIMEZONE': 'UTC'})
-    demisto.debug(f'SymantecEventCollector: first fetch time: {first_fetch_time}'
-                  f' and the command is {demisto.command()}')
+    # API limitation for created_timestamp is 6 months.
+    days_ago_limitation: datetime = dateparser.parse('180 days', settings={'TIMEZONE': 'UTC'})  # type: ignore[assignment]
+    demisto.debug(f'SymantecEventCollector: first fetch time: {first_fetch_time}')
     # For investigate app type the created_timestamp must be less than 6 months.
     first_fetch_time_investigate: datetime = first_fetch_time
-    if days_ago_limitation and first_fetch_time_investigate <= days_ago_limitation:
+    if first_fetch_time_investigate <= days_ago_limitation:
         first_fetch_time_investigate = days_ago_limitation
     first_fetch_time_investigate_str = first_fetch_time_investigate.strftime(DATE_FORMAT_SYMANTEC)
     return first_fetch_str, first_fetch_time_investigate_str
@@ -417,7 +423,6 @@ def main() -> None:
     """
     main function, parses params and runs command functions
     """
-    demisto.debug(f'SymantecEventCollector: last run is {demisto.getLastRun()} and command is {demisto.command()}')
     params: dict = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -431,12 +436,12 @@ def main() -> None:
     base_url = urljoin(params.get('url'), '/api/admin/v1/logs/get/')
     demisto.debug(
         f'SymantecEventCollector: First fetch timestamp: {first_fetch_time} '
-        f'First fetch timestamp investigate: {first_fetch_time_investigate} and the command is {demisto.command()}')
+        f'First fetch timestamp investigate: {first_fetch_time_investigate}')
     demisto.info(f'SymantecEventCollector: Command being called is {command}')
     try:
         client = create_client_with_authorization(base_url, verify_certificate, proxy, key_id, key_secret)
         last_run = demisto.getLastRun()
-        demisto.debug(f'SymantecEventCollector: last run is: {demisto.getLastRun()} and the command is {demisto.command()}')
+        demisto.debug(f'SymantecEventCollector: last run is: {demisto.getLastRun()}')
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
@@ -462,7 +467,7 @@ def main() -> None:
                 demisto.debug(f'SymantecEventCollector: last_run in the fetch_events_command is {last_run}')
                 next_run, events = fetch_events_command(
                     client=client,
-                    max_fetch=arg_to_number(max_fetch) or 1000,
+                    max_fetch=arg_to_number(max_fetch) or MAX_LIMIT_PER_CALL,
                     first_fetch_time=first_fetch_time,
                     first_fetch_time_investigate=first_fetch_time_investigate,
                     last_run=last_run,
@@ -475,7 +480,7 @@ def main() -> None:
                 )
 
                 # saves next_run for the time fetch-events is invoked
-                demisto.debug(f"SymantecEventCollector: setting next_run to {next_run} and the command is {demisto.command()}")
+                demisto.debug(f"SymantecEventCollector: setting next_run to {next_run}")
                 demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
