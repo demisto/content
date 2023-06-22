@@ -45,6 +45,7 @@ tasks:
       id: c81b32b0-333e-4cdb-8b3c-ec5237261b71
       version: -1
       name: Does it have an anti-spyware profile already?
+      description: Checks whether the rule already has an anti-spyware profile attached.
       type: condition
       iscommand: false
       brand: ""
@@ -142,6 +143,7 @@ tasks:
       id: e03b8e2a-8fa2-4274-821b-b8fd8def6985
       version: -1
       name: Is there a rule input?
+      description: Checks whether a rule to add the profile to was specified in the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -221,6 +223,7 @@ tasks:
       id: e6e87945-1ea4-42a7-8f6f-8d979c967567
       version: -1
       name: Was a rule found?
+      description: Checks whether a rule was found.
       type: condition
       iscommand: false
       brand: ""
@@ -465,6 +468,7 @@ tasks:
       id: 3f21f8c6-484b-45f5-8398-294b6eb195c6
       version: -1
       name: Does the profile we are applying already exist?
+      description: Checks whether the profile we want to apply already exists or needs to be created.
       type: condition
       iscommand: false
       brand: ""
@@ -649,6 +653,7 @@ tasks:
       id: 0405331f-819e-4ab6-8c43-ba96e9ca8171
       version: -1
       name: Does the profile we are applying already exist?
+      description: Checks whether the profile we want to apply already exists or needs to be created.
       type: condition
       iscommand: false
       brand: ""
