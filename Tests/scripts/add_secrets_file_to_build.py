@@ -62,7 +62,7 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     labels_filter_branch = {'pack_id': '!=None', 'ignore': '==None', 'merged': '==None', 'dev': '==None'}
     labels_filter_master = {'pack_id': '!=None', 'ignore': '==None', 'merged': '==None', 'dev': '!=None',
-                           'branch_name': f'=={branch_name}'}
+                            'branch_name': f'=={branch_name}'}
     master_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_branch, name_filter=yml_pack_ids,
                                               with_secrets=True)
     branch_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_master, with_secrets=True)
