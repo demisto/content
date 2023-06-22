@@ -4,6 +4,7 @@ on:
     types: [closed]
     branches:
       - contrib/**
+#on: pull_request
 
 jobs:
   create_internal_pr:
