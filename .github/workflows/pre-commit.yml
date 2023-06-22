@@ -10,12 +10,13 @@ jobs:
 
     steps:
     - name: Install poetry
-      run: pipx install poetry
+      uses: Gr1N/setup-poetry@v8
 
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+
     - name: Setup python
       uses: actions/setup-python@v4
       with:
@@ -33,7 +34,10 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
-      run: poetry run demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure
+      run: |
+        source .venv/bin/activate
+        npm install
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3

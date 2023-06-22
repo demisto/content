@@ -41,7 +41,6 @@ configuration:
   section: Collect
 - defaultvalue: Fetch With All Events
   display: Fetch mode
-  hidden: false
   name: fetch_mode
   options:
   - Fetch Without Events
@@ -87,7 +86,6 @@ configuration:
   required: true
   additionalinfo: 'IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.'
   type: 15
-  hidden: false
   options:
   - IPs
   - IPs And Assets
@@ -2646,7 +2644,6 @@ script:
     deprecated: false
     description: Get Source IPs
     execution: false
-    hidden: false
     name: qradar-ips-source-get
     outputs:
     - contextPath: QRadar.SourceIP.ID
@@ -2707,7 +2704,6 @@ script:
     deprecated: false
     description: Get Source IPs
     execution: false
-    hidden: false
     name: qradar-ips-local-destination-get
     outputs:
     - contextPath: QRadar.LocalDestinationIP.ID
@@ -2930,7 +2926,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
   feed: false
   isfetch: false
   isremotesyncin: true

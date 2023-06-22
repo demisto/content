@@ -137,10 +137,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "reportedemailsubject",
+                                "height": 22,
+                                "id": "02f6f6c0-111c-11ee-a4d9-8dbe5c55933f",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "attachmentcount",
                                 "height": 22,
                                 "id": "86ae8b10-a901-11ec-8585-0dac7af6e9b0",
-                                "index": 9,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -149,7 +158,7 @@
                                 "fieldId": "emailrecipientscount",
                                 "height": 22,
                                 "id": "77a63970-6279-11ec-8fa2-217b8b611613",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -158,7 +167,7 @@
                                 "fieldId": "categories",
                                 "height": 22,
                                 "id": "5e2287d0-e502-11ed-ba0f-99a713ead7dc",
-                                "index": 11,
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -174,7 +183,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 2,
                         "hideName": false,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
@@ -183,10 +192,6 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Incident Files",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 14,
                         "query": {
                             "categories": [
                                 "attachments"
@@ -200,7 +205,11 @@
                         },
                         "queryType": "warRoomFilter",
                         "readOnly": true,
-                        "type": "invTimeline"
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -268,6 +277,7 @@
                         "y": 0
                     },
                     {
+                        "description": "",
                         "h": 1,
                         "hideName": true,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-044bccb0-befa-11eb-b351-7bcfe92e5e24",
@@ -282,8 +292,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 5,
-                        "description": ""
+                        "y": 5
                     },
                     {
                         "h": 2,
@@ -300,7 +309,9 @@
                         "y": 6
                     },
                     {
+                        "displayType": "ROW",
                         "h": 2,
+                        "hideName": false,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-93d51e60-a8fe-11ec-927e-2bbbcff3899b",
                         "items": [
                             {
@@ -381,9 +392,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8,
-                        "displayType": "ROW",
-                        "hideName": false
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -417,20 +426,9 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 12
+                        "y": 10
                     },
                     {
-                        "h": 2,
-                        "i": "swtuqptgvs-field-changed-swtuqptgvs-8f724f40-6b37-11ed-b7c0-2904efd8f7fb",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 18,
                         "columns": [
                             {
                                 "displayed": true,
@@ -478,9 +476,21 @@
                                 "width": 300
                             }
                         ],
-                        "type": "linkedIncidents"
+                        "h": 2,
+                        "i": "swtuqptgvs-field-changed-swtuqptgvs-8f724f40-6b37-11ed-b7c0-2904efd8f7fb",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 16
                     },
                     {
+                        "description": "Indicators selected to be blocked.",
                         "h": 2,
                         "i": "swtuqptgvs-1a52c090-c187-11ed-a413-1fc9f082fba8",
                         "items": [],
@@ -488,14 +498,13 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Selected indicators to block",
+                        "query": "tags:\"Blocked Indicator In Systems\"",
+                        "queryType": "input",
                         "static": false,
                         "type": "indicators",
                         "w": 1,
                         "x": 2,
-                        "y": 10,
-                        "description": "Indicators selected to be blocked.",
-                        "query": "tags:\"Blocked Indicator In Systems\"",
-                        "queryType": "input"
+                        "y": 14
                     },
                     {
                         "description": "",
@@ -513,6 +522,53 @@
                         "w": 2,
                         "x": 0,
                         "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "swtuqptgvs-20ca76d0-02e5-11ee-8d4d-65992a7b968b",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "triagesla",
+                                "height": 53,
+                                "id": "39e688c0-02e5-11ee-8d4d-65992a7b968b",
+                                "index": 1,
+                                "listId": "swtuqptgvs-20ca76d0-02e5-11ee-8d4d-65992a7b968b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remediationsla",
+                                "height": 53,
+                                "id": "37bf6300-02e5-11ee-8d4d-65992a7b968b",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectionsla",
+                                "height": 53,
+                                "id": "361116c0-02e5-11ee-8d4d-65992a7b968b",
+                                "index": 0,
+                                "listId": "swtuqptgvs-20ca76d0-02e5-11ee-8d4d-65992a7b968b",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident SLAs",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 12
                     }
                 ],
                 "type": "custom"
@@ -693,7 +749,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -729,11 +785,22 @@
                         "i": "swtuqptgvs-8b9776a0-a906-11ec-8585-0dac7af6e9b0",
                         "items": [
                             {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "emailkeywordsfound",
+                                "height": 22,
+                                "id": "2a056410-fedc-11ed-80a2-5b21992c1654",
+                                "index": 0,
+                                "listId": "swtuqptgvs-8b9776a0-a906-11ec-8585-0dac7af6e9b0",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "domainsquattingresult",
-                                "height": 22,
+                                "height": 44,
                                 "id": "9aca7460-a906-11ec-8585-0dac7af6e9b0",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -741,7 +808,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Domain-squatting Check",
+                        "name": "Spear Phishing Investigation",
                         "static": false,
                         "w": 1,
                         "x": 2,
@@ -793,7 +860,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 9
                     },
                     {
                         "description": "In case there were URLs in the email with a score of 3 or above which the user clicked for the email investigated in this incident, they will appear in the **Clicked URLs** table. **Total Malicious URLs Clicks** represents the number of clicks in all emails (other emails as well) associated with any of the malicious URLs found in this email. **Malicious URL Viewed** will be **True** if the click was allowed or the user clicked through, in case it was blocked.",
@@ -846,6 +913,41 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "swtuqptgvs-fn7ljmkjwi-swtuqptgvs-fn7ljmkjwi-swtuqptgvs-ed6ea880-fec8-11ed-8c2c-79dd47ae5c19",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "relatedcampaign",
+                                "height": 22,
+                                "id": "02a542e0-fec9-11ed-8c2c-79dd47ae5c19",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "relatedreport",
+                                "height": 22,
+                                "id": "07dc19a0-fec9-11ed-8c2c-79dd47ae5c19",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Threat Intelligence Analysis",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
                         "y": 5
                     }
                 ],
