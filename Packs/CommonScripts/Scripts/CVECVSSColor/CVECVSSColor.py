@@ -44,7 +44,7 @@ def get_color(cvss: Union[int, float]) -> str:
 
 
 def main():
-    indicator = demisto.callingContext['args']['indicator']
+    indicator = demisto.callingContext.get('args', '').get('indicator', '')
 
     cvss = indicator.get('CustomFields').get('cvss', '')
     cvss = json.loads(cvss)
