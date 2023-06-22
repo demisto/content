@@ -26,7 +26,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/last/{limit}')
 
     def cve(self, cve_id) -> Dict[str, Any]:
-        res: Dict[str, Any] = self._http_request(method='GET', url_suffix=f'cve/{cve_id}')
+        return self._http_request(method='GET', url_suffix=f'cve/{cve_id}')
 
 
 def cve_to_context(cve) -> Dict[str, str]:
