@@ -159,7 +159,7 @@ A playbook that given the IP address enriches Rapid7 information relevant to ASM
 
 A playbook that creates an ASM Remediation Confirmation Scan using an existing service ID, if the scan does not already exist;. It then polls for results of a scan.
 
-![Cortex ASM - Remediation Confirmation Scan](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Confirmation_Scan.png)
+![Cortex ASM - Remediation Confirmation Scan](https://github.com/demisto/content/pull/27605/files#diff-856ac900300f445ea82aba26774e86a30f646ff08424f629e1372047f6c9695f)
 #### Cortex ASM - Remediation Guidance
 
 A playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
