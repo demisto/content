@@ -3,6 +3,14 @@
         "events": {
           "type": "string",
           "is_array": false
+        },
+        "parameters": {
+          "type": "string",
+          "is_array": false
+        },
+        "parametersint": {
+          "type": "string",
+          "is_array": false
         }
     }
 }
