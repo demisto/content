@@ -1,8 +1,8 @@
 commonfields:
   id: DeleteAndExcludeIndicators
   version: 2
-vcShouldKeepItemLegacyProdMachine: false
 name: DeleteAndExcludeIndicators
+comment: Deletes and Excludes Indicators
 script: |-
   import re
 
@@ -30,11 +30,8 @@ args:
   description: Reason for exclusion
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
 tests:
 - Run all tests
