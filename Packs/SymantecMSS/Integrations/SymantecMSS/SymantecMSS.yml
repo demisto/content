@@ -10,15 +10,13 @@ configuration:
   type: 0
 - display: Certificate (Base64 encoded)
   name: certificate
-  required: false
+  required: true
   type: 12
 - display: Certificate Passphrase
   name: passphrase
-  required: false
   type: 4
   hidden: true
 - name: passphrase_creds
-  required: false
   type: 9
   displaypassword: Certificate Passphrase
   hiddenusername: true
