@@ -64,9 +64,6 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True, pack_api_data: 
             raise ValueError("'If not checking locally, 'pack_api_data' parameter must be provided.'")
 
 
-
-
-
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
     """
     Gets the id of the pack from the pack's path in GCP that is mentioned in the error msg.
