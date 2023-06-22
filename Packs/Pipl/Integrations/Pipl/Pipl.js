@@ -10,7 +10,7 @@ var sendRequest = function(args) {
 
     var queryArgs = {};
     var argKeys = Object.keys(args);
-    var key =  (!params.credentials_api_key) ? params.credentials_api_key.password : params.key;
+    var key =  params.credentials_api_key ? params.credentials_api_key.password : params.key;
     if (!key) {
       return('API key must be provided.');
     }
