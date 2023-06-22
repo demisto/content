@@ -133,7 +133,7 @@ def test_some_error(mocker):
     # run
     try:
         main()
-        assert False, 'SystemExit should occurred'
+        pytest.fail(msg='SystemExit should occurred')
 
     except SystemExit:
         assert demisto.results.call_args[0][0]['Contents'] == SOME_ERROR
