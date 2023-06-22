@@ -40,7 +40,7 @@ def update_incident_with_required_keys(incidents: List, required_keys: List):
 
     """
     for incident in incidents:
-        res = demisto.executeCommand('GetIncidentsByQuery', {'query': "id:({})".format(incident['id'])})
+        res = demisto.executeCommand("GetIncidentsByQuery", {"query": f"id:({incident['id']})"})
         # If an incident is deleted, remove it from the list to avoid a key error
         if res[0]['Contents'] == '[]':
             incidents.remove(incident)
