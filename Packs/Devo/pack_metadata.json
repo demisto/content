@@ -2,7 +2,7 @@
     "name": "Devo",
     "description": "Use the Devo integration to query Devo for alerts, lookup tables, and to write to lookup tables.",
     "support": "partner",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "Devo",
     "url": "https://www.devo.com",
     "email": "support@devo.com",
