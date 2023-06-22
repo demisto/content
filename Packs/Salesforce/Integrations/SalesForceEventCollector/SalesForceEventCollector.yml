@@ -5,7 +5,7 @@ name: Salesforce Event Collector
 display: Salesforce Event Collector (Deprecated)
 category: Analytics & SIEM
 deprecated: true
-description: Deprecated. Use XSIAM/XDR Salesforce integration instead.
+description: Deprecated. Use Cortex XSIAM/XDR Salesforce integration instead.
 configuration:
 - display: Server URL
   name: url
