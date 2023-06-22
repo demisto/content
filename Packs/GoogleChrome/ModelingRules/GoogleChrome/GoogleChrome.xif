@@ -1,9 +1,12 @@
 [MODEL: dataset = google_workspace_chrome_raw]
-// Creating json field with the value of the events field, organized in a key - value format.
+// Creating json fields with the value of the events field, organized in a key - value format.
 alter events = events -> []
 | alter parameters = to_json_string(arrayindex(events, 0)) -> parameters[]
 | alter parameters = arraymap(parameters ,concat("{","\"",json_extract_scalar(to_json_string("@element"), "$.name"),"\"", ":", "\"",json_extract_scalar(to_json_string("@element"), "$.value"),"\"", "}"))
 | alter parameters = replace(arraystring(parameters, ","),"},{", ",") -> {}
+| alter parametersint = to_json_string(arrayindex(events, 0)) -> parameters[]
+| alter parametersint = arraymap(parametersint ,concat("{","\"",json_extract_scalar(to_json_string("@element"), "$.name"),"\"", ":", "\"",json_extract_scalar(to_json_string("@element"), "$.intValue"),"\"", "}"))
+| alter parametersint = replace(arraystring(parametersint, ","),"},{", ",") -> {}
 // Extracting fields
 | alter
         device_platform = lowercase(parameters -> DEVICE_PLATFORM),
@@ -18,8 +21,6 @@ alter events = events -> []
         xdm.source.host.os_family = if(device_platform contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, device_platform contains "mac", XDM_CONST.OS_FAMILY_MACOS, device_platform contains "linux", XDM_CONST.OS_FAMILY_LINUX, device_platform contains "android", XDM_CONST.OS_FAMILY_ANDROID, device_platform contains "ios", XDM_CONST.OS_FAMILY_IOS, device_platform contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, device_platform contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, device_platform contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, device_platform contains "centos", XDM_CONST.OS_FAMILY_CENTOS, device_platform contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, device_platform contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, device_platform contains "scada", XDM_CONST.OS_FAMILY_SCADA, to_string(device_platform)),
         xdm.source.host.os = parameters -> DEVICE_PLATFORM,
         xdm.network.http.browser = concat(parameters -> CLIENT_TYPE, " ", parameters -> BROWSER_VERSION),
-        xdm.source.application.name = parameters -> CLIENT_TYPE,
-        xdm.source.application.version  = parameters -> BROWSER_VERSION,
         xdm.source.user.username = lowercase(parameters -> DEVICE_USER),
         xdm.intermediate.user.username = lowercase(parameters -> PROFILE_USER_NAME),
         xdm.observer.action = parameters -> EVENT_RESULT,
@@ -30,4 +31,4 @@ alter events = events -> []
         xdm.target.resource.id = parameters -> APP_ID,
         xdm.target.file.filename = parameters -> CONTENT_NAME,
         xdm.target.file.sha256 = parameters -> CONTENT_HASH,
-        xdm.target.file.size = to_integer(parameters -> CONTENT_SIZE);
+        xdm.target.file.size = to_integer(parametersint -> CONTENT_SIZE);
