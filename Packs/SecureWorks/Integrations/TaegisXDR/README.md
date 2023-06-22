@@ -129,13 +129,18 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | The subject or description of the investigation | True |
+| title | The subject or description of the investigation | True |
 | priority | The priority for the investigiation [Default: 3] | False |
+| status | The status for the investigation [Default: OPEN] | False |
+| alerts | A list of alert IDs to add to the investigation [Default: []] | False |
+| keyFindings | The Key Findings for the investigation | False |
+| type | The investigation type [Default: SECURITY_INVESTIGATION] | False |
+| assigneeId | The assignee for the investigation [Default: @secureworks] | False |
 
 #### Command Example
 
 ```
-!taegis-create-investigation priority=1 description="XSOAR Created Investigation"
+!taegis-create-investigation priority=1 title="XSOAR Created Investigation"
 ```
 
 #### Context Example

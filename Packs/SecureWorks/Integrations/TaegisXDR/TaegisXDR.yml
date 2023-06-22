@@ -107,9 +107,9 @@ script:
     description: Fetch all investigations or a specific investigation
   - name: taegis-create-investigation
     arguments:
-    - name: description
+    - name: title
       required: true
-      description: The description of the investigation
+      description: The title of the investigation
     - name: priority
       required: true
       default: true
@@ -119,11 +119,48 @@ script:
       - "2"
       - "3"
       - "4"
-      - "5"
-      description: The priority of the investigation (1-5)
+      description: The priority of the investigation
       defaultValue: "2"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
+    - name: fields
+      description: The fields to return from the query
+    - name: alerts
+      description: A list of alert IDs or string of comma-separated alert IDs to add to the investigation during creation
+      isArray: true
+    - name: keyFindings
+      description: The key findings to utilize within the Investigation
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - SECURITY_INVESTIGATION
+      - INCIDENT_RESPONSE
+      - THREAT_HUNT
+      - MANAGED_XDR_THREAT_HUNT
+      - CTU_THREAT_HUNT
+      - MANAGED_XDR_ELITE_THREAT_HUNT
+      - SECUREWORKS_INCIDENT_RESPONSE
+      description: The investigation type to create
+      defaultValue: SECURITY_INVESTIGATION
+    - name: assigneeId
+      description: The assignee for the investigation
+      defaultValue: '@secureworks'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - ACTIVE
+      - AWAITING_ACTION
+      - SUSPENDED
+      - CLOSED_AUTHORIZED_ACTIVITY
+      - CLOSED_CONFIRMED_SECURITY_INCIDENT
+      - CLOSED_FALSE_POSITIVE_ALERT
+      - CLOSED_INCONCLUSIVE
+      - CLOSED_INFORMATIONAL
+      - CLOSED_NOT_VULNERABLE
+      - CLOSED_THREAT_MITIGATED
+      description: The investigation status
+      defaultValue: OPEN
     outputs:
     - contextPath: TaegisXDR.Investigation
       description: The investigation ID that was created

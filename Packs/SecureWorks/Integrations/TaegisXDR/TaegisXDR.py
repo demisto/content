@@ -41,17 +41,34 @@ COMMENT_TYPES = set((
     "investigation",
 ))
 INVESTIGATION_STATUSES = set((
-    "Open",
-    "Active",
-    "Awaiting Action",
-    "Suspended",
-    "Closed: Authorized Activity",
-    "Closed: Confirmed Security Incident",
-    "Closed: False Positive Alert",
-    "Closed: Inconclusive",
-    "Closed: Informational",
-    "Closed: Not Vulnerable",
-    "Closed: Threat Mitigated",
+    "OPEN",
+    "ACTIVE",
+    "AWAITING_ACTION",
+    "SUSPENDED",
+    "CLOSED_AUTHORIZED_ACTIVITY",
+    "CLOSED_CONFIRMED_SECURITY_INCIDENT",
+    "CLOSED_FALSE_POSITIVE_ALERT",
+    "CLOSED_INCONCLUSIVE",
+    "CLOSED_INFORMATIONAL",
+    "CLOSED_NOT_VULNERABLE",
+    "CLOSED_THREAT_MITIGATED",
+))
+INVESTIGATION_TYPES = set((
+    "SECURITY_INVESTIGATION",
+    "INCIDENT_RESPONSE",
+    "THREAT_HUNT",
+    "MANAGED_XDR_THREAT_HUNT",
+    "CTU_THREAT_HUNT",
+    "MANAGED_XDR_ELITE_THREAT_HUNT",
+    "SECUREWORKS_INCIDENT_RESPONSE",
+))
+INVESTIGATION_UPDATE_FIELDS = set((
+    "keyFindings",
+    "priority",
+    "status",
+    "assigneeId",
+    "title",
+    "type",
 ))
 SHARELINK_TYPES = set((
     "alertId",
@@ -65,7 +82,6 @@ SHARELINK_TYPES = set((
     "playbookInstanceId",
     "playbookExecutionId",
 ))
-INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type", "assignee_id"))
 
 
 """ CLIENT """
@@ -251,26 +267,46 @@ def create_comment_command(client: Client, env: str, args=None):
 
 
 def create_investigation_command(client: Client, env: str, args=None):
+    fields: str = args.get("fields") or "id shortId"
     query = """
-    mutation ($investigation: InvestigationInput!) {
-    createInvestigation(investigation: $investigation) {
-            id
+    mutation ($input: CreateInvestigationInput!) {
+    createInvestigationV2(input: $input) {
+            %s
         }
     }
-    """
+    """ % (fields)
 
     variables = {
-        "investigation": {
-            "description": args.get("description", "Demisto Created Investigation"),
-            "priority": args.get("priority", 2),
-            "status": "Open",
+        "input": {
+            "title": args.get("title"),
+            "priority": arg_to_number(args.get("priority")) or 3,
+            "status": args.get("status", "OPEN"),
+            "alerts": split_and_trim(args.get("alerts", [])),
+            "keyFindings": args.get("key_findings", ""),
+            "type": args.get("type", "SECURITY_INVESTIGATION"),
+            "assigneeId": args.get("assignee_id", "@secureworks"),
         }
     }
+
+    if not variables["input"]["assigneeId"].startswith("auth0") and variables["input"]["assigneeId"] != "@secureworks":
+        raise ValueError("assigneeId MUST be in 'auth0|12345' format or '@secureworks'")
+    if variables["input"]["priority"] and not 0 < variables["input"]["priority"] < 5:
+        raise ValueError("Priority must be between 1-4")
+    if variables["input"]["status"] not in INVESTIGATION_STATUSES:
+        raise ValueError((
+            f"The provided status, {variables['input']['status']}, is not valid for updating an investigation. "
+            f"Supported Status Values: {INVESTIGATION_STATUSES}"))
+    if variables["input"]["type"] not in INVESTIGATION_TYPES:
+        raise ValueError((
+            f"The provided type, {variables['input']['type']}, is not valid for updating an investigation. "
+            f"Supported Type Values: {INVESTIGATION_TYPES}"))
+    if not variables["input"]["title"]:
+        raise ValueError("Title must be defined")
 
     result = client.graphql_run(query=query, variables=variables)
 
     try:
-        investigation = result["data"]["createInvestigation"]
+        investigation = result["data"]["createInvestigationV2"]
         investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
     except (KeyError, TypeError):
         raise ValueError(f"Failed to create investigation: {result['errors'][0]['message']}")
@@ -331,7 +367,6 @@ def create_sharelink_command(client: Client, env: str, args=None):
     except (KeyError, TypeError):
         raise ValueError(f"Failed to create ShareLink: {result['errors'][0]['message']}")
 
-    # Create tge
     link_result.update({"url": generate_id_url(env, "share", link_result["id"])})
 
     results = CommandResults(
@@ -1448,6 +1483,12 @@ def test_module(client: Client) -> str:
 
 
 """ UTILITIES """
+
+
+def split_and_trim(element):
+    if type(element) == str:
+        element = element.split(",")  # alerts://id1,alerts://id2
+    return [x.strip() for x in element]  # Ensure no whitespace
 
 
 def generate_id_url(env: str, endpoint: str, element_id: str):

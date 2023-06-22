@@ -319,8 +319,9 @@ FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE = {
 
 CREATE_INVESTIGATION_RESPONSE = {
     "data": {
-        "createInvestigation": {
+        "createInvestigationV2": {
             "id": "593fa115-abad-4a52-9fc4-2ec403a8a1e4",
+            "shortId": "INV00248",
         }
     }
 }

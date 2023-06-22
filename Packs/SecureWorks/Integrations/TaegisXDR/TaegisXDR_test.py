@@ -378,19 +378,35 @@ def test_create_investigation(requests_mock):
     """Tests taegis-create-investigation command function
     """
     client = mock_client(requests_mock, CREATE_INVESTIGATION_RESPONSE)
-    args = {
-        "description": "Test Investigation",
-        "priority": 3,
-    }
 
-    response = create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    # Invalid assignee_id
+    with pytest.raises(ValueError, match="assigneeId MUST be in 'auth0|12345' format or '@secureworks'"):
+        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={"assignee_id": "BadID"})
 
-    assert response.outputs["id"] == CREATE_INVESTIGATION_RESPONSE["data"]["createInvestigation"]["id"]
+    # Invalid priority
+    with pytest.raises(ValueError, match="Priority must be between 1-4"):
+        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={"priority": 7})
+
+    # Invalid status
+    with pytest.raises(ValueError, match="The provided status, BAD_STATUS, is not valid for updating an investigation"):
+        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={"status": "BAD_STATUS"})
+
+    # Invalid type
+    with pytest.raises(ValueError, match="The provided type, BAD_TYPE, is not valid for updating an investigation."):
+        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={"type": "BAD_TYPE"})
+
+    # Invalid title
+    with pytest.raises(ValueError, match="Title must be defined"):
+        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    # Successul Creation
+    response = create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={"title": "Test Title"})
+    assert response.outputs["id"] == CREATE_INVESTIGATION_RESPONSE["data"]["createInvestigationV2"]["id"]
 
     # Investigation creation failed
     client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
     with pytest.raises(ValueError, match="Failed to create investigation:"):
-        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+        assert create_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args={"title": "Test Title"})
 
 
 def test_update_investigation(requests_mock):
