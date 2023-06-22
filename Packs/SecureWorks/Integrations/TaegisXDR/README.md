@@ -11,6 +11,8 @@
     | Client ID | Client ID as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
     | Client Secret | Client Secret as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
     | Use system proxy settings | Defines whether the system proxy is used or not | False |
+    | Fetch Incident Type | The type of incident to fetch from Taegis (Alerts or Investigations) | True |
+    | Include Assets in Fetch | When using the Investigations fetch type, should assets be included? This can cause API failures or latency and should only be enabled if necessary | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

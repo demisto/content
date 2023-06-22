@@ -269,29 +269,46 @@ def test_connectivity(requests_mock):
     assert connectivity_test(client=client) == "ok"
 
 
-def test_fetch_incidents(requests_mock):
-    """Tests taegis-fetch-incidents command function
+def test_fetch_incidents_alerts(requests_mock):
+    """Tests taegis-fetch-incidents (alerts) command function
+    """
+    client = mock_client(requests_mock, FETCH_ALERTS_RESPONSE)
+    response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, fetch_type="alerts")
+    assert response[0]["name"] == FETCH_ALERTS_RESPONSE["data"]["alertsServiceSearch"]["alerts"]["list"][0]["metadata"]["title"]
+
+
+def test_fetch_incidents_investigations(requests_mock):
+    """Tests taegis-fetch-incidents (investigations) command function
     """
     client = mock_client(requests_mock, FETCH_INCIDENTS_RESPONSE)
-    response = fetch_incidents(client=client)
-    assert response[0]['name'] == FETCH_INCIDENTS_RESPONSE["data"]["allInvestigations"][0]['description']
+    response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT)
+    assert response[0]['name'] == FETCH_INCIDENTS_RESPONSE["data"]["investigationsSearch"]["investigations"][0]['description']
 
+    # Invalid max_fetch
     with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
-        assert fetch_incidents(client=client, max_fetch=0)
+        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, max_fetch=0)
+    with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
+        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, max_fetch=201)
 
-    with pytest.raises(ValueError, match="Max Fetch must be between 1 and 200"):
-        assert fetch_incidents(client=client, max_fetch=201)
+    # Invalid fetch_type
+    with pytest.raises(ValueError, match="Incident Type is invalid"):
+        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, fetch_type="BAD_TYPE")
 
     # Failure from Taegis API
     client = mock_client(requests_mock, FETCH_INCIDENTS_BAD_RESPONSE)
-    error = f"Error when fetching investigations: {FETCH_INCIDENTS_BAD_RESPONSE['errors'][0]['message']}"
+    error = f"Error when fetching incidents: {FETCH_INCIDENTS_BAD_RESPONSE['errors'][0]['message']}"
     with pytest.raises(DemistoException, match=error):
-        assert fetch_incidents(client=client, max_fetch=200)
+        assert fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT, max_fetch=200)
+
+    # Unknown error
+    client = mock_client(requests_mock, {})
+    response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT)
+    assert len(response) == 0
 
     # Ignore incidents that have been archived
-    FETCH_INCIDENTS_RESPONSE["data"]["allInvestigations"][0]["archived_at"] = "2022-02-03T13:53:35Z"
+    FETCH_INCIDENTS_RESPONSE["data"]["investigationsSearch"]["investigations"][0]["archived_at"] = "2022-02-03T13:53:35Z"
     client = mock_client(requests_mock, FETCH_INCIDENTS_RESPONSE)
-    response = fetch_incidents(client=client)
+    response = fetch_incidents(client=client, env=TAEGIS_ENVIRONMENT)
     assert len(response) == 0
 
 

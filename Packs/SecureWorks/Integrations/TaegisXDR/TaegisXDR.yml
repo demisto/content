@@ -60,10 +60,18 @@ configuration:
   required: false
 - display: Include Assets in Fetch
   name: include_assets
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
   additionalinfo: An error can occur when the API is slow or there are a large numbers of assets being added to a new incident/investigation. Disabling this will fetch incidents without including asset information, allowing time for the investigation creation to be completed.
+- display: Fetch Incident Type
+  name: fetch_type
+  type: 15
+  required: false
+  options:
+  - alerts
+  - investigations
+  additionalinfo: The type of Taegis asset to fetch when using fetch-incidents
 script:
   script: ''
   type: python

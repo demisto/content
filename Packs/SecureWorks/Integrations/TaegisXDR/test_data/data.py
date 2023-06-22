@@ -269,7 +269,9 @@ FETCH_ENDPOINT_BAD_RESPONSE = {
 
 FETCH_INCIDENTS_RESPONSE = {
     "data": {
-        "allInvestigations": [TAEGIS_INVESTIGATION]
+        "investigationsSearch": {
+            "investigations": [TAEGIS_INVESTIGATION]
+        }
     }
 }
 
@@ -285,13 +287,15 @@ FETCH_INCIDENTS_BAD_RESPONSE = {
 
 FETCH_INVESTIGATION_RESPONSE = {
     "data": {
-        "investigation": TAEGIS_INVESTIGATION
+        "investigationV2": TAEGIS_INVESTIGATION
     }
 }
 
-FETCH_INVESTIGATIONS = {
+FETCH_INVESTIGATIONS_RESPONSE = {
     "data": {
-        "allInvestigations": [TAEGIS_INVESTIGATION]
+        "investigationsSearch": {
+            "investigations": [TAEGIS_INVESTIGATION]
+        }
     }
 }
 

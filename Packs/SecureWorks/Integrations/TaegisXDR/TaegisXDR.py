@@ -802,118 +802,219 @@ def fetch_endpoint_command(client: Client, env: str, args=None):
     return results
 
 
-def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = True):
+def fetch_incidents(
+    client: Client,
+    env: str,
+    fetch_type: str = "investigations",
+    max_fetch: int = 15,
+    include_assets: bool = True
+):
     """
-    Fetch Taegis Investigations for the use with "Fetch Incidents"
+    Fetch Taegis Investigations or Alerts for the use with "Fetch Incidents"
     """
     if not 0 < int(max_fetch) < 201:
         raise ValueError("Max Fetch must be between 1 and 200")
 
-    asset_query = ""
-    if include_assets:
-        demisto.debug("include_assets=True, fetching assets with investigation")
-        asset_query = "assets {id hostnames {id hostname} tags {tag}}"
-
-    query = """
-    query investigations(
-          $page: Int,
-          $perPage: Int,
-          $status: [String],
-          $createdAfter: String,
-          $orderByField: OrderFieldInput,
-          $orderDirection: OrderDirectionInput
-      ) {
-          allInvestigations(
-              page: $page,
-              perPage: $perPage,
-              status: $status,
-              createdAfter: $createdAfter,
-              orderByField: $orderByField,
-              orderDirection: $orderDirection
-          ) {
-            id
-            tenant_id
-            description
-            key_findings
-            assignee {
-                name
-                id
-                email
-            }
-            alerts2 {
-                id
-                suppressed
-                status
-                priority {
-                    value
-                }
-                metadata {
-                    title
-                    description
-                    created_at {
-                        seconds
-                    }
-                    severity
-                    confidence
-                }
-            }
-            archived_at
-            created_at
-            updated_at
-            service_desk_id
-            service_desk_type
-            latest_activity
-            priority
-            status
-            %s
-        }
-    }
-    """ % (asset_query)
-
-    variables = {
-        "orderByField": "created_at",
-        "orderDirection": "asc",
-        "page": 0,
-        "perPage": max_fetch,
-        "status": ["Open", "Active", "Awaiting Action"]
-    }
+    if fetch_type not in ["alerts", "investigations"]:
+        raise ValueError("Incident Type is invalid. Supported types: ['alerts', 'investigations']")
 
     last_run = demisto.getLastRun()
     demisto.debug(f"Last Fetch Incident Run: {last_run}")
-
     now = datetime.now()
     start_time = str(now - timedelta(days=1))  # Default start if first ever run
     if last_run and "start_time" in last_run:
         start_time = last_run.get("start_time")
-    variables["createdAfter"] = start_time
+
+    if fetch_type == "alerts":
+        query = """
+          query alertsServiceSearch($cql_query: String, $limit: Int) {
+            alertsServiceSearch(
+              in: {
+                cql_query:$cql_query,
+                limit:$limit
+              }
+            ) {
+                  status
+              reason
+              alerts {
+                list {
+                  id
+                  status
+                  tenant_id
+                  suppressed
+                  resolution_reason
+                  attack_technique_ids
+                  entities{
+                    entities
+                    relationships{
+                      from_entity
+                      relationship
+                      to_entity
+                    }
+                  }
+                  metadata {
+                    engine {
+                      name
+                    }
+                    creator {
+                      detector {
+                        version
+                        detector_id
+                        detector_name
+                      }
+                      rule {
+                        rule_id
+                        version
+                      }
+                    }
+                    title
+                    description
+                    confidence
+                    severity
+                    created_at {
+                      seconds
+                    }
+                    began_at {
+                      seconds
+                    }
+                    ended_at {
+                      seconds
+                    }
+                  }
+                  event_ids {
+                      id
+                      event_data
+                  }
+                  investigation_ids {
+                    id
+                  }
+                  sensor_types
+                }
+                total_results
+              }
+            }
+          }
+        """
+
+        variables = {
+            "limit": max_fetch,
+            # We only support Medium, High, Critical
+            "cql_query": f"from alert where severity >=0.4 AND earliest = '{start_time}'",
+        }
+    elif fetch_type == "investigations":
+        asset_query = ""
+        if include_assets:
+            demisto.debug("include_assets=True, fetching assets with investigation")
+            asset_query = "assets {id hostnames {id hostname} tags {tag}}"
+
+        query = """
+        query investigationsSearch(
+            $page: Int,
+            $perPage: Int,
+            $orderByField: OrderFieldInput,
+            $orderDirection: OrderDirectionInput,
+            $query: String
+        ) {
+          investigationsSearch(
+            page: $page,
+            perPage: $perPage,
+            orderByField: $orderByField,
+            orderDirection: $orderDirection,
+            query: $query
+          ) {
+            totalCount
+            investigations {
+                id
+                tenant_id
+                description
+                key_findings
+                assignee {
+                    name
+                    id
+                    email
+                }
+                alerts2 {
+                    id
+                    suppressed
+                    status
+                    priority {
+                        value
+                    }
+                    entities {
+                        entities
+                    }
+                    metadata {
+                        title
+                        description
+                        created_at {
+                            seconds
+                        }
+                        severity
+                        confidence
+                    }
+                }
+                created_by
+                created_by_scwx
+                service_desk_id
+                service_desk_type
+                latest_activity
+                priority
+                status
+                created_at
+                archived_at
+                %s
+            }
+          }
+        }
+        """ % (asset_query)
+
+        variables = {
+            "orderByField": "created_at",
+            "orderDirection": "asc",
+            "page": 0,
+            "perPage": max_fetch,
+            "query": f"status in ('Open', 'Active', 'Awaiting Action') AND earliest = '{start_time}'"
+        }
 
     result = client.graphql_run(query=query, variables=variables)
-
     if result.get("errors") and result["errors"]:
-        raise DemistoException(f"Error when fetching investigations: {result['errors'][0]['message']}")
+        raise DemistoException(f"Error when fetching incidents: {result['errors'][0]['message']}")
+
+    try:
+        results = result["data"]["investigationsSearch"]["investigations"] \
+            if fetch_type == "investigations" \
+            else result["data"]["alertsServiceSearch"]["alerts"]["list"]
+    except (TypeError, KeyError):
+        results = []
 
     incidents = []
-    for investigation in result["data"]["allInvestigations"]:
+    for incident in results:
         # createdAfter really means createdAtOrAfter so skip the duplicate
-        if start_time == investigation["created_at"]:
+        created_date = incident["created_at"] if fetch_type == "investigations" else \
+            datetime.fromtimestamp(int(incident["metadata"]["created_at"]["seconds"])).strftime("%Y-%m-%d %H:%M:%S.%f")
+        if start_time == created_date:
             continue
 
         # Skip archived, if necessary
-        if investigation["archived_at"]:
-            demisto.debug(f"Skipping Archived Investigation: {investigation['description']} ({investigation['id']})")
+        if fetch_type == "investigations" and incident["archived_at"]:
+            demisto.debug(f"Skipping Archived Investigation: {incident['description']} ({incident['id']})")
             continue
 
-        demisto.debug(f"Found New Investigation: {investigation['description']} ({investigation['id']})")
+        incident_name: str = incident['description'] if fetch_type == "investigations" else incident['metadata']['title']
+        demisto.debug(f"Found New Incident: [{incident['id']}] {incident_name}")
+
+        incident.update({"url": generate_id_url(env, fetch_type, incident["id"])})
         incidents.append({
-            "name": investigation["description"],
-            "occured": investigation["created_at"],
-            "rawJSON": json.dumps(investigation)
+            "name": incident_name,
+            "occured": created_date,
+            "dbotMirrorId": incident["id"],
+            "rawJSON": json.dumps(incident),
         })
 
     demisto.debug(f"Located {len(incidents)} Incidents")
 
     last_run = str(now) if not incidents else incidents[-1]["occured"]
-    demisto.debug(f"Last Run/Incident Time: {last_run}")
+    demisto.debug(f"Setting New Last Run Time: {last_run}")
     demisto.setLastRun({"start_time": last_run})
 
     demisto.incidents(incidents)
@@ -1640,7 +1741,13 @@ def main():
             return_results(result)
 
         elif command == "fetch-incidents":
-            commands[command](client=client, max_fetch=PARAMS.get("max_fetch"), include_assets=PARAMS.get("include_assets"))
+            commands[command](
+                client=client,
+                env=environment,
+                fetch_type=PARAMS.get("fetch_type"),
+                max_fetch=PARAMS.get("max_fetch"),
+                include_assets=PARAMS.get("include_assets")
+            )
         else:
             return_results(commands[command](client=client, env=environment, args=ARGS))
     except Exception as e:
