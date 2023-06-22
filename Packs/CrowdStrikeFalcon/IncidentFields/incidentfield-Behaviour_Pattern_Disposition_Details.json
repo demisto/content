@@ -300,7 +300,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_behaviourpatterndispositiondetails",
+    "id": "incident_crowdstrikefalconbehaviourpatterndispositiondetails",
     "isReadOnly": false,
     "locked": false,
     "name": "CrowdStrike Falcon Behaviour Pattern Disposition Details",
