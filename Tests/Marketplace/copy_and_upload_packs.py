@@ -88,15 +88,6 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
                                     index_name=index_json_name)
 
-            # copy index_v2.zip from build to prod
-            index_v2_name = f'{GCPConfig.INDEX_V2_NAME}.zip'
-            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
-                                                             production_bucket=production_bucket,
-                                                             index_name=index_v2_name)
-            build_index_v2_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_v2_name))
-            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_v2_blob,
-                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
-                                    index_name=index_v2_name)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")

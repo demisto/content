@@ -114,15 +114,23 @@ def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, stor
         # reading the file generated in the sdk of all the packs readme images data.
         readme_urls_data_dict = json.load(f)
 
-    for pack_name in readme_urls_data_dict:
-        for readme_url_data in readme_urls_data_dict[pack_name]:
+    pack_images_names = {}
+
+    for pack_name, images_data in readme_urls_data_dict.items():
+        for readme_url_data in images_data:
             readme_original_url = readme_url_data.get('original_read_me_url')
             gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
             image_name = str(readme_url_data.get('image_name'))
 
-        download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
-                                                         gcs_storage_path,
-                                                         image_name, storage_bucket)
+            download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
+                                                             gcs_storage_path,
+                                                             image_name, storage_bucket)
+
+        pack_images_names[pack_name] = [
+            image_name.get('image_name') for image_name in images_data
+        ]
+
+    return pack_images_names
 
 
 def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
