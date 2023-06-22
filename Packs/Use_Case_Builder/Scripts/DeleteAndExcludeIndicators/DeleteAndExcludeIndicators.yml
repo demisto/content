@@ -8,6 +8,7 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.10.49934
 enabled: true
+comment: ''
 name: DeleteAndExcludeIndicators
 runas: DBotWeakRole
 runonce: false
