@@ -684,6 +684,13 @@
 <p>Examples: pcap, logs, logs (csv), logs (xml), or logs (json)</p>
 </td>
 </tr>
+<tr>
+<td style="width: 97px;">renderToContext</td>
+<td style="width: 61px;">boolean </td>
+<td style="width: 448px;">
+<p>If renderToContext is set to True and the render type is set to logs (json), the command will not create a file with the output, it will output to the context data.</p>
+</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
