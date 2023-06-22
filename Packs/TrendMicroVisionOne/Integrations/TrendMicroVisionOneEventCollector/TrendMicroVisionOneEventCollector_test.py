@@ -385,6 +385,72 @@ class TestFetchEvents:
         assert send_events_to_xsiam_mocker.call_count == 1
         assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == num_of_expected_events
 
+    def test_get_workbench_logs_no_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - no last run
+         - limit = 500
+         - 1000 workbench events
+
+        When:
+         - running get_workbench_logs function
+
+        Then:
+         - make sure only 500 events are returned
+         - make sure latest workbench event is saved in the workbench_logs_time without adding 1 second to it.
+         - make sure in the cache we will have event with 500 id as its the event that happened in the last second.
+        """
+        from TrendMicroVisionOneEventCollector import get_workbench_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_workbench_logs=1000)
+        )
+
+        workbench_logs, updated_last_run = get_workbench_logs(
+            client=client, first_fetch='1 month ago', last_run={}, limit=500
+        )
+
+        assert len(workbench_logs) == 500
+        assert updated_last_run == {'workbench_logs_time': '2023-01-01T15:07:20Z', 'found_workbench_logs': [500]}
+        assert workbench_logs[-1]['_time'] == '2023-01-01T15:07:20Z'
+
+    def test_get_workbench_logs_with_last_run(self, mocker, client: Client):
+        """
+        Given:
+         - last_run={'workbench_logs_time': '2023-01-01T14:00:00Z', 'found_workbench_logs': [1, 2, 3, 4, 5, 6, 7, 8]}
+         - limit = 500
+         - 200 workbench events
+
+        When:
+         - running get_workbench_logs function
+
+        Then:
+         - make sure only 192 events are returned as there are 8 events in cache from last run
+         - make sure latest workbench event is saved in the workbench_logs_time without adding 1 second to it.
+        """
+        from TrendMicroVisionOneEventCollector import get_workbench_logs
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(num_of_workbench_logs=200)
+        )
+
+        workbench_logs, updated_last_run = get_workbench_logs(
+            client=client,
+            first_fetch='1 month ago',
+            last_run={'workbench_logs_time': '2023-01-01T14:00:00Z', 'found_workbench_logs': [1, 2, 3, 4, 5, 6, 7, 8]},
+            limit=500
+        )
+
+        assert len(workbench_logs) == 192
+        assert updated_last_run == {'workbench_logs_time': '2023-01-01T15:02:20Z', 'found_workbench_logs': [200]}
+        assert workbench_logs[-1]['_time'] == '2023-01-01T15:02:20Z'
+        
 
 @pytest.mark.parametrize(
     "last_run_time, first_fetch, log_type_time_field_name, start_time, expected_start_and_end_date_times",
