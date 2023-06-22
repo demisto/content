@@ -1,34 +1,40 @@
 id: Cisco ASA - Test Playbook
-version: -1
+version: 24
+vcShouldKeepItemLegacyProdMachine: false
 name: Cisco ASA - Test Playbook
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 3dc8d612-f2a3-41e2-886f-ef1f239bb0f3
     type: start
     task:
       id: 3dc8d612-f2a3-41e2-886f-ef1f239bb0f3
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: cd20cfd4-94b6-4a6a-826b-88abaf6c7d54
     type: regular
     task:
@@ -39,25 +45,31 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: b04c0637-41e8-4e2a-88a6-4aa00d213cdf
     type: regular
     task:
@@ -68,31 +80,37 @@ tasks:
       script: '|||cisco-asa-create-rule'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       destination:
         simple: 2.2.2.2
       interface_type:
         simple: Global
       permit:
-        simple: 'False'
+        simple: "False"
       source:
         simple: 1.1.1.1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: bdb11b78-f843-4bcc-8b12-06a5dbc108ba
     type: regular
     task:
@@ -103,10 +121,10 @@ tasks:
       script: '|||cisco-asa-get-rule-by-id'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       interface_name:
         simple: ${CiscoASA.Rules.Interface}
@@ -115,17 +133,23 @@ tasks:
       rule_id:
         simple: ${CiscoASA.Rules.ID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: 37d7434f-e4ba-47c3-891e-21fb26ab1c83
     type: condition
     task:
@@ -134,13 +158,13 @@ tasks:
       name: Verify Rule
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '5'
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -158,17 +182,23 @@ tasks:
           right:
             value:
               simple: 2.2.2.2
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1420\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: f541b99d-106e-4375-80ca-753344aecf35
     type: regular
     task:
@@ -179,10 +209,10 @@ tasks:
       script: '|||cisco-asa-edit-rule'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     scriptarguments:
       destination:
         simple: 3.3.3.3
@@ -193,17 +223,23 @@ tasks:
       rule_id:
         simple: ${CiscoASA.Rules.ID}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: 52515afc-3fae-478e-88f0-1c8d75de6a82
     type: condition
     task:
@@ -212,13 +248,13 @@ tasks:
       name: Verify Rule Edited
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '7'
+      "yes":
+      - "7"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -236,17 +272,23 @@ tasks:
           right:
             value:
               simple: 1.1.1.1
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1770\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: defa2da0-07d3-4e80-8a73-769c6b969433
     type: regular
     task:
@@ -257,7 +299,10 @@ tasks:
       script: '|||cisco-asa-delete-rule'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
     scriptarguments:
       interface_name:
         complex:
@@ -268,10 +313,10 @@ tasks:
             args:
               from:
                 value:
-                  simple: '1'
+                  simple: "1"
               to:
                 value:
-                  simple: '2'
+                  simple: "2"
       interface_type:
         simple: Global
       rule_id:
@@ -283,25 +328,28 @@ tasks:
             args:
               from:
                 value:
-                  simple: '1'
+                  simple: "1"
               to:
                 value:
-                  simple: '2'
+                  simple: "2"
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1945\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    nexttasks:
-      '#none#':
-      - "26"
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 68293ee2-83c5-4f9b-8d9d-021699408c48
     type: regular
     task:
@@ -312,25 +360,31 @@ tasks:
       script: '|||cisco-asa-list-rules'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     scriptarguments:
       interface_type:
         simple: Global
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 7137276e-19d3-45a5-86ac-2cb3bb2c0a99
     type: condition
     task:
@@ -339,15 +393,15 @@ tasks:
       name: Does rule exist
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '11'
-      yes:
-      - '10'
+      - "11"
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
@@ -372,18 +426,24 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'false'
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
+              simple: "false"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: f7186d3e-ead3-4ce7-8bac-112c6dc88b1b
     type: regular
     task:
@@ -394,10 +454,10 @@ tasks:
       script: '|||cisco-asa-delete-rule'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
+      - "11"
     scriptarguments:
       interface_type:
         simple: Global
@@ -420,7 +480,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'false'
+                  simple: "false"
           - - operator: isEqualString
               left:
                 value:
@@ -431,17 +491,23 @@ tasks:
                   simple: 2.2.2.2
           accessor: ID
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 720\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 720
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: a208a3cc-1b36-45b4-841a-e1d5434a199d
     type: regular
     task:
@@ -452,52 +518,20 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      all:
-        simple: yes
-    separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: e9974d8c-8a35-4219-8565-81b0bc3fb897
-    type: condition
-    task:
-      id: e9974d8c-8a35-4219-8565-81b0bc3fb897
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "27"
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.WritememCommand.response
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 4760
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
@@ -509,76 +543,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 4384428d-f8e0-425d-8adc-6130d32b86a7
+    taskid: bab38cfc-5ecb-407c-8cd6-8de6f15317a9
     type: regular
     task:
-      id: 4384428d-f8e0-425d-8adc-6130d32b86a7
+      id: bab38cfc-5ecb-407c-8cd6-8de6f15317a9
       version: -1
-      name: cisco-asa-execute-writemem-command
-      script: Cisco ASA|||cisco-asa-execute-writemem-command
+      name: cisco-asa-write-memory
+      description: The write memory command saves the running configuration to the
+        default location for the startup configuration.
+      script: Cisco ASA|||cisco-asa-write-memory
       type: regular
       iscommand: true
-      brand: ""
+      brand: Cisco ASA
     nexttasks:
       '#none#':
-      - "13"
+      - "27"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 4560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 056c8633-849c-4f44-8d36-2d3009ad254e
-    type: condition
-    task:
-      id: 056c8633-849c-4f44-8d36-2d3009ad254e
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.UserObject.object_id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.UserObject.user_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.UserObject.user.kind
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 4360
+          "y": 3350
         }
       }
     note: false
@@ -602,77 +588,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "14"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 4160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: caea5d14-d4ba-4963-8027-d0cb36005af7
-    type: condition
-    task:
-      id: caea5d14-d4ba-4963-8027-d0cb36005af7
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.SecurityObjectGroup.object_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.SecurityObjectGroup.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.SecurityObjectGroup.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.SecurityObjectGroup.members.kind
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.SecurityObjectGroup.members.value
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.SecurityObjectGroup.members.object_id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 3960
+          "x": 162.5,
+          "y": 3160
         }
       }
     note: false
@@ -696,92 +619,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "16"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 3760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: aa6388da-d0c4-488c-84c5-2b0f4f5594f5
-    type: condition
-    task:
-      id: aa6388da-d0c4-488c-84c5-2b0f4f5594f5
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "18"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.object_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.start
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.end
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.periodic.frequency
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.periodic.start_hour
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.periodic.start_minute
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.periodic.end_hour
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.TimeRange.periodic.end_minute
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 3560
+          "x": 162.5,
+          "y": 2950
         }
       }
     note: false
@@ -805,72 +650,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "18"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 3360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: e38a084b-767c-4951-8dba-b25a61f860ec
-    type: condition
-    task:
-      id: e38a084b-767c-4951-8dba-b25a61f860ec
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.LocalUser.object_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.LocalUser.name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CiscoASA.LocalUser.mschap_authenticated
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.LocalUser.privilege_level
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.LocalUser.asdm_cli_access_type
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 3160
+          "x": 162.5,
+          "y": 2750
         }
       }
     note: false
@@ -894,62 +681,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 2960
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 22227a01-86fc-4a38-8218-c23e96066aa2
-    type: condition
-    task:
-      id: 22227a01-86fc-4a38-8218-c23e96066aa2
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.LocalUserGroup.object_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.LocalUserGroup.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.LocalUserGroup.members.kind
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 2760
+          "x": 162.5,
+          "y": 2550
         }
       }
     note: false
@@ -973,69 +712,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "22"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 2560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: f1d7d0f4-ee60-4454-8002-960584a1cf56
-    type: condition
-    task:
-      id: f1d7d0f4-ee60-4454-8002-960584a1cf56
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.NetworkObjectGroup.object_id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.NetworkObjectGroup.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.NetworkObjectGroup.description
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: CiscoASA.NetworkObjectGroup.members.kind
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 2360
+          "x": 162.5,
+          "y": 2340
         }
       }
     note: false
@@ -1059,14 +743,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "24"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 2160
+          "x": 162.5,
+          "y": 2140
         }
       }
     note: false
@@ -1087,14 +771,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 4950
+          "x": 162.5,
+          "y": 3530
         }
       }
     note: false
@@ -1109,7 +792,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4965,
+        "height": 3545,
         "width": 572.5,
         "x": -30,
         "y": 50
@@ -1118,5 +801,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: ''
