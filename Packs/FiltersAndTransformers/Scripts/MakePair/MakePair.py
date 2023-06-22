@@ -92,9 +92,15 @@ def main():
         if array1_key := args.get('array1_key'):
             array1 = [demisto_get(x, array1_key) for x in array1]
 
+        if not isinstance(array1, list):
+            array1 = [array1]
+
         array2 = args.get('array2', [])
         if array2_key := args.get('array2_key'):
             array2 = [demisto_get(x, array2_key) for x in array2]
+
+        if not isinstance(array2, list):
+            array2 = [array2]
 
         determine_output_length_by = args.get('determine_output_length_by', 'shorter')
         if determine_output_length_by == 'array1':
