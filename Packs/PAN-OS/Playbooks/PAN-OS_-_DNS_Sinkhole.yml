@@ -13,12 +13,12 @@ description: |-
 
 
   How it works:
-  A DNS sinkhole can be used to identify infected hosts on a network where there is an internal DNS Server in-route to the firewall that causes the reference of the original source IP address of the host that first originated the query to be lost (the query is received by the Internal DNS Server, and the internal DNS Server sources a new query if the name-to-IP resolution is not locally cached).
+  A DNS sinkhole can be used to identify infected hosts on a network where there is an internal DNS Server in-route to the firewall that causes the reference of the original source IP address of the host that first originated the query to be lost (the query is received by the internal DNS server, and the internal DNS server sources a new query if the name-to-IP resolution is not locally cached).
 
   This causes the firewall to report observations of malicious DNS queries in the Threat logs where the source IP of the malicious DNS query is the Internal DNS server, which would force the administrator to look into the DNS Server logs to try to trace down what was the infected host that originally sourced the malicious DNS query.
 
-  After a security profile with a "sinkhole" action for domains listed in our EDL is attached to a rule that allows DNS traffic, the threat logs will show that requests from our DNS server were sinkholed. However, the compromised hosts will not appear in those logs.
-  The second step is creating a new rule for denying all requests to our Sinkhole Address. Since the infected hosts received a forged DNS response from our first step they will now try to connect to the Sinkhole Address, assuming it is their C&C server. The new rule will deny the subsequent attempts of those infected hosts when they try to access the Sinkhole Address, and log them.
+  After a security profile with a "sinkhole" action for domains listed in our EDL is attached to a rule that allows DNS traffic, the threat logs will show that requests from our DNS server were sinkholed. However, the compromised systems will not appear in those logs.
+  In order to find the IPs of the systems that tried to resolve the malicious domain, a new rule denying all requests to our Sinkhole Address needs to be created. Since the infected hosts received a forged DNS response due to the security profile involved in our previous step, they will now try to connect to the Sinkhole Address, assuming it is their C&C server. The new rule will deny the subsequent attempts of those infected hosts when they try to access the Sinkhole Address, and log them.
 
 
   Assumptions:
