@@ -5,11 +5,11 @@ import urllib3
 urllib3.disable_warnings()
 
 DEFAULT_HEADERS = {
-    'X-Access-Key': demisto.params().get('customer_id_creds', {}).get('password') or demisto.params().get("Access Key"),
-    'X-Key-Id': demisto.params().get('key_id_creds', {}).get('password') or demisto.params().get("Key ID"),
+    'X-Key-Id': demisto.params().get('credentials', {}).get('identifier') or demisto.params().get("Key ID"),
+    'X-Access-Key': demisto.params().get('credentials', {}).get('password') or demisto.params().get("Access Key"),
     'Content-Type': 'application/json',
 }
-CUSTOMER_ID = demisto.params().get('customer_id_creds', {}).get('identifier') or demisto.params().get("Customer ID")
+CUSTOMER_ID = demisto.params().get("Customer ID")
 BASE_URL = demisto.params().get("url")
 DEFAULT_PAGE_SIZE = 1000
 

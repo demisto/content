@@ -17,22 +17,16 @@ configuration:
   required: false
   type: 4
   hidden: true
-- display: Customer ID
-  name: customer_id_creds
-  required: false
-  type: 9
-  displaypassword: Access Key
 - display: Key ID
   hidden: true
   name: Key ID
   required: false
   type: 4
-- displaypassword: Key ID
-  hiddenusername: true
-  name: key_id_creds
+- display: Key ID
+  displaypassword: Access Key
+  name: credentials
   required: false
   type: 9
-
 description: Base Integration for Palo Alto IoT third party integrations. This integration communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities and devices.
 display: Palo Alto Networks IoT 3rd Party
 name: Palo Alto Networks IoT 3rd Party
