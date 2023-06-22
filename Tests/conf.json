@@ -5754,6 +5754,7 @@
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
+        "CIRCL",
         "rasterize",
         "Phishing",
         "Base",
