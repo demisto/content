@@ -600,7 +600,10 @@ test-upload-flow:
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
-    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
+    - export successfully_upload_id_set=$(python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN)
+    - echo "YUVAL $successfully_upload_id_set"
+    - if [ "${successfully_upload_id_set}" != "true" ]; then
+    -     break
     - section_end "Wait For Upload To Finish"
 
     - section_start "Verify Created Testing Bucket"
