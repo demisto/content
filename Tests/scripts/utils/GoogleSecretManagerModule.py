@@ -8,9 +8,6 @@ SPECIAL_CHARS = [' ', '(', '(', ')', '.', '']
 
 
 class GoogleSecreteManagerModule:
-    class SecretsFilter(Enum):
-        MASTER_SECRETS = 1
-        BRANCH_SECRETS = 2
 
     def __init__(self, service_account_file: str):
         self.client = self.init_secret_manager_client(service_account_file)
