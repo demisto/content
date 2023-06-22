@@ -62,7 +62,7 @@ ignore=PB110
 ignore=RM109
 
 [file:incidenttype-Review_Indicators_Manually_For_Whitelisting.json]
-ignore=GR100
+ignore=BC109
 
 [file:incidenttype-Review_Indicators_Manually.json]
-ignore=GR100
+ignore=BC109
