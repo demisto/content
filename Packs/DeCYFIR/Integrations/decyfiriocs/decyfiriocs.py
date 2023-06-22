@@ -26,6 +26,8 @@ LABEL_ATTACK_PATTERN = "attack-pattern"
 LABEL_TYPE = "type"
 LABEL_ID = "id"
 LABEL_VALUE = "value"
+LABEL_SOURCE_REF = "source_ref"
+LABEL_TARGET_REF = "target_ref"
 
 THREAT_INTEL_SCORES = {
     ThreatIntel.ObjectsNames.CAMPAIGN: ThreatIntel.ObjectsScore.CAMPAIGN,
@@ -94,10 +96,10 @@ class Client(BaseClient):
             ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
         }
 
-        target_type = target_data.get(LABEL_TYPE)
-        target_value = target_data.get(LABEL_VALUE)
-        source_type = source_data.get(LABEL_TYPE)
-        source_value = source_data.get(LABEL_VALUE)
+        target_type:str = target_data.get(LABEL_TYPE)
+        target_value:str = target_data.get(LABEL_VALUE)
+        source_type:str = source_data.get(LABEL_TYPE)
+        source_value:str = source_data.get(LABEL_VALUE)
 
         relationship = relationship_mapping.get(target_type)
         if relationship:
@@ -154,6 +156,18 @@ class Client(BaseClient):
                 "description": data.get("description", ''),
                 "firstseenbysource": data.get("created"),
                 "modified": data.get("modified"),
+                "trafficlightprotocol": tlp_color if tlp_color else "",
+                "aliases": [],
+                "peratingsystemrefs":[],
+                "tags": [],
+                "primary_motivation": "Cyber Crime",
+                "secondary_motivations": data.get('primary_motivation',''),
+                "sophistication": "advanced",
+                "resource_level": "team",
+                "threatactortypes": data.get('threat_actor_types',''),
+
+                "ismalwarefamily": data.get('is_family',''),
+                "malwaretypes": data.get('malware_types','')
             }
         }
 
@@ -177,23 +191,21 @@ class Client(BaseClient):
                 if ttps_id:
                     self.add_tags(ti_data_obj, ttps_id)
 
-        if intel_type is ThreatIntel.ObjectsNames.THREAT_ACTOR:
-            ti_data_obj['fields'].update({
-                'primary_motivation': "Cyber Crime",
-                'secondary_motivations': data.get('primary_motivation'),
-                'sophistication': "advanced",
-                'resource_level': "team",
-                'threatactortypes': data.get('threat_actor_types')
-            })
+        # if intel_type is ThreatIntel.ObjectsNames.THREAT_ACTOR:
+        #     ti_data_obj['fields'].update({
+        #         'primary_motivation': "Cyber Crime",
+        #         'secondary_motivations': data.get('primary_motivation'),
+        #         'sophistication': "advanced",
+        #         'resource_level': "team",
+        #         'threatactortypes': data.get('threat_actor_types')
+        #     })
 
-        if intel_type is ThreatIntel.ObjectsNames.MALWARE:
-            ti_data_obj['fields'].update({
-                'ismalwarefamily': data.get('is_family'),
-                'malwaretypes': data.get('malware_types')
-            })
+        # if intel_type is ThreatIntel.ObjectsNames.MALWARE:
+        #     ti_data_obj['fields'].update({
+        #         'ismalwarefamily': data.get('is_family'),
+        #         'malwaretypes': data.get('malware_types')
+        #     })
 
-        if tlp_color:
-            ti_data_obj['fields']['trafficlightprotocol'] = tlp_color
 
         kill_chain_phases = [phase.get('phase_name') for phase in data.get("kill_chain_phases", [])]
         ti_data_obj['fields']['killchainphases'] = kill_chain_phases
@@ -264,15 +276,15 @@ class Client(BaseClient):
                             raw_ta_data[data1.get(LABEL_ID)] = data1
 
                     for raw_ta_rel_ in raw_ta_rels:
-                        if raw_ta_rel_.get('source_ref') in raw_ta_data:
-                            source_ref_obj = raw_ta_data.get(raw_ta_rel_.get('source_ref'))
+                        if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
+                            source_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF))
                         else:
-                            source_ref_obj = raw_ta_data.get(raw_ta_rel_.get('sourceRef'))
+                            source_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get('sourceRef'))
 
-                        if raw_ta_rel_.get('target_ref') in raw_ta_data:
-                            target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('target_ref'))
+                        if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
+                            target_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF))
                         else:
-                            target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('targetRef'))
+                            target_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get('targetRef'))
 
                         if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
                             source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
@@ -280,8 +292,7 @@ class Client(BaseClient):
                         else:
                             source_ti_data_obj = ta_source_obj
 
-                        if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and source_ti_data_obj.get(
-                            LABEL_ID) != target_ref_obj.get(LABEL_ID):
+                        if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and source_ti_data_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID):
                             target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color, feed_tags)
                             return_data.append(target_ti_data_obj)
                         else:
@@ -289,9 +300,7 @@ class Client(BaseClient):
 
                         if source_ti_data_obj and target_ti_data_obj:
                             if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                  target_ti_data_obj)
-
+                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
                                 source_ti_data_obj[LABEL_RELATIONSHIPS] = []
                                 if ti_relationships:
                                     if source_ti_data_obj[LABEL_RELATIONSHIPS]:
@@ -299,8 +308,7 @@ class Client(BaseClient):
                                     else:
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
                             else:
-                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                  target_ti_data_obj)
+                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
                                 if ti_relationships:
                                     src_ti_relationships_data.append(ti_relationships)
 
@@ -374,6 +382,7 @@ class Client(BaseClient):
                     "description": ioc.get("description", ''),
                     "firstseenbysource": ioc.get("created"),
                     "modified": ioc.get('modified'),
+                    "trafficlightprotocol": tlp_color if tlp_color else "",
                 }
             }
             if file_hash_values:
@@ -383,8 +392,6 @@ class Client(BaseClient):
             if feed_tags:
                 self.add_tags(ioc_data, feed_tags)
 
-            if tlp_color:
-                ioc_data['fields']['trafficlightprotocol'] = tlp_color
 
             if ioc.get("labels"):
                 for label in ioc.get("labels"):
