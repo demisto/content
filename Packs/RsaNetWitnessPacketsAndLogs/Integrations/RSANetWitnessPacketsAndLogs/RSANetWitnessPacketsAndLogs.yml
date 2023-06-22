@@ -18,25 +18,34 @@ configuration:
   name: username
   defaultvalue: admin
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: Password
   name: password
   type: 4
-  required: true
+  required: false
+  hidden: true
+- display: Username
+  name: user_creds
+  type: 9
+  required: false
+  displaypassword: Password
 - display: Validate server certificate
   name: secure
-  defaultvalue: "true"
+  defaultvalue: 'true'
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
-- display: Expiration time
+- defaultvalue: ''
+  display: Expiration time
   name: expiry
-  type: 0
   required: false
+  type: 0
+
 script:
   script: ''
   type: javascript
@@ -457,3 +466,5 @@ script:
       defaultValue: "true"
     description: Dumps information out of the database in nwd formatted files
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
