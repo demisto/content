@@ -223,6 +223,7 @@ script:
       - text/csv
       - text/xml
       - application/json
+      - application/octet-stream
       description: The render type - pcap, logs, logs (csv), logs (xml) or logs (json)
     - name: noFile
       auto: PREDEFINED
