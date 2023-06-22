@@ -4,10 +4,10 @@ import re
 
 try:
     indicatorValues = str(demisto.args().get('indicatorValues'))
-    reason = demisto.args().get('reason','')
+    reason = demisto.args().get('reason', '')
     indicatorQuery = re.sub(',', ' or ', indicatorValues)
     searchQuery = 'value:(' + indicatorQuery + ')'
-    res = demisto.executeCommand("deleteIndicators", {"query":searchQuery,"doNotWhitelist":"false","reason":reason})
+    res = demisto.executeCommand("deleteIndicators", {"query": searchQuery, "doNotWhitelist": "false", "reason": reason})
     resp = res[0]
     if isError(resp):
         raise Exception(resp['Contents'])
