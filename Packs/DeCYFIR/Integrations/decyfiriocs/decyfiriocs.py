@@ -88,6 +88,8 @@ class Client(BaseClient):
         response = self._http_request(url_suffix=decyfir_api_path, method='GET', resp_type='response')
         if response.status_code == 200:
             return response.json() if response.content else []
+        else:
+            return []
 
     def build_relationships(self, relation_type: str, source_value: str, source_type: str, target_value: str, target_type: str):
 
@@ -96,7 +98,7 @@ class Client(BaseClient):
                                   entity_b=target_value, entity_b_type=target_type
                                   ).to_indicator()
 
-    def build_threat_actor_relationship_obj(self, source_data: Dict, target_data: Dict):
+    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]):
 
         if ThreatIntel.ObjectsNames.INTRUSION_SET is target_data.get(LABEL_TYPE):
             return self.build_relationships(EntityRelationship.Relationships.ATTRIBUTED_TO,
@@ -130,13 +132,13 @@ class Client(BaseClient):
 
         return None
 
-    def build_ioc_relationship_obj(self, ioc_data: Dict, target_data: Dict):
+    def build_ioc_relationship_obj(self, ioc_data: Dict[str, str], target_data: Dict[str, str]):
 
         return self.build_relationships(EntityRelationship.Relationships.INDICATOR_OF,
                                         ioc_data.get(LABEL_VALUE), ioc_data.get(LABEL_TYPE),
                                         target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
 
-    def add_tags(self, in_ti: Dict, data: Optional[List | str]):
+    def add_tags(self, in_ti: Dict, data: Optional[List[str] | str]):
 
         if 'Unknown' in data:
             data.remove('Unknown')
