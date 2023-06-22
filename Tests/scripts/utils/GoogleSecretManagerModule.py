@@ -44,15 +44,13 @@ class GoogleSecreteManagerModule:
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
             return {}
 
-    def list_secrets(self, project_id: str, name_filter=None, with_secrets: bool = False, branch_name='',
-                     secrets_type: SecretsFilter = SecretsFilter.MASTER_SECRETS) -> list:
+    def list_secrets(self, project_id: str, labels_filter: dict, name_filter=None, with_secrets: bool = False) -> list:
         """
         Lists secrets from GSM
         :param project_id: the ID of the GCP project
         :param name_filter: a secret name to filter results by
         :param with_secrets: indicates if we want to bring the secret value(will need another API call per scret or just metadata)
-        :param branch_name: filter results according to the label 'branch'
-        :param secrets_type: indicates whether we ignore secrets with the 'dev' label
+        :param labels_filter: indicates how we want to filer secrets according to labels
         :return: the secret as json5 object
         """
         if name_filter is None:
@@ -70,9 +68,8 @@ class GoogleSecreteManagerModule:
             logging.debug(f'Getting the secret: {secret.name}')
             search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
             # Check if the secret comply to the function filter params
-            if not secret_pack_id or labels.get('ignore') or labels.get('merged') or (
-                secrets_type == self.SecretsFilter.MASTER_SECRETS and labels.get('dev')) or (
-                    search_ids and secret_pack_id not in search_ids) or (branch_name and labels.get('branch', '') != branch_name):
+            filter = [eval(f'labels.get("{k}"){v}') for k, v in labels_filter.items()]
+            if not all(filter) or (search_ids and secret_pack_id not in search_ids):
                 continue
             if with_secrets:
                 try:
