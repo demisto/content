@@ -92,7 +92,7 @@ def main():
                 print(f'Branch {branch_name} is not ahead of {base_branch} '
                       'and therefore not suited for a posterity PR')
                 print(f'Deleting stale branch {branch_name} without creating a postery PR')
-                # content_repo.get_git_ref(f'heads/{branch_name}').delete()
+                content_repo.get_git_ref(f'heads/{branch_name}').delete()
             else:
                 print(f'Creating PR for {branch_name}')
                 title = branch_name
@@ -105,7 +105,7 @@ def main():
                 print(f'{t.cyan}Posterity PR Closed{t.normal}')
                 print(f'Deleting {branch_name}')
                 branch_ref = content_repo.get_git_ref(f'heads/{branch_name}')
-                # branch_ref.delete()
+                branch_ref.delete()
         except Exception as e:
             print(f"{t.red}Deletion of {branch_name} encountered an issue: {str(e)}{t.normal}")
 

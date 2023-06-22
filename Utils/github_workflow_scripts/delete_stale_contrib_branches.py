@@ -63,7 +63,7 @@ def main():
         try:
             print(f'Deleting {branch_name}')
             branch_ref = content_repo.get_git_ref(f'heads/{branch_name}')
-            # branch_ref.delete()
+            branch_ref.delete()
         except Exception as e:
             print(f"{t.red}Deletion of {branch_name} encountered an issue: {str(e)}{t.normal}")
 

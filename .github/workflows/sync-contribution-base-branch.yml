@@ -1,8 +1,9 @@
 name: Sync contributor base branch
-on:
-  schedule:
-    # runs at minute 0 of the 0th hour every day.
-    - cron:  '0 0 * * *'
+#on:
+#  schedule:
+#    # runs at minute 0 of the 0th hour every day.
+#    - cron:  '0 0 * * *'
+on: pull_request
 
 permissions:
   contents: read
@@ -19,7 +20,7 @@ jobs:
         with:
           python-version: '3.9'
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v7
+        uses: Gr1N/setup-poetry@v8
       - name: Install Python Dependencies
         run: |
           poetry install --with ci

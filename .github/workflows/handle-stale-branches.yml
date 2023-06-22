@@ -1,9 +1,8 @@
 name: Handle stale branches
-#on:
-#  schedule:
-#    # runs every day at midnight (UTC time).
-#    - cron:  '0 0 * * *'
-on: pull_request
+on:
+  schedule:
+    # runs every day at midnight (UTC time).
+    - cron:  '0 0 * * *'
 permissions:
   contents: read
 
