@@ -2936,7 +2936,7 @@ def release_hosts_command(args, aws_client):
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The host was successfully released.")
 
-def test_func_1():
+def test_func():
     pass
 
 def main():
