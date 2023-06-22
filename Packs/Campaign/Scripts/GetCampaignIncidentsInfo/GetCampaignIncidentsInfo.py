@@ -58,6 +58,8 @@ def update_incident_with_required_keys(incidents: List, required_keys: List):
         for key in required_keys:
             incident[key] = updated_incident.get(key)
 
+    return incidents
+
 
 def convert_incident_to_hr(incident):
     """
@@ -155,7 +157,7 @@ def main():
         incidents = get_campaign_incidents_from_context()
         fields_to_display = demisto.get(demisto.context(), 'EmailCampaign.fieldsToDisplay')
         if incidents:
-            update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
+            incidents = update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
             update_empty_fields()
             readable_output = get_incidents_info_md(incidents, fields_to_display)
         else:
