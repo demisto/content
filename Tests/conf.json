@@ -4583,7 +4583,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
             "integrations": [
@@ -4597,7 +4597,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 160,
-            "pid_threshold": 80
+            "pid_threshold": 80,
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
