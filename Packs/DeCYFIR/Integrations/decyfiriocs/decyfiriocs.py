@@ -439,8 +439,7 @@ class Client(BaseClient):
             return_data.append(ioc_data)
         return return_data
 
-    def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str],
-                         feed_tags: Optional[List]):
+    def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str], feed_tags: Optional[List]) -> List[Dict]:
 
         # Indicators from DeCYFIR
         iocs_data = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
@@ -449,11 +448,14 @@ class Client(BaseClient):
         tas_data = self.get_decyfir_api_iocs_ti_data(TA_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
 
         return_data = []
-        # Converting indicators & threat intel data to XSOAR indicators format
-        return_data.extend(
-            self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color, feed_tags))
-        return_data.extend(self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags,
-                                                                         ThreatIntel.ObjectsNames.THREAT_ACTOR))
+
+        # Converting indicators data to XSOAR indicators format
+        ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color, feed_tags)
+        return_data.extend(ioc_indicators)
+
+        # Converting threat intel data to XSOAR indicators format
+        ta_indicators = self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags, ThreatIntel.ObjectsNames.THREAT_ACTOR)
+        return_data.extend(ta_indicators)
 
         return return_data
 
