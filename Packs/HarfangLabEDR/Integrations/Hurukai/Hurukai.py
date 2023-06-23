@@ -8,6 +8,7 @@ import requests
 import time
 import traceback
 
+from enum import Enum
 from typing import Any, Dict
 from datetime import datetime, timedelta, timezone
 import dateutil.parser
@@ -38,6 +39,39 @@ SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 MAX_NUMBER_OF_ALERTS_PER_CALL = 25
 
+HFL_SECURITY_EVENT_INCOMING_ARGS = ['status']
+
+SECURITY_EVENT_STATUS = {'new', 'probable_false_positive', 'false_positive', 'investigating', 'closed'}
+
+STATUS_HFL_TO_XSOAR = {
+    'new': 'New',
+    'probable_false_positive': 'Closed',
+    'false_positive': 'Closed',
+    'investigating': 'In Progress',
+    'closed': 'Closed'
+}
+
+STATUS_XSOAR_TO_HFL = {
+    'New': 'new',
+    'Reopened': 'investigating',
+    'In Progress': 'investigating',
+    'Closed': 'closed'
+}
+
+HFL_THREAT_OUTGOING_ARGS = {'status': f'Updated threat status, one of {"/".join(STATUS_HFL_TO_XSOAR.keys())}'}
+
+HFL_SECURITY_EVENT_OUTGOING_ARGS = {'status': f'Updated security event status, one of {"/".join(STATUS_HFL_TO_XSOAR.keys())}'}
+
+MIRROR_DIRECTION_DICT = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+class IncidentType(Enum):
+    SEC_EVENT = 'sec'
+    THREAT = 'thr'
 
 def _construct_request_parameters(args: dict, keys: list, params={}):
     """A helper function to add the keys arguments to the dict parameters"""
@@ -116,13 +150,29 @@ class Client(BaseClient):
                 url_suffix=f'/api/data/endpoint/Agent/{agent_id}/',
             )
 
-    def endpoint_search(self, hostname=None, offset=0):
+    def endpoint_search(self, hostname=None, offset=0, threat_id=None, fields=None):
 
-        data = assign_params(hostname=hostname, offset=offset)
+        fields_str = None
+        if fields:
+            fields_str = ','.join(fields)
+        data = assign_params(hostname=hostname, offset=offset, threat_id=threat_id, fields=fields_str, limit=10000)
 
         return self._http_request(
             method='GET',
             url_suffix='/api/data/endpoint/Agent/',
+            params=data
+        )
+
+    def user_search(self, threat_id=None, fields=None):
+
+        fields_str = None
+        if fields:
+            fields_str = ','.join(fields)
+        data = assign_params(offset=0, threat_id=threat_id, fields=fields_str, limit=10000)
+
+        return self._http_request(
+            method='GET',
+            url_suffix='/api/data/host_properties/local_users/windows/',
             params=data
         )
 
@@ -336,13 +386,13 @@ class Client(BaseClient):
         else:
             data['ids'] = [eventid]
 
-        if status == 'New':
+        if status.lower() == 'new':
             data['new_status'] = 'new'
-        elif status == 'Investigating':
+        elif status.lower() == 'investigating':
             data['new_status'] = 'investigating'
-        elif status == 'False Positive':
+        elif status.lower() == 'false positive':
             data['new_status'] = 'false_positive'
-        elif status == 'Closed':
+        elif status.lower() == 'closed':
             data['new_status'] = 'closed'
 
         return self._http_request(
@@ -468,10 +518,19 @@ def test_module(client, args):
 
 
 def fetch_incidents(client, args):
-
-    agents = {}
-
     last_run = demisto.getLastRun()
+
+    if not last_run:
+        last_run = [{}, {}]
+
+    if not isinstance(last_run, list):
+        last_run = [last_run, {}]
+
+    current_fetch_info_sec_events: dict = last_run[0]
+    current_fetch_info_threats: dict = last_run[1]
+
+    max_results = args.get('max_results', None)
+    fetch_types = args.get('fetch_types', [])
 
     if 'first_fetch' in args and args['first_fetch']:
         days = int(args['first_fetch'])
@@ -479,28 +538,8 @@ def fetch_incidents(client, args):
         days = 0
     first_fetch_time = int(datetime.timestamp(
         datetime.now() - timedelta(days=days)) * 1000000)
+
     alert_status = args.get('alert_status', None)
-    alert_type = args.get('alert_type', None)
-    min_severity = args.get('min_severity', SEVERITIES[0])
-    max_results = args.get('max_fetch', None)
-
-    severity = ','.join(SEVERITIES[SEVERITIES.index(min_severity):]).lower()
-
-    already_fetched_previous = []
-    already_fetched_current = []
-
-    last_fetch = None
-    if last_run:
-        last_fetch = last_run.get('last_fetch', None)
-        already_fetched_previous = last_run.get('already_fetched', [])
-
-    if last_fetch is None:
-        # if missing, use what provided via first_fetch_time
-        last_fetch = first_fetch_time
-    else:
-        # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
-
     if alert_status == 'ACTIVE':
         status = ['new', 'probable_false_positive', 'investigating']
     elif alert_status == 'CLOSED':
@@ -508,110 +547,139 @@ def fetch_incidents(client, args):
     else:
         status = None
 
-    args = {
-        'ordering': '+alert_time',
-        'level': severity,
-        'limit': MAX_NUMBER_OF_ALERTS_PER_CALL,
-        'offset': 0
-    }  # type: Dict[str,Any]
 
-    if status:
-        args['status'] = ','.join(status)
+    incidents = []
 
-    if alert_type:
-        args['alert_type'] = alert_type
+    if 'Threats' in fetch_types:
+        already_fetched_previous = []
+        already_fetched_current = []
 
-    latest_created_time_us = 0
+        last_fetch = None
+        if current_fetch_info_threats:
+            last_fetch = current_fetch_info_threats.get('last_fetch', None)
+            already_fetched_previous = current_fetch_info_threats.get('already_fetched', [])
 
-    if last_fetch:
+        if last_fetch is None:
+            # if missing, use what provided via first_fetch_time
+            last_fetch = first_fetch_time
+        else:
+            # otherwise use the stored last fetch
+            last_fetch = int(last_fetch)
+
         latest_created_time_us = int(last_fetch)
         cursor = datetime.fromtimestamp(latest_created_time_us
                                         / 1000000).replace(tzinfo=timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-        args['alert_time__gte'] = cursor
 
-    incidents = []
-    total_number_of_alerts = 0
+        threats = get_threats(client,
+                                         min_created_timestamp=cursor,
+                                         threat_status=status,
+                                         min_severity=args.get('min_severity', SEVERITIES[0])
+                                         )
 
-    while True:
+        for threat in threats:
 
-        results = client._http_request(
-            method='GET',
-            url_suffix='/api/data/alert/alert/Alert/',
-            params=args
-        )
+            incident_created_time_us = int(datetime.timestamp(
+                dateutil.parser.isoparse(threat.get('first_seen', '0'))) * 1000000)
 
-        if 'count' in results and 'results' in results:
-            for alert in results['results']:
-                incident_created_time_us = int(datetime.timestamp(
-                    dateutil.parser.isoparse(alert.get('alert_time', '0'))) * 1000000)
+            # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
+            if incident_created_time_us <= latest_created_time_us:
+                continue
 
-                # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-                if last_fetch:
-                    if incident_created_time_us <= latest_created_time_us:
-                        continue
+            alert_id = threat.get('id', None)
+            threat['incident_link'] = f'{client._base_url}/threat/{alert_id}/summary'
 
-                tags = alert.get('tags', [])
-                tactic = []
-                technique_id = []
+            threat['mirror_direction'] = MIRROR_DIRECTION_DICT.get(args.get('mirror_direction'))
+            threat['mirror_instance'] = demisto.integrationInstance()
+            threat['incident_type'] = 'Hurukai threat'
 
-                for tag in tags:
-                    if tag.startswith('attack'):
-                        content = tag[7:]
-                        if content in TACTICS:
-                            tactic.append(TACTICS[content])
-                        elif content[0] == 't':
-                            technique_id.append(content)
-
-                alert_id = alert.get('id', None)
-                alert['incident_link'] = f'{client._base_url}/security-event/{alert_id}/summary'
-
-                #Retrieve additional endpoint information
-                groups = []
-                agentid = alert.get('agent', {}).get('agentid')
-                if agentid in agents:
-                    agent = agents[agentid]
-                else:
-                    try:
-                        agent = client.get_endpoint_info(agentid)
-                    except Exception as e:
-                        agent = None
-                    agents[agentid] = agent
-
-                if agent:
-                    for g in agent.get('groups',[]):
-                        groups.append(g['name'])
-                    alert['agent']['policy_name'] = agent.get('policy',{}).get('name')
-                    alert['agent']['groups'] = groups
-
+            if alert_id not in already_fetched_previous:
                 incident = {
-                    'name': alert.get('rule_name', None),
-                    'occurred': alert.get('alert_time', None),
-                    'severity': SEVERITIES.index(alert.get('level', '').capitalize()) + 1,
-                    'rawJSON': json.dumps(alert)
+                    'name': threat.get('slug', None),
+                    'occurred': threat.get('first_seen', None),
+                    'severity': SEVERITIES.index(threat.get('level', '').capitalize()) + 1,
+                    'rawJSON': json.dumps(threat)
                 }
+                incidents.append(incident)
+                already_fetched_current.append(alert_id)
 
-                if alert_id not in already_fetched_previous:
-                    incidents.append(incident)
-                    already_fetched_current.append(alert_id)
+            if incident_created_time_us > latest_created_time_us:
+                latest_created_time_us = incident_created_time_us
 
-                if incident_created_time_us > latest_created_time_us:
-                    latest_created_time_us = incident_created_time_us
+            if max_results and len(incidents) >= max_results:
+                break
 
-                total_number_of_alerts += 1
-                if max_results and total_number_of_alerts >= max_results:
-                    break
+        current_fetch_info_threats = {'last_fetch': latest_created_time_us,
+                        'already_fetched': already_fetched_current}
 
-        args['offset'] += len(results['results'])
-        if results['count'] == 0 or not results['next'] or (max_results and total_number_of_alerts >= max_results):
-            break
+    if 'Security Events' in fetch_types:
 
-    next_run = {'last_fetch': latest_created_time_us,
-                'already_fetched': already_fetched_current}
+        already_fetched_previous = []
+        already_fetched_current = []
 
-    demisto.setLastRun(next_run)
+        last_fetch = None
+        if current_fetch_info_sec_events:
+            last_fetch = current_fetch_info_sec_events.get('last_fetch', None)
+            already_fetched_previous = current_fetch_info_sec_events.get('already_fetched', [])
+
+        if last_fetch is None:
+            # if missing, use what provided via first_fetch_time
+            last_fetch = first_fetch_time
+        else:
+            # otherwise use the stored last fetch
+            last_fetch = int(last_fetch)
+
+        latest_created_time_us = int(last_fetch)
+        cursor = datetime.fromtimestamp(latest_created_time_us
+                                        / 1000000).replace(tzinfo=timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+        sec_events = get_security_events(client,
+                                         min_created_timestamp=cursor,
+                                         alert_status=status,
+                                         alert_type=args.get('alert_type'),
+                                         min_severity=args.get('min_severity', SEVERITIES[0])
+                                         )
+
+        for sec_event in sec_events:
+
+            incident_created_time_us = int(datetime.timestamp(
+                dateutil.parser.isoparse(sec_event.get('alert_time', '0'))) * 1000000)
+
+            # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
+            if incident_created_time_us <= latest_created_time_us:
+                continue
+
+            alert_id = sec_event.get('id', None)
+            sec_event['incident_link'] = f'{client._base_url}/security-event/{alert_id}/summary'
+
+            sec_event['mirror_direction'] = MIRROR_DIRECTION_DICT.get(args.get('mirror_direction'))
+            sec_event['mirror_instance'] = demisto.integrationInstance()
+            sec_event['incident_type'] = 'Hurukai alert'
+
+            if alert_id not in already_fetched_previous:
+                incident = {
+                    'name': sec_event.get('rule_name', None),
+                    'occurred': sec_event.get('alert_time', None),
+                    'severity': SEVERITIES.index(sec_event.get('level', '').capitalize()) + 1,
+                    'rawJSON': json.dumps(sec_event)
+                }
+                incidents.append(incident)
+                already_fetched_current.append(alert_id)
+
+            if incident_created_time_us > latest_created_time_us:
+                latest_created_time_us = incident_created_time_us
+
+            if max_results and len(incidents) >= max_results:
+                break
+
+        current_fetch_info_sec_events = {'last_fetch': latest_created_time_us,
+                        'already_fetched': already_fetched_current}
+
+
+    last_run = [current_fetch_info_sec_events, current_fetch_info_threats]
+    demisto.setLastRun(last_run)
     demisto.incidents(incidents)
 
-    return next_run, incidents
+    return last_run, incidents
 
 
 def get_endpoint_info(client, args):
@@ -2510,6 +2578,7 @@ class TelemetryBinary(Telemetry):
         return super().telemetry(client, args)
 
 
+
 def get_function_from_command_name(command):
     commands = {
         'harfanglab-get-endpoint-info': get_endpoint_info,
@@ -2610,11 +2679,510 @@ def get_function_from_command_name(command):
         'harfanglab-whitelist-delete': delete_whitelist,
 
         'fetch-incidents': fetch_incidents,
+        'get-modified-remote-data': get_modified_remote_data,
+        'get-remote-data': get_remote_data,
+        'update-remote-system': update_remote_system,
+        'get-mapping-fields': get_mapping_fields,
         'test-module': test_module
     }
 
     return commands.get(command)
 
+
+def get_security_events(client, security_event_ids=None, min_created_timestamp=None, min_updated_timestamp=None, alert_status = None, alert_type = None, min_severity = SEVERITIES[0], max_results = None, fields = None, limit = MAX_NUMBER_OF_ALERTS_PER_CALL, ordering = 'alert_time', threat_id = None):
+
+    security_events = []
+
+    agents = {}
+
+    if security_event_ids:
+        for sec_evt_id in security_event_ids:
+            results = client._http_request(
+                method='GET',
+                url_suffix=f'/api/data/alert/alert/Alert/{sec_evt_id}/details/'
+            )
+
+            alert = results['alert']
+
+            #Retrieve additional endpoint information
+            groups = []
+            agent = None
+            agentid = alert.get('agent', {}).get('agentid',None)
+            if agentid:
+                if agentid in agents:
+                    agent = agents[agentid]
+                else:
+                    try:
+                        agent = client.get_endpoint_info(agentid)
+                    except Exception as e:
+                        agent = None
+                    agents[agentid] = agent
+
+                if agent:
+                    for g in agent.get('groups',[]):
+                        groups.append(g['name'])
+                    alert['agent']['policy_name'] = agent.get('policy',{}).get('name')
+                    alert['agent']['groups'] = groups
+
+            security_events.append(alert)
+
+        return security_events
+
+    args = {
+        'ordering': ordering,
+        'level': ','.join(SEVERITIES[SEVERITIES.index(min_severity):]).lower(),
+        'limit': limit,
+        'offset': 0
+    }  # type: Dict[str,Any]
+
+    if alert_status == 'ACTIVE':
+        args['status'] = ','.join(['new', 'probable_false_positive', 'investigating'])
+    elif alert_status == 'CLOSED':
+        args['status'] = ','.join(['closed', 'false_positive'])
+
+    if alert_type:
+        args['alert_type'] = alert_type
+
+    if min_created_timestamp:
+        args['alert_time__gte'] = min_created_timestamp
+
+    if min_updated_timestamp:
+        if not fields:
+            fields = []
+        if 'last_update' not in fields:
+            fields.append('last_update')
+
+    if fields:
+        args['fields'] = ','.join(fields)
+
+    if threat_id:
+        args['threat_key'] = threat_id
+
+    demisto.debug(f'Args for fetch_security_events: {args}')
+
+    while True:
+
+        results = client._http_request(
+            method='GET',
+            url_suffix='/api/data/alert/alert/Alert/',
+            params=args
+        )
+
+        demisto.debug(f'Got {len(results["results"])} security events')
+
+        for alert in results['results']:
+
+            alert_id = alert.get('id', None)
+            alert['incident_link'] = f'{client._base_url}/security-event/{alert_id}/summary'
+
+            #Retrieve additional endpoint information
+            groups = []
+            agent = None
+            agentid = alert.get('agent', {}).get('agentid',None)
+            if agentid:
+                if agentid in agents:
+                    agent = agents[agentid]
+                else:
+                    try:
+                        agent = client.get_endpoint_info(agentid)
+                    except Exception as e:
+                        agent = None
+                    agents[agentid] = agent
+
+                if agent:
+                    for g in agent.get('groups',[]):
+                        groups.append(g['name'])
+                    alert['agent']['policy_name'] = agent.get('policy',{}).get('name')
+                    alert['agent']['groups'] = groups
+
+            if min_updated_timestamp:
+                min_timestamp = dateutil.parser.isoparse(min_updated_timestamp)
+                if 'last_update' in alert:
+                    alert_update = dateutil.parser.isoparse(alert.get('last_update'))
+                    demisto.debug(f'alert_update: {alert_update}, min_timestamp: {min_timestamp}')
+
+                    if alert_update > min_timestamp:
+                        security_events.append(alert)
+            else:
+                security_events.append(alert)
+
+            if max_results and len(security_events) >= max_results:
+                break
+
+        demisto.debug(f'Got eventually {len(security_events)} security events')
+
+        args['offset'] += len(results['results'])
+        if results['count'] == 0 or not results['next'] or (max_results and len(security_events) >= max_results):
+            break
+
+    return security_events
+
+def enrich_threat(client, threat):
+    if not client or not threat or 'id' not in threat:
+        return
+
+    threat_id = threat.get('id')
+
+    if not threat_id:
+        return
+
+    #Get agents
+    results = client.endpoint_search(threat_id=threat_id, fields=['id', 'hostname', 'domainname', 'osproducttype', 'ostype'])
+    if 'top_agents' in threat:
+        del(threat['top_agents'])
+    threat['agents'] = results['results']
+
+    #Get users
+    results = client.user_search(threat_id=threat_id)
+    if 'top_impacted_users' in threat:
+        del(threat['top_impacted_users'])
+    threat['impacted_users'] = results['results']
+
+
+    #Get rules
+    args = assign_params(threat_id=threat_id, fields='rule_level,rule_name,security_event_count')
+    results = client._http_request(
+        method='GET',
+        url_suffix='/api/data/alert/alert/Threat/rules/',
+        params=args
+    )
+
+    if 'top_rules' in threat:
+        del(threat['top_rules'])
+    threat['rules'] = results['results']
+
+
+def get_threats(client, threat_ids=None, min_created_timestamp=None, min_updated_timestamp=None, threat_status = None, min_severity = SEVERITIES[0], max_results = None, fields = None, limit = MAX_NUMBER_OF_ALERTS_PER_CALL, ordering ='last_seen'):
+
+    threats = []
+
+    if not threat_ids:
+        threat_ids = []
+        args = {
+            'ordering': ordering,
+            'level': ','.join(SEVERITIES[SEVERITIES.index(min_severity):]).lower(),
+            'limit': limit,
+            'offset': 0
+        }  # type: Dict[str,Any]
+
+        if threat_status == 'ACTIVE':
+            args['status'] = ','.join(['new', 'investigating'])
+        elif threat_status == 'CLOSED':
+            args['status'] = ','.join(['closed', 'false_positive'])
+
+        if min_created_timestamp:
+            args['from'] = min_created_timestamp
+
+        args['fields'] = 'id'
+
+        while True:
+            results = client._http_request(
+                method='GET',
+                url_suffix='/api/data/alert/alert/Threat/',
+                params=args
+            )
+            demisto.debug(f'Got {len(results["results"])} threats')
+
+            for threat in results['results']:
+                threat_ids.append(threat['id'])
+
+                if max_results and len(threat_ids) >= max_results:
+                    break
+
+            args['offset'] += len(results['results'])
+            if results['count'] == 0 or not results['next'] or (max_results and len(threat_ids) >= max_results):
+                break
+
+
+    for threat_id in threat_ids:
+        threat = client._http_request(
+            method='GET',
+            url_suffix=f'/api/data/alert/alert/Threat/{threat_id}/'
+        )
+        enrich_threat(client, threat)
+
+        threat_id = threat.get('id', None)
+        threat['incident_link'] = f'{client._base_url}/threat/{threat_id}/summary'
+
+        if min_updated_timestamp:
+            min_timestamp = dateutil.parser.isoparse(min_updated_timestamp)
+            if 'last_seen' in threat:
+                threat_update = dateutil.parser.isoparse(threat.get('last_seen'))
+                demisto.debug(f'threat_update: {threat_update}, min_timestamp: {min_timestamp}')
+
+                if threat_update > min_timestamp:
+                    threats.append(threat)
+        else:
+            threats.append(threat)
+
+    return threats
+
+def get_modified_remote_data(client, args):
+    """
+    Gets the modified remote security events and threat IDs.
+    Args:
+        args:
+            last_update: the last time we retrieved modified security events and threats.
+
+    Returns:
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved security events and threat IDs.
+    """
+    demisto.debug('In get_modified_remote_data')
+    remote_args = GetModifiedRemoteDataArgs(args)
+
+    last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
+    last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+    demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
+
+    modified_ids_to_mirror = list()
+
+    #Fetch the latest security events and retrieve those whose last update fields is more recent than the last update timestamp
+    sec_events = get_security_events(client,
+                                     min_updated_timestamp=last_update_timestamp,
+                                     alert_type=args.get('alert_type'),
+                                     min_severity=args.get('min_severity', SEVERITIES[0]),
+                                     fields=['id','last_update'],
+                                     limit=10000,
+                                     ordering='-alert_time')
+
+    for sec_event in sec_events:
+        modified_ids_to_mirror.append(f'{IncidentType.SEC_EVENT.value}:{sec_event["id"]}')
+
+    #TODO: same thing for threats
+
+    demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
+    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+
+def find_incident_type(remote_incident_id: str):
+    if remote_incident_id[0:3] == IncidentType.SEC_EVENT.value:
+        return IncidentType.SEC_EVENT
+    if remote_incident_id[0:3] == IncidentType.THREAT.value:
+        return IncidentType.THREAT
+
+def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, Any], mirroring_fields: List[str]):
+    """
+    Sets the updated object (in place) for the security event or threat we want to mirror in, from the mirrored data, according to
+    the mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
+    their name will have a dot in it).
+    Note that the fields that we mirror right now may have only one dot in them, so we only deal with this case.
+
+    :param updated_object: The dictionary to set its values, so it will hold the fields we want to mirror in, with their values.
+    :param mirrored_data: The data of the incident or detection we want to mirror in.
+    :param mirroring_fields: The mirroring fields that we want to mirror in, given according to whether we want to mirror an
+        incident or a detection.
+    """
+    for field in mirroring_fields:
+        if mirrored_data.get(field):
+            updated_object[field] = mirrored_data.get(field)
+
+        # if the field is not in mirrored_data, it might be a nested field - that has a . in its name
+        elif '.' in field:
+            field_name_parts = field.split('.')
+            nested_mirrored_data = mirrored_data.get(field_name_parts[0])
+
+            if isinstance(nested_mirrored_data, list):
+                # if it is a list, it should hold a dictionary in it because it is a json structure
+                for nested_field in nested_mirrored_data:
+                    if nested_field.get(field_name_parts[1]):
+                        updated_object[field] = nested_field.get(field_name_parts[1])
+                        # finding the field in the first time it is satisfying
+                        break
+            elif isinstance(nested_mirrored_data, dict):
+                if nested_mirrored_data.get(field_name_parts[1]):
+                    updated_object[field] = nested_mirrored_data.get(field_name_parts[1])
+
+
+def get_remote_secevent_data(client, remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on a security event.
+    Gets the relevant security event entity from the remote system (HarfangLab EDR). The remote system returns a list with this
+    entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+    """
+    mirrored_data_list = get_security_events(
+        client, security_event_ids=[remote_incident_id])
+    mirrored_data = mirrored_data_list[0]
+
+    if 'status' in mirrored_data:
+        mirrored_data['status'] = STATUS_HFL_TO_XSOAR.get(mirrored_data.get('status'))
+
+    updated_object: Dict[str, Any] = {'incident_type': 'Hurukai alert'}
+    set_updated_object(updated_object, mirrored_data, HFL_SECURITY_EVENT_INCOMING_ARGS)
+    return mirrored_data, updated_object
+
+def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+    demisto.debug(f'{incident_type_name} is closed: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': f'{incident_type_name} was closed on HarfangLab EDR'
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+    demisto.debug(f'{incident_type_name} is reopened: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+def set_xsoar_security_events_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
+    if demisto.params().get('close_incident'):
+        if updated_object.get('status') == 'Closed':
+            close_in_xsoar(entries, remote_incident_id, 'Hurukai alert')
+        elif updated_object.get('status') in (set(STATUS_XSOAR_TO_HFL.keys()) - {'Closed'}):
+            reopen_in_xsoar(entries, remote_incident_id, 'Hurukai alert')
+
+def get_remote_data(client, args):
+    """
+    get-remote-data command: Returns an updated remote security event or threat.
+    Args:
+        args:
+            id: security event or threat id to retrieve.
+            lastUpdate: when was the last time we retrieved data.
+
+    Returns:
+        GetRemoteDataResponse object, which contain the security event or threat data to update.
+    """
+    demisto.debug(f'In get_remote_data')
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
+
+    mirrored_data = {}
+    entries: List = []
+
+    try:
+        demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_incident_id} '
+                      f'and last_update: {remote_args.last_update}')
+        incident_type = find_incident_type(remote_incident_id)
+        if incident_type == IncidentType.SEC_EVENT:
+            mirrored_data, updated_object = get_remote_secevent_data(client, remote_incident_id[4:])
+            if updated_object:
+                demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_security_events_entries(updated_object, entries, remote_incident_id)  # sets in place
+
+        elif incident_type == IncidentType.THREAT:
+            #TODO
+            pass
+        else:
+            # this is here as prints can disrupt mirroring
+            raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
+
+        if not updated_object:
+            demisto.debug(f'No delta was found for detection {remote_incident_id}.')
+
+        return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
+
+    except Exception as e:
+        demisto.debug(f"Error in HarfangLab EDR incoming mirror for security event or threat: {remote_incident_id}\n"
+                      f"Error message: {str(e)}")
+
+        if not mirrored_data:
+            mirrored_data = {'id': remote_incident_id}
+        mirrored_data['in_mirror_error'] = str(e)
+
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+def close_in_hfl(delta: Dict[str, Any]) -> bool:
+    """
+    Closing in the remote system should happen only when both:
+        1. The user asked for it
+        2. One of the closing fields appears in the delta
+
+    The second is mandatory so we will not send a closing request at all of the mirroring requests that happen after closing an
+    incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
+    """
+    closing_fields = {'closeReason', 'closingUserId', 'closeNotes'}
+    return demisto.params().get('close_in_hfl') and any(field in delta for field in closing_fields)
+
+def update_detection_request(client, ids: List[str], status: str) -> Dict:
+    if status not in SECURITY_EVENT_STATUS:
+        raise DemistoException(f'HarfangLab EDR Error: '
+                               f'Status given is {status} and it is not in {SECURITY_EVENT_STATUS}')
+
+    for eventid in ids:
+        client.change_security_event_status(eventid, status)
+    return 'OK'
+
+
+def update_remote_security_event(client, delta, inc_status: IncidentStatus, detection_id: str) -> str:
+    if inc_status == IncidentStatus.DONE and close_in_hfl(delta):
+        demisto.debug(f'Closing security event with remote ID {detection_id} in remote system.')
+        return str(update_detection_request(client, [detection_id[4:]], 'closed'))
+
+    # status field in HarfangLab EDR is mapped to State field in XSOAR
+    elif 'status' in delta:
+        demisto.debug(f'Security Event with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(update_detection_request(client, [detection_id[4:]], delta.get('status')))
+
+    return ''
+
+def update_remote_system(client, args):
+    """
+    Mirrors out local changes to the remote system.
+    Args:
+        args: A dictionary containing the data regarding a modified incident, including: data, entries, incident_changed,
+         remote_incident_id, inc_status, delta
+
+    Returns:
+        The remote incident id that was modified. This is important when the incident is newly created remotely.
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    remote_incident_id = parsed_args.remote_incident_id
+
+    if delta:
+        demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
+
+    try:
+        incident_type = find_incident_type(remote_incident_id)
+        if parsed_args.incident_changed and delta:
+            if incident_type == IncidentType.SEC_EVENT:
+                demisto.debug(f'Updating remote security event {remote_incident_id}')
+                result = update_remote_security_event(client, delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f'Security event updated successfully. Result: {result}')
+
+            elif incident_type == IncidentType.THREAT:
+                #TODO
+                pass
+            else:
+                raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
+
+        else:
+            pass
+            #demisto.debug(f"Skipping updating remote security event or threat {remote_incident_id} as it didn't change.")
+
+    except Exception as e:
+        demisto.error(f'Error in HarfangLab EDR outgoing mirror for security event or threat {remote_incident_id}. '
+                      f'Error message: {str(e)}')
+
+    return remote_incident_id
+
+def get_mapping_fields(client, args) -> GetMappingFieldsResponse:
+    """
+        Returns the list of fields to map in outgoing mirroring, for incidents and detections.
+    """
+
+    demisto.debug('In get_mapping_fields')
+    mapping_response = GetMappingFieldsResponse()
+
+    security_event_type_scheme = SchemeTypeMapping(type_name='HarfangLab EDR Security Event')
+    for argument, description in HFL_SECURITY_EVENT_OUTGOING_ARGS.items():
+        security_event_type_scheme.add_field(name=argument, description=description)
+    mapping_response.add_scheme_type(security_event_type_scheme)
+
+    threat_type_scheme = SchemeTypeMapping(type_name='HarfangLab EDR Threat')
+    for argument, description in HFL_THREAT_OUTGOING_ARGS.items():
+        threat_type_scheme.add_field(name=argument, description=description)
+    mapping_response.add_scheme_type(threat_type_scheme)
+
+    return mapping_response
 
 def main():
     verify = not demisto.params().get('insecure', False)
@@ -2648,6 +3216,8 @@ def main():
             args['min_severity'] = demisto.params().get(
                 'min_severity', SEVERITIES[0])
             args['max_fetch'] = demisto.params().get('max_fetch', None)
+            args['mirror_direction'] = demisto.params().get('mirror_direction', None)
+            args['fetch_types'] = demisto.params().get('fetch_types', None)
         target_function(client, args)
 
     # Log exceptions

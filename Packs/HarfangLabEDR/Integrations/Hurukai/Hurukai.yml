@@ -51,12 +51,48 @@ configuration:
   - CLOSED
   required: false
   type: 15
-- additionalinfo: Start fetching alerts whose creation date is higher than now minus <first_fetch> days.
+- additionalinfo: Start fetching alerts and/or threats whose creation date is higher than now minus <first_fetch> days.
   defaultvalue: '10'
   display: First fetch time
   name: first_fetch
   required: true
   type: 0
+- display: Mirroring Direction
+  name: mirror_direction
+  required: false
+  type: 15
+  additionalinfo: 'Choose the direction to mirror the detection: Incoming (from HarfangLab EDR to Cortex XSOAR), Outgoing (from Cortex XSOAR to HarfangLab EDR), or Incoming and Outgoing (to/from HarfangLab EDR and Cortex XSOAR).'
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+- defaultvalue: 'Security Events'
+  display: 'Fetch types'
+  name: fetch_types
+  options:
+  - 'Security Events'
+  - 'Threats'
+  required: true
+  type: 16
+  advanced: True
+
+- additionalinfo: When selected, closes the XSOAR incident, which is mirrored from the HarfangLab EDR.
+  defaultvalue: 'false'
+  display: Close Mirrored security event or threat in the XSOAR
+  name: close_incident
+  required: false
+  type: 8
+  advanced: true
+- additionalinfo: When selected, closes the HarfangLab EDR security event or threat in the HarfangLab EDR.
+  defaultvalue: 'false'
+  display: Close Mirrored security event or threat in HarfangLab EDR
+  name: close_in_hfl
+  required: false
+  type: 8
+  advanced: true
+
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -68,6 +104,7 @@ configuration:
   required: false
   type: 8
 defaultmapperin: Hurukai alert mapper
+defaultclassifier: Hurukai classifier
 description: |-
   HarfangLab EDR Connector,
   Compatible version 2.13.7+
@@ -81,6 +118,26 @@ script:
   - name: fetch-incidents
     arguments: []
     description: Allows to retrieve incidents from the HarfangLab EDR API
+  - arguments: []
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - arguments:
+    - description: The remote security event or threat ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The security event or threat is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets remote data from a remote security event or threat. This method does not update the current security event or threat, and should be used for debugging purposes only.
+    name: get-remote-data
+  - arguments:
+    - description: Date string representing the local time. The security event or threat is only returned if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets the list of security events and threats that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    name: get-modified-remote-data
+  - arguments: []
+    description: Updates the remote security event or threat with local security event or threat changes. This method is only used for debugging purposes and will not update the current security event or threat.
+    name: update-remote-system
   - arguments:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager
@@ -128,7 +185,8 @@ script:
       type: 8
     - name: operator
       description: Operator used for the criterion (eq, contains, regex)
-      default: 'eq'
+      defaultvalue: eq
+      type: 0
     - name: value
       description: Value used for the criterion
     description: Add a whitelist
@@ -149,7 +207,8 @@ script:
       type: 8
     - name: operator
       description: Operator used for the criterion (eq, contains, regex)
-      default: 'eq'
+      defaultvalue: eq
+      type: 0
     - name: value
       description: Value used for the criterion
     description: Add a criterion to an existing whitelist
@@ -908,8 +967,11 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.11.54132
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: true
   runonce: false
   script: ''
