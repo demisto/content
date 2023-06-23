@@ -170,16 +170,17 @@ class Client(BaseClient):
                 "operatingsystemrefs": data.get('xMitrePlatforms', '')
             }
         }
+        ti_fields =ti_data_obj["fields"]
 
-        if data.get('xMitreAliases'):
-            ti_data_obj["fields"]["cvedescription"] = eval(data.get("description", ""))
+        if FeedIndicatorType.CVE == intel_type:
+            ti_fields["cvedescription"] = data.get("description", "")
 
-        if data.get('xMitreAliases'):
-            self.add_aliases(ti_data_obj, eval(data.get('xMitreAliases')))
+        if data.get("xMitreAliases"):
+            self.add_aliases(ti_data_obj, data.get("xMitreAliases"))
             # ti_data_obj['fields']['aliases'] = data.get('xMitreAliases')
 
-        if data.get('aliases'):
-            self.add_aliases(ti_data_obj, eval(data.get('aliases')))
+        if data.get("aliases"):
+            self.add_aliases(ti_data_obj, data.get("aliases"))
             # self.add_tags(ti_data_obj, data.get('aliases'))
 
         # if data.get('xMitrePlatforms'):
@@ -189,8 +190,8 @@ class Client(BaseClient):
             self.add_tags(ti_data_obj, eval(data.get("xMitreDataSources")))
 
         if isinstance(data.get("external_references"), List):
-            for ex_ref in eval(data.get("external_references")):
-                ttps_id: str = eval(ex_ref.get("external_id"))
+            for ex_ref in data.get("external_references"):
+                ttps_id: str = ex_ref.get("external_id")
                 if ttps_id:
                     self.add_tags(ti_data_obj, ttps_id)
 
@@ -210,31 +211,33 @@ class Client(BaseClient):
         #     })
 
         kill_chain_phases = [phase.get("phase_name") for phase in data.get("kill_chain_phases", [])]
-        ti_data_obj["fields"]["killchainphases"] = kill_chain_phases
+        ti_fields["killchainphases"] = kill_chain_phases
 
         labels = data.get("labels", [])
         for label in labels:
             if isinstance(label, Dict):
                 if label.get("origin-of-country"):
-                    ti_data_obj["fields"]["geocountry"] = label.get("origin-of-country")
+                    ti_fields["geocountry"] = label.get("origin-of-country")
 
                 if label.get("target-countries"):
                     self.add_tags(ti_data_obj, label.get("target-countries"))
-                    ti_data_obj["fields"]["targetcountries"] = label.get("target-countries")
+                    ti_fields["targetcountries"] = label.get("target-countries")
 
                 if label.get("target-industries"):
                     self.add_tags(ti_data_obj, label.get("target-industries"))
-                    ti_data_obj["fields"]["targetindustries"] = label.get("target-industries")
+                    ti_fields["targetindustries"] = label.get("target-industries")
 
                 if label.get("geographies"):
                     self.add_tags(ti_data_obj, label.get("geographies"))
+                    ti_fields["targetcountries"] = label.get("geographies")
 
                 if label.get("industries"):
                     self.add_tags(ti_data_obj, label.get("industries"))
+                    ti_fields["targetindustries"] = label.get("industries")
 
                 if label.get("technologies"):
                     self.add_tags(ti_data_obj, label.get("technologies"))
-                    ti_data_obj["fields"]["technologies"] = label.get("technologies")
+                    ti_fields["technologies"] = label.get("technologies")
 
         if feed_tags:
             self.add_tags(ti_data_obj, feed_tags)
@@ -281,12 +284,12 @@ class Client(BaseClient):
                         if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
                             source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF))
                         else:
-                            source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get('sourceRef'))
+                            source_ref_obj = raw_ta_data.get(raw_ta_rel_.get('sourceRef'))
 
                         if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
                             target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF))
                         else:
-                            target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get('targetRef'))
+                            target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('targetRef'))
 
                         if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
                             source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
@@ -383,6 +386,8 @@ class Client(BaseClient):
                 'service': LABEL_DECYFIR,
                 'Reputation': reputation,
                 "fields": {
+                    "aliases": [],
+                    "tags": [],
                     "stixid": ioc.get('id'),
                     "description": ioc.get("description", ''),
                     "firstseenbysource": ioc.get("created"),
@@ -454,15 +459,15 @@ class Client(BaseClient):
 
 
 def test_module_command(client, decyfir_api_key):
-    url = IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key)
-    response = client._http_request(url_suffix=url, method='GET', resp_type='response')
-    if response.status_code == 200:
-        return 'ok'
-    elif response.status_code == 401 or response.status_code == 403:
-        return 'Not Authorized'
-    else:
-        return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
-    # return client.fetch_indicators(decyfir_api_key, None, None, None)
+    # url = IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key)
+    # response = client._http_request(url_suffix=url, method='GET', resp_type='response')
+    # if response.status_code == 200:
+    #     return 'ok'
+    # elif response.status_code == 401 or response.status_code == 403:
+    #     return 'Not Authorized'
+    # else:
+    #     return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
+    return client.fetch_indicators(decyfir_api_key, None, None, None)
 
 
 def fetch_indicators_command(
