@@ -22,19 +22,23 @@ signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
 
 if not demisto.params().get('proxy', False) \
         or demisto.params()['proxy'] == 'false':
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+    if 'HTTP_PROXY' in os.environ:
+        del os.environ['HTTP_PROXY']
+    if 'HTTPS_PROXY' in os.environ:
+        del os.environ['HTTPS_PROXY']
+    if 'http_proxy' in os.environ:
+        del os.environ['http_proxy']
+    if 'https_proxy' in os.environ:
+        del os.environ['https_proxy']
 
 
 """GLOBAL VARS"""
 
 VERIFY_CERT = True if not demisto.params().get('insecure') else False
-KEY = demisto.params().get('key')
-SECRET = demisto.params().get('secret')
-DOMAIN = demisto.params().get('domain')
-CUSTOMER_ID = demisto.params().get('customer_id')
+KEY = str(demisto.params().get('key'))
+SECRET = str(demisto.params().get('secret'))
+DOMAIN = str(demisto.params().get('domain'))
+CUSTOMER_ID = str(demisto.params().get('customer_id'))
 FETCH_TIME = demisto.params().get('fetch_time')
 
 """HELPER FUNCTIONS"""

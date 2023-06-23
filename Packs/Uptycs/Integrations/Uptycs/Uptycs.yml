@@ -2335,7 +2335,7 @@ script:
       isArray: false
       secret: false
       default: false
-  dockerimage: demisto/uptycs:1.0.0.62934
+  dockerimage: demisto/uptycs:1.0.0.63766
   isfetch: true
   runonce: true
   script: '-'
