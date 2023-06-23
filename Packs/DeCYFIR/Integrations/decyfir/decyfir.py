@@ -201,6 +201,7 @@ class Client(BaseClient):
             ]
         }
 
+
         return return_data
 
     def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> List[dict]:
@@ -243,8 +244,6 @@ class Client(BaseClient):
                 details = str(json.dumps(json_))
                 name: str = json_.get("title")
                 uid = json_.get("uid")
-                asset_value = json_.get("asset_value")
-                domain = json_.get("signature")
 
                 incident_json = self.prepare_incident_json(LABEL_DECYFIR, alert_type, alert_subtype,
                                                            name, date_val, severity, details, uid)
