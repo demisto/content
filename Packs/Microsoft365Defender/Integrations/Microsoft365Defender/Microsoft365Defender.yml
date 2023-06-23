@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft 365 Defender_dev
+  id: Microsoft 365 Defender
   version: -1
 configuration:
 - additionalinfo: |-
@@ -164,8 +164,8 @@ configuration:
   section: Connect
   advanced: true
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
-display: Microsoft 365 Defender_dev
-name: Microsoft 365 Defender_dev
+display: Microsoft 365 Defender
+name: Microsoft 365 Defender
 script:
   commands:
   - arguments: []
