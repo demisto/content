@@ -322,7 +322,10 @@ def test_module(gsuite_client, last_run: Dict, params: Dict[str, Any]) -> str:
         list_alerts_params = {
             'pageSize': 1,
         }
-        gsuite_client.set_authorized_http(scopes=SCOPES['ALERT'], subject=params.get('admin_email_creds', {}).get('identifier') or subject=params.get('admin_email', ''))
+        gsuite_client.set_authorized_http(
+            scopes=SCOPES['ALERT'],
+            subject=params.get('admin_email_creds', {}).get('identifier') or params.get('admin_email', '')
+        )
         gsuite_client.http_request(url_suffix=URL_SUFFIX['LIST_ALERTS'], method='GET', params=list_alerts_params)
 
         if not gsuite_client.credentials.valid:
@@ -342,7 +345,7 @@ def gsac_list_alerts_command(client, args: Dict[str, str]) -> CommandResults:
     :return: Command Result.
     """
     # Prepare params
-    admin_email = args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email')
+    admin_email = args['admin_email']
     params = validate_params_for_list_alerts(args)
 
     # API Call
@@ -390,7 +393,7 @@ def gsac_get_alert_command(client, args: Dict[str, str]) -> CommandResults:
     check_required_arguments(required_arguments=['alert_id'], args=args)
 
     # Prepare params
-    admin_email = args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email')
+    admin_email = args['admin_email']
     alert_id = args.get('alert_id', '')
 
     # API Call
@@ -430,7 +433,7 @@ def gsac_batch_delete_alerts_command(client, args: Dict[str, str]) -> CommandRes
 
     # Prepare params
     json_body: Dict[str, Any] = {}
-    admin_email = args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email')
+    admin_email = args['admin_email']
 
     ids = argToList(args.get('alert_id', []), ",")
 
@@ -473,7 +476,7 @@ def gsac_batch_recover_alerts_command(client, args: Dict[str, str]) -> CommandRe
 
     # Prepare params
     json_body: Dict[str, Any] = {}
-    admin_email = args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email')
+    admin_email = args['admin_email']
 
     ids = argToList(args.get('alert_id', []), ",")
 
@@ -519,7 +522,7 @@ def gsac_create_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> C
     # Prepare Params
     json_body: Dict[str, Any] = {}
     params: Dict[str, Any] = {}
-    admin_email = args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email')
+    admin_email = args['admin_email']
 
     if args['feedback_type'].lower() not in ALERT_FEEDBACK_TYPES:
         raise ValueError(MESSAGES['INVALID_FEEDBACK_TYPE_ERROR'])
@@ -566,7 +569,7 @@ def gsac_list_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> Com
     params: Dict[str, Any] = {
         'filter': args.get('filter', '').replace("'", '"'),
     }
-    admin_email = args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email')
+    admin_email = args['admin_email']
     page_size = args.get('page_size', LIST_FEEDBACK_PAGE_SIZE)
     page_size = GSuiteClient.validate_get_int(page_size, message=MESSAGES['INTEGER_ERROR'].format('page_size'))
 
@@ -683,8 +686,9 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get(
-            'admin_email_creds', {}).get('password') or params.get('user_service_account_json'))
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(
+            params.get('admin_email_creds', {}).get('password')
+            or params.get('user_service_account_json'))
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
@@ -694,7 +698,8 @@ def main() -> None:
 
         # prepare client class object
         gsuite_client = GSuiteClient(service_account_dict,
-                                     base_url=BASE_URL, verify=verify_certificate,
+                                     base_url=BASE_URL,
+                                     verify=verify_certificate,
                                      proxy=proxy,
                                      headers=headers)
 
@@ -713,7 +718,7 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command in commands:
-            args.get('admin_email_creds', {}).get('identifier') or args.get('admin_email') = params.get('admin_email_creds', {}).get('identifier') or params.get('admin_email', '')
+            args['admin_email'] = params.get('admin_email_creds', {}).get('identifier') or params.get('admin_email', '')
             return_results(commands[command](gsuite_client, args))
 
     # Log exceptions
