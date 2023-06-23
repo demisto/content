@@ -96,10 +96,10 @@ class Client(BaseClient):
             ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
         }
 
-        target_type:str = target_data.get(LABEL_TYPE)
-        target_value:str = target_data.get(LABEL_VALUE)
-        source_type:str = source_data.get(LABEL_TYPE)
-        source_value:str = source_data.get(LABEL_VALUE)
+        target_type: str = target_data.get(LABEL_TYPE)
+        target_value: str = target_data.get(LABEL_VALUE)
+        source_type: str = source_data.get(LABEL_TYPE)
+        source_value: str = source_data.get(LABEL_VALUE)
 
         relationship = relationship_mapping.get(target_type)
         if relationship:
@@ -125,7 +125,7 @@ class Client(BaseClient):
         elif 'unknown' in data:
             data.remove('unknown')
 
-        in_ti['fields'].setdefault('tags', []).extend(data)
+        in_ti["fields"]["tags"].extend(data)
 
     def add_aliases(self, in_ti: Dict, data: Optional[List[str] | str]):
         if not data:
@@ -139,12 +139,12 @@ class Client(BaseClient):
         elif 'unknown' in data:
             data.remove('unknown')
 
-        in_ti['fields'].setdefault('aliases', []).extend(data)
+        in_ti["fields"]["aliases"].extend(data)
 
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
         intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
 
-        ti_data_obj = {
+        ti_data_obj: Dict = {
             "value": data.get("name"),
             "name": data.get("name"),
             "type": intel_type,
@@ -158,36 +158,39 @@ class Client(BaseClient):
                 "modified": data.get("modified"),
                 "trafficlightprotocol": tlp_color if tlp_color else "",
                 "aliases": [],
-                "peratingsystemrefs":[],
                 "tags": [],
                 "primary_motivation": "Cyber Crime",
-                "secondary_motivations": data.get('primary_motivation',''),
+                "secondary_motivations": data.get('primary_motivation', ''),
                 "sophistication": "advanced",
                 "resource_level": "team",
-                "threatactortypes": data.get('threat_actor_types',''),
+                "threatactortypes": data.get('threat_actor_types', ''),
 
-                "ismalwarefamily": data.get('is_family',''),
-                "malwaretypes": data.get('malware_types','')
+                "ismalwarefamily": data.get('is_family', ''),
+                "malwaretypes": data.get('malware_types', ''),
+                "operatingsystemrefs": data.get('xMitrePlatforms', '')
             }
         }
 
         if data.get('xMitreAliases'):
-            self.add_aliases(ti_data_obj, data.get('xMitreAliases'))
+            ti_data_obj["fields"]["cvedescription"] = eval(data.get("description", ""))
+
+        if data.get('xMitreAliases'):
+            self.add_aliases(ti_data_obj, eval(data.get('xMitreAliases')))
             # ti_data_obj['fields']['aliases'] = data.get('xMitreAliases')
 
         if data.get('aliases'):
-            self.add_aliases(ti_data_obj, data.get('aliases'))
+            self.add_aliases(ti_data_obj, eval(data.get('aliases')))
             # self.add_tags(ti_data_obj, data.get('aliases'))
 
-        if data.get('xMitrePlatforms'):
-            ti_data_obj['fields']['operatingsystemrefs'] = data.get('xMitrePlatforms')
+        # if data.get('xMitrePlatforms'):
+        #    ti_data_obj["fields"]["operatingsystemrefs"] = data.get('xMitrePlatforms')
 
         if isinstance(data.get("xMitreDataSources"), List):
-            self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
+            self.add_tags(ti_data_obj, eval(data.get("xMitreDataSources")))
 
         if isinstance(data.get("external_references"), List):
-            for ex_ref in data.get("external_references"):
-                ttps_id: str = ex_ref.get("external_id")
+            for ex_ref in eval(data.get("external_references")):
+                ttps_id: str = eval(ex_ref.get("external_id"))
                 if ttps_id:
                     self.add_tags(ti_data_obj, ttps_id)
 
@@ -206,23 +209,22 @@ class Client(BaseClient):
         #         'malwaretypes': data.get('malware_types')
         #     })
 
-
-        kill_chain_phases = [phase.get('phase_name') for phase in data.get("kill_chain_phases", [])]
-        ti_data_obj['fields']['killchainphases'] = kill_chain_phases
+        kill_chain_phases = [phase.get("phase_name") for phase in data.get("kill_chain_phases", [])]
+        ti_data_obj["fields"]["killchainphases"] = kill_chain_phases
 
         labels = data.get("labels", [])
         for label in labels:
             if isinstance(label, Dict):
                 if label.get("origin-of-country"):
-                    ti_data_obj['fields']['geocountry'] = label.get("origin-of-country")
+                    ti_data_obj["fields"]["geocountry"] = label.get("origin-of-country")
 
                 if label.get("target-countries"):
                     self.add_tags(ti_data_obj, label.get("target-countries"))
-                    ti_data_obj['fields']['targetcountries'] = label.get("target-countries")
+                    ti_data_obj["fields"]["targetcountries"] = label.get("target-countries")
 
                 if label.get("target-industries"):
                     self.add_tags(ti_data_obj, label.get("target-industries"))
-                    ti_data_obj['fields']['targetindustries'] = label.get("target-industries")
+                    ti_data_obj["fields"]["targetindustries"] = label.get("target-industries")
 
                 if label.get("geographies"):
                     self.add_tags(ti_data_obj, label.get("geographies"))
@@ -232,7 +234,7 @@ class Client(BaseClient):
 
                 if label.get("technologies"):
                     self.add_tags(ti_data_obj, label.get("technologies"))
-                    ti_data_obj['fields']['technologies'] = label.get("technologies")
+                    ti_data_obj["fields"]["technologies"] = label.get("technologies")
 
         if feed_tags:
             self.add_tags(ti_data_obj, feed_tags)
@@ -277,14 +279,14 @@ class Client(BaseClient):
 
                     for raw_ta_rel_ in raw_ta_rels:
                         if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
-                            source_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF))
+                            source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF))
                         else:
-                            source_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get('sourceRef'))
+                            source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get('sourceRef'))
 
                         if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
-                            target_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF))
+                            target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF))
                         else:
-                            target_ref_obj:Dict = raw_ta_data.get(raw_ta_rel_.get('targetRef'))
+                            target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get('targetRef'))
 
                         if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
                             source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
@@ -292,7 +294,8 @@ class Client(BaseClient):
                         else:
                             source_ti_data_obj = ta_source_obj
 
-                        if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and source_ti_data_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID):
+                        if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and source_ti_data_obj.get(
+                            LABEL_ID) != target_ref_obj.get(LABEL_ID):
                             target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color, feed_tags)
                             return_data.append(target_ti_data_obj)
                         else:
@@ -300,7 +303,8 @@ class Client(BaseClient):
 
                         if source_ti_data_obj and target_ti_data_obj:
                             if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
+                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                                  target_ti_data_obj)
                                 source_ti_data_obj[LABEL_RELATIONSHIPS] = []
                                 if ti_relationships:
                                     if source_ti_data_obj[LABEL_RELATIONSHIPS]:
@@ -308,7 +312,8 @@ class Client(BaseClient):
                                     else:
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
                             else:
-                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
+                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                                  target_ti_data_obj)
                                 if ti_relationships:
                                     src_ti_relationships_data.append(ti_relationships)
 
@@ -391,7 +396,6 @@ class Client(BaseClient):
 
             if feed_tags:
                 self.add_tags(ioc_data, feed_tags)
-
 
             if ioc.get("labels"):
                 for label in ioc.get("labels"):
