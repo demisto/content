@@ -113,7 +113,7 @@ class Client(BaseClient):
                                         ioc_data.get(LABEL_VALUE), ioc_data.get(LABEL_TYPE),
                                         target_data.get(LABEL_VALUE), target_data.get(LABEL_TYPE))
 
-    def add_tags(self, in_ti: Dict, data: Optional[List[str] | str]):
+    def add_tags(self, in_ti: Dict, data: Optional[List | str]):
         if not data:
             return
 
@@ -189,8 +189,10 @@ class Client(BaseClient):
         if isinstance(data.get("xMitreDataSources"), List):
             self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
 
-        if isinstance(data.get("external_references"), List):
-            for ex_ref in list(data.get("external_references")):
+        external_ref = data.get("external_references")
+
+        if external_ref is not None and isinstance(external_ref, List):
+            for ex_ref in list(external_ref):
                 ttps_id: str = str(ex_ref.get("external_id"))
                 if ttps_id:
                     self.add_tags(ti_data_obj, ttps_id)
@@ -281,15 +283,21 @@ class Client(BaseClient):
                             raw_ta_data[data1.get(LABEL_ID)] = data1
 
                     for raw_ta_rel_ in raw_ta_rels:
-                        if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
-                            source_ref_obj: Dict = raw_ta_data.get(str(raw_ta_rel_.get(LABEL_SOURCE_REF)))
+                        if str(raw_ta_rel_.get(LABEL_SOURCE_REF)) in raw_ta_data:
+                            source_ref = str(raw_ta_rel_.get(LABEL_SOURCE_REF))
                         else:
-                            source_ref_obj = raw_ta_data.get(str(raw_ta_rel_.get('sourceRef')))
+                            source_ref = str(raw_ta_rel_.get('sourceRef'))
+
+                        source_ref_val_ = raw_ta_data.get(source_ref)
+                        source_ref_obj: Dict = source_ref_val_ if source_ref_val_ is not None else {}
 
                         if str(raw_ta_rel_.get(LABEL_TARGET_REF)) in raw_ta_data:
-                            target_ref_obj: Dict = raw_ta_data.get(str(raw_ta_rel_.get(LABEL_TARGET_REF)))
+                            target_ref = str(raw_ta_rel_.get(LABEL_TARGET_REF))
                         else:
-                            target_ref_obj = raw_ta_data.get(str(raw_ta_rel_.get('targetRef')))
+                            target_ref = str(raw_ta_rel_.get('targetRef'))
+
+                        target_ref_val_ = raw_ta_data.get(target_ref)
+                        target_ref_obj: Dict = target_ref_val_ if target_ref_val_ is not None else {}
 
                         if str(raw_ta_obj.get(LABEL_ID)) != str(source_ref_obj.get(LABEL_ID)):
                             source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
@@ -402,8 +410,9 @@ class Client(BaseClient):
             if feed_tags:
                 self.add_tags(ioc_data, feed_tags)
 
-            if ioc.get("labels") is not None:
-                for label in list(ioc.get("labels")):
+            ioc_labels = ioc.get("labels")
+            if ioc_labels is not None:
+                for label in list(ioc_labels):
                     if label.get("geographies"):
                         ioc_data['fields']['geocountry'] = label.get("geographies")
                     if label.get("tags"):
