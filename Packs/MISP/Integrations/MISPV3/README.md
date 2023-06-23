@@ -3867,7 +3867,9 @@ Adding a new user to MISP.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.User.email | string | MISP User Email. | 
 
 ### misp-search-attributes
 

@@ -2505,17 +2505,17 @@ script:
     description: Adding a new user to MISP.
     name: misp-add-user
     outputs:
-    - contextPath: MISP.User.Email
+    - contextPath: MISP.User.email
       description: MISP User Email.
       type: string
   - arguments: []
     description: Display organization ids and names.
     name: misp-get-organization-info
     outputs:
-    - contextPath: MISP.Organization.ID
+    - contextPath: MISP.Organization.org_id
       description: MISP Ogranization ID.
       type: string
-    - contextPath: MISP.Organization.NAME
+    - contextPath: MISP.Organization.org_name
       description: MISP Organization Name.
       type: string
   - arguments: []
