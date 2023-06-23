@@ -1,19 +1,64 @@
 #!/usr/bin/env python -W ignore::DeprecationWarning
-class Response:
-    def __init__(self) -> None:
-        pass
 
-    status_code = 200
-    text: str = None
+sample_span_result = """{
+  "data": {
+    "spans": {
+      "results": [
+        {
+          "id": "f7dded93dc8b49c7",
+          "protocolName": "HTTP",
+          "serviceName": "frontend",
+          "displaySpanName": "POST /get_user",
+          "userIdentifier": "xxx@outlook.zz",
+          "sessionId": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e",
+          "ipAddress": "192.0.2.255",
+          "userCountry": "United States",
+          "userCity": "Houston",
+          "userRoles": [
+            "customer"
+          ],
+          "statusCode": "200",
+          "errorCount": 0,
+          "duration": 38,
+          "startTime": 1687388481641,
+          "endTime": 1687388481679,
+          "traceId": "a1f93e44b31be69835cfeeac4f181869",
+          "spanTags": {
+            "net.peer.port": "56453",
+            "http.url": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
+            "enduser.role": "customer",
+            "net.peer.ip": "192.0.2.255",
+            "net.host.ip": "192.0.2.255",
+            "traceableai.enriched.api_type": "HTTP",
+            "http.status_code": "200",
+            "enduser.id": "xxx@outlook.zz",
+            "enduser.id.rule": "0394b434-1def-4b4b-8aa7-c7d03fb8dd57",
+            "span.kind": "server",
+            "traceableai.module.version": "1.0.5",
+            "enduser.role.rule": "0394b434-1def-4b4b-8aa7-c7d03fb8dd57",
+            "servicename": "frontend",
+            "http.method": "POST",
+            "deployment.environment": "Fintech_app",
+            "session.id": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e",
+            "traceableai.module.name": "proxy"
+          },
+          "spanResponseHeaders": {
+            "content-type": "application/json"
+          },
+          "spanResponseCookies": {},
+          "spanRequestBody": "email=xxx@outlook.zz&password=${<script alert(1) />}",
+          "spanRequestHeaders": {
+            "content-type": "application/json",
+            "x-forwarded-for": "192.0.2.255"
+          },
+          "spanRequestCookies": {}
+        }
+      ]
+    }
+  }
+}"""
 
-
-def test_fetch_incidents(mocker):
-    def response_handler(*args, **kwargs):
-        data: str = kwargs["json"]["query"]
-
-        r = Response()
-        if "DOMAIN_EVENT" in data:
-            r.text = """{
+sample_domain_event = """{
   "data": {
     "explore": {
       "results": [
@@ -119,67 +164,29 @@ def test_fetch_incidents(mocker):
     }
   }
 }"""
-            return r
-        elif "spans(" in data:
-            r.text = """{
-  "data": {
-    "spans": {
-      "results": [
-        {
-          "id": "f7dded93dc8b49c7",
-          "protocolName": "HTTP",
-          "serviceName": "frontend",
-          "displaySpanName": "POST /get_user",
-          "userIdentifier": "xxx@outlook.zz",
-          "sessionId": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e",
-          "ipAddress": "192.0.2.255",
-          "userCountry": "United States",
-          "userCity": "Houston",
-          "userRoles": [
-            "customer"
-          ],
-          "statusCode": "200",
-          "errorCount": 0,
-          "duration": 38,
-          "startTime": 1687388481641,
-          "endTime": 1687388481679,
-          "traceId": "a1f93e44b31be69835cfeeac4f181869",
-          "spanTags": {
-            "net.peer.port": "56453",
-            "http.url": "http://localhost:8784/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com",
-            "enduser.role": "customer",
-            "net.peer.ip": "192.0.2.255",
-            "net.host.ip": "192.0.2.255",
-            "traceableai.enriched.api_type": "HTTP",
-            "http.status_code": "200",
-            "enduser.id": "xxx@outlook.zz",
-            "enduser.id.rule": "0394b434-1def-4b4b-8aa7-c7d03fb8dd57",
-            "span.kind": "server",
-            "traceableai.module.version": "1.0.5",
-            "enduser.role.rule": "0394b434-1def-4b4b-8aa7-c7d03fb8dd57",
-            "servicename": "frontend",
-            "http.method": "POST",
-            "deployment.environment": "Fintech_app",
-            "session.id": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e",
-            "traceableai.module.name": "proxy"
-          },
-          "spanResponseHeaders": {
-            "content-type": "application/json"
-          },
-          "spanResponseCookies": {},
-          "spanRequestBody": "email=xxx@outlook.zz&password=${<script alert(1) />}",
-          "spanRequestHeaders": {
-            "content-type": "application/json",
-            "x-forwarded-for": "192.0.2.255"
-          },
-          "spanRequestCookies": {}
-        }
-      ]
-    }
-  }
-}"""
-            return r
 
+
+class Response:
+    def __init__(self) -> None:
+        pass
+
+    status_code = 200
+    text = None  # type: str
+
+
+def response_handler(*args, **kwargs):
+    data: str = kwargs["json"]["query"]
+
+    r = Response()
+    if "DOMAIN_EVENT" in data:
+        r.text = sample_domain_event
+        return r
+    elif "spans(" in data:
+        r.text = sample_span_result
+        return r
+
+
+def test_fetch_incidents(mocker):
     from Traceable import Client, fetch_incidents
     import urllib3
 
@@ -274,3 +281,49 @@ def test_errors_in_response(caplog, mocker):
     is_error, result = client.errors_in_response(resp)
     caplog.clear()
     assert is_error is True and result == "error string"
+
+
+def test_get_span_for_trace_id(caplog, mocker):
+    from Traceable import Client
+    from datetime import datetime
+
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    mocked_post = mocker.patch("requests.post")
+    resp = Response()
+    resp.status_code = 200
+    resp.text = sample_span_result
+    mocked_post.return_value = resp
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    now_time = datetime.now()
+    response_obj = client.get_span_for_trace_id(now_time, now_time, "traceid", "spanid")
+    caplog.clear()
+    assert len(response_obj) == 1
+
+
+def test_get_threat_events(caplog, mocker):
+    from Traceable import Client
+    from datetime import datetime
+    import urllib3
+
+    now_time = datetime.now()
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    # client.set_threat_category_list(threatCategoryList)
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = response_handler
+
+    events = client.get_threat_events(now_time)
+    assert len(events) == 1
+    caplog.clear()
