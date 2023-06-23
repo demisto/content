@@ -86,7 +86,7 @@ class Client(BaseClient):
                                   entity_b=target_value, entity_b_type=target_type
                                   ).to_indicator()
 
-    def build_threat_actor_relationship_obj(self, source_data: Dict, target_data: Dict):
+    def build_threat_actor_relationship_obj(self, source_data: Dict[str,str], target_data: Dict[str,str]):
         relationship_mapping = {
             ThreatIntel.ObjectsNames.INTRUSION_SET: EntityRelationship.Relationships.ATTRIBUTED_TO,
             ThreatIntel.ObjectsNames.ATTACK_PATTERN: EntityRelationship.Relationships.USES,
@@ -187,7 +187,7 @@ class Client(BaseClient):
         #    ti_data_obj["fields"]["operatingsystemrefs"] = data.get('xMitrePlatforms')
 
         if isinstance(data.get("xMitreDataSources"), List):
-            self.add_tags(ti_data_obj, eval(data.get("xMitreDataSources")))
+            self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
 
         if isinstance(data.get("external_references"), List):
             for ex_ref in data.get("external_references"):
@@ -266,7 +266,7 @@ class Client(BaseClient):
 
                 # Threat actors relationships
                 if ta_rel_data:
-                    raw_ta_rels = []
+                    raw_ta_rels = [Dict]
                     raw_ta_data = {}
                     raw_ta_obj = {}
                     # Only source object getting from the iterating
@@ -315,7 +315,7 @@ class Client(BaseClient):
                                     else:
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
                             else:
-                                ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                ti_relationships = self.build_threat_actor_relationship_obj(source_ti_data_obj,
                                                                                                   target_ti_data_obj)
                                 if ti_relationships:
                                     src_ti_relationships_data.append(ti_relationships)
@@ -461,15 +461,15 @@ class Client(BaseClient):
 
 
 def test_module_command(client, decyfir_api_key):
-    # url = IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key)
-    # response = client._http_request(url_suffix=url, method='GET', resp_type='response')
-    # if response.status_code == 200:
-    #     return 'ok'
-    # elif response.status_code == 401 or response.status_code == 403:
-    #     return 'Not Authorized'
-    # else:
-    #     return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
-    return client.fetch_indicators(decyfir_api_key, None, None, None)
+    url = IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key)
+    response = client._http_request(url_suffix=url, method='GET', resp_type='response')
+    if response.status_code == 200:
+        return 'ok'
+    elif response.status_code == 401 or response.status_code == 403:
+        return 'Not Authorized'
+    else:
+        return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
+    # return client.fetch_indicators(decyfir_api_key, None, None, None)
 
 
 def fetch_indicators_command(
