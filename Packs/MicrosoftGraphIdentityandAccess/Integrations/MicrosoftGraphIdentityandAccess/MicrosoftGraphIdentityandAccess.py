@@ -888,7 +888,7 @@ def main():  # pragma: no cover
             private_key=(replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')))
         )
         if command == 'test-module':
-            if client.ms_client.managed_identities_client_id:
+            if client.ms_client.managed_identities_client_id or client.ms_client.grant_type == CLIENT_CREDENTIALS:
                 test_connection(client=client)
                 return_results('ok')
             else:
