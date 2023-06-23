@@ -86,7 +86,7 @@ class Client(BaseClient):
                                   entity_b=target_value, entity_b_type=target_type
                                   ).to_indicator()
 
-    def build_threat_actor_relationship_obj(self, source_data: Dict[str,str], target_data: Dict[str,str]):
+    def build_threat_actor_relationship_obj(self, source_data: Dict[str, str], target_data: Dict[str, str]):
         relationship_mapping = {
             ThreatIntel.ObjectsNames.INTRUSION_SET: EntityRelationship.Relationships.ATTRIBUTED_TO,
             ThreatIntel.ObjectsNames.ATTACK_PATTERN: EntityRelationship.Relationships.USES,
@@ -96,10 +96,10 @@ class Client(BaseClient):
             ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
         }
 
-        target_type: str = target_data.get(LABEL_TYPE)
-        target_value: str = target_data.get(LABEL_VALUE)
-        source_type: str = source_data.get(LABEL_TYPE)
-        source_value: str = source_data.get(LABEL_VALUE)
+        target_type: str = str(target_data.get(LABEL_TYPE))
+        target_value: str = str(target_data.get(LABEL_VALUE))
+        source_type: str = str(source_data.get(LABEL_TYPE))
+        source_value: str = str(source_data.get(LABEL_VALUE))
 
         relationship = relationship_mapping.get(target_type)
         if relationship:
@@ -170,7 +170,7 @@ class Client(BaseClient):
                 "operatingsystemrefs": data.get('xMitrePlatforms', '')
             }
         }
-        ti_fields =ti_data_obj["fields"]
+        ti_fields = ti_data_obj["fields"]
 
         if FeedIndicatorType.CVE == intel_type:
             ti_fields["cvedescription"] = data.get("description", "")
@@ -190,8 +190,8 @@ class Client(BaseClient):
             self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
 
         if isinstance(data.get("external_references"), List):
-            for ex_ref in data.get("external_references"):
-                ttps_id: str = ex_ref.get("external_id")
+            for ex_ref in list(data.get("external_references")):
+                ttps_id: str = str(ex_ref.get("external_id"))
                 if ttps_id:
                     self.add_tags(ti_data_obj, ttps_id)
 
@@ -266,9 +266,9 @@ class Client(BaseClient):
 
                 # Threat actors relationships
                 if ta_rel_data:
-                    raw_ta_rels = [Dict]
-                    raw_ta_data = {}
-                    raw_ta_obj = {}
+                    raw_ta_rels: List = [Dict]
+                    raw_ta_data: Dict = {}
+                    raw_ta_obj: Dict = {}
                     # Only source object getting from the iterating
                     for data1 in ta_rel_data:
                         if LABEL_THREAT_ACTOR == data1.get(LABEL_TYPE):
@@ -282,23 +282,23 @@ class Client(BaseClient):
 
                     for raw_ta_rel_ in raw_ta_rels:
                         if raw_ta_rel_.get(LABEL_SOURCE_REF) in raw_ta_data:
-                            source_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_SOURCE_REF))
+                            source_ref_obj: Dict = raw_ta_data.get(str(raw_ta_rel_.get(LABEL_SOURCE_REF)))
                         else:
-                            source_ref_obj = raw_ta_data.get(raw_ta_rel_.get('sourceRef'))
+                            source_ref_obj = raw_ta_data.get(str(raw_ta_rel_.get('sourceRef')))
 
-                        if raw_ta_rel_.get(LABEL_TARGET_REF) in raw_ta_data:
-                            target_ref_obj: Dict = raw_ta_data.get(raw_ta_rel_.get(LABEL_TARGET_REF))
+                        if str(raw_ta_rel_.get(LABEL_TARGET_REF)) in raw_ta_data:
+                            target_ref_obj: Dict = raw_ta_data.get(str(raw_ta_rel_.get(LABEL_TARGET_REF)))
                         else:
-                            target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('targetRef'))
+                            target_ref_obj = raw_ta_data.get(str(raw_ta_rel_.get('targetRef')))
 
-                        if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
+                        if str(raw_ta_obj.get(LABEL_ID)) != str(source_ref_obj.get(LABEL_ID)):
                             source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
                             return_data.append(source_ti_data_obj)
                         else:
                             source_ti_data_obj = ta_source_obj
 
-                        if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID) and source_ti_data_obj.get(
-                            LABEL_ID) != target_ref_obj.get(LABEL_ID):
+                        if str(raw_ta_obj.get(LABEL_ID)) != str(target_ref_obj.get(LABEL_ID)) and str(source_ti_data_obj.get(
+                            LABEL_ID)) != str(target_ref_obj.get(LABEL_ID)):
                             target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color, feed_tags)
                             return_data.append(target_ti_data_obj)
                         else:
@@ -316,7 +316,7 @@ class Client(BaseClient):
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
                             else:
                                 ti_relationships = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                  target_ti_data_obj)
+                                                                                            target_ti_data_obj)
                                 if ti_relationships:
                                     src_ti_relationships_data.append(ti_relationships)
 
@@ -354,7 +354,7 @@ class Client(BaseClient):
         return_data = []
         for ioc in decyfir_iocs:
             ioc_type = self.get_indicator_or_threatintel_type(ioc.get("pattern"))
-            value: str = ioc.get("name")
+            value: str = str(ioc.get("name"))
             file_hash_values = {}
             decyfir_ioc_type: str = ioc_type
 
@@ -365,7 +365,7 @@ class Client(BaseClient):
             elif 'File MD5 hash' in value:
                 decyfir_ioc_type = "MD5"
 
-            pattern_val: str = ioc.get("pattern")
+            pattern_val: str = str(ioc.get("pattern"))
             pattern_val = pattern_val.replace("[", "").replace("]", "").replace("file:hashes.", "")
             pattern_vals: list = pattern_val.split("OR")
             for p_v in pattern_vals:
@@ -402,8 +402,8 @@ class Client(BaseClient):
             if feed_tags:
                 self.add_tags(ioc_data, feed_tags)
 
-            if ioc.get("labels"):
-                for label in ioc.get("labels"):
+            if ioc.get("labels") is not None:
+                for label in list(ioc.get("labels")):
                     if label.get("geographies"):
                         ioc_data['fields']['geocountry'] = label.get("geographies")
                     if label.get("tags"):
@@ -439,7 +439,8 @@ class Client(BaseClient):
             return_data.append(ioc_data)
         return return_data
 
-    def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str], feed_tags: Optional[List]) -> List[Dict]:
+    def fetch_indicators(self, decyfir_api_key: str, reputation: Optional[str], tlp_color: Optional[str],
+                         feed_tags: Optional[List]) -> List[Dict]:
 
         # Indicators from DeCYFIR
         iocs_data = self.get_decyfir_api_iocs_ti_data(IOC_API_STIX_2_1_PATH_SUFFIX.format(decyfir_api_key))
@@ -450,11 +451,13 @@ class Client(BaseClient):
         return_data = []
 
         # Converting indicators data to XSOAR indicators format
-        ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color, feed_tags)
+        ioc_indicators = self.convert_decyfir_ioc_to_indicators_formats(decyfir_api_key, iocs_data, reputation, tlp_color,
+                                                                        feed_tags)
         return_data.extend(ioc_indicators)
 
         # Converting threat intel data to XSOAR indicators format
-        ta_indicators = self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags, ThreatIntel.ObjectsNames.THREAT_ACTOR)
+        ta_indicators = self.convert_decyfir_ti_to_indicators_formats(decyfir_api_key, tas_data, tlp_color, feed_tags,
+                                                                      ThreatIntel.ObjectsNames.THREAT_ACTOR)
         return_data.extend(ta_indicators)
 
         return return_data
