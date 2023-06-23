@@ -345,7 +345,7 @@ def gsac_list_alerts_command(client, args: Dict[str, str]) -> CommandResults:
     :return: Command Result.
     """
     # Prepare params
-    admin_email = args['admin_email']
+    admin_email = args.get('admin_email')
     params = validate_params_for_list_alerts(args)
 
     # API Call
@@ -393,7 +393,7 @@ def gsac_get_alert_command(client, args: Dict[str, str]) -> CommandResults:
     check_required_arguments(required_arguments=['alert_id'], args=args)
 
     # Prepare params
-    admin_email = args['admin_email']
+    admin_email = args.get('admin_email')
     alert_id = args.get('alert_id', '')
 
     # API Call
@@ -433,7 +433,7 @@ def gsac_batch_delete_alerts_command(client, args: Dict[str, str]) -> CommandRes
 
     # Prepare params
     json_body: Dict[str, Any] = {}
-    admin_email = args['admin_email']
+    admin_email = args.get('admin_email')
 
     ids = argToList(args.get('alert_id', []), ",")
 
@@ -476,7 +476,7 @@ def gsac_batch_recover_alerts_command(client, args: Dict[str, str]) -> CommandRe
 
     # Prepare params
     json_body: Dict[str, Any] = {}
-    admin_email = args['admin_email']
+    admin_email = args.get('admin_email')
 
     ids = argToList(args.get('alert_id', []), ",")
 
@@ -522,7 +522,7 @@ def gsac_create_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> C
     # Prepare Params
     json_body: Dict[str, Any] = {}
     params: Dict[str, Any] = {}
-    admin_email = args['admin_email']
+    admin_email = args.get('admin_email')
 
     if args['feedback_type'].lower() not in ALERT_FEEDBACK_TYPES:
         raise ValueError(MESSAGES['INVALID_FEEDBACK_TYPE_ERROR'])
@@ -569,7 +569,7 @@ def gsac_list_alert_feedback_command(gsuite_client, args: Dict[str, Any]) -> Com
     params: Dict[str, Any] = {
         'filter': args.get('filter', '').replace("'", '"'),
     }
-    admin_email = args['admin_email']
+    admin_email = args.get('admin_email')
     page_size = args.get('page_size', LIST_FEEDBACK_PAGE_SIZE)
     page_size = GSuiteClient.validate_get_int(page_size, message=MESSAGES['INTEGER_ERROR'].format('page_size'))
 
