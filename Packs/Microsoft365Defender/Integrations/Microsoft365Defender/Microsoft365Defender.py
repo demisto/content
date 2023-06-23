@@ -510,7 +510,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
                 "occurred": incident.get('createdTime'),
                 "rawJSON": json.dumps(incident)
-            } for incident in raw_incidents]
+            } for incident in raw_incidents if incident.get("status") != "Redirected" ]
 
             # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
             if len(raw_incidents) < int(MAX_ENTRIES):
