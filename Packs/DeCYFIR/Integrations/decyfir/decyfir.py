@@ -201,7 +201,6 @@ class Client(BaseClient):
             ]
         }
 
-
         return return_data
 
     def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> List[dict]:

@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-import json
 
 urllib3.disable_warnings()
 
@@ -165,9 +164,9 @@ class Client(BaseClient):
                 "resource_level": "team",
                 "threatactortypes": data.get('threat_actor_types', ''),
 
-                "ismalwarefamily": data.get('is_family', ''),
-                "malwaretypes": data.get('malware_types', ''),
-                "operatingsystemrefs": data.get('xMitrePlatforms', '')
+                # "ismalwarefamily": data.get('is_family', ''),
+                # "malwaretypes": data.get('malware_types', ''),
+                # "operatingsystemrefs": data.get('xMitrePlatforms', '')
             }
         }
         ti_fields = ti_data_obj["fields"]
@@ -177,14 +176,12 @@ class Client(BaseClient):
 
         if data.get("xMitreAliases"):
             self.add_aliases(ti_data_obj, data.get("xMitreAliases"))
-            # ti_data_obj['fields']['aliases'] = data.get('xMitreAliases')
 
         if data.get("aliases"):
             self.add_aliases(ti_data_obj, data.get("aliases"))
-            # self.add_tags(ti_data_obj, data.get('aliases'))
 
-        # if data.get('xMitrePlatforms'):
-        #    ti_data_obj["fields"]["operatingsystemrefs"] = data.get('xMitrePlatforms')
+        if data.get('xMitrePlatforms'):
+            ti_fields["operatingsystemrefs"] = data.get('xMitrePlatforms')
 
         if isinstance(data.get("xMitreDataSources"), List):
             self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
@@ -206,11 +203,11 @@ class Client(BaseClient):
         #         'threatactortypes': data.get('threat_actor_types')
         #     })
 
-        # if intel_type is ThreatIntel.ObjectsNames.MALWARE:
-        #     ti_data_obj['fields'].update({
-        #         'ismalwarefamily': data.get('is_family'),
-        #         'malwaretypes': data.get('malware_types')
-        #     })
+        if intel_type is ThreatIntel.ObjectsNames.MALWARE:
+            ti_data_obj['fields'].update({
+                'ismalwarefamily': data.get('is_family'),
+                'malwaretypes': data.get('malware_types')
+            })
 
         kill_chain_phases = [phase.get("phase_name") for phase in data.get("kill_chain_phases", [])]
         ti_fields["killchainphases"] = kill_chain_phases
@@ -246,13 +243,8 @@ class Client(BaseClient):
 
         return ti_data_obj
 
-    def convert_decyfir_ti_to_indicator_format(
-        self,
-        decyfir_api_key: str,
-        data: Dict,
-        tlp_color: Optional[str],
-        feed_tags: Optional[List],
-        threat_intel_type: str) -> List[Dict]:
+    def convert_decyfir_ti_to_indicator_format(self, decyfir_api_key: str, data: Dict, tlp_color: Optional[str],
+                                               feed_tags: Optional[List], threat_intel_type: str) -> List[Dict]:
 
         return_data = []
         ta_source_obj = {}
@@ -336,13 +328,8 @@ class Client(BaseClient):
 
         return return_data
 
-    def convert_decyfir_ti_to_indicators_formats(
-        self,
-        decyfir_api_key: str,
-        ti_data: List[Dict],
-        tlp_color: Optional[str],
-        feed_tags: Optional[List],
-        threat_intel_type: str) -> List[Dict]:
+    def convert_decyfir_ti_to_indicators_formats(self, decyfir_api_key: str, ti_data: List[Dict], tlp_color: Optional[str],
+                                                 feed_tags: Optional[List], threat_intel_type: str) -> List[Dict]:
 
         return_data = []
         for data in ti_data:
@@ -351,13 +338,8 @@ class Client(BaseClient):
 
         return return_data
 
-    def convert_decyfir_ioc_to_indicators_formats(
-        self,
-        decyfir_api_key: str,
-        decyfir_iocs: List[Dict],
-        reputation: Optional[str],
-        tlp_color: Optional[str],
-        feed_tags: Optional[List]) -> List[Dict]:
+    def convert_decyfir_ioc_to_indicators_formats(self, decyfir_api_key: str, decyfir_iocs: List[Dict], reputation: Optional[str],
+                                                  tlp_color: Optional[str], feed_tags: Optional[List]) -> List[Dict]:
 
         return_data = []
         for ioc in decyfir_iocs:
@@ -484,12 +466,9 @@ def test_module_command(client, decyfir_api_key):
     # return client.fetch_indicators(decyfir_api_key, None, None, None)
 
 
-def fetch_indicators_command(
-    client: Client,
-    decyfir_api_key: str,
-    tlp_color: Optional[str],
-    reputation: Optional[str],
-    feed_tags: Optional[List]) -> List[Dict]:
+def fetch_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str],
+                             feed_tags: Optional[List]) -> List[Dict]:
+
     return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags)
 
 
@@ -505,7 +484,7 @@ def main():
         tlp_color = params.get('tlp_color')
         # indicator_type = params.get('indicatorType')
         # indicator = params.get('indicator')
-        feedReputation = params.get('feedReputation')
+        feed_reputation = params.get('feedReputation')
 
         demisto.info(f'Command being called is {demisto.command()}')
 
@@ -519,7 +498,7 @@ def main():
             result = test_module_command(client, decyfir_api_key)
             demisto.results(result)
         elif demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, decyfir_api_key, tlp_color, feedReputation, feed_tags)
+            indicators = fetch_indicators_command(client, decyfir_api_key, tlp_color, feed_reputation, feed_tags)
             for ioc in batch(indicators, batch_size=2500):
                 demisto.createIndicators(ioc)
         else:
