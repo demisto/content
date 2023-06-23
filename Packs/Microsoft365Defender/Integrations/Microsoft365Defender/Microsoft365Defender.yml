@@ -379,7 +379,7 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
-  dockerimage: demisto/crypto:1.0.0.54987
+  dockerimage: demisto/crypto:1.0.0.63672
   isfetch: true
   runonce: false
   script: ''
