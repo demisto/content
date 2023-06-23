@@ -2499,7 +2499,7 @@ script:
       name: role_id
       required: true
       type: textArea
-    - description: A password for the new user.
+    - description: A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, at least one lower-case character.
       name: password
       required: true
     description: Adding a new user to MISP.
