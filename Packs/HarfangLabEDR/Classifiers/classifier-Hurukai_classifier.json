@@ -1,0 +1,37 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "Hurukai classifier",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"Hurukai alert": "Hurukai alert",
+		"Hurukai threat": "Hurukai threat"
+	},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": null,
+	"name": "Hurukai classifier",
+	"nameRaw": "Hurukai classifier",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"simple": "incident_type"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
