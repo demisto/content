@@ -9,8 +9,8 @@ let SLEEP_BETWEEN_RETRIES = 1000 * 5;
 let DEFAULT_WAIT_TIMEOUT = 1000 * 60 * 2;
 let ERROR_MESSAGE = 'Use Live Response for Cb Defense or Cb Response.\nFor Cb Defense: Provide \'Live Response\' API key and connector.\nFor Cb Response: Provide API Token.';
 //validate the credentials are provided to match only one of the products
-let API_TOKEN = (credentials_api_token)? credentials_api_token.password : params.apitoken;
-let API_KEY = (credentials_api_key)? credentials_api_key.password : params.apikey;
+let API_TOKEN = (params.credentials_api_token)? params.credentials_api_token.password : params.apitoken;
+let API_KEY = (params.credentials_api_key)? params.credentials_api_key.password : params.apikey;
 if (API_TOKEN && (API_KEY || params.connector) ) {
     throw ERROR_MESSAGE;
 }

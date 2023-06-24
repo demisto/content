@@ -398,7 +398,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     if not SECRET_KEY:
-        raise DemistoException('Secret Key must be provided.') 
+        raise DemistoException('Secret Key must be provided.')
     try:
         admin_api = create_api_call()
         set_proxy(admin_api)
