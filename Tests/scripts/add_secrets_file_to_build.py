@@ -5,6 +5,7 @@ import yaml
 
 from enum import Enum
 from Tests.scripts.collect_tests.path_manager import PathManager
+from Tests.scripts.collect_tests.utils import find_pack_folder
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
 from pathlib import Path
@@ -75,11 +76,11 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     :return: the list of secrets from GSM to use in the build
     """
     secret_conf = GoogleSecreteManagerModule(options.service_account)
-    labels_filter_branch = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
+    labels_filter_master = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
                             FilterLabels.SECRET_MERGE_TIME: FilterOperators.NONE,
                             FilterLabels.IS_DEV_BRANCH: FilterOperators.NONE}
 
-    labels_filter_master = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
+    labels_filter_branch = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
                             FilterLabels.SECRET_MERGE_TIME: FilterOperators.NONE,
                             FilterLabels.IS_DEV_BRANCH: FilterOperators.NONE,
                             FilterLabels.BRANCH_NAME: f'{FilterOperators.EQUALS}"{branch_name}"'}
@@ -150,7 +151,10 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
     """
     changed_packs = []
     for f in changed_files:
-        if 'Packs' in f:
+        path = Path(f)
+        changed = find_pack_folder(path)
+        print(f'--------------{changed=}--------------')
+        if 'pack' in f:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
             changed_packs.append(pack_path)
@@ -163,8 +167,11 @@ def run(options: argparse.Namespace):
     changed_packs = []
     yml_pack_ids = []
     changed_files = get_git_diff(branch_name, paths.content_repo)
+    print(f'--------------{changed_files=}--------------')
     changed_packs.extend(get_changed_packs(changed_files))
+    print(f'--------------{changed_packs=}--------------')
     yml_pack_ids.extend(get_yml_pack_ids(changed_packs))
+    print(f'--------------{yml_pack_ids=}--------------')
     secrets_file = get_secrets_from_gsm(branch_name, options, yml_pack_ids)
     write_secrets_to_file(options, secrets_file)
 

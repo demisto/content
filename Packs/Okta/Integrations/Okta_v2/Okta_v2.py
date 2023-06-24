@@ -51,7 +51,7 @@ GROUP_PROFILE_ARGS = [
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
+    Client will implement rttthe service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
 
