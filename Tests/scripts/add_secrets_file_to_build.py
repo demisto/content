@@ -152,8 +152,11 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
     changed_packs = []
     for f in changed_files:
         path = Path(f)
-        changed = find_pack_folder(path)
-        print(f'--------------{changed=}--------------')
+        try:
+            changed = find_pack_folder(path)
+            print(f'--------------{changed=}--------------')
+        except:
+            pass
         if 'pack' in f:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
