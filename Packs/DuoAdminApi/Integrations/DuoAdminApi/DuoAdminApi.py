@@ -8,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 
 HOST = demisto.getParam('hostname')
 INTEGRATION_KEY = demisto.getParam('integration_key')
-SECRET_KEY = demisto.getParam('secret_key')
+SECRET_KEY = demisto.params().get('credentials_secret_key', {}).get('password') or demisto.getParam('secret_key')
 USE_SSL = not demisto.params().get('insecure', False)
 USE_PROXY = demisto.params().get('proxy', False)
 
@@ -397,6 +397,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    if not SECRET_KEY:
+        raise DemistoException('Secret Key must be provided.') 
     try:
         admin_api = create_api_call()
         set_proxy(admin_api)
