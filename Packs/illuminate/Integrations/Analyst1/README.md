@@ -1,19 +1,46 @@
 ## Overview
 ---
 
-Analyst1 is an indicator, countermeasure and sensor management tool that enables analysts to collect and analyze evidence of malicious activity. Analyst1’s web based interface provides a single location to collect and analyze evidence of malicious activity and manage indicators then author, test, task and track rules to detect malicious cyber activity. Maintaing traceability between evidence, indicators, rules and sensors, analysts can identify why a rule was created, the type of activity it detects and what sensors are tasked.
+Analyst1 is an advanced threat intelligence platform (TIP) which simplifies every cybrersecurity analyst's role. This integration with XSOAR presently emphasizes indicator, countermeasure, sensor management, and intelligence collection workflows to enable analysts to collect, analyze, and respond to evidence of malicious activity. Analyst1’s web based interface provides a single location to collect and analyze evidence of malicious activity and manage indicators then author, test, task and track rules to detect malicious cyber activity. Maintaing traceability between evidence, indicators, rules and sensors, analysts can identify why a rule was created, the type of activity it detects and what sensors are tasked.
 
-This integration utilizes Analyst1's system to enrich Cortex XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+This integration utilizes Analyst1's system API to: 
+1. enrich Cortex XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+2. submit Evidence as content created in XSOAR, downloaded by XSOAR, or a synthesis of both back to Analsyt1 as 'evidence'.
+3. access the Analyst1 Sensor records to get indicator and/or signature tasking definitions for deployment to IDS/IPS/Firewall/XDR/other boundary tools.
 
-This integration was integrated and tested with version 1.8.7 of Analyst1
+This integration was integrated and tested with version 2.1.0 of Analyst1.
+
+For full documentation on the Analyst1 API, please access the "Help" or "Guides" section within your Analyst1 instance. For help please contact support@analyst1.com. 
+
 ## Analyst1 Playbook
 ---
 Analyst1 Basic Indicator Enrichment: This is a simple playbook that can apply on top of an incident created from an indicator that will determine the indicator type and then properly enrich it with the associated Analyst1 integration command.
+
+Analyst1 Batch Check GET Example: an example of how to execute the GET operation of the batchChek API endpoint to get many observable lookups (Indicator, Asset, Ignored, etc.) and their core risk metrics. Use the GET operation for lower volume observables. 
+
+Analyst1 Batch Check POST Example: an example of how to execute the POST operation of the batchChek API endpoint to get many observable lookups (Indicator, Asset, Ignored, etc.) and their core risk metrics. Use the POST operation for a higher volume observable sets. 
+
+Analyst1 Evidence Submission - Attachment/File Example: an example how to submit attachments/PDFs/other raw files as Evidence to Analyst1. Use this to incorporate docments as receivd directly as Evidence to create and correlate with other intelligence within Analyst1, and then make actionable in defensive output, such as Sensors. 
+
+Analyst1 Evidence Submission - Plain Text/JSON Example: an example of how to submit TEXT/JSON as Evidence to Analyst1. Use this to help author narratives and merge content within XSOAR which Analyst1 should auto-correlate with other intelligence and then make actionable in defensive output, such as Sensors. 
+
+Analyst1 Indicator by ID Example: an example of how to get a full Indicator data set by the Indicator's ID. A useful second call after Enrichment calls or Batch Check calls when the full data set is desired. Note: This will include VirusTotal, DomainTools, and other enrichment result sets if and when Analyst1 is configured to auto-enrich on those enrichment sources, too. 
+
+Analyst1 Sensor Configuration Text File Example: Analyst1 Sensors are how in platform workflows prepare indicators and signatures for operational deployment. The Configuration Text File gives a TEXT output for direct deployment to IDS/IPS/XDR/Firewall/XDR/other tools or replacement of Suricata/Snort/Yara/other configuration files. 
+
+Analyst1 Sensor Diff Example: Analyst1 Sensors are how in platform workflows prepare indicators and signatures for operational deployment. The Diff endpoint is specifically designed to help keep up to date with the added and removed values as the Analyst1 Sensor iterates versions multple times each day. The Diff takes in the last known version of a specific Sensor ID and returns the additions, removals, and latest version. Use that latest version output as subsequent inputs to Diff to only get the latest changes. 
+
+Analyst1 Sensor List by Page Example: Analyst1 Sensors are how in platform workflows prepare indicators and signatures for operational deployment. Use this to iterate all availalbe Sensors in the connected Analyst1 instance. This will include the current Sensor Version, which is relevant for input to the Diff method. 
+
+Analyst1 Sensor Taskings Example: Analyst1 Sensors are how in platform workflows prepare indicators and signatures for operational deployment. The taskings give a JSON result of all current indicators and rules/signatures in the Sensor's current version. 
+
 
 ## Use Cases
 ---
 * When you wish to have more information on a given indicator
 * When you use both Cortex XSOAR and Analyst1 and wish to have easy linking between the two
+* When you want to submit any form of created or discovered intelligence back to Analyst1 
+* When you want to get the current Analyst1 created defensive outputs of Indicators and Signatures 
 
 ## Configure Analyst1 on Cortex XSOAR
 ---
@@ -32,16 +59,27 @@ Analyst1 Basic Indicator Enrichment: This is a simple playbook that can apply on
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. domain
-2. email
-3. ip
-4. file
+1. analyst1-enrich-domain
+2. analyst1-enrich-email
+3. analyst1-enrich-ipv4
+4. analyst1-enrich-hash
 5. analyst1-enrich-string
 6. analyst1-enrich-ipv6
 7. analyst1-enrich-mutex
 8. analyst1-enrich-http-request
-9. url
-### 1. domain
+9. analyst1-enrich-url
+10. analyst1-get-sensor-taskings
+11. analyst1-get-sensors
+12. analyst1-batch-check
+13. analyst1-get-sensor-config
+14. analyst1-get-sensor-diff
+15. analyst1-indicator-by-id
+16. analyst1-batch-check-post
+17. analyst1-evidence-submit
+18. analyst1-evidence-status
+
+
+### 1. analyst1-enrich-domain
 ---
 Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indicator data
 ##### Base Command
@@ -126,7 +164,7 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 | true | 1 | 2043650 | https://partner.cloud.analyst1.com/indicators/2043650 | abc.com | 2018-06-12 |
 
 
-### 2. email
+### 2. analyst1-enrich-email
 ---
 Queries the Analyst1 REST API and enriches the given email with Analyst1 indicator data.
 ##### Base Command
@@ -215,7 +253,7 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 | true | id = -2, name = Unknown | 1 | 1637756 | https://partner.cloud.analyst1.com/indicators/1637756 | 001toxic@gmail.com | 2018-02-05 |
 
 
-### 3. ip
+### 3. analyst1-enrich-ip
 ---
 Queries the Analyst1 REST API and enriches the given IP address with Analyst1 indicator data.
 ##### Base Command
@@ -299,7 +337,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 | true | 1 | 51469 | https://partner.cloud.analyst1.com/indicators/51469 | 0.154.17.105 | 2014-01-04 |
 
 
-### 4. file
+### 4. analyst1-enrich-file
 ---
 Queries the Analyst1 REST API and enriches the given file with Analyst1 indicator data.
 ##### Base Command
@@ -693,7 +731,7 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 | true | high | 1 | 2885382 | https://partner.cloud.analyst1.com/indicators/2885382 | /~ | 2020-01-06 |
 
 
-### 9. url
+### 9. analyst1-enrich-url
 ---
 Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator data.
 ##### Base Command
