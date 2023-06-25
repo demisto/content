@@ -602,7 +602,7 @@ test-upload-flow:
     - section_start "Wait For Upload To Finish"
     - export successfully_upload_id_set=$(python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN)
     - echo $successfully_upload_id_set
-    - successfully_upload_id_set = "BLABLAB"
+    - successfully_upload_id_set="BLABLAB"
     - echo $successfully_upload_id_set
     - echo "YUVAL"
     - if [ "${successfully_upload_id_set}" != "True" ]; then
