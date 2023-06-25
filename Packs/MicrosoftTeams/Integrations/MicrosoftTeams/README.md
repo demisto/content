@@ -1106,7 +1106,9 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
           - Note: The web server supports only POST method queries. 
    2. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
 
-   3. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+   3. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate.
+       1. Run `openssl s_client -connect <domain.com>:443` .
+       2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
    4. Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
 
