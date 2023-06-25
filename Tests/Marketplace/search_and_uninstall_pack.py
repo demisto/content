@@ -105,8 +105,10 @@ def reset_core_pack_version(client: demisto_client):
 
     """
     host = client.api_client.configuration.host.replace('https://api-', 'https://')  # disable-secrets-detection
-    _, success = search_and_install_packs_and_their_dependencies(UNREMOVABLE_PACKS, client, host, True)
-
+    _, success = search_and_install_packs_and_their_dependencies(pack_ids=UNREMOVABLE_PACKS,
+                                                                 client=client,
+                                                                 hostname=host,
+                                                                 install_packs_one_by_one=True)
     return success
 
 
