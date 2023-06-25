@@ -412,7 +412,7 @@ class KeyVaultClient:
             List[dict]: API response from Azure.
         """
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
-        filter_by_tag = arg_to_tag(tag) if tag else None
+        filter_by_tag = azure_tag_formatter(tag) if tag else None
 
         response = self.http_request('GET', full_url=full_url, resource=MANAGEMENT_RESOURCE,
                                      params={'$filter': filter_by_tag, '$top': limit,
@@ -720,8 +720,8 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params
 
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     offset = arg_to_number(args.get('offset', DEFAULT_OFFSET))
-    # subscription_id can be passed as command argument or as configuration parameter,
-    # if both are passed as arguments, the command argument will be used.
+    # subscription_id can be passed as a command argument or as a configuration parameter.
+    # If both are passed, the command argument is used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
     response = client.list_key_vaults_request(subscription_id=subscription_id,
                                               limit=limit, offset=offset)
@@ -1223,8 +1223,8 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     """
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    # # subscription_id can be passed as command arguments or as configuration parameters,
-    # if both are passed as arguments, the command arguments will be used.
+    # subscription_id can be passed as a command argument or as a configuration parameter.
+    # If both are passed, the command argument is used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
 
     response = client.list_resource_groups_request(subscription_id=subscription_id, tag=tag, limit=limit)
@@ -1467,13 +1467,13 @@ def main() -> None:
 
     except Exception as error:
         str_error = str(error)
-        custom_message = 'An error occurred:'
+        custom_message = f'Failed to execute {command} command.\nError: \n'
         if 'InvalidSubscriptionId' in str_error:
-            custom_message = 'Invalid or missing subscription ID. Please verify your subscription ID.'
+            custom_message += 'Invalid or missing subscription ID. Please verify your subscription ID.'
         elif 'SubscriptionNotFound' in str_error:
-            custom_message = 'The given subscription ID could not be found.'
+            custom_message += 'The given subscription ID could not be found.'
         elif 'perform action' in str_error:
-            custom_message = "The client does not have Key Vault permissions to \
+            custom_message += "The client does not have Key Vault permissions to \
 the given resource group name or the resource group name does not exist."
 
         return_error(custom_message + "\n" + error.message if hasattr(error, 'message') else str_error)

@@ -625,17 +625,28 @@ args = {'test': 'test_arg_value'}
 params = {'test': 'test_param_value', 'test_unique': 'test_arg2_value'}
 
 
-def test_get_from_args_or_params__when_the_key_exists():
+def test_get_from_args_or_params__when_the_key_exists_in_args_and_params():
     """
     Given:
-        args and params with the same key in both, and a unique key in params
+        args and params with the same key in both
     When:
-        get value from args or params
+        get value from args or params is called
     Then:
-        Verify that the result are as expected
+        Verify that the result are as expected = the value from args is returned
     """
 
     assert get_from_args_or_params(args, params, 'test') == 'test_arg_value'
+
+
+def test_get_from_args_or_params__when_the_key_exists_only_in_params():
+    """
+    Given:
+        args and params with the requested key exist only in params
+    When:
+        get value from args or params is called
+    Then:
+        Verify that the result are as expected = the value from params
+    """
     assert get_from_args_or_params(args, params, 'test_unique') == 'test_arg2_value'
 
 
@@ -653,27 +664,27 @@ def test_get_from_args_or_params__when_the_key_dose_not_exists():
     assert 'No mock was provided. Please provide a mock in the instance parameters or in the command' in e.value.args
 
 
-def test_arg_to_tag__with_valid_input():
+def test_azure_tag_formatter__with_valid_input():
     """
     Given:
         A valid json as a string
     When:
-        arg_to_tag is called
+        azure_tag_formatter is called
     Then:
         Verify that the result are as expected
     """
-    assert arg_to_tag('{"key":"value"}') == "tagName eq 'key' and tagValue eq 'value'"
+    assert azure_tag_formatter('{"key":"value"}') == "tagName eq 'key' and tagValue eq 'value'"
 
 
-def test_arg_to_tag__with_invalid_input():
+def test_azure_tag_formatter__with_invalid_input():
     """
     Given:
         A invalid json as a string
     When:
-        arg_to_tag is called
+        azure_tag_formatter is called
     Then:
         Verify that the correct error message is raising
     """
     with pytest.raises(Exception) as e:
-        arg_to_tag('{"key:value"}')
+        azure_tag_formatter('{"key:value"}')
     assert """Invalid tag format, please use the following format: '{"key_name":"value_name"}""" in e.value.args
