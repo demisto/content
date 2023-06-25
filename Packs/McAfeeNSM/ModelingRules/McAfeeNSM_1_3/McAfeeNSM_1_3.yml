@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: McAfee_NSM_Collection
+name: McAfee NSM Collection
+rules: ''
+schema: ''
+tags: McAfee NSM Event Colletion
