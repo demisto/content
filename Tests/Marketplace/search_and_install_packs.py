@@ -56,7 +56,7 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True, pack_api_data: 
 
         return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
 
-    if not check_locally:
+    else:
         if pack_api_data:
             return pack_api_data['extras']['pack']['deprecated']
 
@@ -122,7 +122,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
 
 def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> dict | None:
     """
-    Get the pack's required dependencies.
+    Get pack's required dependencies.
 
     Args:
         client (demisto_client): The configured client to use.
