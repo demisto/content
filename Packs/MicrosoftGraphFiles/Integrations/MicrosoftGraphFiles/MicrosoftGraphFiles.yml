@@ -40,10 +40,10 @@ configuration:
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
-  display: Certificate Thumbprint
   hidden: true
 - name: credentials_certificate_thumbprint
   required: false
