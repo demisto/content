@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -630
+          "y": -1030
         }
       }
     note: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: afd82eaf-78d0-4d05-88a9-8833e897bfaa
+    taskid: 08edc2e2-6614-4b95-8973-cb91c57c96de
     type: regular
     task:
-      id: afd82eaf-78d0-4d05-88a9-8833e897bfaa
+      id: 08edc2e2-6614-4b95-8973-cb91c57c96de
       version: -1
       name: Create the External Dynamic List Object
       description: Create a new dynamic list.
@@ -73,6 +73,14 @@ tasks:
       type:
         complex:
           root: inputs.EDLObjectType
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Choose your EDL type.Answers.0
+                iscontext: true
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -295,7 +303,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -480
+          "y": -900
         }
       }
     note: false
@@ -319,7 +327,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+      - "16"
       "yes":
       - "15"
     separatecontext: false
@@ -340,7 +348,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -320
+          "y": -740
         }
       }
     note: false
@@ -406,16 +414,129 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d3236cb3-33d2-4072-87d0-a78bfa8526ca
+    type: condition
+    task:
+      id: d3236cb3-33d2-4072-87d0-a78bfa8526ca
+      version: -1
+      name: Check if the EDL type is empty
+      description: Check if the EDL type is empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.EDLObjectType
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8a1e23d8-217a-4560-8501-5369fcba3862
+    type: collection
+    task:
+      id: 8a1e23d8-217a-4560-8501-5369fcba3862
+      version: -1
+      name: Provide an EDL type
+      description: Provide an EDL type
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": -390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Choose one of the following types:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: domain
+        - simple: ip
+        - simple: url
+        - simple: predefined_ip
+        - simple: predefined_url
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Choose your EDL type
+      description: Your EDL type is missing and we want to ensure that your EDL object will be created successfully.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1275,
-        "width": 800,
-        "x": 240,
-        "y": -630
+        "height": 1675,
+        "width": 1080,
+        "x": -40,
+        "y": -1030
       }
     }
   }
