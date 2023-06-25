@@ -2747,7 +2747,7 @@ Get an Uptycs asset details.
 | Uptycs.Asset.logicalCores | number | Number of logical cores |
 | Uptycs.Asset.memoryMb | number | Memory in mb |
 | Uptycs.Asset.os | string | os installed on asset (Windows, Linux, Mac OS X) |
-| Uptycs.Asset.os_version | string | os version |
+| Uptycs.Asset.osVersion | string | os version |
 | Uptycs.Asset.osFlavor | string | os flavor |
 | Uptycs.Asset.osKey | string | os key |
 | Uptycs.Asset.osqueryVersion | string | Uptycs osquery version |
@@ -2776,22 +2776,19 @@ Get an Uptycs asset details.
             "disabled": false,
             "quarantinedStatus": false,
             "tags": "assets,macos,darwin",
-            "last_enrolled_at": "2019-07-19 14:47:27.485",
-            "os_version": "10.14.5",
+            "lastEnrolledAt": "2019-07-19 14:47:27.485",
+            "osVersion": "10.14.5",
             "osqueryVersion": "3.x.x.x-Uptycs",
             "agentVersion": "5.x.x.x-Uptycs",
             "created_at": "2018-09-25 16:38:16.440",
-            "os_flavor": "darwin",
+            "osFlavor": "darwin",
             "hostName": "kyle-mbp-work",
             "gateway": "x.y.z.a",
-            "last_activity_at": "2019-07-19 17:02:41.704",
             "os": "Mac OS X",
             "osKey": "darwin_10.14.5",
-            "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
             "objectGroupId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
             "cpuBrand": "Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz",
             "hardwareModel": "HVM domU",
-            "hardwareSerial": "ec272101-e5c1-58b2-f847-c439abdadcf4",
             "hardwareVendor": "Xen",
             "cores": 2,
             "logicalCores": 2,
@@ -2806,9 +2803,9 @@ Get an Uptycs asset details.
 
 ##### Human Readable Output
 ### Uptycs Assets
-|status|live|disabled|quarantinedStatus|tags|last_enrolled_at|os_version|osqueryVersion|agentVersion|created_at|os_flavor|hostName|gateway|last_activity_at|os|osKey|id|objectGroupId|cpuBrand|hardwareModel|hardwareSerial|hardwareVendor|cores|logicalCores|memoryMb|arch|osDisplay|location|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|active|true|false|false|assets,macos,darwin|2019-07-19 14:47:27.485 |10.14.5 |3.x.x.x-Uptycs |5.x.x.x-Uptycs|2018-09-25 16:38:16.440|darwin |kyle-mbp-work |x.y.z.a|2019-07-19 17:02:41.704 |Mac OS X |darwin_10.14.5|984d4a7a-9f3a-580a-a3ef-2841a561669b|984d4a7a-9f3a-580a-a3ef-2841a561669b|Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz|HVM domU|ec272101-e5c1-58b2-f847-c439abdadcf4|Xen|2|2|8192|x86_64|macOS 10.14.5|United States|
+|status|live|disabled|quarantinedStatus|tags|lastEnrolledAt|osVersion|osqueryVersion|agentVersion|createdAt|osFlavor|hostName|gateway|os|osKey|objectGroupId|cpuBrand|hardwareModel|hardwareSerial|hardwareVendor|cores|logicalCores|memoryMb|arch|osDisplay|location|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|active|true|false|false|assets,macos,darwin|2019-07-19 14:47:27.485 |10.14.5 |3.x.x.x-Uptycs |5.x.x.x-Uptycs|2018-09-25 16:38:16.440|darwin |kyle-mbp-work |x.y.z.a|Mac OS X |darwin_10.14.5|984d4a7a-9f3a-580a-a3ef-2841a561669b|Intel(R) Xeon(R) CPU E5-2686 v4 @ 2.30GHz|HVM domU|ec272101-e5c1-58b2-f847-c439abdadcf4|Xen|2|2|8192|x86_64|macOS 10.14.5|United States|
 
 
 ### 38. uptycs-get-tag

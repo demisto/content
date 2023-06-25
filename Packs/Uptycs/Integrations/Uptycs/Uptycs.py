@@ -1574,7 +1574,7 @@ def uptycs_get_asset_id_command():
                 context.pop(key, None)
     context['tags'] = ''
     if query_results.get('tags') is not None:
-        context['tags'] = query_results.get('tags').join(',')
+        context['tags'] = ','.join(query_results.get('tags'))
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2757,7 +2757,7 @@ def uptycs_delete_tag():
 
 def uptycs_delete_tag_command():
     response = uptycs_delete_tag()
-    if response.get("status") != 200:
+    if response.get("status") in [500, 404]:
         return_error("Error, check whether if tag has already been deleted")
     human_readable = 'Uptycs Deleted tag'
 
