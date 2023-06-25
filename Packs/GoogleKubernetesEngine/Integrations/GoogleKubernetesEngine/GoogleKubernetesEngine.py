@@ -374,12 +374,13 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
     upadte = {
         "username": "admin" if basic_auth == "enable" else ""
     }
-    raw_response_msg: Message = client.set_master_auth(action=types.SetMasterAuthRequest.Action.SET_USERNAME,
-                                                       project_id=project,
-                                                       zone=zone,
-                                                       cluster_id=cluster,
-                                                       update=upadte,
-                                                       timeout=API_TIMEOUT)
+    raw_response_msg: Message = client.set_master_auth(
+        action=types.SetMasterAuthRequest.Action.SET_USERNAME,  # type: ignore[E1101]
+        project_id=project,
+        zone=zone,
+        cluster_id=cluster,
+        update=upadte,
+        timeout=API_TIMEOUT)
     raw_response_dict: dict = MessageToDict(raw_response_msg)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
