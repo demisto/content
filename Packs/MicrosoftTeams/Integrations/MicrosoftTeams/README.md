@@ -67,7 +67,7 @@ In addition, make sure ***Instance execute external*** is enabled.
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
- - Note: This option is available from Cortex XSOAR v5.5.0. It's not available for XSOAR 8.
+ - Note: This option is available from Cortex XSOAR v5.5.0. It's currently not supported for XSOAR 8.
 
 ### 2. Using NGINX as reverse proxy
 In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relays the HTTPS requests posted from Microsoft Teams
@@ -1121,36 +1121,34 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
 ## Troubleshooting
 
- - Note: most of the following steps do not apply to XSOAR 8, they will be adjusted in the near future.
-
 1. The integration works by spinning up a web server that listens to events and data posted to it from Microsoft Teams.
 
     If you see the error message `Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.`, then it means that the tenant ID was never posted to the web server, which should happen for the first time when the bot is added to the configured team.
 
     This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
-    In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
+    Steps o troubleshoot:
+   1. first verify the Docker container is up and running and publish the configured port to the outside world (currently not supported in XSOAR 8):
 
-    From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
+       From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
 
-    You should see the following, assuming port 7000 is used:
+       You should see the following, assuming port 7000 is used:
 
-    `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
+       `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
 
-    If the Docker container is up and running, try running cURL queries, to verify the web server is up and running and listens on the configured URL:
+       If the Docker container is up and running, try running cURL queries, to verify the web server is up and running and listens on the configured URL:
 
-     - To the messaging endpoint from a separate box.
-     - From the Cortex XSOAR machine to localhost.
+        - To the messaging endpoint from a separate box.
+        - From the Cortex XSOAR machine to localhost.
 
-       - Note: The web server supports only POST method queries.
+          - Note: The web server supports only POST method queries. 
+   2. If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
 
-    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
-
-    If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+   3. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
-    Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
+   4. Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
 
-    In some cases, a connection is not created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
+   5. In some cases, a connection is not created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 
