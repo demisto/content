@@ -3,7 +3,7 @@ import pytest
 from splunklib.binding import AuthenticationError
 
 import SplunkPy as splunk
-import splunklib.client as client
+from splunklib import client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
@@ -570,7 +570,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
@@ -634,7 +634,7 @@ def test_fetch_notables(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = Service('DONE')
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = splunk.UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper=mapper)
     cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
@@ -981,8 +981,9 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
 def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
                                                 func_call_kwargs: dict, expected_closure_data: dict):
     class Jobs:
-        def __init__(self):
-            self.oneshot = lambda x: notable_data
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == 'json'
+            return notable_data
 
     class Service:
         def __init__(self):
@@ -992,7 +993,7 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[notable_data])
     mocker.patch.object(demisto, 'results')
     service = Service()
     splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False), **func_call_kwargs)
@@ -1012,7 +1013,7 @@ def test_get_modified_remote_data_command(mocker):
 
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x, count: [updated_incidet_review]
+            self.oneshot = lambda x, count, output_mode: [updated_incidet_review]
 
     class Service:
         def __init__(self):
@@ -1021,7 +1022,7 @@ def test_get_modified_remote_data_command(mocker):
     args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_incidet_review])
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[updated_incidet_review])
     mocker.patch.object(demisto, 'results')
     splunk.get_modified_remote_data_command(Service(), args)
     results = demisto.results.call_args[0][0]['Contents']
@@ -1413,7 +1414,7 @@ def test_module__exception_raised(mocker, credentials):
     """
     # prepare
     def exception_raiser():
-        raise AuthenticationError()
+        raise AuthenticationError
 
     mocker.patch.object(AuthenticationError, '__init__', return_value=None)
     mocker.patch.object(client.Service, 'info', side_effect=exception_raiser)
@@ -1466,11 +1467,11 @@ def test_module_message_object(mocker):
     Then:
         - Validate the test_module run successfully and the info method was called once.
     """
-    import splunklib.results as results
+    from splunklib import results
     # prepare
     mocker.patch.object(demisto, 'params', return_value={'isFetch': True, 'fetchQuery': 'something'})
     message = results.Message("DEBUG", "There's something in that variable...")
-    mocker.patch('splunklib.results.ResultsReader', return_value=[message])
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[message])
     service = mocker.patch('splunklib.client.connect', return_value=None)
     # run
     splunk.test_module(service)
@@ -1519,7 +1520,7 @@ def test_labels_with_non_str_values(mocker):
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
-    mocker.patch('splunklib.results.ResultsReader', return_value=[mocked_response])
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[mocked_response])
 
     # run
     service = mocker.patch('splunklib.client.connect', return_value=None)
