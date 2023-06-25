@@ -13,6 +13,7 @@ from time import sleep
 
 UNREMOVABLE_PACKS = ['Base', 'CoreAlertFields', 'Core']
 
+
 def get_all_installed_packs(client: demisto_client):
     """
 
