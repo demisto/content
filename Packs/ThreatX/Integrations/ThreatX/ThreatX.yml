@@ -11,6 +11,7 @@ configuration:
 - display: Customer Name
   name: customer_name
   type: 0
+  hidden: true
 - display: API Key
   name: api_key
   type: 4
