@@ -60,9 +60,3 @@ ignore=PB110
 
 [file:playbook-TIM_-_Run_Enrichment_For_IP_Indicators_6_0_0.yml]
 ignore=RM109
-
-[file:incidenttype-Review_Indicators_Manually_For_Whitelisting.json]
-ignore=BC109
-
-[file:incidenttype-Review_Indicators_Manually.json]
-ignore=BC109
