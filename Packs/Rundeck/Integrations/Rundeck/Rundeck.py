@@ -6,7 +6,6 @@ from typing import Any, Dict, Optional, Union
 import ntpath
 from dateparser import parse
 
-# TEST------------------------------------------------------------------------------------------------
 
 # Disable insecure warnings
 urllib3.disable_warnings()
