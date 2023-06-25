@@ -1,6 +1,6 @@
 {
     "name": "Yara",
-    "description": "Perform scans with Yara.",
+    "description": "The pattern matching swiss knife for malware researchers.",
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
