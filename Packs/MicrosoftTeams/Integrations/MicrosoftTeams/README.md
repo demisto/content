@@ -1098,7 +1098,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
        `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
 
-       If the Docker container is up and running, try running cURL queries, to verify the web server is up and running and listens on the configured URL:
+       If the Docker container is up and running, try running cURL queries to verify the web server is up and running and listens on the configured URL:
 
         - To the messaging endpoint from a separate box.
         - From the Cortex XSOAR machine to localhost.
