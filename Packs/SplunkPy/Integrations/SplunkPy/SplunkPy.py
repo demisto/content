@@ -348,6 +348,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
     # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
     latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offset)
+    kwargs_oneshot["output_mode"] = "json"
     fetch_query = build_fetch_query(dem_params)
 
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
@@ -1042,7 +1043,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
-                        for item in results.JSONResultsReader(job.results()):
+                        for item in results.JSONResultsReader(job.results(output_mode='json')):
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
                 except Exception as e:
@@ -1256,7 +1257,7 @@ def get_remote_data_command(service: client.Service, args: dict,
              '| map search=" search `notable_by_id($rule_id$)`"'.format(notable_id, last_update_splunk_timestamp)
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
-    for item in results.JSONResultsReader(service.jobs.oneshot(search)):
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode='json')):
         updated_notable = parse_notable(item, to_dict=True)
 
     if updated_notable.get('owner'):
@@ -1308,7 +1309,7 @@ def get_modified_remote_data_command(service: client.Service, args):
              '| fields rule_id ' \
              '| dedup rule_id'.format(last_update_splunk_timestamp)
     demisto.debug('Performing get-modified-remote-data command with query: {}'.format(search))
-    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT)):
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT, output_mode='json')):
         modified_notable_ids.append(item['rule_id'])
     if len(modified_notable_ids) >= MIRROR_LIMIT:
         demisto.info(f'Warning: More than {MIRROR_LIMIT} notables have been modified since the last update.')
@@ -1426,6 +1427,7 @@ def get_mapping_fields_command(service: client.Service, mapper):
         'latest_time': now,
         'count': FETCH_LIMIT,
         'offset': search_offset,
+        'output_mode': 'json',
     }
 
     searchquery_oneshot = dem_params['fetchQuery']
@@ -1638,7 +1640,7 @@ class ResponseReaderWrapper(io.RawIOBase):
 def get_current_splunk_time(splunk_service: client.Service):
     t = datetime.utcnow() - timedelta(days=3)
     time = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {'count': 1, 'earliest_time': time}
+    kwargs_oneshot = {'count': 1, 'earliest_time': time, 'output_mode': 'json', }
     searchquery_oneshot = '| gentimes start=-1 | eval clock = strftime(time(), "%Y-%m-%dT%H:%M:%S")' \
                           ' | sort 1 -_time | table clock'
 
@@ -2029,7 +2031,8 @@ def update_headers_from_field_names(search_result, chosen_fields):
 def get_current_results_batch(search_job: client.Job, batch_size: int, results_offset: int):
     current_batch_kwargs = {
         "count": batch_size,
-        "offset": results_offset
+        "offset": results_offset,
+        'output_mode': 'json',
     }
 
     results_batch = search_job.results(**current_batch_kwargs)
@@ -2153,7 +2156,7 @@ def splunk_results_command(service: client.Service):
         else:
             return_error(msg, error)
     else:
-        for result in results.JSONResultsReader(job.results(count=limit)):
+        for result in results.JSONResultsReader(job.results(count=limit, output_mode='json')):
             if isinstance(result, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
@@ -2351,7 +2354,7 @@ def test_module(service: client.Service) -> None:
     if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
-        kwargs = {'count': 1, 'earliest_time': time}
+        kwargs = {'count': 1, 'earliest_time': time, 'output_mode': 'json'}
         query = params['fetchQuery']
         try:
             if MIRROR_DIRECTION.get(params.get('mirror_direction')) and not params.get('timezone'):
