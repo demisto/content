@@ -160,6 +160,10 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
         try:
             changed = find_pack_folder(path)
             print(f'--------------{changed=}--------------')
+            print(f'--------------0={Path(__file__).absolute().parents[0]}--------------')
+            print(f'--------------1={Path(__file__).absolute().parents[1]}--------------')
+            print(f'--------------2={Path(__file__).absolute().parents[2]}--------------')
+
         except:
             pass
         if 'Packs' in f:
