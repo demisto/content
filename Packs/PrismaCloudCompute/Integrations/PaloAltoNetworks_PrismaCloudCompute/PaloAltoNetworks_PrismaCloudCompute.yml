@@ -60,7 +60,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -832,10 +832,16 @@ script:
     deprecated: false
     arguments:
     - name: cve_id
-      description: A comma-separated list of CVEs, for example, cve_id=cve-2016-223,cve-2020-3546.
-      required: true
+      description: Deprecated. Use the `cve` argument instead.
+      required: false
       isArray: true
       defaultValue: ""
+    - name: cve
+      description: A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546.
+      required: false
+      isArray: true
+      defaultValue: ""
+      default: true
     outputs:
     - contextPath: CVE.ID
       description: "The ID of the CVE, for example: CVE-2015-1653."
