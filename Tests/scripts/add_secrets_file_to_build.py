@@ -1,4 +1,6 @@
 import argparse
+import os
+
 import json5
 import pathlib
 import yaml
@@ -154,15 +156,29 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
     :param changed_files: a list of changed file from git diff in the current branch
     :return: the list of path for the changed packs
     """
+    t = []
+    # Get the current directory
+    current_dir = os.getcwd()
+
+    # List files in the current directory
+    files = os.listdir(current_dir)
+
+    # Print the file names
+    for file in files:
+        if os.path.isfile(file):
+            t.append(file)
+    print(f'++++++{t=}+++++')
+
+    test_changed = set()
     changed_packs = []
     for f in changed_files:
         path = Path(f)
         try:
             changed = find_pack_folder(path)
+            test_changed.add(f'{Path(__file__).absolute().parents[2]}/{changed}')
             print(f'--------------{changed=}--------------')
-            print(f'--------------0={Path(__file__).absolute().parents[0]}--------------')
-            print(f'--------------1={Path(__file__).absolute().parents[1]}--------------')
-            print(f'--------------2={Path(__file__).absolute().parents[2]}--------------')
+            print(f'{Path(__file__).absolute().parents[2]}/{changed}')
+
 
         except:
             pass
