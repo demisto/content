@@ -544,9 +544,10 @@ def init_google_client(
     :return:
     """
     try:
-        service_account_json = json.loads(
+        service_account_json = json.loads(str(
             credentials.get('password')
-            or service_account_json)
+            if isinstance(credentials, dict)
+            else service_account_json))
         client = PubSubClient(
             default_project=default_project,
             default_subscription=default_subscription,
