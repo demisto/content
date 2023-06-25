@@ -22,15 +22,17 @@ configuration:
   type: 4
   section: Connect
   hidden: true
-- name: credentials_custom_key
+- display: Custom ID
+  name: custom_id
+  required: false
+  type: 0
+  section: Connect
+  hidden: true
+- display: Custom ID
+  name: credentials_custom
   required: false
   type: 9
   displaypassword: Custom Key
-  hiddenusername: true
-- display: Custom ID
-  name: custom_id
-  required: true
-  type: 0
   section: Connect
 - display: Fetch incidents
   name: isFetch
