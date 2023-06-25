@@ -6,6 +6,6 @@ Security teams often have a variety of security tools at their disposal. Given t
 ## **What does this pack do?**
 With Okta + Cortex XSOAR working together, enterprises can provide better integration and automation between security tools, especially for identity-centric visibility and response. Now security teams can:
 - Use identity context to enrich, understand, and analyze security alerts as they arise
-- Prioritize alerts and orchestrate informed security responses in order of importance
+- Prioritize alerts and orchestrate informed jujsecurity responses in order of importance
 - Contain and remediate threats quickly and decisively, through a range of automated identity-centric actions
 - Enhance your visibility and response by enabling identity as a key control point
