@@ -552,7 +552,8 @@ def main():
         auth_id = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id')
         enc_key = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key')
         auth_code = params.get('credentials_auth_code', {}).get('password') or params.get('auth_code', '')
-        certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get('password') or params.get('certificate_thumbprint')
+        certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+            'password') or params.get('certificate_thumbprint')
         private_key = params.get('private_key')
 
         if not managed_identities_client_id:
