@@ -21,17 +21,24 @@ configuration:
   name: token
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- name: token_creds
+  type: 9
+  required: false
+  displaypassword: API token
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-- display: Use system proxy settings
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+
 script:
   script: ''
   type: javascript
