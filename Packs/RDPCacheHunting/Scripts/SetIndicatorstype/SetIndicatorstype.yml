@@ -5,7 +5,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.62631
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: Indicators-type
 runas: DBotWeakRole
@@ -16,6 +16,6 @@ subtype: python3
 tags:
 - dynamic-section
 type: python
-fromversion: 6.8.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
