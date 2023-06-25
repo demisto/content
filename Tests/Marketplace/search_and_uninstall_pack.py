@@ -11,6 +11,7 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.search_and_install_packs import install_packs
 from time import sleep
 
+UNREMOVABLE_PACKS = ['Base', 'CoreAlertFields', 'Core']
 
 def get_all_installed_packs(client: demisto_client):
     """
@@ -35,8 +36,9 @@ def get_all_installed_packs(client: demisto_client):
             installed_packs_ids_str = ', '.join(installed_packs_ids)
             logging.debug(
                 f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
-            if 'Base' in installed_packs_ids:
-                installed_packs_ids.remove('Base')
+            for pack in UNREMOVABLE_PACKS:
+                if pack in installed_packs_ids:
+                    installed_packs_ids.remove('Base')
             return installed_packs_ids
         else:
             result_object = ast.literal_eval(response_data)
@@ -153,7 +155,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client):
         installed_packs_amount_history, failed_uninstall_attempt_count = len(installed_packs), 0
         # new calculation for num of retries
         retries = math.ceil(len(installed_packs) / 2)
-        while len(installed_packs) > 1:
+        while len(installed_packs) > len(UNREMOVABLE_PACKS):
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
