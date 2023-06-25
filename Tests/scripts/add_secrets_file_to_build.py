@@ -160,20 +160,22 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
     test_changed = set()
     changed_packs = []
     changed_integrations = []
+    # Create a set of all the changed packs
     for f in changed_files:
         path = Path(f)
         # If not a pack find_pack_folder throws an exception
         try:
             changed = find_pack_folder(path)
             test_changed.add(f'{Path(__file__).absolute().parents[2]}/{changed}')
-        except:
+        except Exception as exc:
+            logging.debug(f'Skipped {path}, got error: {exc}')
             continue
-
 
         if 'Packs' in f:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
             changed_packs.append(pack_path)
+    # create a list of all the changed integrations
     for changed_pack_path in test_changed:
         integrations_path = f'{changed_pack_path}/Integrations'
         integrations = os.listdir(integrations_path)
