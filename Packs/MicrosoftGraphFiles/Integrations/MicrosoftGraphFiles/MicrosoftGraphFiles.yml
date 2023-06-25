@@ -51,11 +51,11 @@ configuration:
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
   hiddenusername: true
-- display: Private Key
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
   name: private_key
   required: false
   type: 14
-  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
 - display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
