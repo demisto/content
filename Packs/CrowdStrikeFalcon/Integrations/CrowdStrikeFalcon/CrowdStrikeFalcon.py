@@ -1250,7 +1250,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
         params['filter'] = "date_updated:>'{0}'".format(last_updated_timestamp)
 
     response = http_request('GET', endpoint_url, params)
-
+    demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
     return response
 
 
@@ -2317,6 +2317,9 @@ def fetch_incidents():
             if "resources" in raw_res:
                 for detection in demisto.get(raw_res, "resources"):
                     detection['incident_type'] = incident_type
+                    demisto.debug(
+                        f"CrowdStrikeFalconMsg: Detection {detection['detection_id']} "
+                        f"was fetched which was created in {detection['created_timestamp']}")
                     incident = detection_to_incident(detection)
 
                     detections.append(incident)
