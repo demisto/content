@@ -802,7 +802,7 @@ def storage_resource_group_list(client: ASClient, params: Dict, args: Dict) -> C
     # subscription_id can be passed as command argument or as configuration parameter,
     # if both are passed as arguments, the command argument will be used.
     subscription_id = get_from_args_or_params(params=params, args=args, key='subscription_id')
-    filter_by_tag = arg_to_tag(tag) if tag else ''
+    filter_by_tag = azure_tag_formatter(tag) if tag else ''
 
     response = client.list_resource_groups_request(subscription_id=subscription_id,
                                                    filter_by_tag=filter_by_tag, limit=limit)
