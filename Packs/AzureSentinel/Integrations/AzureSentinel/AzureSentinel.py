@@ -1824,7 +1824,7 @@ def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, An
     subscription_id = subscription_id
 
     # extracting the tag name and value from the tag argument that is received from the user as a string
-    filter_by_tag = arg_to_tag(tag) if tag else ''
+    filter_by_tag = azure_tag_formatter(tag) if tag else ''
 
     full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter=\
 {filter_by_tag}&$top={limit}&api-version=2021-04-01'
