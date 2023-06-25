@@ -1,8 +1,7 @@
 id: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
 version: -1
 name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox
-description: Deprecated. Use cs-fx-submit-url command instead. This playbook uploads, detonates, and analyzes URLs for the CrowdStrike Falcon Intelligence Sandbox.
-deprecated: true
+description: This playbook uploads, detonates, and analyzes URLs for the CrowdStrike Falcon Intelligence Sandbox.
 starttaskid: "0"
 tasks:
   "0":
