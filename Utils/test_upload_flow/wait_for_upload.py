@@ -68,7 +68,7 @@ def main():
 
     token = args.gitlab_api_token
     pipeline_id = args.pipeline_id
-    return True
+    return "True"
 
     pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)
 
