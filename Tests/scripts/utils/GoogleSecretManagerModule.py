@@ -56,17 +56,16 @@ class GoogleSecreteManagerModule:
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
+            labels = {}
             try:
                 labels = dict(secret.labels)
             except Exception as e:
-                labels = {}
                 logging.error(f'Error the secret {secret.name} has no labels, got the error: {e}')
             secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
             search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
             # Check if the secret comply to the function filter params
-            filter = [eval(f'labels.get("{k}"){v}') for k, v in labels_filter.items()]
-            print(f'*********{filter=}**********')
+            filter = [eval(f'{labels}.get("{k}"){v}') for k, v in labels_filter.items()]
             if not all(filter) or (search_ids and secret_pack_id not in search_ids):
                 continue
             if with_secrets:
