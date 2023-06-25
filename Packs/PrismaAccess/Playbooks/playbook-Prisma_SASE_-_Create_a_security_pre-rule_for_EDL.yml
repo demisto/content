@@ -527,7 +527,7 @@ inputs:
   playbookInputQuery:
 - key: RuleName
   value:
-    simple: 'Block Indicators using EDL - XSOAR incident #${incident.id}'
+    simple: 'Block Indicators using EDL - Created by XSOAR'
   required: false
   description: The Security Policy Rule name will be created for blocking the indicators.
   playbookInputQuery:
