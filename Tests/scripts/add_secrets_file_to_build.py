@@ -156,18 +156,6 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
     :param changed_files: a list of changed file from git diff in the current branch
     :return: the list of path for the changed packs
     """
-    t = []
-    # Get the current directory
-    current_dir = os.getcwd()
-
-    # List files in the current directory
-    files = os.listdir(current_dir)
-
-    # Print the file names
-    for file in files:
-        if os.path.isfile(file):
-            t.append(file)
-    print(f'++++++{t=}+++++')
 
     test_changed = set()
     changed_packs = []
@@ -176,8 +164,7 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
         try:
             changed = find_pack_folder(path)
             test_changed.add(f'{Path(__file__).absolute().parents[2]}/{changed}')
-            print(f'--------------{changed=}--------------')
-            print(f'{Path(__file__).absolute().parents[2]}/{changed}')
+
 
 
         except:
@@ -186,6 +173,8 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
             changed_packs.append(pack_path)
+    print(f'###############{test_changed=}###############')
+    print(f'!!!!!!!!!!!!!!!{changed_packs=}!!!!!!!!!!!!!!!')
     return changed_packs
 
 
@@ -197,7 +186,7 @@ def run(options: argparse.Namespace):
     changed_files = get_git_diff(branch_name, paths.content_repo)
     print(f'--------------{changed_files=}--------------')
     changed_packs.extend(get_changed_packs(changed_files))
-    print(f'--------------{changed_packs=}--------------')
+    # print(f'--------------{changed_packs=}--------------')
     yml_pack_ids.extend(get_yml_pack_ids(changed_packs))
     print(f'--------------{yml_pack_ids=}--------------')
     secrets_file = get_secrets_from_gsm(branch_name, options, yml_pack_ids)
