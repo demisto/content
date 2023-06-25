@@ -861,7 +861,7 @@ inputs:
   value:
     simple: "18"
   required: false
-  description: The API version for the timestamp format to use
+  description: The API version for the timestamp format changes between versions 
   playbookInputQuery:
 outputs:
 - contextPath: QRadar
