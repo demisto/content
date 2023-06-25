@@ -12,7 +12,7 @@ This integration was integrated and tested with version 9.16(3)23 of Cisco ASA
                 }
             },
             {
-    | Server URL (e.g. https://192.168.0.1) | True |
+    | Server URL (e.g., https://192.168.0.1) | True |
     | Credentials | True |
     | Password | True |
     | Use system proxy settings | False |
@@ -42,7 +42,7 @@ Retrieve information about network object groups. Network object groups can cont
 | object_id | The object ID of the network group to retrieve. This can't be used with pagination arguments. | Optional | 
 | page | Page number of paginated results. Minimum of 1; default 1. | Optional | 
 | page_size | The number of items per page. Maximum of 100; default 50. | Optional | 
-| limit | The maximum number of records to retrieve. Maximum of 100; default 50. Default is 50. | Optional | 
+| limit | The maximum number of records to retrieve. Maximum of 100; default 50. | Optional | 
 
 #### Context Output
 
@@ -108,7 +108,7 @@ Retrieve information about local user groups, which are collections of user acco
 | object_id | The object ID of the local user group to retrieve. This can't be used with pagination arguments. | Optional | 
 | page | Page number of paginated results. Minimum of 1; default 1. | Optional | 
 | page_size | The number of items per page. Maximum of 100; default 50. | Optional | 
-| limit | The maximum number of records to retrieve. Maximum of 100; default 50. Default is 50. | Optional | 
+| limit | The maximum number of records to retrieve. Maximum of 100; default 50. | Optional | 
 
 #### Context Output
 
@@ -168,7 +168,7 @@ Retrieve information about individual local user accounts within a network syste
 | object_id | The object ID of the local user to retrieve. This can't be used with pagination arguments. | Optional | 
 | page | Page number of paginated results. Minimum of 1; default 1. | Optional | 
 | page_size | The number of items per page. Maximum of 100; default 50. | Optional | 
-| limit | The maximum number of records to retrieve. Maximum of 100; default 50. Default is 50. | Optional | 
+| limit | The maximum number of records to retrieve. Maximum of 100; default 50. | Optional | 
 
 #### Context Output
 
@@ -176,9 +176,9 @@ Retrieve information about individual local user accounts within a network syste
 | --- | --- | --- |
 | CiscoASA.LocalUser.object_id | String | The object ID of the local user. | 
 | CiscoASA.LocalUser.name | String | The name of the local user. | 
-| CiscoASA.LocalUser.mschap_authenticated | Boolean | Whether Extensible Authentication Protocol-Microsoft Challenge Handshake Authentication Protocol authenticated. | 
+| CiscoASA.LocalUser.mschap_authenticated | Boolean | Whether Extensible Authentication Protocol-Microsoft Challenge Handshake Authentication Protocol is authenticated. | 
 | CiscoASA.LocalUser.privilege_level | Number | The user's privilege level. | 
-| CiscoASA.LocalUser.asdm_cli_access_type | String | ASDM and CLI access type; can be one of "Full", "None", "Cli". | 
+| CiscoASA.LocalUser.asdm_cli_access_type | String | ASDM and CLI access type. Can be one of "Full", "None", "Cli". | 
 
 #### Command example
 ```!cisco-asa-list-local-user limit=1```
@@ -221,7 +221,7 @@ Retrieve information about time range objects. A time range object defines a spe
 | object_id | The object ID of the time range to retrieve. This can't be used with pagination arguments. | Optional | 
 | page | Page number of paginated results. Minimum of 1; default 1. | Optional | 
 | page_size | The number of items per page. Maximum of 100; default 50. | Optional | 
-| limit | The maximum number of records to retrieve. Maximum of 100; default 50. Default is 50. | Optional | 
+| limit | The maximum number of records to retrieve. Maximum of 100; default 50. | Optional | 
 
 #### Context Output
 
@@ -286,7 +286,7 @@ Retrieve information about security groups, which are collections of security gr
 | object_id | The object ID of the security object group to retrieve. This can't be used with pagination arguments. | Optional | 
 | page | Page number of paginated results. Minimum of 1; default 1. | Optional | 
 | page_size | The number of items per page. Maximum of 100; default 50. | Optional | 
-| limit | The maximum number of records to retrieve. Maximum of 100; default 50. Default is 50. | Optional | 
+| limit | The maximum number of records to retrieve. Maximum of 100; default 50. | Optional | 
 
 #### Context Output
 
@@ -348,7 +348,7 @@ Retrieve information about user definitions within the system. This helps in man
 | object_id | The object ID of the user object to retrieve. This can't be used with pagination arguments. | Optional | 
 | page | Page number of paginated results. Minimum of 1; default 1. | Optional | 
 | page_size | The number of items per page. Maximum of 100; default 50. | Optional | 
-| limit | The maximum number of records to retrieve. Maximum of 100; default 50. Default is 50. | Optional | 
+| limit | The maximum number of records to retrieve. Maximum of 100; default 50.  | Optional | 
 
 #### Context Output
 
@@ -385,7 +385,7 @@ Retrieve information about user definitions within the system. This helps in man
 ### cisco-asa-write-memory
 
 ***
-The write memory command saves the running configuration to the default location for the startup configuration.
+Saves the running configuration to the default location for the startup configuration.
 
 #### Base Command
 
@@ -399,7 +399,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoASA.WriteMemory.response | String | shows a successful 'write memory' command execution on a Cisco ASA device, building the configuration and generating a cryptochecksum for integrity. The process is completed with an "\[OK\]" message. | 
+| CiscoASA.WriteMemory.response | String | Shows a successful 'write memory' command execution on a Cisco ASA device, building the configuration and generating a cryptochecksum for integrity. The process is completed with an "\[OK\]" message. | 
 
 #### Command example
 ```!cisco-asa-write-memory```
@@ -438,7 +438,7 @@ Gets a list all rules for the supplied interface.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | interface_name | The name of the interface from which to get rules. | Optional | 
-| interface_type | The interface type. Can be "In", "Out", or "Global". . Possible values are: In, Out, Global. | Optional | 
+| interface_type | The interface type. Possible values are: In, Out, Global. | Optional | 
 
 #### Context Output
 
@@ -458,7 +458,7 @@ Gets a list all rules for the supplied interface.
 | CiscoASA.Rules.SourceKind | String | One of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, objectRef\#NetworkObj, objectRef\#NetworkObjGroup. | 
 | CiscoASA.Rules.DestKind | String | One of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, objectRef\#NetworkObj, objectRef\#NetworkObjGroup. | 
 | CiscoASA.Rules.SourceSecurity.kind | String | The type of the security group; SecurityName, SecurityTag, objectRef\#SecurityObjGroup. | 
-| CiscoASA.Rules.SourceSecurity.value | String | The value of the SecurityName or SecurityTag | 
+| CiscoASA.Rules.SourceSecurity.value | String | The value of the SecurityName or SecurityTag. | 
 | CiscoASA.Rules.SourceSecurity.objectId | String | The object ID of objectRef\#SecurityObjGroup. | 
 | CiscoASA.Rules.DestinationSecurity.kind | String | The type of the security group; SecurityName, SecurityTag, objectRef\#SecurityObjGroup. | 
 | CiscoASA.Rules.DestinationSecurity.value | String | The value of the SecurityName or SecurityTag | 
@@ -587,7 +587,7 @@ Gets a specific rule by rule ID.
 | --- | --- | --- |
 | rule_id | The rule ID. | Required | 
 | interface_name | The name of the interface. | Optional | 
-| interface_type | The interface type. Can be "In", "Out", or "Global". Possible values are: In, Out, Global. | Required | 
+| interface_type | The interface type. Possible values are: In, Out, Global. | Required | 
 
 #### Context Output
 
@@ -607,7 +607,7 @@ Gets a specific rule by rule ID.
 | CiscoASA.Rules.SourceKind | String | One of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, objectRef\#NetworkObj, objectRef\#NetworkObjGroup. | 
 | CiscoASA.Rules.DestKind | String | One of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, objectRef\#NetworkObj, objectRef\#NetworkObjGroup. | 
 | CiscoASA.Rules.SourceSecurity.kind | String | The type of the security group; SecurityName, SecurityTag, objectRef\#SecurityObjGroup. | 
-| CiscoASA.Rules.SourceSecurity.value | String | The value of the SecurityName or SecurityTag | 
+| CiscoASA.Rules.SourceSecurity.value | String | The value of the SecurityName or SecurityTag. | 
 | CiscoASA.Rules.SourceSecurity.objectId | String | The object ID of objectRef\#SecurityObjGroup. | 
 | CiscoASA.Rules.DestinationSecurity.kind | String | The type of the security group; SecurityName, SecurityTag, objectRef\#SecurityObjGroup. | 
 | CiscoASA.Rules.DestinationSecurity.value | String | The value of the SecurityName or SecurityTag | 
@@ -682,23 +682,23 @@ Creates a rule.
 | permit | Whether the rule is a permit. If True, the rule is a permit. Possible values are: True, False. | Required | 
 | remarks | A list of remarks for the rule. | Optional | 
 | position | The position in which to create the rule. | Optional | 
-| log_level | The log level of the rule. Can be "Default", "Emergencies", "Alerts", "Critical", "Errors", "Warnings", "Notifications", "Informational", or "Debugging". Possible values are: Default, Emergencies, Alerts, Critical, Errors, Warnings, Notifications, Informational, Debugging. | Optional | 
+| log_level | The log level of the rule. Possible values are: Default, Emergencies, Alerts, Critical, Errors, Warnings, Notifications, Informational, Debugging. | Optional | 
 | active | Whether the rule will be active. If True, the rule will be active. Possible values are: True, False. | Optional | 
-| interface_type | The interface type. Can be "In", "Out", or "Global". Possible values are: In, Out, Global. | Required | 
+| interface_type | The interface type. Possible values are: In, Out, Global. | Required | 
 | interface_name | The interface name. | Optional | 
 | service | The service of the rule. | Optional | 
-| destination_kind | The destination address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
-| source_kind | The source address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
-| service_kind | The source service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
+| destination_kind | The destination address kind in the ace. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
+| source_kind | The source address kind in the ace. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
+| service_kind | The source service kind. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
 | destination_service | The destination service value. | Optional | 
-| destination_service_kind | The destination service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
+| destination_service_kind | The destination service kind. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
 | time_range | Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range. | Optional | 
-| user | The object ID to the user; can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object. | Optional | 
-| user_kind | The type of the user, can be one of LocalUserObjGroup, UserGroupObj, UserObj. Possible values are: LocalUserObjGroup, UserGroupObj, UserObj. | Optional | 
+| user | The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object. | Optional | 
+| user_kind | The type of the user. Possible values are: LocalUserObjGroup, UserGroupObj, UserObj. | Optional | 
 | source_security | Source security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
-| source_security_kind | The source security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
+| source_security_kind | The source security type. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
 | destination_security | Destination security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
-| destination_security_kind | The destination security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
+| destination_security_kind | The destination security type. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
 
 #### Context Output
 
@@ -790,7 +790,7 @@ Deletes a rule.
 | --- | --- | --- |
 | rule_id | The rule ID. | Required | 
 | interface_name | The name of the interface. | Optional | 
-| interface_type | The interface type. Can be "In", "Out", or "Global". Possible values are: In, Out, Global. | Required | 
+| interface_type | The interface type. Possible values are: In, Out, Global. | Required | 
 
 #### Context Output
 
@@ -814,7 +814,7 @@ Updates an existing rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| interface_type | The interface type. Can be "In", "Out", or "Global". Possible values are: In, Out, Global. | Required | 
+| interface_type | The interface type. Possible values are: In, Out, Global.  | Required | 
 | interface_name | The interface name. | Optional | 
 | rule_id | The rule ID. | Required | 
 | active | Whether the rule will be active. If True, will be active. Possible values are: True, False. | Optional | 
@@ -825,18 +825,18 @@ Updates an existing rule.
 | destination | The destination. Can be the value of an IPv4, an address block, or the name of a network object. | Optional | 
 | source | The source. Can be the value of an IPv4, an address block, or the name of a network object. | Optional | 
 | service | The service of the rule. | Optional | 
-| destination_kind | The destination address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
-| source_kind | The source address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
-| service_kind | The source service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
+| destination_kind | The destination address kind in the ace. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
+| source_kind | The source address kind in the ace. Possible values are: AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup. | Optional | 
+| service_kind | The source service kind. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
 | destination_service | The destination service value. | Optional | 
-| destination_service_kind | The destination service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
+| destination_service_kind | The destination service kind. Possible values are: AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService. | Optional | 
 | time_range | Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range. | Optional | 
-| user | The object ID to the user; can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object. | Optional | 
-| user_kind | The type of the user, can be one of LocalUserObjGroup, UserGroupObj, UserObj. Possible values are: LocalUserObjGroup, UserGroupObj, UserObj. | Optional | 
+| user | The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object. | Optional | 
+| user_kind | The type of the user. Possible values are: LocalUserObjGroup, UserGroupObj, UserObj. | Optional | 
 | source_security | Source security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
-| source_security_kind | The source security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
+| source_security_kind | The source security type. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
 | destination_security | Destination security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
-| destination_security_kind | The destination security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
+| destination_security_kind | The destination security type. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
 
 #### Context Output
 
