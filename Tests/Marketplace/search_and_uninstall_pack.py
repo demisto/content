@@ -38,7 +38,7 @@ def get_all_installed_packs(client: demisto_client):
                 f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
             for pack in UNREMOVABLE_PACKS:
                 if pack in installed_packs_ids:
-                    installed_packs_ids.remove('Base')
+                    installed_packs_ids.remove(pack)
             return installed_packs_ids
         else:
             result_object = ast.literal_eval(response_data)
@@ -94,9 +94,9 @@ def uninstall_all_packs(client: demisto_client, hostname):
     return True
 
 
-def reset_base_pack_version(client: demisto_client):
+def reset_core_pack_version(client: demisto_client):
     """
-    Resets base pack version to prod version.
+    Resets core pack version to prod version.
 
     Args:
         client (demisto_client): The client to connect to.
@@ -104,38 +104,46 @@ def reset_base_pack_version(client: demisto_client):
 
     """
     host = client.api_client.configuration.host.replace('https://api-', 'https://')  # disable-secrets-detection
-    try:
-        # make the search request
-        response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path='/contentpacks/marketplace/Base',
-                                                                            method='GET',
-                                                                            accept='application/json',
-                                                                            _request_timeout=None)
-        if 200 <= status_code < 300:
-            result_object = ast.literal_eval(response_data)
+    is_succeed = True
 
-            if result_object and result_object.get('currentVersion'):
-                logging.debug('Found Base pack in bucket!')
+    for pack_id in UNREMOVABLE_PACKS:
 
-                pack_data = {
-                    'id': result_object.get('id'),
-                    'version': result_object.get('currentVersion')
-                }
-                # install latest version of Base pack
-                logging.info(f'updating base pack to version {result_object.get("currentVersion")}')
-                return install_packs(client, host, [pack_data], False)
+        try:
+            # make the search request
+            response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                                path=f'/contentpacks/marketplace/{pack_id}',
+                                                                                method='GET',
+                                                                                accept='application/json',
+                                                                                _request_timeout=None)
+            if 200 <= status_code < 300:
+                result_object = ast.literal_eval(response_data)
 
+                if result_object and result_object.get('currentVersion'):
+                    logging.debug(f'Found {pack_id} pack in bucket!')
+
+                    pack_data = {
+                        'id': result_object.get('id'),
+                        'version': result_object.get('currentVersion')
+                    }
+                    # install latest version of the pack
+                    logging.info(f'updating {pack_id} pack to version {result_object.get("currentVersion")}')
+                    installation_status = install_packs(client, host, [pack_data], False)
+                    if not installation_status:
+                        is_succeed = False
+
+                else:
+                    raise Exception(f'Did not find {pack_id} pack')
             else:
-                raise Exception('Did not find Base pack')
-        else:
-            result_object = ast.literal_eval(response_data)
-            msg = result_object.get('message', '')
-            err_msg = f'Search request for base pack, failed with status code ' \
-                      f'{status_code}\n{msg}'
-            raise Exception(err_msg)
-    except Exception:
-        logging.exception('Search request Base pack has failed.')
-        return False
+                result_object = ast.literal_eval(response_data)
+                msg = result_object.get('message', '')
+                err_msg = f'Search request for {pack_id} pack, failed with status code ' \
+                          f'{status_code}\n{msg}'
+                raise Exception(err_msg)
+        except Exception:
+            logging.exception(f'Search request {pack_id} pack has failed.')
+            is_succeed = False
+
+    return is_succeed
 
 
 def wait_for_uninstallation_to_complete(client: demisto_client):
@@ -231,7 +239,7 @@ def main():
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
     sync_marketplace(client=client)
-    success = reset_base_pack_version(client) and uninstall_all_packs(client,
+    success = reset_core_pack_version(client) and uninstall_all_packs(client,
                                                                       host) and wait_for_uninstallation_to_complete(
         client)
     sync_marketplace(client=client)
