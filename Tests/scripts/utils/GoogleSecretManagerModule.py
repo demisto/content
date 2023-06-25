@@ -49,6 +49,7 @@ class GoogleSecreteManagerModule:
         :param labels_filter: indicates how we want to filer secrets according to labels
         :return: the secret as json5 object
         """
+        print(f'{labels_filter=}')
         if name_filter is None:
             name_filter = []
         secrets = []
