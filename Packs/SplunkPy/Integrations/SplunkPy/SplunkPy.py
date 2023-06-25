@@ -8,8 +8,8 @@ import dateparser
 import demistomock as demisto
 import pytz
 import requests
-import splunklib.client as client
-import splunklib.results as results
+from splunklib import client
+from splunklib import results
 from splunklib.data import Record
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -353,7 +353,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
-    reader = results.ResultsReader(oneshotsearch_results)
+    reader = results.JSONResultsReader(oneshotsearch_results)
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
 
@@ -1042,7 +1042,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
-                        for item in results.ResultsReader(job.results()):
+                        for item in results.JSONResultsReader(job.results()):
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
                 except Exception as e:
@@ -1256,7 +1256,7 @@ def get_remote_data_command(service: client.Service, args: dict,
              '| map search=" search `notable_by_id($rule_id$)`"'.format(notable_id, last_update_splunk_timestamp)
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
-    for item in results.ResultsReader(service.jobs.oneshot(search)):
+    for item in results.JSONResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
 
     if updated_notable.get('owner'):
@@ -1308,7 +1308,7 @@ def get_modified_remote_data_command(service: client.Service, args):
              '| fields rule_id ' \
              '| dedup rule_id'.format(last_update_splunk_timestamp)
     demisto.debug('Performing get-modified-remote-data command with query: {}'.format(search))
-    for item in results.ResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT)):
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT)):
         modified_notable_ids.append(item['rule_id'])
     if len(modified_notable_ids) >= MIRROR_LIMIT:
         demisto.info(f'Warning: More than {MIRROR_LIMIT} notables have been modified since the last update.')
@@ -1439,7 +1439,7 @@ def get_mapping_fields_command(service: client.Service, mapper):
 
     searchquery_oneshot = searchquery_oneshot + ' | dedup ' + type_field
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-    reader = results.ResultsReader(oneshotsearch_results)
+    reader = results.JSONResultsReader(oneshotsearch_results)
     for item in reader:
         notable = Notable(data=item)
         total_parsed_results.append(notable.to_incident(mapper))
@@ -1644,7 +1644,7 @@ def get_current_splunk_time(splunk_service: client.Service):
 
     oneshotsearch_results = splunk_service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
-    reader = results.ResultsReader(oneshotsearch_results)
+    reader = results.JSONResultsReader(oneshotsearch_results)
     for item in reader:
         if isinstance(item, results.Message):
             return item.message["clock"]
@@ -2039,7 +2039,7 @@ def get_current_results_batch(search_job: client.Job, batch_size: int, results_o
 def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     parsed_batch_results = []
     batch_dbot_scores = []
-    results_reader = results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(current_batch_of_results)))
+    results_reader = results.JSONResultsReader(io.BufferedReader(ResponseReaderWrapper(current_batch_of_results)))
     for item in results_reader:
         if isinstance(item, results.Message):
             if "Error in" in item.message:
@@ -2153,7 +2153,7 @@ def splunk_results_command(service: client.Service):
         else:
             return_error(msg, error)
     else:
-        for result in results.ResultsReader(job.results(count=limit)):
+        for result in results.JSONResultsReader(job.results(count=limit)):
             if isinstance(result, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
@@ -2357,7 +2357,7 @@ def test_module(service: client.Service) -> None:
             if MIRROR_DIRECTION.get(params.get('mirror_direction')) and not params.get('timezone'):
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
-            for item in results.ResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
+            for item in results.JSONResultsReader(service.jobs.oneshot(query, **kwargs)):  # type: ignore
 
                 if isinstance(item, results.Message):
                     continue
@@ -2453,7 +2453,7 @@ def kv_store_collection_add_entries(service: client.Service) -> None:
 
 def kv_store_collections_list(service: client.Service) -> None:
     app_name = service.namespace['app']
-    names = list([x.name for x in service.kvstore.iter()])
+    names = [x.name for x in service.kvstore.iter()]
     human_readable = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
     entry_context = {"Splunk.CollectionList": names}
     return_outputs(human_readable, entry_context, entry_context)
@@ -2548,7 +2548,7 @@ def get_key_type(kv_store: client.KVStoreCollection, _key: str):
 def get_keys_and_types(kv_store: client.KVStoreCollection) -> dict[str, str]:
     keys = kv_store.content()
     for key_name in list(keys.keys()):
-        if not (key_name.startswith('field.') or key_name.startswith('index.')):
+        if not (key_name.startswith(("field.", "index."))):
             del keys[key_name]
     return keys
 
