@@ -47,7 +47,7 @@ def get_dbot_score(resCmd: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def main():
     cves = argToList(demisto.args().get('input'))
-    resCmd = demisto.executeCommand('cve', {'cve_id': cves})
+    resCmd = demisto.executeCommand('cve', {'cve': cves})
     results = get_dbot_score(resCmd)
 
     if len(results) == 0:
