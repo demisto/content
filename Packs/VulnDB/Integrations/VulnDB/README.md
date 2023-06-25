@@ -1404,7 +1404,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 160px;">cve_id</td>
+<td style="width: 160px;">cve</td>
 <td style="width: 509px;">CVE ID.</td>
 <td style="width: 71px;">Required</td>
 </tr>
@@ -1572,4 +1572,4 @@
 <p> </p>
 <h5>
 <a id="Command_Example_486"></a>Command Example</h5>
-<pre>!vulndb-get-vuln-by-cve-id cve_id="2013-1228" max_size="20"</pre>
+<pre>!vulndb-get-vuln-by-cve-id cve="2013-1228" max_size="20"</pre>
