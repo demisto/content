@@ -110,7 +110,7 @@ class Playbook:
                                                        "nextTasks": {"#none#": [str(self.currentTaskId + 1)]},
                                                        "timerTriggers": [{"action": "start",
                                                                           "fieldName": "containmentsla"},    # type: ignore
-                                                                         {"action": "start", 
+                                                                         {"action": "start",
                                                                           "fieldName": "remediationsla"},    # type: ignore
                                                                          {"action": "start",
                                                                           "fieldName": "triagesla"},    # type: ignore
