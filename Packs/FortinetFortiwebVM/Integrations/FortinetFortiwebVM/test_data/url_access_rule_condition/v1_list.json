@@ -2,7 +2,7 @@
     {
         "sourceAddress": true,
         "sourceAddressType": 3,
-        "iPv4IPv6": "0.0.0.0",
+        "iPv4IPv6": "test",
         "type": 2,
         "domain": "",
         "urlPattern": "test",
@@ -18,7 +18,7 @@
     {
         "sourceAddress": true,
         "sourceAddressType": 3,
-        "iPv4IPv6": "0.0.0.0",
+        "iPv4IPv6": "test",
         "type": 2,
         "domain": "",
         "urlPattern": "/test",

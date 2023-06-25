@@ -10,6 +10,10 @@ from CommonServerPython import *
 from requests import Response
 
 LIMIT_SIZE = 50
+SERVER_POOL_MIN_PORT = 1
+SERVER_POOL_MAX_PORT = 65535
+MIN_CONNECTION_LIMIT = 0
+MAX_CONNECTION_LIMIT = 1048576
 
 
 class CommandAction(Enum):
@@ -78,6 +82,8 @@ class ArgumentValues(Enum):
         "FTP",
         "ADFSPIP",
     ]
+    FTP = "FTP"
+    ADFS = "ADFS"
 
 
 class OutputTitle(Enum):
@@ -166,6 +172,8 @@ class OutputTitle(Enum):
     URL_ACCESS_RULE_CONDITION = "URL access rule condition"
     VIRTUAL_SERVER_GROUP = "Virtual server group"
     VIRTUAL_SERVER_ITEM = "Virtual server item"
+    SERVER_POOL_GROUP = "Server pool group"
+    SERVER_POOL_RULE = "Server pool rule"
 
 
 class ErrorMessage(Enum):
@@ -481,6 +489,60 @@ class Parser:
         pass
 
     @property
+    @abstractmethod
+    def server_pool_group_type_user_to_api_mapper(
+        self,
+    ) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def server_pool_group_type_api_to_user_mapper(
+        self,
+    ) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def lb_algo_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def lb_algo_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def server_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def server_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def server_pool_rule_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def server_pool_rule_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def server_pool_rule_status_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        pass
+
+    @property
+    @abstractmethod
+    def server_pool_rule_status_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        pass
+
+    @property
     def enable_disable_to_boolean_mapper(self) -> dict[bool, str]:
         return {True: "enable", False: "disable"}
 
@@ -492,6 +554,16 @@ class Parser:
 
     def parse_virtual_server_item(
         self, virtual_server_item: dict[str, Any]
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def parse_server_pool(self, server_pool: dict[str, Any]) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def parse_server_pool_rule(
+        self, server_pool_rule: dict[str, Any]
     ) -> dict[str, Any]:
         pass
 
@@ -1034,6 +1106,75 @@ class ParserV1(Parser):
         """
         return reverse_dict(self.ip_type_user_to_api_mapper)
 
+    @property
+    def server_pool_group_type_user_to_api_mapper(
+        self,
+    ) -> dict[str, int] | dict[str, str]:
+        return {
+            ArgumentValues.REVERSE_PROXY.value: 1,
+            ArgumentValues.OFFLINE_PROTECTION.value: 2,
+            ArgumentValues.TRUE_TRANSPARENT_PROXY.value: 3,
+            ArgumentValues.TRANSPARENT_INSPECTION.value: 4,
+            ArgumentValues.WCCP.value: 5,
+        }
+
+    @property
+    def server_pool_group_type_api_to_user_mapper(
+        self,
+    ) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_pool_group_type_user_to_api_mapper)
+
+    @property
+    def lb_algo_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "Round Robin": 1,
+            "Weighted Round Robin": 2,
+            "Least Connection": 3,
+            "URI Hash": 5,
+            "Full URI Hash": 6,
+            "Host Hash": 7,
+            "Host Domain Hash": 8,
+            "Source IP Hash": 9,
+        }
+
+    @property
+    def lb_algo_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.lb_algo_user_to_api_mapper)
+
+    @property
+    def server_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            ArgumentValues.SINGLE_SERVER.value: 1,
+            ArgumentValues.SERVER_BALANCE.value: 2,
+        }
+
+    @property
+    def server_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_type_user_to_api_mapper)
+
+    @property
+    def server_pool_rule_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            ArgumentValues.SERVER_POOL_RULE_IP.value: 1,
+            ArgumentValues.SERVER_POOL_RULE_DOMAIN.value: 2,
+        }
+
+    @property
+    def server_pool_rule_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_pool_rule_type_user_to_api_mapper)
+
+    @property
+    def server_pool_rule_status_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "disable": 1,
+            "enable": 2,
+            "maintenance": 3,
+        }
+
+    @property
+    def server_pool_rule_status_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_pool_rule_status_user_to_api_mapper)
+
     def parse_persistence_policy(
         self, persistence_policy: dict[str, Any]
     ) -> dict[str, Any]:
@@ -1048,6 +1189,35 @@ class ParserV1(Parser):
         return {
             "id": persistence_policy.get("_id"),
             "type": persistence_policy.get("dispType"),
+        }
+
+    def parse_server_pool(self, server_pool: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "id": server_pool.get("_id"),
+            "pool_count": server_pool.get("poolCount"),
+            "server_balance": server_pool.get("dissingleServerOrServerBalance"),
+            "type": dict_safe_get(self.server_pool_group_type_api_to_user_mapper, [server_pool.get("type")]),
+            "comments": server_pool.get("comments"),
+            "lb_algorithm": server_pool.get("disLoadBalancingAlgorithm", ""),
+            "health_check": server_pool.get("disserverHealthCheck", ""),
+            "persistence": server_pool.get("persistence", ""),
+        }
+
+    def parse_server_pool_rule(
+        self, server_pool_rule: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": server_pool_rule.get("_id"),
+            "server_type": server_pool_rule.get("serverType1") or server_pool_rule.get("serverType2"),
+            "status": server_pool_rule.get("status", ""),
+            "ip": server_pool_rule.get("ip", ""),
+            "domain": server_pool_rule.get("domain", ""),
+            "port": server_pool_rule.get("port", ""),
+            "weight": server_pool_rule.get("weight", ""),
+            "backup_server": server_pool_rule.get("backupServer", ""),
+            "connection_limit": server_pool_rule.get("connectLimit", ""),
+            "http2": server_pool_rule.get("http2", ""),
+            "ssl_settings": server_pool_rule.get("sSL", ""),
         }
 
 
@@ -1665,6 +1835,76 @@ class ParserV2(Parser):
         """
         return reverse_dict(self.ip_type_user_to_api_mapper)
 
+    @property
+    def server_pool_group_type_user_to_api_mapper(
+        self,
+    ) -> dict[str, int] | dict[str, str]:
+        return {
+            ArgumentValues.REVERSE_PROXY.value: "reverse-proxy",
+            ArgumentValues.OFFLINE_PROTECTION.value: "offline-protection",
+            ArgumentValues.TRUE_TRANSPARENT_PROXY.value: "transparent-servers-for-tp",
+            ArgumentValues.TRANSPARENT_INSPECTION.value: "transparent-servers-for-ti",
+            ArgumentValues.WCCP.value: "transparent-servers-for-wccp",
+        }
+
+    @property
+    def server_pool_group_type_api_to_user_mapper(
+        self,
+    ) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_pool_group_type_user_to_api_mapper)
+
+    @property
+    def lb_algo_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "Round Robin": "round-robin",
+            "Weighted Round Robin": "weighted-round-robin",
+            "Least Connection": "least-connections",
+            "URI Hash": "uri-hash",
+            "Full URI Hash": "full-uri-hash",
+            "Host Hash": "host-hash",
+            "Host Domain Hash": "host-domain-hash",
+            "Source IP Hash": "src-ip-hash",
+        }
+
+    @property
+    def lb_algo_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.lb_algo_user_to_api_mapper)
+
+    @property
+    def server_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            ArgumentValues.SINGLE_SERVER.value: "disable",
+            ArgumentValues.SERVER_BALANCE.value: "enable",
+        }
+
+    @property
+    def server_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_type_user_to_api_mapper)
+
+    @property
+    def server_pool_rule_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            ArgumentValues.SERVER_POOL_RULE_IP.value: "physical",
+            ArgumentValues.SERVER_POOL_RULE_DOMAIN.value: "domain",
+            ArgumentValues.SERVER_POOL_RULE_EXTERNAL.value: "sdn-connector",
+        }
+
+    @property
+    def server_pool_rule_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_pool_rule_type_user_to_api_mapper)
+
+    @property
+    def server_pool_rule_status_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        return {
+            "disable": "disable",
+            "enable": "enable",
+            "maintenance": "maintain",
+        }
+
+    @property
+    def server_pool_rule_status_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        return reverse_dict(self.server_pool_rule_status_user_to_api_mapper)
+
     def parse_persistence_policy(
         self, persistence_policy: dict[str, Any]
     ) -> dict[str, Any]:
@@ -1698,6 +1938,43 @@ class ParserV2(Parser):
             "status": virtual_server_item.get("status"),
             "use_interface_ip": virtual_server_item.get("use-interface-ip"),
             "virtual_ip": virtual_server_item.get("vip"),
+        }
+
+    def parse_server_pool(self, server_pool: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "id": server_pool.get("name"),
+            "pool_count": server_pool.get("sz_pserver-list"),
+            "server_balance": server_pool.get("server-balance"),
+            "type": dict_safe_get(self.server_pool_group_type_api_to_user_mapper, [server_pool.get("type")]),
+            "comments": server_pool.get("comment"),
+            "lb_algorithm": server_pool.get("lb-algo"),
+            "health_check": server_pool.get("health"),
+            "persistence": server_pool.get("persistence"),
+            "protocol": server_pool.get("protocol"),
+            "http_reuse": server_pool.get("http-reuse"),
+            "reuse_conn_total_time": server_pool.get("reuse-conn-total-time"),
+            "reuse_conn_idle_time": server_pool.get("reuse-conn-idle-time"),
+            "reuse_conn_max_request": server_pool.get("reuse-conn-max-request"),
+            "reuse_conn_max_count": server_pool.get("reuse-conn-max-count"),
+            "adfs_server_name": server_pool.get("adfs-server-name"),
+            "server_pool_id": server_pool.get("server-pool-id"),
+        }
+
+    def parse_server_pool_rule(
+        self, server_pool_rule: dict[str, Any]
+    ) -> dict[str, Any]:
+        return {
+            "id": server_pool_rule.get("id"),
+            "server_type": server_pool_rule.get("server-type"),
+            "status": server_pool_rule.get("status", ""),
+            "ip": server_pool_rule.get("ip"),
+            "domain": server_pool_rule.get("domain"),
+            "port": server_pool_rule.get("port"),
+            "weight": server_pool_rule.get("weight"),
+            "backup_server": server_pool_rule.get("backup-server"),
+            "connection_limit": server_pool_rule.get("conn-limit"),
+            "http2": server_pool_rule.get("http2"),
+            "ssl_settings": server_pool_rule.get("ssl"),
         }
 
 
@@ -2360,6 +2637,49 @@ class Client(BaseClient):
         """
         pass
 
+    def validate_server_pool_group(self, args: dict[str, Any], action: str):
+        """Virtual server pool group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        pass
+
+    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str):
+        """Virtual server pool rule args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+            group_type (str): Server pool group type.
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        validate = partial(validate_argument, args=args)
+        if args.get('server_type') == 'IP':
+            validate(key_='ip')
+        if args.get('server_type') == 'Domain':
+            validate(key_='domain')
+        port = arg_to_number(args.get('port'))
+        connection_limit = arg_to_number(args.get('connection_limit'))
+        if (
+            port is not None
+            and not SERVER_POOL_MIN_PORT <= port <= SERVER_POOL_MAX_PORT
+        ):
+            raise ValueError(
+                f"The port valid range is {SERVER_POOL_MIN_PORT}–{SERVER_POOL_MAX_PORT}."
+            )
+        if (
+            connection_limit is not None
+            and not MIN_CONNECTION_LIMIT <= connection_limit <= MAX_CONNECTION_LIMIT
+        ):
+            raise ValueError(
+                f"The connection_limit valid range is {MIN_CONNECTION_LIMIT}-{MAX_CONNECTION_LIMIT}."
+            )
+
     @abstractmethod
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -2885,6 +3205,71 @@ class Client(BaseClient):
     ) -> dict[str, Any]:
         pass
 
+    @abstractmethod
+    def server_pool_group_create_request(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        comments: str | None = None,
+        server_balance: str | None = None,
+        health_check: str | None = None,
+        lb_algo: str | None = None,
+        persistence: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_pool_group_update_request(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        comments: str | None = None,
+        server_balance: str | None = None,
+        health_check: str | None = None,
+        lb_algo: str | None = None,
+        persistence: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_pool_group_delete_request(self, name: str) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_pool_group_list_request(self, **kwargs) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_pool_rule_create_request(
+        self,
+        group_name: str | None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_pool_rule_update_request(
+        self,
+        group_name: str | None,
+        rule_id: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_pool_rule_delete_request(
+        self, group_name: str, rule_id: str
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def server_pool_rule_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        pass
+
 
 class ClientV1(Client):
     """Fortiweb VM V1 Client
@@ -3038,6 +3423,26 @@ class ClientV1(Client):
             self.version, by_key, value, get_request, object_id
         )
         return member_data["_id"] if member_data else "Can not find the id"
+
+    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str):
+        """Virtual server pool rule args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+            group_type (str): Server pool group type.
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        # res = self.server_pool_group_list_request()
+        # res = find_dict_in_array(res, "name", args["group_name"])
+        # if not res:
+        #     raise DemistoException(ErrorMessage.NOT_EXIST.value)
+        # parsed = self.parser.parse_server_pool(res)
+        # key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
+        # if group_type != parsed[key_]:
+        #     raise ValueError(f'The group type is "{parsed["type"]}", the rule type is "{group_type}"')
+        super().validate_server_pool_rule(args, group_type)
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -4708,6 +5113,189 @@ class ClientV1(Client):
         """
         raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
+    def build_server_pool_group(
+        self,
+        name: str,
+        type: str | None,
+        comments: str | None,
+        server_balance: str | None,
+        health_check: str | None,
+        lb_algo: str | None,
+        persistence: str | None,
+    ) -> dict[str, Any]:
+        return remove_empty_elements(
+            {
+                "name": name,
+                "type": dict_safe_get(self.parser.server_pool_group_type_user_to_api_mapper, [type]),
+                "comments": comments,
+                "singleServerOrServerBalance": dict_safe_get(
+                    self.parser.server_type_user_to_api_mapper, [server_balance]
+                ),
+                "serverHealthCheck": health_check,
+                "loadBalancingAlgorithm": dict_safe_get(self.parser.lb_algo_user_to_api_mapper, [lb_algo]),
+                "persistence": persistence,
+            }
+        )
+
+    def server_pool_group_create_request(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        comments: str | None = None,
+        server_balance: str | None = None,
+        health_check: str | None = None,
+        lb_algo: str | None = None,
+        persistence: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        args = locals()
+        args.pop("self")
+        args.pop("kwargs")
+        data = self.build_server_pool_group(**args)
+        return self._http_request(
+            method="POST",
+            url_suffix="ServerObjects/Server/ServerPool",
+            json_data=data,
+        )
+
+    def server_pool_group_update_request(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        comments: str | None = None,
+        server_balance: str | None = None,
+        health_check: str | None = None,
+        lb_algo: str | None = None,
+        persistence: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        args = locals()
+        args.pop("self")
+        args.pop("kwargs")
+        data = self.build_server_pool_group(**args)
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"ServerObjects/Server/ServerPool/{name}",
+            json_data=data,
+        )
+
+    def server_pool_group_delete_request(self, name: str) -> dict[str, Any]:
+        """Delete a virtual server group.
+
+        Args:
+            name (str): Virtual server group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"ServerObjects/Server/ServerPool/{name}",
+        )
+
+    def server_pool_group_list_request(self, **kwargs) -> dict[str, Any]:
+        """
+        List virtual server groups.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="ServerObjects/Server/ServerPool",
+        )
+
+    def build_server_pool_rule(
+        self,
+        **kwargs,
+    ) -> dict[str, Any]:
+        return remove_empty_elements(
+            {
+                "status1": dict_safe_get(
+                    self.parser.server_pool_rule_status_user_to_api_mapper, [kwargs.get("status")]
+                ),
+                "status2": dict_safe_get(
+                    self.parser.server_pool_rule_status_user_to_api_mapper, [kwargs.get("status")]
+                ),
+                "serverType1": dict_safe_get(
+                    self.parser.server_pool_rule_type_user_to_api_mapper, [kwargs.get("server_type")]
+                ),
+                "serverType2": "1",  # IP in case the group type != reverse proxy.
+                "ip": kwargs.get("ip"),
+                "domain": kwargs.get("domain"),
+                "port": kwargs.get("port"),
+                "connectLimit": kwargs.get("connection_limit"),
+                "weight": kwargs.get("weight"),
+                "http2": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("http2")]),
+                "sSL": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("enable_ssl")]),
+                "clientCertificateFile": kwargs.get("client_certificate_file"),
+                "certficateFile": kwargs.get("certificate_file"),
+                "certificateIntermediateGroup": kwargs.get("certficate_intermediate_group"),
+                "recover": kwargs.get("recover"),
+                "warmUp": kwargs.get("warm_up"),
+                "warmRate": kwargs.get("warm_rate"),
+                "backupServer": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("backup_server")]),
+            }
+        )
+
+    def server_pool_rule_create_request(
+        self,
+        group_name: str | None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        data = self.build_server_pool_rule(**kwargs)
+        return self._http_request(
+            method="POST",
+            url_suffix=f"ServerObjects/Server/ServerPool/{group_name}/EditServerPoolRule",
+            json_data=data,
+        )
+
+    def server_pool_rule_update_request(
+        self,
+        group_name: str | None,
+        rule_id: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        data = self.build_server_pool_rule(
+            **kwargs
+        )
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"ServerObjects/Server/ServerPool/{group_name}/EditServerPoolRule/{rule_id}",
+            json_data=data,
+        )
+
+    def server_pool_rule_delete_request(
+        self, group_name: str, rule_id: str
+    ) -> dict[str, Any]:
+        """Delete an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f"ServerObjects/Server/ServerPool/{group_name}/EditServerPoolRule/{rule_id}",
+        )
+
+    def server_pool_rule_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        """List URL access rule conditions.
+
+        Args:
+            group_name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        endpoint = f"ServerObjects/Server/ServerPool/{group_name}/EditServerPoolRule"
+        return self._http_request(method="GET", url_suffix=endpoint)
+
 
 class ClientV2(Client):
     """Fortiweb VM V2 Client
@@ -4999,6 +5587,37 @@ class ClientV2(Client):
             raise ValueError(ErrorMessage.INSERT_VALUE.value.format("virtual_ip"))
         if args.get("use_interface_ip") == ArgumentValues.ENABLE.value and not args.get("interface"):
             raise ValueError(ErrorMessage.INSERT_VALUE.value.format("interface"))
+
+    def validate_server_pool_group(self, args: dict[str, Any], action: str):
+        """Virtual server pool group args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        if args.get('type') == ArgumentValues.TRUE_TRANSPARENT_PROXY.value:
+            validate_argument(args=args, key_='health_check_source_ip')
+            validate_argument(args=args, key_='health_check_source_ip_v6')
+        super().validate_server_pool_group(args, action)
+
+    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str):
+        """Virtual server pool rule args validator.
+
+        Args:
+            args (Dict[str, Any]): Command arguments from XSOAR.
+            group_type (str): Server pool group type.
+
+        Raises:
+            ValueError: Errors that help the user to insert the required arguments.
+        """
+        # res = self.server_pool_group_list_request(name=args["group_name"]).get('results')
+        # parsed = self.parser.parse_server_pool(res)
+        # key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
+        # if group_type != parsed[key_]:
+        #     raise ValueError(f'The group type is "{parsed["type"]}", the rule type is "{group_type}"')
+        super().validate_server_pool_rule(args, group_type)
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -7159,6 +7778,299 @@ class ClientV2(Client):
         return self._http_request(
             method="GET",
             url_suffix="cmdb/server-policy/vserver/vip-list",
+            params=params,
+        )
+
+    def build_server_pool_group(
+        self,
+        name: str,
+        type: str | None = None,
+        comments: str | None = None,
+        server_balance: str | None = None,
+        health_check: str | None = None,
+        lb_algo: str | None = None,
+        persistence: str | None = None,
+        protocol: str | None = None,
+        http_reuse: str | None = None,
+        reuse_conn_idle_time: str | None = None,
+        reuse_conn_max_count: str | None = None,
+        reuse_conn_max_request: str | None = None,
+        reuse_conn_total_time: str | None = None,
+        server_pool_id: str | None = None,
+        proxy_protocol_version: str | None = None,
+        adfs_server_name: str | None = None,
+        health_check_source_ip: str | None = None,
+        health_check_source_ip_v6: str | None = None,
+
+    ) -> dict[str, Any]:
+        return remove_empty_elements(
+            {
+                "data": {
+                    "name": name,
+                    "type": type and self.parser.server_pool_group_type_user_to_api_mapper.get(
+                        type
+                    ),
+                    "server-balance": server_balance and self.parser.server_type_user_to_api_mapper.get(
+                        server_balance
+                    ),
+                    "lb-algo": lb_algo and self.parser.lb_algo_user_to_api_mapper.get(lb_algo),
+                    "comment": comments,
+                    "health": health_check,
+                    "persistence": persistence,
+                    "protocol": protocol,
+                    "http-reuse": http_reuse and http_reuse.lower(),
+                    "reuse-conn-idle-time": reuse_conn_idle_time,
+                    "reuse-conn-max-count": reuse_conn_max_count,
+                    "reuse_conn_max_request": reuse_conn_max_request,
+                    "reuse-conn-total-time": reuse_conn_total_time,
+                    "server-pool-id": server_pool_id,
+                    "proxy-protocol-version": proxy_protocol_version and proxy_protocol_version.lower(),
+                    "adfs-server-name": adfs_server_name,
+
+                    "hlck-sip": health_check_source_ip,
+                    "hlck-sip6": health_check_source_ip_v6,
+
+                }
+            }
+        )
+
+    def server_pool_group_create_request(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        comments: str | None = None,
+        server_balance: str | None = None,
+        health_check: str | None = None,
+        lb_algo: str | None = None,
+        persistence: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        args = locals()
+        args.pop("self")
+        args |= args.pop("kwargs")
+        data = self.build_server_pool_group(**args)
+        return self._http_request(
+            method="POST",
+            url_suffix="cmdb/server-policy/server-pool",
+            json_data=data,
+        )
+
+    def server_pool_group_update_request(
+        self,
+        name: str | None = None,
+        type: str | None = None,
+        comments: str | None = None,
+        server_balance: str | None = None,
+        health_check: str | None = None,
+        lb_algo: str | None = None,
+        persistence: str | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        args = locals()
+        args.pop("self")
+        args |= args.pop("kwargs")
+        data = self.build_server_pool_group(**args)
+        params = {"mkey": name}
+        return self._http_request(
+            method="PUT",
+            url_suffix="cmdb/server-policy/server-pool",
+            json_data=data,
+            params=params,
+        )
+
+    def server_pool_group_delete_request(self, name: str) -> dict[str, Any]:
+        """Delete a virtual server group.7859
+
+        Args:
+            name (str): Virtual server group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        params = {"mkey": name}
+        return self._http_request(
+            method="DELETE",
+            url_suffix="cmdb/server-policy/server-pool",
+            params=params,
+        )
+
+    def server_pool_group_list_request(self, **kwargs) -> dict[str, Any]:
+        """List virtual server groups.
+
+        Args:
+
+            kwargs: name (str): URL access rule group name.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2.
+        """
+        params = remove_empty_elements({"mkey": kwargs.get("name")})
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/server-policy/server-pool",
+            params=params,
+        )
+
+    def build_server_pool_rule(
+        self,
+        status: str | None = None,
+        server_type: str | None = None,
+        sdn_address_type: str | None = None,
+        sdn_connector: str | None = None,
+        filter: str | None = None,
+        ip: str | None = None,
+        domain: str | None = None,
+        port: str | None = None,
+        connection_limit: str | None = None,
+        weight: str | None = None,
+        http2: str | None = None,
+        enable_ssl: str | None = None,
+        certificate_file: str | None = None,
+        client_certificate_file: str | None = None,
+        recover: str | None = None,
+        warm_up: str | None = None,
+        warm_rate: str | None = None,
+        health_check: str | None = None,
+        health_check_inherit: str | None = None,
+        health_check_domain: str | None = None,
+        backup_server: str | None = None,
+        enable_sni: str | None = None,
+        sni_certificate: str | None = None,
+        certificate_type: str | None = None,
+        multi_certificate: str | None = None,
+        letsencrypt: str | None = None,
+        certficate_intermediate_group: str | None = None,
+
+        implicit_ssl: str | None = None,
+        registration_username: str | None = None,
+        registration_password: str | None = None,
+    ) -> dict[str, Any]:
+
+        cert_type = None if not certificate_type else "enable" if certificate_type == "Letsencrypt" else "disable"
+        enable_multi_certificate = \
+            None if not certificate_type else 'enable' if certificate_type == "Multi Certificate" else "disable"
+        return remove_empty_elements(
+            {
+                "data":
+                {
+                    "status": self.parser.server_pool_rule_status_user_to_api_mapper.get(status)
+                    if status else None,
+                    "server-type": self.parser.server_pool_rule_type_user_to_api_mapper.get(server_type)
+                    if server_type else None,
+                    "sdn-addr-type": sdn_address_type,
+                    "sdn": sdn_connector,
+                    "filter": filter,
+                    "ip": ip,
+                    "domain": domain,
+                    "port": port,
+                    "conn-limit": connection_limit,
+                    "weight": weight,
+                    "health": health_check,
+                    "health-check-inherit": health_check_inherit,
+                    "hlck-domain": health_check_domain,
+                    "weight": weight,
+                    "http2": http2,
+                    "ssl": enable_ssl,
+                    "client-certificate": client_certificate_file,
+                    "certificate": certificate_file,
+                    "recover": recover,
+                    "warm-up": warm_up,
+                    "warm-rate": warm_rate,
+                    "backup-server": backup_server,
+                    "sni": enable_sni,
+                    "sni-certificate": sni_certificate,
+
+                    "multi-certificate": enable_multi_certificate,
+                    "certificate-type": cert_type,
+
+                    "intermediate-certificate-group": certficate_intermediate_group,
+                    "certificate-group": multi_certificate,
+                    "lets-certificate": letsencrypt,
+
+                    "implicit_ssl": implicit_ssl,
+                    "adfs-username": registration_username,
+                    "adfs-password": registration_password,
+                }
+            }
+        )
+
+    def server_pool_rule_update_request(
+        self,
+        group_name: str | None,
+        rule_id: str,
+        **kwargs,
+    ) -> dict[str, Any]:
+        args = locals()
+        args.pop("self")
+        args.pop("group_name")
+        args.pop("rule_id")
+        args |= args.pop("kwargs")
+        data = self.build_server_pool_rule(
+            **args
+        )
+        params = {"mkey": group_name, "sub_mkey": rule_id}
+        return self._http_request(
+            method="PUT",
+            url_suffix="cmdb/server-policy/server-pool/pserver-list",
+            json_data=data,
+            params=params,
+        )
+
+    def server_pool_rule_create_request(
+        self,
+        group_name: str | None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        args = locals()
+        args.pop("self")
+        args.pop("group_name")
+        args |= args.pop("kwargs")
+        data = self.build_server_pool_rule(
+            **args
+        )
+        params = {"mkey": group_name}
+        return self._http_request(
+            method="POST",
+            url_suffix="cmdb/server-policy/server-pool/pserver-list",
+            json_data=data,
+            params=params,
+        )
+
+    def server_pool_rule_delete_request(
+        self, group_name: str, rule_id: str
+    ) -> dict[str, Any]:
+        """Delete an URL access rule condition.
+
+        Args:
+            group_name (str): URL access rule group name.
+            condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        params = {"mkey": group_name, "sub_mkey": rule_id}
+        return self._http_request(
+            method="DELETE",
+            url_suffix="cmdb/server-policy/server-pool/pserver-list",
+            params=params,
+        )
+
+    def server_pool_rule_list_request(
+        self, group_name: str, **kwargs
+    ) -> dict[str, Any]:
+        """List URL access rule conditions.
+
+        Args:
+            group_name (str): URL access rule group name.
+            kwargs: condition_id (str): URL access rule condition ID.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1.
+        """
+        params = remove_empty_elements({"mkey": group_name, "sub_mkey": kwargs.get("rule_id")})
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/server-policy/server-pool/pserver-list",
             params=params,
         )
 
@@ -10327,6 +11239,272 @@ def virtual_server_item_list_command(
     return command_results
 
 
+def server_pool_group_create_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Create a server pool group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_server_pool_group(args=args, action=CommandAction.CREATE.value)
+    name = args.get("name")
+    response = client.server_pool_group_create_request(**args)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.SERVER_POOL_GROUP.value,
+        object_name=name,
+        action=OutputTitle.CREATED.value,
+        response=response,
+    )
+    return command_results
+
+
+def server_pool_group_update_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Update a server pool group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_server_pool_group(args=args, action=CommandAction.UPDATE.value)
+    name = args.get("name")
+    response = client.server_pool_group_update_request(**args)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.SERVER_POOL_GROUP.value,
+        object_name=name,
+        action=OutputTitle.UPDATED.value,
+        response=response,
+    )
+    return command_results
+
+
+def server_pool_group_delete_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Delete a server pool group.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    name = args["name"]
+    response = client.server_pool_group_delete_request(name)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.SERVER_POOL_GROUP.value,
+        object_name=name,
+        action=OutputTitle.DELETED.value,
+        response=response,
+    )
+    return command_results
+
+
+def server_pool_group_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List server pool groups.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    name = args.get("name")
+    response = client.server_pool_group_list_request(name=name)
+    parsed_data, pagination_message, _ = list_response_handler(
+        client=client,
+        response=response,
+        data_parser=client.parser.parse_server_pool,
+        args=args,
+        sub_object_id=name,
+        sub_object_key=client.parser.sub_object_id_key,
+    )
+    headers = client.parser.create_output_headers(
+        client.version,
+        [
+            "id",
+            "type",
+            "pool_count",
+            "server_balance",
+            "comments",
+            "lb_algorithm",
+            "health_check",
+            "persistence",
+        ],
+        [],
+        ["protocol"],
+    )
+    readable_output = tableToMarkdown(
+        name=OutputTitle.SERVER_POOL_GROUP.value,
+        metadata=pagination_message,
+        t=parsed_data,
+        headers=headers,
+        headerTransform=string_to_table_header,
+    )
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="FortiwebVM.ServerPoolGroup",
+        outputs_key_field="id",
+        outputs=parsed_data,
+        raw_response=response,
+    )
+    return command_results
+
+
+def server_pool_rule_create_command(
+    client: Client, args: dict[str, Any], group_type: str
+) -> CommandResults:
+    """Create a server pool rule.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+        group_type (str): Server pool group type.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_name = args["group_name"]
+    client.validate_server_pool_rule(args=args, group_type=group_type)
+    response = client.server_pool_rule_create_request(**args)
+    search = "domain" if args.get("server_type") == ArgumentValues.SERVER_POOL_RULE_DOMAIN.value else "ip"
+    member_id = client.get_object_id(
+        response,
+        search,
+        args[search],
+        client.server_pool_rule_list_request,
+        group_name,
+    )
+    outputs = {"id": group_name, "Rule": {"id": member_id}}
+    return generate_simple_context_data_command_results(
+        "id",
+        None,
+        response,
+        OutputTitle.SERVER_POOL_RULE.value,
+        "FortiwebVM.ServerPoolGroup",
+        readable_outputs=outputs["Rule"],
+        outputs=outputs,
+    )
+
+
+def server_pool_rule_update_command(
+    client: Client, args: dict[str, Any], group_type: str
+) -> CommandResults:
+    """Update a server pool rule.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+        group_type (str): Server pool group type.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    client.validate_server_pool_rule(args=args, group_type=group_type)
+    rule_id = args["rule_id"]
+    response = client.server_pool_rule_update_request(**args)
+    return generate_simple_command_results(
+        object_type=OutputTitle.SERVER_POOL_RULE.value,
+        object_name=rule_id,
+        action=OutputTitle.UPDATED.value,
+        response=response,
+    )
+
+
+def server_pool_rule_delete_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """Delete a server pool rule.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+
+    group_name = args["group_name"]
+    rule_id = args["rule_id"]
+    response = client.server_pool_rule_delete_request(group_name, rule_id)
+    command_results = generate_simple_command_results(
+        object_type=OutputTitle.SERVER_POOL_RULE.value,
+        object_name=rule_id,
+        action=OutputTitle.DELETED.value,
+        response=response,
+    )
+    return command_results
+
+
+def server_pool_rule_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List server pool rules.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    group_name = args["group_name"]
+    rule_id = args.get("rule_id")
+    response = client.server_pool_rule_list_request(
+        group_name, rule_id=rule_id
+    )
+    parsed_data, pagination_message, _ = list_response_handler(
+        client,
+        response,
+        client.parser.parse_server_pool_rule,
+        args,
+        rule_id,
+    )
+    outputs = {"group_name": group_name, "Rule": parsed_data}
+    headers = client.parser.create_output_headers(
+        client.version,
+        [
+            "id",
+            "server_type",
+            "ip",
+            "domain",
+            "port",
+            "status",
+            "connection_limit",
+            "http2",
+        ],
+        [],
+        [],
+    )
+    readable_output = tableToMarkdown(
+        name=OutputTitle.SERVER_POOL_RULE.value,
+        metadata=pagination_message,
+        t=outputs["Rule"],
+        headers=headers,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="FortiwebVM.ServerPoolGroup",
+        outputs_key_field="id",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
@@ -10417,7 +11595,48 @@ def main() -> None:
         "fortiwebvm-virtual-server-item-update": virtual_server_item_update_command,
         "fortiwebvm-virtual-server-item-delete": virtual_server_item_delete_command,
         "fortiwebvm-virtual-server-item-list": virtual_server_item_list_command,
+        "fortiwebvm-server-pool-group-create": server_pool_group_create_command,
+        "fortiwebvm-server-pool-group-update": server_pool_group_update_command,
+        "fortiwebvm-server-pool-group-delete": server_pool_group_delete_command,
+        "fortiwebvm-server-pool-group-list": server_pool_group_list_command,
+        "fortiwebvm-server-pool-rule-delete": server_pool_rule_delete_command,
+        "fortiwebvm-server-pool-rule-list": server_pool_rule_list_command,
     }
+    server_pool_rule_types = {
+        "fortiwebvm-server-pool-reverse-proxy-rule-create": ArgumentValues.REVERSE_PROXY.value,
+        "fortiwebvm-server-pool-reverse-proxy-rule-update": ArgumentValues.REVERSE_PROXY.value,
+        "fortiwebvm-server-pool-offline-protection-rule-create": ArgumentValues.OFFLINE_PROTECTION.value,
+        "fortiwebvm-server-pool-offline-protection-rule-update": ArgumentValues.OFFLINE_PROTECTION.value,
+        "fortiwebvm-server-pool-true-transparent-proxy-rule-create": ArgumentValues.TRUE_TRANSPARENT_PROXY.value,
+        "fortiwebvm-server-pool-true-transparent-proxy-rule-update": ArgumentValues.TRUE_TRANSPARENT_PROXY.value,
+        "fortiwebvm-server-pool-transparent-inspection-rule-create": ArgumentValues.TRANSPARENT_INSPECTION.value,
+        "fortiwebvm-server-pool-transparent-inspection-rule-update": ArgumentValues.TRANSPARENT_INSPECTION.value,
+        "fortiwebvm-server-pool-wccp-rule-create": ArgumentValues.WCCP.value,
+        "fortiwebvm-server-pool-wccp-rule-update": ArgumentValues.WCCP.value,
+        "fortiwebvm-server-pool-ftp-rule-create": ArgumentValues.FTP.value,
+        "fortiwebvm-server-pool-ftp-rule-update": ArgumentValues.FTP.value,
+        "fortiwebvm-server-pool-adfs-rule-create": ArgumentValues.ADFS.value,
+        "fortiwebvm-server-pool-adfs-rule-update": ArgumentValues.ADFS.value,
+
+    }
+    server_pool_rule_create_commands = [
+        "fortiwebvm-server-pool-reverse-proxy-rule-create",
+        "fortiwebvm-server-pool-offline-protection-rule-create",
+        "fortiwebvm-server-pool-true-transparent-proxy-rule-create",
+        "fortiwebvm-server-pool-transparent-inspection-rule-create",
+        "fortiwebvm-server-pool-wccp-rule-create",
+        "fortiwebvm-server-pool-ftp-rule-create",
+        "fortiwebvm-server-pool-adfs-rule-create",
+    ]
+    server_pool_rule_update_commands = [
+        "fortiwebvm-server-pool-reverse-proxy-rule-update",
+        "fortiwebvm-server-pool-offline-protection-rule-update",
+        "fortiwebvm-server-pool-true-transparent-proxy-rule-update",
+        "fortiwebvm-server-pool-transparent-inspection-rule-update",
+        "fortiwebvm-server-pool-wccp-rule-update",
+        "fortiwebvm-server-pool-ftp-rule-update",
+        "fortiwebvm-server-pool-adfs-rule-update",
+    ]
     try:
         client_class = {"V1": ClientV1, "V2": ClientV2}[version]
         client: Client = client_class(
@@ -10432,6 +11651,10 @@ def main() -> None:
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
+        elif command in server_pool_rule_create_commands:
+            return_results(server_pool_rule_create_command(client, args, server_pool_rule_types[command]))
+        elif command in server_pool_rule_update_commands:
+            return_results(server_pool_rule_update_command(client, args, server_pool_rule_types[command]))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 

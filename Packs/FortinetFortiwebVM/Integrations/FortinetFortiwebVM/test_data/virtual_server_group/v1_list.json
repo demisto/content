@@ -3,7 +3,7 @@
         "_id": "test",
         "id": 1,
         "name": "test",
-        "ipv4Address": "1.0.0.0/254.0.0.0",
+        "ipv4Address": "test",
         "ipv6Address": "::/0",
         "interface": "port2",
         "useInterfaceIP": false,

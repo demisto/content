@@ -2,6 +2,7 @@ import json
 import os
 from http import HTTPStatus
 from urllib.parse import urljoin
+from collections.abc import Callable
 
 import pytest
 from CommonServerPython import *
@@ -7357,3 +7358,418 @@ def test_virtual_server_item_list_command(
     if isinstance(result.outputs, list):
         assert len(result.outputs) == expected
     assert result.outputs_prefix == "FortiwebVM.VirtualServerGroup"
+
+
+@pytest.mark.parametrize(
+    ("version", "args", "error_msg"),
+    (
+        (
+            ClientV2.API_VER,
+            {"name": "check", "type": "True Transparent Proxy"},
+            ErrorMessage.INSERT_VALUE.value.format('health_check_source_ip')
+        ),
+        (
+            ClientV2.API_VER,
+            {"name": "check", "type": "True Transparent Proxy", "health_check_source_ip": "test"},
+            ErrorMessage.INSERT_VALUE.value.format('health_check_source_ip_v6')
+        ),
+    ),
+)
+def test_input_fail_server_pool_group_create_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    args: Dict[str, Any],
+    error_msg: str,
+):
+    """
+    Scenario: Create a server pool group.
+    Given:
+     - User has provided wrong parameters.
+    When:
+     - fortiwebvm-server-pool-group-create called.
+    Then:
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import server_pool_group_create_command
+
+    url = urljoin(mock_client.base_url, "ServerObjects/Server/ServerPool")
+    requests_mock.post(
+        url=url,
+    )
+    with pytest.raises(ValueError) as error_info:
+        server_pool_group_create_command(mock_client, args)
+    assert error_msg == str(error_info.value)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool/check",
+            {"name": "check", "type": "Reverse Proxy", "server_balance": "Server Balance", "lb_algo": "Round Robin"},
+            "v1_create_update_group.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool?mkey=check",
+            {"name": "check", "type": "Reverse Proxy", "server_balance": "Server Balance", "lb_algo": "Round Robin"},
+            "server_pool/v2_create_update.json",
+        ),
+    ),
+)
+def test_server_pool_group_update_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+):
+    """
+    Scenario: Update a server pool group.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-server-pool-group-update called.
+    Then:
+     - Ensure that server pool group updated.
+    """
+    from FortinetFortiwebVM import server_pool_group_update_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=HTTPStatus.OK)
+    args |= {"comments": "test", "health_check": "test", "persistence": "test"}
+    result = server_pool_group_update_command(mock_client, args)
+    output = f'{OutputTitle.SERVER_POOL_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool/check",
+            {"name": "check"},
+            "v1_delete.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool?mkey=check",
+            {"name": "check"},
+            "v2_delete.json",
+        ),
+    ),
+)
+def test_server_pool_group_delete_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+):
+    """
+    Scenario: Delete a server pool group.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-server-pool-group-delete called.
+    Then:
+     - Ensure that server pool group deleted.
+    """
+    from FortinetFortiwebVM import server_pool_group_delete_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = server_pool_group_delete_command(mock_client, args)
+    output = f'{OutputTitle.SERVER_POOL_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath", "expected"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool",
+            {"page": "1", "page_size": 3},
+            "server_pool/v1_list.json",
+            3,
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool",
+            {"page": "1", "page_size": 3},
+            "server_pool/v2_list.json",
+            1,
+        ),
+    ),
+)
+def test_server_pool_group_list_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+    expected,
+):
+    """
+    Scenario: List server pool groups.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-server-pool-group-list called.
+    Then:
+     - Ensure that server pool groups listed.
+    """
+    from FortinetFortiwebVM import server_pool_group_list_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = server_pool_group_list_command(mock_client, args)
+    if isinstance(result.outputs, list):
+        assert len(result.outputs) == expected
+    assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"
+
+
+@pytest.mark.parametrize(
+    ("version", "post_endpoint", "group_get_endpoint", "args", "post_json_path",
+     "group_get_json_path", "expected_value", "group_type"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool/test/EditServerPoolRule",
+            "ServerObjects/Server/ServerPool",
+            {"group_name": "test", "ip": "test", "server_type": "IP"},
+            "v1_create_update_group.json",
+            "server_pool/v1_list.json",
+            "1",
+            ArgumentValues.REVERSE_PROXY.value,
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool/pserver-list?mkey=test",
+            "cmdb/server-policy/server-pool?mkey=test",
+            {
+                "group_name": "test",
+                "ip": "test"
+            },
+            "server_pool_rule/v2_create.json",
+            "server_pool/v2_get_rp.json",
+            "1",
+            ArgumentValues.REVERSE_PROXY.value,
+        ),
+    ),
+)
+def test_server_pool_rule_create_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    post_endpoint: str,
+    group_get_endpoint: str,
+    args: Dict[str, Any],
+    post_json_path: str,
+    group_get_json_path: str,
+    expected_value: str,
+    group_type: str,
+):
+    """
+    Scenario: Create an URL access rule condition.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-server-pool-reverse-proxy-rule-create called.
+     - fortiwebvm-server-pool-offline-protection-rule-create called.
+     - fortiwebvm-server-pool-true-transparent-proxy-rule-create called.
+     - fortiwebvm-server-pool-transparent-inspection-rule-create called.
+     - fortiwebvm-server-pool-wccp-rule-create called.
+     - fortiwebvm-server-pool-ftp-rule-create called.
+     - fortiwebvm-server-pool-adfs-rule-create called.
+    Then:
+     - Ensure that URL access rule condition created.
+    """
+    from FortinetFortiwebVM import server_pool_rule_create_command
+
+    json_response = load_mock_response(post_json_path)
+    json_response_get = load_mock_response(
+        "server_pool_rule/v1_list.json"
+    )
+    group_get_response = load_mock_response(group_get_json_path)
+    post_url = urljoin(mock_client.base_url, post_endpoint)
+    get_url = urljoin(mock_client.base_url, group_get_endpoint)
+    requests_mock.post(url=post_url, json=json_response)
+    requests_mock.get(url=post_url, json=json_response_get, status_code=200)
+    requests_mock.get(url=get_url, json=group_get_response, status_code=200)
+    result = server_pool_rule_create_command(mock_client, args, group_type=group_type)
+    assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"
+    assert isinstance(result.outputs, dict) and result.outputs['Rule']["id"] == expected_value
+
+
+@pytest.mark.parametrize(
+    ("version", "post_endpoint", "group_get_endpoint", "args", "post_json_path",
+     "group_get_json_path", "expected_value", "group_type"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool/test/EditServerPoolRule/1",
+            "ServerObjects/Server/ServerPool",
+            {"group_name": "test", "rule_id": "1", "ip": "1.1.1.1", "server_type": "IP"},
+            "v1_create_update_group.json",
+            "server_pool/v1_list.json",
+            "1",
+            ArgumentValues.REVERSE_PROXY.value,
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool/pserver-list?mkey=test&sub_mkey=1",
+            "cmdb/server-policy/server-pool?mkey=test",
+            {
+                "group_name": "test",
+                "rule_id": "1",
+                "ip": "1.1.1.1"
+            },
+            "server_pool_rule/v2_create.json",
+            "server_pool/v2_get_rp.json",
+            "1",
+            ArgumentValues.REVERSE_PROXY.value,
+        ),
+    ),
+)
+def test_server_pool_rule_update_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    post_endpoint: str,
+    group_get_endpoint: str,
+    args: Dict[str, Any],
+    post_json_path: str,
+    group_get_json_path: str,
+    expected_value: str,
+    group_type: str,
+):
+    """
+    Scenario: Update an URL access rule group.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-server-pool-reverse-proxy-rule-update called.
+     - fortiwebvm-server-pool-offline-protection-rule-update called.
+     - fortiwebvm-server-pool-true-transparent-proxy-rule-update called.
+     - fortiwebvm-server-pool-transparent-inspection-rule-update called.
+     - fortiwebvm-server-pool-wccp-rule-update called.
+     - fortiwebvm-server-pool-ftp-rule-update called.
+     - fortiwebvm-server-pool-adfs-rule-update called.
+    Then:
+     - Ensure that URL access rule group updated.
+    """
+    from FortinetFortiwebVM import server_pool_rule_update_command
+    group_get_response = load_mock_response(group_get_json_path)
+    get_url = urljoin(mock_client.base_url, group_get_endpoint)
+    requests_mock.get(url=get_url, json=group_get_response, status_code=200)
+
+    json_response = load_mock_response(post_json_path)
+    post_url = urljoin(mock_client.base_url, post_endpoint)
+    requests_mock.put(url=post_url, json=json_response, status_code=HTTPStatus.OK)
+    result = server_pool_rule_update_command(mock_client, args, group_type=group_type)
+    output = f'{OutputTitle.SERVER_POOL_RULE.value} {args["rule_id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool/check/EditServerPoolRule/1",
+            {"group_name": "check", "rule_id": "1"},
+            "v1_delete.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool/pserver-list?mkey=check&sub_mkey=1",
+            {"group_name": "check", "rule_id": "1"},
+            "v2_delete.json",
+        ),
+    ),
+)
+def test_server_pool_rule_delete_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+):
+    """
+    Scenario: Delete a server pool rule.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-server-pool-rule-delete called.
+    Then:
+     - Ensure that server pool rule deleted.
+    """
+    from FortinetFortiwebVM import server_pool_rule_delete_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = server_pool_rule_delete_command(mock_client, args)
+    output = f'{OutputTitle.SERVER_POOL_RULE.value} {args["rule_id"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath", "expected"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool/test/EditServerPoolRule",
+            {"group_name": "test", "page": "1", "page_size": 3},
+            "server_pool_rule/v1_list.json",
+            1,
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool/pserver-list?mkey=test",
+            {"group_name": "test", "page": "1", "page_size": 3},
+            "server_pool_rule/v2_list.json",
+            1,
+        ),
+    ),
+)
+def test_server_pool_rule_list_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: Dict[str, Any],
+    jsonpath: str,
+    expected,
+):
+    """
+    Scenario: List server pool rules.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-server-pool-rule-list called.
+    Then:
+     - Ensure that server pool rules listed.
+    """
+    from FortinetFortiwebVM import server_pool_rule_list_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = server_pool_rule_list_command(mock_client, args)
+    assert isinstance(result.outputs['Rule'], list)
+    assert len(result.outputs['Rule']) == expected
+    assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"
+    assert result.outputs['Rule'][0]['ip'] == 'test'

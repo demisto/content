@@ -1,11 +1,11 @@
 [
     {
         "id": 1,
-        "_id": "sdfsdfs",
-        "name": "sdfsdfs",
+        "_id": "test",
+        "name": "test",
         "type": 1,
         "timeout": 300,
-        "ipv4Netmask": "255.255.255.255",
+        "ipv4Netmask": "test",
         "ipv6MaskLength": 128,
         "can_delete": true,
         "dispType": "Source IP"

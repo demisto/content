@@ -6,7 +6,7 @@
             "q_ref": 0,
             "can_clone": 1,
             "q_type": 1,
-            "name": "fghfgh",
+            "name": "test",
             "sz_vip-list": 0
         },
         {
@@ -15,7 +15,7 @@
             "q_ref": 0,
             "can_clone": 1,
             "q_type": 1,
-            "name": "54645",
+            "name": "test2",
             "sz_vip-list": 1
         },
         {
@@ -24,7 +24,7 @@
             "q_ref": 0,
             "can_clone": 1,
             "q_type": 1,
-            "name": "עכיכעי",
+            "name": "test3",
             "sz_vip-list": 0
         },
         {
@@ -33,7 +33,7 @@
             "q_ref": 0,
             "can_clone": 1,
             "q_type": 1,
-            "name": "dfdsf",
+            "name": "test4",
             "sz_vip-list": 0
         }
     ]
