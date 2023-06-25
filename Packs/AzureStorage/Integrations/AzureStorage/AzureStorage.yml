@@ -116,13 +116,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -272,13 +272,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -657,13 +657,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -702,13 +702,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -878,13 +878,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -944,13 +944,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -1024,13 +1024,13 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -1097,13 +1097,13 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -1167,7 +1167,7 @@ script:
     name: azure-storage-resource-group-list
     arguments:
       - default: false
-        description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+        description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         isArray: false
         name: subscription_id
         required: false

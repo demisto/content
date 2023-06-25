@@ -122,7 +122,7 @@ script:
     arguments:
     - default: false
       isArray: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
     outputs:
     - contextPath: AzureKS.ManagedCluster.id
@@ -223,12 +223,12 @@ script:
       type: String
   - arguments:
     - name: subscription_id
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
       isArray: false
       required: false
     - name: resource_group_name
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
       isArray: false
       required: false
@@ -368,7 +368,7 @@ script:
     name: azure-ks-resource-group-list
     arguments:
     - default: false
-      description: "The Subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'."
+      description: "The Subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
