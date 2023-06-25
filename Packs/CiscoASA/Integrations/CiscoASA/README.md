@@ -695,9 +695,9 @@ Creates a rule.
 | time_range | Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range. | Optional | 
 | user | The object ID to the user; can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object. | Optional | 
 | user_kind | The type of the user, can be one of LocalUserObjGroup, UserGroupObj, UserObj. Possible values are: LocalUserObjGroup, UserGroupObj, UserObj. | Optional | 
-| source_security | Source security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
+| source_security | Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
 | source_security_kind | The source security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
-| destination_security | Destination security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
+| destination_security | Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
 | destination_security_kind | The destination security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
 
 #### Context Output
@@ -833,9 +833,9 @@ Updates an existing rule.
 | time_range | Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range. | Optional | 
 | user | The object ID to the user; can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object. | Optional | 
 | user_kind | The type of the user, can be one of LocalUserObjGroup, UserGroupObj, UserObj. Possible values are: LocalUserObjGroup, UserGroupObj, UserObj. | Optional | 
-| source_security | Source security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
+| source_security | Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
 | source_security_kind | The source security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
-| destination_security | Destination security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
+| destination_security | Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group. | Optional | 
 | destination_security_kind | The destination security type, can be one of SecurityName, SecurityTag, SecurityObjGroup. Possible values are: SecurityName, SecurityTag, SecurityObjGroup. | Optional | 
 
 #### Context Output

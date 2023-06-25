@@ -677,7 +677,7 @@ script:
       - UserGroupObj
       - UserObj
     - default: false
-      description: Source security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group
+      description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       isArray: false
       name: source_security
       required: false
@@ -694,7 +694,7 @@ script:
       - SecurityTag
       - SecurityObjGroup
     - default: false
-      description: Destination security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group
+      description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       isArray: false
       name: destination_security
       required: false
@@ -1004,7 +1004,7 @@ script:
       - UserGroupObj
       - UserObj
     - default: false
-      description: Source security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group
+      description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       isArray: false
       name: source_security
       required: false
@@ -1021,7 +1021,7 @@ script:
       - SecurityTag
       - SecurityObjGroup
     - default: false
-      description: Destination security group in the ace. Can be one of SecurityName, SecurityTag and SecurityObjGroup values can be added. Can be received with the existing command cisco-asa-list-security-object-group
+      description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       isArray: false
       name: destination_security
       required: false
