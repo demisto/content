@@ -3,23 +3,22 @@ commonfields:
   id: ThreatX
   version: -1
 configuration:
-- display: Customer Name
-  name: customer_name
-  required: true
-  type: 0
 - defaultvalue: https://provision.threatx.io
   display: ThreatX Server URL (e.g., https://provision.threatx.io)
   name: url
   required: true
   type: 0
+- display: Customer Name
+  name: customer_name
+  type: 0
 - display: API Key
   name: api_key
   type: 4
   hidden: true
-- name: api_key_creds
+- name: credentials
   type: 9
+  display: Customer Name
   displaypassword: API Key
-  hiddenusername: true
 - defaultvalue: '70'
   display: IP Threshold. Minimum risk score from ThreatX to consider the IP malicious.
   name: dbot_threshold
