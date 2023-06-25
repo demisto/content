@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: EDL
+  id: EDL Dev
   version: -1
 configuration:
 - additionalinfo: Enabling this prevents automatic list refresh.
@@ -56,7 +56,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- additionalinfo: Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.\nNote: If the test button is pressed twice, it may result in a failure and mistakenly indicate that the port is already in use."
   display: Listen Port
   name: longRunningPort
   type: 0
@@ -245,8 +245,8 @@ configuration:
   section: Collect
   advanced: true
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
-display: Generic Export Indicators Service
-name: EDL
+display: Generic Export Indicators Service Dev
+name: EDL Dev
 script:
   commands:
   - name: edl-update
