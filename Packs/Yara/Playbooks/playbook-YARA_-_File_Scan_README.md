@@ -1,5 +1,5 @@
 A playbook to run YARA scan against uploaded file.
-To run the playbook, the YARA rule content and the file entry ID must be provided.
+To run the playbook, provide the YARA rule content and the entry ID of the file you intend to scan.
 
 
 ### Scripts
