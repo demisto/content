@@ -65,6 +65,7 @@ class GoogleSecreteManagerModule:
             search_ids = [self.convert_to_gsm_format(s.lower()) for s in name_filter]
             # Check if the secret comply to the function filter params
             filter = [eval(f'labels.get("{k}"){v}') for k, v in labels_filter.items()]
+            print(f'*********{filter=}**********')
             if not all(filter) or (search_ids and secret_pack_id not in search_ids):
                 continue
             if with_secrets:

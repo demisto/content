@@ -78,14 +78,17 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     :return: the list of secrets from GSM to use in the build
     """
     secret_conf = GoogleSecreteManagerModule(options.service_account)
-    labels_filter_master = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
-                            FilterLabels.SECRET_MERGE_TIME: FilterOperators.NONE,
-                            FilterLabels.IS_DEV_BRANCH: FilterOperators.NONE}
+    labels_filter_master = {FilterLabels.PACK_ID.value: FilterOperators.NOT_NONE.value,
+                            FilterLabels.IGNORE_SECRET.value: FilterOperators.NONE.value,
+                            FilterLabels.SECRET_MERGE_TIME.value: FilterOperators.NONE.value,
+                            FilterLabels.IS_DEV_BRANCH.value: FilterOperators.NONE.value}
 
-    labels_filter_branch = {FilterLabels.PACK_ID: FilterOperators.NOT_NONE, FilterLabels.IGNORE_SECRET: FilterOperators.NONE,
-                            FilterLabels.SECRET_MERGE_TIME: FilterOperators.NONE,
-                            FilterLabels.IS_DEV_BRANCH: FilterOperators.NONE,
-                            FilterLabels.BRANCH_NAME: f'{FilterOperators.EQUALS}"{branch_name}"'}
+    labels_filter_branch = {FilterLabels.PACK_ID.value: FilterOperators.NOT_NONE.value,
+                            FilterLabels.IGNORE_SECRET.value: FilterOperators.NONE.value,
+                            FilterLabels.SECRET_MERGE_TIME.value: FilterOperators.NONE.value,
+                            FilterLabels.IS_DEV_BRANCH.value: FilterOperators.NONE.value,
+                            FilterLabels.BRANCH_NAME.value: f'{FilterOperators.EQUALS.value}"{branch_name}"'}
+
     master_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_branch, name_filter=yml_pack_ids,
                                               with_secrets=True)
     branch_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_master, with_secrets=True)
