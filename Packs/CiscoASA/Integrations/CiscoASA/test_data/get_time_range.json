@@ -1,0 +1,40 @@
+{
+    "kind": "object#TimeRange",
+    "selfLink": "selfLink",
+    "name": "tr_periodic_test",
+    "objectId": "tr_periodic_test",
+    "value": {
+        "start": "now",
+        "end": "never",
+        "periodic": [
+            {
+                "frequency": "weekend",
+                "startHour": 3,
+                "startMinute": 3,
+                "endHour": 4,
+                "endMinute": 1
+            },
+            {
+                "frequency": "daily",
+                "startHour": 4,
+                "startMinute": 0,
+                "endHour": 5,
+                "endMinute": 1
+            },
+            {
+                "frequency": "Tuesday Thursday Saturday ",
+                "startHour": 0,
+                "startMinute": 0,
+                "endHour": 1,
+                "endMinute": 1
+            },
+            {
+                "frequency": "weekdays",
+                "startHour": 12,
+                "startMinute": 0,
+                "endHour": 13,
+                "endMinute": 1
+            }
+        ]
+    }
+}
