@@ -110,7 +110,7 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
-This video is designed to work with XSOAR 6
+The information in this video is for Cortex XSOAR 6 only.
 
 <video controls>
     <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
