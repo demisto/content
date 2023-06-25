@@ -28,7 +28,7 @@ configuration:
   type: 8
 description: 'Will be added later'
 display: 'Forcepoint Security Management Center'
-name: Forcepoint_Security_Management_Center
+name: Forcepoint Security Management Center
 script:
   commands:
   - arguments:
@@ -295,7 +295,7 @@ script:
       secret: false
     description: 'Deletes a host.'
     execution: false
-    name: forcepoint-smc-host-list
+    name: forcepoint-smc-host-delete
     outputs:
     - contextPath: ForcepointSMC.Host.Name
       description: 'The name of the Host'
@@ -361,7 +361,7 @@ script:
       name: name
       required: true
       secret: false
-    description: 'Deletes a host.'
+    description: 'Deletes a domain.'
     execution: false
     name: forcepoint-smc-domain-delete
     outputs:
@@ -370,6 +370,92 @@ script:
       type: String
     - contextPath: ForcepointSMC.Domain.Deleted
       description: 'Was the domain deleted or not'
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The limit on the returned number Policy Template. Default value is 50.
+      isArray: false
+      name: limit
+      defaultvalue: 50
+      required: false
+    - default: false
+      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+      defaultvalue: false
+    description: 'Lists the Domains in the system.'
+    execution: false
+    name: forcepoint-smc-policy-template-list
+    outputs:
+    - contextPath: ForcepointSMC.Policy.Name
+      description: 'The name of the firewall policy.'
+      type: String
+    - contextPath: ForcepointSMC.Policy.Comment
+      description: 'The comment of the firewall policy.'
+      type: String
+  - arguments:
+    - default: false
+      description: The limit on the returned number firewall policies. Default value is 50.
+      isArray: false
+      name: limit
+      defaultvalue: 50
+      required: false
+    - default: false
+      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      required: false
+      defaultvalue: false
+    description: 'Lists the firewall policies in the system.'
+    execution: false
+    name: forcepoint-smc-firewall-policy-list
+    outputs:
+    - contextPath: ForcepointSMC.Policy.Name
+      description: 'The name of the firewall policy.'
+      type: String
+    - contextPath: ForcepointSMC.Policy.Comment
+      description: 'The comment of the firewall policy.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: name
+      defaultvalue: 50
+      required: true
+    - default: false
+      description:  The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list to get the list of policy templates.
+      isArray: false
+      name: template
+      required: true
+      defaultvalue: false
+    description: 'Creates a firewall policy.'
+    execution: false
+    name: forcepoint-smc-firewall-policy-create
+    outputs:
+    - contextPath: ForcepointSMC.Policy.Name
+      description: 'The name of the firewall policy.'
+      type: String
+    - contextPath: ForcepointSMC.Policy.Comment
+      description: 'The comment of the firewall policy.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the policy to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: 'Deletes a firewall policy.'
+    execution: false
+    name: forcepoint-smc-firewall-policy-delete
+    outputs:
+    - contextPath: ForcepointSMC.Policy.Name
+      description: 'The name of the firewall policy'
+      type: String
+    - contextPath: ForcepointSMC.Policy.Deleted
+      description: 'Was the policy deleted or not'
       type: Boolean
   isfetch: false
   runonce: false

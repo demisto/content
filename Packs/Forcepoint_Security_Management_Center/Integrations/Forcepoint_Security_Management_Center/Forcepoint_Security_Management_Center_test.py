@@ -1,12 +1,12 @@
-import json
-import io
 import demistomock as demisto
 import pytest
 from smc import *
 from Forcepoint_Security_Management_Center import (create_iplist_command, update_iplist_command, list_iplist_command,
                                                    delete_iplist_command, create_host_command, list_host_command,
                                                    delete_host_command, update_host_command, create_domain_command,
-                                                   list_domain_command, delete_domain_command, IPList, Host, DomainName)
+                                                   list_domain_command, delete_domain_command, list_policy_template_command,
+                                                   list_firewall_policy_command, create_firewall_policy_command,
+                                                   delete_firewall_policy_command, IPList, Host, DomainName, FirewallPolicy)
 from smc.api.exceptions import ElementNotFound
 from smc.base.model import Element
 from smc.base.collection import CollectionManager
@@ -29,6 +29,12 @@ class mock_Host():
 
 
 class mock_Domain():
+    def __init__(self, name: str, comment: str):
+        self.name = name
+        self.comment = comment
+
+
+class mock_Policy():
     def __init__(self, name: str, comment: str):
         self.name = name
         self.comment = comment
@@ -256,7 +262,7 @@ def test_delete_host_command(mocker):
         - Ensure the results holds the expected data in case of an ElementNotFound exception
     """
 
-    mocker.patch.object(Host, 'delete', side_effect=delete)
+    mocker.patch.object(Host, 'delete', side_effect=mock_delete)
     response = delete_host_command({'name': 'name'})
 
     assert response.readable_output == 'Host name was not found.'
@@ -317,7 +323,90 @@ def test_delete_domain_command(mocker):
         - Ensure the results holds the expected data in case of an ElementNotFound exception
     """
 
-    mocker.patch.object(Host, 'delete', side_effect=delete)
-    response = delete_host_command({'name': 'name'})
+    mocker.patch.object(DomainName, 'delete', side_effect=mock_delete)
+    response = delete_domain_command({'name': 'name'})
 
-    assert response.readable_output == 'Host name was not found.'
+    assert response.readable_output == 'Domain name was not found.'
+
+
+@pytest.mark.parametrize('args,returned_results', [({'limit': '2'}, 2), ({'all_results': 'True'}, 3)])
+def test_list_policy_template_command(mocker, args, returned_results):
+    """
+    Given:
+        - demisto args:
+        Case 1: stating a specific Domain name
+        Case 2: getting 2 results
+        Case 3: getting all of the results (3 results)
+    When:
+        - Calling function list_domain_command
+    Then:
+        - Ensure the results holds the expected data and the correct number of results
+    """
+
+    policy = mock_Policy(name='name', comment='comment')
+    mocker.patch.object(CollectionManager, 'limit', return_value=[policy, policy])
+    mocker.patch.object(CollectionManager, 'all', return_value=[policy, policy, policy])
+    response = list_policy_template_command(args)
+
+    assert 'Policy template:' in response.readable_output
+    assert len(response.outputs) == returned_results
+
+
+@pytest.mark.parametrize('args,returned_results', [({'limit': '2'}, 2), ({'all_results': 'True'}, 3)])
+def test_list_firewall_policy_command(mocker, args, returned_results):
+    """
+    Given:
+        - demisto args:
+        Case 1: stating a specific Domain name
+        Case 2: getting 2 results
+        Case 3: getting all of the results (3 results)
+    When:
+        - Calling function list_domain_command
+    Then:
+        - Ensure the results holds the expected data and the correct number of results
+    """
+
+    policy = mock_Policy(name='name', comment='comment')
+    mocker.patch.object(CollectionManager, 'limit', return_value=[policy, policy])
+    mocker.patch.object(CollectionManager, 'all', return_value=[policy, policy, policy])
+    response = list_firewall_policy_command(args)
+
+    assert 'Firewall policies:' in response.readable_output
+    assert len(response.outputs) == returned_results
+
+
+def test_create_firewall_policy_command(mocker):
+    """
+    Given:
+        - demisto args
+    When:
+        - Calling function create_domain_command
+    Then:
+        - Ensure the results holds the expected data
+    """
+
+    args = {
+        'name': 'name',
+        'comment': 'comment'
+    }
+    mocker.patch.object(FirewallPolicy, 'create', return_value=mock_Policy(name='name', comment='comment'))
+    response = create_firewall_policy_command(args)
+
+    assert response.readable_output == 'Firewall policy name was created successfully.'
+    assert response.outputs.get('Name') == 'name'
+
+
+def test_firewall_policy_domain_command(mocker):
+    """
+    Given:
+        - demisto args
+    When:
+        - Calling function delete_domain_command
+    Then:
+        - Ensure the results holds the expected data in case of an ElementNotFound exception
+    """
+
+    mocker.patch.object(FirewallPolicy, 'delete', side_effect=mock_delete)
+    response = delete_firewall_policy_command({'name': 'name'})
+
+    assert response.readable_output == 'Firewall policy name was not found.'

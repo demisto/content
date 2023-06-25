@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from smc import session
 from smc.elements.network import IPList, DomainName, Host
-from smc.policy.layer3 import FirewallTemplatePolicy
+from smc.policy.layer3 import FirewallTemplatePolicy, FirewallPolicy
 from smc.api.exceptions import ElementNotFound
 import urllib3
 from typing import Dict, Any
@@ -133,7 +133,7 @@ def update_iplist_command(args: Dict[str, Any]) -> CommandResults:
     is_overwrite = args.get('is_overwrite', False)
 
     if not list(IPList.objects.filter(name)):
-        return_error(f'IP List {name} was not found.')
+        raise DemistoException(f'IP List {name} was not found.')
 
     ip_list = IPList.update_or_create(name=name, append_lists=not is_overwrite, iplist=addresses, comment=comment)
 
@@ -301,7 +301,7 @@ def update_host_command(args: Dict[str, Any]) -> CommandResults:
     is_overwrite = args.get('is_overwrite', False)
 
     if not list(Host.objects.filter(name)):
-        return_error(f'Host {name} was not found.')
+        raise DemistoException(f'Host {name} was not found.')
 
     host = Host.update_or_create(name=name, address=address, ipv6_address=ipv6_address,
                                  secondary=secondary, comment=comment, append_lists=not is_overwrite)
@@ -438,6 +438,123 @@ def delete_domain_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def list_policy_template_command(args: Dict[str, Any]) -> CommandResults:
+    """Lists the policy templates in the system.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    policy_templates = []
+    if all_results:
+        policy_templates = list(FirewallTemplatePolicy.objects.all())
+    else:
+        policy_templates = list(FirewallTemplatePolicy.objects.limit(limit))
+
+    outputs = []
+    for policy_template in policy_templates:
+        outputs.append({'Name': policy_template.name,
+                        'Comment': policy_template.comment})
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.PolicyTemplate',
+        outputs=outputs,
+        raw_response=outputs,
+        outputs_key_field='Name',
+        readable_output=tableToMarkdown(name='Policy template:', t=outputs, removeNull=True),
+    )
+
+
+def list_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
+    """Lists the policy templates in the system.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    firewall_policies = []
+    if all_results:
+        firewall_policies = list(FirewallPolicy.objects.all())
+    else:
+        firewall_policies = list(FirewallPolicy.objects.limit(limit))
+
+    outputs = []
+    for firewall_policy in firewall_policies:
+        outputs.append({'Name': firewall_policy.name,
+                        'Comment': firewall_policy.comment})
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.FirewallPolicy',
+        outputs=outputs,
+        raw_response=outputs,
+        outputs_key_field='Name',
+        readable_output=tableToMarkdown(name='Firewall policies:', t=outputs, removeNull=True),
+    )
+
+
+def create_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
+    """Creating a Domain.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    name = args.get('name')
+    template = args.get('template', '')
+
+    firewall_policy = FirewallPolicy.create(name=name, template=template)
+
+    outputs = {'Name': firewall_policy.name,
+               'Comment': firewall_policy.comment}
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.Domain',
+        outputs=outputs,
+        raw_response=outputs,
+        readable_output=f'Firewall policy {name} was created successfully.'
+    )
+
+
+def delete_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
+    """Deleting domain.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    name = args.get('name')
+
+    try:
+        FirewallPolicy(name).delete()
+
+    except ElementNotFound:
+        return CommandResults(readable_output=f'Firewall policy {name} was not found.')
+
+    outputs = {'Name': name,
+               'Deleted': True}
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.Policy',
+        outputs_key_field='Name',
+        outputs=outputs,
+        readable_output=f'Firewall policy {name} was deleted successfully.'
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -490,6 +607,12 @@ def main() -> None:
             return_results(list_domain_command(demisto.args()))
         elif command == 'forcepoint-smc-domain-delete':
             return_results(delete_domain_command(demisto.args()))
+        elif command == 'forcepoint-smc-policy-template-list':
+            return_results(list_policy_template_command(demisto.args()))
+        elif command == 'forcepoint-smc-firewall-policy-create':
+            return_results(create_firewall_policy_command(demisto.args()))
+        elif command == 'forcepoint-smc-firewall-policy-delete':
+            return_results(delete_firewall_policy_command(demisto.args()))
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
