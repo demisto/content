@@ -1524,6 +1524,32 @@ def test_zoom_send_message_markdown_command(mocker):
     assert mock_send_chat_message.call_args[0][1] == expected_request_payload
 
 
+def test_zoom_send_message_markdown_command_error_mentions(mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel with invalid markdown
+    Then -
+        Validate that an exception is raised
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_send_message_command
+
+    with pytest.raises(Exception) as e:
+        zoom_send_message_command(client,
+                                  user_id='user1',
+                                  at_contact='user2@example.com',
+                                  is_markdown=True,
+                                  message="@user This is an @invalid markdown",
+                                  to_channel='channel1'
+                                  )
+
+    assert str(e.value) == "to many mentions in text. you can provide only one mention in each message"
+
+
 def test_zoom_list_messages_command(mocker):
     """
     Given -
