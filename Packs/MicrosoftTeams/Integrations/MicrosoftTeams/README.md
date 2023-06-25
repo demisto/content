@@ -67,7 +67,7 @@ In addition, make sure ***Instance execute external*** is enabled.
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
- - Note: This option is available from Cortex XSOAR v5.5.0. It's currently not supported for XSOAR 8.
+ - Note: This option is available from Cortex XSOAR v5.5.0. Currently, Cortex XSOAR 8 is not supported.
 
 ### 2. Using NGINX as reverse proxy
 In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relays the HTTPS requests posted from Microsoft Teams
