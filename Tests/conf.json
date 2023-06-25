@@ -22,6 +22,10 @@
     "tests": [
         {
             "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
         },
         {
@@ -1079,6 +1083,7 @@
         {
             "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-test",
+            "instance_names": "Tenable_SC_secman_api_key",
             "timeout": 240
         },
         {
@@ -1196,11 +1201,6 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "timeout": 3600
-        },
-        {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable-sc-scan-test",
-            "timeout": 600
         },
         {
             "integrations": "google-vault",
@@ -3148,6 +3148,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "timeout": 1200
         },
         {
@@ -4582,7 +4583,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
             "integrations": [
@@ -4596,7 +4597,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 160,
-            "pid_threshold": 80
+            "pid_threshold": 80,
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
@@ -4809,6 +4811,7 @@
         {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -4971,7 +4974,8 @@
             "integrations": "Azure Sentinel",
             "fromversion": "5.5.0",
             "is_mockable": false,
-            "playbookID": "TestAzureSentinelPlaybookV2"
+            "playbookID": "TestAzureSentinelPlaybookV2",
+            "instance_names": "azure_sentinel_dev"
         },
         {
             "integrations": "AnsibleAlibabaCloud",
@@ -5111,6 +5115,7 @@
         {
             "playbookID": "Get Original Email - EWS v2 - test",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -5727,7 +5732,6 @@
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "FortinetFortiwebVM": "No instance - developed by Qmasters",
         "_comment2": "~~~ UNSTABLE ~~~",
-        "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",

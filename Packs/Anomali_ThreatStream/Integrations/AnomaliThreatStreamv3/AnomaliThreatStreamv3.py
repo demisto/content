@@ -2069,9 +2069,10 @@ def get_passive_dns(client: Client, value, all_results=None, type=DBotScoreType.
 
 
 def import_ioc_with_approval(client: Client, import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
+                             threat_type="exploit", severity="low", default_state='inactive',
+                             ip_mapping=None, domain_mapping=None,
                              url_mapping=None, email_mapping=None, md5_mapping=None, tags=None,
-                             source_confidence_weight=None):
+                             source_confidence_weight=None, tags_tlp: str = None, expiration_ts=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
@@ -2082,13 +2083,16 @@ def import_ioc_with_approval(client: Client, import_type, import_value, confiden
         confidence=int(confidence),
         source_confidence_weight=arg_to_number(source_confidence_weight) if source_confidence_weight else None,
         ip_mapping=ip_mapping,
+        default_state=default_state,
+        expiration_ts=expiration_ts,
         domain_mapping=domain_mapping,
         url_mapping=url_mapping,
         email_mapping=email_mapping,
         md5_mapping=md5_mapping,
         threat_type=threat_type,
         severity=severity,
-        tags=json.dumps([{'name': tag} for tag in argToList(tags)]) if tags else None
+        tags=(json.dumps([({'name': tag, 'tlp': tags_tlp.lower()} if tags_tlp else {'name': tag}) for tag in argToList(tags)])
+              if tags else None)
     )
     files = None
     uploaded_file = None
@@ -2128,9 +2132,10 @@ def import_ioc_with_approval(client: Client, import_type, import_value, confiden
         raise DemistoException('The data was not imported. Check if valid arguments were passed')
 
 
-def import_ioc_without_approval(client: Client, classification, file_id=None, confidence=None, allow_unresolved='no',
+def import_ioc_without_approval(client: Client, classification, file_id=None, confidence=None,
+                                allow_unresolved='no',
                                 source_confidence_weight=None, expiration_ts=None, severity=None,
-                                tags=None, trustedcircles=None, indicators_json=None):
+                                tags=None, trustedcircles=None, indicators_json=None, tags_tlp: str = None):
     """
         Imports indicators data to ThreatStream.
         file_id of uploaded file to war room.
@@ -2166,7 +2171,8 @@ def import_ioc_without_approval(client: Client, classification, file_id=None, co
         source_confidence_weight=source_confidence_weight,
         expiration_ts=expiration_ts,
         severity=severity,
-        tags=tags,
+        tags=([({'name': tag, 'tlp': tags_tlp.lower()} if tags_tlp else {'name': tag}) for tag in argToList(tags)]
+              if tags else None),
         trustedcircles=trustedcircles
     )
     ioc_to_import.update({"meta": meta})
@@ -2368,7 +2374,7 @@ def submit_report(client: Client, submission_type, submission_value, import_indi
         'import_indicators': import_indicators
     }
     if detail:
-        data['detail'] = detail
+        data['report_radio-notes'] = detail
 
     uploaded_file = None
     files = None

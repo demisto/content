@@ -55,7 +55,7 @@ tasks:
       - "7"
     scriptarguments:
       data:
-        simple: var a = 'b'
+        simple: var a = 'c'
       entryId: {}
       filename:
         simple: test1.js
