@@ -221,7 +221,6 @@ def test_uptycs_get_asset_with_id(mocker, requests_mock):
         "osVersion": "10.14.5",
         "osqueryVersion": "3.x.x.x-Uptycs",
         "agentVersion": "5.x.x.x-Uptycs",
-        "createdAt": "2018-09-25 16:38:16.440",
         "osFlavor": "darwin",
         "hostName": "kyle-mbp-work",
         "gateway": "x.y.z.a",
@@ -1034,7 +1033,7 @@ def test_uptycs_get_alerts(mocker, requests_mock):
                 "host_name": "kyle-mbp-work",
                 "key": "identifier",
                 "assigned_to": "testuser",
-                "metadata": "{\"type\":\"application\",\"pid\":'437'}",
+                "metadata": "{\"type\":\"application\",\"pid\":\"437\"}",
                 "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
                 "grouping": "OS X Crashes"
             }
@@ -1123,7 +1122,7 @@ def test_uptycs_get_alert_rules(mocker, requests_mock):
     Tests uptycs-get-alert-rules command function.
 
         Given:
-            - requests_mock instance to generate the appropriate threat vendors API
+            - requests_mock instance to generate the appropriate alert rules API
               response when the correct uptycs-get-alert-rules API request is performed.
 
         When:
@@ -1178,7 +1177,7 @@ def test_uptycs_get_event_rules(mocker, requests_mock):
     Tests uptycs-get-event-rules command function.
 
         Given:
-            - requests_mock instance to generate the appropriate threat vendors API
+            - requests_mock instance to generate the appropriate event rules API
               response when the correct uptycs-get-event-rules API request is performed.
 
         When:
@@ -1230,20 +1229,22 @@ def test_uptycs_get_event_rules(mocker, requests_mock):
 
 def test_uptycs_get_users(mocker, requests_mock):
     """
-    Tests uptycs-get-users command function.
+    Tests uptycs-get-users and uptycs-get-user-asset-groups command function.
 
         Given:
-            - requests_mock instance to generate the appropriate threat vendors API
-              response when the correct uptycs-get-users API request is performed.
+            - requests_mock instance to generate the appropriate users API
+              response when the correct uptycs-get-users or
+              uptycs-get-user-asset-groups API request is performed.
 
         When:
             - Running the 'uptycs-get-users'.
+            - Running the 'uptycs-get-user-asset-groups'.
 
         Then:
             -  Checks the output of the command function with the expected output.
 
     """
-    from Uptycs import uptycs_get_users_command
+    from Uptycs import uptycs_get_users_command, uptycs_get_user_asset_groups_command
 
     mocker.patch.object(demisto, 'params', return_value={
         "key": KEY,
@@ -1253,8 +1254,11 @@ def test_uptycs_get_users(mocker, requests_mock):
         "proxy": "false",
         "fetch_time": "7 days"
     })
+
+    user_id = "33436e24-f30f-42d0-8438-d948be12b5af"
+    object_group_id = "8963abf8-9c8d-4ef5-8a80-af836fe69be4"
     mocker.patch.object(demisto, 'args', return_value={
-        "limit": '1'
+        "asset_group_id": object_group_id
     })
 
     mocker.patch("Uptycs.KEY", new=KEY)
@@ -1262,26 +1266,44 @@ def test_uptycs_get_users(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    mock_response = {
-        "items": [
+    mock_user = {
+        "name": "Bschmoll",
+        "id": user_id,
+        "email": "goo@test.com",
+        "admin": True,
+        "active": True,
+        "createdAt": "2018-11-20T19:15:05.611Z",
+        "updatedAt": "2018-11-20T19:15:05.611Z",
+        "userObjectGroups": [
             {
-                "name": "Bschmoll",
-                "id": "33436e24-f30f-42d0-8438-d948be12b5af",
-                "email": "goo@test.com",
-                "admin": True,
-                "active": True,
-                "createdAt": "2018-11-20T19:15:05.611Z",
-                "updatedAt": "2018-11-20T19:15:05.611Z",
+                "objectGroupId": object_group_id
             }
         ]
     }
 
-    test_url = 'https://%s/public/api/customers/%s/users?limit=1' % (DOMAIN, CUSTOMER_ID)
+    mock_response = {}
+    mock_response['items'] = mock_user
+
+    test_url = 'https://%s/public/api/customers/%s/users' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_users_command()
 
-    assert response['Contents'] == mock_response
+    test_url_extra = 'https://%s/public/api/customers/%s/users/%s' % (DOMAIN, CUSTOMER_ID, user_id)
+    requests_mock.get(test_url_extra, json=mock_user)
+
+    del mock_user['userObjectGroups']
+    assert response['Contents']['items'] == mock_response
+    asset_groups = uptycs_get_user_asset_groups_command()
+
+    users_in_group = {
+        mock_user['name']: {
+            'email': mock_user['email'],
+            'id': mock_user['id']
+        }
+    }
+
+    assert asset_groups['Contents'] == users_in_group
 
 
 def test_uptycs_get_user_information(mocker, requests_mock):
@@ -1309,7 +1331,7 @@ def test_uptycs_get_user_information(mocker, requests_mock):
         "proxy": "false",
         "fetch_time": "7 days"
     })
-    user_id = "33436e24-f30f-42d0-8438-d948be12b5af",
+    user_id = "33436e24-f30f-42d0-8438-d948be12b5af"
     mocker.patch.object(demisto, 'args', return_value={
         "user_id": user_id
     })
@@ -1321,7 +1343,7 @@ def test_uptycs_get_user_information(mocker, requests_mock):
 
     mock_response = {
         "name": "Bschmoll",
-        "id": "33436e24-f30f-42d0-8438-d948be12b5af",
+        "id": user_id,
         "email": "goo@test.com",
         "userRoles": [
             {
@@ -1330,7 +1352,7 @@ def test_uptycs_get_user_information(mocker, requests_mock):
                 }
             }
         ],
-        "userObjectGroups": "testuser,asset"
+        "userObjectGroups": "testuser"
     }
 
     test_url = 'https://%s/public/api/customers/%s/users/%s' % (DOMAIN, CUSTOMER_ID, user_id)
@@ -1340,3 +1362,965 @@ def test_uptycs_get_user_information(mocker, requests_mock):
 
     for key in ['name', 'id', 'email', 'userObjectGroups']:
         assert response['Contents'][key] == mock_response[key]
+
+
+def test_uptycs_get_asset_groups(mocker, requests_mock):
+    """
+    Tests uptycs-get-asset-groups command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate asset groups API
+              response when the correct uptycs-get-asset-groups API request is performed.
+
+        When:
+            - Running the 'uptycs-get-asset-groups'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_asset_groups_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1'
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    mock_response = {
+        "items": [
+            {
+                "name": "assets",
+                "description": "Default asset group",
+                "custom": False,
+                "updatedAt": "2018-09-24T17:24:45.604Z",
+                "id": "106eef5e-c3a6-44eb-bb3d-1a2087cded3d",
+                "createdAt": "2018-09-24T17:24:45.604Z",
+                "updatedAt": "2018-09-24T17:24:45.604Z",
+                "objectType": "ASSET"
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/objectGroups?limit=1' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.get(test_url, json=mock_response)
+
+    response = uptycs_get_asset_groups_command()
+
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_get_saved_queries(mocker, requests_mock):
+    """
+    Tests uptycs-get-saved-queries command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-saved-queries API request is performed.
+
+        When:
+            - Running the 'uptycs-get-saved-queries'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_saved_queries_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+    query_id = "16de057d-6f69-46b0-80d0-46cb9348c8fe"
+    query_name = "test_saved_query"
+    mocker.patch.object(demisto, 'args', return_value={
+        "query_id": query_id,
+        "name": query_name
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    mock_response = {
+        "items": [
+            {
+                "query": "select * from upt_assets limit 1",
+                "id": query_id,
+                "grouping": "default",
+                "description": "this is a test query",
+                "name": query_name,
+                "executionType": "realtime"
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queries/%s?name=%s' % (DOMAIN, CUSTOMER_ID, query_id, query_name)
+    requests_mock.get(test_url, json=mock_response)
+
+    response = uptycs_get_saved_queries_command()
+
+    assert response['Contents'] == mock_response['items']
+
+
+def test_uptycs_run_saved_query(mocker, requests_mock):
+    """
+    Tests uptycs-run-saved-query command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-run-saved-query API request is performed.
+
+        When:
+            - Running the 'uptycs-run-saved-query'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_run_saved_query_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+    query_id = "16de057d-6f69-46b0-80d0-46cb9348c8fe"
+    query_name = "test_saved_query"
+    mocker.patch.object(demisto, 'args', return_value={
+        "query_id": query_id,
+        "name": query_name,
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    mock_response = {
+        "items": [
+            {
+                "query": "select * from upt_assets limit 1",
+                "id": query_id,
+                "grouping": "default",
+                "description": "this is a test query",
+                "name": query_name,
+                "executionType": "realtime"
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queries/%s?name=%s' % (DOMAIN, CUSTOMER_ID, query_id, query_name)
+    requests_mock.get(test_url, json=mock_response)
+
+    test_url = 'https://%s/public/api/customers/%s/assets/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_run_saved_query_command()
+    assert response['Contents'] == mock_response['items']
+
+
+def test_uptycs_run_query(mocker, requests_mock):
+    """
+    Tests uptycs-run-query command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-run-query API request is performed.
+
+        When:
+            - Running the 'uptycs-run-query'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_run_query_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "query": "select * from upt_assets limit 1",
+        "asset_id": "testassetid",
+        "description": "this is a test query",
+        "name": "test_saved_query",
+        "executionType": "realtime",
+        "type": "default",
+        "custom": True
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "name": mock_response['name'],
+        "type": mock_response['type'],
+        "description": mock_response['description'],
+        "execution_type": mock_response['executionType'],
+        "query": mock_response['query'],
+        "asset_id": mock_response['asset_id']
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/assets/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_run_query_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_get_process_open_sockets(mocker, requests_mock):
+    """
+    Tests uptycs-get-process-open-sockets command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-process-open-sockets API request is performed.
+
+        When:
+            - Running the 'uptycs-get-process-open-sockets'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_process_open_sockets_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "protocol": 6,
+                "socket": 0,
+                "family": 2,
+                "local_port": 54755,
+                "remote_port": 443,
+                "pid": 704,
+                "remote_address": "69.147.92.12",
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "upt_time": "2019-07-19 17:03:31.000",
+                "state": "ESTABLISHED",
+                "upt_hostname": "kyle-mbp-work",
+                "path": "",
+                "local_address": "192.168.86.61"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "host_name_is": "testhost",
+        "host_name_like": "test",
+        "time_ago": "1 day"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_process_open_sockets_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_get_process_information(mocker, requests_mock):
+    """
+    Tests uptycs-get-process-open-information command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-process-information API request is performed.
+
+        When:
+            - Running the 'uptycs-get-process-information'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_process_information_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "pid": 5119,
+                "parent": 484,
+                "upt_hostname": "kyle-mbp-work",
+                "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                "name": "VBoxHeadless"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "pid": '5119',
+        "host_name_is": "testhost",
+        "host_name_like": "test",
+        "time_ago": "1 day"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_process_information_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_get_process_child_processes(mocker, requests_mock):
+    """
+    Tests uptycs-get-process-child-processes command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-process-child-processes API request is performed.
+
+        When:
+            - Running the 'uptycs-get-process-child-processes'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_process_child_processes_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "upt_time": "2019-01-29 16:14:27.000",
+                "upt_add_time": "2019-01-29 16:14:27.000",
+                "pid": 5119,
+                "upt_hostname": "kyle-mbp-work",
+                "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                "name": "VBoxHeadless"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "parent": '5119',
+        "limit": '1',
+        "asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+        "parent_start_time": "2023-01-28 14:16:58.000",
+        "parent_end_time": "2019-01-29 14:16:58.000",
+        "time_ago": "1 day"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_process_child_processes_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_processes(mocker, requests_mock):
+    """
+    Tests uptycs-get-processes command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-processes API request is performed.
+
+        When:
+            - Running the 'uptycs-get-processes'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_processes_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "name": "SCHelper",
+                "parent": 1,
+                "upt_time": "2019-07-19 07:29:32.000",
+                "pid": 60051,
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "cmdline": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "upt_hostname": "kyle-mbp-work",
+                "pgroup": 60051,
+                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "cwd": "/"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "host_name_is": "test",
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_processes_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_process_open_files(mocker, requests_mock):
+    """
+    Tests uptycs-get-process-open-files command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-process-open-files API request is performed.
+
+        When:
+            - Running the 'uptycs-get-process-open-files'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_process_open_files_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "upt_time": "2019-07-19 07:29:32.000",
+                "pid": 60051,
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "upt_hostname": "kyle-mbp-work",
+                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "fd": 35
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "host_name_is": "test",
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_process_open_files_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_process_event_information(mocker, requests_mock):
+    """
+    Tests uptycs-get-process-event-information command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-process-event-information API request is performed.
+
+        When:
+            - Running the 'uptycs-get-process-event-information'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_process_event_information_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "upt_time": "2019-07-19 07:29:32.000",
+                "parent": 5001,
+                "pid": 60051,
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "upt_hostname": "kyle-mbp-work",
+                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
+                "cwd": "/"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "host_name_is": "test",
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_process_event_information_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_process_events(mocker, requests_mock):
+    """
+    Tests uptycs-get-process-events command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-process-events API request is performed.
+
+        When:
+            - Running the 'uptycs-get-process-events'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_process_events_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "upt_time": "2019-07-19 07:29:32.000",
+                "parent": 5001,
+                "pid": 60051,
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "upt_hostname": "kyle-mbp-work",
+                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
+                "cwd": "/"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "host_name_is": "test",
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_process_events_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_socket_events(mocker, requests_mock):
+    """
+    Tests uptycs-get-socker-events command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-socker-events API request is performed.
+
+        When:
+            - Running the 'uptycs-get-socket-events'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_socket_events_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "upt_time": "2019-07-19 07:29:32.000",
+                "family": 2,
+                "pid": 60051,
+                "local_port": 47873,
+                "remote_port": "",
+                "protocol": "",
+                "socket": "",
+                "remote_address": "17.142.171.8",
+                "local_address": "0.0.0.0",
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "upt_hostname": "kyle-mbp-work",
+                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "action": "connect"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "host_name_is": "test",
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_socket_events_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_parent_event_information(mocker, requests_mock):
+    """
+    Tests uptycs-get-parent-event-information command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-parent-event-information API request is performed.
+
+        When:
+            - Running the 'uptycs-get-parent-event-information'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_parent_event_information_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "upt_time": "2019-07-19 07:29:32.000",
+                "parent": 5005,
+                "pid": 60051,
+                "upt_hostname": "kyle-mbp-work",
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "cmdline": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "cwd": ""
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "host_name_is": "test",
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_parent_event_information_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_socket_event_information(mocker, requests_mock):
+    """
+    Tests uptycs-get-socket-event-information command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-socket-event-information API request is performed.
+
+        When:
+            - Running the 'uptycs-get-socket-event-information'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_socket_event_information_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "items": [
+            {
+                "upt_time": "2019-07-19 07:29:32.000",
+                "family": 2,
+                "pid": 60051,
+                "local_port": 47873,
+                "remote_port": "",
+                "protocol": "",
+                "socket": "",
+                "remote_address": "17.142.171.8",
+                "local_address": "0.0.0.0",
+                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "upt_hostname": "kyle-mbp-work",
+                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                "action": "connect"
+            }
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "host_name_is": "test",
+        "host_name_like": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_socket_event_information_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_get_asset_tags(mocker, requests_mock):
+    """
+    Tests uptycs-get-asset-tags command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-get-asset-tags API request is performed.
+
+        When:
+            - Running the 'uptycs-get-asset-tags'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_asset_tags_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "tags": [
+            "Uptycs=work laptop",
+            "owner=Uptycs office",
+            "network=low",
+            "cpu=unknown",
+            "memory=unknown",
+            "disk=high"
+        ]
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "asset_id": "test"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/assets/test' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_get_asset_tags_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_set_alert_status(mocker, requests_mock):
+    """
+    Tests uptycs-set-alert-status command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate queries API
+              response when the correct uptycs-set-alert-status API request is performed.
+
+        When:
+            - Running the 'uptycs-set-alert-status'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_set_alert_status_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    mock_response = {
+        "status": "assigned",
+        "code": "OUTBOUND_CONNECTION_TO_THREAT_IOC",
+        "updatedAt": "2019-07-19T17:07:27.447Z",
+        "id": "9cb18abd-2c9a-43a8-988a-0601e9140f6c",
+        "createdAt": "2019-02-22T21:13:21.238Z",
+        "updatedByUser": {
+            "name": "B schmoll",
+            "admin": "True",
+            "email": "goo@test.com"
+        }
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={
+        "alert_id": "testalert",
+        "status": "open"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    test_url = 'https://%s/public/api/customers/%s/alerts/testalert' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.put(test_url, json=mock_response)
+
+    response = uptycs_set_alert_status_command()
+
+    del mock_response["updatedByUser"]
+    mock_response["updatedByEmail"] = "goo@test.com"
+    mock_response["updatedByAdmin"] = "True"
+    mock_response["updatedBy"] = "B schmoll"
+
+    assert response['Contents'] == mock_response
