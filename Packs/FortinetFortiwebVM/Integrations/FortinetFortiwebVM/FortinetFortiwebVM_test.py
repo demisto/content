@@ -6858,6 +6858,9 @@ def test_dependencies_commands(
     requests_mock.get(url=url, json=json_response)
     result = commands[command_name](mock_client, {})
     assert result.outputs_prefix == outputs_prefix
+    assert isinstance(result.outputs, list)
+    assert isinstance(result.outputs[0], dict)
+    assert 'id' in result.outputs[0].keys()
 
 
 @pytest.mark.parametrize(
@@ -7131,8 +7134,8 @@ def test_virtual_server_group_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = virtual_server_group_list_command(mock_client, args)
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) == expected
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == expected
     assert result.outputs_prefix == "FortiwebVM.VirtualServerGroup"
 
 

@@ -1037,9 +1037,17 @@ class ParserV1(Parser):
     def parse_persistence_policy(
         self, persistence_policy: dict[str, Any]
     ) -> dict[str, Any]:
+        """Parse for Persistence policy dict.
+
+        Args:
+            persistence_policy (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
         return {
-            "id": persistence_policy["_id"],
-            "type": persistence_policy["dispType"],
+            "id": persistence_policy.get("_id"),
+            "type": persistence_policy.get("dispType"),
         }
 
 
@@ -1660,20 +1668,36 @@ class ParserV2(Parser):
     def parse_persistence_policy(
         self, persistence_policy: dict[str, Any]
     ) -> dict[str, Any]:
+        """Parse for Persistence policy dict.
+
+        Args:
+            persistence_policy (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
         return {
-            "id": persistence_policy["name"],
-            "type": persistence_policy["type"],
+            "id": persistence_policy.get("name"),
+            "type": persistence_policy.get("type"),
         }
 
     def parse_virtual_server_item(
         self, virtual_server_item: dict[str, Any]
     ) -> dict[str, Any]:
+        """Parse for Virtual server item dict.
+
+        Args:
+            virtual_server_item (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
         return {
-            "id": virtual_server_item["id"],
-            "interface": virtual_server_item["interface"],
-            "status": virtual_server_item["status"],
-            "use_interface_ip": virtual_server_item["use-interface-ip"],
-            "virtual_ip": virtual_server_item["vip"],
+            "id": virtual_server_item.get("id"),
+            "interface": virtual_server_item.get("interface"),
+            "status": virtual_server_item.get("status"),
+            "use_interface_ip": virtual_server_item.get("use-interface-ip"),
+            "virtual_ip": virtual_server_item.get("vip"),
         }
 
 
@@ -2706,7 +2730,7 @@ class Client(BaseClient):
     @abstractmethod
     def url_access_rule_group_update_request(
         self,
-        name: str,
+        name: str | None,
         action: str | None,
         trigger_policy: str | None,
         severity: str | None,
@@ -2716,7 +2740,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def url_access_rule_group_delete_request(self, name: str) -> dict[str, Any]:
+    def url_access_rule_group_delete_request(self, name: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2743,8 +2767,8 @@ class Client(BaseClient):
     @abstractmethod
     def url_access_rule_condition_update_request(
         self,
-        group_name: str,
-        condition_id: str,
+        group_name: str | None,
+        condition_id: str | None,
         url_type: str | None,
         url_pattern: str | None,
         meet_this_condition_if: str | None,
@@ -2760,13 +2784,13 @@ class Client(BaseClient):
 
     @abstractmethod
     def url_access_rule_condition_delete_request(
-        self, group_name: str, member_id: str
+        self, group_name: str | None, member_id: str | None
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     def url_access_rule_condition_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         pass
 
@@ -2805,7 +2829,7 @@ class Client(BaseClient):
     @abstractmethod
     def virtual_server_group_create_request(
         self,
-        name: str,
+        name: str | None,
         **kwargs,
     ) -> dict[str, Any]:
         pass
@@ -2813,13 +2837,13 @@ class Client(BaseClient):
     @abstractmethod
     def virtual_server_group_update_request(
         self,
-        name: str,
+        name: str | None,
         **kwargs,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def virtual_server_group_delete_request(self, name: str) -> dict[str, Any]:
+    def virtual_server_group_delete_request(self, name: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2829,10 +2853,10 @@ class Client(BaseClient):
     @abstractmethod
     def virtual_server_item_create_request(
         self,
-        group_name: str,
+        group_name: str | None,
         interface: str | None,
-        use_interface_ip: str,
-        status: str,
+        use_interface_ip: str | None,
+        status: str | None,
         virtual_ip: str | None,
     ) -> dict[str, Any]:
         pass
@@ -2840,8 +2864,8 @@ class Client(BaseClient):
     @abstractmethod
     def virtual_server_item_update_request(
         self,
-        group_name: str,
-        item_id: str,
+        group_name: str | None,
+        item_id: str | None,
         interface: str | None,
         use_interface_ip: str | None,
         status: str | None,
@@ -2851,13 +2875,13 @@ class Client(BaseClient):
 
     @abstractmethod
     def virtual_server_item_delete_request(
-        self, group_name: str, member_id: str
+        self, group_name: str | None, member_id: str | None
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     def virtual_server_item_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         pass
 
@@ -4199,7 +4223,7 @@ class ClientV1(Client):
 
     def url_access_rule_group_update_request(
         self,
-        name: str,
+        name: str | None,
         action: str | None,
         trigger_policy: str | None,
         severity: str | None,
@@ -4237,7 +4261,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def url_access_rule_group_delete_request(self, name: str) -> dict[str, Any]:
+    def url_access_rule_group_delete_request(self, name: str | None) -> dict[str, Any]:
         """Delete an URL access rule group.
 
         Args:
@@ -4385,8 +4409,8 @@ class ClientV1(Client):
 
     def url_access_rule_condition_update_request(
         self,
-        group_name: str,
-        condition_id: str,
+        group_name: str | None,
+        condition_id: str | None,
         url_type: str | None,
         url_pattern: str | None,
         meet_this_condition_if: str | None,
@@ -4437,7 +4461,7 @@ class ClientV1(Client):
         )
 
     def url_access_rule_condition_delete_request(
-        self, group_name: str, condition_id: str
+        self, group_name: str | None, condition_id: str | None
     ) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
@@ -4452,7 +4476,7 @@ class ClientV1(Client):
         return self._http_request(method="DELETE", url_suffix=endpoint)
 
     def url_access_rule_condition_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         """List URL access rule conditions.
 
@@ -4536,7 +4560,7 @@ class ClientV1(Client):
 
     def virtual_server_group_create_request(
         self,
-        name: str,
+        name: str | None,
         **kwargs,
     ) -> dict[str, Any]:
         """Create a virtual server group name.
@@ -4555,7 +4579,7 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "name": name,
-                "interface": kwargs["interface"],
+                "interface": kwargs.get("interface"),
                 "ipv4Address": kwargs.get("ipv4_address"),
                 "ipv6Address": kwargs.get("ipv6_address"),
                 "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
@@ -4574,7 +4598,7 @@ class ClientV1(Client):
 
     def virtual_server_group_update_request(
         self,
-        name: str,
+        name: str | None,
         **kwargs,
     ) -> dict[str, Any]:
         """Update a virtual server group name.
@@ -4610,7 +4634,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def virtual_server_group_delete_request(self, name: str) -> dict[str, Any]:
+    def virtual_server_group_delete_request(self, name: str | None) -> dict[str, Any]:
         """Delete a virtual server group.
 
         Args:
@@ -4638,18 +4662,18 @@ class ClientV1(Client):
 
     def virtual_server_item_create_request(
         self,
-        group_name: str,
+        group_name: str | None,
         interface: str | None,
-        use_interface_ip: str,
-        status: str,
+        use_interface_ip: str | None,
+        status: str | None,
         virtual_ip: str | None,
     ) -> dict[str, Any]:
         raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
     def virtual_server_item_update_request(
         self,
-        group_name: str,
-        item_id: str,
+        group_name: str | None,
+        item_id: str | None,
         interface: str | None,
         use_interface_ip: str | None,
         status: str | None,
@@ -4658,7 +4682,7 @@ class ClientV1(Client):
         raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
     def virtual_server_item_delete_request(
-        self, group_name: str, condition_id: str
+        self, group_name: str | None, condition_id: str | None
     ) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
@@ -4672,7 +4696,7 @@ class ClientV1(Client):
         raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
     def virtual_server_item_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         """List URL access rule conditions.
 
@@ -6128,7 +6152,7 @@ class ClientV2(Client):
 
     def url_access_rule_group_update_request(
         self,
-        name: str,
+        name: str | None,
         action: str | None,
         trigger_policy: str | None,
         severity: str | None,
@@ -6169,7 +6193,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def url_access_rule_group_delete_request(self, name: str) -> dict[str, Any]:
+    def url_access_rule_group_delete_request(self, name: str | None) -> dict[str, Any]:
         """Delete an URL access rule group.
 
         Args:
@@ -6330,8 +6354,8 @@ class ClientV2(Client):
 
     def url_access_rule_condition_update_request(
         self,
-        group_name: str,
-        condition_id: str,
+        group_name: str | None,
+        condition_id: str | None,
         url_type: str | None,
         url_pattern: str | None,
         meet_this_condition_if: str | None,
@@ -6383,7 +6407,7 @@ class ClientV2(Client):
         )
 
     def url_access_rule_condition_delete_request(
-        self, group_name: str, member_id: str
+        self, group_name: str | None, member_id: str | None
     ) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
@@ -6402,7 +6426,7 @@ class ClientV2(Client):
         )
 
     def url_access_rule_condition_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         """List URL access rule conditions.
 
@@ -6965,7 +6989,7 @@ class ClientV2(Client):
 
     def virtual_server_group_create_request(
         self,
-        name: str,
+        name: str | None,
         **kwargs,
     ) -> dict[str, Any]:
         """Create a virtual server group name.
@@ -6991,7 +7015,7 @@ class ClientV2(Client):
 
     def virtual_server_group_update_request(
         self,
-        name: str,
+        name: str | None,
         **kwargs,
     ) -> dict[str, Any]:
         """Update a virtual server group name.
@@ -7001,7 +7025,7 @@ class ClientV2(Client):
         """
         raise NotImplementedError(ErrorMessage.V2_NOT_SUPPORTED.value)
 
-    def virtual_server_group_delete_request(self, name: str) -> dict[str, Any]:
+    def virtual_server_group_delete_request(self, name: str | None) -> dict[str, Any]:
         """Delete a virtual server group.
 
         Args:
@@ -7036,10 +7060,10 @@ class ClientV2(Client):
 
     def virtual_server_item_create_request(
         self,
-        group_name: str,
+        group_name: str | None,
         interface: str | None,
-        use_interface_ip: str,
-        status: str,
+        use_interface_ip: str | None,
+        status: str | None,
         virtual_ip: str | None,
     ) -> dict[str, Any]:
         """
@@ -7075,8 +7099,8 @@ class ClientV2(Client):
 
     def virtual_server_item_update_request(
         self,
-        group_name: str,
-        item_id: str,
+        group_name: str | None,
+        item_id: str | None,
         interface: str | None,
         use_interface_ip: str | None,
         status: str | None,
@@ -7101,7 +7125,7 @@ class ClientV2(Client):
         )
 
     def virtual_server_item_delete_request(
-        self, group_name: str, member_id: str
+        self, group_name: str | None, member_id: str | None
     ) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
@@ -7112,7 +7136,7 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1.
         """
-        params = {"mkey": group_name, "sub_mkey": member_id}
+        params = remove_empty_elements({"mkey": group_name, "sub_mkey": member_id})
         return self._http_request(
             method="DELETE",
             url_suffix="cmdb/server-policy/vserver/vip-list",
@@ -7120,7 +7144,7 @@ class ClientV2(Client):
         )
 
     def virtual_server_item_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         """List URL access rule conditions.
 
@@ -8559,7 +8583,7 @@ def url_access_rule_group_update_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.validate_url_access_group(args=args)
-    name = args["name"]
+    name = args.get("name")
     response = client.url_access_rule_group_update_request(
         name=name,
         action=args.get("action"),
@@ -8589,7 +8613,7 @@ def url_access_rule_group_delete_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    name = args["name"]
+    name = args.get("name")
     response = client.url_access_rule_group_delete_request(name)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.URL_ACCESS_RULE_GROUP.value,
@@ -8614,7 +8638,7 @@ def url_access_rule_group_list_command(
     """
     name = args.get("name")
     response = client.url_access_rule_group_list_request(name=name)
-    parsed_data, pagination_message, _formatted_response = list_response_handler(
+    parsed_data, pagination_message, _ = list_response_handler(
         client=client,
         response=response,
         data_parser=client.parser.parse_url_access_rule_group,
@@ -8705,9 +8729,8 @@ def url_access_rule_condition_update_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    client.validate_protected_hostname_member(args=args)
-    group_name = args["group_name"]
-    condition_id = args["condition_id"]
+    group_name = args.get("group_name")
+    condition_id = args.get("condition_id", "")
     # Get exist settings
     args = get_object_data_before_update(
         client=client,
@@ -8724,7 +8747,7 @@ def url_access_rule_condition_update_command(
         url_type=args.get("url_type"),
         url_pattern=args.get("url_pattern"),
         meet_this_condition_if=args.get("meet_this_condition_if"),
-        source_address=args["source_address"],
+        source_address=args.get("source_address"),
         source_address_type=args.get("source_address_type"),
         ip_range=args.get("ip_range"),
         ip_type=args.get("ip_type"),
@@ -8755,8 +8778,8 @@ def url_access_rule_condition_delete_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    group_name = args["group_name"]
-    condition_id = args["condition_id"]
+    group_name = args.get("group_name")
+    condition_id = args.get("condition_id")
     response = client.url_access_rule_condition_delete_request(group_name, condition_id)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.URL_ACCESS_RULE_CONDITION.value,
@@ -8779,12 +8802,12 @@ def url_access_rule_condition_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    group_name = args["group_name"]
+    group_name = args.get("group_name")
     condition_id = args.get("condition_id")
     response = client.url_access_rule_condition_list_request(
         group_name, condition_id=condition_id
     )
-    parsed_data, pagination_message, _formatted_response = list_response_handler(
+    parsed_data, pagination_message, _ = list_response_handler(
         client,
         response,
         client.parser.parse_url_access_rule_condition,
@@ -9597,9 +9620,9 @@ def list_response_handler(
         response = [group_dict] if group_dict else []
         if not response:
             raise DemistoException(ErrorMessage.NOT_EXIST.value)
-    if name_filter := args.get("search") and isinstace(response, list):
+    if name_filter := args.get("search") and isinstance(response, list):
         for obj in response[:]:
-            if name_filter not in obj["name"]:
+            if (name := obj.get("name")) and name_filter not in name:
                 response.remove(obj)
     response, pagination_message = paginate_results(client.version, response, args)
     parsed_data = parser_handler(response, data_parser)
@@ -9829,8 +9852,23 @@ def validate_argument(args: dict[str, Any], key_: str, values: List[str] | None 
 
 def dependencies_handler(client: Client, args: dict[str, Any], request_command: Callable,
                          parser_command: Callable, title: str, headers: list, outputs_prefix: str) -> CommandResults:
+    """
+    Handler for dependencies commands.
+
+    Args:
+        client (Client): Fortiweb API version.
+        args (dict[str, Any]): XSOAR arguments.
+        request_command (Callable): List request command.
+        parser_command (Callable): Response parser command.
+        title (str): Output title.
+        headers (list): Output table headers.
+        outputs_prefix (str): Outputs prefix.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
     response = request_command()
-    parsed_data, pagination_message, formatted_response = list_response_handler(
+    parsed_data, pagination_message, _ = list_response_handler(
         client=client,
         response=response,
         data_parser=parser_command,
@@ -9907,7 +9945,7 @@ def local_certificate_list_command(
     return dependencies_handler(client=client,
                                 args=args,
                                 request_command=client.local_certificate_list_request,
-                                parser_command=snakify,
+                                parser_command=client.parser.parse_snakify_with_id,
                                 title="Local certificate:",
                                 headers=["id", "valid_to", "subject", "status"],
                                 outputs_prefix="FortiwebVM.LocalCertificate")
@@ -10008,16 +10046,15 @@ def network_inteface_list_command(
     return dependencies_handler(client=client,
                                 args=args,
                                 request_command=client.network_interface_list_request,
-                                parser_command=snakify,
+                                parser_command=client.parser.parse_snakify_with_id,
                                 title="Network interface:",
-                                headers=[
-                                        "name",
-                                        "ipv4_netmask",
-                                        "ipv4_access",
-                                        "ipv6_netmask",
-                                        "ipv6_access",
-                                        "status",
-                                        "type"],
+                                headers=["name",
+                                         "ipv4_netmask",
+                                         "ipv4_access",
+                                         "ipv6_netmask",
+                                         "ipv6_access",
+                                         "status",
+                                         "type"],
                                 outputs_prefix="FortiwebVM.NetworkInterface")
 
 
@@ -10034,14 +10071,14 @@ def virtual_server_group_create_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.validate_virtual_server_group(args=args, action=CommandAction.CREATE.value)
-    name = args["name"]
+    name = args.get("name")
     response = client.virtual_server_group_create_request(
         name=name,
         interface=args.get("interface"),
         ipv4_address=args.get("ipv4_address"),
         ipv6_address=args.get("ipv6_address"),
-        status=args["status"],
-        use_interface_ip=args["use_interface_ip"],
+        status=args.get("status"),
+        use_interface_ip=args.get("use_interface_ip"),
     )
     command_results = generate_simple_command_results(
         object_type=OutputTitle.VIRTUAL_SERVER_GROUP.value,
@@ -10065,7 +10102,7 @@ def virtual_server_group_update_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.validate_virtual_server_group(args=args, action=CommandAction.UPDATE.value)
-    name = args["name"]
+    name = args.get("name")
     response = client.virtual_server_group_update_request(
         name=name,
         interface=args.get("interface"),
@@ -10095,7 +10132,7 @@ def virtual_server_group_delete_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    name = args["name"]
+    name = args.get("name")
     response = client.virtual_server_group_delete_request(name)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.VIRTUAL_SERVER_GROUP.value,
@@ -10164,12 +10201,12 @@ def virtual_server_item_create_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.validate_virtual_server_item(args=args)
-    group_name = args["group_name"]
+    group_name = args.get("group_name")
     response = client.virtual_server_item_create_request(
         group_name=group_name,
         interface=args.get("interface"),
-        use_interface_ip=args["use_interface_ip"],
-        status=args["status"],
+        use_interface_ip=args.get("use_interface_ip"),
+        status=args.get("status"),
         virtual_ip=args.get("virtual_ip"),
     )
     member_id = {"id": group_name, "Item": {"id": response["results"]["id"]}}
@@ -10198,8 +10235,8 @@ def virtual_server_item_update_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.validate_virtual_server_group(args=args, action=CommandAction.UPDATE.value)
-    group_name = args["group_name"]
-    item_id = args["item_id"]
+    group_name = args.get("group_name")
+    item_id = args.get("item_id")
     response = client.virtual_server_item_update_request(
         group_name=group_name,
         item_id=item_id,
@@ -10230,8 +10267,8 @@ def virtual_server_item_delete_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    group_name = args["group_name"]
-    item_id = args["item_id"]
+    group_name = args.get("group_name")
+    item_id = args.get("item_id")
     response = client.virtual_server_item_delete_request(group_name, item_id)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.VIRTUAL_SERVER_ITEM.value,
@@ -10254,7 +10291,7 @@ def virtual_server_item_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    group_name = args["group_name"]
+    group_name = args.get("group_name")
     condition_id = args.get("condition_id")
     response = client.virtual_server_item_list_request(
         group_name, condition_id=condition_id
