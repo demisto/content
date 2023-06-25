@@ -1,66 +1,205 @@
 {
-  "salesforce_event_audit_raw": {
-      "user_name": {
+  "salesforce_audit_raw": {
+      "Action": {
           "type": "string",
           "is_array": false
-      },
-      "user_id": {
+      },"Display": {
           "type": "string",
           "is_array": false
-      },
-      "client_ip": {
+      },"CreatedById": {
           "type": "string",
           "is_array": false
-      },
-      "organization_id": {
+      },"Id": {
           "type": "string",
           "is_array": false
-      },
-      "request_status": {
+      },"DelegateUser": {
           "type": "string",
           "is_array": false
-      },
-      "run_time": {
+      },"CreatedByIssuer": {
           "type": "string",
           "is_array": false
-      },
-      "session_key": {
+      },"attributes": {
           "type": "string",
           "is_array": false
-      },
-      "timestamp": {
+      }
+  },"salesforce_login_raw": {
+      "_USER_ID_": {
           "type": "string",
           "is_array": false
-      },
-      "uri": {
+      },"_URI_": {
           "type": "string",
           "is_array": false
-      },
-      "user_type": {
+      },"_RUN_TIME_": {
           "type": "string",
           "is_array": false
-      },
-      "authentication_method_reference": {
+      },"_SOURCE_IP_": {
           "type": "string",
           "is_array": false
-      },
-      "event_type": {
+      },"_USER_NAME_": {
           "type": "string",
           "is_array": false
-      },
-      "login_key": {
+      },"_USER_TYPE_": {
           "type": "string",
           "is_array": false
-      },
-      "login_status": {
+      },"_EVENT_TYPE_": {
           "type": "string",
           "is_array": false
-      },
-      "platform_type": {
+      },"_BROWSER_TYPE_": {
           "type": "string",
           "is_array": false
-      },
-      "source_ip": {
+      },"_CIPHER_SUITE_": {
+          "type": "string",
+          "is_array": false
+      },"_TLS_PROTOCOL_": {
+          "type": "string",
+          "is_array": false
+      },"_DB_TOTAL_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_PLATFORM_TYPE_": {
+          "type": "string",
+          "is_array": false
+      },"_LOGIN_STATUS_": {
+          "type": "string",
+          "is_array": false
+      },"_API_VERSION_": {
+          "type": "string",
+          "is_array": false
+      },"_LOGIN_KEY_": {
+          "type": "string",
+          "is_array": false
+      }
+  },"salesforce_eventlogfile_raw": {
+      "_METHOD_": {
+          "type": "string",
+          "is_array": false
+      },"_HTTP_METHOD_": {
+          "type": "string",
+          "is_array": false
+      },"_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_RUN_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_TOTAL_MS_": {
+          "type": "string",
+          "is_array": false
+      },"_CLIENT_IP_": {
+          "type": "string",
+          "is_array": false
+      },"_EXEC_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_URL_": {
+          "type": "string",
+          "is_array": false
+      },"_NEXT_LINK_": {
+          "type": "string",
+          "is_array": false
+      },"_EXECUTE_MS_": {
+          "type": "string",
+          "is_array": false
+      },"_FILE_TYPE_": {
+          "type": "string",
+          "is_array": false
+      },"_MEDIA_TYPE_": {
+          "type": "string",
+          "is_array": false
+      },"_SIZE_BYTES_": {
+          "type": "string",
+          "is_array": false
+      },"_DB_CPU_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_ENTRY_POINT_": {
+          "type": "string",
+          "is_array": false
+      },"_URI_": {
+          "type": "string",
+          "is_array": false
+      },"_STATUS_CODE_": {
+          "type": "string",
+          "is_array": false
+      },"_BROWSER_NAME_": {
+          "type": "string",
+          "is_array": false
+      },"_USER_AGENT_": {
+          "type": "string",
+          "is_array": false
+      },"_CALLOUT_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_FLOW_LOAD_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_RECORD_ID_": {
+          "type": "string",
+          "is_array": false
+      },"_DEVICE_SESSION_ID_": {
+          "type": "string",
+          "is_array": false
+      },"_PREVPAGE_APP_NAME_": {
+          "type": "string",
+          "is_array": false
+      },"_APP_NAME_": {
+          "type": "string",
+          "is_array": false
+      },"_TARGET_UI_ELEMENT_": {
+          "type": "string",
+          "is_array": false
+      },"_PAGE_URL_": {
+          "type": "string",
+          "is_array": false
+      },"_DURATION_": {
+          "type": "string",
+          "is_array": false
+      },"_ACTION_": {
+          "type": "string",
+          "is_array": false
+      },"_ENTITY_": {
+          "type": "string",
+          "is_array": false
+      },"_ORIGIN_": {
+          "type": "string",
+          "is_array": false
+      },"_SEARCH_QUERY_": {
+          "type": "string",
+          "is_array": false
+      },"_SELECT_": {
+          "type": "string",
+          "is_array": false
+      },"_OS_NAME_": {
+          "type": "string",
+          "is_array": false
+      },"_QUIDDITY_": {
+          "type": "string",
+          "is_array": false
+      },"_DEVICE_ID_": {
+          "type": "string",
+          "is_array": false
+      },"_USER_TYPE_": {
+          "type": "string",
+          "is_array": false
+      },"_CLIENT_GEO_": {
+          "type": "string",
+          "is_array": false
+      },"_ENTITY_NAME_": {
+          "type": "string",
+          "is_array": false
+      },"_REQUEST_SIZE_": {
+          "type": "string",
+          "is_array": false
+      },"_RESPONSE_SIZE_": {
+          "type": "string",
+          "is_array": false
+      },"_DB_TOTAL_TIME_": {
+          "type": "string",
+          "is_array": false
+      },"_DEVICE_PLATFORM_": {
+          "type": "string",
+          "is_array": false
+      },"_FILE_PREVIEW_TYPE_": {
           "type": "string",
           "is_array": false
       }
