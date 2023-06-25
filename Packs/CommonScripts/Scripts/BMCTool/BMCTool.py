@@ -1,3 +1,4 @@
+from typing import AnyStr, Generic
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # This tool was developed by "https://github.com/ANSSI-FR/bmc-tools" - Thank you for your hardwork!
@@ -5,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 from struct import pack, unpack
 
 
-class BMCContainer():
+class BMCContainer(Generic[AnyStr]):
     BIN_FILE_HEADER = b"RDP8bmp\x00"
     BIN_CONTAINER = b".BIN"
     BMC_CONTAINER = b".BMC"
@@ -63,7 +64,7 @@ class BMCContainer():
     COLOR_WHITE = b"\xFF"
 
     def __init__(self, verbose=False, count=0, old=False, big=False, width=64):
-        self.bdat = ""
+        self.bdat = b""
         self.o_bmps = []
         self.bmps = []
         self.btype = None
@@ -130,7 +131,7 @@ class BMCContainer():
             return False
         bl = 0
         while len(self.bdat) > 0:
-            o_bmp = ""
+            o_bmp = b""
             t_hdr = self.bdat[:self.TILE_HEADER_SIZE[self.btype]]
             key1, key2, t_width, t_height = unpack("<LLHH", t_hdr[:0xC])
             if self.btype == self.BIN_CONTAINER:
@@ -404,7 +405,7 @@ class BMCContainer():
 
         self.b_log("info", False, f"Successfully exported {len(self.bmps)} files.")
         if self.big:
-            pad = b"\xFF"
+            pad: bytes = b"\xFF"
             if not self.pal:
                 pad *= 4
             for i in range(len(self.bmps)):
@@ -412,7 +413,7 @@ class BMCContainer():
                     self.bmps[i] = self.bmps[i][len(self.PALETTE):]
                 while len(self.bmps[i]) != 64 * 64 * len(pad):
                     self.bmps[i] += pad * 64
-            w = 64 * len(self.bmps)
+            w: int = 64 * len(self.bmps)
             h = 64
             if len(self.bmps) // self.STRIPE_WIDTH > 0:
                 m = len(self.bmps) % self.STRIPE_WIDTH
@@ -448,7 +449,7 @@ class BMCContainer():
         return_results(collage)
 
     def b_flush(self):
-        self.bdat = ""
+        self.bdat = b""
         self.bmps = []
         self.o_bmps = []
 
