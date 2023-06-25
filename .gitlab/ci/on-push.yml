@@ -605,6 +605,7 @@ test-upload-flow:
     - echo "YUVAL"
     - if [ "${successfully_upload_id_set}" != "true" ]; then
     -     break
+    - fi
     - section_end "Wait For Upload To Finish"
 
     - section_start "Verify Created Testing Bucket"
