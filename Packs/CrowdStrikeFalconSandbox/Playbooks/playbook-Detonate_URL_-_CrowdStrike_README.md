@@ -58,4 +58,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Detonate URL - CrowdStrike](../doc_files/Detonate_URL_-_CrowdStrike.png)
+![Detonate_URL_CrowdStrike](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_CrowdStrike.png)
