@@ -1,6 +1,3 @@
-[file:HPEArubaClearPass.yml]
-ignore=IN145
-
 [known_words]
 HPE
 ClearPass
