@@ -16,7 +16,8 @@ from googleapiclient import discovery
 """ GLOBALS/PARAMS """
 
 # Params for assembling object of the Service Account Credentials File Contents
-SERVICE_ACCOUNT_FILE = demisto.params().get('credentials_service_account_json', {}).get('password') or demisto.params().get('service')
+SERVICE_ACCOUNT_FILE = demisto.params().get('credentials_service_account_json',
+                                            {}).get('password') or demisto.params().get('service')
 SERVICE_ACT_PROJECT_ID = None
 
 # Params for constructing googleapiclient service object
