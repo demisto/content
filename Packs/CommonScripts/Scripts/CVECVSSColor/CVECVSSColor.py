@@ -53,7 +53,7 @@ def main():
         color = get_color(cvss)
         return_results(CommandResults(readable_output=f"# <-:->{{{{color:{color}}}}}(**{cvss}**)"))
 
-    except AttributeError:
+    except (AttributeError, json.decoder.JSONDecodeError):
         return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\A**)"))
 
 

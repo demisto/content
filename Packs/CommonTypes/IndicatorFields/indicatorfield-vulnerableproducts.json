@@ -24,7 +24,7 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "cpe",
+            "key": "CPE",
             "displayName": "CPE",
             "type": "shortText",
             "orgType": "shortText",
