@@ -174,7 +174,7 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
             changed_integrations.extend([f'{integrations_path}/{i}' for i in integrations])
             # Print the file names
             print(f'+++++++++++')
-            print(f'++++++{changed_integrations=}+++++')
+            print(f'++++++{changed_integrations=}++f+++')
             print(f'+++++++++++')
         if 'Packs' in f:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
