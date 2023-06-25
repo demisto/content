@@ -68,6 +68,7 @@ def main():
 
     token = args.gitlab_api_token
     pipeline_id = args.pipeline_id
+    sys.exit(1)
     print("True")
     return None
 
