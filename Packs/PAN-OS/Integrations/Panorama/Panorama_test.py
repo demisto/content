@@ -3516,6 +3516,7 @@ class TestFirewallCommand:
                                                       '<entry name="edl_name"><packet-capture>disable</packet-capture>'
                                                       '<action><allow/></action></entry>'
                                                       '</lists>'
+                                                      f'<sinkhole><ipv4-address>pan-sinkhole-default-ip</ipv4-address><ipv6-address>::1</ipv6-address></sinkhole>'
                                                       '</botnet-domains>'},
                                        MockedResponse(text='<response status="success" code="20"><msg>'
                                                            'command succeeded</msg></response>', status_code=200,
