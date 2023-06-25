@@ -157,7 +157,7 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
             print(f'--------------{changed=}--------------')
         except:
             pass
-        if 'pack' in f:
+        if 'Packs' in f:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
             changed_packs.append(pack_path)
