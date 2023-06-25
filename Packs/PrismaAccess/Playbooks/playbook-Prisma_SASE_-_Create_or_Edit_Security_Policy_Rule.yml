@@ -466,8 +466,8 @@ tasks:
     task:
       id: 4c29e35e-13da-4951-85d0-eeafaa74fd2c
       version: -1
-      name: Choose to commit and push configuration
-      description: Choose to commit and push configuration
+      name: Choose to commit and push configuration automatically
+      description: Choose to commit and push configuration automatically
       type: condition
       iscommand: false
       brand: ""
