@@ -61,7 +61,7 @@ def test_module(client: Client):
         'ok' if test passed, anything else will fail the test.
     """
     cve_latest_command(client, 1)
-    return 'ok'
+    return 'ok', None, None
 
 
 def cve_latest_command(client: Client, limit) -> List[CommandResults]:
