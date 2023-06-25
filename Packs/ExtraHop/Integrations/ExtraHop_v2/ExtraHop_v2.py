@@ -1455,7 +1455,8 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
                         'name': str(detection.get("title", "")),
                         'occurred': datetime.utcfromtimestamp(detection['start_time'] / 1000).strftime(
                             DATE_FORMAT),
-                        'severity': next((severity for range_str, severity in TICKET_SEVERITY.items() if detection.get("risk_score") in range(*map(int, range_str.split("-")))), None),
+                        'severity': next((severity for range_str, severity in TICKET_SEVERITY.items() if
+                                          detection.get("risk_score") in range(*map(int, range_str.split("-")))), None),
                         'rawJSON': json.dumps(detection)
                     }
                     incidents.append(incident)
