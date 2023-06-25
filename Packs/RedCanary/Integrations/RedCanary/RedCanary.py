@@ -588,9 +588,10 @@ def test_integration():
 
 def main():
     global BASE_URL, API_KEY, USE_SSL
-    BASE_URL = urljoin(demisto.params().get('domain', ''), '/openapi/v3')
-    API_KEY = demisto.params().get('api_key')
-    USE_SSL = not demisto.params().get('insecure', False)
+    params = demisto.params()
+    BASE_URL = urljoin(params.get('domain', ''), '/openapi/v3')
+    API_KEY = params.get('api_key_creds', {}).get('password') or params.get('api_key')
+    USE_SSL = not params.get('insecure', False)
     ''' EXECUTION CODE '''
     COMMANDS = {
         'test-module': test_integration,
