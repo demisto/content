@@ -133,13 +133,13 @@ script:
       description: The name of the local user.
       type: String
     - contextPath: CiscoASA.LocalUser.mschap_authenticated
-      description: Whether Extensible Authentication Protocol-Microsoft Challenge Handshake Authentication Protocol authenticated.
+      description: Whether Extensible Authentication Protocol-Microsoft Challenge Handshake Authentication Protocol is authenticated.
       type: Boolean
     - contextPath: CiscoASA.LocalUser.privilege_level
       description: The user's privilege level.
       type: Number
     - contextPath: CiscoASA.LocalUser.asdm_cli_access_type
-      description: ASDM and CLI access type; can be one of "Full", "None", "Cli".
+      description: ASDM and CLI access type. Can be one of "Full", "None", "Cli".
       type: String
   - arguments:
     - description: The object ID of the time range to retrieve. This can't be used with pagination arguments.
@@ -261,11 +261,11 @@ script:
     - contextPath: CiscoASA.UserObject.value
       description: The value of the local user.
       type: String
-  - description: The write memory command saves the running configuration to the default location for the startup configuration.
+  - description: Saves the running configuration to the default location for the startup configuration.
     name: cisco-asa-write-memory
     outputs:
     - contextPath: CiscoASA.WriteMemory.response
-      description: shows a successful 'write memory' command execution on a Cisco ASA device, building the configuration and generating a cryptochecksum for integrity. The process is completed with an "[OK]" message.
+      description: Shows a successful 'write memory' command execution on a Cisco ASA device, building the configuration and generating a cryptochecksum for integrity. The process is completed with an "[OK]" message.
       type: String
   - arguments:
     - default: false
@@ -574,7 +574,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The destination address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup
+      description: The destination address type in the ace. 
       isArray: false
       name: destination_kind
       required: false
@@ -596,7 +596,7 @@ script:
       - NetworkObjGroup
     - auto: PREDEFINED
       default: false
-      description: The source address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup
+      description: The source address type in the ace. 
       isArray: false
       name: source_kind
       required: false
@@ -618,7 +618,7 @@ script:
       - NetworkObjGroup
     - auto: PREDEFINED
       default: false
-      description: The source service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService
+      description: The source service type. 
       isArray: false
       name: service_kind
       required: false
@@ -639,7 +639,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The destination service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService
+      description: The destination service type. 
       isArray: false
       name: destination_service_kind
       required: false
@@ -660,14 +660,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The object ID to the user; can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object
+      description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object
       isArray: false
       name: user
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the user, can be one of LocalUserObjGroup, UserGroupObj, UserObj
+      description: The type of the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj.
       isArray: false
       name: user_kind
       required: false
@@ -684,7 +684,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The source security type, can be one of SecurityName, SecurityTag, SecurityObjGroup
+      description: The source security type. 
       isArray: false
       name: source_security_kind
       required: false
@@ -701,7 +701,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The destination security type, can be one of SecurityName, SecurityTag, SecurityObjGroup
+      description: The destination security type. 
       isArray: false
       name: destination_security_kind
       required: false
@@ -758,7 +758,7 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
@@ -767,7 +767,7 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
@@ -901,7 +901,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The destination address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup
+      description: The destination address type in the ace. 
       isArray: false
       name: destination_kind
       required: false
@@ -923,7 +923,7 @@ script:
       - NetworkObjGroup
     - auto: PREDEFINED
       default: false
-      description: The source address kind in the ace. Can be on of AnyIPAddress, IPv4Address, IPv4FQDN, IPv4Network, IPv4Range, IPv6Address, IPv6FQDN, IPv6Network, IPv6Range, SecurityName, SecurityTag, interfaceIP, NetworkObj, NetworkObjGroup
+      description: The source address type in the ace. 
       isArray: false
       name: source_kind
       required: false
@@ -945,7 +945,7 @@ script:
       - NetworkObjGroup
     - auto: PREDEFINED
       default: false
-      description: The source service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService
+      description: The source service type. 
       isArray: false
       name: service_kind
       required: false
@@ -966,7 +966,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The destination service kind, can be one of AnyService, ICMP6Service, ICMPService, NetworkProtocol, NetworkServiceGroups, NetworkServiceObjects, TcpUdpService
+      description: The destination service type. 
       isArray: false
       name: destination_service_kind
       required: false
@@ -987,14 +987,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The object ID to the user; can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object
+      description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object.
       isArray: false
       name: user
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the user, can be one of LocalUserObjGroup, UserGroupObj, UserObj
+      description: The type of the user. 
       isArray: false
       name: user_kind
       required: false
@@ -1011,7 +1011,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The source security type, can be one of SecurityName, SecurityTag, SecurityObjGroup
+      description: The source security type. 
       isArray: false
       name: source_security_kind
       required: false
@@ -1028,7 +1028,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The destination security type, can be one of SecurityName, SecurityTag, SecurityObjGroup
+      description: The destination security type. 
       isArray: false
       name: destination_security_kind
       required: false
@@ -1085,7 +1085,7 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.SourceSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
@@ -1094,7 +1094,7 @@ script:
       description: The type of the security group; SecurityName, SecurityTag, objectRef#SecurityObjGroup.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.value
-      description: The value of the SecurityName or SecurityTag
+      description: The value of the SecurityName or SecurityTag.
       type: String
     - contextPath: CiscoASA.Rules.DestinationSecurity.objectId
       description: The object ID of objectRef#SecurityObjGroup.
