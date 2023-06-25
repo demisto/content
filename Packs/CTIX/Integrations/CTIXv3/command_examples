@@ -59,3 +59,4 @@
 !ctix-create-note text="hello world x100" object_id="fake" object_type=indicator
 !ctix-delete-note id=fake
 !ctix-delete-note id=5437b392-e60b-48ee-bbbb-6366c2a3c29f
+!ctix-get-vulnerability-data cve="CVE-2021-44228"
