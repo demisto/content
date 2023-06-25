@@ -16,6 +16,8 @@ class FilterLabels(Enum):
     IGNORE_SECRET = 'ignore'
     SECRET_MERGE_TIME = 'merge'
     PACK_ID = 'pack_id'
+    IS_DEV_BRANCH = 'dev'
+    BRANCH_NAME = 'branch'
 
 
 class FilterOperators(Enum):
