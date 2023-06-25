@@ -159,16 +159,23 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
 
     test_changed = set()
     changed_packs = []
+    changed_integrations = []
     for f in changed_files:
         path = Path(f)
+        # If not a pack find_pack_folder throws an exception
         try:
             changed = find_pack_folder(path)
             test_changed.add(f'{Path(__file__).absolute().parents[2]}/{changed}')
-
-
-
         except:
-            pass
+            continue
+        for changed_pack_path in test_changed:
+            integrations_path = f'{changed_pack_path}/Integrations'
+            integrations = os.listdir(integrations_path)
+            changed_integrations.extend([f'{integrations_path}/{i}' for i in integrations])
+            # Print the file names
+            print(f'+++++++++++')
+            print(f'++++++{changed_integrations=}+++++')
+            print(f'+++++++++++')
         if 'Packs' in f:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
