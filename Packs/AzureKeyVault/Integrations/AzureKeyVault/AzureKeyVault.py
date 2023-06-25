@@ -1490,7 +1490,5 @@ the given resource group name or the resource group name does not exist."
         return_error(custom_message + "\n" + error.message if hasattr(error, 'message') else str_error)
 
 
-from MicrosoftApiModule import *  # noqa: E402
-
 if __name__ in ["builtins", "__main__"]:
     main()
