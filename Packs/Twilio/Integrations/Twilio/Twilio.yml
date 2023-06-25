@@ -15,12 +15,20 @@ configuration:
   name: sid
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: Auth token
   name: token
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- display: Account SID
+  name: credentials_token
+  required: false
+  type: 9
+  displaypassword: Auth token
+  section: Connect
 - display: Default sending number (e.g. +123456789101)
   name: from
   defaultvalue: ""
