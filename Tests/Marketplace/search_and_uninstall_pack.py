@@ -8,7 +8,7 @@ import demisto_client
 from Tests.configure_and_test_integration_instances import CloudBuild
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
-from Tests.Marketplace.search_and_install_packs import install_packs
+from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
 from time import sleep
 
 UNREMOVABLE_PACKS = ['Base', 'CoreAlertFields', 'Core']
@@ -105,46 +105,9 @@ def reset_core_pack_version(client: demisto_client):
 
     """
     host = client.api_client.configuration.host.replace('https://api-', 'https://')  # disable-secrets-detection
-    is_succeed = True
+    _, success = search_and_install_packs_and_their_dependencies(UNREMOVABLE_PACKS, client, host, True)
 
-    for pack_id in UNREMOVABLE_PACKS:
-
-        try:
-            # make the search request
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path=f'/contentpacks/marketplace/{pack_id}',
-                                                                                method='GET',
-                                                                                accept='application/json',
-                                                                                _request_timeout=None)
-            if 200 <= status_code < 300:
-                result_object = ast.literal_eval(response_data)
-
-                if result_object and result_object.get('currentVersion'):
-                    logging.debug(f'Found {pack_id} pack in bucket!')
-
-                    pack_data = {
-                        'id': result_object.get('id'),
-                        'version': result_object.get('currentVersion')
-                    }
-                    # install latest version of the pack
-                    logging.info(f'updating {pack_id} pack to version {result_object.get("currentVersion")}')
-                    installation_status = install_packs(client, host, [pack_data], False)
-                    if not installation_status:
-                        is_succeed = False
-
-                else:
-                    raise Exception(f'Did not find {pack_id} pack')
-            else:
-                result_object = ast.literal_eval(response_data)
-                msg = result_object.get('message', '')
-                err_msg = f'Search request for {pack_id} pack, failed with status code ' \
-                          f'{status_code}\n{msg}'
-                raise Exception(err_msg)
-        except Exception:
-            logging.exception(f'Search request {pack_id} pack has failed.')
-            is_succeed = False
-
-    return is_succeed
+    return success
 
 
 def wait_for_uninstallation_to_complete(client: demisto_client):
