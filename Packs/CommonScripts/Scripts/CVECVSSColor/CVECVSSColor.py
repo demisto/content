@@ -44,14 +44,17 @@ def get_color(cvss: Union[int, float]) -> str:
 
 
 def main():
-    indicator = demisto.callingContext.get('args', '').get('indicator', '')
+    indicator = demisto.callingContext.get('args').get('indicator')
 
-    cvss = indicator.get('CustomFields').get('cvss', '')
-    cvss = json.loads(cvss)
-    cvss = float(cvss.get('Score', 0))
+    try:
+        cvss = indicator.get('CustomFields').get('cvss', '')
+        cvss = json.loads(cvss)
+        cvss = float(cvss.get('Score', 0))
+        color = get_color(cvss)
+        return_results(CommandResults(readable_output=f"# <-:->{{{{color:{color}}}}}(**{cvss}**)"))
 
-    color = get_color(cvss)
-    return_results(CommandResults(readable_output=f"# <-:->{{{{color:{color}}}}}(**{cvss}**)"))
+    except AttributeError:
+        return_results(CommandResults(readable_output="# <-:->{{color:#000000}}(**N\A**)"))
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
