@@ -1089,7 +1089,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
     This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
-    Steps o troubleshoot:
+    To troubleshoot:
    1. first verify the Docker container is up and running and publish the configured port to the outside world (currently not supported in XSOAR 8):
 
        From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
