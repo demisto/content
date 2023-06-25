@@ -12,12 +12,7 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
-        }
-    },
+    "dependencies": {},
     "marketplaces": [
         "xsoar",
         "marketplacev2"
