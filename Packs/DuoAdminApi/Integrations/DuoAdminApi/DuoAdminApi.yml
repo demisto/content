@@ -9,17 +9,18 @@ configuration:
   type: 0
 - display: Integration Key
   name: integration_key
-  required: true
+  required: false
   type: 0
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
   hidden: true
 - displaypassword: Secret Key
-  name:  credentials_secret_key
+  name:  credentials_key
   required: false
-  hiddenusername: true
+  display: Integration Key
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
