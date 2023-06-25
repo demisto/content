@@ -110,6 +110,8 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
+This video is designed to work with XSOAR 6
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
             type="video/mp4"/>
@@ -318,7 +320,7 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 
 - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
 
-#### Using the Developer Portal
+#### Using the Developer Portal and Microsoft Azure Portal
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
