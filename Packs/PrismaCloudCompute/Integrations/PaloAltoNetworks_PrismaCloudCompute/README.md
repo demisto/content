@@ -1041,7 +1041,7 @@ devOps
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Comma-separated list of CVEs, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
+| cve | Comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546. | Required | 
 
 
 #### Context Output
@@ -1059,7 +1059,7 @@ devOps
 
 
 #### Command Example
-```!cve cve_id=CVE-2021-4333```
+```!cve cve=CVE-2021-4333```
 
 #### Context Example
 ```json
