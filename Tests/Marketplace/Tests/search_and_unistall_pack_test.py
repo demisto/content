@@ -35,6 +35,10 @@ MOCK_PACKS_ID_TO_UNINSTALL = ['HelloWorld', 'TestPack', 'Base']
 def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
     if path == '/contentpacks/marketplace/Base':
         return MOCK_BASE_SEARCH_RESULTS, 200, None
+    if path == '/contentpacks/marketplace/Core':
+        return MOCK_BASE_SEARCH_RESULTS, 200, None
+    if path == '/contentpacks/marketplace/CoreAlertFields':
+        return MOCK_BASE_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/metadata/installed':
         return MOCK_PACKS_INSTALLATED_RESULT, 200, None
     elif path == '/contentpacks/installed/delete':
