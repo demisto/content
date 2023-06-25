@@ -529,8 +529,8 @@ def init_google_client(
     default_project,
     default_max_msgs,
     insecure,
-    credentials={},
-    service_account_json=None,
+    credentials: dict = None,
+    service_account_json: str = None,
     **kwargs,
 ) -> PubSubClient:
     """
