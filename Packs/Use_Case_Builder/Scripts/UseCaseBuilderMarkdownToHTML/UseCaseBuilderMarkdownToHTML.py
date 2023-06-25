@@ -32,7 +32,7 @@ def main():
         res = CommandResults(
             outputs_prefix='MarkdownToHTML',
             outputs_key_field='',
-            readable_output=output_list,
+            readable_output=output_list,    # type: ignore
             outputs={'HTML': output_list})
 
         return_results(res)
