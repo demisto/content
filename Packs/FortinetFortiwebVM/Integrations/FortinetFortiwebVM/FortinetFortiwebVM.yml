@@ -2896,7 +2896,7 @@ script:
       - enable
       - disable
       required: false
-    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit =enable. Supports by API V2 only.
+    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports by API V2 only.
       isArray: false
       name: health_check_domain
       required: false
@@ -3024,7 +3024,7 @@ script:
       - enable
       - disable
       required: false
-    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit =enable. Supports by API V2 only.
+    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports by API V2 only.
       isArray: false
       name: health_check_domain
       required: false
@@ -3190,7 +3190,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: Local
-      description: Enable this option to allow FortiWeb to use local / multiple local / letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
@@ -3219,18 +3219,18 @@ script:
       name: client_certificate_file
       required: false
     - auto: PREDEFINED
-      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration.
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Supports API version 2 only.
       isArray: false
       name: health_check_inherit
       predefined:
       - enable
       - disable
       required: false
-    - description: 'The domain name of the server pool. Required when health_check_inherit =enable. '
+    - description: 'The domain name of the server pool. Required when health_check_inherit=enable. Supports API version 2 only.'
       isArray: false
       name: health_check_domain
       required: false
-    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies).
+    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Supports API version 2 only.
       isArray: false
       name: health_check
       required: false
@@ -3313,18 +3313,18 @@ script:
       name: client_certificate_file
       required: false
     - auto: PREDEFINED
-      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration.
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Supports API version 2 only.
       isArray: false
       name: health_check_inherit
       predefined:
       - enable
       - disable
       required: false
-    - description: 'The domain name of the server pool. Required when health_check_inherit =enable. '
+    - description: 'The domain name of the server pool. Required when health_check_inherit=enable. Supports API version 2 only.'
       isArray: false
       name: health_check_domain
       required: false
-    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies).
+    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Supports API version 2 only.
       isArray: false
       name: health_check
       required: false
@@ -3474,19 +3474,18 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: Local
-      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certificate certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
       - Local
       - Multi Certificate
-      - Letsencrypt
       required: false
     - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. Relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates)."
       isArray: false
       name: certificate_file
       required: false
-    - description: Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_file=Multi Certificate. Supports API version 2 only.
+    - description: Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_type=Multi Certificate. Supports API version 2 only.
       isArray: false
       name: multi_certificate
       required: false
@@ -3540,19 +3539,18 @@ script:
       - disable
       required: false
     - auto: PREDEFINED
-      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
       - Local
       - Multi Certificate
-      - Letsencrypt
       required: false
     - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. Relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates)."
       isArray: false
       name: certificate_file
       required: false
-    - description: Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_file=Multi Certificate. Supports API version 2 only.
+    - description: Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_type=Multi Certificate. Supports API version 2 only.
       isArray: false
       name: multi_certificate
       required: false
@@ -3591,10 +3589,10 @@ script:
       - IP
       - Domain
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
       isArray: false
       name: ip
-      required: true
+      required: false
     - defaultValue: '21'
       description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
       isArray: false
@@ -3618,7 +3616,7 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit =enable. '
+    - description: 'The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. '
       isArray: false
       name: health_check_domain
       required: false
@@ -3662,6 +3660,10 @@ script:
       description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
       isArray: false
       name: warm_rate
+      required: false
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+      isArray: false
+      name: domain
       required: false
     deprecated: false
     description: Create a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
@@ -3697,8 +3699,7 @@ script:
       - IP
       - Domain
       required: false
-
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
       isArray: false
       name: ip
       required: false
@@ -3722,7 +3723,7 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit =enable. '
+    - description: 'The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. '
       isArray: false
       name: health_check_domain
       required: false
@@ -3762,6 +3763,10 @@ script:
       isArray: false
       name: warm_rate
       required: false
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+      isArray: false
+      name: domain
+      required: false
     deprecated: false
     description: Update a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only.
     execution: false
@@ -3781,14 +3786,28 @@ script:
       - disable
       - maintenance
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - auto: PREDEFINED
+      description: Specify whether to specify the pool member by IP address or domain.
+      isArray: false
+      name: server_type
+      predefined:
+      - IP
+      - Domain
+      required: true
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
       isArray: false
       name: ip
-      required: true
+      required: false
+    - description: 'The IP address of the web server to include in the pool. '
+      isArray: false
+      name: enable_ssl
+      defaultValue: enable
+      isHidden: true
     - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
       isArray: false
       name: port
-      required: true
+      required: false
+      defaultValue: '443'
     - defaultValue: '0'
       description: 'Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
       isArray: false
@@ -3801,7 +3820,7 @@ script:
       - enable
       - disable
       required: false
-    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit =enable.
+    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable.
       isArray: false
       name: health_check_domain
       required: false
@@ -3813,18 +3832,18 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The username that will be used by FortiWeb to connect with the AD FS server. You should include the domain to which FortiWeb and the AD FS server belong. For example: damain1\administrator.'
+    - description: 'The username that will be used by FortiWeb to connect with the AD FS server. You should include the domain to which FortiWeb and the AD FS server belong. For example: administrator.'
       isArray: false
       name: registration_username
-      required: false
+      required: true
     - description: The password that will be used by FortiWeb to connect with the AD FS server.
       isArray: false
       name: registration_password
       required: false
-    - description: 'The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: (ssl=enable) (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
+    - description: 'The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
       isArray: false
       name: client_certificate_file
-      required: false
+      required: true
     - defaultValue: '0'
       description: 'Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
       isArray: false
@@ -3839,6 +3858,10 @@ script:
       description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
       isArray: false
       name: warm_rate
+      required: false
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+      isArray: false
+      name: domain
       required: false
     deprecated: false
     description: Create a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
@@ -3866,7 +3889,15 @@ script:
       - disable
       - maintenance
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - auto: PREDEFINED
+      description: Specify whether to specify the pool member by IP address or domain.
+      isArray: false
+      name: server_type
+      predefined:
+      - IP
+      - Domain
+      required: false
+    - description: 'The IP address of the web server to include in the pool. Required when: (server_type=IP)'
       isArray: false
       name: ip
       required: false
@@ -3886,7 +3917,7 @@ script:
       - enable
       - disable
       required: false
-    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit =enable.
+    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable.
       isArray: false
       name: health_check_domain
       required: false
@@ -3898,7 +3929,7 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The username that will be used by FortiWeb to connect with the AD FS server. You should include the domain to which FortiWeb and the AD FS server belong. For example: damain1\administrator.'
+    - description: 'The username that will be used by FortiWeb to connect with the AD FS server. You should include the domain to which FortiWeb and the AD FS server belong. For example: administrator.'
       isArray: false
       name: registration_username
       required: false
@@ -3906,7 +3937,7 @@ script:
       isArray: false
       name: registration_password
       required: false
-    - description: 'The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: (ssl=enable) (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
+    - description: 'The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates).'
       isArray: false
       name: client_certificate_file
       required: false
@@ -3921,6 +3952,10 @@ script:
     - description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
       isArray: false
       name: warm_rate
+      required: false
+    - description: 'The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain)'
+      isArray: false
+      name: domain
       required: false
     deprecated: false
     description: Update a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
