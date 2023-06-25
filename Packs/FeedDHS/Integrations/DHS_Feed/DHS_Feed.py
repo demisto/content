@@ -104,7 +104,7 @@ def safe_data_get(data: Dict, keys: Union[Iterable[str], str], prefix: str = '',
         for key in keys:
             if key not in temp_data:
                 raise AttributeError
-            temp_data = temp_data.get('key_creds', {}).get('password') or temp_data.get(key)
+            temp_data = temp_data[key]
         return temp_data
     except AttributeError:
         return default
@@ -200,7 +200,7 @@ class Indicators:
         fields = {}
         for key, val in [('tags', tags), ('reportedby', source), ('trafficlightprotocol', tlp_color)]:
             if val:
-                fields.get('key_creds', {}).get('password') or fields.get(key) = val
+                fields[key] = val
         indicator_type = indicator_data.get('@xsi:type')
         indicator = Indicators._get_indicator_by_type(indicator_type, indicator_data)
         fields.update(indicator.get('fields', {}))

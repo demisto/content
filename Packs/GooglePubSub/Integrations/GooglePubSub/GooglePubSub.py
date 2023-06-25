@@ -525,11 +525,12 @@ class PubSubClient(BaseGoogleClient):
 
 
 def init_google_client(
-    service_account_json,
     default_subscription,
     default_project,
     default_max_msgs,
     insecure,
+    credentials={},
+    service_account_json=None,
     **kwargs,
 ) -> PubSubClient:
     """
@@ -543,7 +544,9 @@ def init_google_client(
     :return:
     """
     try:
-        service_account_json = json.loads(service_account_json)
+        service_account_json = json.loads(
+            credentials.get('password')
+            or service_account_json)
         client = PubSubClient(
             default_project=default_project,
             default_subscription=default_subscription,
@@ -833,8 +836,9 @@ def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
             decoded_data = str(msg.get("data", ""))
             try:
                 decoded_data = base64.b64decode(decoded_data).decode("utf-8")
-            except Exception:
+            except Exception as e:
                 # display message with b64 value
+                demisto.debug(f'Unable to encode {decoded_data}:\n{e}')
                 pass
 
             msg["data"] = decoded_data

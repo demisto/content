@@ -22,7 +22,7 @@ configuration:
   type: 4
   section: Connect
   hidden: true
-- name: service_account_json_creds
+- name: credentials
   type: 9
   section: Connect
   displaypassword: Service account private key file contents (JSON).
@@ -72,7 +72,6 @@ configuration:
   required: false
   section: Collect
   type: 0
-
 description: Google Cloud Pub/Sub is a fully-managed real-time messaging service that enables you to send and receive messages between independent applications.
 display: Google Cloud Pub/Sub
 name: GooglePubSub
