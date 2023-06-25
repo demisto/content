@@ -5,12 +5,19 @@ commonfields:
 configuration:
 - display: Service account private key file contents (JSON)
   name: credentials_json
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: Default project ID
+  name: project_id_creds
+  required: false
+  type: 9
+  displaypassword: Service account private key file contents (JSON)
 - display: Default project ID
   name: project_id
   required: false
   type: 0
+  hidden: true
 - display: Default region
   name: region
   required: false
@@ -23,6 +30,7 @@ configuration:
   name: insecure
   required: false
   type: 8
+
 description: Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
 display: Google Cloud Functions
 name: Google Cloud Functions
@@ -148,10 +156,12 @@ script:
     - contextPath: GoogleCloudFunctions.Execution.error
       description: Either a system or user-function generated error. Set if the execution was not successful.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.45941
+  dockerimage: demisto/google-api-py3:1.0.0.64100
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
