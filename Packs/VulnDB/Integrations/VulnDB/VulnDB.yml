@@ -881,11 +881,16 @@ script:
       description: Classification description (human readable).
       type: string
   - arguments:
+    - description: Deprecated. Use the `cve` argument instead.
+      isArray: false
+      name: cve_id
+      required: false
+      secret: false
     - default: true
       description: CVE ID.
       isArray: false
-      name: cve_id
-      required: true
+      name: cve
+      required: false
       secret: false
     - default: false
       description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
@@ -925,7 +930,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
