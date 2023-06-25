@@ -4992,7 +4992,7 @@ def download_sensor_installer_by_id_command(client, args):
         file_name = response.headers.get('Content-Disposition').split('attachment; filename=')[1]
     except Exception as err:
         demisto.debug(f'Failed extracting filename from response headers - [{str(err)}]')
-        file_name = 'cs_installer.exe'
+        file_name = f'cs_installer-id-{id_}'
 
     return fileResult(filename=file_name, data=data, file_type=EntryType.FILE)
 
