@@ -1104,7 +1104,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
         - From the Cortex XSOAR machine to localhost.
 
           - Note: The web server supports only POST method queries. 
-   2. If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
+   2. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
 
    3. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
