@@ -159,7 +159,7 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
 
     test_changed = set()
     changed_packs = []
-    changed_integrations = set()
+    changed_integrations = []
     for f in changed_files:
         path = Path(f)
         # If not a pack find_pack_folder throws an exception
@@ -168,22 +168,20 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
             test_changed.add(f'{Path(__file__).absolute().parents[2]}/{changed}')
         except:
             continue
-        for changed_pack_path in test_changed:
-            integrations_path = f'{changed_pack_path}/Integrations'
-            integrations = os.listdir(integrations_path)
-            changed_integrations.update([f'{integrations_path}/{i}' for i in integrations])
+
 
         if 'Packs' in f:
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
             changed_packs.append(pack_path)
+    for changed_pack_path in test_changed:
+        integrations_path = f'{changed_pack_path}/Integrations'
+        integrations = os.listdir(integrations_path)
+        changed_integrations.extend([f'{integrations_path}/{i}' for i in integrations])
     print(f'###############{test_changed=}###############')
     print(f'!!!!!!!!!!!!!!!{changed_packs=}!!!!!!!!!!!!!!!')
-    # Print the file names
-    print(f'+++++++++++')
-    print(f'++++++{changed_integrations=}++f+++')
-    print(f'+++++++++++')
-    return changed_packs
+    print(f'--------------{changed_integrations=}--------------')
+    return changed_integrations
 
 
 def run(options: argparse.Namespace):
