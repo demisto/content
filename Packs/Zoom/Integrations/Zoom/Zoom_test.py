@@ -287,7 +287,7 @@ def test_zoom_meeting_create_command__scheduled_meeting(mocker):
     assert zoom_create_meeting_mocker.call_args[1]["json_data"].get("type") == 2
 
 
-def test_zoom_create_meeting_command__too_meny_arguments(mocker):
+def test_zoom_create_meeting_command_too_many_arguments(mocker):
     """
        Given -
           client
