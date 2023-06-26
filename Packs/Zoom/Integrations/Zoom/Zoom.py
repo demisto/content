@@ -80,7 +80,7 @@ time is missing this argument: recurrence_type."""
 MISSING_ARGUMENT = """Missing either a contact info or a channel id"""
 USER_NOT_FOUND = """ This user email can't be found """
 MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
-                    don't provide one of the following arguments: start_position, end_position, format_type, at_type, 
+                    don't provide one of the following arguments: start_position, end_position, format_type, at_type,
                     rt_start_position, rt_end_position or format_attr"""
 MARKDOWN_EXTRA_FORMATS = """to many style in text. you can provide only one style type"""
 MARKDOWN_EXTRA_MENTIONS = """to many mentions in text. you can provide only one mention in each message"""
@@ -1142,7 +1142,7 @@ def zoom_send_file_command(client, **args) -> CommandResults:
 
 def process_links(formatted_message, formats):
     """
-    Processes markdown links in the formatted message. 
+    Processes markdown links in the formatted message.
     for example- [my link](https://****.com)
     Args:
         formatted_message (str): The formatted message to process.
@@ -1285,7 +1285,7 @@ def process_font_colors(formatted_message, formats):
 def process_left_indent_and_paragraphs(formatted_message, formats):
     """
     Processes left indents and paragraphs in the markdown message.
-    for left indents use >,>>,>>> 
+    for left indents use >,>>,>>>
     for paragraph usr #,##,### (up to 3)
     this type of markdowns effect the whole line.
 
