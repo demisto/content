@@ -148,8 +148,7 @@ class AzureSentinelClient:
         """
         if not full_url:
             params = params or {}
-            if not params.get('api-version'):
-                params['api-version'] = API_VERSION
+            params['api-version'] = API_VERSION
 
         res = self._client.http_request(
             method=method,  # disable-secrets-detection
