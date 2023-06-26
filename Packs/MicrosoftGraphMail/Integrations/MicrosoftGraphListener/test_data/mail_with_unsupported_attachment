@@ -1,0 +1,15 @@
+{
+  "@odata.context":"https://graph.microsoft.com/v1.0/$metadata#users('d1a2fae9-db66-4cc9-8133-2184c77af1b8')/messages('AAMkADA1M-zAAA%3D')/attachments/$entity",
+  "@odata.type":"#microsoft.graph.itemAttachment",
+  "id":"exampleContactID",
+  "lastModifiedDateTime":"2017-07-21T00:20:34Z",
+  "name":"Test contact",
+  "contentType":null,
+  "size":32005,
+  "isInline":false,
+  "item@odata.context":"example",
+  "item":{
+    "@odata.type":"#microsoft.graph.contact",
+    "id":""
+  }
+}

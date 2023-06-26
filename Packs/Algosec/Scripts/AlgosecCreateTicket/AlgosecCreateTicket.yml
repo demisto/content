@@ -48,6 +48,6 @@ dependson:
   must:
   - algosec-create-ticket
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.10.48392
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,165 @@
+{
+    "description": "Mapper for ExtraHop detection.",
+    "feed": false,
+    "id": "ExtraHop Detections - Incoming Mapper",
+    "mapping": {
+        "ExtraHop Detection": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assigned User": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assignee",
+                        "transformers": []
+                    }
+                },
+                "Categories": {
+                    "complex": {
+                        "filters": [],
+                        "root": "categories",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Appliance ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "appliance_id",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Detection ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Detection Participants": {
+                    "complex": {
+                        "filters": [],
+                        "root": "participants",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Detection Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Detection Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "type",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) End Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "end_time",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Mitre Tactics": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mitre_tactics",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Mitre Techniques": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mitre_techniques",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Mod Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mod_time",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Properties": {
+                    "complex": {
+                        "filters": [],
+                        "root": "properties",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Resolution": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resolution",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Risk Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk_score",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Start Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "start_time",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Update Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "update_time",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) User Created": {
+                    "complex": {
+                        "filters": [],
+                        "root": "is_user_created",
+                        "transformers": []
+                    }
+                },
+                "ExtraHop Reveal(x) Detection Devices": {
+                    "complex": {
+                        "filters": [],
+                        "root": "device_data",
+                        "transformers": []
+                    }
+                },
+                "Ticket Number": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ticket_id",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "name": "ExtraHop Detections - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

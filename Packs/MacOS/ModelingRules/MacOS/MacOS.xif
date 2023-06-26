@@ -1,0 +1,26 @@
+[MODEL: dataset = apple_macos_raw]
+alter
+    get_hostname = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s([^\s]+)"), ""),
+    get_process =  arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s[^\s]+\s([^\[]+)"), ""),
+    get_pid = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s[^\s]+\s[^\[]+\[([^\]]+)"), ""),
+    get_description = arraystring(regextract(_raw_log, "<\d+>[^\s]+\s+\d+\s+\d{2}:\d{2}:\d{2}\s[^\s]+\s[^\[]+\[[^\]]+\]:(.*)"), ""),
+    get_des_pid = arraystring(regextract(_raw_log, "pid[\s|=]+(\d+)"), ""),
+    get_des_uid = arraystring(regextract(_raw_log, "uid[\s|=]+(\d+)"), ""),
+    get_des_path = arraystring(regextract(_raw_log, "path[\s|=]+([^,]+)"), ""),
+    get_des_macos_error_code = arraystring(regextract(_raw_log, "[C|c]ode[\s|=](\d+)"), ""),
+    get_nsurl = arraystring(regextract(_raw_log, "NSURL[\s|=]([^,]+)"), ""),
+    get_pkinstallpackageidentifier = arraystring(regextract(_raw_log, "PKInstallPackageIdentifier[\s|=]([^,]+)"), ""),
+    get_nslocalizeddescription =  arraystring(regextract(_raw_log, "NSLocalizedDescription[\s|=]([^,}]+)"), "")
+| alter
+    xdm.source.host.os_family = XDM_CONST.OS_FAMILY_MACOS,
+    xdm.source.host.hostname = get_hostname,
+    xdm.source.process.name = get_process,
+    xdm.source.process.parent_id = get_pid,
+    xdm.event.description = get_description,
+    xdm.source.process.pid = to_integer(get_des_pid),
+    xdm.source.process.identifier = get_des_uid,
+    xdm.source.process.executable.path = get_des_path,
+    xdm.network.http.response_code = get_des_macos_error_code,
+    xdm.source.process.executable.directory = get_nsurl,
+    xdm.source.process.executable.signer = get_pkinstallpackageidentifier,
+    xdm.alert.description = get_nslocalizeddescription;

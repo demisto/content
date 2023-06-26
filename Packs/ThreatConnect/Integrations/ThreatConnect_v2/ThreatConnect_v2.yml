@@ -53,9 +53,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: ThreatConnect's intelligence-driven security operations solution with
-  intelligence, automation, analytics, and workflows.
-display: ThreatConnect v2
+description: Deprecated. Use the ThreatConnect v3 integration instead.
+deprecated: true
+display: ThreatConnect v2 (Deprecated)
 name: ThreatConnect v2
 script:
   commands:
@@ -2197,7 +2197,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.23423
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.40378
   runonce: false
   script: ''
   subtype: python3

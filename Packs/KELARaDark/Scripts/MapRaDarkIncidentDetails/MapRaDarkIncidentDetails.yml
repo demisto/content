@@ -5,7 +5,7 @@ comment: Map details to an RaDark incident.
 commonfields:
   id: MapRaDarkIncidentDetails
   version: -1
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.58677
 enabled: true
 name: MapRaDarkIncidentDetails
 outputs:

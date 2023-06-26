@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Playbook to check WebEx webpage is reachable and not creating any errors
+description: Deprecated. No available replacement.
 id: Check WebEx Feed
 inputs: []
 name: Check WebEx Feed
@@ -87,9 +87,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       id: 94d7bd4a-d82c-4f56-8708-8621232c1a70
       iscommand: false
       name: Is There a Web page Error?
@@ -212,229 +210,10 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      agentid: {}
-      app: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      blockedaction: {}
-      bugtraq: {}
-      caller: {}
-      city: {}
-      cloudservice: {}
-      commandline: {}
-      country: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      dest: {}
-      desthostname: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destinationports: {}
-      destntdomain: {}
-      destos: {}
       details:
-        simple: 'WebEx Feed Integration could not pull IPs or Domains from WebEx web
-          page (https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network). '
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      duration: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      entryIDs: {}
-      escalation: {}
-      eventid: {}
-      eventtype: {}
-      exactlywhathappenedandatwhattimes: {}
-      externaladdresses: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstname: {}
-      firstseen: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hostname: {}
-      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
-      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
-      incomingmirrorerror: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      logsource: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      md5: {}
-      mobiledevicemodel: {}
+        simple: 'WebEx Feed Integration could not pull IPs or Domains from WebEx web page (https://help.webex.com/en-us/WBX264/How-Do-I-Allow-Webex-Meetings-Traffic-on-My-Network). '
       name:
         simple: WebEx Feed Web Page Error
-      niststage: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      protocol: {}
-      protocols: {}
-      quarantined: {}
-      rating: {}
-      region: {}
-      regionid: {}
-      reporteremailaddress: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      samaccountname: {}
-      scansourcetype: {}
-      severity: {}
-      sha256: {}
-      signature: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      state: {}
-      subcategory: {}
-      subtype: {}
-      systems: {}
-      targetfirewallversion: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
-      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
-      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
-      whatinformationwasneededsooner: {}
-      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
-      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     separatecontext: false
     skipunavailable: false
     task:
@@ -471,4 +250,5 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

@@ -16,7 +16,7 @@ This integration was integrated and tested with API versions 10.1-14.0 on QRadar
     | Fetch mode |  | True |
     | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5. | False |
     | Number of offenses to pull per API call (max 50) |  | False |
-    | Query to fetch offenses | Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". filtering by status in the query may result in unexpected behavior when changing an incident's status.| False |
+    | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". Filtering by status in the query may result in unexpected behavior when changing an incident's status.| False |
     | First fetch time | how long to look back while fetching incidents on the first fetch \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
     | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
     | Incidents Enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
@@ -145,7 +145,7 @@ Gets offenses from QRadar.
 | enrichment | IP enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. Possible values are: IPs, IPs And Assets, None. Default is None. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query to filter offenses, e.g., "severity &gt;= 4 AND id &gt; 5 AND status=OPEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-GET.html. | Optional | 
 
 
 #### Context Output
@@ -344,7 +344,7 @@ Update an offense.
 | status | The new status for the offense. When the status of an offense is set to CLOSED, a valid closing_reason_id must be provided. To hide an offense, use the HIDDEN status. To show a previously hidden offense, use the OPEN status. Possible values are: OPEN, HIDDEN, CLOSED. | Optional | 
 | closing_reason_id | The ID of a closing reason. You must provide a valid closing_reason_id when you close an offense. For a full list of closing reason IDs, use the 'qradar-closing-reasons' command. | Optional | 
 | assigned_to | User to assign the offense to. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-POST.html. | Optional | 
 
 
 #### Context Output
@@ -459,7 +459,7 @@ Retrieves a list of offense closing reasons.
 | include_deleted | If true, deleted closing reasons are included in the response. Possible values are: true, false. Default is false. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query to filter closing reasons, e.g. "id &gt; 5". For reference see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offense_closing_reasons-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offense_closing_reasons-GET.html. | Optional | 
 
 
 #### Context Output
@@ -536,7 +536,7 @@ Retrieves a list of notes for an offense.
 | note_id | The note ID for which to retrieve its details. Specify note_id to get details about a specific note. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query to filter offense notes, e.g., "username=admin". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-notes-GET.html. | Optional | 
 
 
 #### Context Output
@@ -597,7 +597,7 @@ Creates a note on an offense.
 | --- | --- | --- |
 | offense_id | The offense ID to add the note to. | Required | 
 | note_text | The text of the note. | Required | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-offenses-offense_id-notes-POST.html. | Optional | 
 
 
 #### Context Output
@@ -651,7 +651,7 @@ Retrieves a list of rules.
 | rule_type | Retrieves rules corresponding to the specified rule type. Possible values are: EVENT, FLOW, COMMON, USER. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter rules, e.g., "type=EVENT". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,identifier,origin". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi150.doc/15.0--analytics-rules-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,identifier,origin". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--analytics-rules-GET.html. | Optional | 
 
 
 #### Context Output
@@ -751,7 +751,7 @@ Retrieves a list of the rule groups.
 | rule_group_id | The rule group ID for which to retrieve its details. Specify rule_group_id to get details about a specific rule group. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter rules, e.g., "id &gt;= 125". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,parent_id". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--analytics-rule_groups-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,parent_id". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--analytics-rule_groups-GET.html. | Optional | 
 
 
 #### Context Output
@@ -890,7 +890,7 @@ Retrieves assets list.
 | asset_id | The asset ID for which to retrieve its details. Specify asset_id to get details about a specific asset. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter assets, e.g., "domain_id=0". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,interfaces,users,properties". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,interfaces,users,properties". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--asset_model-assets-GET.html. | Optional | 
 
 
 #### Context Output
@@ -1085,7 +1085,7 @@ Retrieves a list of Ariel saved searches.
 | timeout | Number of seconds until timeout for the specified command. Default is 35. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter saved searches, e.g., "database=EVENTS and is_dashboard=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,owner,description". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--ariel-saved_searches-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,owner,description". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--ariel-saved_searches-GET.html. | Optional | 
 
 
 #### Context Output
@@ -1604,7 +1604,7 @@ Retrieves a list of reference sets.
 | date_value | If set to true will try to convert the data values to ISO-8601 string. Possible values are: True, False. Default is False. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-GET.html. | Optional | 
 
 
 #### Context Output
@@ -1682,7 +1682,7 @@ Creates a new reference set.
 | element_type | The element type for the values allowed in the reference set. Possible values are: ALN, ALNIC, NUM, IP, PORT, DATE. | Required | 
 | timeout_type | Indicates if the time_to_live interval is based on when the data was first seen or last seen. Possible values are: FIRST_SEEN, LAST_SEEN, UNKNOWN. Default is UNKNOWN. | Optional | 
 | time_to_live | The time to live interval, time range. for example: '1 month' or '5 minutes'. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-POST.html. | Optional | 
 
 
 #### Context Output
@@ -1771,7 +1771,7 @@ Adds or updates an element in a reference set.
 | value | Comma-separated list of the values to add or update in the reference set. If the values are dates, the supported date formats are: epoch, ISO, and time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days.). | Required | 
 | source | An indication of where the data originated. Default is reference data api. | Optional | 
 | date_value | True if the specified value  type was date. Possible values are: true, false. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html. | Optional | 
 
 
 #### Context Output
@@ -1860,7 +1860,7 @@ Gets the list of domains. You must have System Administrator or Security Adminis
 | domain_id | The domain ID from which to retrieve its details. Specify domain_id to get details about a specific domain. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter domains, e.g., "id &gt; 3". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-domain_management-domains-GET.html. | Optional | 
 
 
 #### Context Output
@@ -1924,7 +1924,7 @@ Uploads indicators to QRadar.
 | query | The query for getting indicators from Cortex XSOAR. | Optional | 
 | limit | The maximum number of indicators to fetch from Cortex XSOAR. Default is 50. | Optional | 
 | page | The page from which to get the indicators. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-maps-bulk_load-namespace-name-domain_id-POST.html. | Optional | 
 
 
 #### Context Output
@@ -1988,7 +1988,7 @@ Retrieves the MaxMind GeoIP data for the specified IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | Comma-separated list of IPs from which to retrieve their geolocation. | Required | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "continent,ip_address". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--services-geolocations-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "continent,ip_address". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--services-geolocations-GET.html. | Optional | 
 
 
 #### Context Output
@@ -2098,7 +2098,7 @@ Retrieves a list of log sources.
 | qrd_encryption_password | The password to use for encrypting the sensitive data of this endpoint. If password was not given, random password will be generated. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter log sources, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-log_source_management-log_sources-GET.html. | Optional | 
 
 
 #### Context Output
@@ -2275,7 +2275,7 @@ Retrieves a list of event regex properties.
 | field_name | A comma-separated list of names of the exact properties to search for. | Optional | 
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter regex properties, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-custom_properties-regex_properties-GET.html. | Optional | 
 
 
 #### Context Output
@@ -2406,7 +2406,7 @@ Get Source IPs
 | --- | --- | --- |
 | source_ip | Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2". | Optional | 
 | filter | Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
-| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemsource-addresses | Optional | 
+| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-source_addresses-GET.html | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 
 
@@ -2483,8 +2483,8 @@ Get Source IPs
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | local_destination_ip | Comma separated list. Local destination IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2". | Optional | 
-| filter | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses | Optional | 
-| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses. | Optional | 
+| filter | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-local_destination_addresses-GET.html. | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-local_destination_addresses-GET.html. | Optional | 
 | range | Range of results to return. e.g.: 0-20. | Optional | 
 
 

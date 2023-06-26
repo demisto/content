@@ -24,8 +24,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a
-    decimal point number. Disabled if empty. Mutually exclusive with cvss_score
+- additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score
   display: Fetch vulnerabilities with CVSS greater than
   name: cvss_score_greater_than
   required: false
@@ -35,8 +34,7 @@ configuration:
   name: risk_more_than
   required: false
   type: 0
-- additionalinfo: 'How many days to fetch back on first run. It can be: 360 days,
-    12 months, 1 year, etc.'
+- additionalinfo: 'How many days to fetch back on first run. It can be: 360 days, 12 months, 1 year, etc.'
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -50,15 +48,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided
-    value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
+- additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
   display: Fetch vulnerabilities with CVSS with exact value
-  hidden: false
   name: cvss_score
   required: false
   type: 0
-description: Cloud-based continuous vulnerability management and penetration testing
-  solution.
+description: Cloud-based continuous vulnerability management and penetration testing solution.
 display: Edgescan
 name: Edgescan
 script:
@@ -1062,7 +1057,7 @@ script:
     - contextPath: Edgescan.AnnotationAdd.created_at
       description: The date when the annoation was added
       type: Date
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

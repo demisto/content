@@ -3,8 +3,9 @@ from typing import Tuple, Dict
 
 from CommonServerPython import *
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 XFORCE_URL = 'https://exchange.xforce.ibmcloud.com'
 DEFAULT_THRESHOLD = 7

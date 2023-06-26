@@ -26,6 +26,7 @@ FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
 FETCH_BY = demisto.params().get('fetch_by', 'MALOP CREATION TIME')
+IS_EPP_ENABLED = argToBoolean(demisto.params().get('enable_epp_poll', False))
 
 STATUS_MAP = {
     'To Review': 'TODO',
@@ -538,6 +539,26 @@ def query_malops_command(client: Client, args: dict):
         outputs_prefix='Cybereason.Malops',
         outputs_key_field='GUID',
         outputs=outputs)
+
+
+def poll_malops(client: Client, start_time):
+    end_time = round(datetime.now().timestamp()) * 1000
+    json_body = {"startTime": start_time, "endTime": end_time}
+    api_response = client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body)
+    demisto.debug(f"Fetching the length of rest/dectection malops : {len(api_response)}")
+    return api_response
+
+
+def get_non_edr_malop_data(client, start_time):
+    malop_data = poll_malops(client, start_time)
+    non_edr_malop_data = list()
+    for malops in malop_data['malops']:
+        if not malops.get('edr'):
+            non_edr_malop_data.append(malops)
+
+    malop_data.clear()
+    demisto.debug(f"Total count of EPP Malops fetched is: {len(non_edr_malop_data)}")
+    return non_edr_malop_data
 
 
 def query_malops(
@@ -1450,6 +1471,8 @@ def malop_to_incident(malop: str) -> dict:
         raise ValueError("Cybereason raw response is not valid, malop is not dict")
 
     guid_string = malop.get('guidString', '')
+    if not guid_string:
+        guid_string = malop.get('guid', '')
     incident = {
         'rawJSON': json.dumps(malop),
         'name': 'Cybereason Malop ' + guid_string,
@@ -1467,7 +1490,7 @@ def fetch_incidents(client: Client):
         # In first run
         last_update_time, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-    max_update_time = last_update_time
+    max_update_time = int(last_update_time)
 
     if FETCH_BY == 'MALOP UPDATE TIME':
         filters = [{
@@ -1496,12 +1519,26 @@ def fetch_incidents(client: Client):
             simple_values = dict_safe_get(malop, ['simpleValues'], default_return_value={}, return_type=dict)
             simple_values.pop('iconBase64', None)
             simple_values.pop('malopActivityTypes', None)
-            malop_update_time = dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0])
+            malop_update_time = int(dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0]))
             if int(malop_update_time) > int(max_update_time):
                 max_update_time = malop_update_time
 
             incident = malop_to_incident(malop)
             incidents.append(incident)
+
+    # Enable Polling for Cybereason EPP Malops
+    non_edr = get_non_edr_malop_data(client, last_update_time)
+    if IS_EPP_ENABLED:
+        demisto.info(f"Fetching EPP malop is enabled: {IS_EPP_ENABLED}")
+        for non_edr_malops in non_edr:
+            malop_update_time = dict_safe_get(non_edr_malops, ['lastUpdateTime'])
+
+            if malop_update_time > max_update_time:
+                max_update_time = malop_update_time
+
+            incident = malop_to_incident(non_edr_malops)
+            incidents.append(incident)
+        demisto.debug(f"Fetching the length of incidents list if epp in enabled : {len(incidents)}")
 
     demisto.setLastRun({
         'creation_time': max_update_time

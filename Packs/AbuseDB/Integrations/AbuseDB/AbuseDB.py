@@ -15,7 +15,7 @@ VERBOSE = True
 SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
     SERVER += '/'
-API_KEY = demisto.params().get('apikey')
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 MAX_AGE = demisto.params().get('days')
 THRESHOLD = demisto.params().get('threshold')
 INSECURE = demisto.params().get('insecure')

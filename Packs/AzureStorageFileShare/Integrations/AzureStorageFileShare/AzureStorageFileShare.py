@@ -7,6 +7,7 @@ from requests import Response
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import defusedxml.ElementTree as defused_ET
 
 GENERAL_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
@@ -360,7 +361,7 @@ def get_pagination_next_marker_element(limit: str, page: int, client_request: Ca
     """
     offset = int(limit) * (page - 1)
     response = client_request(limit=str(offset), **params)
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     return root.findtext('NextMarker')  # type: ignore
@@ -396,7 +397,7 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.list_shares_request(limit, prefix, marker=marker)
 
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     raw_response = []
@@ -456,7 +457,7 @@ def handle_directory_content_response(response: str) -> dict:
         dict: Raw response.
 
     """
-    tree = ET.ElementTree(ET.fromstring(response))
+    tree = ET.ElementTree(defused_ET.fromstring(response))
     root = tree.getroot()
 
     xml_path = ['Directory', 'File']

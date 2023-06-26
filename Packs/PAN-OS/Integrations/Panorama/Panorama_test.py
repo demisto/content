@@ -1,9 +1,10 @@
 import json
 import io
+from defusedxml import ElementTree
 import pytest
+import requests_mock
 
 import demistomock as demisto
-from lxml import etree
 from unittest.mock import patch, MagicMock
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
@@ -11,9 +12,9 @@ from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 import dateparser
-import test_data.fetch_incidents_input as fetch_incidents_input
+from test_data import fetch_incidents_input
+from test_data import mock_rules
 from freezegun import freeze_time
-
 
 integration_firewall_params = {
     'port': '443',
@@ -140,6 +141,63 @@ def test_add_argument_target():
     response = add_argument_target('foo', 'bar')
     expected = '<bar><devices><entry name=\"foo\"/></devices></bar>'
     assert response == expected
+
+
+@pytest.mark.parametrize('disabled, rules_file, expected_results_file',
+                         [
+                             ('yes', 'test_data/filter_rules_sample.json',
+                              'test_data/filter_rules_expected_result.json'),
+                         ])
+def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results_file: str):
+    from Panorama import filter_rules_by_status
+
+    with open(rules_file, 'r') as f:
+        rules = json.loads(f.read())
+
+    with open(expected_results_file, 'r') as f:
+        expected_result = json.loads(f.read())
+
+    result = filter_rules_by_status(disabled, rules)
+    assert result == expected_result
+
+
+def test_get_address(mocker):
+    """
+    Given:
+     - an address_name argument which does not exist
+
+    When:
+     - running the panorama_get_address function
+
+    Then:
+     - Ensure the return value is an empty dictionary
+    """
+    import Panorama
+    from Panorama import panorama_get_address
+    exception_msg = 'Object was not found, verify that the name is correct and that the instance was committed.'
+    mocker.patch.object(Panorama, "http_request", side_effect=Exception(exception_msg))
+    result = panorama_get_address("TEST")
+    assert result == {}
+
+
+def test_get_address_command(mocker):
+    """
+    Given:
+     - an address_name argument which does not exist
+
+    When:
+     - running the panorama_get_address_command function
+
+    Then:
+     - Ensure the return value is None, without any errors, and return_results contains the correct informative message.
+    """
+    import Panorama
+    from Panorama import panorama_get_address_command
+    mocker.patch.object(Panorama, "panorama_get_address", return_value={})
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    result = panorama_get_address_command({'name': 'TEST'})
+    assert not result
+    assert return_results_mock.call_args[0][0] == 'Address name TEST was not found'
 
 
 def test_prettify_addresses_arr():
@@ -478,7 +536,7 @@ class TestQueryLogsCommand:
         response_queue = [
             MockedResponse(
                 text='<response status="success" code="19"><result><msg><line>query '
-                'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
+                     'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
                 status_code=200
             )
         ]
@@ -539,7 +597,7 @@ class TestQueryLogsCommand:
             'request',
             return_value=MockedResponse(
                 text='<response status="success" code="19"><result><msg><line>query '
-                'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
+                     'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
                 status_code=200
             )
         )
@@ -680,13 +738,37 @@ def test_prettify_logs():
 
 
 prepare_security_rule_inputs = [
+    ('after', 'test_rule_name', ['user1'], '<source-user><member>user1</member></source-user>'),
+    ('after', 'test_rule_name', ['user1,user2'], '<source-user><member>user1,user2</member></source-user>'),
+]
+
+
+@pytest.mark.parametrize('where, dst, source_user, expected_result', prepare_security_rule_inputs)
+def test_prepare_security_rule_params(where, dst, source_user, expected_result):
+    """
+    Given:
+     - valid arguments for the prepare_security_rule_params function
+
+    When:
+     - running the prepare_security_rule_params utility function
+
+    Then:
+     - a valid security rule dictionary is returned.
+    """
+    from Panorama import prepare_security_rule_params
+    params = prepare_security_rule_params(api_action='set', action='drop', destination=['any'], source=['any'],
+                                          rulename='test', where=where, dst=dst, source_user=source_user)
+    assert expected_result in params.get('element', '')
+
+
+prepare_security_rule_fail_inputs = [
     ('top', 'test_rule_name'),
     ('bottom', 'test_rule_name'),
 ]
 
 
-@pytest.mark.parametrize('where, dst', prepare_security_rule_inputs)
-def test_prepare_security_rule_params(where, dst):
+@pytest.mark.parametrize('where, dst', prepare_security_rule_fail_inputs)
+def test_prepare_security_rule_params_fail(where, dst):
     """
     Given:
      - a non valid arguments for the prepare_security_rule_params function
@@ -738,14 +820,8 @@ def test_panorama_register_ip_tag_command_wrongful_args(mocker):
      - a proper exception is raised
     """
     from Panorama import panorama_register_ip_tag_command
-    args = {'IPs': '1.1.1.1', 'tag': 'test_tag', 'persistent': 'true', 'timeout': '5'}
+    args = {'IPs': '1.1.1.1', 'tag': 'test_tag', 'persistent': 'false', 'timeout': '5'}
 
-    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
-    with pytest.raises(DemistoException,
-                       match='When the persistent argument is true, you can not use the timeout argument.'):
-        panorama_register_ip_tag_command(args)
-
-    args['persistent'] = 'false'
     mocker.patch('Panorama.get_pan_os_major_version', return_value=8)
     with pytest.raises(DemistoException,
                        match='The timeout argument is only applicable on 9.x PAN-OS versions or higher.'):
@@ -865,11 +941,12 @@ def test_prettify_rule():
         rule = json.load(f)
 
     with open("test_data/prettify_rule.json") as f:
-        expected_prettify_rule = json.load(f)
+        expected_pretty_rule = json.load(f)
 
-    prettify_rule = prettify_rule(rule)
+    pretty_rule = prettify_rule(rule)
+    del pretty_rule['DeviceGroup']
 
-    assert prettify_rule == expected_prettify_rule
+    assert pretty_rule == expected_pretty_rule
 
 
 class TestPcap:
@@ -1008,7 +1085,7 @@ class TestPanoramaListApplicationsCommand:
         mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
 
         res = mocker.patch('demistomock.results')
-        panorama_list_applications_command(predefined='false')
+        panorama_list_applications_command({'predefined': 'false'})
 
         assert res.call_args.args[0]['Contents'] == {
             '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure',
@@ -1116,7 +1193,8 @@ def test_apply_security_profiles_command_main_flow(mocker):
             'device-group': 'new-device-group',
             'profile_type': 'data-filtering',
             'profile_name': 'test-profile',
-            'rule_name': 'rule-test'
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
@@ -1129,13 +1207,103 @@ def test_apply_security_profiles_command_main_flow(mocker):
     assert request_mock.call_args.kwargs['params'] == {
         'action': 'set', 'type': 'config',
         'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
-                 "/rule-test/security/rules/entry[@name='rule-test']/profile-setting/profiles/data-filtering",
-        'key': 'thisisabogusAPIKEY!', 'element': '<member>test-profile</member>'}
-    assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!', 'element': '<profile-setting><profiles><data-filtering>'
+                                                 '<member>test-profile</member></data-filtering></profiles>'
+                                                 '</profile-setting>'}
+    assert res.call_args.args[0] == 'The profile data-filtering = test-profile has been applied to the rule rule-test'
+
+
+def test_apply_security_profiles_command_when_one_already_exists(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-apply-security-profile command arguments including device_group
+     - same profile as already exists in the rule
+
+    When -
+        running the pan-os-apply-security-profile command through the main flow
+
+    Then
+     - Ensure the request is what's already in the API (the 'element' parameter contains all profiles in the XML)
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'spyware',
+            'profile_name': 'strict',
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
+        }
+    )
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!',
+        'element': '<profile-setting><profiles><spyware><member>strict</member></spyware>'
+                   '<virus><member>Tap</member></virus></profiles></profile-setting>'}
+    assert res.call_args.args[0] == 'The profile spyware = strict has been applied to the rule rule-test'
+
+
+def test_remove_security_profiles_command(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-remove-security-profile command arguments
+
+    When -
+        running the pan-os-remove-security-profile command through the main flow
+
+    Then
+     - Ensure the given profile type has been removed from the given rule
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'spyware',
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
+        }
+    )
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-remove-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!',
+        'element': '<profile-setting><profiles><virus><member>Tap</member></virus></profiles></profile-setting>'}
+    assert res.call_args.args[0] == 'The profile spyware has been removed from the rule rule-test'
 
 
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE = {
+        'response': {'@status': 'success', 'result': 'Successfully added comment for xpath'}
+    }
 
     @staticmethod
     @pytest.fixture()
@@ -1255,11 +1423,12 @@ class TestPanoramaEditRuleCommand:
         assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
 
     @staticmethod
-    def test_edit_rule_main_flow(mocker):
+    def test_edit_rule_main_flow_disable_rule(mocker):
         """
         Given
-         - integrations parameters.
+         - panorama integrations parameters.
          - pan-os-edit-rule command arguments including device_group.
+         - arguments to disable the rule
 
         When -
             running the pan-os-edit-rule command through the main flow
@@ -1302,12 +1471,104 @@ class TestPanoramaEditRuleCommand:
             'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
         }
 
+    @staticmethod
+    def test_edit_rule_main_flow_update_audit_comment(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
 
-def test_panorama_edit_address_group_command_main_flow(mocker):
+        When -
+            running the pan-os-edit-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "behaviour": "replace",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # make sure that device group is getting overriden by the device-group from command arguments.
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/security/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+
+    @staticmethod
+    def test_edit_rule_main_flow_remove_profile_setting_group(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+         - arguments to remove a profile-setting group.
+        When
+         - running the pan-os-edit-rule command through the main flow.
+
+        Then
+         - make sure the API request body is correct.
+         - make sure the message is correct for the user.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "profile-setting",
+                "element_value": "some string",
+                "behaviour": "remove",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # Check: 'action' == set (not edit)
+        assert request_mock.call_args.kwargs['body']['action'] == 'set'
+        # Ensure 'element' wasn't sent with a group (since we removed the profile-setting group)
+        assert request_mock.call_args.kwargs['body']['element'] == '<profile-setting><group/></profile-setting>'
+        # Make sure the message is correct for the user
+        assert res.call_args.args[0]['HumanReadable'] == 'Rule edited successfully.'
+
+
+def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     """
     Given
      - integrations parameters.
-     - pan-os-edit-address-group command arguments including device_group
+     - pan-os-edit-address-group command arguments including device_group and description to add.
 
     When -
         running the pan-os-edit-address-group command through the main flow
@@ -1345,6 +1606,46 @@ def test_panorama_edit_address_group_command_main_flow(mocker):
     assert res.call_args.args[0]['HumanReadable'] == 'Address Group test was edited successfully.'
 
 
+def test_panorama_edit_address_group_command_remove_single_address(mocker):
+    """
+    Given
+     - pan-os-edit-address-group command arguments including a single address to remove.
+
+    When
+     - running the pan-os-edit-address-group command through the main flow
+
+    Then
+     - make sure an exception is raised because address group must always have at least one address.
+    """
+    import Panorama
+
+    Panorama.DEVICE_GROUP = integration_panorama_params['device_group']
+
+    mocker.patch(
+        'Panorama.http_request',
+        return_value={
+            'response': {
+                '@status': 'success', 'result': {
+                    'entry': {
+                        '@name': 'test5',
+                        'static': {'member': ['5.5.5.5']},
+                        'description': 'dfdf'
+                    }
+                }
+            }
+        }
+    )
+
+    with pytest.raises(DemistoException) as exc_info:
+        Panorama.panorama_edit_address_group_command(
+            {'name': 'test', 'device-group': 'Shared', 'type': 'static', 'element_to_remove': '5.5.5.5'}
+        )
+
+    assert exc_info.type == DemistoException
+    assert exc_info.value.message == "cannot remove ['5.5.5.5'] addresses from address group test, " \
+                                     "address-group test must have at least one address in its configuration"
+
+
 @pytest.mark.parametrize(
     'action, existing_url_categories_mock, category', [
         (
@@ -1363,7 +1664,7 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
     """
     Given
      - integrations parameters.
-     - pan-os-edit-custom-url-category command arguments including device_group
+     - pan-os-edit-custom-url-category command arguments: categories, device-group and action.
 
     When -
         running the pan-os-edit-custom-url-category command through the main flow
@@ -1400,6 +1701,61 @@ def test_panorama_edit_custom_url_category_command_main_flow(mocker, action, exi
         'key': 'thisisabogusAPIKEY!'
     }
 
+    # make sure that device group is getting overriden by the device-group from command arguments.
+    assert request_mock.call_args.kwargs['body'] == expected_body_request
+    assert res.call_args.args[0]['Contents'] == {
+        'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}
+    }
+
+
+def test_panorama_edit_custom_url_category_command_main_flow_with_sites(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-edit-custom-url-category command arguments: sites, device-group and action = 'add'.
+
+    When -
+        running the pan-os-edit-custom-url-category command through the main flow
+
+    Then
+     - make sure the context output is returned as expected.
+     - make sure the sites are being HTML escaped correctly for the site.
+     - make sure the device group gets overriden by the command arguments.
+    """
+    from Panorama import main
+
+    existing_url_categories_mock = {'list': {'member': []}}
+    expected_site = 'example.com/?a=b&amp;c=d'
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'name': 'test', 'action': 'add', 'sites': ['example.com/?a=b&c=d'], 'device-group': 'new device group'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='pan-os-edit-custom-url-category')
+    request_mock = mocker.patch(
+        'Panorama.http_request',
+        return_value={'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    )
+    mocker.patch('Panorama.panorama_get_custom_url_category', return_value=existing_url_categories_mock)
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    expected_body_request = {
+        'action': 'edit',
+        'element': '<entry '
+                   f"name='test'><list><member>{expected_site}</member></list><type>URL "
+                   'List</type></entry>',
+        'key': 'thisisabogusAPIKEY!',
+        'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry[@name='new device "
+                 "group']/profiles/custom-url-category/entry[@name='test']"
+    }
     # make sure that device group is getting overriden by the device-group from command arguments.
     assert request_mock.call_args.kwargs['body'] == expected_body_request
     assert res.call_args.args[0]['Contents'] == {
@@ -1599,7 +1955,6 @@ class MockedResponse:
 
 
 class TestPanoramaCommitCommand:
-
     COMMIT_POLLING_ARGS = {
         'device-group': 'some_device',
         'admin_name': 'some_admin_name',
@@ -1620,8 +1975,8 @@ class TestPanoramaCommitCommand:
     def create_mock_responses(job_commit_status_count):
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
-                text='<response status="success" code="19"><result><msg>''<line>Commit job '
-                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                text='<response status="success" code="19"><result><msg><line>Commit job '
+                     'enqueued with jobid 123</line></msg><job>123</job></result></response>',
                 status_code=200,
             )
         ]
@@ -1667,7 +2022,7 @@ class TestPanoramaCommitCommand:
                                            id='only admin changes commit'),
                               pytest.param({'device-group': 'some_device', 'force_commit': 'true', 'polling': 'false'},
                                            {'cmd': '<commit><device-group><entry name="some_device"/>'
-                                                   '</device-group><force>''</force></commit>',
+                                                   '</device-group><force></force></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
                                            MockedResponse(text='<response status="success" code="19"><result><msg>'
@@ -1681,7 +2036,7 @@ class TestPanoramaCommitCommand:
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
                                                    '<partial><device-and-network>excluded</'
-                                                   'device-and-network></partial>''</commit>',
+                                                   'device-and-network></partial></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
                                            MockedResponse(text='<response status="success" code="19"><result><msg>'
@@ -1716,7 +2071,7 @@ class TestPanoramaCommitCommand:
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'}, id="no args")
                               ])
     def test_panorama_commit_command_without_polling(
-        self, mocker, args, expected_request_params, request_result, expected_demisto_result
+            self, mocker, args, expected_request_params, request_result, expected_demisto_result
     ):
         """
         Given:
@@ -1777,7 +2132,7 @@ class TestPanoramaCommitCommand:
         ]
     )
     def test_panorama_commit_command_with_polling(
-        self, mocker, args, expected_commit_request_url_params, api_response_queue
+            self, mocker, args, expected_commit_request_url_params, api_response_queue
     ):
         """
         Given:
@@ -1831,8 +2186,8 @@ class TestPanoramaPushToDeviceGroupCommand:
     def create_mock_responses(push_to_devices_job_status_count):
         mocked_responses = [  # panorama commit api response mock
             MockedResponse(
-                text='<response status="success" code="19"><result><msg>''<line>Push job '
-                     'enqueued with jobid 123</line></msg>''<job>123</job></result></response>',
+                text='<response status="success" code="19"><result><msg><line>Push job '
+                     'enqueued with jobid 123</line></msg><job>123</job></result></response>',
                 status_code=200,
             )
         ]
@@ -1872,7 +2227,7 @@ class TestPanoramaPushToDeviceGroupCommand:
     def test_panorama_push_to_devices_command_with_polling(self, mocker, api_response_queue):
         """
         Given:
-            - pan-os-push-to-device-group command arguments
+            - pan-os-push-to-device-group command arguments including device-group.
             - a queue for api responses of the following:
                 1) first value in the queue is the panorama push to the device group api response
                 2) panorama job status api response which indicates job isn't done yet (different number each time)
@@ -1888,17 +2243,21 @@ class TestPanoramaPushToDeviceGroupCommand:
               that it returns the expected output.
             - make sure readable output is printed out only once.
             - make sure context output is returned only when polling is finished.
+            - make sure the device-group from argument overrides the device-group from parameter in context.
         """
         import requests
         import Panorama
         from Panorama import panorama_push_to_device_group_command
         from CommonServerPython import ScheduledCommand
-        Panorama.DEVICE_GROUP = 'device-group'
 
         args = {
             'description': 'a simple push',
-            'polling': 'true'
+            'polling': 'true',
+            'device-group': 'device-group-from-command-arg'
         }
+
+        # mimcs the piece of code which decides which device-group will be set into DEVICE_GROUP parameter.
+        Panorama.DEVICE_GROUP = args.get('device-group') or 'device-group-from-integration-params'
 
         Panorama.API_KEY = 'APIKEY'
         mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
@@ -1921,6 +2280,7 @@ class TestPanoramaPushToDeviceGroupCommand:
             command_result = panorama_push_to_device_group_command(polling_args)
 
         assert command_result.outputs.get('JobID') == '123'
+        assert command_result.outputs.get('DeviceGroup') == 'device-group-from-command-arg'
         assert command_result.outputs.get('Status') == 'Completed'
         assert command_result.outputs.get('Details')
         assert command_result.outputs.get('Warnings')
@@ -2289,7 +2649,7 @@ class TestDevices:
 
 def load_xml_root_from_test_file(xml_file: str):
     """Given an XML file, loads it and returns the root element XML object."""
-    return etree.parse(xml_file).getroot()
+    return ElementTree.parse(xml_file).getroot()
 
 
 MOCK_PANORAMA_SERIAL = "111222334455"
@@ -3119,7 +3479,8 @@ class TestFirewallCommand:
     def test_get_ha_status_panorama(self, patched_run_op_command, mock_topology):
         """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
         from Panorama import FirewallCommand
-        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_PANORAMA_STATE_XML)
+        patched_run_op_command.return_value = load_xml_root_from_test_file(
+            TestFirewallCommand.SHOW_HA_PANORAMA_STATE_XML)
         result = FirewallCommand.get_ha_status(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result:
@@ -3185,6 +3546,27 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
     called_request_params = request_mock.call_args.kwargs['params']  # The body part of the request
     assert called_request_params == expected_request_params
     assert command_result.readable_output == expected_demisto_result
+
+
+def test_panorama_apply_dns_command2(mocker):
+    """
+    Given:
+        - command args with a singel firewall
+    When:
+        - Running panorama-apply-dns
+    Then:
+        - Assert the request parameters are as expected
+    """
+    import Panorama
+    from Panorama import apply_dns_signature_policy_command
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(Panorama, 'http_request', return_value={})
+    apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
+
+    request_params = request_mock.call_args.kwargs['params']  # The body part of the request
+    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
 
 
 class TestHygieneFunctions:
@@ -3797,13 +4179,13 @@ class TestPanOSListNatRulesCommand:
                 'Name': 'test', 'Tags': 'test tag', 'SourceZone': '1.1.1.1', 'DestinationZone': '1.1.1.1',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'yes'
             },
             {
                 'Name': 'test-2', 'Tags': None, 'SourceZone': '2.2.2.2', 'DestinationZone': '2.2.2.2',
                 'SourceAddress': 'any', 'DestinationAddress': 'any', 'DestinationInterface': None,
                 'Service': 'any', 'Description': None, 'SourceTranslation': None, 'DynamicDestinationTranslation': None,
-                'DestinationTranslation': None
+                'DestinationTranslation': None, 'Disabled': 'no'
             }
         ]
 
@@ -4400,7 +4782,7 @@ class TestPanOSListRedistributionProfiles:
         ]
     )
     def test_pan_os_list_redistribution_profiles_main_flow(
-        self, mocker, args, params, expected_url_params
+            self, mocker, args, params, expected_url_params
     ):
         """
         Given:
@@ -4601,7 +4983,7 @@ class TestPanOSEditRedistributionProfile:
         ]
     )
     def test_pan_os_edit_redistribution_profile_command_replace_action_main_flow(
-        self, mocker, args, params, expected_url_params
+            self, mocker, args, params, expected_url_params
     ):
         """
         Tests several cases where behavior == 'replace'
@@ -4671,7 +5053,7 @@ class TestPanOSEditRedistributionProfile:
         ]
     )
     def test_pan_os_edit_redistribution_profile_command_add_action_main_flow(
-        self, mocker, args, params, expected_url_params
+            self, mocker, args, params, expected_url_params
     ):
         """
         Tests cases where behavior == 'add'
@@ -4747,7 +5129,7 @@ class TestPanOSEditRedistributionProfile:
         ]
     )
     def test_pan_os_edit_redistribution_profile_command_remove_action_main_flow(
-        self, mocker, args, params, expected_url_params
+            self, mocker, args, params, expected_url_params
     ):
         """
         Tests cases where behavior == 'remove'
@@ -4890,19 +5272,19 @@ class TestPanOSListPBFRulesCommand:
                     }
                 },
                 'EnforceSymmetricReturn': {'nexthop-address-list': {'entry': {'@name': '1.1.1.1'}}, 'enabled': 'yes'},
-                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default'
+                'Target': {'negate': 'no'}, 'Application': '3pc', 'Service': 'application-default', 'Disabled': None
             },
             {
                 'Name': 'test2', 'Description': None, 'Tags': None, 'SourceZone': ['1.1.1.1', '2.2.2.2'],
                 'SourceInterface': None, 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'no-pbf': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "yes"
             },
             {
                 'Name': 'test3', 'Description': None, 'Tags': None, 'SourceZone': None, 'SourceInterface': 'a2',
                 'SourceAddress': 'any', 'SourceUser': 'any', 'DestinationAddress': 'any',
                 'Action': {'discard': {}}, 'EnforceSymmetricReturn': {'enabled': 'no'}, 'Target': {'negate': 'no'},
-                'Application': 'any', 'Service': 'any'
+                'Application': 'any', 'Service': 'any', 'Disabled': "no"
             }
         ]
 
@@ -4959,8 +5341,8 @@ class TestPanOSListPBFRulesCommand:
         expected_context = [
             {
                 'Name': 'test', 'Description': 'this is a test description', 'Tags': ['test tag', 'dag_test_tag'],
-                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'SourceAddress': '1.1.1.1', 'SourceUser': 'pre-logon',
-                'DestinationAddress': '1.1.1.1',
+                'SourceZone': '1.1.1.1', 'SourceInterface': None, 'Disabled': None, 'SourceAddress': '1.1.1.1',
+                'SourceUser': 'pre-logon', 'DestinationAddress': '1.1.1.1',
                 'Action': {
                     'forward': {
                         'nexthop': {'ip-address': '2.2.2.2'},
@@ -5036,7 +5418,7 @@ class TestCreatePBFRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
-                              "/rulebase/pbf/rules/entry[@name='test']"
+                             "/rulebase/pbf/rules/entry[@name='test']"
                 }
             ),
             pytest.param(
@@ -5064,7 +5446,7 @@ class TestCreatePBFRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
-                              "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
                 }
             ),
             pytest.param(
@@ -5840,6 +6222,60 @@ def test_pan_os_delete_application_group_command_main_flow(mocker, args, params,
 
 
 @pytest.mark.parametrize(
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_firewall_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!',
+             'vsys': 'vsys1'}
+        ),
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_panorama_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!'}
+        )
+    ]
+)
+def test_pan_os_register_ip_tag_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance with IP tag to register (without vsys).
+     - Firewall instance with IP tag to register (with vsys).
+
+    When:
+     - running the pan-os-register-ip-tag through the main flow.
+
+    Then:
+     - make sure the params and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', 'result': {'uid-response': {'version': '2.0',
+                                                                                     'payload': {'register': None}}}}}
+    )
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-register-ip-tag')
+
+    main()
+    assert mock_request.call_args.kwargs['body'] == expected_url_params
+
+
+@pytest.mark.parametrize(
     'args', [
         {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test'},
         {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'name': 'test'},
@@ -5865,6 +6301,60 @@ def test_pan_os_create_address_main_flow_error(args):
 
     with pytest.raises(DemistoException):
         panorama_create_address_command(args)
+
+
+@pytest.mark.parametrize(
+    "device_group, vsys, response, args, error", [
+        (
+            "test",
+            "",
+            '<response status="success" code="19"> \
+                <result total-count="0" count="0"> \
+                </result> \
+            </response>',
+            {"name": "test", "tag": "not exist"},
+            "Failed to create the address object since the tags `{'not exist'}` does not exist. "
+            "You can use the `create_tag` argument to create the tag."
+        ),
+        (
+            "",
+            "vsys1",
+            '<response status="success" code="19"> \
+                <result total-count="1" count="1"> \
+                    <tag admin="admin" dirtyId="3" time="2023/04/23 01:41:22"> \
+                        <entry name="exist" admin="admin" dirtyId="3" time="2023/04/23 01:18:03"/> \
+                    </tag> \
+                </result> \
+            </response>',
+            {"name": "test", "tag": "exist, not exist", 'create_tag': 'Yes'},
+            'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
+        ),
+    ]
+)
+def test_pan_os_create_address_with_not_exist_tag(mocker, device_group, vsys, response, args, error):
+    """
+    Given:
+     - Tags that does not exist in the system as command arguments
+
+    When:
+     - Running the panorama_create_address_command function
+
+    Then:
+     - Make sure an exception is raised saying only tags that already exist in system can be the command input.
+    """
+    from Panorama import panorama_create_address_command
+    mocker.patch('Panorama.DEVICE_GROUP', device_group)
+    mocker.patch('Panorama.VSYS', vsys)
+    mocker.patch('Panorama.URL', 'https://example.com')
+
+    with requests_mock.Mocker() as m:
+        m.get('https://example.com', text=response, status_code=200)
+        m.post('https://example.com', text=response, status_code=200)
+
+        with pytest.raises(DemistoException) as e:
+            panorama_create_address_command(args)
+
+        assert e.value.message == error
 
 
 """ FETCH INCIDENTS """
@@ -5901,21 +6391,6 @@ class TestFetchIncidentsHelperFunctions:
             add_time_filter_to_query_parameter('time_generated geq "2020-01-01T00:00:00Z"',
                                                fetch_incidents_input.utc_time_twelve)
 
-    @pytest.mark.parametrize('query, id, expected_result',
-                             fetch_incidents_input.test_add_unique_id_filter_to_query_parameter_args)
-    def test_add_unique_id_filter_to_query_parameter(self, query, id, expected_result):
-        """
-        Given:
-            - a query from parameters
-        When:
-            - every fetch incidents cycle starts
-        Then:
-            - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
-              according to the queries log type last fetch time.
-        """
-        from Panorama import add_unique_id_filter_to_query_parameter
-        assert add_unique_id_filter_to_query_parameter(query, id) == expected_result
-
     @pytest.mark.parametrize('params, expected_result', fetch_incidents_input.test_parse_queries_args)
     def test_log_types_queries_to_dict(self, params, expected_result):
         """
@@ -5943,10 +6418,10 @@ class TestFetchIncidentsHelperFunctions:
         - assert that the returned context formatted incident entry is valid
         """
         from Panorama import incident_entry_to_incident_context, DATE_FORMAT
-        raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE'}
+        raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE', 'device_name': 'dummy_device'}
         if occured := dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}):
             context_entry = {
-                'name': '1',
+                'name': 'dummy_device 1',
                 'occurred': occured.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(raw_entry),
                 'type': 'TYPE'
@@ -5976,7 +6451,8 @@ class TestFetchIncidentsHelperFunctions:
         assert fetch_incidents_input.assert_datetime_objects(
             result_dict.get('Y_log_type'), expected_result.get('Y_log_type'))
 
-    @pytest.mark.parametrize('incident_entries, expected_result', fetch_incidents_input.test_parse_incident_entries_args)
+    @pytest.mark.parametrize('incident_entries, expected_result',
+                             fetch_incidents_input.test_parse_incident_entries_args)
     def test_parse_incident_entries(self, incident_entries, expected_result):
         from Panorama import parse_incident_entries
 
@@ -5989,6 +6465,28 @@ class TestFetchIncidentsHelperFunctions:
         from Panorama import get_parsed_incident_entries
         mocker.patch('Panorama.parse_incident_entries', return_value=fetch_incidents_input.one_incident_result)
         assert get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict) == expected_result
+
+    @patch("Panorama.GET_LOG_JOB_ID_MAX_RETRIES", 1)
+    @pytest.mark.parametrize('response, debug_msg, expected_result',
+                             fetch_incidents_input.get_query_entries_by_id_request_args)
+    def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
+        """
+        Given:
+            - A valid Panorama job id.
+
+        When:
+            1. The Panorama job has already finished.
+            2. The Panorama job is still running (not finished).
+
+        Then:
+            1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
+            2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
+         """
+        from Panorama import get_query_entries_by_id_request
+        mocker.patch('Panorama.http_request', return_value=response)
+        debug = mocker.patch('demistomock.debug')
+        assert get_query_entries_by_id_request('000') == expected_result
+        assert debug.called_with(debug_msg)
 
 
 class TestFetchIncidentsFlows:
@@ -6008,7 +6506,7 @@ class TestFetchIncidentsFlows:
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/22 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
         mocker.patch('Panorama.get_query_entries', return_value={})
 
@@ -6037,10 +6535,11 @@ class TestFetchIncidentsFlows:
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
-        expected_parsed_incident_entries = {'name': '000000001', 'occurred': '2022-01-01T12:00:00Z',
+        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00',
+                       'device_name': 'device_for_test'}
+        expected_parsed_incident_entries = {'name': 'device_for_test 000000001', 'occurred': '2022-01-01T12:00:00Z',
                                             'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -6052,7 +6551,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000001'
+        assert last_id_dict.get('X_log_type', '') == {'device_for_test': '000000001'}
 
     def test_second_fetch_with_no_incidents_flow(self, mocker):
         """
@@ -6073,7 +6572,7 @@ class TestFetchIncidentsFlows:
                     'last_id_dict': {'X_log_type': '000000001'}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
         raw_entries = []
         expected_parsed_incident_entries = []
@@ -6107,15 +6606,16 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 13:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device': '000000001'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022/1/1 13:00:00'}]
+        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022/1/1 13:00:00',
+                        'device_name': 'dummy_device'}]
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                            'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'}]
+        expected_parsed_incident_entries = [{'name': 'dummy_device 000000002', 'occurred': '2022-01-01T13:00:00Z',
+                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
@@ -6126,7 +6626,7 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device': '000000002'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_flow(self, mocker):
         """
@@ -6148,25 +6648,27 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 12:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)",
                         'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00'},
-                       {'seqno': '000000001', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00'}]
+        raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00',
+                        'device_name': 'dummy_device1'},
+                       {'seqno': '000000001', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00',
+                        'device_name': 'dummy_device2'}]
 
         fetch_incidents_request_result = {'X_log_type': [raw_entries[0]], 'Y_log_type': [raw_entries[1]]}
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                            'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'},
-                                            {'name': '000000001', 'occurred': '2022-01-01T13:00:00Z',
-                                            'rawJSON': json.dumps(raw_entries[1]), 'type': 'Y_log_type'}]
+        expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
+                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'},
+                                            {'name': 'dummy_device2 000000001', 'occurred': '2022-01-01T13:00:00Z',
+                                             'rawJSON': json.dumps(raw_entries[1]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse(
             '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
             'Y_log_type': dateparser.parse(
-            '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
+                '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.fetch_incidents_request', return_value=fetch_incidents_request_result)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
@@ -6176,9 +6678,9 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == '000000001'
+        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000001'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_and_different_last_fetch_flow(self, mocker):
         """
@@ -6200,20 +6702,22 @@ class TestFetchIncidentsFlows:
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 11:00:00', 'Y_log_type': '2022-01-01 13:00:00'},
-                    'last_id_dict': {'X_log_type': '000000001', 'Y_log_type': '000000001'}}
+                    'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}, 'Y_log_type': {'dummy_device2': '000000002'}}}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)",
                         'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
-        max_fetch = 10
+        max_fetch = {'X_log_type': 10}
 
-        X_log_type_raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00'}]
-        Y_log_type_raw_entries = [{'seqno': '000000002', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00'}]
+        X_log_type_raw_entries = [{'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022-01-01 13:00:00',
+                                   'device_name': 'dummy_device1'}]
+        Y_log_type_raw_entries = [{'seqno': '000000003', 'type': 'Y_log_type', 'time_generated': '2022-01-01 13:00:00',
+                                   'device_name': 'dummy_device2'}]
         fetch_incidents_request_result = {'X_log_type': X_log_type_raw_entries, 'Y_log_type': Y_log_type_raw_entries}
 
-        expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                            'rawJSON': json.dumps(X_log_type_raw_entries[0]), 'type': 'X_log_type'},
-                                            {'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                            'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
+        expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
+                                             'rawJSON': json.dumps(X_log_type_raw_entries[0]), 'type': 'X_log_type'},
+                                            {'name': 'dummy_device2 000000003', 'occurred': '2022-01-01T13:00:00Z',
+                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
                                      'Y_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -6225,6 +6729,343 @@ class TestFetchIncidentsFlows:
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000002'
+        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == '000000002'
+        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000003'}
+
+
+def test_update_max_fetch_dict(mocker):
+    """
+    Given:
+    - configured_max_fetch - maximum number of incidents the client configured to fetch.
+    - max_fetch_dict - dictionary with the maximum number of incidents to fetch per log type.
+    - last_fetch_dict - dictionary with the last fetch time per log type.
+    When:
+        - update_max_fetch_dict is called.
+        - max_fetch_dict has a log type that is not in last_fetch_dict.
+    Then:
+        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type.
+    """
+    from Panorama import update_max_fetch_dict
+    mocker.patch('demistomock.getLastRun', return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08"}})
+    res = update_max_fetch_dict(configured_max_fetch=5, max_fetch_dict={"log_type1": 10, "log_type2": 15},
+                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
+    assert res == {'log_type1': 15, 'log_type2': 5}
+
+
+def test_find_largest_id_per_device(mocker):
+    """
+    Given:
+    - list of dictionaries representing raw entries, some contain seqno and some don't, some contain device_name and
+    When:
+        - find_largest_id_per_device is called.
+    Then:
+        - return a dictionary with the largest id per device and skip entries that don't contain seqno or device_name.
+    """
+    raw_entries = [{'device_name': 'dummy_device1', 'seqno': '000000001'},
+                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                   {'device_name': 'dummy_device2', 'seqno': '000000001'},
+                   {'device_name': 'dummy_device7'},
+                   {'seqno': '000000008'}]
+    from Panorama import find_largest_id_per_device
+    res = find_largest_id_per_device(raw_entries)
+    assert res == {'dummy_device1': '000000002', 'dummy_device2': '000000001'}
+
+
+def test_filter_fetched_entries(mocker):
+    """
+    Given:
+    - list of dictionares repesenting raw entries, some contain seqno and some don't,  some contain device_name and some don't.
+    - dictionary with the largest id per device.
+    When:
+    - filter_fetched_entries is called.
+    Then:
+    - return a dictionary the entries that there id is larger then the id in the id_dict,
+        without the entries that do not have seqno.
+    """
+    from Panorama import filter_fetched_entries
+    raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
+                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                   {'device_name': 'dummy_device2', 'seqno': '000000001'}],
+                   "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'},
+                                 {'seqno': '000000007'}]}
+    id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000000'}}
+    res = filter_fetched_entries(raw_entries, id_dict)
+    assert res == {'log_type1': [{'device_name': 'dummy_device2', 'seqno': '000000001'}],
+                   'log_type2': [{'device_name': 'dummy_device3', 'seqno': '000000004'}]}
+
+
+def test_create_max_fetch_dict():
+    """
+    Given:
+    - dictionary of queries and max_fetch.
+    When:
+    - create_max_fetch_dict is called.
+    Then:
+    - return a dictionary of queries and max_fetch.
+    """
+    from Panorama import create_max_fetch_dict
+    queries_dict = {'log_type1': '(mock)', 'log_type2': '(mocker)'}
+    res = create_max_fetch_dict(queries_dict, 5)
+    assert res == {'log_type1': 5, 'log_type2': 5}
+
+
+@pytest.mark.parametrize('name_match, name_contain, filters, expected_result',
+                         mock_rules.get_mock_rules_and_application)
+def test_build_xpath_filter(name_match, name_contain, filters, expected_result):
+    from Panorama import build_xpath_filter
+    mock_result = build_xpath_filter(name_match, name_contain, filters)
+    assert mock_result == expected_result
+
+
+@pytest.mark.parametrize('sample_file, expected_result_file',
+                         [
+                             ('test_data/prettify_edls_arr_sample.json',
+                              'test_data/prettify_edls_arr_expected_result.json'),
+                         ])
+def test_prettify_edls_arr(sample_file, expected_result_file):
+    """
+    Given:
+    - raw response from api represented by a dictionary
+
+    When:
+    - calling panorama_list_edls and there is only one edl in response
+
+    Then:
+    - assert that the returned value after prettify is correct
+    """
+    from Panorama import prettify_edls_arr
+
+    with open(sample_file, 'r') as f:
+        sample = json.loads(f.read())
+
+    with open(expected_result_file, 'r') as f:
+        expected_result = json.loads(f.read())
+
+    mock_result = prettify_edls_arr(sample)
+    assert mock_result == expected_result
+
+
+def test_panorama_list_rules():
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    mock_version_xml = """
+    <response status="success" code="19">
+        <result total-count="1" count="1">
+            <entry name="hehe 2">
+                <to>
+                    <member>any</member>
+                </to>
+                <from>
+                    <member>any</member>
+                </from>
+                <source>
+                    <member>any</member>
+                </source>
+                <destination>
+                    <member>any</member>
+                </destination>
+                <source-user>
+                    <member>any</member>
+                </source-user>
+                <category>
+                    <member>any</member>
+                </category>
+                <application>
+                    <member>dns</member>
+                    <member>http</member>
+                </application>
+                <service>
+                    <member>application-default</member>
+                </service>
+                <hip-profiles>
+                    <member>any</member>
+                </hip-profiles>
+                <action>allow</action>
+            </entry>
+        </result>
+    </response>
+    """
+    xpath = "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry"
+    query = "(application/member eq 'dns')"
+
+    with requests_mock.Mocker() as m:
+        mock_request = m.get('https://1.1.1.1:443', text=mock_version_xml, status_code=200)
+        rules = Panorama.panorama_list_rules(xpath, query=query)
+
+    assert rules['application']['member'][0] == 'dns'
+    assert mock_request.last_request.qs['xpath'][0] == \
+        "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
+
+
+@pytest.mark.parametrize('include_shared', ['No', 'Yes'])
+def test_panorama_list_tags(mocker, include_shared):
+    """
+    Given:
+        - The include_shared argument.
+    When:
+        - Running the pan_os_list_tag_command method.
+    Then:
+        - Ensure the returned tags list output and HR table is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = ''
+    tags_response_xml = """<response status="success" code="19"><result total-count="1" count="1">
+        <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
+            <entry name="tag1">
+                <color>color13</color>
+            </entry>
+            <entry name="tag2">
+                <color>color39</color>
+            </entry>
+            <entry name="tag3">
+                <color>color39</color>
+                <disable-override>no</disable-override>
+                <comments>text text text</comments>
+            </entry></tag></result></response>"""
+
+    shared_tags_response_xml = """<response status="success" code="19"><result total-count="1" count="1">
+        <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
+            <entry name="sharedtag1">
+                <color>color15</color>
+            </entry>
+            <entry name="sharedtag2">
+                <color>color34</color>
+            </entry></tag></result></response>"""
+
+    tags_mock_response = MockedResponse(text=tags_response_xml, status_code=200)
+    shared_tags_mock_response = MockedResponse(text=shared_tags_response_xml, status_code=200)
+
+    mocker.patch.object(requests, 'request', side_effect=[tags_mock_response, shared_tags_mock_response])
+
+    expected_outputs_tags_list = [{"name": "tag1", "color": "color13", "location": ""},
+                                  {"name": "tag2", "color": "color39", "location": ""},
+                                  {"name": "tag3", "color": "color39", "location": "",
+                                   "disable-override": "no", "comments": "text text text"}]
+
+    expected_hr_result = '### Tags:\n|Name|Color|Comment|Location|\n|---|---|---|---|\n| tag1 | color13' \
+                         ' |  |  |\n| tag2 | color39 |  |  |\n| tag3 | color39 | text text text |  |\n'
+
+    if include_shared == 'Yes':
+        expected_outputs_tags_list.extend([
+            {"name": "sharedtag1", "color": "color15", "location": "shared"},
+            {"name": "sharedtag2", "color": "color34", "location": "shared"}
+        ])
+        expected_hr_result += '| sharedtag1 | color15 |  | shared |\n| sharedtag2 | color34 |  | shared |\n'
+
+    command_results = Panorama.pan_os_list_tag_command({"include_shared_tags": include_shared})
+
+    assert command_results.outputs == expected_outputs_tags_list
+    assert command_results.readable_output == expected_hr_result
+
+
+def test_pan_os_create_tag_command(mocker):
+    """
+    Given:
+        - The tag name to create.
+    When:
+        - Running the pan_os_create_tag_command method.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    create_tag_mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=create_tag_mock_response)
+
+    command_results = Panorama.pan_os_create_tag_command({"name": "testtag"})
+
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'The tag with name "testtag" was created successfully.'
+
+
+@pytest.mark.parametrize('is_shared', [False, True])
+def test_pan_os_edit_tag_command(mocker, is_shared):
+    """
+    Given:
+        - The command arguments to edit the tag.
+    When:
+        1. The tag is not in a shared device group.
+        2. The tag is in a shared device group.
+        - Running the pan_os_edit_tag_command method.
+    Then:
+        - Ensure the request method call counts is according to if the tag is shared.
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_first_text_response_if_shared = '<response status="error" code="12"><msg>' \
+                                             '<line>Edit breaks config validity</line></msg></response>'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+    expected_list_text_response = """<response status="success" code="19"><result total-count="1" count="1">
+        <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
+            <entry name="testtag">
+                <color>color39</color>
+                <disable-override>no</disable-override>
+                <comments>text text text</comments>
+            </entry></tag></result></response>"""
+    expected_request_count = 4 if is_shared else 3
+
+    edit_tag_mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    edit_tag_first_mock_response = MockedResponse(text=expected_first_text_response_if_shared, status_code=200)
+    list_tag_mr = MockedResponse(text=expected_list_text_response, status_code=200)
+
+    responses = [list_tag_mr, list_tag_mr, edit_tag_first_mock_response, edit_tag_mock_response] if is_shared else \
+        [list_tag_mr, list_tag_mr, edit_tag_mock_response]
+    request_mocker = mocker.patch.object(requests, 'request', side_effect=responses)
+
+    command_results = Panorama.pan_os_edit_tag_command({"name": "testtag", "new_name": "newtesttag"})
+
+    assert request_mocker.call_count == expected_request_count
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'The tag with name "testtag" was edited successfully.'
+
+
+@pytest.mark.parametrize('is_shared', [False, True])
+def test_pan_os_delete_tag_command(mocker, is_shared):
+    """
+    Given:
+        - The tag name to delete.
+    When:
+        1. The tag is not in a shared device group.
+        2. The tag is in a shared device group.
+        - Running the pan_os_delete_tag_command method.
+    Then:
+        - Ensure the request method call counts is according to if the tag is shared.
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'somedevice'
+
+    expected_first_text_response_if_shared = '<response status="success" code="7"><msg>Object doesn\'t exist</msg></response>'
+    expected_second_text_response_if_shared = '<response status="success" code="19"><result total-count="2" count="2">' \
+                                              '<entry name="somedevice"></entry></result></response>'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+    expected_request_count = 3 if is_shared else 1
+
+    delete_tag_mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    delete_tag_first_mock_response = MockedResponse(text=expected_first_text_response_if_shared, status_code=200)
+    delete_tag_second_mock_response = MockedResponse(text=expected_second_text_response_if_shared, status_code=200)
+
+    responses = [delete_tag_first_mock_response, delete_tag_second_mock_response,
+                 delete_tag_mock_response] if is_shared else [delete_tag_mock_response]
+    request_mocker = mocker.patch.object(requests, 'request', side_effect=responses)
+
+    command_results = Panorama.pan_os_delete_tag_command({"name": "testtag", "new_name": "newtesttag"})
+
+    assert request_mocker.call_count == expected_request_count
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'The tag with name "testtag" was deleted successfully.'

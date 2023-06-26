@@ -1,0 +1,33 @@
+{
+    "flowId": "6426061d83048b7317acfcec",
+    "allFinished": true,
+    "allFilesDownloadFinished": true,
+    "reportsAmount": 0,
+    "priority": "least",
+    "pollPause": 12,
+    "fileSize": 15834135,
+    "fileReadProgressBytes": 15834135,
+    "rejected_files": [
+        {
+            "name": "37ec20c328a389e51430d794e12dce643d92f4b532e04c9e014b5f06884e8209_d6c484c5-28c1-4fce-9712-8392a6ee785b",
+            "rejected_reason": "SOME REASON"
+        }
+    ],
+    "sourceArchive": {
+        "scan_task_id": "de526ca0-9ce9-4a7d-8920-a0d795320d91",
+        "name": "bad_files_mal.zip",
+        "mimeType": "application/zip",
+        "sha256": "37ec20c328a389e51430d794e12dce643d92f4b532e04c9e014b5f06884e8209",
+        "private": false,
+        "is_link_upload": false,
+        "tags": [
+            {
+                "source": "MEDIA_TYPE",
+                "tag": {
+                    "name": "zip"
+                }
+            }
+        ]
+    },
+    "reports": {}
+}

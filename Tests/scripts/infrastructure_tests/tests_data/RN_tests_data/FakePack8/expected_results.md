@@ -3,8 +3,8 @@
 DBotRole has been removed from these automations. This change will affect any playbook that is dependent on, or runs, these automations.
 These automations will now run using the default Limited User role, unless you explicitly change the permissions.
 For more information, see the section about permissions here:
-[https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
+[https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations)
 - ##### GetIncidentsByQuery
 - ##### FindSimilarIncidentsByText
 

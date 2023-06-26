@@ -152,6 +152,8 @@ script:
       description: Search query/qualification format of '<field> LIKE "<values>"' (e.g. 'Company LIKE "My company"', 'Submitter LIKE "%john%"')
     - description: integer value to limit the amount of results returned (default no limit)
       name: limit
+    - description: Sort query results in descending or ascending order. Format:'<field>.asc' or '<field>.desc' (e.g. 'Assigned To.asc').
+      name: sort
     outputs:
     - contextPath: Ticket.Assignee
       description: Ticket assignee

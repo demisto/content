@@ -1,0 +1,16 @@
+!fortanix-list-secrets
+!fortanix-list-secrets group_id=aedc4bd0-2880-4191-8f38-043fce5ee97
+!fortanix-get-secret-metadata name="Test Secret"
+!fortanix-get-secret-metadata kid=09299af7-0d69-4091-9dc7-27d426667847
+!fortanix-fetch-secret kid=4bd14880-522d-4c34-8560-617e0fb6485b
+!fortanix-new-secret value="Top Secret !3$8" name=metasec metadata="key1=value1, key2=meta2,key3=\"whats that\",key 4=nothin new" group_id=07f85883-adaf-4a6c-a040-ffed46dfd349
+!fortanix-rotate-secret value="Fib0nac!I !3$8" name=metasec metadata="key1=value01,key2=meta2a,key3=\"whats that\",key 4=nothin new" group_id=07f85883-adaf-4a6c-a040-ffed46dfd349
+!fortanix-delete-secret kid=30d7286a-ad4c-4cb3-8bb1-0f9265e0adfc
+!fortanix-invoke-plugin pid=3599796b-7b18-49c3-aad8-9758af24fbf9
+!fortanix-invoke-plugin pid=3599796b-7b18-49c3-aad8-9758af24fbf9 input="Hello World Oct 29"
+!fortanix-invoke-plugin pid=c6a5351e-d516-4099-b5c9-be00c6967a53 input=ewogICJjYV9rZXkiOiAiU1NIQ0EtUHJpdmF0ZS1LZXktRWQyNTUxOSIsCiAgInB1YmtleSI6ICJBQUFBRTJWalpITmhMWE5vWVRJdGJtbHpkSEF5TlRZQUFBQUlibWx6ZEhBeU5UWUFBQUJCQkt0R3dTeFhWdU4zbXFkaE9YNXozVjBNT243MkRJNWNQQThzSXBTemJSVjZnNTNRYW0yVzNNaW1JdlNaazkxL2x4aFNXRE82RmUxQXVqYy9VQ2VCc3lNPSIsCiAgImNlcnRfbGlmZXRpbWUiOiAzNjAwLAogICJ2YWxpZF9wcmluY2lwYWxzIjogInVidW50dSIsCiAgImNlcnRfdHlwZSI6ICJ1c2VyIiwKICAiY3JpdGljYWxfZXh0ZW5zaW9ucyI6IHt9LAogICJleHRlbnNpb25zIjogewogICAgInBlcm1pdC1wdHkiOiAiIgogIH0KfQo=
+!fortanix-invoke-plugin pid=3599796b-7b18-49c3-aad8-9758af24fbf9 input="{\"iv\":\"DaRIkBoCaAPqpGSczBeVGQ==\",\"kid\":\"3451bf0b-1728-4b9a-9859-f1c6bd0d8652\",\"op\":\"decrypt\",\"cipher\":\"ZmHxqmbgYGAtauvCnco7EA==\"}"
+!fortanix-encrypt data="Hello World 123"
+!fortanix-decrypt cipher=eyJraWQiOiAiY2E5ZTJiMGYtNzFjNC00ZjNiLWJhYTYtNGM1YWY5YTM5N2YwIiwgImNpcGhlciI6ICJqcGxqVUk2S2tIb3drbHhhdG1MWXVBPT0iLCAiaXYiOiAidDFJczFWUTR3TlRFOThLZHR2aUlWZz09IiwgIm1vZGUiOiAiQ0JDIn0=
+!fortanix-decrypt cipher=u2KMcAUF1jsifJfh99uWqw== iv=r7HeHduHSZ1IrCC6s7MG0w==
+!fortanix-decrypt kid=ca9e2b0f-71c4-4f3b-baa6-4c5af9a397f0 cipher=u2KMcAUF1jsifJfh99uWqw== iv=r7HeHduHSZ1IrCC6s7MG0w==

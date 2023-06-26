@@ -1135,5 +1135,6 @@
     "name": "Carbon Black EDR Incidents",
     "system": false,
     "version": -1,
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }

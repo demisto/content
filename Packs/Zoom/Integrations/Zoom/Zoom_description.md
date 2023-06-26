@@ -21,4 +21,5 @@ For more information about creating an OAuth app click [here](https://marketplac
     API Key
     API Secret
 
+Note: This authentication method will be deprecated by Zoom in June 2023.
 For more information about creating an JWT app click [here](https://marketplace.zoom.us/docs/guides/build/jwt-app/).

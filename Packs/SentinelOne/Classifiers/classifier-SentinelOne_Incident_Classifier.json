@@ -1,0 +1,16 @@
+{
+	"defaultIncidentType": "SentinelOne Incident",
+	"description": "Classifies SentinelOne incidents.",
+	"feed": false,
+	"id": "SentinelOne Classifier",
+	"keyTypeMap": {
+		"SentinelOne Incident": "SentinelOne Incident"
+	},
+	"name": "SentinelOne Classifier",
+	"transformer": {
+		"simple": "incident_type"
+	},
+	"type": "classification",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

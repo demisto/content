@@ -1,0 +1,3 @@
+!bloxone-td-dossier-lookup-get indicator_type="ip" value="11.22.33.44" sources="activity,threatfox,ccb"
+!bloxone-td-dossier-source-list
+!bloxone-td-lookalike-domain-list detected_at="1y"

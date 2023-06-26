@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: Mantis
   version: -1
@@ -24,8 +24,7 @@ configuration:
   name: token
   required: true
   type: 4
-description: create and update issues in MantisBT,MantisBT is a popular free web-based
-  bug tracking system
+description: create and update issues in MantisBT,MantisBT is a popular free web-based bug tracking system
 display: Mantis
 name: Mantis
 script:
@@ -92,8 +91,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The number of issues to return per page. Default is 50 but overridable
-        by configuration.
+      description: The number of issues to return per page. Default is 50 but overridable by configuration.
       isArray: false
       name: page_size
       required: false
@@ -148,7 +146,7 @@ script:
     description: close a Mantis issue
     execution: false
     name: mantis-close-issue
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

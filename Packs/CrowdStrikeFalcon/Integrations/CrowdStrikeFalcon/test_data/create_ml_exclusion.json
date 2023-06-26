@@ -1,0 +1,36 @@
+{
+    "meta": {
+        "query_time": 0.505713292,
+        "trace_id": "123456"
+    },
+    "errors": null,
+    "resources": [
+        {
+            "id": "123456",
+            "value": "/test",
+            "regexp_value": "\\/test",
+            "value_hash": "123456",
+            "excluded_from": [
+                "blocking"
+            ],
+            "groups": [
+                {
+                    "id": "123456",
+                    "group_type": "static",
+                    "name": "Lab env",
+                    "description": "",
+                    "assignment_rule": "some rule",
+                    "created_by": "user",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "modified_by": "user",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z"
+                }
+            ],
+            "applied_globally": false,
+            "last_modified": "2023-02-06T11:53:20.405090118Z",
+            "modified_by": "admin",
+            "created_on": "2023-02-06T11:53:20.405090118Z",
+            "created_by": "admin"
+        }
+    ]
+}

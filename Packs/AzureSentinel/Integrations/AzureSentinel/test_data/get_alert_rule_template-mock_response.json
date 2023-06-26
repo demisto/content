@@ -1,0 +1,9 @@
+{
+    "name": "template1",
+    "kind": "Scheduled",
+    "properties": {
+        "severity": "High",
+        "displayName": "Template 1",
+        "description": "Description of Template 1"
+    }
+}

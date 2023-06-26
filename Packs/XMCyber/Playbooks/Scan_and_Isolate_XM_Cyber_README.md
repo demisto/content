@@ -4,9 +4,9 @@ An example of playbook using data from XM Cyber to help decide about scanning an
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Isolate Endpoint - Generic
-* IP Enrichment - XM Cyber
-* Endpoint Enrichment - XM Cyber
+* Isolate Endpoint - Generic V2
+* Endpoint Enrichment By Hostname - XM Cyber
+* Endpoint Enrichment By IP - XM Cyber
 * Scan Assets - Nexpose
 
 ### Integrations
@@ -17,6 +17,10 @@ This playbook does not use any scripts.
 
 ### Commands
 This playbook does not use any commands.
+
+## Playbook Inputs
+---
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 ---

@@ -1,0 +1,2821 @@
+id: Test XDR Playbook general commands
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: Test XDR Playbook general commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32c3a3fe-28c5-4d2c-88bd-92e35c4805eb
+    type: start
+    task:
+      id: 32c3a3fe-28c5-4d2c-88bd-92e35c4805eb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 341eae2b-a9df-4ac8-82e2-d09c65df852f
+    type: regular
+    task:
+      id: 341eae2b-a9df-4ac8-82e2-d09c65df852f
+      version: -1
+      name: DeleteContext
+      description: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 157df404-614f-47f4-87cd-0371a630446d
+    type: regular
+    task:
+      id: 157df404-614f-47f4-87cd-0371a630446d
+      version: -1
+      name: xdr-get-incidents
+      description: xdr-get-incidents
+      script: '|||xdr-get-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      gte_creation_time:
+        simple: 2010-10-10T00:00:00
+      limit:
+        simple: "3"
+      sort_by_creation_time:
+        simple: desc
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4a527b96-da71-45ff-849b-80b84c897915
+    type: condition
+    task:
+      id: 4a527b96-da71-45ff-849b-80b84c897915
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.incident_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.xdr_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0b3a4fe4-f134-4ace-8ee9-723597ce8aa6
+    type: regular
+    task:
+      id: 0b3a4fe4-f134-4ace-8ee9-723597ce8aa6
+      version: -1
+      name: xdr-get-incident-extra-data
+      description: xdr-get-incident-extra-data
+      script: '|||xdr-get-incident-extra-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incident_id:
+        simple: ${PaloAltoNetworksXDR.Incident.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 86a0e7eb-c183-4441-832f-7a814860a718
+    type: condition
+    task:
+      id: 86a0e7eb-c183-4441-832f-7a814860a718
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.incident_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 638390de-ae89-4c00-8a87-af8a179c117a
+    type: regular
+    task:
+      id: 638390de-ae89-4c00-8a87-af8a179c117a
+      version: -1
+      name: xdr-update-incident
+      description: xdr-update-incident
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+          transformers:
+          - operator: FirstArrayElement
+      manual_severity:
+        simple: HIGH
+      status:
+        simple: UNDER_INVESTIGATION
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5c9a57b5-fc03-495f-8f4d-330f2fa52079
+    type: regular
+    task:
+      id: 5c9a57b5-fc03-495f-8f4d-330f2fa52079
+      version: -1
+      name: Save incident id
+      description: Save incident id
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: XDRIncidentID
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b54cda42-9c17-410e-8cef-2bf1c89066ad
+    type: regular
+    task:
+      id: b54cda42-9c17-410e-8cef-2bf1c89066ad
+      version: -1
+      name: DeleteContext
+      description: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: XDRIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 98ef82f9-82db-4505-8fcb-8f55cb1184f4
+    type: regular
+    task:
+      id: 98ef82f9-82db-4505-8fcb-8f55cb1184f4
+      version: -1
+      name: xdr-get-incidents
+      description: xdr-get-incidents
+      script: '|||xdr-get-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      incident_id_list:
+        simple: ${XDRIncidentID}
+      sort_by_creation_time:
+        simple: desc
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2924d5e4-cf5a-4503-8c88-63596b739236
+    type: condition
+    task:
+      id: 2924d5e4-cf5a-4503-8c88-63596b739236
+      version: -1
+      name: Verify updated values
+      description: Verify updated values
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.severity
+            iscontext: true
+          right:
+            value:
+              simple: high
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.status
+            iscontext: true
+          right:
+            value:
+              simple: under_investigation
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 914f893a-0a88-4f85-8f86-edf10ee6b3ab
+    type: regular
+    task:
+      id: 914f893a-0a88-4f85-8f86-edf10ee6b3ab
+      version: -1
+      name: xdr-update-incident
+      description: xdr-update-incident
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      incident_id:
+        simple: ${PaloAltoNetworksXDR.Incident.incident_id}
+      manual_severity:
+        simple: LOW
+      status:
+        simple: NEW
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 9e4fbdec-bfb8-4f66-8dcc-2d66d5bc2f17
+    type: regular
+    task:
+      id: 9e4fbdec-bfb8-4f66-8dcc-2d66d5bc2f17
+      version: -1
+      name: xdr-insert-parsed-alert
+      description: xdr-insert-parsed-alert
+      script: '|||xdr-insert-parsed-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alert_description:
+        simple: This alert from content  TestXDRPlaybook description
+      alert_name:
+        simple: This alert from content  TestXDRPlaybook
+      local_ip:
+        simple: 196.168.0.111
+      local_port:
+        simple: "2000"
+      product:
+        simple: SandBlast
+      remote_ip:
+        simple: 2.2.2.2
+      remote_port:
+        simple: "6000"
+      severity:
+        simple: High
+      vendor:
+        simple: Checkpoint
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 88adf053-0271-421a-871d-23d4e45ce70d
+    type: regular
+    task:
+      id: 88adf053-0271-421a-871d-23d4e45ce70d
+      version: -1
+      name: Set 2 CEF alerts to context
+      description: Set 2 CEF alerts to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: cef_alerts
+      value:
+        simple: |-
+          [
+                      "CEF:0|Check Point|VPN-1 & FireWall-1|Check Point|Log|microsoft-ds|Unknown|act=AcceptdeviceDirection=0 rt=1569477512000 spt=56957 dpt=445 cs2Label=Rule Name cs2=ADPrimery layer_name=FW_Device_blackened Securitylayer_uuid=07693fc7-1a5c-4f31-8afe-77ae96c71b8c match_id=1806 parent_rule=0rule_action=Accept rule_uid=8e45f36b-d106-4d81-a1f0-9d1ed9a6be5c ifname=bond2logid=0 loguid={0x5d8c5388,0x61,0x29321fac,0xc0000022} origin=1.1.1.1originsicname=CN=DWdeviceBlackend,O=Blackend sequencenum=363 version=5dst=1.1.1.1 inzone=External outzone=Internal product=VPN-1 & FireWall-1 proto=6service_id=microsoft-ds src=1.1.1.1",
+                      "CEF:0|Check Point|VPN-1 & FireWall-1|Check Point|Log|Log|Unknown|act=AcceptdeviceDirection=0 rt=1569477501000 spt=63088 dpt=5985 cs2Label=Rule Namelayer_name=FW_Device_blackened Securitylayer_uuid=07693fc7-1a5c-4f31-8afe-77ae96c71b8c match_id=8899 parent_rule=0rule_action=Accept rule_uid=ae987933-82c0-470f-ab1c-1ad552c82369conn_direction=Internal ifname=bond1.12 logid=0loguid={0x5d8c537d,0xbb,0x29321fac,0xc0000014} origin=1.1.1.1originsicname=CN=DWdeviceBlackend,O=Blackend sequencenum=899 version=5dst=1.1.1.1 product=VPN-1 & FireWall-1 proto=6 src=1.1.1.1"
+                  ]
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a9c7d974-0c5b-4fd8-8ef1-3bb2028ea924
+    type: regular
+    task:
+      id: a9c7d974-0c5b-4fd8-8ef1-3bb2028ea924
+      version: -1
+      name: xdr-insert-cef-alerts
+      description: xdr-insert-cef-alerts
+      script: '|||xdr-insert-cef-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      cef_alerts:
+        simple: ${cef_alerts}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 18a22975-3344-4e18-869d-9e3cdbb81921
+    type: regular
+    task:
+      id: 18a22975-3344-4e18-869d-9e3cdbb81921
+      version: -1
+      name: Get Endpoint aeec6a2cc92e46fab3b6f621722e9916
+      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 96d5efde-a448-4667-8612-812fc0947194
+    type: condition
+    task:
+      id: 96d5efde-a448-4667-8612-812fc0947194
+      version: -1
+      name: To isolate ?
+      description: To isolate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d654baeb-b9cd-4e3c-8e0f-e90d7218b9ec
+    type: condition
+    task:
+      id: d654baeb-b9cd-4e3c-8e0f-e90d7218b9ec
+      version: -1
+      name: To unisolate?
+      description: To unisolate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_ISOLATED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 95807320-56e8-4a69-8be5-3baf127a07a3
+    type: regular
+    task:
+      id: 95807320-56e8-4a69-8be5-3baf127a07a3
+      version: -1
+      name: xdr-unisolate-endpoint
+      description: xdr-unisolate-endpoint
+      script: '|||xdr-unisolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      endpoint_id:
+        simple: f8a2f58846b542579c12090652e79f3d
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c9a44025-c78c-471d-8efa-9dade67f86f3
+    type: regular
+    task:
+      id: c9a44025-c78c-471d-8efa-9dade67f86f3
+      version: -1
+      name: xdr-isolate-endpoint
+      description: xdr-isolate-endpoint
+      script: '|||xdr-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      endpoint_id:
+        simple: f8a2f58846b542579c12090652e79f3d
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f8f050ee-c241-488e-84c9-27dce0c5fd51
+    type: regular
+    task:
+      id: f8f050ee-c241-488e-84c9-27dce0c5fd51
+      version: -1
+      name: xdr-get-endpoints
+      description: xdr-get-endpoints
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      hostname:
+        simple: DESKTOP-S2455R8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e694b028-ae06-4b83-83fc-7b48a91a0375
+    type: condition
+    task:
+      id: e694b028-ae06-4b83-83fc-7b48a91a0375
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.os_type
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_OS_WINDOWS
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.ip
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7ea4bed4-4fdc-4c91-8377-ef69a86ea15c
+    type: title
+    task:
+      id: 7ea4bed4-4fdc-4c91-8377-ef69a86ea15c
+      version: -1
+      name: Isolation done
+      description: Isolation done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f93cc330-e3e4-48eb-84a2-998541fb91dd
+    type: title
+    task:
+      id: f93cc330-e3e4-48eb-84a2-998541fb91dd
+      version: -1
+      name: Success!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 11540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cc23793b-a8e5-4e2a-8773-fcfa42ebb38e
+    type: condition
+    task:
+      id: cc23793b-a8e5-4e2a-8773-fcfa42ebb38e
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptCode
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 5e9302cd-8730-474e-89ef-9ad1710b6c73
+    type: regular
+    task:
+      id: 5e9302cd-8730-474e-89ef-9ad1710b6c73
+      version: -1
+      name: xdr-get-script-code
+      description: Gets the code of a specific script in the script library.
+      script: '|||xdr-get-script-code'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      script_uid:
+        complex:
+          root: PaloAltoNetworksXDR.Scripts
+          accessor: script_uid
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 62068161-c31b-41f3-8490-aaf97810cf7d
+    type: condition
+    task:
+      id: 62068161-c31b-41f3-8490-aaf97810cf7d
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptMetadata
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 2224bb2f-f913-4cf0-8a90-9fbe85c946c8
+    type: regular
+    task:
+      id: 2224bb2f-f913-4cf0-8a90-9fbe85c946c8
+      version: -1
+      name: xdr-get-script-metadata
+      description: Gets the full definition of a specific script in the scripts library.
+      script: '|||xdr-get-script-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      script_uid:
+        complex:
+          root: PaloAltoNetworksXDR.Scripts
+          accessor: script_uid
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: f67fe57e-5c39-4c3b-85c7-309190669668
+    type: condition
+    task:
+      id: f67fe57e-5c39-4c3b-85c7-309190669668
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Scripts
+                accessor: script_uid
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 7d0a79fa-097e-433b-83b9-fcd5fe234823
+    type: regular
+    task:
+      id: 7d0a79fa-097e-433b-83b9-fcd5fe234823
+      version: -1
+      name: xdr-get-scripts
+      description: Gets a list of scripts available in the scripts library.
+      script: '|||xdr-get-scripts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: cb8ce739-192c-4b83-850d-bd182a7fd994
+    type: condition
+    task:
+      id: cb8ce739-192c-4b83-850d-bd182a7fd994
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.EndpointViolations
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: e291fb21-3769-4f59-849c-88f724ce1be7
+    type: regular
+    task:
+      id: e291fb21-3769-4f59-849c-88f724ce1be7
+      version: -1
+      name: xdr-get-endpoint-device-control-violations
+      description: Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+      script: '|||xdr-get-endpoint-device-control-violations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2ef3fa01-4fa1-4ad3-877f-4bcd14d00b45
+    type: condition
+    task:
+      id: 2ef3fa01-4fa1-4ad3-877f-4bcd14d00b45
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Policy.policy_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 951f029d-975d-4625-88e7-6f4a0e00c65d
+    type: regular
+    task:
+      id: 951f029d-975d-4625-88e7-6f4a0e00c65d
+      version: -1
+      name: xdr-get-policy
+      description: Gets the policy name for a specific endpoint.
+      script: '|||xdr-get-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      endpoint_id:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 831a0609-dd5d-4a0c-8c80-21e4416c247d
+    type: condition
+    task:
+      id: 831a0609-dd5d-4a0c-8c80-21e4416c247d
+      version: -1
+      name: Check the number of endpoints in context
+      description: Check the number of endpoints in context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: Endpoint
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: f12d8c07-a71f-4fe7-8f69-0cc9326364b2
+    type: regular
+    task:
+      id: f12d8c07-a71f-4fe7-8f69-0cc9326364b2
+      version: -1
+      name: xdr-get-endpoints
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: f41e82db-437a-47fa-88a1-4e424a0fd178
+    type: condition
+    task:
+      id: f41e82db-437a-47fa-88a1-4e424a0fd178
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTNAME
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 6642f602-df92-4b46-8e82-b2606b0a6302
+    type: regular
+    task:
+      id: 6642f602-df92-4b46-8e82-b2606b0a6302
+      version: -1
+      name: xdr-get-audit-agent-reports
+      description: xdr-get-audit-agent-reports
+      script: '|||xdr-get-audit-agent-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      limit:
+        simple: "5"
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "30"
+      sort_by:
+        simple: category
+      sort_order:
+        simple: desc
+      timestamp_gte:
+        simple: "2019-10-10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 98f9ddfc-5df1-4ea6-81a3-3d2d6c345a86
+    type: condition
+    task:
+      id: 98f9ddfc-5df1-4ea6-81a3-3d2d6c345a86
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE
+            iscontext: true
+          right:
+            value:
+              simple: Authentication failed
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: b86fcd0f-cf55-40d6-8388-4e42eca51c63
+    type: regular
+    task:
+      id: b86fcd0f-cf55-40d6-8388-4e42eca51c63
+      version: -1
+      name: xdr-get-audit-management-logs
+      description: xdr-get-audit-management-logs
+      script: '|||xdr-get-audit-management-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      limit:
+        simple: "5"
+      sort_by:
+        simple: sub_type
+      sort_order:
+        simple: asc
+      sub_type:
+        simple: Authentication failed
+      timestamp_gte:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 41d66d95-87a4-4d47-8792-b5488064ce20
+    type: condition
+    task:
+      id: 41d66d95-87a4-4d47-8792-b5488064ce20
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Distribution.url
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 881c45ee-fe01-4e6a-8a34-cba49d12c5eb
+    type: regular
+    task:
+      id: 881c45ee-fe01-4e6a-8a34-cba49d12c5eb
+      version: -1
+      name: xdr-get-distribution-url
+      description: xdr-get-distribution-url
+      script: '|||xdr-get-distribution-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      distribution_id:
+        simple: 2c74c11b63074653aa01d575a82bf52a
+      package_type:
+        simple: sh
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 18d86a1c-020e-4a89-8041-57b7df5bbe4a
+    type: condition
+    task:
+      id: 18d86a1c-020e-4a89-8041-57b7df5bbe4a
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Distribution.status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Distribution.status
+            iscontext: true
+          right:
+            value:
+              simple: In Progress
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 56069267-4c4c-4d63-8d5a-c57d2928db16
+    type: regular
+    task:
+      id: 56069267-4c4c-4d63-8d5a-c57d2928db16
+      version: -1
+      name: xdr-get-create-distribution-status
+      description: xdr-get-create-distribution-status
+      script: '|||xdr-get-create-distribution-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      distribution_ids:
+        simple: ${PaloAltoNetworksXDR.Distribution.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 549d3eaf-3f5a-4ba4-8a9e-dbeb24fd2700
+    type: condition
+    task:
+      id: 549d3eaf-3f5a-4ba4-8a9e-dbeb24fd2700
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Distribution.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Distribution.platform
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 3386d7c3-e532-47f2-8526-7427f52e2b3c
+    type: regular
+    task:
+      id: 3386d7c3-e532-47f2-8526-7427f52e2b3c
+      version: -1
+      name: xdr-create-distribution
+      description: xdr-create-distribution
+      script: '|||xdr-create-distribution'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      agent_version:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: DistributionVersions.linux
+          transformers:
+          - operator: FirstArrayElement
+      description:
+        simple: Created by TestXDRPlaybook
+      name:
+        simple: This is test distribution
+      package_type:
+        simple: standalone
+      platform:
+        simple: linux
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: e4bab8aa-3021-41ad-89ad-6cbc4002bf2e
+    type: condition
+    task:
+      id: e4bab8aa-3021-41ad-89ad-6cbc4002bf2e
+      version: -1
+      name: Verify Outputs
+      description: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.DistributionVersions.windows
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.DistributionVersions.linux
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 33de01f8-7db0-4cff-8ee6-dc39008e9a0a
+    type: regular
+    task:
+      id: 33de01f8-7db0-4cff-8ee6-dc39008e9a0a
+      version: -1
+      name: xdr-get-distribution-versions
+      description: xdr-get-distribution-versions
+      script: '|||xdr-get-distribution-versions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 7a97cba3-a9f7-42b5-8677-b67fa58fea19
+    type: regular
+    task:
+      id: 7a97cba3-a9f7-42b5-8677-b67fa58fea19
+      version: -1
+      name: xdr-get-contributing-event
+      description: Retrieves contributing events for a specific alert.
+      script: '|||xdr-get-contributing-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          accessor: internal_id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: ceeef896-569c-4f73-8004-459a682e2d17
+    type: condition
+    task:
+      id: ceeef896-569c-4f73-8004-459a682e2d17
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.ContributingEvent
+                accessor: alertID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.ContributingEvent
+                accessor: events
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 1ea61c4d-031e-4380-8dff-39358f0b7658
+    type: regular
+    task:
+      id: 1ea61c4d-031e-4380-8dff-39358f0b7658
+      version: -1
+      name: xdr-replace-featured-field
+      description: Replace the featured hosts\users\ips\active-directory_groups listed in your environment.
+      script: '|||xdr-replace-featured-field'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      comments:
+        simple: This is a test comment
+      field_type:
+        simple: ip_addresses
+      values:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: f4f304a0-fad3-4d8c-8304-c87113225df2
+    type: condition
+    task:
+      id: f4f304a0-fad3-4d8c-8304-c87113225df2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.FeaturedField
+                accessor: fieldType
+            iscontext: true
+          right:
+            value:
+              simple: ip_addresses
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.FeaturedField.fields
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: df55a9c0-283c-425c-854e-0b3e724e6bab
+    type: regular
+    task:
+      id: df55a9c0-283c-425c-854e-0b3e724e6bab
+      version: -1
+      name: DeleteContext
+      description: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 816090ca-43ff-486e-88d2-6c5361a24097
+    type: regular
+    task:
+      id: 816090ca-43ff-486e-88d2-6c5361a24097
+      version: -1
+      name: Get endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: ca6d2ce8-dcab-43cf-8b0b-16a89c5be6af
+    type: regular
+    task:
+      id: ca6d2ce8-dcab-43cf-8b0b-16a89c5be6af
+      version: -1
+      name: Save original alias name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      key:
+        simple: old_name
+      value:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+                iscontext: true
+              right:
+                value:
+                  simple: aeec6a2cc92e46fab3b6f621722e9916
+          accessor: alias
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: eea9b039-c0e4-4d48-88f3-524730c40d8f
+    type: regular
+    task:
+      id: eea9b039-c0e4-4d48-88f3-524730c40d8f
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 8915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 4ae5c7f3-765c-493b-875e-625c1f8cc11e
+    type: regular
+    task:
+      id: 4ae5c7f3-765c-493b-875e-625c1f8cc11e
+      version: -1
+      name: Change alias name
+      description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
+      script: '|||xdr-endpoint-alias-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      new_alias_name:
+        simple: testing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 56a6c868-66c9-4ccf-8b8e-322930493f04
+    type: condition
+    task:
+      id: 56a6c868-66c9-4ccf-8b8e-322930493f04
+      version: -1
+      name: Verify the name was changed
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: aeec6a2cc92e46fab3b6f621722e9916
+                accessor: alias
+            iscontext: true
+          right:
+            value:
+              simple: testing
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 4dbc9cc3-0685-4e0c-83ca-3f0f262af935
+    type: regular
+    task:
+      id: 4dbc9cc3-0685-4e0c-83ca-3f0f262af935
+      version: -1
+      name: Get endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 86098caa-d146-44c8-8a9d-746cfb4bc3f2
+    type: regular
+    task:
+      id: 86098caa-d146-44c8-8a9d-746cfb4bc3f2
+      version: -1
+      name: Change alias name to the original name
+      description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
+      script: '|||xdr-endpoint-alias-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      alias_name:
+        complex:
+          root: old_name
+      endpoint_id_list:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      new_alias_name:
+        simple: testing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 9965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: b2497abd-049f-429d-8cec-b7b879769957
+    type: regular
+    task:
+      id: b2497abd-049f-429d-8cec-b7b879769957
+      version: -1
+      name: xdr-list-users
+      description: Retrieve a list of the current users in your environment.
+      script: '|||xdr-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 710bc3a3-51b7-4669-83bd-8c00c74761f5
+    type: condition
+    task:
+      id: 710bc3a3-51b7-4669-83bd-8c00c74761f5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: Adi
+          right:
+            value:
+              simple: PaloAltoNetworksXDR.User.user_first_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: c6c51606-70b0-439d-84f3-4547d748059d
+    type: regular
+    task:
+      id: c6c51606-70b0-439d-84f3-4547d748059d
+      version: -1
+      name: xdr-list-risky-users
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in your environment along with the reason affecting each score.
+      script: '|||xdr-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      limit:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 1d136452-a2cf-43ef-8615-9d51f80b1caf
+    type: condition
+    task:
+      id: 1d136452-a2cf-43ef-8615-9d51f80b1caf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.RiskyUser.id
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: a02bdc7e-d4d6-412f-81bd-6268c7e48c61
+    type: regular
+    task:
+      id: a02bdc7e-d4d6-412f-81bd-6268c7e48c61
+      version: -1
+      name: xdr-list-risky-hosts
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in your environment along with the reason affecting each score.
+      script: '|||xdr-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      limit:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: dda888db-59bb-4ae2-8e68-6ad42db7f387
+    type: condition
+    task:
+      id: dda888db-59bb-4ae2-8e68-6ad42db7f387
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.RiskyHost
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 11015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 986cd567-b783-43bb-8a53-d1b905773c36
+    type: regular
+    task:
+      id: 986cd567-b783-43bb-8a53-d1b905773c36
+      version: -1
+      name: xdr-list-roles
+      description: Retrieve information about one or more roles created in your environment.
+      script: '|||xdr-list-roles'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      role_names:
+        simple: Account Admin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 11190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 926deb2e-7e35-47da-819c-84afdd15c088
+    type: condition
+    task:
+      id: 926deb2e-7e35-47da-819c-84afdd15c088
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Role
+                accessor: pretty_name
+            iscontext: true
+          right:
+            value:
+              simple: Account Admin
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 11365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: c17f9fd4-87cd-4582-84ab-a2ad7cb63f94
+    type: regular
+    task:
+      id: c17f9fd4-87cd-4582-84ab-a2ad7cb63f94
+      version: -1
+      name: get-correlation-alerts
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      alert_source:
+        simple: correlation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: c8603613-0ee9-4615-8b2c-0cc37400e027
+    type: condition
+    task:
+      id: c8603613-0ee9-4615-8b2c-0cc37400e027
+      version: -1
+      name: check if have any correlation alerts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.internal_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 11875,
+        "width": 922.5,
+        "x": 50,
+        "y": -270
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

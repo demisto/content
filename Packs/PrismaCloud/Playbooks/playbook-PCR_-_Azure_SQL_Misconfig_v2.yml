@@ -1,0 +1,578 @@
+id: Prisma Cloud Remediation - Azure SQL Misconfiguration v2
+version: -1
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Remediation - Azure SQL Misconfiguration v2
+description: |-
+  This playbook remediates Prisma Cloud Azure SQL alerts.  It calls sub-playbooks that perform the actual remediation steps.
+
+  Remediation:
+
+  - Azure SQL database auditing is disabled
+  - Azure SQL Database with Auditing Retention less than 90 days
+  - Azure Threat Detection on SQL databases is set to Off
+  - Azure SQL Database with Threat Retention less than or equals to 90 days
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: dc0dbaf1-b1ca-4e2c-8ffa-31db09905c46
+    type: condition
+    task:
+      id: dc0dbaf1-b1ca-4e2c-8ffa-31db09905c46
+      version: -1
+      name: Is Azure SQL Management integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: Azure SQL Management
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a69c9129-aecc-4d60-8ba0-f0cb72a597af
+    type: condition
+    task:
+      id: a69c9129-aecc-4d60-8ba0-f0cb72a597af
+      version: -1
+      name: Is there a policy to remediate?
+      description: Checks for a Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9ce73454-797e-4d04-891d-423a639c10b2
+    type: condition
+    task:
+      id: 9ce73454-797e-4d04-891d-423a639c10b2
+      version: -1
+      name: Update SQL automatically?
+      description: Auto remediate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediateAzureSQL
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 901706e5-bb77-442f-88f6-f9d1fbaa4fea
+    type: condition
+    task:
+      id: 901706e5-bb77-442f-88f6-f9d1fbaa4fea
+      version: -1
+      name: Auto remediate?
+      description: Remediate automatically or manually update?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: ${incident.id} Autoremediate?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4a30291e-3335-4fb7-8e43-4a4de8a82591
+    type: condition
+    task:
+      id: 4a30291e-3335-4fb7-8e43-4a4de8a82591
+      version: -1
+      name: Execute playbook
+      description: Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      database:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: database
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 96b1b8e3-6936-434f-94ab-a154cd5967d9
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: fa6fa903-8887-49dd-917f-91687df98dd1
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 8f7eee48-dffb-4f18-9207-8ea48680b0e2
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: c83a7b1d-ac74-475b-80fe-b1244daa1b27
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 6788b112-6dc7-4211-84c4-5d3b88c9f1d3
+    type: regular
+    task:
+      id: 6788b112-6dc7-4211-84c4-5d3b88c9f1d3
+      version: -1
+      name: Manually update SQL
+      description: |-
+        1. Log in to the Azure Portal.
+        2. Go to SQL servers.
+        3. Choose the reported DB server.
+        4. Under the Security section, click 'Auditing'.
+        5. Set 'Auditing' to 'On'.
+        6. Select 'Storage' and click 'Storage Details'.
+        7. Configure 'Retention (days)' setting to be greater than or equal to 90 days
+        Note: The default value for the retention period is 0 (unlimited retention).
+        8. Click 'Ok'.
+        9. Click 'Save'.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c3d736e6-e9ab-4cfc-8ed0-7276f754c074
+    type: regular
+    task:
+      id: c3d736e6-e9ab-4cfc-8ed0-7276f754c074
+      version: -1
+      name: Close investigation
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      mndadone: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
+    type: condition
+    task:
+      id: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
+      version: -1
+      name: Is Prisma Cloud v2 integration enabled?
+      description: Is Prisma Cloud v2 integration enabled?
+      type: condition
+      iscommand: false
+      brand: PrismaCloud v2
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "14"
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: e35348a0-09fc-4386-8b04-cb1d1d36b4d4
+    type: regular
+    task:
+      id: e35348a0-09fc-4386-8b04-cb1d1d36b4d4
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      script: PrismaCloud v2|||prisma-cloud-alert-dismiss
+      type: regular
+      iscommand: true
+      brand: PrismaCloud v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      dismissal_note:
+        simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: cddf5b62-db60-450c-8f1d-108486c7eaa0
+    type: playbook
+    task:
+      id: cddf5b62-db60-450c-8f1d-108486c7eaa0
+      version: -1
+      name: Prisma Cloud Remediation - Azure SQL Database Misconfiguration
+      description: |-
+        This playbook remediates the following Prisma Cloud Azure SQL database alerts.
+
+        Prisma Cloud policies remediated:
+
+        - Azure SQL database auditing is disabled
+        - Azure SQL Database with Auditing Retention less than 90 days
+        - Azure Threat Detection on SQL databases is set to Off
+        - Azure SQL Database with Threat Retention less than or equals to 90 days
+      playbookName: Prisma Cloud Remediation - Azure SQL Database Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_14_yes": 0.61,
+      "11_9_#default#": 0.53,
+      "2_3_#default#": 0.2,
+      "2_4_yes": 0.52,
+      "4_5_yes": 0.3,
+      "4_8_#default#": 0.22,
+      "5_6_#default#": 0.55,
+      "5_7_yes": 0.46,
+      "6_7_Yes": 0.46,
+      "6_8_#default#": 0.35,
+      "7_15_database": 0.61,
+      "7_8_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1735,
+        "width": 1490,
+        "x": -480,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: AutoRemediateAzureSQL
+  value:
+    simple: "no"
+  required: false
+  description: Execute Azure SQL remediation automatically?
+  playbookInputQuery:
+- key: policyId
+  value:
+    complex:
+      root: incident
+      accessor: labels.policy
+      transformers:
+      - operator: ParseJSON
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: policyId
+  required: false
+  description: Grab the Prisma Cloud policy ID.
+  playbookInputQuery:
+outputs: []
+tests:
+- No Test

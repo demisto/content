@@ -1,0 +1,16 @@
+{
+  "id": "1",
+  "name": "ip",
+  "folder": "Shared",
+  "type": {
+    "ip": {
+      "description": "api test",
+      "recurring": {
+        "five_minute": {}
+      },
+      "certificate_profile": "GP_Log_Certificate",
+      "url": "https://www.test.com",
+      "exception_list": ["www.test.com"]
+    }
+  }
+}

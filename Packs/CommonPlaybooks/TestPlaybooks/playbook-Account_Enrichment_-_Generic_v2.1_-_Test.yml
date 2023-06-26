@@ -7,35 +7,158 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e730f65f-dac8-4988-8603-1f0d4d66dad6
+    taskid: 628ddf6f-d859-4b9b-8679-10571ea848fe
     type: start
     task:
-      id: e730f65f-dac8-4988-8603-1f0d4d66dad6
+      id: 628ddf6f-d859-4b9b-8679-10571ea848fe
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 430,
+          "y": -410
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: b13d4e0f-214d-4a6e-8130-51aa93b7116a
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 42e5ac7e-2b61-48d7-8988-16de9960f7f4
     type: regular
     task:
-      id: b13d4e0f-214d-4a6e-8130-51aa93b7116a
+      id: 42e5ac7e-2b61-48d7-8988-16de9960f7f4
+      version: -1
+      name: Users with a domain
+      description: 'Will create an array object in context from given string input '
+      scriptName: CreateArray
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      arrayData:
+        simple: DEM449982,DEM531065
+      contextKey:
+        simple: Account.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: be320151-f8bd-43c2-8dd6-b64f706a3462
+    type: playbook
+    task:
+      id: be320151-f8bd-43c2-8dd6-b64f706a3462
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Domain:
+        simple: '@demisto.local'
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 372ee57a-43b3-4ace-8088-ddc94f526a3f
+    type: title
+    task:
+      id: 372ee57a-43b3-4ace-8088-ddc94f526a3f
+      version: -1
+      name: Checking with a Domain
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a8b08f80-3b3b-4c97-8ac1-786542cfb260
+    type: regular
+    task:
+      id: a8b08f80-3b3b-4c97-8ac1-786542cfb260
       version: -1
       name: Delete Context
       description: Clear the context for a fresh start of the test.
@@ -45,32 +168,33 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "8"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 430,
+          "y": 495
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 402ad72f-caaa-49c7-8002-024c592825e8
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 9cffe0a3-76f9-4f91-81f9-cdc868cd6cf2
     type: condition
     task:
-      id: 402ad72f-caaa-49c7-8002-024c592825e8
+      id: 9cffe0a3-76f9-4f91-81f9-cdc868cd6cf2
       version: -1
       name: Was the account enriched?
       description: Checks whether the account was enriched.
@@ -79,9 +203,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+      - "16"
       "yes":
-      - "5"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -98,79 +222,27 @@ tasks:
                         simple: Account.Groups
                       iscontext: true
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 710
+          "x": 430,
+          "y": 1020
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 95918583-c914-41b3-89f8-248188060671
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 3088d8ca-4179-4815-8780-b53d275a2add
     type: regular
     task:
-      id: 95918583-c914-41b3-89f8-248188060671
-      version: -1
-      name: Set account username in context
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      append: {}
-      key:
-        simple: Account.Username
-      value:
-        simple: donotdelete
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: e317c164-089b-493b-8bf8-a4c7f790cf6a
-    type: title
-    task:
-      id: e317c164-089b-493b-8bf8-a4c7f790cf6a
-      version: -1
-      name: Done
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 619c7110-204c-4e78-8bd0-e2811237bb3c
-    type: regular
-    task:
-      id: 619c7110-204c-4e78-8bd0-e2811237bb3c
+      id: 3088d8ca-4179-4815-8780-b53d275a2add
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message.
@@ -180,58 +252,173 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "17"
     scriptarguments:
       message:
         simple: The account was not enriched as expected (did not get the outputs that we expected from the Account Enrichment playbook). Check if the user still exists in the integrations used by that playbook (Active Directory, for example). Also check that the outputs are there and that they are the outputs we are checking for.
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 880
+          "x": 750,
+          "y": 1190
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: bf2a892c-d930-41aa-8ca8-27f1581cace3
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: f2c3b038-ac2b-4661-8f9f-1535fa5dba98
+    type: title
+    task:
+      id: f2c3b038-ac2b-4661-8f9f-1535fa5dba98
+      version: -1
+      name: Checking with a Domain
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6ada5f2c-bba8-423d-86e8-404b8df7658b
+    type: regular
+    task:
+      id: 6ada5f2c-bba8-423d-86e8-404b8df7658b
+      version: -1
+      name: Delete Context
+      description: Clear the context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f84b83dc-6451-4fdd-8eea-8e91279ea045
     type: playbook
     task:
-      id: bf2a892c-d930-41aa-8ca8-27f1581cace3
+      id: f84b83dc-6451-4fdd-8eea-8e91279ea045
       version: -1
       name: Account Enrichment - Generic v2.1
-      description: ""
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "13"
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 540
+          "x": 430,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 43bec4b2-8eec-49bc-8059-cc9d0da80ca5
+    type: title
+    task:
+      id: 43bec4b2-8eec-49bc-8059-cc9d0da80ca5
+      version: -1
+      name: Test Without any Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1075,
+        "height": 1845,
         "width": 700,
-        "x": 450,
-        "y": 50
+        "x": 430,
+        "y": -410
       }
     }
   }

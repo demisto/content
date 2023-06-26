@@ -25,29 +25,24 @@ configuration:
   required: false
   type: 8
 - display: Name of the specific Bonusly application (if required)
-  hidden: false
   name: application_name
   required: false
   type: 0
 - defaultvalue: '20'
   display: Max. number of bonuses to fetch (Default is 20)
-  hidden: false
   name: limit
   required: false
   type: 0
 - display: Filter by user email address (given and received)
-  hidden: false
   name: user_email
   required: false
   type: 0
 - display: Filter by hashtag (e.g., %23teamwork)
-  hidden: false
   name: hashtag
   required: false
   type: 0
 - defaultvalue: '1'
   display: Start fetching from X days ago (Defaults is 1 day)
-  hidden: false
   name: fetch_time
   required: false
   type: 0
@@ -634,7 +629,7 @@ script:
     - contextPath: Bonusly.Bonus.message
       description: Message
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: true
   longRunning: false

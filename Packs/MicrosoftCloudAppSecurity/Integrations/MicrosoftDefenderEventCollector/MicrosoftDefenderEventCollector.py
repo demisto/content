@@ -4,20 +4,20 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
 from abc import ABC
 from typing import Any, Callable, Optional
 
 from enum import Enum
-from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field  # type: ignore[E0611, E0611, E0611]
+from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field, parse_obj_as, HttpUrl  # type: ignore[E0611, E0611, E0611]
 from requests.auth import HTTPBasicAuth
 import requests
 import dateparser
 
 from MicrosoftApiModule import *
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
@@ -276,7 +276,7 @@ class DefenderGetEvents(IntegrationGetEvents):
         # TYPES_TO_RETRIEVE dictionary contains the filters and the endpoint according to the event type.
         for event_type_name, endpoint_details in TYPES_TO_RETRIEVE.items():
             self.client.request.params.pop('filters', None)
-            self.client.request.url = f'{base_url}{endpoint_details["type"]}'
+            self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
             # get the filter for this type
             filters = endpoint_details['filters']

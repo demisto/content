@@ -50,6 +50,10 @@ def side_effect_demisto_dt(obj, dt):
             return int(obj) == int(dt[len('.=val =='):])
         elif dt.startswith('.=val !='):
             return int(obj) != int(dt[len('.=val !='):])
+        elif dt == ".='key1' in val":
+            return 'key1' in obj
+        elif dt == ".=!('key2' in val)":
+            return 'key2' not in obj
     except Exception:
         return False
 

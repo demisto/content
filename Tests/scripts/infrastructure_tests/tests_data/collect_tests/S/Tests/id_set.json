@@ -1,0 +1,46 @@
+{
+  "scripts": [],
+  "integrations": [
+    {
+      "myIntegration": {
+        "name": "myIntegration",
+        "file_path": "Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml",
+        "pack": "myXSOAROnlyPack",
+        "tests": [
+          "myOtherTestPlaybook"
+        ]
+      }
+    },
+    {
+      "myIntegration2": {
+        "name": "myIntegration2",
+        "file_path": "Packs/myXSOAROnlyPack2/Integrations/myIntegration2/myIntegration2.yml",
+        "pack": "myXSOAROnlyPack2",
+        "tests": [
+          "myOtherTestPlaybook"
+        ]
+      }
+    }
+  ],
+  "TestPlaybooks": [
+    {
+      "myTestPlaybook": {
+        "name": "myTestPlaybook",
+        "file_path": "Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myXSOAROnlyPack",
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "myOtherTestPlaybook": {
+        "name": "myOtherTestPlaybook",
+        "file_path": "Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml",
+        "pack": "myXSOAROnlyPack",
+        "marketplaces": [
+          "xsoar"
+        ]
+      }
+    }
+  ],
+  "Packs": {}
+}

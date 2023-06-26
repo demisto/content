@@ -48,6 +48,10 @@ Queries Qintel for CVE intelligence
 | Qintel.CVE.AffectedVersions | string | Systems affected by the CVE | 
 | Qintel.CVE.LastObserved | string | Last threat actor observation time | 
 | Qintel.CVE.Observations | array | List of observations | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | Type of indicator. | 
+| DBotScore.Vendor | String | Vendor used to calculate the score. | 
 
 
 #### Command Example

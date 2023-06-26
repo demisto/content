@@ -14,11 +14,25 @@ class Client(BaseClient):
     Client class to interact with the service API.
     """
 
-    def __init__(self, base_url, verify, proxy, headers, auth):
+    def __init__(self, base_url, verify, proxy, headers):
         """
         Class initialization.
         """
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
+
+    def list_remediation_rule_request(self, request_data: Dict) -> Dict[str, Any]:
+        """Get a list of all your remediation rules using the 'xpanse_remediation_rules/rules/' endpoint.
+
+        Args:
+            request_data (dict): dict of parameters for API call.
+
+        Returns:
+            dict: dict containing list of external services.
+        """
+
+        response = self._http_request('POST', '/xpanse_remediation_rules/rules/', json_data=request_data)
+
+        return response
 
     def list_external_service_request(self, search_params: List[Dict]) -> Dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
@@ -30,10 +44,8 @@ class Client(BaseClient):
             dict: dict containing list of external services.
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_services/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_services/', json_data=data)
 
         return response
 
@@ -47,10 +59,8 @@ class Client(BaseClient):
             dict: dict containing information on single external service.
         """
         data = {"request_data": {"service_id_list": service_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_service',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_service', json_data=data)
 
         return response
 
@@ -61,10 +71,8 @@ class Client(BaseClient):
             dict: dict containing list of external ip address ranges.
         """
         data = {"request_data": {"search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_ip_address_ranges/', json_data=data)
 
         return response
 
@@ -78,10 +86,8 @@ class Client(BaseClient):
             dict: dict containing information on external ip address range.
         """
         data = {"request_data": {"range_id_list": range_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_external_ip_address_range/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_external_ip_address_range/', json_data=data)
 
         return response
 
@@ -95,10 +101,8 @@ class Client(BaseClient):
             dict: dict containing list of internet exposure assets.
         """
         data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_assets_internet_exposure/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_assets_internet_exposure/', json_data=data)
 
         return response
 
@@ -112,10 +116,8 @@ class Client(BaseClient):
             dict: dict containing information on an internet exposure asset.
         """
         data = {"request_data": {"asm_id_list": asm_id_list}}
-        headers = self._headers
 
-        response = self._http_request('POST', '/assets/get_asset_internet_exposure/',
-                                      json_data=data, headers=headers)
+        response = self._http_request('POST', '/assets/get_asset_internet_exposure/', json_data=data)
 
         return response
 
@@ -143,6 +145,49 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
 
 ''' COMMAND FUNCTIONS '''
+
+
+def list_remediation_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-list-remediation-rule command: Returns list of remediation path rules.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['asm_rule_id']`` A string representing the ASM Rule ID you want to get association
+            remediation path rules for.
+            ``args['sort_by_creation_time']`` optional - enum (asc,desc).
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains list of remediation path rules.
+    """
+    asm_rule_id = str(args.get('asm_rule_id'))
+    sort_by_creation_time = args.get('sort_by_creation_time')
+
+    # create list of search parameters or pass empty list.
+    search_params = []
+    if asm_rule_id:
+        search_params.append({"field": "attack_surface_rule_id", "operator": "eq", "value": asm_rule_id})
+    if sort_by_creation_time:
+        request_data = {"request_data": {"filters": search_params, 'search_from': 0,
+                        'search_to': DEFAULT_SEARCH_LIMIT, "sort": {"field": "created_at", "keyword": sort_by_creation_time}}}
+    else:
+        request_data = {"request_data": {"filters": search_params, 'search_from': 0,
+                        'search_to': DEFAULT_SEARCH_LIMIT}}
+
+    response = client.list_remediation_rule_request(request_data)
+    parsed = response.get('reply', {}).get('remediation_rules')
+    markdown = tableToMarkdown('Remediation Rules', parsed, removeNull=True, headerTransform=string_to_table_header)
+    command_results = CommandResults(
+        outputs_prefix='ASM.RemediationRule',
+        outputs_key_field='rule_id',
+        outputs=parsed,
+        raw_response=response,
+        readable_output=markdown
+    )
+
+    return command_results
 
 
 def list_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -423,8 +468,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy,
-            auth=None)
+            proxy=proxy)
 
         commands = {
             'asm-list-external-service': list_external_service_command,
@@ -432,7 +476,8 @@ def main() -> None:
             'asm-list-external-ip-address-range': list_external_ip_address_range_command,
             'asm-get-external-ip-address-range': get_external_ip_address_range_command,
             'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
-            'asm-get-asset-internet-exposure': get_asset_internet_exposure_command
+            'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
+            'asm-list-remediation-rule': list_remediation_rule_command
         }
 
         if command == 'test-module':

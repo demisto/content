@@ -1,0 +1,1963 @@
+id: Cortex XDR - First SSO Access
+version: -1
+name: Cortex XDR - First SSO Access
+description: |-
+  Investigates a Cortex XDR incident containing First SSO access from ASN in organization
+   or First successful SSO connection from a country in organization.
+
+  The playbook executes the following:
+  - IP and User Enrichment.
+  - User Investigation - Using 'User Investigation - Generic' sub-playbook.
+  - Set alert's verdict - Using 'Cortex XDR - First SSO access - Set Verdict' sub-playbook.
+  - Response based on the verdict.
+
+  The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a7572bfc-0679-48d4-83e1-a7a7cbafd683
+    type: start
+    task:
+      id: a7572bfc-0679-48d4-83e1-a7a7cbafd683
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": -1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e337418e-95d8-4cac-8585-f9f2f19daf46
+    type: regular
+    task:
+      id: e337418e-95d8-4cac-8585-f9f2f19daf46
+      version: -1
+      name: IP Enrichment
+      description: IP to check.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      extend-context:
+        simple: IPEnrichment=
+      ignore-outputs:
+        simple: "true"
+      ip:
+        complex:
+          root: inputs.IPAddress
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Source IP
+      output:
+        complex:
+          root: IP
+          accessor: Address
+    - incidentfield: ASN
+      output:
+        complex:
+          root: IP
+          accessor: ASN
+    - incidentfield: ASN Name
+      output:
+        complex:
+          root: IP
+          accessor: ASOwner
+    - incidentfield: IP Reputation
+      output:
+        complex:
+          root: DBotScore.[0]
+          accessor: Score
+    - incidentfield: Alert Name
+      output:
+        complex:
+          root: incident.xdrsimilarincidents
+          accessor: name
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Country Code
+      output:
+        complex:
+          root: IP.Geo
+          accessor: Country
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a47c2c3e-ddf0-49d2-8e6c-a8b5b11212ea
+    type: title
+    task:
+      id: a47c2c3e-ddf0-49d2-8e6c-a8b5b11212ea
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "93"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": -1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cc47b29e-d8f6-4343-8c5b-a610b3b99933
+    type: title
+    task:
+      id: cc47b29e-d8f6-4343-8c5b-a610b3b99933
+      version: -1
+      name: Set Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "157"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: a37362fe-c6c2-4357-849b-5636850ddd26
+    type: title
+    task:
+      id: a37362fe-c6c2-4357-849b-5636850ddd26
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "160"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 657.5,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: e2409291-5dae-4067-8154-febfbf9ea338
+    type: title
+    task:
+      id: e2409291-5dae-4067-8154-febfbf9ea338
+      version: -1
+      name: Done
+      description: Closes the investigation.
+      type: title
+      iscommand: false
+      brand: Builtin
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 966c70ad-4d4f-4c65-8623-44b00208ff4b
+    type: regular
+    task:
+      id: 966c70ad-4d4f-4c65-8623-44b00208ff4b
+      version: -1
+      name: Manually Block Account
+      description: Manually disable the user account.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "116"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: bebf269a-0586-4094-89be-b1f6a2eccabf
+    type: condition
+    task:
+      id: bebf269a-0586-4094-89be-b1f6a2eccabf
+      version: -1
+      name: Are the manager contact details exist?
+      description: Check if the manager can be contacted for the user location approval.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "176"
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 527.5,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 77ef71e3-5c97-400e-8684-f0cab0f615d9
+    type: playbook
+    task:
+      id: 77ef71e3-5c97-400e-8684-f0cab0f615d9
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 670ae50d-528f-40c5-8f9b-5976a8ade4f5
+    type: collection
+    task:
+      id: 670ae50d-528f-40c5-8f9b-5976a8ade4f5
+      version: -1
+      name: Get Manager Response
+      description: |-
+        Ask for the user's manager.
+        Did the user work from the country? (The country from the incident.)
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: UserManagerEmail
+      subject:
+        simple: Did the user ${Account.DisplayName} work from ${incident.countryname}?
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Did the user ${Account.DisplayName} work from ${incident.countryname}?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Did the user ${Account.DisplayName} work from ${incident.countryname}?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 3b6bc054-4584-41a4-80b6-7a4e2842b490
+    type: condition
+    task:
+      id: 3b6bc054-4584-41a4-80b6-7a4e2842b490
+      version: -1
+      name: IP is malicious?
+      description: Check if the IP is malicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "115"
+      "yes":
+      - "112"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": -1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 6dfdca0e-a796-4d81-80c4-b78a56fe28bc
+    type: title
+    task:
+      id: 6dfdca0e-a796-4d81-80c4-b78a56fe28bc
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "181"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -1150
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 75df03aa-b478-49ed-89c4-1de438755949
+    type: title
+    task:
+      id: 75df03aa-b478-49ed-89c4-1de438755949
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "172"
+      - "173"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 74577fe2-2dc9-4913-8f77-18be32c48ca2
+    type: condition
+    task:
+      id: 74577fe2-2dc9-4913-8f77-18be32c48ca2
+      version: -1
+      name: Should the Endpoint be isolated automatically?
+      description: Checks if the endpoint can be isolated automatically based on the input's value. (AutomaticallyIsolateEndpoint)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "117"
+      "yes":
+      - "120"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyIsolateEndpoint
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 647.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 7b5e0833-f7b6-4195-8398-af16a0d718f3
+    type: regular
+    task:
+      id: 7b5e0833-f7b6-4195-8398-af16a0d718f3
+      version: -1
+      name: Manually Endpoint isolation
+      description: Manually isolate the endpoint.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "161"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: b41d6c60-682d-4d44-85f8-e051731ad37a
+    type: regular
+    task:
+      id: b41d6c60-682d-4d44-85f8-e051731ad37a
+      version: -1
+      name: Cortex XDR - Isolate Endpoint
+      description: Isolates the specified endpoint.
+      script: '|||xdr-endpoint-isolate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "161"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.EndpointID
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: bdcff895-7896-4c5e-83ee-78d86f941cef
+    type: regular
+    task:
+      id: bdcff895-7896-4c5e-83ee-78d86f941cef
+      version: -1
+      name: Set XDR alerts details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      countryname:
+        complex:
+          root: inputs.LoginCountry
+          transformers:
+          - operator: ConvertCountryCodeCountryName
+            args:
+              country_code:
+                value:
+                  simple: inputs.LoginCountry
+                iscontext: true
+              country_name: {}
+      xdralertsearchresults:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Alert
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 37.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: sAMAccountName
+      output:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: sAMAccountName
+    - incidentfield: Employee Email
+      output:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: mail
+    - incidentfield: Account Groups
+      output:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: dn
+    - incidentfield: Manager Name
+      output:
+        complex:
+          root: UserManagerDisplayName
+    - incidentfield: Manager Email Address
+      output:
+        complex:
+          root: UserManagerEmail
+    - incidentfield: Account Name
+      output:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: name
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 1bc76c1f-9fd0-4eb1-8dcf-e16d2c0a860b
+    type: title
+    task:
+      id: 1bc76c1f-9fd0-4eb1-8dcf-e16d2c0a860b
+      version: -1
+      name: Containment - Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "115"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: cda6d38e-5731-485a-8c0a-1f34f1a37b91
+    type: playbook
+    task:
+      id: cda6d38e-5731-485a-8c0a-1f34f1a37b91
+      version: -1
+      name: Block Account - Generic v2
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+        * SailPoint
+        * PingOne
+        * AWS IAM
+        * Clarizen IAM
+        * Envoy IAM
+        * ExceedLMS IAM
+        * Okta
+      playbookName: Block Account - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: 3bbe0d0f-f54d-42e6-862c-fc994a95d963
+    type: regular
+    task:
+      id: 3bbe0d0f-f54d-42e6-862c-fc994a95d963
+      version: -1
+      name: Manually reset 2FA / clear user sessions / block if needed
+      description: Manually reset 2FA / clear user sessions / block if needed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -552.5,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: b65a3bd8-2eb7-4e84-88f2-7eb972d7f0d2
+    type: playbook
+    task:
+      id: b65a3bd8-2eb7-4e84-88f2-7eb972d7f0d2
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
+      playbookName: TIM - Indicator Relationships Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "158"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: inputs.IPAddress
+      LimitResults:
+        simple: "200"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: 30e19b73-6556-4df0-8440-79122e149c1f
+    type: regular
+    task:
+      id: 30e19b73-6556-4df0-8440-79122e149c1f
+      version: -1
+      name: Set Related Campaign
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: PartOfCampaign
+      value:
+        complex:
+          root: RelatedCampaign
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: RelatedCampaign
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Part of Campaign
+      output:
+        complex:
+          root: RelatedCampaign
+    - incidentfield: Related Report
+      output:
+        complex:
+          root: RelatedReport
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: f2feaf4b-662c-4cc1-8558-33ae9f305b2c
+    type: playbook
+    task:
+      id: f2feaf4b-662c-4cc1-8558-33ae9f305b2c
+      version: -1
+      name: User Investigation - Generic
+      description: |-
+        This playbook performs an investigation on a specific user, using queries and logs from SIEM, identity management systems, XDR, and firewalls.
+
+        Supported integrations:
+        -Okta
+        -Splunk
+        -QRadar
+        -Azure Log Analytics
+        -PAN-OS
+        -XDR By Palo Alto Networks
+      playbookName: User Investigation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      ASN:
+        complex:
+          root: IPEnrichment.data.attributes
+          accessor: asn
+          transformers:
+          - operator: LastArrayElement
+      AzureSearchTime:
+        complex:
+          root: inputs.AzureSearchTime
+      LoginCountry:
+        complex:
+          root: inputs.LoginCountry
+      OktaSearch:
+        complex:
+          root: inputs.OktaSearch
+      QRadarSearchTime:
+        complex:
+          root: inputs.QRadarSearchTime
+      SIEMFailedLogonSearch:
+        complex:
+          root: inputs.SIEMFailedLogonSearch
+      SplunkEarliestTime:
+        complex:
+          root: inputs.SplunkEarliestTime
+      SplunkIndex:
+        complex:
+          root: inputs.SplunkIndex
+      SplunkLatestTime:
+        complex:
+          root: inputs.SplunkLatestTime
+      ThreatLogSearch:
+        complex:
+          root: inputs.ThreatLogSearch
+      UserEmail:
+        complex:
+          root: ActiveDirectory.Users
+          accessor: mail
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
+      XDRAlertSearch:
+        complex:
+          root: inputs.XDRAlertSearch
+      XDRUsernameField:
+        complex:
+          root: inputs.XDRUsernameField
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 37.5,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "157":
+    id: "157"
+    taskid: b67ff8da-2897-42a3-8e54-4b74fe65048b
+    type: playbook
+    task:
+      id: b67ff8da-2897-42a3-8e54-4b74fe65048b
+      version: -1
+      name: Cortex XDR - First SSO Access - Set Verdict
+      description: |-
+        This playbook determines the alert’s verdict based on the results of multiple checks.
+        By default, if at least two of the checks' results are true, the verdict is set to malicious.
+        else if only one check's results are true, the verdict is set to suspicious.
+        If none of the conditions is true,  the verdict is set to non-malicious.
+        It is possible to change the threshold value of the inputs to change the sensitivity of the verdict
+      playbookName: Cortex XDR - First SSO Access - Set Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "177"
+    scriptarguments:
+      AlertName:
+        complex:
+          root: inputs.AlertName
+      FailedlogonFromASNThreshold:
+        complex:
+          root: inputs.FailedlogonFromASNThreshold
+      FailedlogonUserThreshold:
+        complex:
+          root: inputs.FailedlogonUserThreshold
+      MaliciousVerdictThreshold:
+        complex:
+          root: inputs.MaliciousVerdictThreshold
+      NumOfFailedLogon:
+        complex:
+          root: NumOfFailedLogon
+      NumOfFailedLogonASN:
+        complex:
+          root: NumOfFailedLogonASN
+      NumOfOktaSuspiciousActivities:
+        complex:
+          root: NumOfOktaSuspiciousActivities
+      NumOfOktaSuspiciousUserAgent:
+        complex:
+          root: NumOfOktaSuspiciousUserAgent
+      NumOfXDRAlerts:
+        complex:
+          root: ArraySize
+      PermanentCountry:
+        complex:
+          root: PermanentCountry
+      RelatedCampaign:
+        complex:
+          root: RelatedCampaign
+      SuspiciousVerdictThreshold:
+        complex:
+          root: inputs.SuspiciousVerdictThreshold
+      XDRRelatedAlertsThreshold:
+        complex:
+          root: inputs.XDRRelatedAlertsThreshold
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "158":
+    id: "158"
+    taskid: 9b79bb04-5cd7-409d-8f97-24995c148492
+    type: condition
+    task:
+      id: 9b79bb04-5cd7-409d-8f97-24995c148492
+      version: -1
+      name: Relate campaign exist?
+      description: Check if there are related campaigns to the IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RelatedCampaign
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "160":
+    id: "160"
+    taskid: 36cba334-80b3-45b9-8f46-d04ab74bc01a
+    type: condition
+    task:
+      id: 36cba334-80b3-45b9-8f46-d04ab74bc01a
+      version: -1
+      name: Should the Account be disabled automatically?
+      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (AutomaticallyBlockAccount)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "79"
+      "yes":
+      - "143"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyBlockAccount
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 657.5,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "161":
+    id: "161"
+    taskid: fb47202f-856e-430d-8dee-a41e85cd522e
+    type: title
+    task:
+      id: fb47202f-856e-430d-8dee-a41e85cd522e
+      version: -1
+      name: Remediation Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 647.5,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "163":
+    id: "163"
+    taskid: 45b89b57-833e-402d-8b3e-d283a47c595a
+    type: condition
+    task:
+      id: 45b89b57-833e-402d-8b3e-d283a47c595a
+      version: -1
+      name: Analyst decision - Is this a True positive?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "179"
+      "Yes":
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Based on the investigation details, is this a true positive?
+      body:
+        simple: Based on the investigation details, is this a true positive?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: 09ad9e20-3152-4df7-87df-2f88b1931877
+    type: title
+    task:
+      id: 09ad9e20-3152-4df7-87df-2f88b1931877
+      version: -1
+      name: User Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "151"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 37.5,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "173":
+    id: "173"
+    taskid: 567a518f-c8a7-42a4-830e-fd3562d254da
+    type: title
+    task:
+      id: 567a518f-c8a7-42a4-830e-fd3562d254da
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "149"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 08371615-4227-429f-8592-27f91586fdd4
+    type: title
+    task:
+      id: 08371615-4227-429f-8592-27f91586fdd4
+      version: -1
+      name: Manager Engagment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 527.5,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 41605197-33c9-42fb-887c-f75de60fe41e
+    type: title
+    task:
+      id: 41605197-33c9-42fb-887c-f75de60fe41e
+      version: -1
+      name: Action Based On Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "178"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: e8f8bda5-9fed-45e8-8aa3-5473750b4fbc
+    type: condition
+    task:
+      id: e8f8bda5-9fed-45e8-8aa3-5473750b4fbc
+      version: -1
+      name: Should engage with the manager?
+      description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "176"
+      "yes":
+      - "175"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ContactUserManager
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious - Ask the Manager
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: 1a78241d-7c98-432c-8b12-ea760f4b6f03
+    type: condition
+    task:
+      id: 1a78241d-7c98-432c-8b12-ea760f4b6f03
+      version: -1
+      name: Should run remediation actions?
+      description: Action based on verdict.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "179"
+      'Manual decision ':
+      - "163"
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+          ignorecase: true
+    - label: 'Manual decision '
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Suspicious - Ask the Manager
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 267.5,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: 4352685a-1322-4a25-8271-3f726a7f0580
+    type: title
+    task:
+      id: 4352685a-1322-4a25-8271-3f726a7f0580
+      version: -1
+      name: False positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "180":
+    id: "180"
+    taskid: 81105405-75c9-4faa-80ad-3ee28a75be66
+    type: condition
+    task:
+      id: 81105405-75c9-4faa-80ad-3ee28a75be66
+      version: -1
+      name: Is Okta V2 integration enabled ?
+      description: Checks if Okta V2 integration enabled and the user email is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "145"
+      "yes":
+      - "187"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    id: "181"
+    taskid: 418e7f45-3394-43eb-8ff0-50453c346092
+    type: condition
+    task:
+      id: 418e7f45-3394-43eb-8ff0-50453c346092
+      version: -1
+      name: Should verify factor authentication automatically?
+      description: Checks whether to automatically initiate two-factor authentication verification based on the input's value. (AutomaticallyClearSessions)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "145"
+      "yes":
+      - "180"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyClearSessions
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: a8480757-5f5c-4693-8c86-3dd10307f003
+    type: regular
+    task:
+      id: a8480757-5f5c-4693-8c86-3dd10307f003
+      version: -1
+      name: Okta - Clear user sessions
+      description: |-
+        Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        For more information and examples:
+        https://developer.okta.com/docs/reference/api/users/#user-sessions
+      script: '|||okta-clear-user-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      userId:
+        complex:
+          root: Account
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "111_112_yes": 0.4,
+      "111_115_#default#": 0.11,
+      "116_117_#default#": 0.64,
+      "116_120_yes": 0.56,
+      "158_150_yes": 0.54,
+      "158_6_#default#": 0.35,
+      "160_143_yes": 0.56,
+      "160_79_#default#": 0.54,
+      "177_175_yes": 0.37,
+      "177_176_#default#": 0.16,
+      "178_179_#default#": 0.32,
+      "178_72_yes": 0.32,
+      "180_145_#default#": 0.51,
+      "180_187_yes": 0.37,
+      "181_145_#default#": 0.36,
+      "181_180_yes": 0.44,
+      "88_100_yes": 0.46,
+      "88_176_#default#": 0.25
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5125,
+        "width": 1782.5,
+        "x": -552.5,
+        "y": -1800
+      }
+    }
+  }
+inputs:
+- key: AutomaticallyIsolateEndpoint
+  value:
+    simple: "False"
+  required: false
+  description: Whether to isolate the endpoint automatically.
+  playbookInputQuery:
+- key: XDRRelatedAlertsThreshold
+  value:
+    simple: "3"
+  required: false
+  description: |2-
+
+    This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.
+    example: If this input is set to '3', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 4 XDR related alerts - It will classify this check as suspicious activity.
+    The default value is '3'.
+  playbookInputQuery:
+- key: FailedlogonUserThreshold
+  value:
+    simple: "30"
+  required: false
+  description: |-
+    This is the minimum threshold for failed login attempts by the user.
+    example: If this input is set to '30', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 31 failed login attempts - It will classify this check as suspicious activity.
+    The default value is '30'.
+  playbookInputQuery:
+- key: FailedlogonFromASNThreshold
+  value:
+    simple: "20"
+  required: false
+  description: |-
+    This is the minimum threshold for failed login attempts from ASN.
+    example: If this input is set to '20', and the 'Cortex XDR - First SSO Access - Set Verdict' sub-playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity.
+    The default value is '20'.
+  playbookInputQuery:
+- key: EndpointID
+  value: {}
+  required: false
+  description: XDR Endpoint ID.
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: User name.
+  playbookInputQuery:
+- key: IPAddress
+  value: {}
+  required: false
+  description: IP Address from the XDR Alert.
+  playbookInputQuery:
+- key: LoginCountry
+  value: {}
+  required: false
+  description: The country from which the user logged in.
+  playbookInputQuery:
+- key: AutomaticallyBlockAccount
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the account automatically.
+  playbookInputQuery:
+- key: ContactUserManager
+  value:
+    simple: "False"
+  required: false
+  description: Whether to ask the user manager for the legitimacy of the login events, in case of a user logged in from an unusual country.
+  playbookInputQuery:
+- key: AlertName
+  value: {}
+  required: false
+  description: Alert Name.
+  playbookInputQuery:
+- key: MaliciousVerdictThreshold
+  value:
+    simple: "2"
+  required: false
+  description: |-
+    The 'Malicious verdict' threshold to determine a malicious verdict.
+    The default value is '2'.
+    Should be Greater than the "SuspiciousVerdictThreshold" input.
+  playbookInputQuery:
+- key: SuspiciousVerdictThreshold
+  value:
+    simple: "1"
+  required: false
+  description: |-
+    The 'Suspicious verdict' threshold to determine a suspicious verdict.
+    The default value is '1'.
+    Should be lower than the "MaliciousVerdictThreshold" input.
+  playbookInputQuery:
+- key: SplunkIndex
+  value:
+    simple: '*'
+  required: false
+  description: Splunk's index name in which to search. Default is "*" - All.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -1d
+  required: false
+  description: The earliest time for the Splunk search query.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time for the Splunk search query.
+  playbookInputQuery:
+- key: QRadarSearchTime
+  value:
+    simple: Last 1 days
+  required: false
+  description: 'The Search Time for the QRadar search query. for example:  Last 1 days'
+  playbookInputQuery:
+- key: AzureSearchTime
+  value:
+    simple: ago(1d)
+  required: false
+  description: 'The Search Time for the Azure Log Analytics search query. for example: ago(1d)'
+  playbookInputQuery:
+- key: SIEMFailedLogonSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for failed logon logs from Siem? Can be False or True.
+  playbookInputQuery:
+- key: ThreatLogSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for threat logs from PAN-OS? Can be False or True.
+  playbookInputQuery:
+- key: XDRAlertSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for Related alerts from XDR? Can be False or True.
+  playbookInputQuery:
+- key: OktaSearch
+  value:
+    simple: "True"
+  required: false
+  description: Whether to search for logs from Okta? Can be False or True.
+  playbookInputQuery:
+- key: XDRUsernameField
+  value:
+    simple: actor_effective_username
+  required: false
+  description: Cortex XDR User name Field.
+  playbookInputQuery:
+- key: AutomaticallyClearSessions
+  value:
+    simple: "False"
+  required: false
+  description: Whether to clear all the user sessions automatically.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

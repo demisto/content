@@ -1,0 +1,43 @@
+{
+    "id": "####ec11-b599-4372-a0d7-####7ecb8203",
+    "name": "cid-1252366",
+    "folder": "Shared",
+    "position": "pre",
+    "action": "allow",
+    "source_hip": [
+        "any"
+    ],
+    "destination_hip": [
+        "any"
+    ],
+    "from": [
+        "trust"
+    ],
+    "to": [
+        "untrust"
+    ],
+    "source": [
+        "PA-GP-Mobile-User-Pool"
+    ],
+    "destination": [
+        "any"
+    ],
+    "source_user": [
+        "any"
+    ],
+    "category": [
+        "any"
+    ],
+    "application": [
+        "any"
+    ],
+    "service": [
+        "application-default"
+    ],
+    "log_setting": "Cortex Data Lake",
+    "profile_setting": {
+        "group": [
+            "best-practice"
+        ]
+    }
+}

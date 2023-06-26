@@ -83,7 +83,7 @@
     "params": {
      "groupBy": [
       "occurred(d)",
-      "type"
+      "rawType"
      ]
     },
     "size": 0,
@@ -337,7 +337,7 @@
     "params": {
      "groupBy": [
       "severity",
-      "type"
+      "rawType"
      ]
     },
     "size": 0,

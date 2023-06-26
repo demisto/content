@@ -1,5 +1,5 @@
 Randomly assigns the incidents to users on call (requires shift management) and users on call.
-https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/users-and-roles/shift-management.html#idf554fd0f-f93b-40cd-9111-1393bf25ac6e
+https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Shift-Management#idf554fd0f-f93b-40cd-9111-1393bf25ac6e
 
 Incident Ids should be passed in as a comma separated list.
 
@@ -7,8 +7,7 @@ Incident Ids should be passed in as a comma separated list.
 ---
 
 This automation runs using the default Limited User role, unless you explicitly change the permissions.
-For more information, see the section about permissions here: [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
+For more information, see the section about permissions here: [https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations)
 
 ## Script Data
 ---

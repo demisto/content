@@ -25,24 +25,20 @@ configuration:
   required: false
   type: 8
 - display: Client ID
-  hidden: false
   name: client_id
   required: false
   type: 0
 - display: Client Secret
-  hidden: false
   name: client_secret
   required: false
   type: 4
 - display: Domain
-  hidden: false
   name: domain
   required: false
   type: 0
 - additionalinfo: max -> 200
   defaultvalue: '150'
   display: Maximum no. of incidents to fetch.
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -56,14 +52,10 @@ configuration:
   type: 8
 - defaultvalue: 1 day
   display: First Fetch Time of Risks
-  hidden: false
   name: first_fetch
   required: false
   type: 0
-description: Concentric’s Semantic Intelligence™ solution discovers and protects business
-  critical, unstructured data. We use deep learning to identify risky sharing, inappropriate
-  third party access, assets in the wrong location, mis-classified documents, or lateral
-  movement of data – all without rules or complex upfront configuration.
+description: Concentric’s Semantic Intelligence™ solution discovers and protects business critical, unstructured data. We use deep learning to identify risky sharing, inappropriate third party access, assets in the wrong location, mis-classified documents, or lateral movement of data – all without rules or complex upfront configuration.
 display: ConcentricAI
 name: ConcentricAI
 script:
@@ -139,7 +131,7 @@ script:
     - contextPath: ConcentricAI.FileSharingInfo.user_name
       description: User name.
       type: Array
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.11.54132
   feed: false
   isfetch: true
   longRunning: false

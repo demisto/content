@@ -1,0 +1,355 @@
+id: playbook-Test_Twitter_v2
+version: -1
+name: playbook-Test_Twitter_v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cd0fc8b3-30f0-4c72-8bf1-728e3c33949d
+    type: start
+    task:
+      id: cd0fc8b3-30f0-4c72-8bf1-728e3c33949d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d1af7840-9e6b-4936-8352-41eceda7d4a7
+    type: regular
+    task:
+      id: d1af7840-9e6b-4936-8352-41eceda7d4a7
+      version: -1
+      name: twitter-tweet-search
+      description: This command will search for tweets posted over the past week and return all information available
+      script: Twitter v2|||twitter-tweet-search
+      type: regular
+      iscommand: true
+      brand: Twitter v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit:
+        simple: "50"
+      query:
+        simple: t
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 178a5676-5961-4c4e-8b3a-529581b1256b
+    type: regular
+    task:
+      id: 178a5676-5961-4c4e-8b3a-529581b1256b
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: Twitter v2
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: da7728d9-953a-428e-8a83-58df5e49adbe
+    type: regular
+    task:
+      id: da7728d9-953a-428e-8a83-58df5e49adbe
+      version: -1
+      name: twitter-user-get
+      description: 'Lookup users by name to display information about them.Search multiple users simultaneously by separating them by commas. Ex: ''name=''user1,user2,user3'''
+      script: Twitter v2|||twitter-user-get
+      type: regular
+      iscommand: true
+      brand: Twitter v2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      user_name:
+        simple: Twitter
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b7fe0496-2b2d-4e9e-81b7-7706c1308589
+    type: regular
+    task:
+      id: b7fe0496-2b2d-4e9e-81b7-7706c1308589
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: Twitter v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 439c2cc1-675d-4107-8e1d-7c6f5fb92f2a
+    type: condition
+    task:
+      id: 439c2cc1-675d-4107-8e1d-7c6f5fb92f2a
+      version: -1
+      name: Verify response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Twitter.User.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 29c41aa6-beb6-4040-84c7-ccf1c838ef0b
+    type: condition
+    task:
+      id: 29c41aa6-beb6-4040-84c7-ccf1c838ef0b
+      version: -1
+      name: Verify response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Twitter.Tweet.id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 95bbbc7a-6b62-49d9-8530-b56927b119b5
+    type: title
+    task:
+      id: 95bbbc7a-6b62-49d9-8530-b56927b119b5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 394adfbd-45d1-4f74-8791-0698268e1a6b
+    type: condition
+    task:
+      id: 394adfbd-45d1-4f74-8791-0698268e1a6b
+      version: -1
+      name: Verify is array
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Twitter.User
+                accessor: id
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1265,
+        "width": 390,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: ''

@@ -1007,3 +1007,20 @@ def test_get_request_command_404(requests_mock, mocker):
     args = {'request_id': 1, 'request_type': 'alert'}
     response = OpsGenieV3.get_request_command(OpsGenieV3.Client(base_url="http://example.com"), args)
     assert response.scheduled_command._args == {**args, 'polled_once': True}
+
+
+def test_invite_user(mocker):
+    """
+    Given:
+        - An app client object
+        - Responders "team,id,123"
+    When:
+        - Calling function create_alert with argument responders in the right format
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'invite_user', return_value=util_load_json('test_data/invite_user.json'))
+    res = OpsGenieV3.invite_user(mock_client, {'username': "test@example.com", 'fullName': 'Test Example', 'role': 'user'})
+    assert (res.raw_response == util_load_json('test_data/invite_user.json'))

@@ -1,0 +1,148 @@
+id: DBotUpdateLogoURLPhishing_test
+version: -1
+name: DBotUpdateLogoURLPhishing_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 82e6639b-8bec-4d92-817b-d08e958ca843
+    type: start
+    task:
+      id: 82e6639b-8bec-4d92-817b-d08e958ca843
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3f8d4c47-1ffe-462b-8fab-2ee030d1e23a
+    type: regular
+    task:
+      id: 3f8d4c47-1ffe-462b-8fab-2ee030d1e23a
+      version: -1
+      name: Display all logos
+      description: Add, remove, or modify logos from the URL Phishing model.
+      scriptName: DBotUpdateLogoURLPhishing
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      action:
+        simple: DisplayAllLogos
+      associatedDomains: {}
+      debug: {}
+      logoName: {}
+      logoImageId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 65dba3db-384e-4120-8b74-5b6b3f3909f2
+    type: title
+    task:
+      id: 65dba3db-384e-4120-8b74-5b6b3f3909f2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 21709482-4858-46a0-8aa8-f90a21286f06
+    type: regular
+    task:
+      id: 21709482-4858-46a0-8aa8-f90a21286f06
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 555,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''
+marketplaces:
+- xsoar

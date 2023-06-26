@@ -1,0 +1,46 @@
+{
+    "kind": "collection#SecurityObjGroup",
+    "selfLink": "selfLink",
+    "rangeInfo": {
+        "offset": 0,
+        "limit": 2,
+        "total": 2
+    },
+    "items": [
+        {
+            "kind": "object#SecurityObjGroup",
+            "selfLink": "items[0]_selfLink",
+            "name": "oneSecurityGroup",
+            "description": "test12",
+            "members": [
+                {
+                    "kind": "SecurityName",
+                    "value": "beep"
+                },
+                {
+                    "kind": "SecurityTag",
+                    "value": "bap"
+                }
+            ],
+            "objectId": "oneSecurityGroup"
+        },
+        {
+            "kind": "object#SecurityObjGroup",
+            "selfLink": "items[1]_selfLink",
+            "name": "secondSecurityGroup",
+            "description": "test21",
+            "members": [
+                {
+                    "kind": "objectRef#SecurityObjGroup",
+                    "refLink": "items[1]_members[0]_refLink",
+                    "objectId": "oneSecurityGroup"
+                },
+                {
+                    "kind": "SecurityTag",
+                    "value": "52"
+                }
+            ],
+            "objectId": "secondSecurityGroup"
+        }
+    ]
+}

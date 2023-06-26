@@ -1,0 +1,54 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "connector_guid": "data_connector_guid",
+        "hostname": "data_hostname",
+        "windows_processor_id": "data_windows_processor_id",
+        "active": "data_active",
+        "links": {
+            "computer": "data_links_computer",
+            "trajectory": "data_links_trajectory",
+            "group": "data_links_group"
+        },
+        "connector_version": "data_connector_version",
+        "operating_system": "data_operating_system",
+        "os_version": "data_os_version",
+        "internal_ips": [
+            "data_internal_ips_0"
+        ],
+        "external_ip": "data_external_ip",
+        "group_guid": "data_group_guid",
+        "install_date": "data_install_date",
+        "is_compromised": "data_is_compromised",
+        "demo": "data_demo",
+        "network_addresses": [
+            {
+                "mac": "data_network_addresses[0]_mac",
+                "ip": "data_network_addresses[0]_ip"
+            }
+        ],
+        "policy": {
+            "guid": "data_policy_guid",
+            "name": "data_policy_name"
+        },
+        "groups": [
+            {
+                "guid": "data_groups[0]_guid",
+                "name": "data_groups[0]_name"
+            }
+        ],
+        "faults": [],
+        "isolation": {
+            "available": "data_isolation_available",
+            "status": "data_isolation_status"
+        },
+        "orbital": {
+            "status": "data_orbital_status"
+        }
+    }
+}

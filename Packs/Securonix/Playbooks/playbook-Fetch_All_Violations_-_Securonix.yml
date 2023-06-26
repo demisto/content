@@ -1,0 +1,307 @@
+id: Fetch All Violations - Securonix
+version: -1
+name: Fetch All Violations - Securonix
+description: Gets a list of violations with pagination using queryId parameter.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 9cddc5bb-7835-46a9-81c8-4806a03f34de
+    type: start
+    task:
+      id: 9cddc5bb-7835-46a9-81c8-4806a03f34de
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: be9f3c6c-2a1e-4d02-8718-6ae4009ec1bc
+    type: title
+    task:
+      id: be9f3c6c-2a1e-4d02-8718-6ae4009ec1bc
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: baf3f0a4-c312-4671-8c8b-e9e719a35a79
+    type: playbook
+    task:
+      id: baf3f0a4-c312-4671-8c8b-e9e719a35a79
+      version: -1
+      name: Fetch Violations - Securonix
+      description: Gets a list of violation data.
+      playbookName: Fetch Violations - Securonix
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      from:
+        complex:
+          root: inputs.from
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: 00/00/00 00:00:00
+      query:
+        complex:
+          root: inputs.query
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.securonixviolationspotterquery
+                iscontext: true
+      to:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+          - operator: toString
+            args:
+              format:
+                value:
+                  simple: 02/01/2006 15:04:00
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: inputs.to
+                iscontext: true
+              raw: {}
+          - operator: LastArrayElement
+    separatecontext: false
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Securonix.Violation
+                accessor: totalDocuments
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Securonix
+                accessor: ViolationData
+                transformers:
+                - operator: count
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Securonix.Violation
+                accessor: message
+            iscontext: true
+          right:
+            value:
+              simple: All records have been retrieved. No more results to be fetched.
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: df40127c-a552-40b6-88fe-832316c63891
+    type: regular
+    task:
+      id: df40127c-a552-40b6-88fe-832316c63891
+      version: -1
+      name: Update Violation Count
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      securonixviolationcount:
+        complex:
+          root: Securonix
+          accessor: ViolationData
+          transformers:
+          - operator: count
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: af01bc29-9129-45a1-8294-a6ae31938e5e
+    type: regular
+    task:
+      id: af01bc29-9129-45a1-8294-a6ae31938e5e
+      version: -1
+      name: Get Current Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: c7a564f6-d50c-49d8-8efc-660497b05e51
+    type: regular
+    task:
+      id: c7a564f6-d50c-49d8-8efc-660497b05e51
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      key:
+        simple: Securonix
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: from
+  value: {}
+  required: false
+  description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+  playbookInputQuery:
+- key: to
+  value: {}
+  required: false
+  description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

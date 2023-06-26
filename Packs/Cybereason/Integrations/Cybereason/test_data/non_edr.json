@@ -1,0 +1,1661 @@
+[
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1mBHnEF4lvoq",
+        "displayName": "ba8eb4085c467dd2a342530e14d5976383cc40c4",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "f_00001a",
+        "rootCauseElementNamesCount": 2,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670832474092,
+        "lastUpdateTime": 1670834035442,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "ba8eb4085c467dd2a342530e14d5976383cc40c4",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1tJTGa1ZwRQj",
+        "displayName": "mimidrv.sys",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimidrv.sys",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1607000775711,
+        "lastUpdateTime": 1670833336040,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "115edd175c346fd3fbc9f113ee5ccd03b5511ee1",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            },
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "a8Nz8xCi55eyTiwX",
+                "displayName": "3fad374e-ede4-4a4e-97fa-d2dd6aa18d7b",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": true,
+                "lastConnected": 1607425405575,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1iD1Qx7Bsc4F",
+        "displayName": "nc.ps1",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "nc.ps1",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923447473,
+        "lastUpdateTime": 1670832254921,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "8a4ae7776f563a21e8056a167478e41a2baf12f9",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1ldtb-APkWCf",
+        "displayName": "mimilove.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimilove.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657968709180,
+        "lastUpdateTime": 1670833336227,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "03d42dbba8a284ce01f1f28829c82eb3d3e9ba45",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1j6dnGNFoUvS",
+        "displayName": "mimilib.dll",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimilib.dll",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670833336130,
+        "lastUpdateTime": 1670833336130,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "afc1320d4c9be5c3b57fb18de4ba3555cd3bc3b1",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1k4legJdgxZh",
+        "displayName": "mimidrv.sys",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimidrv.sys",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1607000784417,
+        "lastUpdateTime": 1670833336125,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "e38e1efd98cd8a3cdb327d386db8df79ea08dccc",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            },
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "a8Nz8xCi55eyTiwX",
+                "displayName": "3fad374e-ede4-4a4e-97fa-d2dd6aa18d7b",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": true,
+                "lastConnected": 1607425405575,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1rYrr6oJjrkD",
+        "displayName": "mimilove.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimilove.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1607000783490,
+        "lastUpdateTime": 1670833336032,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "ab4a3fa8b8bd8233a7b8bb31cb1a8ccc848c6dc6",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            },
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "a8Nz8xCi55eyTiwX",
+                "displayName": "3fad374e-ede4-4a4e-97fa-d2dd6aa18d7b",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": true,
+                "lastConnected": 1607425405575,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1udH_KPC-GGm",
+        "displayName": "js-dropper.bat",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "js-dropper.bat",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923486210,
+        "lastUpdateTime": 1670833969028,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "d1c6524f7c54b606aea4e7b4a1b292959bdc5bce",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1r0Yu-hjE6Ww",
+        "displayName": "cymulateaptscenariohandler.dll",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "cymulateaptscenariohandler.dll",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670832554259,
+        "lastUpdateTime": 1670833868000,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "3387342cbde7964d3da0a8eedd322091b221b9ce",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "qb7xfRCi55eyTiwX",
+                "displayName": "win-cybereason",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777314083,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1t7sGaVZW9JF",
+        "displayName": "mimilib.dll",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimilib.dll",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670833336028,
+        "lastUpdateTime": 1670833336028,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "3daf54f1f5edc7f723c2d2587b46f70eb9584be2",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1ix__J-_yJaX",
+        "displayName": "1704cb1582636d175025a859e8a2d357a01ce7ad",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "1704cb1582636d175025a859e8a2d357a01ce7ad",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670834046535,
+        "lastUpdateTime": 1670834046535,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "71f36120ba799ebecda022bb339b9b498df4b9f7",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1q1-bWPbq0O2",
+        "displayName": "655a7fbd170aa0b31e20e82282251309b3bc5d1f",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "sbsimulation_sb_614289_bs_559808.exe",
+        "rootCauseElementNamesCount": 154,
+        "detectionEngines": [
+            "StaticAnalysis"
+        ],
+        "detectionTypes": [
+            "Malware detection by Anti-Malware Artificial Intelligence classification"
+        ],
+        "malopDetectionType": "UNKNWOWN",
+        "creationTime": 1661861329357,
+        "lastUpdateTime": 1669594205000,
+        "iconBase64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEaSURBVFhH7ZfBDYMwDEWZoYOgbtFDB+iqrMWNG/2vclDq5BBKUg7E0oss+8tOUwfEgN3uz1FMYjHwx08yY+RMc1yPI2axOoglRYlZro5eC7vxycBkdTYj5jQx+/VaOJJcEharsxkxp4nZr2dxwZi/bOD0v+DcIYxE7JTjAvykWDBypmmi73ZBYyBsMIqGZH28RjGJxcD/bQhxRPG1opGYxeogluipYbXy9bWwG58MJA8WNeHX+uaB9u8CNeHIc82h/buAJq5pTPt3gZpU/wvOHcJIxE45LsBPigWjkahzDbt1wxgIG4yiISFnmuN6HFF8DYlZro5eC7vxycD+B4szYk4T078L+nfB101gpxwX4CfFgpEzzUH9MLwBXgMwjvoJmBsAAAAASUVORK5CYII=",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "655a7fbd170aa0b31e20e82282251309b3bc5d1f",
+        "status": "Remediated",
+        "severity": "Medium",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "XrjQmRCi55eyTiwX",
+                "displayName": "desktop-sb01",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": false,
+                "lastConnected": 1669658411126,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [
+            "medium"
+        ],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": 1666167296850,
+        "closerName": "example@example.com",
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Remediated",
+        "malopSeverity": "Medium",
+        "malopType": "UNKNWOWN",
+        "malopPriority": "HIGH",
+        "closed": true,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1mnSTQA1cmB8",
+        "displayName": "schtasks-backdoor.ps1",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "schtasks-backdoor.ps1",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923526258,
+        "lastUpdateTime": 1670832254931,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "175ffee53f7d68176911e49505dd964a7f6233d3",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1pefS3hr9izp",
+        "displayName": "7ea62fd644dd9b9f82944268ea649fd007ee354d",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "en-us.js",
+        "rootCauseElementNamesCount": 2,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670832264943,
+        "lastUpdateTime": 1670833996476,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "7ea62fd644dd9b9f82944268ea649fd007ee354d",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1nF1YW09brGO",
+        "displayName": "mimikatz_trunk.zip",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimikatz_trunk.zip",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670832495232,
+        "lastUpdateTime": 1670832495232,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "f70ecfcc8cdcb0055d6f4733426a171b4f648500",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1ucy68wdOJ8Q",
+        "displayName": "nbtscan.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "nbtscan.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "ApplicationControl",
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Application Control blocked application on blocklist",
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "BLACKLIST",
+        "creationTime": 1653090721859,
+        "lastUpdateTime": 1670832254926,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "90da10004c8f6fafdaa2cf18922670a745564f45",
+        "status": "Closed",
+        "severity": "Low",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "GTKYrRCi55eyTiwX",
+                "displayName": "win10-cybereason-jiaping",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": false,
+                "lastConnected": 1654147969331,
+                "empty": true
+            },
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            },
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "Ee3w2xCi55eyTiwX",
+                "displayName": "w10-cy-jp",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": false,
+                "lastConnected": 1659497996540,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Closed",
+        "malopSeverity": "Low",
+        "malopType": "BLACKLIST",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1l9Xos5DiN2g",
+        "displayName": "xcmd.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "xcmd.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923517299,
+        "lastUpdateTime": 1670832254934,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "c26dc6e4ef77cafafa154fa9529c4ce79a8fc78b",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1qYgfDbl0kJE",
+        "displayName": "mimilib.dll",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimilib.dll",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670833336035,
+        "lastUpdateTime": 1670833336035,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "5eda9bd042bddef5e7d7c91a0eb621d8c52c4226",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1j6Sn8JheirM",
+        "displayName": "mimikatz.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimikatz.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657968709180,
+        "lastUpdateTime": 1670833336332,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "80e31e19825574846995e0530dc9c49b7e857555",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1v8SrUi5afZg",
+        "displayName": "mimikatz.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimikatz.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1607000784416,
+        "lastUpdateTime": 1670833336038,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "250875212d58e1d4169b7e7d0cd236d1a19a4b9a",
+        "status": "Excluded",
+        "severity": "",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            },
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "a8Nz8xCi55eyTiwX",
+                "displayName": "3fad374e-ede4-4a4e-97fa-d2dd6aa18d7b",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": true,
+                "lastConnected": 1607425405575,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": 1617629010643,
+        "closerName": "example@example.co",
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Excluded",
+        "malopSeverity": "",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": true,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1rbvwWhpBKFC",
+        "displayName": "b.jsp",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "b.jsp",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923546262,
+        "lastUpdateTime": 1670832264907,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "680237acfd23e9ed0d03adfc8b593d0d906a0c73",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1tZ_kzFG9smb",
+        "displayName": "mimilib.dll",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimilib.dll",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670833336429,
+        "lastUpdateTime": 1670833336429,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "fb55caf46ea5dd8c2de40b5894a123fb1aa548fb",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1oE-nDAmJvSd",
+        "displayName": "msedge_pwa_launcher.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "msedge_pwa_launcher.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1669596194671,
+        "lastUpdateTime": 1669596194671,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "e5b0901de546099df01cef42c7030df7286b38d6",
+        "status": "Closed",
+        "severity": "Low",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "XrjQmRCi55eyTiwX",
+                "displayName": "desktop-sb01",
+                "osType": "WINDOWS",
+                "connected": false,
+                "isolated": false,
+                "lastConnected": 1669658411126,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Disinfect"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Closed",
+        "malopSeverity": "Low",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1tkDA9EJSgPW",
+        "displayName": "mimikatz_trunk.zip",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimikatz_trunk.zip",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670832495141,
+        "lastUpdateTime": 1670832495141,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "285c978c293b26be1eaf7b2a695f8a0a3dc742f3",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1hLrf483x0YI",
+        "displayName": "mimikatz.exe",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimikatz.exe",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657968709288,
+        "lastUpdateTime": 1670833336326,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "40963139cc017a296cb9826c88749099ffdf413e",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1v2rTE5hLrX_",
+        "displayName": "at-jobs.bat",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "at-jobs.bat",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923517397,
+        "lastUpdateTime": 1670833969033,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "08e167dbc8bafe455d37b618f75d9d3ae9d51e25",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1gPXCkiyOPSq",
+        "displayName": "mimikatz_trunk.iso",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimikatz_trunk.iso",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1670832495146,
+        "lastUpdateTime": 1670832495146,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "5787a85ce3865f769056ae61e7f739a1d13b3a1a",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1v8lOMhlBCYW",
+        "displayName": "schtasks.bat",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "schtasks.bat",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923536238,
+        "lastUpdateTime": 1670833969030,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "f8ca3de40d9ed7fb1212bba2bf896d59c579c907",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1tSV5B6oxCcl",
+        "displayName": "mimidrv.sys",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimidrv.sys",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657968708994,
+        "lastUpdateTime": 1670833336329,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "b5696e2183d9387776820ef3afa388200f08f5a6",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1iJKF-3j7hZo",
+        "displayName": "mimidrv.sys",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimidrv.sys",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657968709084,
+        "lastUpdateTime": 1670833336132,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "39169c9b79502251ca2155c8f1cd7e63fd9a42e9",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    },
+    {
+        "@class": ".MalopInboxModel",
+        "guid": "AAAA1kOvt5bGQ5Du",
+        "displayName": "mimikatz-1.bat",
+        "rootCauseElementType": "File",
+        "primaryRootCauseName": "mimikatz-1.bat",
+        "rootCauseElementNamesCount": 1,
+        "detectionEngines": [
+            "AntiVirus"
+        ],
+        "detectionTypes": [
+            "Known malware detected by Cybereason Anti-Malware"
+        ],
+        "malopDetectionType": "KNOWN_MALWARE",
+        "creationTime": 1657923467318,
+        "lastUpdateTime": 1670833969025,
+        "iconBase64": "",
+        "priority": "HIGH",
+        "group": "",
+        "rootCauseElementHashes": "15c8ecf4e91a523333193e95f7a5b9729ea6142c",
+        "status": "Active",
+        "severity": "High",
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "guid": "HobXaBCi55eyTiwX",
+                "displayName": "sthq-mimikatz",
+                "osType": "WINDOWS",
+                "connected": true,
+                "isolated": false,
+                "lastConnected": 1671777313659,
+                "empty": true
+            }
+        ],
+        "users": [],
+        "containers": [],
+        "labels": [],
+        "decisionStatuses": [
+            "Prevented",
+            "Detected"
+        ],
+        "malopCloseTime": null,
+        "closerName": null,
+        "escalated": false,
+        "edr": false,
+        "malopStatus": "Active",
+        "malopSeverity": "High",
+        "malopType": "KNOWN_MALWARE",
+        "malopPriority": "HIGH",
+        "closed": false,
+        "empty": true
+    }
+]

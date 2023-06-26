@@ -62,16 +62,16 @@ class MimecastClient(IntegrationEventsClient):
             date=request_date,
             req_id=request_id,
             uri=uri,
-            app_key=self.options.app_key
+            app_key=self.options.app_key  # type: ignore[attr-defined]
         )
         hmac_sha1 = hmac.new(
-            base64.b64decode(self.options.secret_key),
+            base64.b64decode(self.options.secret_key),  # type: ignore[attr-defined]
             unsigned_auth_header.encode(),
             digestmod=hashlib.sha1).digest()
         sig = base64.encodebytes(hmac_sha1).rstrip()
         headers = {
-            'Authorization': 'MC ' + self.options.access_key + ':' + sig.decode(),
-            'x-mc-app-id': self.options.app_id,
+            'Authorization': 'MC ' + self.options.access_key + ':' + sig.decode(),  # type: ignore[attr-defined]
+            'x-mc-app-id': self.options.app_id,  # type: ignore[attr-defined]
             'x-mc-date': request_date,
             'x-mc-req-id': request_id,
             'Content-Type': 'application/json'
@@ -243,8 +243,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             'headers': self.client.prepare_headers(self.uri),  # type: ignore
             'data': self.prepare_siem_request_body(),
             'method': Method.POST,
-            'url': self.options.base_url + self.uri,
-            'verify': self.options.verify,
+            'url': self.options.base_url + self.uri,  # type: ignore[attr-defined]
+            'verify': self.options.verify,  # type: ignore[attr-defined]
         }
         return req_obj
 
@@ -361,8 +361,8 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             'headers': self.client.prepare_headers(self.uri),  # type: ignore
             'data': self.prepare_audit_events_data(),
             'method': Method.POST,
-            'url': self.options.base_url + self.uri,
-            'verify': self.options.verify,
+            'url': self.options.base_url + self.uri,  # type: ignore[attr-defined]
+            'verify': self.options.verify,  # type: ignore[attr-defined]
         }
 
     def prepare_audit_events_data(self):
@@ -443,7 +443,7 @@ def set_audit_next_run(audit_events: list) -> str:
         return audit_events[0].get('eventTime', '')
 
 
-def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events: list):
+def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events: list) -> dict:
     """
     This function removes duplicates from audit_events.
     prepares the next dedup audit event list
@@ -453,7 +453,7 @@ def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events
         siem_event_handler (MimecastGetSiemEvents): the siem event handler.
         audit_events (list): the audit events of this run.
     Returns:
-        None
+        next_run_obj (dict): the lastRun object to set.
     """
     demisto_last_run = demisto.getLastRun()
     # handle audit events last run
@@ -472,10 +472,11 @@ def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events
                     SIEM_EVENTS_FROM_LAST_RUN: siem_fetched_events_for_next_run,  # setting for next run
                     AUDIT_LAST_RUN: audit_next_run,
                     AUDIT_EVENT_DEDUP_LIST: audit_dedup_next_run}
-    demisto.setLastRun(next_run_obj)
+
     demisto.info(f'\naudit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
                  f'audit potential dups: {audit_dedup_next_run}\n'
                  f'siem_events_for_next_run: {len(siem_fetched_events_for_next_run)}\n')
+    return next_run_obj
 
 
 def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run_time: str) -> list:
@@ -530,30 +531,30 @@ def main():  # pragma: no cover
         if command == 'test-module':
             return_results('ok')
 
-        elif command in ('mimecast-get-events', 'fetch-events'):
-            if command == 'fetch-events':
-                handle_last_run_exit(siem_event_handler, events_audit)
+        elif command == 'fetch-events':
+            next_run_obj = handle_last_run_exit(siem_event_handler, events_audit)
+            events = events_siem + events_audit
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run_obj)
+
+        elif command == 'mimecast-get-events':
+            command_results_siem = CommandResults(
+                readable_output=tableToMarkdown('Mimecast Siem Logs', events_siem),
+                outputs_prefix='Mimecast.SiemLogs',
+                outputs=events_siem,
+                raw_response=events_siem,
+            )
+            command_results_audit = CommandResults(
+                readable_output=tableToMarkdown('Mimecast Audit Logs', events_audit),
+                outputs_prefix='Mimecast.AuditLogs',
+                outputs_key_field='id',
+                outputs=events_audit,
+                raw_response=events_audit,
+            )
+            return_results([command_results_siem, command_results_audit])
+            if should_push_events:
                 events = events_siem + events_audit
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
-            else:
-                command_results_siem = CommandResults(
-                    readable_output=tableToMarkdown('Mimecast Siem Logs', events_siem),
-                    outputs_prefix='Mimecast.SiemLogs',
-                    outputs=events_siem,
-                    raw_response=events_siem,
-                )
-                command_results_audit = CommandResults(
-                    readable_output=tableToMarkdown('Mimecast Audit Logs', events_audit),
-                    outputs_prefix='Mimecast.AuditLogs',
-                    outputs_key_field='id',
-                    outputs=events_audit,
-                    raw_response=events_audit,
-                )
-                return_results([command_results_siem, command_results_audit])
-                if should_push_events:
-                    events = events_siem + events_audit
-                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

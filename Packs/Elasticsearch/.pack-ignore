@@ -2,3 +2,4 @@
 ignore=IN126,BA108,BA109
 [known_words]
 Elasticsearch
+aggregations

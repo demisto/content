@@ -1,0 +1,265 @@
+id: Endpoint Enrichment - Generic v2.1.6.8 - Test
+version: -1
+name: Endpoint Enrichment - Generic v2.1.6.8 - Test
+description: |-
+  A test for the Endpoint Enrichment - Generic playbook.
+  We use specific hostnames that are known on the current integrations. The following list defines the integrations and the hostnames that should be enriched using them:
+  Active Directory - moshe
+  ePO - WIN-AQ0LQQOG4Q7
+
+  These should work but are not currently tested:
+  Carbon Black Enterprise Response - WIN-B73RGE9AAIF
+  CrowdStrike Falcon Host - AUTOMATIONPC
+  Cylance Protect v2 - DESKTOP-M7E991U
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 51d76c40-db3f-4bfb-81b7-700c0be7d9c4
+    type: start
+    task:
+      id: 51d76c40-db3f-4bfb-81b7-700c0be7d9c4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8c86995c-33dd-43ca-80f9-9850be9ae82c
+    type: regular
+    task:
+      id: 8c86995c-33dd-43ca-80f9-9850be9ae82c
+      version: -1
+      name: Delete Context
+      description: Clear context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ba25bb46-15fd-4d06-8491-de100a9ca8b5
+    type: regular
+    task:
+      id: ba25bb46-15fd-4d06-8491-de100a9ca8b5
+      version: -1
+      name: Set hostnames in context
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: '["moshe", "WIN-AQ0LQQOG4Q7", "WIN-B73RGE9AAIF", "AUTOMATIONPC", "DESKTOP-M7E991U"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 63ee6de7-76f6-4e99-88ad-0b0c217871fd
+    type: title
+    task:
+      id: 63ee6de7-76f6-4e99-88ad-0b0c217871fd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: b07a17a8-6610-4437-8307-d9cd7197e5cd
+    type: condition
+    task:
+      id: b07a17a8-6610-4437-8307-d9cd7197e5cd
+      version: -1
+      name: Did enrichment work?
+      description: Checks whether the enrichment outputs that we expected are in the context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Endpoint
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DC=demisto,DC=ninja
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.CbSensorID
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Carbon Black Response
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: ade5fa29-00fc-4a66-86f5-58a94dd3a4db
+    type: regular
+    task:
+      id: ade5fa29-00fc-4a66-86f5-58a94dd3a4db
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Not all enrichment outputs were in context. Please check if hostnames that the integrations should know - have changed, and whether outputs of those integrations were the outputs we expected. For example, there could be a case where we look for "Windows 7" as the output for OS version, but the system was upgraded to Windows 10.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d07d9734-b6b6-4e27-8518-1524bcb6f005
+    type: playbook
+    task:
+      id: d07d9734-b6b6-4e27-8518-1524bcb6f005
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 680,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0

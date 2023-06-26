@@ -1,6 +1,7 @@
 Uses the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Uses the Query API to have a client application look for either the analysis rep
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * sb-query
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,5 +35,6 @@ This script uses the following commands and scripts.
 | file_name | The name of the file. The service calculates the file name from the part name. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

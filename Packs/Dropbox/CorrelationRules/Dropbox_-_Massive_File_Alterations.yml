@@ -1,0 +1,51 @@
+alert_category: OTHER
+alert_description: This rule detects more than 100 edited files during an hour by the same user. This is a suspicious behavior which can be an indication of a ransomware attack.
+alert_fields:
+  actor_process_image_name: Files
+  actor_process_image_path:
+  actor_process_command_line:
+  agent_device_domain:
+  actor_process_image_sha256:
+  agent_hostname:
+  action_local_ip:
+  action_remote_ip: SourceIP
+  action_remote_port:
+  actor_effective_username: user
+alert_name: DropBox - Massive File Alterations
+crontab: 0 * * * *
+dataset: alerts
+description: This rule detects more than 100 edited files during an hour by the same user. This is a suspicious behavior which can be an indication of a ransomware attack
+drilldown_query_timeframe: QUERY
+execution_mode: SCHEDULED
+global_rule_id: 6de99f56-dfbf-40e0-bffd-bffe0a543cf5
+investigation_query_link: 'datamodel
+
+  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_edit" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
+
+  | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
+
+  | filter user=$user
+
+  '
+mapping_strategy: CUSTOM
+mitre_defs:
+  TA0040 - Impact:
+  - T1486 - Data Encrypted for Impact
+name: DropBox - Massive File Alterations
+search_window: 4 hours
+severity: SEV_040_HIGH
+suppression_duration: 4 hours
+suppression_enabled: true
+suppression_fields:
+user_defined_category:
+user_defined_severity:
+xql_query: 'datamodel
+
+  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_edit" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
+
+  | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
+
+  | comp values(xdm.source.ipv4) as SourceIP, values(xdm.source.location.country) as Countries, max(_time) as lastTime, values(xdm.target.resource.name) as Files, count() as NumberOfFiles by user
+
+  | filter NumberOfFiles > 100'
+fromversion: 6.10.0

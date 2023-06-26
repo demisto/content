@@ -15,7 +15,6 @@ comment: Checks if the given PAN-OS version number is affected by the given list
 commonfields:
   id: CheckPanosVersionAffected
   version: -1
-enabled: false
 name: CheckPanosVersionAffected
 outputs:
 - contextPath: MatchingSecurityAdvisory.data_type
@@ -50,7 +49,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

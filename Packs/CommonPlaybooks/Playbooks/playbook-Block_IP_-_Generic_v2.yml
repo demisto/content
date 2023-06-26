@@ -1,7 +1,9 @@
+deprecated: true
 id: Block IP - Generic v2
 version: -1
 name: Block IP - Generic v2
 description: |-
+  Deprecated. Use the `Block IP - Generic v3` playbook instead. 
   This playbook blocks malicious IPs using all integrations that are enabled.
 
   Supported integrations for this playbook:
@@ -1043,3 +1045,6 @@ outputs:
 fromversion: 5.0.0
 tests:
 - block_indicators_-_generic_-_test
+marketplaces:
+  - xsoar
+  - marketplacev2

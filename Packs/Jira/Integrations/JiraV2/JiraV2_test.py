@@ -4,7 +4,6 @@ import demistomock as demisto
 import pytest
 from CommonServerPython import *
 
-
 integration_params = {
     "url": "https://localhost",
     "APItoken": "token",
@@ -404,7 +403,7 @@ def test_update_remote_system_delta(mocker):
             "incidentChanged": "17757",
             "remoteId": "17757",
             "data": {"summary": "data", "not_changes_key": "not_changes_val"},
-            "delta": {"summary": "changes"},
+            "delta": {"summary": "changes", "dbotMirrorDirection": "test"},
         }
     )
     assert res == "17757"
@@ -913,7 +912,20 @@ def test_edit_issue_status(mocker):
     mocker.patch("JiraV2.get_issue", return_value=True)
     mocker.patch(
         "JiraV2.list_transitions_data_for_issue",
-        return_value={"transitions": [{"name": "To Do", "id": 1}]},
+        return_value={"transitions": [{"name": "To Do", "id": 1, "to": {
+            "self": "https: //demistodev.atlassian.net/rest/api/2/status/10000",
+            "description": "",
+            "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+            "name": "To Do",
+            "id": "10000",
+            "statusCategory": {
+                "self": "https://demistodev.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "To Do"
+            }
+        }}]},
     )
     mocked_return_error = mocker.patch("JiraV2.return_error", return_value=None)
     mocked_edit_transition = mocker.patch("JiraV2.edit_transition", return_value=None)
@@ -1264,6 +1276,28 @@ def test_get_project_id(mocker):
     assert id == 'Test_id'
 
 
+def test_get_project_id_non_english(mocker):
+    """
+    Given:
+        - Exception (404) contains non english content.
+    When
+        - Running the create issue command.
+    Then
+        - Ensure the new api endpoint is being used.
+    """
+    from JiraV2 import get_project_id
+
+    def mock_res(method, endpoint, resp_type):
+        if endpoint == 'rest/api/latest/issue/createmeta':
+            raise DemistoException("Status code: 404\nMessage: La Incidencia no Existe")
+        elif endpoint == 'rest/api/latest/project':
+            return [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]
+
+    mocker.patch('JiraV2.jira_req', side_effect=mock_res)
+    id = get_project_id(project_name='Test_name')
+    assert id == 'Test_id'
+
+
 @pytest.mark.parametrize('params, custom_headers, expected_headers', AUTH_CASES)
 def test_jira_req(mocker, requests_mock, params, custom_headers, expected_headers):
     """
@@ -1514,3 +1548,81 @@ def test_append_to_existing_field_command(mocker):
     _, outputs, _ = append_to_field_command('id', field_json='{"labels":"New"}')
 
     mock_update.assert_called_with('id', {'labels': ['test', 'New']})
+
+
+@pytest.mark.parametrize(
+    'assignee, assignee_id, excpected_body_request',
+    [
+        ("server_assignee", None, '{"name": "server_assignee"}'),
+        (None, "cloud_assignee", '{"accountId": "cloud_assignee"}')
+    ]
+)
+def test_update_issue_assignee_command(mocker, assignee, assignee_id, excpected_body_request):
+    """
+    Given:
+        - issue id, and assignees for cloud/server jira
+    When
+        - Running the update_issue_assignee_command
+    Then
+        - Ensure the body request is ok for both cloud/server jira
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE
+    from JiraV2 import update_issue_assignee_command
+
+    jira_req_mocker = mocker.patch('JiraV2.jira_req', side_effect=['', GET_ISSUE_RESPONSE])
+
+    assert update_issue_assignee_command(issue_id='19141', assignee=assignee, assignee_id=assignee_id)
+    assert jira_req_mocker.call_args_list[0].args[2] == excpected_body_request
+
+
+def test_test_update_issue_assignee_command_no_assignees():
+    """
+    Given:
+        - issue id, without assignee / assignee_id
+    When
+        - Running the update_issue_assignee_command
+    Then
+        - Ensure an exception is raised
+    """
+    from JiraV2 import update_issue_assignee_command
+
+    with pytest.raises(DemistoException):
+        update_issue_assignee_command(issue_id='19141', assignee=None, assignee_id=None)
+
+
+def test_get_organizations(mocker):
+    from test_data.raw_response import ORGANIZATIONS
+    from JiraV2 import get_organizations_command
+    mocker.patch.object(demisto, "results")
+    organizations = [
+        {
+            "id": "23",
+            "name": "TEST"
+        },
+        {
+            "id": "4",
+            "name": "XSOAR"
+        }
+    ]
+    mocker.patch("JiraV2.jira_req", return_value=ORGANIZATIONS)
+    result = get_organizations_command()
+    assert result.raw_response == organizations
+
+
+def test_get_project_role(mocker):
+    from test_data.raw_response import PROJECT_ROLES, PROJECT_ROLE
+    from JiraV2 import get_project_role_command
+    mocker.patch("JiraV2.get_project_roles", return_value=PROJECT_ROLES)
+    mocker.patch("JiraV2.jira_req", return_value=PROJECT_ROLE)
+
+    role = get_project_role_command("demisto", "Agent")
+    assert role.get('id') == 11823
+
+
+def test_get_project_roles(mocker):
+    from test_data.raw_response import PROJECT_ROLES
+    from JiraV2 import get_project_roles
+    mocker.patch("JiraV2.jira_req", return_value=PROJECT_ROLES)
+
+    roles = get_project_roles("demisto")
+    assert len(roles) == 2

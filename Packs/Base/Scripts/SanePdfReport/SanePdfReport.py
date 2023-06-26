@@ -52,7 +52,7 @@ def quit_driver_and_reap_children(killMarkdownServer):
                 SERVER_OBJECT.shutdown()
 
         zombies, ps_out = find_zombie_processes()
-        if zombies:
+        if zombies:  # pragma no cover
             demisto.info(f'Found zombie processes will waitpid: {ps_out}')
             for pid in zombies:
                 waitres = os.waitpid(int(pid), os.WNOHANG)[1]
@@ -126,6 +126,7 @@ def main():
         pageSize = demisto.args().get('paperSize', 'letter')
         disableHeaders = demisto.args().get('disableHeaders', '')
         tableTextMaxLength = demisto.args().get('tableTextMaxLength', '300')
+        forceServerFormattedTimeString = argToBoolean(demisto.args().get('forceServerFormattedTimeString', 'false'))
 
         # Note: After headerRightImage the empty one is for legacy argv in server.js
         extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
@@ -154,8 +155,12 @@ def main():
 
             if isTableTextMaxLengthSupported:
                 extra_cmd += f' {tableTextMaxLength}'
+            else:
+                extra_cmd += ' ""'
 
-        with tempfile.TemporaryDirectory(suffix='sane-pdf', ignore_cleanup_errors=True) as tmpdir:
+            extra_cmd += f' "{forceServerFormattedTimeString}"'
+
+        with tempfile.TemporaryDirectory(suffix='sane-pdf', ignore_cleanup_errors=True) as tmpdir:  # type: ignore[call-overload]
             input_file = tmpdir + '/input.json'
             output_file = tmpdir + '/output.pdf'
             dist_dir = tmpdir + '/dist'
@@ -173,7 +178,7 @@ def main():
                 f' resourceTimeout="{resourceTimeout}",' \
                 f' reportType="{reportType}", headerLeftImage="{headerLeftImage}",' \
                 f' headerRightImage="{headerRightImage}", pageSize="{pageSize}",' \
-                f' disableHeaders="{disableHeaders}"'
+                f' disableHeaders="{disableHeaders}", forceServerFormattedTimeString="{forceServerFormattedTimeString}"'
 
             if isMDImagesSupported:
                 params += f', markdownArtifactsServerAddress="{mdServerAddress}"'

@@ -1,0 +1,664 @@
+id: Email extraction test
+version: -1
+name: Email extraction test
+description: Test extraction flow of email indicator in XSOAR
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: def7640e-da15-498b-8e70-6498f009d81c
+    type: start
+    task:
+      id: def7640e-da15-498b-8e70-6498f009d81c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fb706760-78dc-492f-8275-13c5f2a76ed7
+    type: regular
+    task:
+      id: fb706760-78dc-492f-8275-13c5f2a76ed7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5eb7df5d-9ccc-4954-8e5c-050ff724e3a1
+    type: regular
+    task:
+      id: 5eb7df5d-9ccc-4954-8e5c-050ff724e3a1
+      version: -1
+      name: Set valid emails
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: valid_emails
+      value:
+        simple: '"normal@test.com", "separating.dot@test.com", "fanged[@]test.com"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f4e9dc72-e8c5-4aa3-84e7-59a8c214031c
+    type: regular
+    task:
+      id: f4e9dc72-e8c5-4aa3-84e7-59a8c214031c
+      version: -1
+      name: Print valid emails
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "78"
+      - "77"
+    scriptarguments:
+      value:
+        simple: ${valid_emails}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 026b1629-7bf0-46bf-811d-2ce0ca1c9d24
+    type: condition
+    task:
+      id: 026b1629-7bf0-46bf-811d-2ce0ca1c9d24
+      version: -1
+      name: check auto extract emails - normal@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: normal@test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 24e6a570-2552-4445-8b47-f96337cfb628
+    type: regular
+    task:
+      id: 24e6a570-2552-4445-8b47-f96337cfb628
+      version: -1
+      name: set invalid emails
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: invalid_emails
+      value:
+        simple: "\"invalid_ending_char_@test.com\", \n\"@nouser.com\", \n\".startingdot@test.com\", \n\"お@example.com\",\n\"invalid__consecutive__chars@test.com\", \n\"quoted\\\"not\\\"dotted@test.com\""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 22eda9fa-6c69-47e3-88e9-150926b635a5
+    type: regular
+    task:
+      id: 22eda9fa-6c69-47e3-88e9-150926b635a5
+      version: -1
+      name: Print invalid emails
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+      - "81"
+      - "83"
+      - "82"
+    scriptarguments:
+      value:
+        simple: ${invalid_emails}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e48830c7-76ae-419f-8626-7ddf2a8ffec1
+    type: condition
+    task:
+      id: e48830c7-76ae-419f-8626-7ddf2a8ffec1
+      version: -1
+      name: non extraction - invalid__consecutive__chars@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: invalid__consecutive__chars@test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 033ce332-44d3-4251-8da6-456e5f429042
+    type: title
+    task:
+      id: 033ce332-44d3-4251-8da6-456e5f429042
+      version: -1
+      name: Email
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 81d64bd8-db9b-408d-8b01-a5aaa271e79c
+    type: regular
+    task:
+      id: 81d64bd8-db9b-408d-8b01-a5aaa271e79c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: d8a3568d-29c1-45bc-8ae7-7f726ee9fa56
+    type: condition
+    task:
+      id: d8a3568d-29c1-45bc-8ae7-7f726ee9fa56
+      version: -1
+      name: check auto extract emails - fanged@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: fanged@test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 25da995a-0396-43f2-8ab2-a6105086e9ba
+    type: condition
+    task:
+      id: 25da995a-0396-43f2-8ab2-a6105086e9ba
+      version: -1
+      name: check auto extract emails - separating.dot@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: separating.dot@test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 926f0142-7fdd-4725-8910-f7661b2a2055
+    type: condition
+    task:
+      id: 926f0142-7fdd-4725-8910-f7661b2a2055
+      version: -1
+      name: non extraction - お@example.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: お@example.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: d1372eba-6765-4392-8188-14895009934b
+    type: condition
+    task:
+      id: d1372eba-6765-4392-8188-14895009934b
+      version: -1
+      name: non extraction - invalid_ending_char_@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: invalid_ending_char_@test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 7c138bae-e192-4a30-8c18-d1ed2d1d1047
+    type: condition
+    task:
+      id: 7c138bae-e192-4a30-8c18-d1ed2d1d1047
+      version: -1
+      name: non extraction - invalid_ending_char_@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: '@nouser.com'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: c39f4ae3-71e3-4540-8510-7361e2593cf5
+    type: condition
+    task:
+      id: c39f4ae3-71e3-4540-8510-7361e2593cf5
+      version: -1
+      name: non extraction - .startingdot@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: .startingdot@test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 5ba20fda-1de2-4551-8ad8-825631e68a78
+    type: condition
+    task:
+      id: 5ba20fda-1de2-4551-8ad8-825631e68a78
+      version: -1
+      name: non extraction - quoted\"not\"dotted@test.com
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: quoted\"not\"dotted@test.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0

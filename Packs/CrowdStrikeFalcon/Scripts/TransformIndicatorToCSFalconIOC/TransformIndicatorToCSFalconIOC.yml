@@ -66,7 +66,6 @@ comment: Transform a XSOAR indicator into a Crowd Strike Falcon IOC. The output 
 commonfields:
   id: TransformIndicatorToCSFalconIOC
   version: -1
-enabled: false
 name: TransformIndicatorToCSFalconIOC
 outputs:
 - contextPath: TransformIndicatorToCSFalconIOC
@@ -113,7 +112,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.9.46807
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

@@ -1,0 +1,925 @@
+id: O365 - Security And Compliance - Search And Delete
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: O365 - Security And Compliance - Search And Delete
+description: |-
+  This playbook performs the following steps:
+  1. Creates a compliance search.
+  2. Starts a compliance search.
+  3. Waits for the compliance search to complete.
+  4. Gets the results of the compliance search.
+  5. Gets the preview results, if specified.
+  6. Deletes the search results (Hard/Soft).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a8ee8345-fbf4-4b8a-8181-5d444b413636
+    type: start
+    task:
+      id: a8ee8345-fbf4-4b8a-8181-5d444b413636
+      version: -1
+      name: ""
+      description: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 401e2d9a-11db-45ed-82e9-734db5db3ca8
+    type: condition
+    task:
+      id: 401e2d9a-11db-45ed-82e9-734db5db3ca8
+      version: -1
+      name: Emails found?
+      description: Checks if the search results exist. If not, no action should be
+        performed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f341c194-b500-4f99-8f3e-cd3885b51711
+    type: title
+    task:
+      id: f341c194-b500-4f99-8f3e-cd3885b51711
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -990,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 326e36dd-d7cb-4001-85e4-061ec01226ef
+    type: regular
+    task:
+      id: 326e36dd-d7cb-4001-85e4-061ec01226ef
+      version: -1
+      name: Remove search
+      description: Remove the compliance search by name from the Security & Compliance
+        Center.
+      script: '|||o365-sc-remove-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 413cef08-8ba6-43b8-8f51-aeb1ecf602f1
+    type: regular
+    task:
+      id: 413cef08-8ba6-43b8-8f51-aeb1ecf602f1
+      version: -1
+      name: Remove search action
+      description: Remove the compliance search action by searching for the action
+        name in the Security & Compliance Center.
+      script: '|||o365-sc-remove-search-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      retry-count:
+        simple: "10"
+      search_action_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+          accessor: Name
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ee1c4f90-23cb-401e-8d09-e5d45bbdf8c2
+    type: playbook
+    task:
+      id: ee1c4f90-23cb-401e-8d09-e5d45bbdf8c2
+      version: -1
+      name: O365 - Security And Compliance - Search
+      description: |-
+        This playbook performs the following steps:
+        1. Creates a compliance search.
+        2. Starts a compliance search.
+        3. Waits for the compliance search to complete.
+        4. Gets the results of the compliance search as an output.
+        5. Gets the preview results, if specified.
+      playbookName: O365 - Security And Compliance - Search
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ' exchange_location_exclusion':
+        complex:
+          root: inputs.exchange_location_exclusion
+      allow_not_found_exchange_locations:
+        complex:
+          root: inputs.allow_not_found_exchange_locations
+      case:
+        complex:
+          root: inputs.case
+      description:
+        complex:
+          root: inputs.description
+      exchange_location:
+        complex:
+          root: ExchangeLocation
+      force:
+        complex:
+          root: inputs.force
+      kql:
+        complex:
+          root: inputs.kql
+      polling_interval:
+        simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
+      preview:
+        simple: "false"
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 7ef52938-a049-4864-86c8-7a1fc43373d2
+    type: condition
+    task:
+      id: 7ef52938-a049-4864-86c8-7a1fc43373d2
+      version: -1
+      name: Whether to preview the results.
+      description: Whether to preview the results using the search action "Preview".
+        Possible values are "true" and "false" or leave empty to select manually.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      Manual step - Preview:
+      - "23"
+      Preview:
+      - "24"
+      Skip:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: Preview
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.preview
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: "TRUE"
+    - label: Manual step - Preview
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.force
+            iscontext: true
+    - label: Skip
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.preview
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: "FALSE"
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 089dc291-6f60-44db-807c-13e090115979
+    type: condition
+    task:
+      id: 089dc291-6f60-44db-807c-13e090115979
+      version: -1
+      name: Manually select whether to preview the search results.
+      description: Manual selection for the preview.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Preview:
+      - "24"
+      Skip:
+      - "25"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: admin
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: bd72040e-b521-4e2f-831c-c04cceaa84dd
+    type: playbook
+    task:
+      id: bd72040e-b521-4e2f-831c-c04cceaa84dd
+      version: -1
+      name: O365 - Security And Compliance - Search Action - Preview
+      description: |-
+        This playbook performs the following steps:
+        1. Creates a new compliance search action - Preview (Base on created compliance search).
+        2. Waits for the preview action to complete.
+        3. Retrieves the preview results.
+      playbookName: O365 - Security And Compliance - Search Action - Preview
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      polling_interval:
+        simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 2aa70f15-3594-4832-829b-f3f398480518
+    type: condition
+    task:
+      id: 2aa70f15-3594-4832-829b-f3f398480518
+      version: -1
+      name: Should the search action delete the results?
+      description: Specify the delete type to perform on the search results. Possible
+        values are "Hard" and "Soft" or leave empty to select manually. (Hard = Unrecoverable,
+        Soft=Recoverable)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      Hard:
+      - "29"
+      Manual step - delete:
+      - "27"
+      soft:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: Manual step - delete
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.delete_type
+            iscontext: true
+    - label: soft
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: SOFT
+    - label: Hard
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: HARD
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: eb4ae985-e3ae-4f50-8eca-acf94da282e1
+    type: condition
+    task:
+      id: eb4ae985-e3ae-4f50-8eca-acf94da282e1
+      version: -1
+      name: Which type of delete do you want to perform?
+      description: Manually select either Hard or Soft delete.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Hard:
+      - "29"
+      Skip:
+      - "32"
+      Soft:
+      - "28"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: admin
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: c5606169-c166-4c31-8072-203b88e3197b
+    type: playbook
+    task:
+      id: c5606169-c166-4c31-8072-203b88e3197b
+      version: -1
+      name: O365 - Security And Compliance - Search Action - Delete
+      description: |-
+        This playbook performs the following steps:
+        1. Creates a new compliance search action Purge - Hard or Soft.
+        2. Waits for the compliance search action to complete.
+        3. Retrieves the delete search action.
+      playbookName: O365 - Security And Compliance - Search Action - Delete
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      delete_type:
+        simple: Soft
+      polling_interval:
+        simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: c9aa0f2c-455e-4e63-88a2-9ccc4f31d547
+    type: playbook
+    task:
+      id: c9aa0f2c-455e-4e63-88a2-9ccc4f31d547
+      version: -1
+      name: O365 - Security And Compliance - Search Action - Delete
+      description: |-
+        This playbook performs the following steps:
+        1. Creates a new compliance search action Purge - Hard or Soft.
+        2. Waits for the compliance search action to complete.
+        3. Retrieves the delete search action.
+      playbookName: O365 - Security And Compliance - Search Action - Delete
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      delete_type:
+        simple: Hard
+      polling_interval:
+        simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 50e3fe8c-982b-4715-84f4-86b1aaec3adb
+    type: regular
+    task:
+      id: 50e3fe8c-982b-4715-84f4-86b1aaec3adb
+      version: -1
+      name: Error - Preview parameter
+      description: Print an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Preview parameter should be empty or true or false.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 1a65115a-5733-4a90-8b9a-92863d644c57
+    type: regular
+    task:
+      id: 1a65115a-5733-4a90-8b9a-92863d644c57
+      version: -1
+      name: Error - delete_type parameter
+      description: Print an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: delete_type parameter should be empty or soft or hard delete.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 3799629e-3828-45ff-8ac6-76f91c2269af
+    type: regular
+    task:
+      id: 3799629e-3828-45ff-8ac6-76f91c2269af
+      version: -1
+      name: Remove compliance search
+      description: Remove the compliance search by name from the Security & Compliance
+        Center.
+      script: '|||o365-sc-remove-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: O365.SecurityAndCompliance.ContentSearch.Search
+          accessor: Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: def40f3a-e3ba-496d-88af-39731e3d320b
+    type: condition
+    task:
+      id: def40f3a-e3ba-496d-88af-39731e3d320b
+      version: -1
+      name: From where should emails be searched and deleted?
+      description: Checks if a target to search and delete emails from was specified.
+        Determined by the O365ExchangeLocation playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      User Input:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: User Input
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.exchange_location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: b51ca904-5901-47db-8a6a-06cd5b6f31f1
+    type: regular
+    task:
+      id: b51ca904-5901-47db-8a6a-06cd5b6f31f1
+      version: -1
+      name: Set all mailboxes to be searched
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: ExchangeLocation
+      value:
+        simple: All
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 7bffe37a-56c1-4b6a-8f22-d93e811a3ce4
+    type: regular
+    task:
+      id: 7bffe37a-56c1-4b6a-8f22-d93e811a3ce4
+      version: -1
+      name: Set the "email to" as the mailbox to search
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: ExchangeLocation
+      value:
+        complex:
+          root: inputs.exchange_location
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_23_Manual step - Preview": 0.49,
+      "22_24_Preview": 0.27,
+      "22_25_Skip": 0.31,
+      "23_24_Preview": 0.51,
+      "23_25_Skip": 0.21,
+      "25_28_soft": 0.22,
+      "25_29_Hard": 0.25,
+      "27_28_Soft": 0.43,
+      "27_29_Hard": 0.2,
+      "27_32_Skip": 0.31,
+      "33_35_#default#": 0.62,
+      "33_36_User Input": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3015,
+        "width": 2680,
+        "x": -990,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: search_name
+  value: {}
+  required: false
+  description: The name of the compliance search.
+  playbookInputQuery: null
+- key: case
+  value: {}
+  required: false
+  description: The name of a Core eDiscovery case to associate with the new compliance
+    search.
+  playbookInputQuery: null
+- key: kql
+  value: {}
+  required: true
+  description: Text search string or a query that is formatted using the Keyword Query
+    Language (KQL).
+  playbookInputQuery: null
+- key: description
+  value: {}
+  required: false
+  description: Description of the compliance search.
+  playbookInputQuery: null
+- key: allow_not_found_exchange_locations
+  value:
+    simple: "true"
+  required: false
+  description: Whether to include mailboxes other than regular user mailboxes in the
+    compliance search. Default is "false".
+  playbookInputQuery: null
+- key: exchange_location
+  value: {}
+  required: false
+  description: Comma-separated list of mailboxes/distribution groups to include, or
+    use the value "All" to include all.
+  playbookInputQuery: null
+- key: exchange_location_exclusion
+  value: {}
+  required: false
+  description: Comma-separated list of mailboxes/distribution groups to exclude when
+    you use the value "All" for the exchange_location parameter.
+  playbookInputQuery: null
+- key: force
+  value:
+    simple: "false"
+  required: true
+  description: Whether to replace the existing search. If "true", the existing search
+    will be removed and a new search will be created. If "false", the existing search
+    will be used and any new search configurations will be ignored.
+  playbookInputQuery: null
+- key: preview
+  value:
+    simple: "true"
+  required: true
+  description: 'Whether to preview the results using the search action "Preview".
+    Possible values are: "true" and "false" or leave empty to select manually.'
+  playbookInputQuery: null
+- key: delete_type
+  value: {}
+  required: false
+  description: Specify the delete type to perform on the search results. Possible
+    values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
+    Soft=Recoverable)
+  playbookInputQuery: null
+- key: search_action_polling_timeout
+  value:
+    simple: "45"
+  required: false
+  description: Amount of time to poll before declaring a timeout for the search action
+    and resuming the playbook (in minutes).
+  playbookInputQuery: null
+- key: search_action_polling_interval
+  value:
+    simple: "3"
+  required: false
+  description: The frequency that the polling command will run for the search action
+    that was chosen.
+  playbookInputQuery: null
+outputs: []
+tests:
+- O365-SecurityAndCompliance-Test
+fromversion: 5.5.0

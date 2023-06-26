@@ -1,3 +1,4 @@
+# pylint: disable=E9010, E9011
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -10,6 +11,7 @@ import types
 import urllib3
 from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
+from taxii2client.exceptions import InvalidJSONError
 import tempfile
 
 # disable insecure warnings
@@ -58,6 +60,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "md5": FeedIndicatorType.File,
     "sha-1": FeedIndicatorType.File,
     "sha-256": FeedIndicatorType.File,
+    "sha-512": FeedIndicatorType.File,
     "file:hashes": FeedIndicatorType.File,
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malware": ThreatIntel.ObjectsNames.MALWARE,
@@ -195,6 +198,7 @@ class Taxii2FeedClient:
             certificate: str = None,
             key: str = None,
             default_api_root: str = None,
+            update_custom_fields: bool = False
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -265,6 +269,7 @@ class Taxii2FeedClient:
         self.id_to_object: Dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
         self.default_api_root = default_api_root
+        self.update_custom_fields = update_custom_fields
 
     def init_server(self, version=TAXII_VER_2_0):
         """
@@ -350,7 +355,7 @@ class Taxii2FeedClient:
         """
         Tries to initialize `collection_to_fetch` if possible
         """
-        if collection_to_fetch is None and isinstance(self.collection_to_fetch, str):
+        if not collection_to_fetch and isinstance(self.collection_to_fetch, str):
             # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
             collection_to_fetch = self.collection_to_fetch
         if not self.collections:
@@ -387,7 +392,6 @@ class Taxii2FeedClient:
 
     @staticmethod
     def get_indicator_publication(indicator: Dict[str, Any]):
-
         """
         Build publications grid field from the indicator external_references field
 
@@ -459,6 +463,16 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
+    @staticmethod
+    def get_tlp(indicator_json: dict) -> str:
+        object_marking_definition_list = indicator_json.get('object_marking_refs', '')
+        tlp_color: str = ''
+        for object_marking_definition in object_marking_definition_list:
+            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
+                tlp_color = tlp
+                break
+        return tlp_color
+
     def set_default_fields(self, obj_to_parse):
         fields = {
             'stixid': obj_to_parse.get('id', ''),
@@ -467,15 +481,24 @@ class Taxii2FeedClient:
             'description': obj_to_parse.get('description', ''),
         }
 
-        tlp_color = self.tlp_color
-        for object_marking in obj_to_parse.get('object_marking_refs', []):
-            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking):
-                tlp_color = tlp
-                break
+        tlp_from_marking_refs = self.get_tlp(obj_to_parse)
+        tlp_color = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
+
         if tlp_color:
             fields['trafficlightprotocol'] = tlp_color
 
         return fields
+
+    @staticmethod
+    def parse_custom_fields(extensions):
+        custom_fields = {}
+        score = None
+        for key, value in extensions.items():
+            if key.startswith('extension-definition--'):
+                custom_fields = value.get('CustomFields', {})
+                score = value.get('score', None)
+                break
+        return custom_fields, score
 
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
@@ -541,8 +564,14 @@ class Taxii2FeedClient:
             "killchainphases": kill_chain_phases,
             'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
             "publications": publications,
-            "tags": list(self.tags),
         })
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(attack_pattern_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                attack_pattern['score'] = score
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+
         attack_pattern["fields"] = fields
 
         if not is_demisto_version_ge('6.2.0'):
@@ -571,8 +600,17 @@ class Taxii2FeedClient:
         fields.update({
             'published': report_obj.get('published'),
             "report_types": report_obj.get('report_types', []),
-            "tags": list((set(report_obj.get('labels', []))).union(set(self.tags))),
         })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(report_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                report['score'] = score
+
+        tags = list((set(report_obj.get('labels', []))).union(set(self.tags)))
+        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+
         report["fields"] = fields
 
         return [report]
@@ -601,8 +639,16 @@ class Taxii2FeedClient:
             "resource_level": threat_actor_obj.get('resource_level', ''),
             "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
             "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
-            "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
         })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(threat_actor_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                threat_actor['score'] = score
+
+        tags = list((set(threat_actor_obj.get('labels', []))).union(set(self.tags)))
+        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
         threat_actor["fields"] = fields
 
         return [threat_actor]
@@ -629,8 +675,16 @@ class Taxii2FeedClient:
             "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
             "aliases": infrastructure_obj.get('aliases', []),
             "kill_chain_phases": kill_chain_phases,
-            "tags": list(set(self.tags))
         })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(infrastructure_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                infrastructure['score'] = score
+
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+
         infrastructure["fields"] = fields
 
         return [infrastructure]
@@ -661,9 +715,18 @@ class Taxii2FeedClient:
             "os_execution_envs": malware_obj.get('os_execution_envs', []),
             "architecture_execution_envs": malware_obj.get('architecture_execution_envs', []),
             "capabilities": malware_obj.get('capabilities', []),
-            "sample_refs": malware_obj.get('sample_refs', []),
-            "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
+            "sample_refs": malware_obj.get('sample_refs', [])
         })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(malware_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                malware['score'] = score
+
+        tags = list((set(malware_obj.get('labels', []))).union(set(self.tags)))
+        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+
         malware["fields"] = fields
 
         return [malware]
@@ -689,9 +752,16 @@ class Taxii2FeedClient:
             "killchainphases": kill_chain_phases,
             "tool_types": tool_obj.get("tool_types", []),
             "aliases": tool_obj.get('aliases', []),
-            "tool_version": tool_obj.get('tool_version', ''),
-            "tags": list(set(self.tags))
+            "tool_version": tool_obj.get('tool_version', '')
         })
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(tool_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                tool['score'] = score
+
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+
         tool["fields"] = fields
 
         return [tool]
@@ -715,8 +785,16 @@ class Taxii2FeedClient:
         fields.update({
             "action_type": coa_obj.get('action_type', ''),
             "publications": publications,
-            "tags": [tag for tag in self.tags]
         })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(coa_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                course_of_action['score'] = score
+
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+
         course_of_action["fields"] = fields
 
         return [course_of_action]
@@ -738,8 +816,13 @@ class Taxii2FeedClient:
         fields.update({
             "aliases": campaign_obj.get('aliases', []),
             "objective": campaign_obj.get('objective', ''),
-            "tags": [tag for tag in self.tags],
         })
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(campaign_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                campaign['score'] = score
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
         campaign["fields"] = fields
 
         return [campaign]
@@ -767,8 +850,15 @@ class Taxii2FeedClient:
             "primary_motivation": intrusion_set_obj.get('primary_motivation', ''),
             "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
             "publications": publications,
-            "tags": list(self.tags),
         })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(intrusion_set_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                intrusion_set['score'] = score
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+
         intrusion_set["fields"] = fields
 
         return [intrusion_set]
@@ -791,9 +881,14 @@ class Taxii2FeedClient:
         }
 
         fields = self.set_default_fields(sco_object)
-        fields.update({
-            'tags': list(set(self.tags))
-        })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(sco_object.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                sco_indicator['score'] = score
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+
         sco_indicator['fields'] = fields
 
         return [sco_indicator]
@@ -886,20 +981,29 @@ class Taxii2FeedClient:
         :param identity_obj: identity object
         :return: identity extracted from the identity object in cortex format
         """
-        fields = self.set_default_fields(identity_obj)
-        fields.update({
-            'identityclass': identity_obj.get('identity_class', ''),
-            'industrysectors': identity_obj.get('sectors', []),
-            'tags': list((set(identity_obj.get('labels', []))).union(set(self.tags))),
-        })
-
         identity = {
             'value': identity_obj.get('name'),
             'type': FeedIndicatorType.Identity,
-            'fields': fields,
             'score': Common.DBotScore.NONE,
             'rawJSON': identity_obj
         }
+        fields = self.set_default_fields(identity_obj)
+        fields.update({
+            'identityclass': identity_obj.get('identity_class', ''),
+            'industrysectors': identity_obj.get('sectors', [])
+        })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(identity_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                identity['score'] = score
+
+        tags = list((set(identity_obj.get('labels', []))).union(set(self.tags)))
+        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+
+        identity['fields'] = fields
+
         return [identity]
 
     def parse_location(self, location_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -908,20 +1012,31 @@ class Taxii2FeedClient:
         :param location_obj: location object
         :return: location extracted from the location object in cortex format
         """
-        fields = self.set_default_fields(location_obj)
-        fields.update({
-            'countrycode': location_obj.get('country', ''),
-            'tags': list((set(location_obj.get('labels', []))).union(set(self.tags))),
-        })
-
         country_name = COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country', '')).upper(), '')
+
         location = {
             'value': location_obj.get('name') or country_name,
             'type': FeedIndicatorType.Location,
-            'fields': fields,
             'score': Common.DBotScore.NONE,
             'rawJSON': location_obj
         }
+
+        fields = self.set_default_fields(location_obj)
+        fields.update({
+            'countrycode': location_obj.get('country', ''),
+        })
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(location_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                location['score'] = score
+
+        tags = list((set(location_obj.get('labels', []))).union(set(self.tags)))
+        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+
+        location['fields'] = fields
+
         return [location]
 
     def parse_vulnerability(self, vulnerability_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -936,19 +1051,26 @@ class Taxii2FeedClient:
                 name = external_reference.get('external_id')
                 break
 
-        fields = self.set_default_fields(vulnerability_obj)
-        fields.update({
-            'tags': list((set(vulnerability_obj.get('labels', []))).union(set(self.tags),
-                                                                          {name} if name else {})),
-        })
-
         cve = {
             'value': name,
             'type': FeedIndicatorType.CVE,
             'score': Common.DBotScore.NONE,
-            'fields': fields,
             'rawJSON': vulnerability_obj
         }
+
+        fields = self.set_default_fields(vulnerability_obj)
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(vulnerability_obj.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                cve['score'] = score
+
+        tags = list((set(vulnerability_obj.get('labels', []))).union(set(self.tags), {name} if name else {}))
+        fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
+
+        cve['fields'] = fields
+
         return [cve]
 
     def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -968,13 +1090,15 @@ class Taxii2FeedClient:
                     continue
 
             a_threat_intel_type = relationships_object.get('source_ref', '').split('--')[0]
-            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type, '')  # type: ignore
+            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
+                a_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(a_threat_intel_type, '')  # type: ignore
             if a_threat_intel_type == 'indicator':
                 id = relationships_object.get('source_ref', '')
                 a_type = self.get_ioc_type(id, self.id_to_object)
 
             b_threat_intel_type = relationships_object.get('target_ref', '').split('--')[0]
-            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type, '')  # type: ignore
+            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(
+                b_threat_intel_type, '') or STIX_2_TYPES_TO_CORTEX_TYPES.get(b_threat_intel_type, '')  # type: ignore
             if b_threat_intel_type == 'indicator':
                 b_type = self.get_ioc_type(relationships_object.get('target_ref', ''), self.id_to_object)
 
@@ -1020,8 +1144,14 @@ class Taxii2FeedClient:
         page_size = self.get_page_size(limit, limit)
         if page_size <= 0:
             return []
-        envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-        indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+
+        try:
+            envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+            indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+        except InvalidJSONError as e:
+            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
+            # raised when the response is empty, because {} is parsed into '筽'
+            indicators = []
 
         return indicators
 
@@ -1109,8 +1239,8 @@ class Taxii2FeedClient:
             self.objects_to_fetch.append('relationship')
         kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            return v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        return v21.as_pages(get_objects, per_request=page_size, **kwargs)
+            return v20.as_pages(get_objects, per_request=page_size, kwargs=kwargs)
+        return v21.as_pages(get_objects, per_request=page_size, kwargs=kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
@@ -1205,6 +1335,16 @@ class Taxii2FeedClient:
             if field_path in ioc_obj_copy:
                 fields[field_name] = ioc_obj_copy.get(field_path)
 
+        if not fields.get('trafficlightprotocol'):
+            tlp_from_marking_refs = self.get_tlp(ioc_obj_copy)
+            fields["trafficlightprotocol"] = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
+
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(ioc_obj_copy.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                indicator['score'] = score
+
         # union of tags and labels
         if "tags" in fields:
             field_tag = fields.get("tags")
@@ -1213,10 +1353,7 @@ class Taxii2FeedClient:
             else:
                 tags.append(field_tag)
 
-        fields["tags"] = tags
-
-        if self.tlp_color and not fields.get('trafficlightprotocol'):
-            fields["trafficlightprotocol"] = self.tlp_color
+        fields["tags"] = list(set(tags))
 
         indicator["fields"] = fields
         return indicator
@@ -1265,14 +1402,11 @@ class Taxii2FeedClient:
         """
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
-            if ioc_obj.get('type') == 'report':
-                return ioc_obj.get('name')
-            elif ioc_obj.get('type') == 'attack-pattern':
-                return ioc_obj.get('name')
-            elif "file:hashes.'SHA-256' = '" in ioc_obj.get('name'):
+            name = ioc_obj.get('name', '') or ioc_obj.get('value', '')
+            if "file:hashes.'SHA-256' = '" in name:
                 return Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj)
             else:
-                return ioc_obj.get('name')
+                return name
 
     @staticmethod
     def get_ioc_value_from_ioc_name(ioc_obj):

@@ -1,0 +1,9 @@
+{
+    "dns": true,
+    "geo": true,
+    "ptr": true,
+    "rlabs": false,
+    "whois": true,
+    "ssl_cert": true,
+    "urlhaus": true
+}

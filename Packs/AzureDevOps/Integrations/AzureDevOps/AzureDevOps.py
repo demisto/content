@@ -15,8 +15,7 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
                             'pull_request_id': 'the ID of the pull request'}
 
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
-SCOPE_BY_CONNECTION = {'Device Code': "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access",
-                       'Authorization Code': "https://management.azure.com/.default"}
+AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
 
 
 class Client:
@@ -39,7 +38,7 @@ class Client:
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
             proxy=proxy,
-            scope=SCOPE_BY_CONNECTION[auth_type],
+            scope=AZURE_DEVOPS_SCOPE,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
@@ -1621,7 +1620,10 @@ def main() -> None:
             proxy=proxy, auth_type=auth_type, tenant_id=tenant_id,
             enc_key=enc_key, auth_code=auth_code, redirect_uri=redirect_uri)
 
-        if command == 'azure-devops-auth-start':
+        if command == 'azure-devops-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
+
+        elif command == 'azure-devops-auth-start':
             return_results(start_auth(client))
 
         elif command == 'azure-devops-auth-complete':

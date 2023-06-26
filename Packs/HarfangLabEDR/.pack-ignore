@@ -1,7 +1,8 @@
 [file:Hurukai.yml]
-ignore=IN126
+ignore=IN126,BA124
+
 [known_words]
-HarfangLab
+harfanglab
 filesize
 eventid
 eventlog
@@ -24,3 +25,4 @@ evtx
 logs
 filesystem
 downloadfile
+

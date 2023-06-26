@@ -418,7 +418,7 @@ def fetchIncidents():
                 "EndTime": endTimeString,
                 "rawJSON": json.dumps(matchingThreatBehavior),
             }
-        demisto.incidents(map(toIncident, matchingThreatBehaviors))
+        demisto.incidents(list(map(toIncident, matchingThreatBehaviors)))
         # Don't increase the low-water-mark until we actually find incidents
         #
         # This is a precaution because incidents sometimes appear in an old time

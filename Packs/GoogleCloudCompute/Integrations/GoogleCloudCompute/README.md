@@ -10,6 +10,8 @@ Google Compute Engine delivers virtual machines running in Google's innovative d
 | --- | --- | --- |
 | service | Service Account Private Key file contents \(JSON\) | True |
 | proxy | Use system proxy settings | False |
+| default_search_scope | What is the top level object to search in (usually a project or organization in format of organization/XX). | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1057,7 +1059,7 @@ Returns the specified Instance resource. Gets a list of available instances by m
 | --- | --- | --- |
 | instance | Name of the instance resource to return. | Required | 
 | zone | The name of the zone for this request. | Required | 
-
+| project_id | Project ID that you want to run this command on. | Optional |
 
 ##### Context Output
 
@@ -5816,6 +5818,7 @@ Creates a firewall rule in the specified project using the data included in the 
 | direction | Direction of traffic to which this firewall applies; default is INGRESS. Note: For INGRESS traffic, it is NOT supported to specify destinationRanges; For EGRESS traffic, it is NOT supported to specify sourceRanges OR sourceTags. | Optional | 
 | logConfigEnable | This field denotes whether to enable logging for a particular firewall rule. | Optional | 
 | disabled | Denotes whether the firewall rule is disabled, i.e not applied to the network it is associated with. When set to true, the firewall rule is not enforced and the network behaves as if it did not exist. If this is unspecified, the firewall rule will be enabled. | Optional | 
+| project_id | Project ID that you want to run this command on. | Optional |
 
 
 ##### Context Output
@@ -6001,6 +6004,7 @@ Retrieves the list of firewall rules available to the specified project.
 | filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance. | Optional | 
 | orderBy | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using orderBy=&quot;creationTimestamp desc&quot;. This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. | Optional | 
 | pageToken | Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results. | Optional | 
+| project_id | Project ID that you want to run this command on. | Optional |
 
 
 ##### Context Output
@@ -6874,6 +6878,7 @@ Add network tag for the specified instance.
 | instance | Name of the instance scoping this request. | Required | 
 | zone | The name of the zone for this request. | Required | 
 | tag | Network tag to add.  Tag must be unique, 1-63 characters long, and comply with RFC1035. | Required | 
+| project_id | Project ID that you want to run this command on. | Optional |
 
 
 ##### Context Output

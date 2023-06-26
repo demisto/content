@@ -16,6 +16,18 @@ DEFAULT_HEADERS = {
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
+# =========== Mirroring Mechanism Globals ===========
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+OUTGOING_MIRRORED_FIELDS = ['comment', 'status']
+XSOAR_SUMO_CLOSE_REASON_MAP = {'False Positive': 'False Positive', 'Duplicate': 'Duplicate',
+                               'Resolved': 'Resolved', 'Other': 'Resolved'}
+
 ''' CLIENT CLASS '''
 
 
@@ -109,7 +121,7 @@ def add_list_to_q(q, fields, args):
 
 def insight_signal_to_readable(obj):
     '''
-    Readable json output from insight/signal object
+    Construct a readable json output from an original insight/signal object
     '''
     if obj is None:
         return {}
@@ -172,7 +184,7 @@ def entity_to_readable(obj):
     return cap_obj
 
 
-def get_update_result(resp_json):
+def get_update_result(resp_json: bool):
     '''
     Readable json output from update
     '''
@@ -185,6 +197,40 @@ def insight_timestamp_to_created_format(timestamp_int):
     '''
     created_time = datetime.utcfromtimestamp(timestamp_int)
     return datetime.strftime(created_time, '%Y-%m-%dT%H:%M:%S.%f')
+
+
+def convert_timestampstr_to_epochms(timestampstr: str) -> int:
+    '''
+    Convert a Signal or Insight timestamp string to epoch millisecs
+    '''
+    try:
+        incident_datetime = datetime.strptime(timestampstr, '%Y-%m-%dT%H:%M:%S.%f')
+    except ValueError:
+        incident_datetime = datetime.strptime(timestampstr, '%Y-%m-%dT%H:%M:%S')
+
+    incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
+    return incident_created_time * 1000
+
+
+def craft_sumo_url(svc_url: str, resource_type: str, id: str) -> str:
+    '''
+    Craft a full URL to a Sumo Logic insight/signal based on its Id
+    '''
+    if resource_type == "insight":
+        return f'{svc_url}/sec/insight/{id}'
+    elif resource_type == "signal":
+        return f'{svc_url}/sec/signal/{id}'
+    else:
+        return ""
+
+
+def is_inmirrorable_object(readable_remote_id: str) -> bool:
+    '''
+    Check if a remote object ID is mirrorable into XSOAR. Currently on Sumo Logic Insights
+    can be in-mirrored into XSOAR. Note the readable_remote_id must be in reable form, not
+    the raw ID
+    '''
+    return True if readable_remote_id.startswith('INSIGHT') else False
 
 
 ''' COMMAND FUNCTIONS '''
@@ -223,7 +269,9 @@ def test_module(client: Client) -> str:
             last_run={},  # getLastRun() gets the last run dict
             first_fetch_time=first_fetch_timestamp,
             fetch_query='',  # defaults to status:in("new", "inprogress")
-            record_summary_fields=''
+            pull_signals=False,
+            record_summary_fields='',
+            other_args=None
         )
         message = 'ok'
     except DemistoException as e:
@@ -232,15 +280,6 @@ def test_module(client: Client) -> str:
         else:
             raise e
     return message
-
-
-def craft_sumo_url(svc_url, resource_type, id):
-    if resource_type == "insight":
-        return f'{svc_url}/sec/insight/{id}'
-    elif resource_type == "signal":
-        return f'{svc_url}/sec/signal/{id}'
-    else:
-        return ""
 
 
 def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -258,7 +297,7 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     if record_summary_fields:
         query['recordSummaryFields'] = record_summary_fields
 
-    resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
+    resp_json = client.req('GET', f'sec/v1/insights/{insight_id}', query)
     insight = insight_signal_to_readable(resp_json)
     insight['SumoUrl'] = craft_sumo_url(client.get_extra_params()['instance_endpoint'], 'insight', insight_id)
 
@@ -272,6 +311,30 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='SumoLogicSec.Insight',
         outputs_key_field='Id',
         outputs=insight
+    )
+
+
+def insight_add_comment(client: Client, args: Dict[str, Any]) -> CommandResults:
+    '''
+    Add a comment to an insight
+    '''
+    insight_id = args.get('insight_id')
+
+    reqbody = {}
+    reqbody['body'] = args.get('comment')
+    c = client.req('POST', 'sec/v1/insights/{}/comments'.format(insight_id), None, reqbody)
+
+    comment = [{'Id': c.get('id'), 'Body': c.get('body'), 'Author': c.get('author').get('username'),
+                'Timestamp': c.get('timestamp'), 'InsightId': insight_id}]
+    readable_output = tableToMarkdown('Insight Added Comment:', comment,
+                                      ['Id', 'InsightId', 'Author', 'Body', 'Timestamp'],
+                                      headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogicSec.InsightComments',
+        outputs_key_field='Id',
+        outputs=comment
     )
 
 
@@ -663,14 +726,153 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
+def cleanup_records(signal: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    '''
+    Function to clean up all "bro" fields of the records under a Signal object
+    '''
+    if (signal is None) or ('allRecords' not in signal):
+        return None
+    for rec in signal['allRecords']:
+        field_names = list(rec.keys())
+        for field_name in field_names:
+            if (field_name.startswith('bro') and len(rec.get(field_name)) == 0):
+                rec.pop(field_name, None)
+            if (field_name == 'timestamp'):
+                rec['lastlog_timestamp'] = rec['timestamp']
+                rec.pop(field_name, None)
+
+    return signal
+
+
+def get_remote_data_command(client: Client, args: dict, close_incident: bool):
+    ''' get-remote-data command: Returns an updated Sumo Logic Cloud SIEM Insight incident
+
+    Args:
+        client: Client object to call a Sumo Logic SIEM
+        args (dict): The command arguments
+        close_incident (bool): Whether to close the corresponding XSOAR incident if the Sumo Logic SIEM Insight has been
+        closed
+
+    Returns:
+        GetRemoteDataResponse: The Response containing the update to mirror and the entries
+    '''
+    entries = []
+    remote_args = GetRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    # last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    insight_id = remote_args.remote_incident_id
+    demisto.debug(f"Get-Remote-Data-Command for {insight_id} {last_update}")
+    if (not is_inmirrorable_object(insight_id)):
+        demisto.debug(f'Not in-mirrorable object with {insight_id}')
+        return GetRemoteDataResponse(mirrored_object={}, entries={})
+    else:
+        insight = insight_get_details(client, {'insight_id': insight_id}).outputs
+        insight_resolution = insight.get('Resolution')  # type: ignore
+        if insight['Status'] == 'Closed' and close_incident:  # type: ignore
+            resolution = insight_resolution
+            if (resolution == "No Action"):
+                resolution = "Other"
+            demisto.info(f'Closing incident related to Sumo Logic Insight {insight_id} with resolution {insight_resolution}, \
+                which is mapped to XSOAR reason: {resolution}')
+            entries = [{
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': resolution,
+                    'closeNotes': f'Insight {insight_id} was closed on Sumo Logic SIEM with resolution {insight_resolution}, \
+                        which is mapped to XSOAR reason: {resolution}.'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            }]
+        demisto.debug(f'Updated Sumo Logic Insight {insight_id}')
+        return GetRemoteDataResponse(mirrored_object=insight, entries=entries)
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
+    """ Pushes changes in XSOAR incident into the corresponding Sumo Logic Insight.
+
+    Args:
+        args (dict): Demisto args
+        params (dict): Demisto params
+        client: Client to connect to Sumo Logic SIEM
+
+    Returns:
+        insight_id (str): The Sumo Logic Insight Id
+
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    # Insight ID on Sumo Logic SIEM side
+    insight_id = parsed_args.remote_incident_id
+    # Incident ID on XSOAR side
+    incident_id = parsed_args.data['id']
+    if not is_inmirrorable_object(insight_id):
+        demisto.info(f"Not an Insight incident: {insight_id} so won't mirror")
+        return insight_id
+
+    if parsed_args.incident_changed and delta:
+        demisto.debug(f'Got the following delta keys {str(list(delta.keys()))} to update incident \
+            corresponding to Insight {insight_id}')
+        demisto.debug(f'Got the following delta {delta} to update incident corresponding to Insight {insight_id}')
+        demisto.debug(f"Incident Id: {incident_id}")
+        changed_data = {field: '' for field in OUTGOING_MIRRORED_FIELDS}
+        for field in delta:
+            if field in OUTGOING_MIRRORED_FIELDS:
+                changed_data[field] = delta[field]
+
+        if 'closeReason' in delta:
+            if parsed_args.inc_status == IncidentStatus.ACTIVE:
+                changed_data['status'] = 'inprogress'
+            if parsed_args.inc_status == IncidentStatus.PENDING:
+                changed_data['status'] = 'new'
+            # Close Insight if relevant
+            if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_insight'):
+                demisto.debug(f'Closing Sumo Logic Insight {insight_id}')
+                changed_data['status'] = 'closed'
+            # XSOAR has by default: False Positive, Duplicate, Resolved and Other which can be
+            # mapped directly to Sumo Logic default resolutions (except for Other). For any custom
+            # resolution, there must be a 1-1 mapping between Sumo SIEM and XSOAR side.
+            reason = delta['closeReason']
+            if (reason == 'Other'):
+                reason = 'Resolved'
+            changed_data['resolution'] = reason
+            changed_data['insight_id'] = insight_id
+            demisto.debug(f'Sending update status request to Sumo Logic for Insight {insight_id}, data: {changed_data}')
+
+            insight_add_comment(client, {'insight_id': insight_id, 'comment':
+                                f"Close since the corresponding XSOAR Insight incident: {incident_id} was closed"})
+            insight_obj = insight_set_status(client, changed_data).outputs  # type: ignore
+            return insight_obj.get('ReadableId')  # type: ignore
+    else:
+        demisto.debug(f'Incident corresponding to Sumo Logic Insight {insight_id} was not changed.')
+
+    return insight_id
+
+
+def get_modified_remote_data_command(client: Client, args: Any) -> Any:
+    ''' Gets all Sumo Logic Insights that have changed since a given time. Currently not used
+    since Sumo Logic API does not allow filtering insights by update time
+
+    Args:
+        client: Client object to call a Sumo Logic SIEM
+        args (dict): The command arguments
+
+    Returns:
+        GetModifiedRemoteDataResponse: The response containing the list of ids of Insights changed
+    '''
+    raise NotImplementedError('get-modified-remote-data not implemented')
+
+
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch_time: Optional[int],
-                    fetch_query: Optional[str], record_summary_fields: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+                    fetch_query: Optional[str], pull_signals: Optional[bool], record_summary_fields: Optional[str],
+                    other_args: Union[Dict[str, Any], None]) -> Tuple[Dict[str, int], List[dict]]:
     '''
     Retrieve new incidents periodically based on pre-defined instance parameters
     '''
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
+    demisto.debug(f"Sumo Logic Integration last run: {last_run}")
     last_fetch = last_run.get('last_fetch', None)
 
     # track last_fetch_ids to handle insights with the same timestamp
@@ -687,61 +889,62 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
+    last_fetch_created_time = latest_created_time
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
     incidents: List[Dict[str, Any]] = []
 
     # set query values that do not change with pagination
-    q = 'created:>={}'.format(insight_timestamp_to_created_format(latest_created_time))
-    if fetch_query:
-        q += ' ' + fetch_query
-    else:
-        q = q + ' status:in("new", "inprogress")'
-
+    q = f'created:>={insight_timestamp_to_created_format(last_fetch_created_time)}'
     offset = 0
     query = {}
-    query['q'] = q
+    if fetch_query:
+        query['q'] = q + ' ' + fetch_query
+    else:
+        query['q'] = q + ' status:in("new", "inprogress")'
     query['limit'] = str(max_results)
     if record_summary_fields:
         query['recordSummaryFields'] = record_summary_fields
     incidents = []
     hasNextPage = True
     instance_endpoint = client.get_extra_params()['instance_endpoint']
-    while hasNextPage:
+    signal_ids = []
+    counter = 0
+    # Retrieve Insights
+    while hasNextPage and counter < max_results:
 
         # only query parameter that changes loop to loop is the offset
         query['offset'] = str(offset)
         resp_json = client.req('GET', 'sec/v1/insights', query)
         for a in resp_json.get('objects'):
-
             # If no created_time set is as epoch (0). We use time in ms so we must
             # convert it from the API response
             insight_timestamp = a.get('created')
             insight_id = a.get('id')
             insight_readableid = a.get('readableId')
-            # add sumoUrl to signal:
+            # add sumoUrl to raw insight:
             a['sumoUrl'] = craft_sumo_url(instance_endpoint, 'insight', insight_id)
+            if (other_args is not None):
+                a['mirror_instance'] = other_args['mirror_instance']
+                a['mirror_direction'] = other_args['mirror_direction']
 
             if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
-                try:
-                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
-                except ValueError:
-                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
-
-                incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
-                incident_created_time_ms = incident_created_time * 1000
+                incident_created_time_ms = convert_timestampstr_to_epochms(insight_timestamp)
+                incident_created_time = (int)(incident_created_time_ms / 1000)
 
                 # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
                 if last_fetch:
                     if incident_created_time < last_fetch:
                         continue
-                # add sumoUrl to raw insight:
 
                 signals = a.get('signals')
                 for signal in signals:
+                    # add sumoUrl to signal:
                     signal_id = signal['id']
+                    signal_ids.append(signal_id)
                     signal['sumoUrl'] = craft_sumo_url(instance_endpoint, 'signal', signal_id)
+                    cleanup_records(signal)
 
                 incidents.append({
                     'name': a.get('name', 'No name') + ' - ' + insight_readableid,
@@ -751,7 +954,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                     'rawJSON': json.dumps(a)
                 })
                 current_fetch_ids.append(insight_id)
-
+                counter += 1
                 # Update last run and add incident if the incident is newer than last fetch
                 if incident_created_time > latest_created_time:
                     latest_created_time = incident_created_time
@@ -763,6 +966,43 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         else:
             offset = len(incidents)
 
+    final_incidents = []
+    if (pull_signals):
+        # Retrieve Signals associated with the insights
+        query = {}
+        i = 0
+        batch_size = 10
+        signal_incidents = []
+        while i < len(signal_ids):
+            signal_list_str = ','.join([f'"{x}"' for x in signal_ids[i:i + batch_size]])
+            query['q'] = f'id:in({signal_list_str})'
+            resp_json = client.req('GET', 'sec/v1/signals', query)
+            for a in resp_json.get('objects'):
+                signal_id = a.get('id')
+                # add sumoUrl to signal:
+                a['sumoUrl'] = craft_sumo_url(instance_endpoint, 'signal', signal_id)
+                # field inserted for classifier
+                a['readableId'] = "SIGNAL-" + signal_id
+                cleanup_records(a)
+                signal_created_time_ms = convert_timestampstr_to_epochms(a['timestamp'])
+                signal_incidents.append({
+                    'name': a.get('name', 'No name') + ' - ' + signal_id,
+                    'occurred': timestamp_to_datestring(signal_created_time_ms),
+                    'details': a.get('description'),
+                    'severity': translate_severity(a.get('severity')),
+                    'rawJSON': json.dumps(a)
+                })
+                if (other_args is not None):
+                    a['mirror_instance'] = other_args['mirror_instance']
+                    a['mirror_direction'] = other_args['mirror_direction']
+            i += batch_size
+
+        # Append incidents to the signal list so the signals will be created first:
+        final_incidents.extend(signal_incidents)
+        del(signal_incidents)
+    final_incidents.extend(incidents)
+    del(incidents)
+
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(
         Dict[str, Any],
@@ -771,13 +1011,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
             'last_fetch_ids': current_fetch_ids if len(current_fetch_ids) > 0 else last_fetch_ids
         }
     )
-    return next_run, incidents
+    return next_run, final_incidents
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
@@ -800,10 +1040,16 @@ def main() -> None:
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
     assert isinstance(first_fetch_timestamp, int)
 
-    fetch_query = demisto.params().get('fetch_query')
-    record_summary_fields = demisto.params().get('record_summary_fields')
+    fetch_query = demisto.getParam('fetch_query')
+    record_summary_fields = demisto.getParam('record_summary_fields')
+    pull_signals = demisto.getParam('pull_signals')
+    other_args = {
+        'mirror_instance': demisto.integrationInstance(),
+        'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
+    }
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
 
         client = Client(
@@ -814,38 +1060,48 @@ def main() -> None:
             auth=(access_id, access_key),
             ok_codes=[200])
         client.set_extra_params({'instance_endpoint': demisto.getParam('instance_endpoint')})
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-        elif demisto.command() == 'sumologic-sec-insight-get-details':
+        elif command == 'sumologic-sec-insight-get-details':
             return_results(insight_get_details(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-insight-get-comments':
+        elif command == 'sumologic-sec-insight-get-comments':
             return_results(insight_get_comments(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-signal-get-details':
+        elif command == 'sumologic-sec-insight-add-comment':
+            return_results(insight_add_comment(client, demisto.args()))
+        elif command == 'sumologic-sec-signal-get-details':
             return_results(signal_get_details(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-entity-get-details':
+        elif command == 'sumologic-sec-entity-get-details':
             return_results(entity_get_details(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-insight-search':
+        elif command == 'sumologic-sec-insight-search':
             return_results(insight_search(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-entity-search':
+        elif command == 'sumologic-sec-entity-search':
             return_results(entity_search(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-signal-search':
+        elif command == 'sumologic-sec-signal-search':
             return_results(signal_search(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-insight-set-status':
+        elif command == 'sumologic-sec-insight-set-status':
             return_results(insight_set_status(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-match-list-get':
+        elif command == 'sumologic-sec-match-list-get':
             return_results(match_list_get(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-match-list-update':
+        elif command == 'sumologic-sec-match-list-update':
             return_results(match_list_update(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-threat-intel-search-indicators':
+        elif command == 'sumologic-sec-threat-intel-search-indicators':
             return_results(threat_intel_search_indicators(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-threat-intel-get-sources':
+        elif command == 'sumologic-sec-threat-intel-get-sources':
             return_results(threat_intel_get_sources(client, demisto.args()))
-        elif demisto.command() == 'sumologic-sec-threat-intel-update-source':
+        elif command == 'sumologic-sec-threat-intel-update-source':
             return_results(threat_intel_update_source(client, demisto.args()))
+        elif command == 'update-remote-system':
+            demisto.info('########### MIRROR OUT FROM XSOAR #############')
+            update_remote_system_command(client, demisto.args(), demisto.params())
+        elif command == 'get-remote-data':
+            demisto.info('########### MIRROR INTO XSOAR #############')
+            return_results(get_remote_data_command(client, demisto.args(), other_args['mirror_direction'] is not None))
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(
                 arg=demisto.params().get('max_fetch'),
@@ -861,11 +1117,14 @@ def main() -> None:
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_timestamp,
                 fetch_query=fetch_query,
-                record_summary_fields=record_summary_fields
+                pull_signals=pull_signals,
+                record_summary_fields=record_summary_fields,
+                other_args=other_args
             )
 
             # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(next_run)
+
             # fetch-incidents calls ``demisto.incidents()`` to provide the list
             # of incidents to create
             demisto.incidents(incidents)

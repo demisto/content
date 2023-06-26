@@ -16,6 +16,9 @@ ignore=IM111
 [file:VirusTotal_V3_Premium_image.png]
 ignore=IM111
 
+[file:FeedLivehunt.yml]
+ignore=RM110
+
 [known_words]
 VirusTotal
 Livehunt

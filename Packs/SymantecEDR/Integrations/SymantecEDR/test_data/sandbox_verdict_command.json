@@ -1,0 +1,17 @@
+{
+    "verdict": "clean",
+    "verdict_type": "intelligence",
+    "sandbox_service": "cynic",
+    "type": "file_latest",
+    "sha2": "1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164",
+    "md5": "72f5c05b7ea8dd6059bf59f50b22df33",
+    "name": "d06c94537ecaee12.automaticdestinations-ms",
+    "size": 1536,
+    "first_seen": "2022-10-21T07:00:17.831Z",
+    "last_seen": "2023-02-06T18:01:15.578Z",
+    "global_first_seen": "2009-12-16T08:00:00.000Z",
+    "prevalence_band": 196,
+    "file_health": 1,
+    "sandbox_verdict": "clean",
+    "is_targeted": false
+}

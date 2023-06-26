@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Slack Event Collector
   version: -1
@@ -8,33 +11,41 @@ configuration:
   name: url
   type: 0
   required: true
+  section: Connect
 - display: ''
   displaypassword: User Token
   name: user_token
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - defaultvalue: 1000
   display: The maximum number of audit logs to fetch
   name: limit
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 3 days ago
   display: First fetch time interval
   name: oldest
   required: false
   type: 0
   additionalinfo: Data is not available prior to March 2018.
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
   additionalinfo:
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   additionalinfo:
+  section: Connect
+  advanced: true
 description: Slack logs event collector integration for XSIAM.
 display: Slack Event Collector
 name: Slack Event Collector
@@ -103,7 +114,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
 marketplaces:
 - marketplacev2

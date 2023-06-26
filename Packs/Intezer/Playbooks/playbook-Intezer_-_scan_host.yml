@@ -366,4 +366,6 @@ inputs:
 outputs: []
 tests:
 - No Tests
+marketplaces:
+- xsoar
 deprecated: true

@@ -44,7 +44,7 @@ configuration:
   name: freshness
   required: false
   type: 0
-description: Deprecated. Use the ThreatConnect v2 integration instead.
+description: Deprecated. Use the ThreatConnect v3 integration instead.
 display: ThreatConnect (Deprecated)
 name: ThreatConnect
 script:

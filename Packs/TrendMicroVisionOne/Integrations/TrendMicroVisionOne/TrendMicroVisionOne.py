@@ -14,6 +14,7 @@ from requests.models import HTTPError
 
 """CONSTANTS"""
 USER_AGENT = "TMV1CortexXSOARApp/1.1"
+VENDOR_NAME = "TrendMicroVisionOne"
 URL = "url"
 POST = "post"
 GET = "get"
@@ -294,6 +295,22 @@ class Client(BaseClient):
         """
         task_id = data.get(TASKID)
         result = self.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
+        risk = result.get("data", {}).get("analysisSummary", {}).get("riskLevel", "")
+        risk_score = self.incident_severity_to_dbot_score(risk)
+        sha256 = result.get("data", {}).get("digest", {}).get("sha256")
+        md5 = result.get("data", {}).get("digest", {}).get("md5")
+        sha1 = result.get("data", {}).get("digest", {}).get("sha1")
+        reliability = demisto.params().get("integrationReliability")
+        dbot_score = Common.DBotScore(
+            indicator=sha256,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=VENDOR_NAME,
+            score=risk_score,
+            reliability=reliability,
+        )
+        file_entry = Common.File(
+            sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score
+        )
         message = {
             "message": result.get("message", ""),
             "code": result.get("code", ""),
@@ -319,6 +336,11 @@ class Client(BaseClient):
             .get("analysisSummary", "")
             .get("trueFileType", ""),
             "report_id": result.get("data", {}).get("reportId", ""),
+            "DBotScore": {
+                "Score": dbot_score.score,
+                "Vendor": dbot_score.integration_name,
+                "Reliability": dbot_score.reliability,
+            },
         }
         return CommandResults(
             readable_output=tableToMarkdown(
@@ -327,6 +349,7 @@ class Client(BaseClient):
             outputs_prefix="VisionOne.Sandbox_Submission_Polling",
             outputs_key_field="report_id",
             outputs=message,
+            indicator=file_entry,
         )
 
     def lookup_type(self, param: Any) -> str:
@@ -427,6 +450,30 @@ class Client(BaseClient):
             "workbenchRecords"
         ]
         return response
+
+    def incident_severity_to_dbot_score(self, severity: str):
+        """
+        Converts an priority string to DBot score representation
+            alert severity. Can be one of:
+            Unknown -> 0
+            No Risk -> 1
+            Low or Medium -> 2
+            Critical or High -> 3
+        Args:
+            severity: String representation of severity.
+        Returns:
+            Dbot representation of severity
+        """
+        if not isinstance(severity, str):
+            return 0
+
+        if severity == "noRisk":
+            return 1
+        if severity in ["low", "medium"]:
+            return 2
+        if severity in ["high", "critical"]:
+            return 3
+        return 0
 
 
 def run_polling_command(
@@ -664,6 +711,7 @@ def fetch_incidents(client: Client):
             incident = {
                 "name": record["workbenchName"],
                 "occurred": record["createdTime"],
+                "severity": client.incident_severity_to_dbot_score(record["severity"]),
                 "rawJSON": json.dumps(record),
             }
             incidents.append(incident)
@@ -1047,6 +1095,21 @@ def get_file_analysis_status(
     """
     task_id = args.get(TASKID)
     response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
+    risk = response.get("data", {}).get("analysisSummary", {}).get("riskLevel", "")
+    risk_score = client.incident_severity_to_dbot_score(risk)
+    sha256 = response.get("data", {}).get("digest", {}).get("sha256")
+    md5 = response.get("data", {}).get("digest", {}).get("md5")
+    sha1 = response.get("data", {}).get("digest", {}).get("sha1")
+    reliability = demisto.params().get("integrationReliability")
+    dbot_score = Common.DBotScore(
+        indicator=sha256,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=VENDOR_NAME,
+        score=risk_score,
+        reliability=reliability,
+    )
+
+    file_entry = Common.File(sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score)
 
     message = {
         "message": response.get("message", ""),
@@ -1073,6 +1136,11 @@ def get_file_analysis_status(
         .get("analysisSummary", "")
         .get("trueFileType", ""),
         "report_id": response.get("data", {}).get("reportId", ""),
+        "DBotScore": {
+            "Score": dbot_score.score,
+            "Vendor": dbot_score.integration_name,
+            "Reliability": dbot_score.reliability,
+        },
     }
     results = CommandResults(
         readable_output=tableToMarkdown(
@@ -1081,6 +1149,7 @@ def get_file_analysis_status(
         outputs_prefix="VisionOne.File_Analysis_Status",
         outputs_key_field="message",
         outputs=message,
+        indicator=file_entry,
     )
     return results
 

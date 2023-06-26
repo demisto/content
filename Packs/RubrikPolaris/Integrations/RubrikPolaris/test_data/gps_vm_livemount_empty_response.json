@@ -1,6 +1,6 @@
 {
     "data": {
-        "vsphereVMInitiateLiveMount": {
+        "vsphereVmInitiateLiveMountV2": {
             "id": ""
         }
     }
