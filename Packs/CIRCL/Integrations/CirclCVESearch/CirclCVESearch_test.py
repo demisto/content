@@ -135,4 +135,5 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
         requests_mock.get(url_for_mock, json=response)
     client = Client(base_url=BASE_URL, verify=False, proxy=False)
     command_results = cve_command(client, cve_id_arg)
+    assert isinstance(command_results, list)
     assert len(command_results) == expected
