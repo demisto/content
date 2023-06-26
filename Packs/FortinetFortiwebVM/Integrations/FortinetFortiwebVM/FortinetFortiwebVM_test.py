@@ -6816,6 +6816,13 @@ def test_url_access_rule_condition_list_command(
             "FortiwebVM.Letsencrypt",
             "fortiwebvm-letsencrypt-certificate-list",
         ),
+        (
+            ClientV2.API_VER,
+            "cmdb/system/sdn-connector",
+            "server_pool_dependencies/v2_sdn_connector.json",
+            "FortiwebVM.SDNCollector",
+            "fortiwebvm-sdn-connector-list",
+        ),
     ),
 )
 def test_dependencies_commands(
@@ -6832,6 +6839,7 @@ def test_dependencies_commands(
      - fortiwebvm-sni-certificate-list
      - fortiwebvm-virtual-ip-list
      - fortiwebvm-network-interface-list
+     - fortiwebvm-sdn-connector-list
 
     Then:
      - Ensure that the output is correct.
@@ -6844,6 +6852,7 @@ def test_dependencies_commands(
     from FortinetFortiwebVM import network_inteface_list_command
     from FortinetFortiwebVM import virtual_ip_list_command
     from FortinetFortiwebVM import letsencrypt_certificate_list_command
+    from FortinetFortiwebVM import sdn_connector_list_command
     commands: dict[str, Callable] = {
         "fortiwebvm-persistence-policy-list": persistence_list_command,
         "fortiwebvm-server-health-check-list": server_health_check_list_command,
@@ -6853,6 +6862,7 @@ def test_dependencies_commands(
         "fortiwebvm-virtual-ip-list": virtual_ip_list_command,
         "fortiwebvm-network-interface-list": network_inteface_list_command,
         "fortiwebvm-letsencrypt-certificate-list": letsencrypt_certificate_list_command,
+        "fortiwebvm-sdn-connector-list": sdn_connector_list_command,
     }
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
@@ -6899,16 +6909,20 @@ def test_not_implemented_commands(
     When:
      - fortiwebvm-multi-certificate-list
      - fortiwebvm-sni-certificate-list
+     - fortiwebvm-letsencrypt-certificate-list
+     - fortiwebvm-sdn-connector-list
     Then:
      - Ensure relevant error raised.
     """
     from FortinetFortiwebVM import multi_certificate_list_command
     from FortinetFortiwebVM import sni_certificate_list_command
     from FortinetFortiwebVM import letsencrypt_certificate_list_command
+    from FortinetFortiwebVM import sdn_connector_list_command
     commands: dict[str, Callable] = {
         "fortiwebvm-multi-certificate-list": multi_certificate_list_command,
         "fortiwebvm-sni-certificate-list": sni_certificate_list_command,
         "fortiwebvm-letsencrypt-certificate-list": letsencrypt_certificate_list_command,
+        "fortiwebvm-sdn-connector-list": sdn_connector_list_command,
     }
     with pytest.raises(NotImplementedError) as error_info:
         commands[command_name](mock_client, {})

@@ -3135,6 +3135,10 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
+    def sdn_connector_list_request(self) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
     def virtual_ip_list_request(self) -> dict[str, Any]:
         pass
 
@@ -3238,7 +3242,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def server_pool_group_list_request(self, **kwargs) -> dict[str, Any]:
+    def server_pool_group_list_request(self, **kwargs) -> dict[str, Any] | list:
         pass
 
     @abstractmethod
@@ -3434,14 +3438,14 @@ class ClientV1(Client):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        # res = self.server_pool_group_list_request()
-        # res = find_dict_in_array(res, "name", args["group_name"])
-        # if not res:
-        #     raise DemistoException(ErrorMessage.NOT_EXIST.value)
-        # parsed = self.parser.parse_server_pool(res)
-        # key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
-        # if group_type != parsed[key_]:
-        #     raise ValueError(f'The group type is "{parsed["type"]}", the rule type is "{group_type}"')
+        res = self.server_pool_group_list_request() or []
+        res = find_dict_in_array(res, "name", args.get("group_name", ""))
+        if not res:
+            raise DemistoException(ErrorMessage.NOT_EXIST.value)
+        parsed = self.parser.parse_server_pool(res)
+        key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
+        if group_type != parsed[key_]:
+            raise ValueError(f'The group type is "{parsed["type"]}", the rule type is "{group_type}"')
         super().validate_server_pool_rule(args, group_type)
 
     def protected_hostname_create_request(
@@ -4939,6 +4943,14 @@ class ClientV1(Client):
         """
         raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
+    def sdn_connector_list_request(self) -> dict[str, Any]:
+        """List the SNI certificates.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V1
+        """
+        raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
+
     def virtual_ip_list_request(self) -> dict[str, Any]:
         """List the virtual IPs.
 
@@ -5193,7 +5205,7 @@ class ClientV1(Client):
             url_suffix=f"ServerObjects/Server/ServerPool/{name}",
         )
 
-    def server_pool_group_list_request(self, **kwargs) -> dict[str, Any]:
+    def server_pool_group_list_request(self, **kwargs) -> list:
         """
         List virtual server groups.
 
@@ -5612,11 +5624,11 @@ class ClientV2(Client):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        # res = self.server_pool_group_list_request(name=args["group_name"]).get('results')
-        # parsed = self.parser.parse_server_pool(res)
-        # key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
-        # if group_type != parsed[key_]:
-        #     raise ValueError(f'The group type is "{parsed["type"]}", the rule type is "{group_type}"')
+        res = self.server_pool_group_list_request(name=args.get("group_name")).get('results') or {}
+        parsed = self.parser.parse_server_pool(res)
+        key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
+        if group_type != parsed[key_]:
+            raise ValueError(f'The group {key_} is "{parsed[key_]}", the rule type is "{group_type}"')
         super().validate_server_pool_rule(args, group_type)
 
     def protected_hostname_create_request(
@@ -7571,6 +7583,17 @@ class ClientV2(Client):
         return self._http_request(
             method="GET",
             url_suffix="cmdb/system/certificate.sni",
+        )
+
+    def sdn_connector_list_request(self) -> dict[str, Any]:
+        """List the SNI certificates.
+
+        Returns:
+            Dict[str, Any]: API response from FortiwebVM V2
+        """
+        return self._http_request(
+            method="GET",
+            url_suffix="cmdb/system/sdn-connector",
         )
 
     def virtual_ip_list_request(self) -> dict[str, Any]:
@@ -10905,6 +10928,27 @@ def sni_certificate_list_command(
                                 outputs_prefix="FortiwebVM.SNICertificate")
 
 
+def sdn_connector_list_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
+    """List all the SNI certificates.
+
+    Args:
+        client (Client): FortiwebVM API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    return dependencies_handler(client=client,
+                                args=args,
+                                request_command=client.sdn_connector_list_request,
+                                parser_command=client.parser.parse_simple_name,
+                                title="SDN collectors:",
+                                headers=["id"],
+                                outputs_prefix="FortiwebVM.SDNCollector")
+
+
 def virtual_ip_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all the virtual IPs.
 
@@ -11584,6 +11628,7 @@ def main() -> None:
         "fortiwebvm-local-certificate-list": local_certificate_list_command,
         "fortiwebvm-multi-certificate-list": multi_certificate_list_command,
         "fortiwebvm-sni-certificate-list": sni_certificate_list_command,
+        "fortiwebvm-sdn-connector-list": sdn_connector_list_command,
         "fortiwebvm-virtual-ip-list": virtual_ip_list_command,
         "fortiwebvm-letsencrypt-certificate-list": letsencrypt_certificate_list_command,
         "fortiwebvm-network-interface-list": network_inteface_list_command,
