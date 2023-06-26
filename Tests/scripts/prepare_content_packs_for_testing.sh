@@ -25,7 +25,7 @@ else
   elif [[ "$MARKETPLACE_TYPE" == "xpanse" ]]; then
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XPANSE_BUCKET
 
-  elif [[ "$MARKETPLACE_TYPE" == "xsoar-saas" ]]; then
+  elif [[ "$MARKETPLACE_TYPE" == "xsoar_saas" ]]; then
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XSOAR_SAAS_BUCKET
   fi
 fi

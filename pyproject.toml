@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto_sdk = "1.16.0"
+demisto_sdk = { git = "https://github.com/demisto/demisto-sdk.git", branch = "sdk_new_bucket_xsoar_saas" }
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -374,7 +374,7 @@ select = [
     "YTT303", # sys-version-slice
 ]
 ignore = [
-    "E402", # module-import-not-at-top-of-file	
+    "E402", # module-import-not-at-top-of-file
 
     "F403", # undefined-local-with-import-star
     "F405", # undefined-local-with-import-star-usage

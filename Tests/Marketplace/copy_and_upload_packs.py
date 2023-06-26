@@ -388,6 +388,8 @@ def main():
     production_base_path = options.production_base_path
     target_packs = options.pack_names
     marketplace = options.marketplace
+    # omertodo: do i need to add a parameter for working with also the devops buckets
+    # can one service acount work for the 2 projects?
 
     # Google cloud storage client initialized
     storage_client = init_storage_client(service_account)
