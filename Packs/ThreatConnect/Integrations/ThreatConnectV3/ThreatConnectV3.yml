@@ -112,6 +112,7 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: ThreatConnect's integration is a intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 display: ThreatConnect v3
 name: ThreatConnect v3
@@ -359,6 +360,9 @@ script:
       name: page
     - description: The maximum number of results that can be returned. The default is 500.
       name: limit
+    - name: fields_to_return
+      description: 'Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes.'
+      isArray: true
     description: Retrieves a list of all indicators.
     name: tc-indicators
     outputs:
@@ -488,6 +492,9 @@ script:
       description: The ID of the indicator by which to search.
       name: indicator
       required: true
+    - name: fields_to_return
+      description: 'Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes.'
+      isArray: true
     description: Retrieves information about an indicator.
     name: tc-get-indicator
     outputs:
@@ -619,6 +626,9 @@ script:
       name: page
     - description: The maximum number of results that can be returned. The default is 500.
       name: limit
+    - name: fields_to_return
+      description: 'Comma separated list of additional fields to return as part of the result indicator metadata. Possible values are: associatedGroups, associatedIndicators, observations, tags, and attributes.'
+      isArray: true
     description: Fetches all indicators that have a tag.
     name: tc-get-indicators-by-tag
     outputs:
@@ -1682,22 +1692,16 @@ script:
       type: string
     - description: Add group tags metadata to the results.
       name: include_tags
-      type: bool
     - description: Add group security labels metadata to the results.
       name: include_security_labels
-      type: bool
     - description: Add group attributes metadata to the results.
       name: include_attributes
-      type: bool
     - description: Add group associated groups metadata to the results.
       name: include_associated_groups
-      type: bool
     - description: Add group associated indicators metadata to the results.
       name: include_associated_indicators
-      type: bool
     - description: Add all group metadata to the results.
       name: include_all_metaData
-      type: bool
     description: Returns all groups.
     name: tc-list-groups
     outputs:
@@ -2122,7 +2126,8 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: string
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
   isfetch: true
   script: ''
   subtype: python3

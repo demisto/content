@@ -15,6 +15,11 @@ configuration:
 - display: Certificate Passphrase
   name: passphrase
   type: 4
+  hidden: true
+- name: passphrase_creds
+  type: 9
+  displaypassword: Certificate Passphrase
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -28,6 +33,7 @@ configuration:
   display: Fetch incidents for severities
   name: severities
   type: 0
+
 description: Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7
 display: Symantec Managed Security Services
 name: Symantec MSS
@@ -73,7 +79,7 @@ script:
       name: max
     description: Get a list of incidents
     name: symantec-mss-incidents-list
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.63672
   isfetch: true
   script: '-'
   subtype: python3

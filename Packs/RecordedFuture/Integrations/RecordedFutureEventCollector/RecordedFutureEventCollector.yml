@@ -50,7 +50,7 @@ script:
       name: limit
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
-  dockerimage: demisto/python3:3.10.11.59070
+  dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true
   script: '-'
   subtype: python3

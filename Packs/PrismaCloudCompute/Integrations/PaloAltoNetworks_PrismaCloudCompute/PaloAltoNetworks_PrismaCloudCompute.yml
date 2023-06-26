@@ -772,10 +772,16 @@ script:
     description: Get information about the CVEs in the system. Will return a maximum of 50 records. It is possible to query for a partial CVE description such as cve-2020 or cve-2014 or by severity/distro/package.
     arguments:
     - name: cve_id
-      description: A comma-separated list of CVEs, for example, cve_id=cve-2016-223,cve-2020-3546.
-      required: true
+      description: Deprecated. Use the `cve` argument instead.
+      required: false
       isArray: true
       defaultValue: ""
+    - name: cve
+      description: A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546.
+      required: false
+      isArray: true
+      defaultValue: ""
+      default: true
     outputs:
     - contextPath: CVE.ID
       description: "The ID of the CVE, for example: CVE-2015-1653."

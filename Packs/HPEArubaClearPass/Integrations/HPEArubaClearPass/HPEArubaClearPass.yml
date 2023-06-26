@@ -10,29 +10,41 @@ configuration:
 - additionalinfo: HPE Aruba ClearPass client identifier.
   display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 0
+  hidden: true
 - additionalinfo: HPE Aruba ClearPass client secret.
   display: Client Secret
   name: client_secret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: Client ID
+  name: client_id_creds
+  required: false
+  type: 9
+  displaypassword: Client Secret
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
 - display: Use system proxy settings
   name: proxy
   type: 8
+
 description: Aruba ClearPass Policy Manager provides role and device-based network access control for employees, contractors, and guests across any multi-vendor wired, wireless, and VPN infrastructure.
 display: HPE Aruba ClearPass
 name: HPEArubaClearPass
 script:
   commands:
   - arguments:
-    - description: MAC address of the required endpoint. If not given, all the endpoints will be returned.
+    - default: false
+      description: MAC address of the required endpoint. If not given, all the endpoints will be returned.
+      isArray: false
       name: mac_address
     - auto: PREDEFINED
+      default: false
       description: Status of the required endpoint. Possible values- Known, Unknown, Disabled.
+      isArray: false
       name: status
       predefined:
       - Known
@@ -40,9 +52,17 @@ script:
       - Disabled
     - description: Zero based offset to start from. Default is 0.
       name: offset
-    - description: Maximum number of items to return in the range of 1 – 1000. Default is 25.
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of items to return in the range of 1 – 1000. Default is 25.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Get a list of endpoints. An endpoint device is an Internet-capable hardware device on a TCP/IP network (e.g. laptops, smart phones, tablets, etc.)
+    execution: false
     name: aruba-clearpass-endpoints-list
     outputs:
     - contextPath: HPEArubaClearPass.Endpoints.id
@@ -67,7 +87,10 @@ script:
     - description: Numeric ID of the endpoint.
       name: endpoint_id
       required: true
-    - description: MAC address of the endpoint to be set. If not given, all the endpoints will be returned.
+      secret: false
+    - default: false
+      description: MAC address of the endpoint to be set. If not given, all the endpoints will be returned.
+      isArray: false
       name: mac_address
     - auto: PREDEFINED
       description: Status of the endpoint to be set. Can be Known/Unknown/Disabled.
@@ -81,7 +104,10 @@ script:
     - description: A comma-seperated list of Device Insight Tags.
       isArray: true
       name: device_insight_tags
-    - description: 'Additional attributes (key/value pairs) that may be stored with the endpoint. For example: [{"demisto_test": "aaaaa"},{"test":"good"}].'
+      required: false
+      secret: false
+    - default: false
+      description: 'Additional attributes (key/value pairs) that may be stored with the endpoint. For example: [{"demisto_test": "aaaaa"},{"test":"good"}].'
       isArray: true
       name: attributes
     description: Updates some fields of an endpoint.
@@ -121,9 +147,17 @@ script:
       - Onboard
     - description: Zero-based offset to start from. Default is 0.
       name: offset
-    - description: Maximum number of items to return in the range of 1 – 1000. Default is 25.
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of items to return in the range of 1 – 1000. Default is 25.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Get a list of attributes. Attributes allows you to specify unique sets of criteria for local users, guest users, endpoints, and devices. If no arguments were given, all of the attributes will be displayed.
+    execution: false
     name: aruba-clearpass-attributes-list
     outputs:
     - contextPath: HPEArubaClearPass.Attributes.id
@@ -165,7 +199,9 @@ script:
       - Onboard
       required: true
     - auto: PREDEFINED
+      default: false
       description: Data Type of the attribute to be set. Can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      isArray: false
       name: data_type
       predefined:
       - Boolean
@@ -180,7 +216,10 @@ script:
       - Time
       - TimeOfDay
       required: true
-    - description: Whether to make this attribute mandatory for the given entity_name. Default is False.
+      secret: false
+    - default: false
+      description: Whether to make this attribute mandatory for the given entity_name. Default is False.
+      isArray: false
       auto: PREDEFINED
       name: mandatory
       predefined:
@@ -188,13 +227,21 @@ script:
       - 'False'
     - description: Default value of the attribute. Default is an empty string.
       name: default_value
-    - description: Whether to allow multiple values of the attribute with data type String only (API limitation). Default is False.
+      required: false
+      secret: false
+    - default: false
+      description: Whether to allow multiple values of the attribute with data type String only (API limitation). Default is False.
+      isArray: false
       name: allow_multiple
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - description: Possible value for attribute with data type List only (API limitation) (e.g., example1,example2,example3). Default is an empty string.
+      required: false
+      secret: false
+    - default: false
+      description: Possible value for attribute with data type List only (API limitation) (e.g., example1,example2,example3). Default is an empty string.
+      isArray: false
       name: allowed_value
     description: Create a new attribute.
     name: aruba-clearpass-attribute-create
@@ -239,7 +286,9 @@ script:
       - Endpoint
       - Onboard
     - auto: PREDEFINED
+      default: false
       description: Data type of the attribute to be set. Can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      isArray: false
       name: data_type
       predefined:
       - Boolean
@@ -253,7 +302,11 @@ script:
       - Text
       - Time
       - TimeOfDay
-    - description: Whether to make this attribute mandatory for the given entity_name. Default is False.
+      required: false
+      secret: false
+    - default: false
+      description: Whether to make this attribute mandatory for the given entity_name. Default is False.
+      isArray: false
       auto: PREDEFINED
       name: mandatory
       predefined:
@@ -261,13 +314,20 @@ script:
       - 'False'
     - description: Default value of the attribute. Default is an empty string.
       name: default_value
-    - description: Whether to allow multiple values of the attribute with data type String only (API limitation). Default is False.
+      required: false
+      secret: false
+    - default: false
+      description: Whether to allow multiple values of the attribute with data type String only (API limitation). Default is False.
+      isArray: false
       name: allow_multiple
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - description: Possible value for attribute with data type List only (API limitation) (e.g., example1,example2,example3). Default is an empty string.
+      secret: false
+    - default: false
+      description: Possible value for attribute with data type List only (API limitation) (e.g., example1,example2,example3). Default is an empty string.
+      isArray: false
       name: allowed_value
     description: Update some fields of an attribute by the attribute's ID.
     name: aruba-clearpass-attribute-update
@@ -311,7 +371,11 @@ script:
       name: device_mac_address
     - description: The visitor’s phone number.
       name: visitor_phone
-    - description: Maximum number of items to return in the range of 1 – 1000. Default is 25.
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of items to return in the range of 1 – 1000. Default is 25.
+      isArray: false
       name: limit
     description: Get a list of active sessions.
     name: aruba-clearpass-active-sessions-list
@@ -344,7 +408,7 @@ script:
     - contextPath: HPEArubaClearPass.Sessions.Response_message
       description: Describes the result of the disconnected operation.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   script: '-'
   subtype: python3
   type: python

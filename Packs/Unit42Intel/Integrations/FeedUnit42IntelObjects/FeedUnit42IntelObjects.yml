@@ -100,7 +100,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: unit42intel-objects-feed-get-indicators
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   script: '-'
   subtype: python3

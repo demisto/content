@@ -116,7 +116,7 @@ script:
       name: offset
     description: Gets the indicators from AutoFocus.
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   script: '-'
   subtype: python3
