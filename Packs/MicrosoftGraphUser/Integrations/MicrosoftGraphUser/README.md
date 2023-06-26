@@ -599,7 +599,7 @@ There is no context output for this command.
 ***
 Changes the user password.
 Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
-
+Note: In order to change the password, you need additional permissions: Auth Admin, Privileged Auth Admin or Global Admin, depending on the target user's role.
 
 #### Base Command
 
