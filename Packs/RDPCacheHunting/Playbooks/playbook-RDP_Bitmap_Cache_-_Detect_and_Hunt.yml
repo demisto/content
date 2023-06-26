@@ -1,5 +1,7 @@
 id: RDP Bitmap Cache - Detect and Hunt
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: RDP Bitmap Cache - Detect and Hunt
 description: This playbook automates the collection and forensic analysis of RDP sessions cache data by collecting the cache files and convert it to an image, extract readable text from the image and build IOC's from text and finally enrich any extracted indicators for further hunting
 starttaskid: "0"
@@ -105,14 +107,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ef0be61d-6d32-42b8-8d57-926296bda539
+    taskid: 7de8b5f2-8c08-4616-87a7-02c1680147c0
     type: regular
     task:
-      id: ef0be61d-6d32-42b8-8d57-926296bda539
+      id: 7de8b5f2-8c08-4616-87a7-02c1680147c0
       version: -1
       name: Parse RDP cache files
-      description: Parse RDP cache files into a single image collage
-      scriptName: BMC-Tool
+      description: Parse RDP bitmap cache data into a single collage image file.
+      scriptName: BMCTool
       type: regular
       iscommand: false
       brand: ""
@@ -207,48 +209,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 3c563b94-366f-41b3-8a53-7e59c25abd2f
+    taskid: d624b2a0-9b5d-4e82-8d78-14d59118f6eb
     type: regular
     task:
-      id: 3c563b94-366f-41b3-8a53-7e59c25abd2f
+      id: d624b2a0-9b5d-4e82-8d78-14d59118f6eb
       version: -1
       name: Suspicious strings hunting
       description: This script runs stringsifter ML tool for malware anlisys and ranking of words.
-      scriptName: StringSifter
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "15"
-    scriptarguments:
-      file_name:
-        complex:
-          root: File.Name
-          filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: sharpen
-              ignorecase: true
-      string_text:
-        complex:
-          root: File
-          filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: sharp
-              ignorecase: true
-          accessor: Text
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1548,6 +1521,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
