@@ -375,7 +375,7 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
         "username": "admin" if basic_auth == "enable" else ""
     }
     raw_response_msg: Message = client.set_master_auth(
-        action=types.SetMasterAuthRequest.Action.SET_USERNAME,  # type: ignore[E1101]
+        action=types.SetMasterAuthRequest.Action.SET_USERNAME,  # pylint: disable=E1101
         project_id=project,
         zone=zone,
         cluster_id=cluster,
