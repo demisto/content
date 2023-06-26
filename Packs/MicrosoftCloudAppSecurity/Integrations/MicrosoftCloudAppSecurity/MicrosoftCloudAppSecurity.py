@@ -941,7 +941,7 @@ def main():  # pragma: no cover
         verify = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
-        endpoint_type_name = params.get('endpoint_type', 'Worldwide')
+        endpoint_type_name = params.get('endpoint_type') or 'Worldwide'
         endpoint_type = MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE[endpoint_type_name]
         azure_cloud = AZURE_CLOUDS[endpoint_type]  # The MDA endpoint type is a subset of the azure clouds.
         token = params.get('creds_token', {}).get('password', '') or params.get('token', '')

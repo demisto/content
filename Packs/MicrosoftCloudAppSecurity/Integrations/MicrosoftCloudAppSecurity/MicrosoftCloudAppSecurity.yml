@@ -18,8 +18,7 @@ configuration:
   section: Connect
   advanced: true
 - additionalinfo: |-
-    More information can be found on the integration page -  #
-# FIXME https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+    More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-cloud-app-security
   defaultvalue: Worldwide
   display: Endpoint Type
   name: endpoint_type
@@ -517,7 +516,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Cֹlose multiple alerts matching the specified filters as true positive (an alert on a confirmed malicious activity.
+    description: Close multiple alerts matching the specified filters as true positive (an alert on a confirmed malicious activity.
     execution: false
     name: microsoft-cas-alert-close-true-positive
   - arguments:
