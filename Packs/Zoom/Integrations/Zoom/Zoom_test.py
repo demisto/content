@@ -1547,7 +1547,39 @@ def test_zoom_send_message_markdown_command_error_mentions(mocker):
                                   to_channel='channel1'
                                   )
 
-    assert str(e.value) == "to many mentions in text. you can provide only one mention in each message"
+    assert str(e.value) == "too many mentions in text. you can provide only one mention in each message"
+
+
+def test_zoom_send_message_markdown_command_error_too_many_arguments(mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel with invalid markdown
+    Then -
+        Validate that an exception is raised
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_send_message_command
+
+    with pytest.raises(Exception) as e:
+        zoom_send_message_command(client,
+                                  user_id='user1',
+                                  at_contact='user2@example.com',
+                                  is_markdown=True,
+                                  message="@user This is an markdown",
+                                  to_channel='channel1',
+                                  start_position=0,
+                                  end_position=4,
+                                  at_type='Mention a contact',
+
+                                  )
+
+    assert str(e.value) == """Too many arguments. If you choose is_markdown,
+                    don't provide one of the following arguments: start_position, end_position, format_type, at_type,
+                    rt_start_position, rt_end_position or format_attr"""
 
 
 def test_zoom_list_messages_command(mocker):

@@ -82,8 +82,8 @@ USER_NOT_FOUND = """ This user email can't be found """
 MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
                     don't provide one of the following arguments: start_position, end_position, format_type, at_type,
                     rt_start_position, rt_end_position or format_attr"""
-MARKDOWN_EXTRA_FORMATS = """to many style in text. you can provide only one style type"""
-MARKDOWN_EXTRA_MENTIONS = """to many mentions in text. you can provide only one mention in each message"""
+MARKDOWN_EXTRA_FORMATS = """Too many style in text. you can provide only one style type"""
+MARKDOWN_EXTRA_MENTIONS = """Too many mentions in text. you can provide only one mention in each message"""
 
 
 '''CLIENT CLASS'''
