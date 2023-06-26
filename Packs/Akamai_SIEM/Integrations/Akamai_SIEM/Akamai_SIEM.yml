@@ -10,16 +10,28 @@ configuration:
   type: 0
 - display: Client token
   name: clientToken
-  required: true
   type: 4
+  hidden: true
+- name: clienttoken_creds
+  type: 9
+  displaypassword: Client token
+  hiddenusername: true
 - display: Access token
   name: accessToken
-  required: true
   type: 4
+  hidden: true
+- name: accesstoken_creds
+  type: 9
+  displaypassword: Access token
+  hiddenusername: true
 - display: Client secret
   name: clientSecret
-  required: true
   type: 4
+  hidden: true
+- name: clientsecret_creds
+  type: 9
+  displaypassword: Client secret
+  hiddenusername: true
 - defaultvalue: '50170'
   display: Config IDs to fetch
   name: configIds
@@ -29,16 +41,16 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 1 hours
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   required: false
   type: 0
-- defaultvalue: '20'
-  display: Fetch limit (minimum is 20)
+  defaultvalue: 1 hours
+- display: Fetch limit (minimum is 20)
   name: fetchLimit
   required: false
   type: 0
+  defaultvalue: '20'
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -171,7 +183,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/akamai:1.0.0.45817
+  dockerimage: demisto/akamai:1.0.0.63810
   isfetch: true
   longRunning: false
   longRunningPort: false
