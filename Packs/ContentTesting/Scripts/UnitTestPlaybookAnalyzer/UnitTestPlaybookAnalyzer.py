@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import uuid
+
 from typing import Dict, TypedDict, List  # type: ignore
 from datetime import datetime
 from dateutil.parser import parse
@@ -35,8 +35,6 @@ def BuildTask(t) -> Task:
     duration = -1.0
     state = "Unknown"
     started = 0
-    error = 0
-    waiting = 0
     notexecuted = 0
 
     if 'state' in t:
@@ -49,10 +47,7 @@ def BuildTask(t) -> Task:
             started = 1
         elif state == "WillNotBeExecuted":
             notexecuted = 1
-        elif state == "Error":
-            error = 1
-        elif state == "Waiting":
-            waiting = 1
+
     newtask = Task(name=t['task']['name'], duration=duration, state=state, tid=t['id'], started=started, notexecuted=notexecuted)
 
     return newtask
@@ -94,7 +89,7 @@ def TaskStats(task: List[Task], taskstat: Dict[str, TaskStat]) -> Dict[str, Task
         if t['state'] == "Completed":
             if dur > taskstat[taskid]['maxdur']:
                 taskstat[taskid]['maxdur'] = dur
-            if taskstat[taskid]['mindur'] != None:
+            if taskstat[taskid]['mindur'] is not None:
                 if dur < taskstat[taskid]['mindur']:
                     taskstat[taskid]['mindur'] = dur
             else:
@@ -122,7 +117,7 @@ def GetTaskStats(playbookname, subplaybookname, firstday, lastday, maxinc):
     taskstat: TaskStat = {}  # type: ignore
     taskstats: Dict[str, TaskStat] = {}  # type: ignore
     count = 0
-    if response['data'] != None:
+    if response['data'] is not None:
         for inc in response['data']:
             tasks = GetTasks(inc['id'], subplaybookname)
             taskstats = TaskStats(tasks, taskstat)
@@ -149,7 +144,7 @@ def StatsInfoMarkdown(stats: Dict[str, TaskStat]) -> str:
     markdown += "|---|:---:|:---:|:---:|\n"
 
     for key, val in stats.items():
-        if val['mindur'] == None:
+        if val['mindur'] is None:
             val['mindur'] = 0
         markdown += f"|{val['name']}|{val['mindur']}|{val['avgdur']}|{val['maxdur']}|\n"
 

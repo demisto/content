@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# Final Test: 6.10
-from typing import Dict, TypedDict
-import traceback
 
 
 BLUE1 = "rgb(138, 160, 171)"
@@ -12,30 +9,20 @@ BLUE4 = "rgb(49, 131, 171)"
 BLUE5 = "rgb(21, 122, 171)"
 BLUE6 = "rgb(2, 112, 171)"
 COLORS = [BLUE1, BLUE2, BLUE3, BLUE4, BLUE5, BLUE6]
-
 FORMATS = ["bar", "pie"]
-#FORMATS = ["bar", "pie", "line", "duration", "number"]
 LAYOUTS = ["horizontal", "vertical"]
 
 STATFIELD = 'avgdur'
 
 
-class WidgetStat(TypedDict):
-    data: list
-    groups: list
-    name: str
-    label: str
-    color: str
-
-
-def NewWidgetStat(name: str, color: str, label: str, data: list) -> WidgetStat:
-    wstat: WidgetStat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': []}
+def NewWidgetStat(name: str, color: str, label: str, data: list) -> dict:
+    wstat = {'name': name, 'color': color, 'data': [data], 'label': label, 'groups': []}
     return wstat
 
 
-def NewWidget(format: str, layout: str, wstat: list[WidgetStat]) -> Dict:
-    if format in FORMATS and layout in LAYOUTS:
-        widget = {'Type': 17, 'ContentsFormat': format, 'Contents': {'stats': wstat, 'params': {'layout': layout}}}
+def NewWidget(formatt: str, layout: str, wstat: list) -> dict:
+    if formatt in FORMATS and layout in LAYOUTS:
+        widget = {'Type': 17, 'ContentsFormat': formatt, 'Contents': {'stats': wstat, 'params': {'layout': layout}}}
     return widget
 
 
@@ -47,13 +34,13 @@ def main():
         stats = json.loads(ctx['PlaybookStatistics'])
         if len(stats) == 0:
             return
-        wstats: list[WidgetStat] = []
-        l = len(COLORS)
-        i = l
+        wstats: list = []
+        length = len(COLORS)
+        i = length
         for key, val in stats.items():
             if val[STATFIELD] == 0:
                 continue
-            newstat = NewWidgetStat("", COLORS[i % l], val['name'], val[STATFIELD])
+            newstat = NewWidgetStat("", COLORS[i % length], val['name'], val[STATFIELD])
             wstats.append(newstat)
             i += 1
 

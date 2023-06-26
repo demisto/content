@@ -1,9 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """
-This automation should be run in dev environments. It will consume 100% CPU for 10 - 20 minutes or more - depending on the amount of playbook and automation content.
+This automation should be run in dev environments. It will consume 100% CPU for 10 - 20 minutes or more -
+depending on the amount of playbook and automation content.
 It is set to timeout at 15 minutes in Advanced settings. This may need to be increased if content amount is large.
-It only parses python scripts to see if additional automations/commands are invoked via demisto.executeCommand or execute_command. Javascript automations are not parsed
+It only parses python scripts to see if additional automations/commands are invoked via demisto.executeCommand or
+execute_command. Javascript automations are not parsed
 Command names passed in a variable to demisto.executeCommand or execute_command are not reported.
 If a python automation fails to parse, an error is reported in the war room: any automations it calls are not reported.
 Integration commands and builtins are not parsed.
@@ -11,8 +13,6 @@ Integration commands and builtins are not parsed.
 """
 
 import ast
-import uuid
-from datetime import datetime
 
 
 def GetAutomation(scriptid: str):
@@ -57,34 +57,34 @@ def CalledAutomation(scrname: str, script: str) -> list:
     watchval = False
     names = []
 
-    for l in lines:
-        if not watchname and "Call" in l:
+    for lin in lines:
+        if not watchname and "Call" in lin:
             watchname = True
             continue
         if watchname:
-            if 'func=Name' in l:
-                name = l.split("'")[1]
+            if 'func=Name' in lin:
+                name = lin.split("'")[1]
                 if name == "execute_command":
                     watcharg = True
                     continue
-            if 'func=Attribute' in l:
+            if 'func=Attribute' in lin:
                 watchatt = True
                 continue
             if watchatt:
-                if 'attr=' in l:
-                    name = l.split("'")[1]
+                if 'attr=' in lin:
+                    name = lin.split("'")[1]
                     watchatt = False
                     if name == "executeCommand":
                         watcharg = True
                         continue
             if watcharg:
-                if "args=[" in l:
+                if "args=[" in lin:
                     watcharg = False
                     watchval = True
                     continue
             if watchval:
-                if "Constant(value=" in l:
-                    parts = l.split("'")  # handle when command name is in a variable
+                if "Constant(value=" in lin:
+                    parts = lin.split("'")
                     if len(parts) > 1:
                         name = parts[1]
                         watchval = False
@@ -239,7 +239,7 @@ def main():
         output = ""
 
         if outfmt == "markdown" or outfmt == "":
-            output += f"### Playbooks\n"
+            output += "### Playbooks\n"
         for key, ent in entities.items():
             if ent['etype'] == "playbook":
                 if outfmt == "csv":
@@ -248,7 +248,7 @@ def main():
                     output += PlaybookMarkdown(key, ent)
 
         if outfmt == "markdown" or outfmt == "":
-            output += f"### Automations\n"
+            output += "### Automations\n"
         for key, ent in entities.items():
             if ent['etype'] == "script":
                 if outfmt == "csv":

@@ -416,15 +416,6 @@
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "unittestingresults",
-                                "height": 22,
-                                "id": "cdc8be00-1a7e-11ed-9a74-f764f36fb746",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 2,
