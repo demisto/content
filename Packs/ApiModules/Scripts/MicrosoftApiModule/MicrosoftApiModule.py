@@ -79,6 +79,8 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
 
 MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM = "Custom"
 MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE = "com"
+MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE_CUSTOM = "Custom"
+
 
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
@@ -122,6 +124,19 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
     'gcc': 'https://securitycenter.onmicrosoft.us',
     'gcc-high': 'https://securitycenter.onmicrosoft.us',
     'dod': 'https://securitycenter.onmicrosoft.us',
+}
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_API = {
+    "com": "https://api.securitycenter.microsoft.com",
+    "gcc": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+}
+
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
+    "Worldwide": "com",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
 }
 
 # Azure Managed Identities
@@ -596,6 +611,23 @@ def get_azure_cloud(params, integration_name):
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
 
+def microsoft_defender_for_applications_get_base_url(params_endpoint_type, params_url, is_gcc=None):
+    # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
+    if params_endpoint_type == MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE_CUSTOM or not params_endpoint_type:
+        # When the integration was configured before our Azure Cloud support, the value will be None.
+        endpoint_type = "gcc" if is_gcc else "com"
+        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API.get(endpoint_type)
+
+        if params_url is None:
+            if params_endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+                raise DemistoException("Endpoint type is set to Custom but no URL was provided.")
+            raise DemistoException("Endpoint type is not set and no URL was provided.")
+
+    else:
+        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE[params_endpoint_type]  # type: ignore[assignment]
+        params_url = params_url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+    return endpoint_type, params_url
+
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
@@ -711,7 +743,7 @@ class MicrosoftClient(BaseClient):
 
         self.multi_resource = multi_resource
         if self.multi_resource:
-            self.resources = resources if resources else []
+            self.resources = resources or []
             self.resource_to_access_token: Dict[str, str] = {}
 
         # for Azure Managed Identities purpose
@@ -819,7 +851,10 @@ class MicrosoftClient(BaseClient):
                     ET.fromstring(response.text)
             return response
         except ValueError as exception:
-            raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
+            raise DemistoException(
+                f'Failed to parse json object from response: {response.content}',
+                exception,
+            )
 
     def get_access_token(self, resource: str = '', scope: Optional[str] = None) -> str:
         """
@@ -830,7 +865,7 @@ class MicrosoftClient(BaseClient):
 
         Args:
             resource (str): The resource identifier for which the generated token will have access to.
-            scope (str): A scope to get instead of the default on the API.
+            scope (str | None): A scope to get instead of the default on the API.
 
         Returns:
             str: Access token that will be added to authorization header.
@@ -848,9 +883,8 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        if access_token and valid_until:
-            if self.epoch_seconds() < valid_until:
-                return access_token
+        if access_token and valid_until and self.epoch_seconds() < valid_until:
+            return access_token
 
         if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
@@ -887,7 +921,8 @@ class MicrosoftClient(BaseClient):
 
         return access_token
 
-    def _raise_authentication_error(self, oproxy_response: requests.Response):
+    @staticmethod
+    def _raise_authentication_error(oproxy_response: requests.Response):
         """
         Raises an exception for authentication error with the Oproxy server.
         Args:
@@ -895,8 +930,9 @@ class MicrosoftClient(BaseClient):
         """
         msg = 'Error in authentication. Try checking the credentials you entered.'
         try:
-            demisto.info('Authentication failure from server: {} {} {}'.format(
-                oproxy_response.status_code, oproxy_response.reason, oproxy_response.text))
+            demisto.info(
+                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} {oproxy_response.text}'
+            )
             err_response = oproxy_response.json()
             server_msg = err_response.get('message')
             if not server_msg:
@@ -907,9 +943,9 @@ class MicrosoftClient(BaseClient):
                 elif detail:
                     server_msg = detail
             if server_msg:
-                msg += ' Server message: {}'.format(server_msg)
-        except Exception as ex:
-            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+                msg += f' Server message: {server_msg}'
+        except Exception as parsing_ex:
+            demisto.error(f'Failed parsing error response - Exception: {parsing_ex}')
         raise Exception(msg)
 
     def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
@@ -968,13 +1004,13 @@ class MicrosoftClient(BaseClient):
                                   ' integration parameters: {} {} {}'.format(oproxy_second_try_response.status_code,
                                                                              oproxy_second_try_response.reason,
                                                                              oproxy_second_try_response.text))
-                    self._raise_authentication_error(oproxy_response)
+                    MicrosoftClient._raise_authentication_error(oproxy_response)
 
                 else:  # Second try succeeded
                     oproxy_response = oproxy_second_try_response
 
             else:  # no refresh token for a second auth try
-                self._raise_authentication_error(oproxy_response)
+                MicrosoftClient._raise_authentication_error(oproxy_response)
 
         # Oproxy authentication succeeded
         try:
@@ -1009,14 +1045,13 @@ class MicrosoftClient(BaseClient):
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
-            else:
-                expires_in = -1  # init variable as an int
-                for resource in self.resources:
-                    access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
-                                                                                                      resource)
-                    self.resource_to_access_token[resource] = access_token
+            expires_in = -1  # init variable as an int
+            for resource in self.resources:
+                access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                  resource)
+                self.resource_to_access_token[resource] = access_token
 
-                return '', expires_in, refresh_token
+            return '', expires_in, refresh_token
         elif self.grant_type == DEVICE_CODE:
             return self._get_token_device_code(refresh_token, scope, integration_context)
         else:
@@ -1054,7 +1089,7 @@ class MicrosoftClient(BaseClient):
 
         # Set scope.
         if self.scope or scope:
-            data['scope'] = scope if scope else self.scope
+            data['scope'] = scope or self.scope
 
         if self.resource or resource:
             data['resource'] = resource or self.resource  # type: ignore
@@ -1084,7 +1119,7 @@ class MicrosoftClient(BaseClient):
         data = assign_params(
             client_id=self.client_id,
             client_secret=self.client_secret,
-            resource=self.resource if not resource else resource,
+            resource=resource or self.resource,
             redirect_uri=self.redirect_uri
         )
 
@@ -1258,14 +1293,14 @@ class MicrosoftClient(BaseClient):
         """
         if not d:
             d = MicrosoftClient._get_utcnow()
-        return int((d - MicrosoftClient._get_utcfromtimestamp(0)).total_seconds())
+        return int((d - MicrosoftClient._get_utc_from_timestamp(0)).total_seconds())
 
     @staticmethod
     def _get_utcnow() -> datetime:
         return datetime.utcnow()
 
     @staticmethod
-    def _get_utcfromtimestamp(_time) -> datetime:
+    def _get_utc_from_timestamp(_time) -> datetime:
         return datetime.utcfromtimestamp(_time)
 
     @staticmethod
@@ -1320,7 +1355,7 @@ class MicrosoftClient(BaseClient):
         try:
             headers = get_x_content_info_headers()
         except Exception as e:
-            demisto.error('Failed getting integration info: {}'.format(str(e)))
+            demisto.error(f'Failed getting integration info: {str(e)}')
 
         return headers
 
@@ -1348,7 +1383,7 @@ class MicrosoftClient(BaseClient):
         response = self.device_auth_request()
         message = response.get('message', '')
         re_search = re.search(REGEX_SEARCH_URL, message)
-        url = re_search.group('url') if re_search else None
+        url = re_search['url'] if re_search else None
         user_code = response.get('user_code')
 
         return f"""### Authorization instructions
