@@ -10,12 +10,20 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 4
+  hidden: true
 - display: Client Secret
   name: client_secret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: Client ID
+  name: credentials_client
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -364,7 +372,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - CrowdStrikeMalquery-Test
