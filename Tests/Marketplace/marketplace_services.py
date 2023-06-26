@@ -2164,6 +2164,9 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                             'fromversion': self._server_min_version,
                             'toversion': metadata_toversion,
+                            'isfetch': content_item.get('script', {}).get('isfetch', False),
+                            'isfetchevents': content_item.get('script', {}).get('isfetchevents', False),
+                            'deprecated': content_item.get('deprecated', False),
                         }
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
