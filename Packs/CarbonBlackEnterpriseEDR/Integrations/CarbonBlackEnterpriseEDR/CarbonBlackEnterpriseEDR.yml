@@ -18,13 +18,21 @@ configuration:
   section: Connect
 - display: Custom Key
   name: custom_key
-  required: true
+  required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Custom ID
   name: custom_id
-  required: true
+  required: false
   type: 0
+  section: Connect
+  hidden: true
+- display: Custom ID
+  name: credentials_custom
+  required: false
+  type: 9
+  displaypassword: Custom Key
   section: Connect
 - display: Fetch incidents
   name: isFetch
@@ -48,7 +56,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- defaultvalue: 3 days
+- defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
@@ -1793,7 +1801,7 @@ script:
     - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
       description: The cumulative count of loaded scripts since process tracking started.
       type: Number
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false
