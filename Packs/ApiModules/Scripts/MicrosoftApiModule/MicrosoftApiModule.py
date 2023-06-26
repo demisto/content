@@ -1434,7 +1434,7 @@ def get_from_args_or_params(args: Dict[str, Any], params: Dict[str, Any], key: s
         raise Exception(f'No {key} was provided. Please provide a {key} in the instance parameters or in the command')
 
 
-def arg_to_tag(arg):
+def azure_tag_formatter(arg):
     """
     Convert a tag argument as string to a tag dictionary
     Args:
