@@ -178,7 +178,7 @@ def main():
     base_url = params.get('url')
     if base_url[-1] != '/':
         base_url += '/'
-    access_token = params.get('access_token')
+    access_token = params.get('access_token_creds', {}).get('password') or params.get('access_token')
     directory_id = params.get('directory_id')
 
     mapper_in = params.get('mapper_in')
