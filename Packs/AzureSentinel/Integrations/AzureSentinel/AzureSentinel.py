@@ -1899,6 +1899,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    # only for testing
     params = demisto.params()
     args = demisto.args()
 
