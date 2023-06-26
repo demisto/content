@@ -97,7 +97,7 @@ class GetEvents:
             try:
                 assert events
             except (IndexError, AssertionError):
-                LOG('empty ledeist, breaking')
+                LOG('empty list, breaking')
                 break
 
     def aggregated_results(self, last_object_ids: List[str] = None) -> List[dict]:  # pragma: no cover

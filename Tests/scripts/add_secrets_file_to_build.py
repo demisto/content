@@ -176,8 +176,6 @@ def get_changed_packs(changed_files: list[str]) -> list[str]:
         integrations_path = f'{changed_pack_path}/Integrations'
         integrations = os.listdir(integrations_path)
         changed_integrations.extend([f'{integrations_path}/{i}' for i in integrations])
-    print(f'###############{test_changed=}###############')
-    print(f'--------------{changed_integrations=}--------------')
     return changed_integrations
 
 
@@ -187,11 +185,8 @@ def run(options: argparse.Namespace):
     changed_packs = []
     yml_pack_ids = []
     changed_files = get_git_diff(branch_name, paths.content_repo)
-    print(f'--------------{changed_files=}--------------')
     changed_packs.extend(get_changed_packs(changed_files))
-    # print(f'--------------{changed_packs=}--------------')
     yml_pack_ids.extend(get_yml_pack_ids(changed_packs))
-    print(f'--------------{yml_pack_ids=}--------------')
     secrets_file = get_secrets_from_gsm(branch_name, options, yml_pack_ids)
     write_secrets_to_file(options, secrets_file)
 
