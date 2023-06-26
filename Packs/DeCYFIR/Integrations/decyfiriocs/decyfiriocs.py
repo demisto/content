@@ -186,22 +186,13 @@ class Client(BaseClient):
         if isinstance(data.get("xMitreDataSources"), List):
             self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
 
-        external_ref = data.get("external_references")
+        external_ref = data.get("external_references", [])
 
         if external_ref is not None and isinstance(external_ref, List):
             for ex_ref in list(external_ref):
                 ttps_id: str = str(ex_ref.get("external_id"))
                 if ttps_id:
                     self.add_tags(ti_data_obj, ttps_id)
-
-        # if intel_type is ThreatIntel.ObjectsNames.THREAT_ACTOR:
-        #     ti_data_obj['fields'].update({
-        #         'primary_motivation': "Cyber Crime",
-        #         'secondary_motivations': data.get('primary_motivation'),
-        #         'sophistication': "advanced",
-        #         'resource_level': "team",
-        #         'threatactortypes': data.get('threat_actor_types')
-        #     })
 
         if intel_type is ThreatIntel.ObjectsNames.MALWARE:
             ti_data_obj['fields'].update({
@@ -468,7 +459,6 @@ def test_module_command(client, decyfir_api_key):
 
 def fetch_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Optional[str], reputation: Optional[str],
                              feed_tags: Optional[List]) -> List[Dict]:
-
     return client.fetch_indicators(decyfir_api_key, reputation, tlp_color, feed_tags)
 
 
