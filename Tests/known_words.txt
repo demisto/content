@@ -238,5 +238,3 @@ GCP
  params
 Qradar
 XSIAM
-fromversion
-RSANetWitness

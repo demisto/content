@@ -3,6 +3,9 @@ from CommonServerPython import *  # noqa: F401
 from typing import Tuple
 from urllib3 import disable_warnings
 
+# Disable insecure warnings
+disable_warnings()
+
 ERROR_TITLES = {
     400: "400 Bad Request - The request was malformed, check the given arguments\n",
     401: "401 Unauthorized - authentication is required and has failed\n",
@@ -809,7 +812,7 @@ def endpoint_isolation_remove_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def fetch_alerts_related_incident(client: Client, incident_id: str) -> list[Any]:
+def fetch_alerts_related_incident(client: Client, incident_id: str) -> list[dict[str, Any]]:
     """
     Returns the alerts that are associated with an incident.
     """
@@ -827,9 +830,9 @@ def fetch_alerts_related_incident(client: Client, incident_id: str) -> list[Any]
             alerts.extend(response_body.get('items', []))
             has_next = response_body.get('hasNext', False)
             page_number += 1
-        except DemistoException as e:
-            raise DemistoException(f"Error occurred while fetching alerts: {str(e)}")
-
+        except DemistoException:
+            demisto.error("Error occurred while fetching alerts.")
+            raise
     return alerts
 
 
@@ -1178,7 +1181,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        disable_warnings()
         client: Client = Client(url, verify_certificate, proxy, headers=headers, service_id=service_id,
                                 fetch_time=fetch_time, fetch_limit=fetch_limit, cred=cred)
         client.get_token()
