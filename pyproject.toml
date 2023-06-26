@@ -190,8 +190,6 @@ select = [
     "E902", # io-error
     "E999", # syntax-error
 
-    "ERA001", # commented-out-code
-
     "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
     "F404", # late-future-import
@@ -268,6 +266,7 @@ select = [
 
     "PLC0414", # useless-import-alias
     "PLC3002", # unnecessary-direct-lambda-call
+
     "PLE0100", # yield-in-init
     "PLE0101", # return-in-init
     "PLE0116", # continue-in-finally
@@ -325,7 +324,9 @@ select = [
     "RET502", # implicit-return-value
     "RET503", # implicit-return
     "RET508", # superfluous-else-break
+
     "RSE102", # unnecessary-paren-on-raise-exception
+
     "RUF001", # ambiguous-unicode-character-string
     "RUF006", # asyncio-dangling-task
     "RUF007", # pairwise-over-zipped
@@ -388,6 +389,7 @@ select = [
     "UP004", # useless-object-inheritance
     "UP005", # deprecated-unittest-alias
     "UP006", # non-pep585-annotation
+    "UP007", # non-pep604-annotation
     "UP008", # super-call-with-parameters
     "UP009", # utf8-encoding-declaration
     "UP010", # unnecessary-future-import
@@ -411,6 +413,7 @@ select = [
     "UP029", # unnecessary-builtin-import
     "UP030", # format-literals
     "UP031", # printf-string-formatting
+    "UP032", # f-string
     "UP033", # lru-cache-with-maxsize-none
     "UP034", # extraneous-parentheses
     "UP035", # deprecated-import
