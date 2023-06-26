@@ -12,6 +12,12 @@ configuration:
   name: api_key
   required: false
   type: 4
+  hidden: true
+- displaypassword: API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -388,7 +394,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
