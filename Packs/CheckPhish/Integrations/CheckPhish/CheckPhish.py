@@ -226,7 +226,9 @@ def main():
     good_disp = argToList(demisto_params.get('good_disp'))
     susp_disp = argToList(demisto_params.get('susp_disp'))
     bad_disp = argToList(demisto_params.get('bad_disp'))
-
+    api_key = demisto_params.get('credentials_api_token', {}).get('password') or demisto_params.get('token')
+    if not api_key:
+        raise DemistoException('API token must be provided.')
     unite_dispositions(good_disp, susp_disp, bad_disp)
 
     reliability = demisto_params.get('integrationReliability')
@@ -239,7 +241,7 @@ def main():
 
     params = {
         'base_url': demisto_params['url'],
-        'api_key': demisto_params.get('token'),
+        'api_key': api_key,
         'use_ssl': not demisto_params.get('insecure', False),
         'reliability': reliability
     }
