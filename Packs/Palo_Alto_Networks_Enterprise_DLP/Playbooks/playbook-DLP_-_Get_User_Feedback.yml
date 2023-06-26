@@ -1,5 +1,7 @@
 id: DLP - Get User Feedback
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: DLP - Get User Feedback
 description: Get the user feedback on a blocked file, whether it is false or true positive and if an exemption is needed.
 starttaskid: "0"
@@ -24,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 1072.5,
-          "y": 600
+          "y": 750
         }
       }
     note: false
@@ -396,7 +398,7 @@ tasks:
       '#default#':
       - "10"
       "no":
-      - "23"
+      - "20"
     separatecontext: false
     conditions:
     - label: "no"
@@ -421,7 +423,7 @@ tasks:
       {
         "position": {
           "x": 1072.5,
-          "y": 750
+          "y": 900
         }
       }
     note: false
@@ -1035,45 +1037,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 8efcb19d-fa8a-4ab1-8b93-bc8f9d691bf1
-    type: regular
-    task:
-      id: 8efcb19d-fa8a-4ab1-8b93-bc8f9d691bf1
-      version: -1
-      name: Get file report
-      description: Fetches DLP reports associated with a report ID.
-      script: '|||pan-dlp-get-report'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      fetch_snippets:
-        simple: "true"
-      report_id:
-        complex:
-          root: incident
-          accessor: pandlpreportid
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1492.5,
-          "y": 950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1084,10 +1048,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3615,
+        "height": 3465,
         "width": 1620,
         "x": 670,
-        "y": 600
+        "y": 750
       }
     }
   }
@@ -1119,8 +1083,8 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: UserRequestedExemption
-  type: unknown
   description: Whether the user requested exemption or not.
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0

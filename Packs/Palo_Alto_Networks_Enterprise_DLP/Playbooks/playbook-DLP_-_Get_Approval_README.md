@@ -37,10 +37,7 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| ApproverExist | Whether the exemption approver was found via Slack. | string |
+There are no outputs for this playbook.
 
 ## Playbook Image
 

@@ -29,7 +29,7 @@ tasks:
       {
         "position": {
           "x": 815,
-          "y": -600
+          "y": -430
         }
       }
     note: false
@@ -312,7 +312,7 @@ tasks:
       {
         "position": {
           "x": 380,
-          "y": 60
+          "y": 230
         }
       }
     note: false
@@ -461,7 +461,7 @@ tasks:
       {
         "position": {
           "x": 1550,
-          "y": -400
+          "y": -230
         }
       }
     note: false
@@ -515,7 +515,7 @@ tasks:
       {
         "position": {
           "x": 1055,
-          "y": -260
+          "y": -90
         }
       }
     note: false
@@ -862,7 +862,7 @@ tasks:
       {
         "position": {
           "x": 815,
-          "y": 280
+          "y": 450
         }
       }
     note: false
@@ -893,7 +893,7 @@ tasks:
       {
         "position": {
           "x": 380,
-          "y": 280
+          "y": 450
         }
       }
     note: false
@@ -955,7 +955,7 @@ tasks:
       {
         "position": {
           "x": 1550,
-          "y": 110
+          "y": 280
         }
       }
     note: false
@@ -1015,7 +1015,7 @@ tasks:
       {
         "position": {
           "x": 1550,
-          "y": -260
+          "y": -90
         }
       }
     note: false
@@ -1027,10 +1027,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 48608092-6aec-4486-82fa-4cf6f87951cb
+    taskid: a3ad19e3-4ec1-428c-81f9-c924664b5519
     type: condition
     task:
-      id: 48608092-6aec-4486-82fa-4cf6f87951cb
+      id: a3ad19e3-4ec1-428c-81f9-c924664b5519
       description: ""
       version: -1
       name: Any results?
@@ -1078,12 +1078,38 @@ tasks:
                 root: DLP.Report.DataPatternMatches.Detections
                 accessor: detection
             iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UserManagerDisplayName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Groups
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1550,
-          "y": -80
+          "y": 90
         }
       }
     note: false
@@ -1132,7 +1158,7 @@ tasks:
       {
         "position": {
           "x": 815,
-          "y": 430
+          "y": 600
         }
       }
     note: false
@@ -1273,14 +1299,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "110"
+      - "92"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 815,
-          "y": 800
+          "y": 970
         }
       }
     note: false
@@ -1335,7 +1361,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "41"
+      - "112"
       Email/Manual:
       - "78"
       Manager:
@@ -1487,7 +1513,7 @@ tasks:
       {
         "position": {
           "x": 815,
-          "y": 600
+          "y": 770
         }
       }
     note: false
@@ -1904,45 +1930,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "110":
-    id: "110"
-    taskid: 2fc6cb73-82f3-486a-8fbe-0f73334c538b
-    type: regular
-    task:
-      id: 2fc6cb73-82f3-486a-8fbe-0f73334c538b
-      version: -1
-      name: Get file report
-      description: Fetches DLP reports associated with a report ID.
-      script: '|||pan-dlp-get-report'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "92"
-    scriptarguments:
-      fetch_snippets:
-        simple: "true"
-      report_id:
-        complex:
-          root: incident
-          accessor: pandlpreportid
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 815,
-          "y": 950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "111":
     id: "111"
     taskid: 3579d335-de3c-429b-8904-445f8e3b2c21
@@ -1972,7 +1959,7 @@ tasks:
       {
         "position": {
           "x": 2040,
-          "y": -260
+          "y": -90
         }
       }
     note: false
@@ -1982,6 +1969,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: c6b6106e-cb4f-40d7-8c39-48e70587ff44
+    type: regular
+    task:
+      id: c6b6106e-cb4f-40d7-8c39-48e70587ff44
+      version: -1
+      name: Set Approver (Not Required)
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      approver:
+        simple: Not Required
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2005,10 +2028,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4905,
-        "width": 3060,
+        "height": 4735,
+        "width": 3120,
         "x": -640,
-        "y": -600
+        "y": -430
       }
     }
   }
