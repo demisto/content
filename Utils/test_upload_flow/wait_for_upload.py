@@ -66,7 +66,7 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-g', '--gitlab-api-token', help='Github api token')
     arg_parser.add_argument('-p', '--pipeline-id', help='Pipeline id')
-    arg_parser.add_argument('-vis', '--verify-upload-id-set-job', help='Pipeline id')
+    arg_parser.add_argument('-vis', '--verify-upload-id-set-job', help='Pipeline id', action=argparse.BooleanOptionalAction)
 
     args = arg_parser.parse_args()
 
@@ -83,7 +83,7 @@ def main():
     pipeline_status, upload_job_status = get_job_status(pipeline_response=pipline_response,
                                                         job_name='upload-packs-to-marketplace')
     if verify_upload_id_set_job:
-        logging.info(f"verify innnnn")
+        logging.info("verify innnnn")
         _, upload_id_set_status = get_job_status(pipeline_response=pipline_response, job_name='upload-id-set-bucket')
         if upload_id_set_status == 'failed':
             logging.error('failed to upload id set to bucket')
