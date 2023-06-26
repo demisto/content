@@ -442,7 +442,6 @@ ignore = [
 ]
 extend-exclude = ["CommonServerPython", "test_data"]
 
-# fixable = []
 unfixable = [
     "RUF001"  # ambiguous-unicode-character-string
 ]
