@@ -93,7 +93,9 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
 
     master_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_master, name_filter=yml_pack_ids,
                                               with_secrets=True)
-    branch_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_branch, with_secrets=True)
+    branch_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_branch, name_filter=yml_pack_ids,
+                                              with_secrets=True)
+
 
     if branch_secrets:
         for dev_secret in branch_secrets:
@@ -191,7 +193,6 @@ def run(options: argparse.Namespace):
     yml_pack_ids.extend(get_yml_pack_ids(changed_packs))
     print(f'--------------{yml_pack_ids=}--------------')
     secrets_file = get_secrets_from_gsm(branch_name, options, yml_pack_ids)
-    print(f'--------------{secrets_file=}--------------')
     write_secrets_to_file(options, secrets_file)
 
 
