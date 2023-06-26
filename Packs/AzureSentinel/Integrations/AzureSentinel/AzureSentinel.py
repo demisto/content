@@ -2030,11 +2030,13 @@ def main():
         # mirroring command
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
+        elif command == 'azure-sentinel-subscriptions-list':
+            return_results(list_subscriptions_command(client))
+        elif command == 'azure-sentinel-resource-group-list':
+            return_results(list_resource_groups_command(client, args, subscription_id))
 
-        elif command in commands:
-            return_results(commands[command](client, args))  # type: ignore
-        elif command in command_without_args:
-            return_results(command_without_args[command](client))  # type: ignore
+        elif command() in commands:
+            return_results(commands[command()](client, args))  # type: ignore
 
     except Exception as e:
         return_error(
