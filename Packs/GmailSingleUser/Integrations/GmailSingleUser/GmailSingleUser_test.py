@@ -288,4 +288,3 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
         references=['test', 'test1'],
         inReplyTo='test test'
     )
-    
