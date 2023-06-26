@@ -81,8 +81,7 @@ tasks:
     scriptarguments:
       alert_ids:
         complex:
-          root: alert
-          accessor: id
+          root: inputs.alert_id
       extend-context:
         simple: alertData=
       ignore-outputs:
