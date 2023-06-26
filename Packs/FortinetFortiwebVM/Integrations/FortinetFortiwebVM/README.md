@@ -4772,3 +4772,48 @@ List server pool rules (server pool rule is a member of server pool group). Supp
 >| 1 | 2 |  | test.com | 80 | 2 | 0 | false |
 
 
+### fortiwebvm-sdn-connector-list
+
+***
+List the SDN collector. The AWS and Azure connectors authorize FortiWeb to automatically retrieve the IP addresses of the back-end servers deployed on AWS or Azure. Supports API versions 2 only.
+
+#### Base Command
+
+`fortiwebvm-sdn-connector-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.SDNCollector.id | String | The SDN collector name. |
+
+#### Command example
+```!fortiwebvm-sdn-connector-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "SDNCollector": {
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### SDN collectors:
+>Showing page 1.
+> Current page size: 50
+>|Id|
+>|---|
+>| test |
