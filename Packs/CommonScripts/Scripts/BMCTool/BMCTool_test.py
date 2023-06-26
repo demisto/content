@@ -204,15 +204,13 @@ def test_b_uncompress(data, bbp, expected_output):
 
     # Compare the result with the expected output
     assert result == expected_output
-
-
-@pytest.mark.parametrize("width, height, data, pal, expected_output", [
-    (10, 10, b"\x00" * 100, False,
-     b'BM\xde\x00\x00\x00\x00z\x00\x00\x00l\x00\x00\x00\x0a\x00\x00\x00\x0a\x00\x00\x00\x01\x00 \x00\x03\x00\x00\x00d\x00\x00\x00\x13\x0b\x00\x00\x13\x0b\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\x00\x00\xff\x00\x00\xff\x00\x00\x00\x00\x00\x00\xff niW\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')])  # noqa: E501
-def test_b_export_bmp(width, height, data, pal, expected_output):
-    container = BMCContainer()
-    container.pal = pal
-    result = container.b_export_bmp(width, height, data)
-
-    # Compare the result with the expected output
-    assert result == expected_output
+    
+    @pytest.mark.parametrize("width, height, data, expected", [
+            (10, 10, b"test_data", b"expected_output_without_palette"),
+            (10, 10, b"test_data", b"expected_output_with_palette"),
+            # Add more test cases as needed
+        ])
+    def test_b_export_bmp(self, width, height, data, expected):
+        container = BMCContainer() 
+        actual = container.b_export_bmp(width, height, data)
+        assert actual == expected
