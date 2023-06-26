@@ -405,8 +405,9 @@ class KeyVaultClient:
             Dict[str, Any]: API response from Azure.
         """
         url = 'https://management.azure.com/subscriptions?'
-        response = self.http_request('GET', full_url=url, resource=MANAGEMENT_RESOURCE, params={'api-version': '2020-01-01'})
-        return self.get_entities_independent_of_pages(first_page=response, resource=MANAGEMENT_RESOURCE)
+        response = self.http_request('GET', full_url=url, resource=self.get_management_resource(),
+                                     params={'api-version': '2020-01-01'})
+        return self.get_entities_independent_of_pages(first_page=response, resource=self.get_management_resource())
 
     def list_resource_groups_request(self, subscription_id: str, tag: Dict[str, str], limit: int) -> List[dict]:
         """
@@ -423,10 +424,10 @@ class KeyVaultClient:
         full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
         filter_by_tag = azure_tag_formatter(tag) if tag else None
 
-        response = self.http_request('GET', full_url=full_url, resource=MANAGEMENT_RESOURCE,
+        response = self.http_request('GET', full_url=full_url, resource=self.get_management_resource(),
                                      params={'$filter': filter_by_tag, '$top': limit,
                                              'api-version': '2021-04-01'}, ok_codes=[200])
-        return self.get_entities_independent_of_pages(first_page=response, limit=limit, resource=MANAGEMENT_RESOURCE)
+        return self.get_entities_independent_of_pages(first_page=response, limit=limit, resource=self.get_management_resource())
 
     ''' INTEGRATION HELPER METHODS  '''
 
