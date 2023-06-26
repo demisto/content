@@ -10,3 +10,6 @@ ignore=IM111
 
 [file:RSANetWitnessv115_image.png]
 ignore=IM111
+
+[known_words]
+RSANetWitness
