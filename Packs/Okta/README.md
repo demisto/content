@@ -16,4 +16,4 @@ response. Now security teams can:
 - Use identity context to enrich, understand, and analyze security alerts as they arise
 - Prioritize alerts and orchestrate informed jujsecurity responses in order of importance
 - Contain and remediate threats quickly and decisively, through a range of automated identity-centric actions
-- Enhance your visibility and response by enabling identity as a key control point.
+- Enhance your visibility and response by enabling identity as a key control point
