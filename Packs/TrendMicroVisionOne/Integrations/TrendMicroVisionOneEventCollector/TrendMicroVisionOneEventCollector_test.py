@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import pytest
 import pytz
-from typing import Tuple
 from urllib.parse import parse_qs, urlparse
 from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsTimeFields, UrlSuffixes, LogTypes
 
@@ -638,7 +637,7 @@ def test_get_datetime_range(
     first_fetch: str,
     log_type_time_field_name: str,
     start_time: str,
-    expected_start_and_end_date_times: Tuple[str, str],
+    expected_start_and_end_date_times: tuple[str, str],
 ):
     """
     Given:

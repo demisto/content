@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple
+from typing import Any
 from enum import Enum
 
 
@@ -102,8 +102,8 @@ class Client(BaseClient):
         self,
         url_suffix: str | None = None,
         method: str = 'GET',
-        params: Dict | None = None,
-        headers: Dict | None = None,
+        params: dict | None = None,
+        headers: dict | None = None,
         next_link: str | None = None
     ) -> Any:
         """
@@ -134,11 +134,11 @@ class Client(BaseClient):
         self,
         url_suffix: str,
         method: str = 'GET',
-        params: Dict | None = None,
-        headers: Dict | None = None,
+        params: dict | None = None,
+        headers: dict | None = None,
         limit: int = DEFAULT_MAX_LIMIT,
         should_finish_pagination: bool = False
-    ) -> List[Dict]:
+    ) -> List[dict]:
         """
         Implements a generic method with pagination to retrieve logs from trend micro vision one.
 
@@ -153,7 +153,7 @@ class Client(BaseClient):
         Returns:
             List[Dict]: a list of the requested logs sorted in acesnding order
         """
-        events: List[Dict] = []
+        events: List[dict] = []
 
         response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
         current_items = response.get('items') or []
@@ -191,7 +191,7 @@ class Client(BaseClient):
         end_datetime: str | None = None,
         order_by: str = 'createdDateTime asc',
         limit: int = DEFAULT_MAX_LIMIT
-    ) -> List[Dict]:
+    ) -> List[dict]:
         """
         Get the workbench logs.
 
@@ -228,7 +228,7 @@ class Client(BaseClient):
         detected_end_datetime: str,
         top: int = 1000,
         limit: int = DEFAULT_MAX_LIMIT
-    ) -> List[Dict]:
+    ) -> List[dict]:
         """
         Get the observed attack techniques logs.
 
@@ -270,7 +270,7 @@ class Client(BaseClient):
         end_datetime: str | None = None,
         top: int = DEFAULT_MAX_LIMIT,
         limit: int = DEFAULT_MAX_LIMIT
-    ) -> List[Dict]:
+    ) -> List[dict]:
         """
         Get the search detection logs.
 
@@ -308,7 +308,7 @@ class Client(BaseClient):
         order_by: str = 'loggedDateTime asc',
         top: int = 200,
         limit: int = DEFAULT_MAX_LIMIT
-    ) -> List[Dict]:
+    ) -> List[dict]:
         """
         Get the audit logs.
 
@@ -354,7 +354,7 @@ def get_datetime_range(
     log_type_time_field_name: str,
     date_format: str = DATE_FORMAT,
     date_range_for_oat_and_search_logs: int = ONE_DAY
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """
     Get a datetime range for any log type.
 
@@ -399,10 +399,7 @@ def get_datetime_range(
         one_day_from_last_run_time = last_run_time_datetime + timedelta(  # type: ignore[operator]
             hours=date_range_for_oat_and_search_logs  # type: ignore[operator]
         )
-        if one_day_from_last_run_time > now:
-            end_time_datetime = now
-        else:
-            end_time_datetime = one_day_from_last_run_time
+        end_time_datetime = now if one_day_from_last_run_time > now else one_day_from_last_run_time
     else:
         end_time_datetime = now
 
@@ -414,7 +411,7 @@ def get_datetime_range(
 
 
 def get_latest_log_created_time(
-    logs: List[Dict],
+    logs: List[dict],
     log_type: str,
     created_time_field: str = '_time',
     date_format: str = DATE_FORMAT
@@ -448,12 +445,12 @@ def get_latest_log_created_time(
 
 
 def get_all_latest_time_logs_ids(
-    logs: List[Dict],
+    logs: List[dict],
     log_type: str,
     log_id_field_name: str,
     log_created_time_field_name: str = '_time',
     date_format: str = DATE_FORMAT
-) -> Tuple[List[str], str]:
+) -> tuple[List[str], str]:
     """
     Get all the logs that their time is equal to the last log that occurred.
 
@@ -481,22 +478,21 @@ def get_all_latest_time_logs_ids(
     latest_occurred_time_log_ids: Set[str] = set()
 
     for log in logs:
-        if log.get(log_created_time_field_name) == latest_occurred_log:
-            if log_id := log.get(log_id_field_name):
-                demisto.info(f'adding log with ID {log_id} to latest occurred time logs')
-                latest_occurred_time_log_ids.add(log_id)
+        if log.get(log_created_time_field_name) == latest_occurred_log and (log_id := log.get(log_id_field_name)):
+            demisto.info(f'adding log with ID {log_id} to latest occurred time logs')
+            latest_occurred_time_log_ids.add(log_id)
 
     demisto.info(f'{latest_occurred_time_log_ids=}')
     return list(latest_occurred_time_log_ids), latest_occurred_log
 
 
 def dedup_fetched_logs(
-    logs: List[Dict],
-    last_run: Dict,
+    logs: List[dict],
+    last_run: dict,
     log_id_field_name: str,
     log_cache_last_run_name_field_name: str,
     log_type: str
-) -> List[Dict]:
+) -> List[dict]:
     """
     Retrieve a list of all the logs that were not fetched yet.
 
@@ -528,10 +524,10 @@ def dedup_fetched_logs(
 def get_workbench_logs(
     client: Client,
     first_fetch: str,
-    last_run: Dict,
+    last_run: dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-) -> Tuple[List[Dict], Dict]:
+) -> tuple[List[dict], dict]:
     """
     Get the workbench logs.
 
@@ -602,11 +598,11 @@ def get_workbench_logs(
 def get_observed_attack_techniques_logs(
     client: Client,
     first_fetch: str,
-    last_run: Dict,
+    last_run: dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
     date_range_for_oat_and_search_logs: int = ONE_DAY
-) -> Tuple[List[Dict], Dict]:
+) -> tuple[List[dict], dict]:
     """
     Get the observed attack techniques logs.
 
@@ -685,11 +681,11 @@ def get_observed_attack_techniques_logs(
 def get_search_detection_logs(
     client: Client,
     first_fetch: str,
-    last_run: Dict,
+    last_run: dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
     date_range_for_oat_and_search_logs: int = ONE_DAY
-) -> Tuple[List[Dict], Dict]:
+) -> tuple[List[dict], dict]:
     """
     Get the search detection logs.
 
@@ -748,10 +744,10 @@ def get_search_detection_logs(
 def get_audit_logs(
     client: Client,
     first_fetch: str,
-    last_run: Dict,
+    last_run: dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-) -> Tuple[List[Dict], Dict]:
+) -> tuple[List[dict], dict]:
     """
     Get the audit logs.
 
@@ -822,7 +818,7 @@ def fetch_events(
     first_fetch: str,
     limit: int = DEFAULT_MAX_LIMIT,
     date_range_for_oat_and_search_logs: int = ONE_DAY
-) -> Tuple[List[Dict], Dict]:
+) -> tuple[List[dict], dict]:
     """
     Get all the logs.
 
@@ -906,7 +902,7 @@ def test_module(client: Client, first_fetch: str) -> str:
     return 'ok'
 
 
-def get_events_command(client: Client, args: Dict) -> CommandResults:
+def get_events_command(client: Client, args: dict) -> CommandResults:
     """
     implements the trend-micro-vision-one-get-events command, mainly used for debugging.
 
@@ -923,7 +919,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
     from_time = args.get('from_time')
     to_time = args.get('to_time') or datetime.now().strftime(DATE_FORMAT)
 
-    def parse_workbench_logs() -> List[Dict]:
+    def parse_workbench_logs() -> List[dict]:
         workbench_logs = client.get_workbench_logs(
             start_datetime=from_time,  # type: ignore[arg-type]
             end_datetime=to_time,
@@ -937,7 +933,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             } for log in workbench_logs
         ]
 
-    def parse_observed_attack_techniques_logs() -> List[Dict]:
+    def parse_observed_attack_techniques_logs() -> List[dict]:
         observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
             detected_start_datetime=from_time,  # type: ignore[arg-type]
             detected_end_datetime=to_time,  # type: ignore[arg-type]
@@ -952,7 +948,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             } for log in observed_attack_techniques_logs
         ]
 
-    def parse_search_detection_logs() -> List[Dict]:
+    def parse_search_detection_logs() -> List[dict]:
         search_detection_logs = client.get_search_detection_logs(
             start_datetime=from_time,  # type: ignore[arg-type]
             end_datetime=to_time,
@@ -967,7 +963,7 @@ def get_events_command(client: Client, args: Dict) -> CommandResults:
             } for log in search_detection_logs
         ]
 
-    def parse_audit_logs() -> List[Dict]:
+    def parse_audit_logs() -> List[dict]:
         audit_logs = client.get_audit_logs(
             start_datetime=from_time,  # type: ignore[arg-type]
             end_datetime=to_time,
