@@ -1879,7 +1879,7 @@ def remove_duplicates_from_list_arg(args, field):
 
 def argToBoolean(value):
     """
-        Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
+        Boolean-ish arguments that are passed through demisto.args() or demisto.params() could be type bool or type string.
         This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
         It will also return True for 'yes' and False for 'no'.
 
