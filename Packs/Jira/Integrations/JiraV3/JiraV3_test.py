@@ -1,4 +1,3 @@
-import io
 import json
 import pytest
 import demistomock as demisto
@@ -8,12 +7,12 @@ from CommonServerPython import *
 
 
 def util_load_json(path: str):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_bytes_file(path: str):
-    with io.open(path, mode='rb') as f:
+    with open(path, mode='rb') as f:
         return f.read()
         # return json.loads(f.read())
 
@@ -605,7 +604,7 @@ class TestJiraGetIDOffsetCommand:
         raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
         run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
         command_result = get_id_offset_command(client=client, args={})
-        assert 'ORDER BY created ASC' == run_query_mocker.call_args[1].get('query_params', {}).get('jql')
+        assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
         assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
 
 
@@ -892,7 +891,7 @@ class TestJiraIssueToIssueCommand:
         client = jira_base_client_mock()
         mocker.patch.object(client, 'create_issue_link', return_value=requests.Response())
         command_results = link_issue_to_issue_command(client=client, args={})
-        assert 'Issue link created successfully' == command_results.to_context()['HumanReadable']
+        assert command_results.to_context()['HumanReadable'] == 'Issue link created successfully'
 
 
 class TestJiraSprintIssueMoveCommand:
@@ -909,7 +908,7 @@ class TestJiraSprintIssueMoveCommand:
         client = jira_base_client_mock()
         mocker.patch.object(client, 'issues_to_sprint', return_value=requests.Response())
         command_results = issues_to_sprint_command(client=client, args={})
-        assert 'Issues were moved to the Sprint successfully' == command_results.to_context()['HumanReadable']
+        assert command_results.to_context()['HumanReadable'] == 'Issues were moved to the Sprint successfully'
 
 
 class TestJiraEpicIssuesCommand:
