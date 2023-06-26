@@ -69,6 +69,7 @@ def check_memory(target_mem: str, check_type: str) -> str:
 
         try:
             with open(cgroup_file, "r") as f:
+                demisto.debug(f'\n\nf.read(): {f.read()}\n\n')
                 mem_bytes = int(f.read().strip())
                 if mem_bytes > size:
                     return (f'According to memory cgroup configuration at: {cgroup_file}'
