@@ -22,7 +22,7 @@ variables:
   GCS_MARKET_BUCKET: "marketplace-dist"
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
   GCS_MARKET_XPANSE_BUCKET: "xpanse-dist"
-  GCS_MARKET_XSOAR_SAAS_BUCKET: "marketplace-xsoar-saas-dist"
+  GCS_MARKET_XSOAR_SAAS_BUCKET: "marketplace-xsoar-prod-us"
   GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
   GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-dev"
   STORAGE_BASE_PATH: ""
