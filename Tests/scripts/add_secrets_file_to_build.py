@@ -79,7 +79,8 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     :param yml_pack_ids: a list of IDs of changed integrations
     :return: the list of secrets from GSM to use in the build
     """
-    secret_conf = GoogleSecreteManagerModule(options.service_account)
+    secret_conf_dev = GoogleSecreteManagerModule(options.service_account_dev)
+    secret_conf_prod = GoogleSecreteManagerModule(options.service_account_prod)
     labels_filter_master = {FilterLabels.PACK_ID.value: FilterOperators.NOT_NONE.value,
                             FilterLabels.IGNORE_SECRET.value: FilterOperators.NONE.value,
                             FilterLabels.SECRET_MERGE_TIME.value: FilterOperators.NONE.value,
@@ -91,9 +92,9 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
                             FilterLabels.IS_DEV_BRANCH.value: FilterOperators.NOT_NONE.value,
                             FilterLabels.BRANCH_NAME.value: f'{FilterOperators.EQUALS.value}"{branch_name}"'}
 
-    master_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_master, name_filter=yml_pack_ids,
+    master_secrets = secret_conf_prod.list_secrets(options.gsm_project_id, labels_filter_master, name_filter=yml_pack_ids,
                                               with_secrets=True)
-    branch_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_branch, name_filter=yml_pack_ids,
+    branch_secrets = secret_conf_dev.list_secrets(options.gsm_project_id, labels_filter_branch, name_filter=yml_pack_ids,
                                               with_secrets=True)
 
 
@@ -203,14 +204,14 @@ def options_handler(args=None) -> argparse.Namespace:
     parser.add_argument('-p', '--password', help='The password for Demisto.')
     parser.add_argument('-sf', '--json_path_file', help='Path to the secret json file.')
     # disable-secrets-detection-start
-    parser.add_argument('-sa', '--service_account',
+    parser.add_argument('-sap', '--service_account_prod',
                         help=("Path to gcloud service account, for circleCI usage. "
                               "For local development use your personal account and "
                               "authenticate using Google Cloud SDK by running: "
                               "`gcloud auth application-default login` and leave this parameter blank. "
                               "For more information see: "
-                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
-                        required=False)
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"))
+    parser.add_argument('-sad', '--service_account_dev', help='The dev store service account')
     # disable-secrets-detection-end
     options = parser.parse_args(args)
 
