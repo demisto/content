@@ -2024,7 +2024,7 @@ def main():
             'update-remote-system': update_remote_system_command
         }
 
-        if demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             fetch_incidents_command(client, params)
 
         # mirroring command
@@ -2035,7 +2035,7 @@ def main():
         elif command == 'azure-sentinel-resource-group-list':
             return_results(list_resource_groups_command(client, args, subscription_id))
 
-        elif command() in commands:
+        elif command in commands:
             return_results(commands[command()](client, args))  # type: ignore
 
     except Exception as e:
