@@ -7375,6 +7375,50 @@ def test_virtual_server_item_list_command(
 
 
 @pytest.mark.parametrize(
+    ("version", "endpoint", "args", "jsonpath"),
+    (
+        (
+            ClientV1.API_VER,
+            "ServerObjects/Server/ServerPool",
+            {"name": "test", "server_balance": "Server Balance"},
+            "v1_create_update_group.json",
+        ),
+        (
+            ClientV2.API_VER,
+            "cmdb/server-policy/server-pool",
+            {"name": "test", "server_balance": "Server Balance"},
+            "server_pool/v2_create_update.json",
+        ),
+    ),
+)
+def test_server_pool_group_create_command(
+    requests_mock,
+    mock_client: Client,
+    version: str,
+    endpoint: str,
+    args: dict[str, Any],
+    jsonpath: str,
+):
+    """
+    Scenario: Create a virtual server group.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-virtual-server-group-create called.
+    Then:
+     - Ensure that virtual server group created.
+    """
+    from FortinetFortiwebVM import server_pool_group_create_command
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = server_pool_group_create_command(mock_client, args)
+    output = f'{OutputTitle.SERVER_POOL_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
+    assert output == str(result.readable_output)
+
+
+@pytest.mark.parametrize(
     ("version", "args", "error_msg"),
     (
         (
