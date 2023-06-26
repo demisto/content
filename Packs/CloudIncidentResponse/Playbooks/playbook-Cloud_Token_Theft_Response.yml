@@ -1706,10 +1706,8 @@ tasks:
       '#none#':
       - "60"
     scriptarguments:
-      extend-context:
-        simple: VPNIPList=
       ignore-outputs:
-        simple: "true"
+        simple: "false"
       url:
         complex:
           root: inputs.VPNIPList
@@ -1725,6 +1723,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Device External IPs
+      output:
+        simple: ${http.parsedBlog.indicators}
     skipunavailable: false
     quietmode: 0
     isoversize: false
