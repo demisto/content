@@ -162,7 +162,7 @@ validate-content-conf:
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
-      if [[ $MARKETPLACE_VERSION != "xsoar" ||  $MARKETPLACE_VERSION != "xsoar_saas" ]];
+      if [[ $MARKETPLACE_VERSION == "marketplacev2" ||  $MARKETPLACE_VERSION == "xpanse" ]];
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
