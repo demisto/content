@@ -7769,6 +7769,7 @@ def test_server_pool_rule_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = server_pool_rule_list_command(mock_client, args)
+    assert isinstance(result.outputs, dict)
     assert isinstance(result.outputs['Rule'], list)
     assert len(result.outputs['Rule']) == expected
     assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"

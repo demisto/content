@@ -10582,10 +10582,10 @@ def paginate_results(
     if page and page_size:
         if page_size < len(output):
             first_item = page_size * (page - 1)
-            output = output[first_item: (first_item + page_size)]
-        else:
-            output = output[:page_size]
+            return output[first_item: (first_item + page_size)], pagination_message
+
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
+        return output[:page_size], pagination_message
 
     return output, pagination_message
 
@@ -11121,7 +11121,7 @@ def virtual_server_item_create_command(
         status=args.get("status"),
         virtual_ip=args.get("virtual_ip"),
     )
-    member_id = {"id": group_name, "Item": {"id": response["results"]["id"]}}
+    member_id = {"id": group_name, "Item": {"id": dict_safe_get(response, ["results", "id"])}}
     command_results = generate_simple_context_data_command_results(
         "id",
         None,

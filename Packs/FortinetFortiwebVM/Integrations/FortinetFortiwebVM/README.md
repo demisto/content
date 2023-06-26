@@ -2617,3 +2617,2158 @@ List the Server policy HTTP content routing members.
 | FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile | Boolean | HTTP content routing inherit web protection profile flag. | 
 | FortiwebVM.HttpContentRoutingMember.Members.profile | String | HTTP content routing profile. | 
 | FortiwebVM.HttpContentRoutingMember.Members.status | String | HTTP content routing status. Supports API version 2 only. | 
+
+
+### fortiwebvm-persistence-policy-list
+
+***
+List all the Persistence policies. The persistence policy applies to all members of the server pool. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-persistence-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.PersistencePolicy.id | String | Persistence policy name. |
+| FortiwebVM.PersistencePolicy.type | String | The persistence policy type. |
+
+#### Command example
+```!fortiwebvm-persistence-policy-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "PersistencePolicy": {
+            "id": "test",
+            "type": "Source IP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Persistence policy:
+>Showing page 1.
+> Current page size: 50
+>|Id|Type|
+>|---|---|
+>| test | Source IP |
+
+
+### fortiwebvm-server-health-check-list
+
+***
+List all the server health check policies. Tests for server responsiveness (called “server health checks” in the web UI) poll web servers that are members of a server pool to determine their availability before forwarding traffic. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-health-check-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerHealthCheck.id | String | Server Health Check name. |
+
+#### Command example
+```!fortiwebvm-server-health-check-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerHealthCheck": {
+            "id": "HLTHCK_ICMP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server health check:
+>Showing page 1.
+> Current page size: 50
+>|Id|
+>|---|
+>| HLTHCK_ICMP |
+
+
+### fortiwebvm-local-certificate-list
+
+***
+List the Server certificate that is stored locally on the FortiWeb appliance. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-local-certificate-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.LocalCertificate.id | String | The local certificate name. |
+| FortiwebVM.LocalCertificate.valid_to | String | The local certificate expiration date. |
+
+#### Command example
+```!fortiwebvm-local-certificate-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "LocalCertificate": {
+            "_id": "certificate",
+            "can_config": true,
+            "can_delete": true,
+            "can_download": false,
+            "can_view": true,
+            "comments": "",
+            "extension": "Name: X509v3 Subject Key Identifier<br>\nCritical: no<br>\nContent: <br>\nA5:F1:B8:06:8B:1E:2A:7F:B9:EB:CC:22:F4:80:57:5B:81:76:92:9A<br>\nName: X509v3 Authority Key Identifier<br>\nCritical: no<br>\nContent: <br>\nkeyid:A5:F1:B8:06:8B:1E:2A:7F:B9:EB:CC:22:F4:80:57:5B:81:76:92:9A\n<br>\nName: X509v3 Basic Constraints<br>\nCritical: yes<br>\nContent: <br>\nCA:TRUE<br>\n",
+            "id": "certificate",
+            "issuer": "C = us, ST = nnew york, O = Internet Widgits Pty Ltd",
+            "name": "certificate",
+            "serial_number": "62:f4:29:a6:9f:5f:16:b3:13:1e:c5:f4:f3:2c:97:33:aa:49:76:ab ",
+            "status": "OK",
+            "subject": "C = us, ST = nnew york, O = Internet Widgits Pty Ltd",
+            "valid_from": "2023-04-23 08:47:47  GMT",
+            "valid_to": "2024-04-22 08:47:47  GMT",
+            "version": 3
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Local certificate:
+>Showing page 1.
+> Current page size: 50
+>|Id|Valid To|Subject|Status|
+>|---|---|---|---|
+>| certificate | 2024-04-22 08:47:47  GMT | C = us, ST = nnew york, O = Internet Widgits Pty Ltd | OK |
+
+
+### fortiwebvm-network-interface-list
+
+***
+List the Network interfaces. A network interface is a connection point that enables communication between the FortiWeb device and the network, allowing traffic to flow through for inspection and protection. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-network-interface-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.NetworkInterface.name | String | Network interface name. |
+| FortiwebVM.NetworkInterface.ipv4_netmask | String | IPv4 network mask. |
+| FortiwebVM.NetworkInterface.ipv4_access | String | IPv4 allowed access list. |
+| FortiwebVM.NetworkInterface.ipv6_netmask | String | IPv6 network mask. |
+| FortiwebVM.NetworkInterface.ipv6_access | String | IPv6 allowed access list. |
+| FortiwebVM.NetworkInterface.status | String | The network interface status. |
+| FortiwebVM.NetworkInterface.type | String | The network interface type. |
+
+#### Command example
+```!fortiwebvm-network-interface-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "NetworkInterface": {
+            "_id": "port1",
+            "addressing6_mode": "0",
+            "addressing_mode": "0",
+            "can_del": false,
+            "can_edit": true,
+            "column_name": "port1()",
+            "de": "",
+            "edit_name": "port1 (00:0C:29:71:BB:4E)",
+            "id": "port1",
+            "ipv4_access": "HTTPS,PING,SSH,HTTP,FortiWeb Manager",
+            "ipv4_administrative_access": [
+                "https",
+                "ping",
+                "ssh",
+                "http",
+                "FWB-manager"
+            ],
+            "ipv4_netmask": "192.168.30.137/24",
+            "ipv6_access": "",
+            "ipv6_administrative_access": [],
+            "ipv6_netmask": "::/0",
+            "link_status": "up",
+            "name": "port1",
+            "port_id": 0,
+            "ref": 0,
+            "status": "up",
+            "type": "Physical"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Network interface:
+>Showing page 1.
+> Current page size: 50
+>|Name|Ipv4 Netmask|Ipv4 Access|Ipv6 Netmask|Ipv6 Access|Status|Type|
+>|---|---|---|---|---|---|---|
+>| port1 | 192.168.30.137/24 | HTTPS,PING,SSH,HTTP,FortiWeb Manager | ::/0 |  | up | Physical |
+
+
+
+### fortiwebvm-multi-certificate-list
+
+***
+List the Multi certificates. Multi-certificate configure RSA, DSA, and ECDSA certificates and reference them in server policy in Reverse Proxy mode and pserver in True Transparent Proxy mode. Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-multi-certificate-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.MultiCertificate.id | String | The multi certificate name. |
+
+#### Command example
+```!fortiwebvm-multi-certificate-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "MultiCertificate": {
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Multi certificate:
+>Showing page 1.
+> Current page size: 50
+>|Id|
+>|---|
+>| test |
+
+
+### fortiwebvm-sni-certificate-list
+
+***
+List the SNI certificates. Server Name Indication (SNI) configuration identifies the certificate to use by domain. Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-sni-certificate-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.SNICertificate.id | String | SNI certificate name. |
+
+#### Command example
+```!fortiwebvm-sni-certificate-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "SNICertificate": {
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### SNI certificate:
+>Showing page 1.
+> Current page size: 50
+>|Id|
+>|---|
+>| test |
+
+
+### fortiwebvm-virtual-ip-list
+
+***
+List the system virtual IPs. The virtual IP addresses are the IP addresses that paired with the domain name of your application. When users visit your application, the destination of their requests are these IP addresses. Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-virtual-ip-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.VirtualIP.id | String | Virtual IP name. |
+
+#### Command example
+```!fortiwebvm-virtual-ip-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "VirtualIP": {
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtaul IP:
+>Showing page 1.
+> Current page size: 50
+>|Id|
+>|---|
+>| test |
+
+
+### fortiwebvm-letsencrypt-certificate-list
+
+***
+List the Letsencrypt certificates. Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-letsencrypt-certificate-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.Letsencrypt.id | String | Letsencrypt certificate name. |
+
+#### Command example
+```!fortiwebvm-letsencrypt-certificate-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "Letsencrypt": {
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Letsencrypt certificate:
+>Showing page 1.
+> Current page size: 50
+>|Id|
+>|---|
+>| test |
+
+
+### fortiwebvm-url-access-rule-group-create
+
+***
+Create an URL access rule group. URL access rule group is a container that contains URL access rules (use fortiwebvm-url-access-rule-create/update/delete/list to manage the URL access rules). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | URL access rule group name. | Required |
+| action | Which action the FortiWeb appliance will take when a request matches the URL access rule. Possible values are: Pass, Alert &amp; Deny, Continue, Deny (no log). Default is Pass. | Optional |
+| trigger_policy | Trigger Policy Name (dependencies - use fortiwebvm-trigger-policy-list to get the trigger policies). Relevant when: action=Alert &amp; Deny or Deny (no log). | Optional |
+| severity | Severity level that FortiWeb appliance will use when a blocklisted IP address attempts to connect to your web servers. Relevant when: action=Alert &amp; Deny or Deny (no log). The default value is Low. Possible values are: High, Medium, Low, Informative. | Optional |
+| host_status | Whether to require host name. Possible values are: enable, disable. Default is disable. | Optional |
+| host | A name of protected host that the HTTP request must be in order to match the rule (dependencies - use fortiwebvm-protected-hostname-member-list to get hosts). Required when: host_status=enable. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-url-access-rule-group-create name=test```
+#### Human Readable Output
+
+>URL access rule group test was successfully created!
+
+### fortiwebvm-url-access-rule-group-update
+
+***
+Update an URL access rule group. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-group-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups). | Required |
+| action | Which action the FortiWeb appliance will take when a request matches the URL access rule. Possible values are: Pass, Alert &amp; Deny, Continue, Deny (no log). | Optional |
+| trigger_policy | Trigger Policy Name (dependencies - use fortiwebvm-trigger-policy-list to get the trigger policies). Relevant when: action=Alert &amp; Deny or Deny (no log). | Optional |
+| severity | Severity level. Required when: action=Alert &amp; Deny or Deny (no log). Possible values are: High, Medium, Low, Informative. | Optional |
+| host_status | Whether to require host name. Possible values are: enable, disable. | Optional |
+| host | A name of protected host that the HTTP request must be in order to match the rule (dependencies - use fortiwebvm-protected-hostname-member-list to get hosts). Required when: host_status=enable. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-url-access-rule-group-update name=test action="Alert & Deny"```
+#### Human Readable Output
+
+>URL access rule group test was successfully updated!
+
+### fortiwebvm-url-access-rule-group-delete
+
+***
+Delete an URL access rule group. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-group-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups). | Required |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-url-access-rule-group-delete name=test```
+#### Human Readable Output
+
+>URL access rule group test was successfully deleted!
+
+### fortiwebvm-url-access-rule-group-list
+
+***
+List URL access rule groups. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | URL access rule group name. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.URLAccessRuleGroup.id | String | URL access rule group name. |
+| FortiwebVM.URLAccessRuleGroup.action | String | The Action of the URL access rule group. |
+| FortiwebVM.URLAccessRuleGroup.host_status | String | Whether to enable host. |
+| FortiwebVM.URLAccessRuleGroup.host | String | The host of the URL access rule group. |
+| FortiwebVM.URLAccessRuleGroup.severity | String | The severity of the URL access rule group. |
+| FortiwebVM.URLAccessRuleGroup.trigger_policy | String | The Trigger policy of the URL access rule group. |
+| FortiwebVM.URLAccessRuleGroup.count | Number | The count of the conditions that are related to the current URL access rule group.  |
+
+#### Command example
+```!fortiwebvm-url-access-rule-group-list name=test```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "URLAccessRuleGroup": {
+            "action": "alert_deny",
+            "count": 0,
+            "host": "",
+            "host_status": "disable",
+            "id": "test",
+            "severity": "Low",
+            "trigger_policy": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### URL access rule group
+>Showing page 1.
+> Current page size: 50
+>|Id|Action|Host|Severity|Count|
+>|---|---|---|---|---|
+>| test | alert_deny |  | Low | 0 |
+
+
+### fortiwebvm-url-access-rule-condition-create
+
+***
+Create an URL access rule condition (URL access rule condition is a member of URL access rule group). URL access rules define the HTTP requests that are allowed or denied based on their hostname and URL. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-condition-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups). | Required |
+| url_type | URL type. Select how to use the text in url_pattern to determine whether or not a request URL meets the conditions for this rule. Possible values are: Simple String, Regular Expression. | Required |
+| url_pattern | Depending on your selection in url_type and meet_this_condition_if, type a regular expression that defines either all matching or all non-matching URLs. Must start with '/' when url_type=Simple String. | Required |
+| meet_this_condition_if | Indicate how to use url_pattern when determining whether or not this rule’s condition has been met. Possible values are: Object matches the URL Pattern, Object does not match the URL Pattern. Default is Object matches the URL Pattern. | Optional |
+| source_address | Whether to enable source address. Possible values are: enable, disable. Default is disable. | Optional |
+| source_address_type | The source address type. Relevant when source_address=enable. . Possible values are: IP, IP Resolved by Specified Domain, Source Domain. | Optional |
+| ip_range | IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. . | Optional |
+| ip_type | IP type. Relevant when source_address_type=IP Resolved by Specified Domain. . Possible values are: IPv4, IPv6. | Optional |
+| ip | IP resolved by specified domain. Relevant when source_address_type=IP Resolved by Specified Domain. . | Optional |
+| source_domain_type | Source domain type.  Relevant when source_address_type=Source Domain. . Possible values are: Simple String, Regular Expression. | Optional |
+| source_domain | Source Domain. For example: test.com. Relevant when source_address_type=Source Domain. . | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.URLAccessRuleGroup.Condition.id | String | The URL access rule condition ID. |
+
+#### Command example
+```!fortiwebvm-url-access-rule-condition-create group_name=test url_pattern=test url_type="Regular Expression"```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "URLAccessRuleGroup": {
+            "Condition": {
+                "id": "1"
+            },
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### URL access rule condition
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-url-access-rule-condition-update
+
+***
+Update an URL access rule condition (URL access rule condition is a member of URL access rule group). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-condition-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups). | Required |
+| condition_id | URL access rule condition ID (dependencies - use fortiwebvm-url-access-rule-condition-list command to get all URL access condition IDs). | Required |
+| url_type | URL type. Select how to use the text in url_pattern to determine whether or not a request URL meets the conditions for this rule. Possible values are: Simple String, Regular Expression. | Optional |
+| url_pattern | Depending on your selection in url_type and meet_this_condition_if, type a regular expression that defines either all matching or all non-matching URLs. Must start with '/' when url_type=Simple String. | Optional |
+| meet_this_condition_if | Indicate how to use url_pattern when determining whether or not this rule’s condition has been met. Possible values are: Object matches the URL Pattern, Object does not match the URL Pattern. | Optional |
+| source_address | Whether to enable source address. Possible values are: enable, disable. | Optional |
+| source_address_type | The source address type. Possible values are: IP, IP Resolved by Specified Domain, Source Domain. | Optional |
+| ip_range | IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. . | Optional |
+| ip_type | IP Type. Relevant when source_address_type=IP Resolved by Specified Domain. . Possible values are: IPv4, IPv6. | Optional |
+| ip | IP Resolved by Specified Domain. Relevant when source_address_type=IP Resolved by Specified Domain. . | Optional |
+| source_domain_type | Source Domain type.  Relevant when source_address_type=Source Domain. . Possible values are: Simple String, Regular Expression. | Optional |
+| source_domain | Source Domain. For example: test.com. Relevant when source_address_type=Source Domain. . | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-url-access-rule-condition-update group_name=test condition_id=1 url_type="Regular Expression" url_pattern=test2```
+#### Human Readable Output
+
+>URL access rule condition 1 was successfully updated!
+
+### fortiwebvm-url-access-rule-condition-delete
+
+***
+Delete an URL access rule condition (URL access rule condition is a member of URL access rule group). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-condition-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups). | Required |
+| condition_id | URL access rule condition member ID (dependencies - use fortiwebvm-url-access-rule-condition-list command to get all URL access rule condition IDs). | Required |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-url-access-rule-condition-delete group_name=test condition_id=1```
+#### Human Readable Output
+
+>URL access rule condition 1 was successfully deleted!
+
+### fortiwebvm-url-access-rule-condition-list
+
+***
+List URL access rule conditions (URL access rule condition is a member of URL access rule group). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-url-access-rule-condition-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | URL access rule group name (dependencies - use fortiwebvm-url-access-rule-group-list command to get all URL access rule groups). | Required |
+| condition_id | URL access rule condition member ID (dependencies - use fortiwebvm-url-access-rule-condition-list command to get all URL access rule condition IDs). | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.URLAccessRuleGroup.Condition.id | String | URL access rule condition name. |
+| FortiwebVM.URLAccessRuleGroup.Condition.url_type | String | URL access rule condition URL type. |
+| FortiwebVM.URLAccessRuleGroup.Condition.url_pattern | String | URL access rule condition URL pattern. |
+| FortiwebVM.URLAccessRuleGroup.Condition.meet_this_condition_if | String | Indicate how to use url_pattern when determining whether or not this rule’s condition has been met. |
+| FortiwebVM.URLAccessRuleGroup.Condition.source_address | String | URL access rule condition source address. |
+| FortiwebVM.URLAccessRuleGroup.Condition.source_address_type | String | URL access rule condition source address type. |
+| FortiwebVM.URLAccessRuleGroup.Condition.ip_range | String | IPv4/IPv6/IP range. |
+| FortiwebVM.URLAccessRuleGroup.Condition.domain | String | URL access rule condition domain. |
+| FortiwebVM.URLAccessRuleGroup.Condition.source_domain_type | String | URL access rule condition source domain type. |
+| FortiwebVM.URLAccessRuleGroup.Condition.source_domain | String | URL access rule condition domain type. |
+| FortiwebVM.URLAccessRuleGroup.Condition.only_method_check | String | Wether use HTTP method check is enable or not. Supports API version 2 only. |
+| FortiwebVM.URLAccessRuleGroup.Condition.only_protocol_check | String | Wether use HTTP protocol check is enable or not. Supports API version 2 only. |
+| FortiwebVM.URLAccessRuleGroup.Condition.only_method | String | Methods that checked. Supports API version 2 only. |
+| FortiwebVM.URLAccessRuleGroup.Condition.only_protocol | String | Protocols that checked. Supports API version 2 only. |
+
+#### Command example
+```!fortiwebvm-url-access-rule-condition-list group_name=test condition_id=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "URLAccessRuleGroup": {
+            "Condition": [
+                {
+                    "domain": "",
+                    "id": "1",
+                    "ip_range": "",
+                    "ip_type": "IPv4",
+                    "meet_this_condition_if": "Object matches the URL Pattern",
+                    "only_method": "",
+                    "only_method_check": "disable",
+                    "only_protocol": "",
+                    "only_protocol_check": "disable",
+                    "source_address": "disable",
+                    "source_address_type": "IP",
+                    "source_domain": "",
+                    "source_domain_type": "Simple String",
+                    "url_pattern": "test2",
+                    "url_type": "Regular Expression"
+                }
+            ],
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### URL access rule condition
+>Showing page 1.
+> Current page size: 50
+>|Id|Url Type|Url Pattern|Meet This Condition If|Source Address Type|Ip Range|Domian Type|Domain|Source Domain Type|Source Domain|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1 | Regular Expression | test2 | Object matches the URL Pattern | IP |  |  |  | Simple String |  |
+
+
+### fortiwebvm-virtual-server-group-create
+
+***
+Create a virtual server group. In API version 1, virtual server group defines the network interface, bridge, and IP address on which traffic destined for an individual physical server or server farm will arrive. In API version 2, virtual server group is a container that contains the virtual server items (use fortiwebvm-virtual-server-item-create/update/delete/list to manage the virtual server group’s items). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Virtual server group name. | Required |
+| interface | The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). For example: port1. Required in API version 1. Supports API version 1 only. | Optional |
+| ipv4_address | The IPv4 address and subnet of the virtual server. For example: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
+| ipv6_address | The IPv6 address and subnet of the virtual server. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. Supports API version 1 only. Default is ::/0. | Optional |
+| status | Wheter to enable the virtual server group. Supports API version 1 only. Possible values are: enable, disable. Default is enable. | Optional |
+| use_interface_ip | Whether uses interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address. Supports API version 1 only. Possible values are: enable, disable. Default is disable. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example - API Version 1
+```!fortiwebvm-virtual-server-group-create name=test use_interface_ip=enable interface=port1```
+#### Command example - API Version 2
+```!fortiwebvm-virtual-server-group-create name=test```
+#### Human Readable Output
+
+>Virtual server group test was successfully created!
+
+### fortiwebvm-virtual-server-group-update
+
+***
+Update a virtual server group. Supports API version 1 only.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-group-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Virtual server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all virtual server groups). | Required |
+| interface | The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). For example: port1. Supports API version 1 only. | Optional |
+| ipv4_address | The IPv4 address and subnet of the virtual server. For exampl: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
+| ipv6_address | The IPv4 address and subnet of the virtual server. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
+| status | Wheter to enable the virtual server group. Supports API version 1 only. Possible values are: enable, disable. | Optional |
+| use_interface_ip | Whether uses interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address. Possible values are: enable, disable. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-virtual-server-group-update name=test status=disable use_interface_ip=enable```
+#### Human Readable Output
+
+>Virtual server group test was successfully updated!
+
+### fortiwebvm-virtual-server-group-delete
+
+***
+Delete virtual server group. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-group-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Virtual server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all virtual server groups). | Required |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-virtual-server-group-delete name=test```
+#### Human Readable Output
+
+>Virtual server group test was successfully deleted!
+
+### fortiwebvm-virtual-server-group-list
+
+***
+List the virtual server groups. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The virtual server group name. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.VirtualServerGroup.id | String | The virtual server group name. |
+| FortiwebVM.VirtualServerGroup.ipv4_address | String | IP V4 address. Supports API version 1 only. |
+| FortiwebVM.VirtualServerGroup.ipv6_address | String | IP V6 address. Supports API version 1 only. |
+| FortiwebVM.VirtualServerGroup.interface | String | The interface name. Supports API version 1 only. |
+| FortiwebVM.VirtualServerGroup.use_interface_ip | String | Whether to use interface IP. Supports API version 1 only. |
+| FortiwebVM.VirtualServerGroup.enable | String | Whether the Virtual Server is enabled. Supports API version 1 only. |
+| FortiwebVM.VirtualServerGroup.items_count | String | The number of items that related to the Virtual Server. Supports API version 2 only. |
+
+#### Command example
+```!fortiwebvm-virtual-server-group-list limit=1```
+#### Context Example - API Version 1
+```json
+{
+    "FortiwebVM": {
+        "VirtualServerGroup": {
+            "_id": "test",
+            "can_delete": true,
+            "enable": true,
+            "id": "test",
+            "interface": "port1",
+            "ipv4_address": "0.0.0.0/0.0.0.0",
+            "ipv6_address": "::/0",
+            "name": "test",
+            "use_interface_ip": true
+        }
+    }
+}
+```
+#### Context Example - API Version 2
+```json
+{
+    "FortiwebVM": {
+        "VirtualServerGroup": {
+            "can_clone": 1,
+            "can_view": 0,
+            "id": "test",
+            "name": "test",
+            "q_ref": 0,
+            "q_type": 1,
+            "sz_vip-list": 0
+        }
+    }
+}
+```
+#### Human Readable Output
+
+>### Virtual server group
+>Showing page 1.
+> Current page size: 50
+>|Id|Items Count|
+>|---|---|
+>| test |  |
+
+
+### fortiwebvm-network-interface-list
+
+***
+List the Network interfaces. A network interface is a connection point that enables communication between the FortiWeb device and the network, allowing traffic to flow through for inspection and protection. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-network-interface-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.NetworkInterface.name | String | Network interface name. |
+| FortiwebVM.NetworkInterface.ipv4_netmask | String | IPv4 network mask. |
+| FortiwebVM.NetworkInterface.ipv4_access | String | IPv4 allowed access list. |
+| FortiwebVM.NetworkInterface.ipv6_netmask | String | IPv6 network mask. |
+| FortiwebVM.NetworkInterface.ipv6_access | String | IPv6 allowed access list. |
+| FortiwebVM.NetworkInterface.status | String | The network interface status. |
+| FortiwebVM.NetworkInterface.type | String | The network interface type. |
+
+### fortiwebvm-virtual-server-item-create
+
+***
+Create a virtual serer item (virtual server Item is a member of virtual server group in API version 2). A virtual server defines the network interface, bridge, and IP address on which traffic destined for an individual physical server or server farm will arrive in API version 2. Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-item-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Virtual Server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all the virtual server groups). . | Required |
+| interface | The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). Required when use_interface_ip=enable. | Optional |
+| use_interface_ip | Whether uses interface IP. enable - use interface IP. disable - use virtual IP. Possible values are: enable, disable. Default is disable. | Optional |
+| status | Wheter to enable the virtual server item. . Possible values are: enable, disable. Default is enable. | Optional |
+| virtual_ip | The virtual IP name of the virtual server item (dependencies - use fortiwebvm-virtual-ip-list command to get all the virtual IP names). Required when use_interface_ip=disable. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.VirtualServerGroup.Item.id | String | The virtual server item ID. |
+
+#### Command example
+```!fortiwebvm-virtual-server-item-create group_name=test use_interface_ip=enable interface=port1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "VirtualServerGroup": {
+            "Item": {
+                "id": "1"
+            },
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual server item
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-virtual-server-item-update
+
+***
+Update a virtual server item (virtual server Item is a member of virtual server group in API version 2). Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-item-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Virtual Server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all the virtual server groups). . | Required |
+| item_id | Virtual server item ID (dependencies - use fortiwebvm-virtual-server-item-list command to get all the virtual server items). . | Required |
+| interface | The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). Required when use_interface_ip=enable. | Optional |
+| use_interface_ip | Whether uses interface IP. enable - use interface IP. disable - use virtual IP. Possible values are: enable, disable. | Optional |
+| status | Wheter to enable the virtual server item. . Possible values are: enable, disable. | Optional |
+| virtual_ip | The virtual IP name of the virtual server item (dependencies - use fortiwebvm-virtual-ip-list command to get all the virtual IP names). Required when use_interface_ip=disable. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-virtual-server-item-update group_name=test item_id=1 status=disable```
+#### Human Readable Output
+
+>Virtual server item 1 was successfully updated!
+
+### fortiwebvm-virtual-server-item-delete
+
+***
+Delete a virtual server item (virtual server Item is a member of virtual server group in API version 2). Supports API versions 2 only.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-item-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Virtual server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all virtual server groups). | Required |
+| item_id | Virtual server item ID. (dependencies - use fortiwebvm-virtual-server-item-list command to get all virtual server items). | Required |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-virtual-server-item-delete group_name=test item_id=1```
+#### Human Readable Output
+
+>Virtual server item 1 was successfully deleted!
+
+### fortiwebvm-virtual-server-item-list
+
+***
+List virtual server items (virtual server item is a member of virtual server group in API version 2). Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-virtual-server-item-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Virtual server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all virtual server groups). | Required |
+| item_id | Virtual server item ID. (dependencies - use fortiwebvm-virtual-server-item-list command to get all virtual server items). | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.VirtualServerGroup.Item.id | String | Virtual Server Item ID. |
+| FortiwebVM.VirtualServerGroup.Item.interface | String | The name of the network interface or bridge. |
+| FortiwebVM.VirtualServerGroup.Item.status | String | Wheter the item is enabled or disabled. |
+| FortiwebVM.VirtualServerGroup.Item.use_interface_ip | String | Virtual server whether uses interface IP. |
+| FortiwebVM.VirtualServerGroup.Item.virtual_ip | String | The virtual IP of the virtual server. |
+
+#### Command example
+```!fortiwebvm-virtual-server-item-list group_name=test limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "VirtualServerGroup": {
+            "Item": [
+                {
+                    "id": "1",
+                    "interface": "port1",
+                    "status": "disable",
+                    "use_interface_ip": "enable",
+                    "virtual_ip": ""
+                }
+            ],
+            "id": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual server item
+>Showing page 1.
+> Current page size: 50
+>|Id|Interface|Status|Use Interface Ip|Virtual Ip|
+>|---|---|---|---|---|
+>| 1 | port1 | disable | enable |  |
+
+
+### fortiwebvm-server-pool-group-create
+
+***
+Create a server pool group. Server pools define a group of one or more physical or domain servers (web servers) that FortiWeb distributes connections among, or where the connections pass through to, depending on the operation mode. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Server pool group name. | Required |
+| type | The operation mode of the appliance to display the corresponding pool options. Possible values are: Reverse Proxy, Offline Protection, True Transparent Proxy, Transparent Inspection, WCCP. Default is Reverse Proxy. | Optional |
+| comments | Description or other comment. | Optional |
+| server_balance | Specifies whether the pool contains a single server or multiple members. Relevant when type=Reverse Proxy. Possible values are: Single Server, Server Balance. Default is Single Server. | Optional |
+| health_check | The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Relevant when server_balance=Server Balance. | Optional |
+| lb_algo | The load-balancing algorithms that FortiWeb uses when it distributes new connections among server pool members. Relevant when server_balance=Server Balance. Possible values are: Round Robin, Weighted Round Robin, Least Connection, URI Hash, Full URI Hash, Host Hash, Host Domain Hash, Source IP Hash. Default is Round Robin. | Optional |
+| persistence | The name of the persistence policy that specifies a session persistence method and timeout to apply to the pool (dependencies - use fortiwebvm-persistence-policy-list command to get all persistence policies). Relevant when server_balance=Server Balance. | Optional |
+| http_reuse | Configure multiplexing so that FortiWeb uses a single connection to a server for requests from multiple clients. Enter one of these options: Aggressive - The first request from a client can use a cached server connection only when the cached server connection has been used by more than one client. Always - Client requests will use an available connection cached server connection. Never - Disable multiplexing. Safe - A client will establish a new connection for the first request, but will use an available cached server connection for subsequent requests. Relevant when protocol=HTTP. Supports API version 2 only. Possible values are: Aggressive, Always, Never, Safe. | Optional |
+| protocol | The server pool protocol. HTTP - Specifies that the server pool governs HTTP traffic. Specific options for configuring an HTTP server pool become available. FTP - Specifies that the server pool governs FTP traffic. Specific options for configuring an FTP server pool become available. ADFSPIP - Specifies that the server pool governs ADFSPIP traffic. Specific options for configuring an ADFSPIP server pool become available. In case you use FTP/ADFSPIP make sure it enabled in the “Feature Visibility” (under system-&gt;config). Supports API version 2 only. Relevant when type=Reverse Proxy. Possible values are: HTTP, FTP, ADFSPIP. | Optional |
+| reuse_conn_idle_time | Idle time limit for a cached server connection. If a cached server connection remains idle for the set duration, it will be closed. The valid range is 1–1000. Supports API version 2 only. Default is 10. | Optional |
+| reuse_conn_max_count | The maximum number of allowed cached server connections. If FortiWeb meets the set number, no more cached server connections will be established. The valid range is 1–1000 for each server.  Supports API version 2 only. Default is 100. | Optional |
+| reuse_conn_max_request | The maximum number of HTTP responses that the cached server connection may handle. If a cached server connection meets the set number, it will be closed. The valid range is 1–1000. Supports API version 2 only. Default is 100. | Optional |
+| reuse_conn_total_time | The maximum time limit in which a cached server connection may be reused. If a cached server connection exists for longer than the set limit, it will be closed. The valid range is 1–1000. Supports API version 2 only. Default is 100. | Optional |
+| server_pool_id | A 64-bit random integer assigned to each server policy. The policy-id is a unique identification number for each server policy. Supports API version 2 only. | Optional |
+| proxy_protocol | If the back-end server enables proxy protocol, you need to enable the Proxy Protocol option on FortiWeb so that the TCP SSL and HTTP traffic can successfully go through. The real IP address of the client will be included in the proxy protocol header. Relevant when type=Reverse Proxy or True Transparent Proxy or Offline Protection or Transparent Inspection. Supports API version 2 only. Possible values are: enable, disable. | Optional |
+| proxy_protocol_version | The proxy protocol version for the back-end server. Relevant when type=Reverse Proxy or True Transparent Proxy. Supports API version 2 only. Possible values are: V1, V2. Default is V1. | Optional |
+| adfs_server_name | Enter a name for the AD FS Server. It should be the federation service name. This option is mandatory if the AD FS Server needs to verify the server name in the SSL handshake. Relevant when protocol=ADFSPIP. Supports API version 2 only. | Optional |
+| health_check_source_ip | Health Check Source IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty. | Optional |
+| health_check_source_ip_v6 | Health Check Source v6 IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-group-create name=test server_balance=ServerBalance```
+#### Human Readable Output
+
+>Server pool group test was successfully created!
+
+### fortiwebvm-server-pool-group-update
+
+***
+Update a server pool group. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-group-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| type | The operation mode of the appliance to display the corresponding pool options. Possible values are: Reverse Proxy, Offline Protection, True Transparent Proxy, Transparent Inspection, WCCP. | Optional |
+| comments | Enter a description or other comment. If the comment is more than one word or contains special characters, surround the comment with double quotes ( " ). The maximum length is 199 characters. | Optional |
+| server_balance | Specifies whether the pool contains a single server or multiple members. Possible values are: Single Server, Server Balance. | Optional |
+| health_check | The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Relevant when server_balance=Server Balance. | Optional |
+| lb_algo | The load-balancing algorithms that FortiWeb uses when it distributes new connections among server pool members.. Relevant when server_balance=Server Balance. Possible values are: Round Robin, Weighted Round Robin, Least Connection, URI Hash, Full URI Hash, Host Hash, Host Domain Hash, Source IP Hash. | Optional |
+| persistence | The name of the persistence policy that specifies a session persistence method and timeout to apply to the pool (dependencies - use fortiwebvm-persistence-policy-list command to get all persistence policies). Relevant when server_balance=Server Balance. | Optional |
+| http_reuse | Configure multiplexing so that FortiWeb uses a single connection to a server for requests from multiple clients. Enter one of these options: Aggressive - The first request from a client can use a cached server connection only when the cached server connection has been used by more than one client. Always - Client requests will use an available connection cached server connection. Never - Disable multiplexing. Safe - A client will establish a new connection for the first request, but will use an available cached server connection for subsequent requests. Relevant when protocol=HTTP. Supports API version 2 only. Possible values are: Aggressive, Always, Never, Safe. | Optional |
+| protocol | The server pool protocol. HTTP - Specifies that the server pool governs HTTP traffic. Specific options for configuring an HTTP server pool become available. FTP - Specifies that the server pool governs FTP traffic. Specific options for configuring an FTP server pool become available. ADFSPIP - Specifies that the server pool governs ADFSPIP traffic. Specific options for configuring an ADFSPIP server pool become available. In case you use FTP/ADFSPIP make sure it enabled in the “Feature Visibility” (under system-&gt;config). Supports API version 2 only. Relevant when type=Reverse Proxy. Possible values are: HTTP, FTP, ADFSPIP. | Optional |
+| reuse_conn_idle_time | Idle time limit for a cached server connection. If a cached server connection remains idle for the set duration, it will be closed. The valid range is 1–1000. Supports API version 2 only. | Optional |
+| reuse_conn_max_count | The maximum number of allowed cached server connections. If FortiWeb meets the set number, no more cached server connections will be established. The valid range is 1–1000 for each pserver. Supports API version 2 only. | Optional |
+| reuse_conn_max_request | The maximum number of HTTP responses that the cached server connection may handle. If a cached server connection meets the set number, it will be closed. The valid range is 1–1000. Supports API version 2 only. | Optional |
+| reuse_conn_total_time | The maximum time limit in which a cached server connection may be reused. If a cached server connection exists for longer than the set limit, it will be closed. The valid range is 1–1000. Supports API version 2 only. | Optional |
+| server_pool_id | A 64-bit random integer assigned to each server policy. The policy-id is a unique identification number for each server policy. Supports API version 2 only. | Optional |
+| proxy_protocol | If the back-end server enables proxy protocol, you need to enable the Proxy Protocol option on FortiWeb so that the TCP SSL and HTTP traffic can successfully go through. The real IP address of the client will be included in the proxy protocol header. Relevant when type=Reverse Proxy or True Transparent Proxy or Offline Protection or Transparent Inspection. Supports API version 2 only. Possible values are: enable, disable. | Optional |
+| proxy_protocol_version | The proxy protocol version for the back-end server. Relevant when type=Reverse Proxy or True Transparent Proxy. Supports API version 2 only. Possible values are: V1, V2. | Optional |
+| adfs_server_name | Enter a name for the AD FS Server. It should be the federation service name. This option is mandatory if the AD FS Server needs to verify the server name in the SSL handshake. Relevant when protocol=ADFSPIP. Supports API version 2 only. | Optional |
+| health_check_source_ip | Health Check Source IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty. | Optional |
+| health_check_source_ip_v6 | Health Check Source v6 IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-group-update name=test comments=test```
+#### Human Readable Output
+
+>Server pool group test was successfully updated!
+
+### fortiwebvm-server-pool-group-delete
+
+***
+Delete a server pool group. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-group-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-group-delete name=test```
+#### Human Readable Output
+
+>Server pool group test was successfully deleted!
+
+### fortiwebvm-server-pool-group-list
+
+***
+List server pool groups. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Server pool group name. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.id | String | Server Pool group ID. |
+| FortiwebVM.ServerPoolGroup.pool_count | String | The number of rule members. |
+| FortiwebVM.ServerPoolGroup.server_balance | String | Whether the pool contains a single server or multiple members.  |
+| FortiwebVM.ServerPoolGroup.type | String | Server pool type. |
+| FortiwebVM.ServerPoolGroup.comments | String | Comments that attached to the Server Pool. |
+| FortiwebVM.ServerPoolGroup.lb_algorithm | String | Server Pool LB Algorithm. |
+| FortiwebVM.ServerPoolGroup.health_check | String | The name of the server health check. |
+| FortiwebVM.ServerPoolGroup.persistence | String | The name of the persistence policy that specifies a session persistence method and timeout to apply to the pool. |
+| FortiwebVM.ServerPoolGroup.protocol | String | Sever Pool protocol. Supports API version 2 only. |
+| FortiwebVM.ServerPoolGroup.http_reuse | String | Sever Pool HTTP reuse. Supports API version 2 only. |
+| FortiwebVM.ServerPoolGroup.reuse_conn_total_time | Number | The maximum time limit in which a cached server connection may be reused. If a cached server connection exists for longer than the set limit, it will be closed. Supports API version 2 only. |
+| FortiwebVM.ServerPoolGroup.reuse_conn_idle_time | Number | Idle time limit for a cached server connection. If a cached server connection remains idle for the set duration, it will be closed. Supports API version 2 only. |
+| FortiwebVM.ServerPoolGroup.reuse_conn_max_request | Number | The maximum number of HTTP responses that the cached server connection may handle. If a cached server connection meets the set number, it will be closed. Supports API version 2 only. |
+| FortiwebVM.ServerPoolGroup.reuse_conn_max_count | Number | The maximum number of allowed cached server connections. If FortiWeb meets the set number, no more cached server connections will be established. Supports API version 2 only. |
+| FortiwebVM.ServerPoolGroup.adfs_server_name | String | The name for the AD FS Server that related. Supports API version 2 only. |
+| FortiwebVM.ServerPoolGroup.server_pool_id | String | A 64-bit random integer assigned to each server policy. Supports API version 2 only. |
+
+#### Command example
+```!fortiwebvm-server-pool-group-list limit=1```
+#### Context Example - API Version 1
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "comments": "",
+            "health_check": "",
+            "id": "rp",
+            "lb_algorithm": "",
+            "persistence": "",
+            "pool_count": 0,
+            "server_balance": "Single Server",
+            "type": "Reverse Proxy"
+        }
+    }
+}
+```
+#### Context Example - API Version 2
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "adfs_server_name": "",
+            "comments": "",
+            "health_check": "",
+            "http_reuse": "never",
+            "id": "test",
+            "lb_algorithm": "round-robin",
+            "persistence": "",
+            "pool_count": 1,
+            "protocol": "HTTP",
+            "reuse_conn_idle_time": 10,
+            "reuse_conn_max_count": 100,
+            "reuse_conn_max_request": 100,
+            "reuse_conn_total_time": 100,
+            "server_balance": "disable",
+            "server_pool_id": "16406048845216073408",
+            "type": "Reverse Proxy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool group
+>Showing page 1.
+> Current page size: 50
+>|Id|Type|Pool Count|Server Balance|Comments|Lb Algorithm|Health Check|Persistence|
+>|---|---|---|---|---|---|---|---|
+>| rp | Reverse Proxy | 0 | Single Server |  |  |  |  |
+
+
+### fortiwebvm-persistence-policy-list
+
+***
+List all the Persistence policies. The persistence policy applies to all members of the server pool. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-persistence-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.PersistencePolicy.id | String | Persistence policy name. |
+| FortiwebVM.PersistencePolicy.type | String | The persistence policy type. |
+
+### fortiwebvm-server-health-check-list
+
+***
+List all the server health check policies. Tests for server responsiveness (called “server health checks” in the web UI) poll web servers that are members of a server pool to determine their availability before forwarding traffic. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-health-check-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerHealthCheck.id | String | Server Health Check name. |
+
+### fortiwebvm-server-pool-reverse-proxy-rule-create
+
+***
+Create a rule for an reverse proxy server pool group (server pool rule is a member of server pool group). Reverse proxy — Requests are destined for a virtual server’s network interface and IP address on the FortiWeb appliance.. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-reverse-proxy-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| status | Server pool rule status. Possible values are: enable, disable, maintenance. Default is enable. | Optional |
+| server_type | Specify whether to specify the pool member by IP address, domain, or automatically pulled by SDN connector. The value “External connector” Supports by API V2 only. Possible values are: IP, Domain, External connector. | Required |
+| sdn_address_type | Select whether you want FortiWeb to get the public or private addresses of your application's VM instances, or select all to get both the public and the private addresses. Relevant when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only. Possible values are: Private, Public, All. | Optional |
+| sdn_connector | Select the SDN connector you have created (dependencies - use fortiwebvm-sdn-connector-list command to get all the SDN connectors). Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only. Possible values are: aws, azure. | Optional |
+| filter | Once you select the SDN collector that you have created, choose filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only. | Optional |
+| ip | The IP address of the web server to include in the pool. Required when: (server_type= ip). | Optional |
+| domain | The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain). | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . Default is  80. | Optional |
+| connection_limit | Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576. Default is 0. | Optional |
+| http2 | Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections. Possible values are: enable, disable. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable. | Optional |
+| recover | Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400. Default is 0. | Optional |
+| warm_up | Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400. Default is 0. | Optional |
+| warm_rate | Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400. Default is 10. | Optional |
+| weight | Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999. Default is 1. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports by API V2 only. | Optional |
+| backup_server | Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
+
+#### Command example
+```!fortiwebvm-server-pool-reverse-proxy-rule-create group_name=rp server_type=IP ip=1.2.3.4```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": {
+                "id": "1"
+            },
+            "id": "rp"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool rule
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-server-pool-reverse-proxy-rule-update
+
+***
+Update a rule for an reverse proxy server pool group. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-reverse-proxy-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+| status | Server pool rule status. Possible values are: enable, disable, maintenance. | Optional |
+| server_type | Specify whether to specify the pool member by IP address, domain, or automatically pulled by SDN connector. The value “External connector” Supports by API V2 only. Possible values are: IP, Domain, External connector. | Optional |
+| sdn_address_type | Select whether you want FortiWeb to get the public or private addresses of your application's VM instances, or select all to get both the public and the private addresses. Relevant when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only. Possible values are: Private, Public, All. | Optional |
+| sdn_connector | Select the SDN connector you have created (dependencies - use fortiwebvm-sdn-connector-list command to get all the SDN connectors). Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only. Possible values are: aws, azure. | Optional |
+| filter | Once you select the SDN collector that you have created, choose filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only. | Optional |
+| ip | The IP address of the web server to include in the pool. Required when: (server_type= ip). | Optional |
+| domain | The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain). | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . | Optional |
+| connection_limit | Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit.  Size range: 0-1048576. | Optional |
+| http2 | Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections. Possible values are: enable, disable. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable. | Optional |
+| recover | Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400. | Optional |
+| warm_up | Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400. | Optional |
+| warm_rate | Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400. | Optional |
+| weight | Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports by API V2 only. | Optional |
+| backup_server | Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-reverse-proxy-rule-update group_name=rp rule_id=1 status=disable```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully updated!
+
+### fortiwebvm-server-pool-offline-protection-rule-create
+
+***
+Create a rule for an offline protection server pool group (server pool rule is a member of server pool group). Offline Protection  -  Requests are destined for a real web server instead of the FortiWeb appliance; traffic is duplicated to the FortiWeb through a span port. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-offline-protection-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| status | Server pool rule status. Possible values are: enable, disable. Default is enable. | Optional |
+| ip | The IP address of the web server to include in the pool. | Required |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. Default is 80. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. Default is disable. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Requried when ssl=enable. | Optional |
+| enable_sni | Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only. Possible values are: enable, disable. | Optional |
+| sni_certificate | The name of the Server Name Indication (SNI) certificate that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports by API V2 only. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
+
+#### Command example
+```!fortiwebvm-server-pool-offline-protection-rule-create group_name=op ip=1.2.3.5```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": {
+                "id": "1"
+            },
+            "id": "op"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool rule
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-server-pool-offline-protection-rule-update
+
+***
+Update a rule for an offline protection server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-offline-protection-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+| status | Server pool rule status. Possible values are: enable, disable. | Optional |
+| ip | The IP address of the web server to include in the pool. | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Requried when ssl=enable. | Optional |
+| enable_sni | Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only. Possible values are: enable, disable. | Optional |
+| sni_certificate | The name of the Server Name Indication (SNI) policy that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports by API V2 only. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-offline-protection-rule-update group_name=op rule_id=1 port=81```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully updated!
+
+### fortiwebvm-server-pool-true-transparent-proxy-rule-create
+
+***
+Create a rule for an true transparent server pool group (server pool rule is a member of server pool group). True transparent proxy  -  Requests are destined for a real web server instead of the FortiWeb appliance. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-true-transparent-proxy-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| status | The status of the server pool rule. enable - Specifies that this pool member can receive new sessions from FortiWeb. disable - Specifies that this pool member does not receive new sessions from FortiWeb and FortiWeb closes any current sessions as soon as possible. maintenance - Specifies that this pool member does not receive new sessions from FortiWeb but FortiWeb maintains any current connections. Possible values are: enable, disable. Default is enable. | Optional |
+| ip | The IP address of the web server to include in the pool. . | Required |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . Default is 80. | Optional |
+| http2 | Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections. Possible values are: enable, disable. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| certificate_type | Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only. Possible values are: Local, Multi Certificate, Letsencrypt. Default is Local. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. In API version 2 - relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Optional |
+| multi_certificate | Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_file=Multi Certificate. Supports API version 2 only. | Optional |
+| letsencrypt | Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-letsencrypt-certificate-list command to list all the letsencrypt certificates). Supports API version 2 only. | Optional |
+| certficate_intermediate_group | The name of a group of intermediate certificate authority (CA) certificates, if any, that FortiWeb presents to clients to complete the signing chain for them and validate the server certificate’s CA signature (dependencies - use fortiwebvm-certificate-intermediate-group-list command to get all the certificate intermediate groups). Relevant when ssl=enable. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Supports API version 2 only. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when health_check_inherit=enable. Supports API version 2 only. | Optional |
+| health_check | The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Supports API version 2 only. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
+
+#### Command example
+```!fortiwebvm-server-pool-true-transparent-proxy-rule-create group_name=ttp server_type=IP ip=1.2.3.6```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": {
+                "id": "1"
+            },
+            "id": "ttp"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool rule
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-server-pool-true-transparent-proxy-rule-update
+
+***
+Update a rule for an true transparent server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-true-transparent-proxy-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+| status | The status of the server pool rule. enable - Specifies that this pool member can receive new sessions from FortiWeb. disable - Specifies that this pool member does not receive new sessions from FortiWeb and FortiWeb closes any current sessions as soon as possible. maintenance - Specifies that this pool member does not receive new sessions from FortiWeb but FortiWeb maintains any current connections. Possible values are: enable, disable. | Optional |
+| ip | The IP address of the web server to include in the pool. . | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . | Optional |
+| http2 | Enable to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections. Possible values are: enable, disable. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| certificate_type | Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only. Possible values are: Local, Multi Certificate, Letsencrypt. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. In API version 2 - relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Optional |
+| multi_certificate | Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_file=Multi Certificate. Supports API version 2 only. | Optional |
+| letsencrypt | Relevant when enable_ssl=enable and certificate_file=Letsencrypt (dependencies - use fortiwebvm-letsencrypt-certificate-list command to list all the letsencrypt certificates). Supports API version 2 only. | Optional |
+| certficate_intermediate_group | The name of a group of intermediate certificate authority (CA) certificates, if any, that FortiWeb presents to clients to complete the signing chain for them and validate the server certificate’s CA signature (dependencies - use fortiwebvm-certificate-intermediate-group-list command to get all the certificate intermediate groups). Relevant when ssl=enable. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Relevant when: ssl=enable. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Supports API version 2 only. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when health_check_inherit=enable. Supports API version 2 only. | Optional |
+| health_check | The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Supports API version 2 only. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-true-transparent-proxy-rule-update group_name=ttp rule_id=1 port=82```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully updated!
+
+### fortiwebvm-server-pool-transparent-inspection-rule-create
+
+***
+Create a rule for an transparent inspection server pool group (server pool rule is a member of server pool group). Transparent Inspection  -  Requests are destined for a real web server instead of the FortiWeb appliance. The FortiWeb appliance asynchronously inspects traffic arriving on a network port that belongs to a Layer 2 bridge, applies the first applicable policy, and lets permitted traffic pass through. Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-transparent-inspection-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| status | Server pool rule status. Possible values are: enable, disable. | Optional |
+| ip | The IP address of the web server to include in the pool. . | Required |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . Default is 80. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Requried when ssl=enable. | Optional |
+| enable_sni | Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only. Possible values are: enable, disable. | Optional |
+| sni_certificate | The name of the Server Name Indication (SNI) policy that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports by API V2 only. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
+
+#### Command example
+```!fortiwebvm-server-pool-transparent-inspection-rule-create group_name=ti ip=1.2.3.7```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": {
+                "id": "1"
+            },
+            "id": "ti"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool rule
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-server-pool-transparent-inspection-rule-update
+
+***
+Update a rule for an transparent inspection server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-transparent-inspection-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+| status | Server pool rule status. Possible values are: enable, disable. | Optional |
+| ip | The IP address of the web server to include in the pool. . | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . Default is 80. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Requried when ssl=enable. | Optional |
+| enable_sni | Enable to use a Server Name Indication (SNI) configuration. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only. Possible values are: enable, disable. | Optional |
+| sni_policy | The name of the Server Name Indication (SNI) configuration that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. Required when enable_sni=enable. Supports by API V2 only. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-transparent-inspection-rule-update group_name=ti rule_id=1 port=83```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully updated!
+
+### fortiwebvm-server-pool-wccp-rule-create
+
+***
+Create a rule for an WCCP server pool group (server pool rule is a member of server pool group). WCCP - The FortiWeb appliance allows traffic to pass through to the server pool when it receives traffic that is directed to the FortiWeb (configured as a WCCP client) by a FortiGate acting as a WCCP server. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-wccp-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| status | Server pool rule status. Possible values are: enable, disable. Default is enable. | Optional |
+| ip | The IP address of the web server to include in the pool. . | Required |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. Default is disable. | Optional |
+| certificate_type | Enable this option to allow FortiWeb to use Local / Multi Certificate certificates. Supports API version 2 only. Possible values are: Local, Multi Certificate. Default is Local. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. Relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Optional |
+| multi_certificate | Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_type=Multi Certificate. Supports API version 2 only. | Optional |
+| certficate_intermediate_group | The name of a group of intermediate certificate authority (CA) certificates, if any, that FortiWeb presents to clients to complete the signing chain for them and validate the server certificate’s CA signature (dependencies - use fortiwebvm-certificate-intermediate-group-list command to get all the certificate intermediate groups). Relevant when ssl=enable. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: enable_ssl=enable (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
+
+#### Command example
+```!fortiwebvm-server-pool-wccp-rule-create group_name=wccp ip=1.2.3.9 port=84```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": {
+                "id": "1"
+            },
+            "id": "wccp"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool rule
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-server-pool-wccp-rule-update
+
+***
+Update a rule for an WCCP server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-wccp-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+| status | Server pool rule status. Possible values are: enable, disable. | Optional |
+| ip | The IP address of the web server to include in the pool. . | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| certificate_type | Enable this option to allow FortiWeb to use Local / Multi Certifiacte certificates. Supports API version 2 only. Possible values are: Local, Multi Certificate. | Optional |
+| certificate_file | The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Relevant when enable_ssl=enable. Relevant when enable_ssl=enable and certificate_type=Local (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Optional |
+| multi_certificate | Multi certificate (dependencies use fortiwebvm-multi-certificate-list to get all the multi-certificates). Relevant when enable_ssl=enable and certificate_type=Multi Certificate. Supports API version 2 only. | Optional |
+| certficate_intermediate_group | The name of a group of intermediate certificate authority (CA) certificates, if any, that FortiWeb presents to clients to complete the signing chain for them and validate the server certificate’s CA signature (dependencies - use fortiwebvm-certificate-intermediate-group-list command to get all the certificate intermediate groups). Relevant when ssl=enable. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member. Relevant when: enable_ssl=enable (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-wccp-rule-update group_name=wccp rule_id=1 port=84```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully updated!
+
+### fortiwebvm-server-pool-ftp-rule-create
+
+***
+Create a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-ftp-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| status | Server pool rule status. Possible values are: enable, disable, maintenance. Default is enable. | Optional |
+| server_type | Specify whether to specify the pool member by IP address or domain. Possible values are: IP, Domain. | Optional |
+| ip | The IP address of the web server to include in the pool. Required when: (server_type=IP). | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . Default is 21. | Optional |
+| connection_limit | Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576. Default is 0. | Optional |
+| weight | Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999. Default is 1. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. . | Optional |
+| backup_server | Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. Default is disable. | Optional |
+| implicit_ssl | Enable so that FortiWeb will communicate with the pool member using implicit SSL. Possible values are: enable, disable. Default is disable. | Optional |
+| recover | Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400. Default is 0. | Optional |
+| warm_up | Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400. Default is 0. | Optional |
+| warm_rate | Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400. Default is 10. | Optional |
+| domain | The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
+
+#### Command example
+```!fortiwebvm-server-pool-ftp-rule-create group_name=ftp ip=1.2.3.9```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": {
+                "id": "1"
+            },
+            "id": "ftp"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool rule
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-server-pool-ftp-rule-update
+
+***
+Update a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only.
+
+#### Base Command
+
+`fortiwebvm-server-pool-ftp-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+| status | Server pool rule status. Possible values are: enable, disable, maintenance. | Optional |
+| server_type | Specify whether to specify the pool member by IP address or domain. Possible values are: IP, Domain. | Optional |
+| ip | The IP address of the web server to include in the pool. Required when: (server_type=IP). | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . | Optional |
+| connection_limit | Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576. | Optional |
+| weight | Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. . | Optional |
+| backup_server | Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| enable_ssl | Enable to use SSL/TLS for connections between FortiWeb and the pool member. Possible values are: enable, disable. | Optional |
+| implicit_ssl | Enable so that FortiWeb will communicate with the pool member using implicit SSL. Possible values are: enable, disable. | Optional |
+| recover | Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400. | Optional |
+| warm_up | Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400. | Optional |
+| warm_rate | Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400. | Optional |
+| domain | The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-ftp-rule-update group_name=ftp rule_id=1 port=81```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully updated!
+
+### fortiwebvm-server-pool-adfs-rule-create
+
+***
+Create a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-adfs-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| status | Server pool rule status. Possible values are: enable, disable, maintenance. Default is enable. | Optional |
+| server_type | Specify whether to specify the pool member by IP address or domain. Possible values are: IP, Domain. | Required |
+| ip | The IP address of the web server to include in the pool. Required when: (server_type=IP). | Optional |
+| enable_ssl | The IP address of the web server to include in the pool. . Default is enable. | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . Default is 443. | Optional |
+| connection_limit | Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576. Default is 0. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. | Optional |
+| backup_server | Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| registration_username | The username that will be used by FortiWeb to connect with the AD FS server. You should include the domain to which FortiWeb and the AD FS server belong. For example: administrator. | Required |
+| registration_password | The password that will be used by FortiWeb to connect with the AD FS server. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Required |
+| recover | Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400. Default is 0. | Optional |
+| warm_up | Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400. Default is 0. | Optional |
+| warm_rate | Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400. Default is 10. | Optional |
+| domain | The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
+
+#### Command example
+```!fortiwebvm-server-pool-adfs-rule-create group_name=adfs client_certificate_file=certificate registration_username=test server_type=Domain domain=test.com```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": {
+                "id": "1"
+            },
+            "id": "adfs"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server pool rule
+>|Id|
+>|---|
+>| 1 |
+
+
+### fortiwebvm-server-pool-adfs-rule-update
+
+***
+Update a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
+
+#### Base Command
+
+`fortiwebvm-server-pool-adfs-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+| status | Server pool rule status. Possible values are: enable, disable, maintenance. | Optional |
+| server_type | Specify whether to specify the pool member by IP address or domain. Possible values are: IP, Domain. | Optional |
+| ip | The IP address of the web server to include in the pool. Required when: (server_type=IP). | Optional |
+| port | The TCP port number where the pool member listens for connections. The valid range is 1–65,535. . | Optional |
+| connection_limit | Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576. | Optional |
+| health_check_inherit | Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| health_check_domain | The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. | Optional |
+| backup_server | Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance. Possible values are: enable, disable. | Optional |
+| registration_username | The username that will be used by FortiWeb to connect with the AD FS server. You should include the domain to which FortiWeb and the AD FS server belong. For example: administrator. | Optional |
+| registration_password | The password that will be used by FortiWeb to connect with the AD FS server. | Optional |
+| client_certificate_file | The client certificate that FortiWeb uses to connect to this server pool member (dependencies - use fortiwebvm-local-certificate-list command to list all the local certificates). | Optional |
+| recover | Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400. | Optional |
+| warm_up | Warm up, if the server cannot initially handle full connection load when it begins to respond to health checks. Size range: 0-86400. | Optional |
+| warm_rate | Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400. | Optional |
+| domain | The fully-qualified domain name of the web server to include in the pool, such as www.example.com. Required when: (server_type=domain). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-adfs-rule-update group_name=adfs rule_id=1 port=81 client_certificate_file=certificate registration_username=test server_type=Domain domain=test2.com```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully updated!
+
+### fortiwebvm-server-pool-rule-delete
+
+***
+Delete Server Pool Rule (Server Pool Rule is a member of Server Pool). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID (dependencies - use fortiwebvm-server-pool-rule-list command to get all server pool rules). | Required |
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-pool-rule-delete group_name=rp rule_id=1```
+#### Human Readable Output
+
+>Server pool rule 1 was successfully deleted!
+
+### fortiwebvm-server-pool-rule-list
+
+***
+List server pool rules (server pool rule is a member of server pool group). Supports API versions 1 & 2.
+
+#### Base Command
+
+`fortiwebvm-server-pool-rule-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups). | Required |
+| rule_id | Server pool rule ID. | Optional |
+| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
+| page_size | The number of items per page. Default is 50. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiwebVM.ServerPoolGroup.Rule.id | String | Sever pool rule rule ID. |
+| FortiwebVM.ServerPoolGroup.Rule.server_type | String | Sever pool rule type. |
+| FortiwebVM.ServerPoolGroup.Rule.ip | String | Sever pool rule IP. |
+| FortiwebVM.ServerPoolGroup.Rule.domain | String | Sever pool rule domain. |
+| FortiwebVM.ServerPoolGroup.Rule.port | String | Sever pool rule port. |
+| FortiwebVM.ServerPoolGroup.Rule.weight | String | Sever pool rule weight. |
+| FortiwebVM.ServerPoolGroup.Rule.status | String | Sever pool rule status. |
+| FortiwebVM.ServerPoolGroup.Rule.backup_server | String | Sever pool rule backup server. |
+| FortiwebVM.ServerPoolGroup.Rule.connection_limit | String | The maximum number of concurrent connections to the backend server. 0 for no connection limit |
+| FortiwebVM.ServerPoolGroup.Rule.http2 | String | Wether to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections. |
+| FortiwebVM.ServerPoolGroup.Rule.ssl_settings | String | Sever pool rule SSL settings. |
+
+#### Command example
+```!fortiwebvm-server-pool-rule-list group_name=test```
+#### Context Example - API Version 1
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": [
+                {
+                    "backup_server": false,
+                    "connection_limit": 0,
+                    "domain": "test.com",
+                    "http2": false,
+                    "id": "1",
+                    "ip": "",
+                    "port": 80,
+                    "server_type": 2,
+                    "ssl_settings": false,
+                    "status": 2,
+                    "weight": ""
+                }
+            ],
+            "group_name": "test"
+        }
+    }
+}
+```
+#### Context Example - API Version 2
+```json
+{
+    "FortiwebVM": {
+        "ServerPoolGroup": {
+            "Rule": [
+                {
+                    "backup_server": "disable",
+                    "connection_limit": 0,
+                    "domain": "test.com",
+                    "http2": "disable",
+                    "id": "1",
+                    "ip": "0.0.0.0",
+                    "port": 80,
+                    "server_type": "domain",
+                    "ssl_settings": "disable",
+                    "status": "enable",
+                    "weight": 1
+                }
+            ],
+            "group_name": "test"
+        }
+    }
+}
+
+#### Human Readable Output
+
+>### Server pool rule
+>Showing page 1.
+> Current page size: 50
+>|Id|Server Type|Ip|Domain|Port|Status|Connection Limit|Http2|
+>|---|---|---|---|---|---|---|---|
+>| 1 | 2 |  | test.com | 80 | 2 | 0 | false |
+
+

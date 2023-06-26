@@ -3462,7 +3462,6 @@ script:
       isArray: false
       name: port
       required: false
-      defaultVale : '80'
     - auto: PREDEFINED
       defaultValue: disable
       description: Enable to use SSL/TLS for connections between FortiWeb and the pool member.
@@ -3802,7 +3801,6 @@ script:
       isArray: false
       name: enable_ssl
       defaultValue: enable
-      isHidden: true
     - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
       isArray: false
       name: port
@@ -4907,7 +4905,7 @@ script:
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.only_protocol
       description: Protocols that checked. Supports API version 2 only.
       type: String
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   longRunning: false
   longRunningPort: false
