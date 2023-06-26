@@ -544,14 +544,16 @@ def main():
     command = demisto.command()
     LOG(f'Command being called is {command}')
     try:
-        refresh_token = params.get('refresh_token', '')
+        refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token', '')
         managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed = params.get('self_deployed', False) or managed_identities_client_id is not None
         redirect_uri = params.get('redirect_uri', '')
         tenant_id = refresh_token if self_deployed else ''
-        auth_id = params.get('auth_id')
-        enc_key = params.get('enc_key')
-        certificate_thumbprint = params.get('certificate_thumbprint')
+        auth_id = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id')
+        enc_key = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key')
+        auth_code = params.get('credentials_auth_code', {}).get('password') or params.get('auth_code', '')
+        certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+            'password') or params.get('certificate_thumbprint')
         private_key = params.get('private_key')
 
         if not managed_identities_client_id:
@@ -578,7 +580,7 @@ def main():
             auth_and_token_url=auth_id,
             timeout=calculate_timeout_value(params=params, args=args),
             enc_key=enc_key,
-            auth_code=params.get('auth_code', ''),
+            auth_code=auth_code,
             redirect_uri=redirect_uri,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
