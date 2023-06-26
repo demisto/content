@@ -193,7 +193,7 @@ def run(options: argparse.Namespace):
 
 def options_handler(args=None) -> argparse.Namespace:
     """
-    Parse the passed parameters for the script
+    Parse  the passed parameters for the script
     :param args: a list of arguments to add
     :return: the parsed arguments that were passed to the script
     """
