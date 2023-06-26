@@ -5,10 +5,13 @@ ignore=RM104
 ignore=BA101
 
 [file:GoogleDrive.yml]
-ignore=IN145
+ignore=PR101
 
 [file:GoogleDrive_image.png]
 ignore=IM111
 
 [file:classifier-Google_Drive.json]
 ignore=BA101
+
+[file:GoogleDrive_1_3.yml]
+ignore=MR108

@@ -231,7 +231,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -254,7 +254,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -370,8 +370,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Enables partial responses to be retrieved, separated by commas. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
-      isArray: false
+      description: 'Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: 
+        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc,
+        Date, Html, Attachment Names'
+      isArray: true
       name: fields
       required: false
       secret: false
@@ -542,8 +544,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
-      isArray: false
+      description: 'Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: 
+        Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc,
+        Date, Html, Attachment Names'
+      isArray: true
       name: fields
       required: false
       secret: false
@@ -936,7 +940,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to delete.
+      description: The ID of the email to delete. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -1066,7 +1070,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -1168,7 +1172,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the message to retrieve.
+      description: The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.
       isArray: false
       name: message-id
       required: true
@@ -2316,7 +2320,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.58017
+  dockerimage: demisto/google-api-py3:1.0.0.63203
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-TOKEN = demisto.params().get('token')
+TOKEN = demisto.params().get('token_creds', {}).get('password') or demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params().get('url')[:-1] \
     if ('url' in demisto.params() and demisto.params()['url'].endswith('/')) else demisto.params().get('url', '')
@@ -249,13 +249,13 @@ def get_page_number_and_page_size(args):
     try:
         page = int(page)
         if page <= 0:
-            raise ValueError()
+            raise ValueError
     except (ValueError, TypeError):
         return_error(err_msg_format.format(arg='page_number', val=page))
     try:
         page_size = int(page_size)
         if page_size <= 0:
-            raise ValueError()
+            raise ValueError
     except (ValueError, TypeError):
         return_error(err_msg_format.format(arg='page_size', val=page_size))
     return page, page_size

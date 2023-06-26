@@ -25,7 +25,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
+    response_to_context, is_integration_command_execution
 
 try:
     from StringIO import StringIO
@@ -4257,6 +4258,69 @@ def test_get_x_content_info_headers(mocker):
     headers = get_x_content_info_headers()
     assert headers['X-Content-LicenseID'] == test_license
     assert headers['X-Content-Name'] == test_brand
+
+
+def test_script_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrics entry
+      - The command currently running is a script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time (without the execution metrics entry)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 1},
+    ]
+    return_results(mock_command_results)
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
+    assert demisto_results_mock.call_count == 2
+
+
+def test_integration_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrics entry
+      - The command currently running is an integration command
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 3 times (with the execution metrics entry included)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'integration'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 19},
+    ]
+    return_results(mock_command_results)
+    execution_metrics_entry_found = False
+    for call_args in demisto_results_mock.call_args_list:
+        if execution_metrics_entry_found:
+            break
+        for args in call_args.args:
+            if execution_metrics_entry_found:
+                break
+            execution_metrics_entry_found = args["Type"] != 19
+
+    assert execution_metrics_entry_found
+    assert demisto_results_mock.call_count == 3
 
 
 def test_return_results_multiple_command_results(mocker):
@@ -8928,3 +8992,92 @@ def test_replace_spaces_in_credential(credential, expected):
 
     result = replace_spaces_in_credential(credential)
     assert result == expected
+
+
+TEST_RESPONSE_TO_CONTEXT_DATA = [
+    (
+        {"id": "111"}, {"ID": "111"}, {}
+    ),
+    (
+        {"test": [1]}, {"Test": [1]}, {}
+    ),
+    (
+        {"test1": [{'test2': "val"}]}, {"Test1": [{'Test2': "val"}]}, {}
+    ),
+    (
+        {"test1": {'test2': "val"}}, {"Test1": {'Test2': "val"}}, {}
+    ),
+    (
+        [{"test1": {'test2': "val"}}], [{"Test1": {'Test2': "val"}}], {}
+    ),
+    (
+        "test", "test", {}
+    ),
+    (
+        {"test_func": "test"}, {"TestFunc": "test"}, {}
+    ),
+    (
+        {"testid": "test"}, {"TestID": "test"}, {"testid": "TestID"}
+    ),
+    (
+        {"testid": "test", "id": "test_id", "test": "test_val"}, {"TestID": "test", "ID": "test_id", "Test": "test_val"},
+        {"testid": "TestID"}
+    )
+]
+
+
+@pytest.mark.parametrize('response, expected_results, user_predefiend_keys', TEST_RESPONSE_TO_CONTEXT_DATA)
+def test_response_to_context(response, expected_results, user_predefiend_keys):
+    """
+    Given:
+        A response and user_predefiend_keys dict.
+        Case 1: a response dict with a key "id".
+        Case 2: a response dict with a list as a value.
+        Case 3: a response dict with a list of dicts as a value.
+        Case 4: a response dict with a dict as a value.
+        Case 5: a response list.
+        Case 6: a response string.
+        Case 7: a response dict with a key with underscore.
+        Case 8: a response dict and a user_predefiend_keys dict,
+                where the key of the response dict is in the user_predefiend_keys dict.
+        Case 9: a response dict with 3 keys and a user_predefiend_keys dict,
+                where one key of the response dict is in the user_predefiend_keys dict.
+                where one key of the response dict is in the predefined_keys dict.
+                where one key of the response is not in any predefined dict.
+    When:
+        Running response_to_context function.
+    Then:
+        Test - Assert the function created the dict formatted succesfuly.
+        Case 1: Should transfom key to "ID".
+        Case 2: Should attempt to transform only the dict key.
+        Case 3: Should attempt to transform only the dict inside the list.
+        Case 4: Should attempt to transform both the given dict key and the keys of the nested dict.
+        Case 5: Should modify the dict inside the list.
+        Case 6: Should return the input as is.
+        Case 7: Should remove the underscore and capitalize the first letters of both words.
+        Case 8: Should change the key according to the user_predefiend_keys dict.
+        Case 9: Should change the first key according to the user_predefiend_keys dict,
+                the second key according to predefined_keys, and the third regularly.
+    """
+    assert response_to_context(response, user_predefiend_keys) == expected_results
+
+
+class TestIsIntegrationCommandExecution:
+    def test_with_script_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+        assert is_integration_command_execution() == False
+
+    def test_with_integration_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
+        assert is_integration_command_execution() == True
+    data_test_problematic_cases = [
+        None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
+        {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
+        {'context': {'ExecutedCommands': [{}]}}
+    ]
+
+    @pytest.mark.parametrize('calling_context_mock', data_test_problematic_cases)
+    def test_problematic_cases(self, mocker, calling_context_mock):
+        mocker.patch.object(demisto, 'callingContext', calling_context_mock)
+        assert is_integration_command_execution() == True
+        

@@ -807,7 +807,7 @@ class Pack(object):
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number,
                                 new_version=True, initial_release=False, pull_request_numbers=None,
-                                marketplace='xsoar', id_set=None):
+                                marketplace='xsoar', id_set=None, is_override=False):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -817,6 +817,7 @@ class Pack(object):
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
             id_set (dict): The content id set dict.
+            is_override (bool): Whether the flow overrides the packs on cloud storage.
         Returns:
             dict: release notes entry of changelog
             bool: Whether the pack is not updated
@@ -826,6 +827,7 @@ class Pack(object):
         entry_result = {}
 
         if new_version:
+            logging.debug(f"Creating changelog entry for a new version for pack {self.name} and version {version_display_name}")
             pull_request_numbers = self.get_pr_numbers_for_version(version_display_name)
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
@@ -833,12 +835,16 @@ class Pack(object):
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         elif initial_release:
+            logging.debug(
+                f"Creating changelog entry for an initial version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
                             Changelog.RELEASED: self._create_date,
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
-        elif self.is_modified:
+        elif self.is_modified and not is_override:
+            logging.debug(
+                f"Creating changelog entry for an existing version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
@@ -1569,7 +1575,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
-                              marketplace='xsoar', id_set=None):
+                              marketplace='xsoar', id_set=None, is_override=False):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1578,6 +1584,7 @@ class Pack(object):
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
             marketplace (str): The marketplace to which the upload is made.
+            is_override (bool): Whether the flow overrides the packs on cloud storage.
 
         Returns:
             bool: whether the operation succeeded.
@@ -1632,6 +1639,7 @@ class Pack(object):
                                                                    {}).get(Changelog.PULL_REQUEST_NUMBERS, []),
                                 marketplace=marketplace,
                                 id_set=id_set,
+                                is_override=is_override
                             )
 
                         else:
@@ -2091,7 +2099,10 @@ class Pack(object):
                             continue
 
                     # check if content item has to version
-                    to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    try:
+                        to_version = content_item.get('toversion') or content_item.get('toVersion')
+                    except Exception:
+                        logging.exception(f"Failed on {pack_file_path=}. {content_item=}")
 
                     if to_version and Version(to_version) < Version(Metadata.SERVER_DEFAULT_MIN_VERSION):
                         os.remove(pack_file_path)
@@ -2427,11 +2438,12 @@ class Pack(object):
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
+                    content_item_type_and_id = f"{current_directory}_{metadata_output['id']}"
                     if self.is_replace_item_in_folder_collected_list(
                             content_item, content_items_id_to_version_map,
-                            metadata_output['id']):
+                            content_item_type_and_id):
                         latest_fromversion, latest_toversion = self.get_latest_versions(
-                            content_items_id_to_version_map, metadata_output['id'])
+                            content_items_id_to_version_map, content_item_type_and_id)
                         metadata_output['fromversion'] = latest_fromversion
                         metadata_output['toversion'] = latest_toversion
                         folder_collected_items = [metadata_output
@@ -2439,9 +2451,9 @@ class Pack(object):
                                                   else d
                                                   for d in folder_collected_items]
                     elif not content_items_id_to_version_map.get(
-                            metadata_output['id'], {}).get('added_to_metadata_list', ''):
+                            content_item_type_and_id, {}).get('added_to_metadata_list', ''):
                         folder_collected_items.append(metadata_output)
-                        content_items_id_to_version_map.get(metadata_output['id'], {})['added_to_metadata_list'] = True
+                        content_items_id_to_version_map.get(content_item_type_and_id, {})['added_to_metadata_list'] = True
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
@@ -2496,7 +2508,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar'])
+            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
