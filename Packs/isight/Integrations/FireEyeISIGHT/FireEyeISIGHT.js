@@ -46,7 +46,7 @@ var getHeaders = function(query) {
         timestamp = timestamp.substring(0,timestamp.indexOf('-'));
     }
     if (!privateKey){
-        return DemistoException('Private Key must be provided.')
+        throw('Private Key must be provided.')
     }
     message = query + acceptVersion + 'application/json' + timestamp;
     hashed = HMAC_SHA256_MAC(privateKey, message);
