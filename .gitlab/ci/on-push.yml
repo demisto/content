@@ -604,8 +604,7 @@ test-upload-flow:
     -   export verify_upload_id_set_job="true"
     -   echo "verifying upload-id-set-job, $verify_upload_id_set_job"
     - else
-    -   export verify_upload_id_set_job="false"
-    -   echo "skipping verifying upload-id-set-job, $verify_upload_id_set_job"
+    -   echo "skipping verifying upload-id-set-job"
     - fi
     - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN -vis $verify_upload_id_set_job
     - section_end "Wait For Upload To Finish"

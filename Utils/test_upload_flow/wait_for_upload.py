@@ -66,7 +66,7 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-g', '--gitlab-api-token', help='Github api token')
     arg_parser.add_argument('-p', '--pipeline-id', help='Pipeline id')
-    arg_parser.add_argument('-vis', '--verify-upload-id-set-job', help='Pipeline id', action=argparse.BooleanOptionalAction)
+    arg_parser.add_argument('-vis', '--verify-upload-id-set-job', help='Pipeline id', default=False)
 
     args = arg_parser.parse_args()
 
