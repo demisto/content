@@ -1,1 +1,1 @@
-{"breakingChanges":true,"breakingChangesNotes":"These widgets will no longer be accessible: GetLargestInputsAndOutputsInIncidents and GetLargestInvestigations"}
+{"breakingChanges":true,"breakingChangesNotes":"These widgets have been deprecated in the past, and will no longer be usable: GetLargestInputsAndOutputsInIncidents and GetLargestInvestigations"}
