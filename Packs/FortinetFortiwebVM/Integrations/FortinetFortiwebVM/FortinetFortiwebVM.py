@@ -911,7 +911,7 @@ class ParserV1(Parser):
             "domain": url_access_rule_condition.get("domain"),
             "source_domain_type": dict_safe_get(self.url_type_api_to_user_mapper, [
                 url_access_rule_condition.get("source_domain_type")]
-            ),
+            ) or "",
             "source_domain": url_access_rule_condition.get("source_domain"),
         }
 
@@ -1609,7 +1609,7 @@ class ParserV2(Parser):
             "domain": url_access_rule_condition.get("sip-address-domain"),
             "source_domain_type": dict_safe_get(self.url_type_api_to_user_mapper, [
                 source_domain_type]
-            ),
+            ) or "",
             "source_domain": url_access_rule_condition.get("source-domain"),
             "only_method_check": url_access_rule_condition.get("only-method-check"),
             "only_protocol_check": url_access_rule_condition.get("only-protocol-check"),
