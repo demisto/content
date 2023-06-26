@@ -1,4 +1,3 @@
-from pathlib import Path
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -6,6 +5,7 @@ from multiprocessing import Process
 import resource
 import re
 import time
+from os.path import exists
 import subprocess
 
 import requests
@@ -59,9 +59,9 @@ def check_memory(target_mem: str, check_type: str) -> str:
     else:
         cgroup_file_v1 = "/sys/fs/cgroup/memory/memory.limit_in_bytes"
         cgroup_file_v2 = "/sys/fs/cgroup/memory.max"
-        if Path(cgroup_file_v1).exists():
+        if exists(cgroup_file_v1):
             cgroup_file = cgroup_file_v1
-        elif Path(cgroup_file_v2).exists():
+        elif exists(cgroup_file_v2):
             cgroup_file = cgroup_file_v2
         else:
             return ('Failed checking cgroup file, memory_check set to cgroup but neither v1 or v2'
