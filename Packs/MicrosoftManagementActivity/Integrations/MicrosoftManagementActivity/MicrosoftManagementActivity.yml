@@ -18,23 +18,55 @@ configuration:
   required: false
   type: 4
   section: Connect
-- display: Key or Client Secret
+  hidden: true
+- displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
-  name: enc_key
+  name:  credentials_auth_id
   required: false
-  type: 4
+  hiddenusername: true
   section: Connect
+  type: 9
 - display: Token or Tenant ID
   additionalinfo: See the Help tab.
   name: refresh_token
   required: false
   type: 4
   section: Connect
+  hidden: true
+- displaypassword: Token or Tenant ID
+  additionalinfo: See the Help tab.
+  name:  credentials_refresh_token
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Key or Client Secret
+  additionalinfo: See the Help tab.
+  name: enc_key
+  required: false
+  type: 4
+  section: Connect
+  hidden: true
+- displaypassword: Key or Client Secret
+  additionalinfo: See the Help tab.
+  name:  credentials_enc_key
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
+  section: Connect
+- displaypassword: Certificate Thumbprint
+  additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
+  name:  credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
@@ -47,7 +79,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
 - display: Application redirect URI (for self-deployed mode)
   name: redirect_uri
   required: false
@@ -60,6 +92,13 @@ configuration:
   required: false
   type: 4
   section: Connect
+  hidden: true
+- displaypassword: The authentication code you got for the service
+  additionalinfo: For instructions on how to receive it, see the Help tab. 
+  name:  credentials_auth_code
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Relevant only if the integration is running on Azure VM. 
     If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
     If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
@@ -313,7 +352,7 @@ script:
     execution: false
     name: ms-management-activity-generate-login-url
     arguments: []
-  dockerimage: demisto/pyjwt3:1.0.0.61733
+  dockerimage: demisto/pyjwt3:1.0.0.63826
   feed: false
   isfetch: true
   longRunning: false
