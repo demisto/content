@@ -2036,7 +2036,7 @@ def main():
             return_results(list_resource_groups_command(client, args, subscription_id))
 
         elif command in commands:
-            return_results(commands[command()](client, args))  # type: ignore
+            return_results(commands[command](client, args))  # type: ignore
 
     except Exception as e:
         return_error(
