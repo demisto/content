@@ -255,7 +255,7 @@ def test_send_mail(gmail_client, mocker, command_args):
 def test_send_mail_with_reference(gmail_client: Client, mocker):
     """
     Given:
-        - The reference argument as a list type
+        - The references argument as a list type
         - The inReplyTo argument as a str type
     When:
         - run client.send_mail function
