@@ -600,8 +600,9 @@ test-upload-flow:
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
+    - export verify_upload_id_set_job
     - if [ "$DEMISTO_SDK_NIGHTLY" == "true" ]; then
-    -   export verify_upload_id_set_job="true"
+    -   verify_upload_id_set_job="true"
     -   echo "verifying upload-id-set-job, $verify_upload_id_set_job"
     - else
     -   echo "skipping verifying upload-id-set-job"
