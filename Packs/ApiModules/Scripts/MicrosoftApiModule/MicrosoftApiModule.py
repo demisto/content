@@ -995,6 +995,9 @@ class MicrosoftClient(BaseClient):
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
+            # Try to send request to the Oproxy server with the refresh token from the integration parameters
+            # (instance configuration).
+            # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
             if self.refresh_token_param:
                 demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
                               ' authorizing with the Oproxy, this time using the refresh token from the integration'
