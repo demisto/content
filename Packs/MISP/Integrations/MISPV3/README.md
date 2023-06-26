@@ -3871,6 +3871,14 @@ Adding a new user to MISP.
 | --- | --- | --- |
 | MISP.User.email | string | MISP User Email. | 
 
+#### Command Example
+
+```!misp-add-user email="example@example.com" org_id=1 role_id=1 password=123456789++Qq!```
+
+#### Human Readable Output
+
+> MISP add user New user was added to MISP. Email:example@example.com
+
 ### misp-search-attributes
 
 ***
@@ -4255,6 +4263,7 @@ Check a list of indicator values against the MISP warninglist.
 | MISP.Warninglist.Count | number | Count on how many warninglists the value was found. | 
 | MISP.Warninglist.Value | string | Value checked. | 
 | MISP.Warninglist.Lists | string | Name of warninglists where the value was found. | 
+
 ### misp-get-organization-info
 
 ***
@@ -4275,6 +4284,14 @@ Display organization ids and names.
 | --- | --- | --- |
 | MISP.Organization.org_id | string | MISP Ogranization ID. | 
 | MISP.Organization.org_name | string | MISP Organization Name. | 
+
+#### Command Example
+
+```!misp-get-organization-info```
+
+#### Human Readable Output
+
+> MISP add user New user was added to MISP. Email:example@example.com
 
 ### misp-get-role-info
 
