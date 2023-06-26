@@ -715,7 +715,8 @@
         {
             "integrations": "Whois",
             "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": "1000"
         },
         {
             "integrations": "HelloWorld",
