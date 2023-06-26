@@ -22,10 +22,16 @@ configuration:
   type: 9
   displaypassword: Key File as Text
   hiddenusername: true
+  additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
 - display: Certificate File as Text
   name: crt
-  required: true
+  hidden: true
   type: 12
+  additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
+- name: crt_creds
+  type: 9
+  displaypassword: Certificate File as Text
+  hiddenusername: true
   additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
 - display: Feed Type
   name: collection
@@ -118,7 +124,6 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
-
 description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
 display: 'DHS Feed'
 name: 'DHS Feed'

@@ -357,8 +357,10 @@ def get_first_fetch(first_fetch_string: str) -> str:
 
 def main():
     params = demisto.params()
-    key = fix_rsa_data(params.get('key_creds', {}).get('password') or params.get('key', ''), 4)
-    crt = params.get('crt', '')
+    key = fix_rsa_data(
+        params.get('key_creds', {}).get('password')
+        or params.get('key', ''), 4)
+    crt = params.get('crt_creds', {}).get('password') or params.get('crt', '')
     collection = params.get('collection')
     tags = argToList(params['tags']) if params.get('tags') else None
     client = TaxiiClient(key, crt, collection, base_url=params.get('base_url'),
