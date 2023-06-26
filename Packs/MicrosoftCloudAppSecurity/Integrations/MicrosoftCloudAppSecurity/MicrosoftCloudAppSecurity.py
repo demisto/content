@@ -270,7 +270,7 @@ def connection_test(client: Client,
     return CommandResults(readable_output='✅ Success!')
 
 
-def args_to_filter(arguments: dict):  # sourcery skip: extract-method, switch
+def args_to_filter(arguments: dict):
     """
     Common filters of **all** related entities (Activities, Alerts, Files and Data Entities).
 
@@ -513,7 +513,6 @@ def list_alerts_command(client: Client, args: dict):
 
 
 def bulk_dismiss_alert_command(client: Client, args: dict):  # pragma: no cover
-    # sourcery skip: raise-from-previous-error
     """
     Deprecated: use close_false_positive_command instead.
     """
