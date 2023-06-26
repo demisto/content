@@ -88,7 +88,7 @@ def get_secrets_from_gsm(branch_name: str, options: argparse.Namespace, yml_pack
     labels_filter_branch = {FilterLabels.PACK_ID.value: FilterOperators.NOT_NONE.value,
                             FilterLabels.IGNORE_SECRET.value: FilterOperators.NONE.value,
                             FilterLabels.SECRET_MERGE_TIME.value: FilterOperators.NONE.value,
-                            FilterLabels.IS_DEV_BRANCH.value: FilterOperators.NONE.value,
+                            FilterLabels.IS_DEV_BRANCH.value: FilterOperators.NOT_NONE.value,
                             FilterLabels.BRANCH_NAME.value: f'{FilterOperators.EQUALS.value}"{branch_name}"'}
 
     master_secrets = secret_conf.list_secrets(options.gsm_project_id, labels_filter_master, name_filter=yml_pack_ids,
