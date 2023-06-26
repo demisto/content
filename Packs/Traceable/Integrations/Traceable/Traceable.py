@@ -8,7 +8,6 @@ import urllib3
 from typing import Dict
 from string import Template
 from datetime import datetime, timezone
-import logging
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -17,11 +16,6 @@ from requests.adapters import HTTPAdapter, Retry
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(filename)s:%(lineno)s - %(funcName)15s() ] %(asctime)s [%(levelname)s] [%(name)s] [%(threadName)s] %(message)s",
-    handlers=[logging.StreamHandler()],
-)
 
 s = requests.Session()
 retries = Retry(
@@ -195,9 +189,6 @@ get_spans_for_trace_id = """{
 """
 
 
-""" CLIENT CLASS """
-
-
 class Helper:
     @staticmethod
     def construct_filterby_expression(*clauses):
@@ -206,20 +197,20 @@ class Helper:
 
     @staticmethod
     def datetime_to_string(d: datetime):
-        return d.strftime("%Y-%m-%dT%H:%M:%SZ")
+        return d.strftime(DATE_FORMAT)
 
     @staticmethod
     def construct_key_expression(key, value, _type="ATTRIBUTE", operator="IN"):
         # "filterBy: [{keyExpression: {key: \"environment\"}, operator: IN, value: [\"" + environment + "\"], type: ATTRIBUTE}]"
         if key is None:
-            logging.warning("Key was None. Couldn't create Key Expression.")
+            demisto.info("Key was None. Couldn't create Key Expression.")
             return ""
         if operator == "IN":
             _value = value
             if value is not None:
                 if type(value) == str:
                     _value = '"' + value + '"'
-                elif type(value) == int or type(value) == float:
+                elif isinstance(value, (int, float)):
                     _value = value
                 elif type(value) == list and len(value) > 0:
                     if type(value[0]) == str:
@@ -227,7 +218,7 @@ class Helper:
                     elif type(value[0]) == int or type(value[0]) == float:
                         _value = ",".join(value)
             else:
-                logging.warning(
+                demisto.info(
                     "Value was found None. Returning without creating Key Expression. Key: "
                     + key
                 )
@@ -270,6 +261,9 @@ class Helper:
         return False
 
 
+""" CLIENT CLASS """
+
+
 class Client(BaseClient):
     REQUESTS_TIMEOUT = 60
 
@@ -294,6 +288,7 @@ class Client(BaseClient):
         self.ipReputationLevelList = None
         self.ipAbuseVelocityList = None
         self.limit = None
+        self.proxy = proxy
         self.environments = None
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth, timeout)
 
@@ -331,19 +326,19 @@ class Client(BaseClient):
                     + " | Status Code: "
                     + str(response.status_code)
                 )
-                logging.error(msg)
+                demisto.error(msg)
                 raise Exception(msg)
 
         is_error, error = self.errors_in_response(response)
         if is_error:
-            logging.error(error)
+            demisto.error(error)
             raise Exception(error)
 
         if response is not None and response.text is not None:
             response_obj = json.loads(response.text)
             return response_obj
 
-        raise Exception("Something went wrong: " + json.dumps(response, indent=2))
+        raise Exception(f"Something went wrong: {json.dumps(response, indent=2)}")
 
     def errors_in_response(self, response):
         if response is not None and response.status_code == 200:
@@ -357,7 +352,7 @@ class Client(BaseClient):
     def get_span_for_trace_id(self, starttime, endtime, traceid=None, spanid=None):
         if traceid is None or len(traceid) < 1:
             msg = "traceid cannot be None."
-            logging.error(msg)
+            demisto.error(msg)
             raise Exception(msg)
         trace_id_clause = None
         if traceid is not None:
@@ -374,10 +369,10 @@ class Client(BaseClient):
             limit=self.limit,
             filter_by_clause=filter_by_clause,
         )
-        logging.debug("Query is: " + query)
+        demisto.info("Query is: " + query)
         return self.graphql_query(query)
 
-    def get_threat_events(
+    def get_threat_events_query(
         self, starttime: datetime, endtime: datetime = datetime.now()
     ):
         environment_clause = None
@@ -424,24 +419,30 @@ class Client(BaseClient):
             ipReputationLevel_clause,
             ipAbuseVelocity_clause,
         )
-        logging.info("Limit set to: " + str(self.limit))
+        demisto.info("Limit set to: " + str(self.limit))
         query = Template(get_threat_events_query).substitute(
             limit=self.limit,
             starttime=Helper.datetime_to_string(starttime),
             endtime=Helper.datetime_to_string(endtime),
             filter_by_clause=filter_by_clause,
         )
-        logging.debug("Query is: " + query)
+        return query
+
+    def get_threat_events(
+        self, starttime: datetime, endtime: datetime = datetime.now()
+    ):
+        query = self.get_threat_events_query(starttime, endtime)
+        demisto.debug("Query is: " + query)
         result = self.graphql_query(query)
         if Helper.is_error(result, "data", "explore", "results"):
             msg = "Error Object: " + json.dumps(result)
-            logging.error(msg)
+            demisto.error(msg)
             raise Exception(msg)
 
         results = result["data"]["explore"]["results"]
 
-        logging.info("Retrieved: " + str(len(results)) + " Domain Events")
-        logging.debug("Result is:" + json.dumps(results, indent=2))
+        demisto.info("Retrieved: " + str(len(results)) + " Domain Events")
+        demisto.debug("Result is:" + json.dumps(results, indent=2))
 
         events = []
         first = True
@@ -449,13 +450,13 @@ class Client(BaseClient):
         with ThreadPoolExecutor(max_workers=100) as executor:
             for domain_event in results:
                 if Helper.is_error(domain_event, "traceId", "value"):
-                    logging.warning(
+                    demisto.info(
                         "Couldn't find traceId in Domain Event: "
                         + json.dumps(domain_event, indent=2)
                     )
                     continue
                 if Helper.is_error(domain_event, "spanId", "value"):
-                    logging.warning(
+                    demisto.info(
                         "Couldn't find spanId in Domain Event: "
                         + json.dumps(domain_event, indent=2)
                     )
@@ -464,7 +465,7 @@ class Client(BaseClient):
                 trace_id = domain_event["traceId"]["value"]
                 span_id = domain_event["spanId"]["value"]
 
-                logging.info("Forking thread for span retrieval")
+                demisto.info("Forking thread for span retrieval")
 
                 future = executor.submit(
                     self.get_span_for_trace_id,
@@ -474,7 +475,7 @@ class Client(BaseClient):
                     spanid=span_id,
                 )
                 future_list.append((domain_event, future))
-                logging.info("Completed thread for span retrieval")
+                demisto.info("Completed thread for span retrieval")
 
         for domain_event, future in future_list:
             trace_results = future.result()
@@ -508,16 +509,16 @@ class Client(BaseClient):
 
             if Helper.is_error(trace_results, "data", "spans", "results"):
                 msg = "Error Object: " + json.dumps(result) + ". Couldn't get the Span."
-                logging.warning(msg)
+                demisto.info(msg)
             else:
-                logging.info("Found Span with id: " + span_id + ". Adding to Event.")
+                demisto.info("Found Span with id: " + span_id + ". Adding to Event.")
                 domain_event["spans"] = []
                 domain_event["spans"] = trace_results["data"]["spans"]["results"]
                 events.append(domain_event)
                 if first:
                     first = False
-                    logging.info("Domain Event: " + json.dumps(domain_event, indent=3))
-                logging.debug(
+                    demisto.info("Domain Event: " + json.dumps(domain_event, indent=3))
+                demisto.debug(
                     "Complete Domain Event is: " + json.dumps(domain_event, indent=2)
                 )
 
@@ -555,7 +556,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     incidents = []
     items = client.get_threat_events(last_fetch, datetime.now())
     demisto.info("Retrieved " + str(len(items)) + " records.")
-    logging.debug("First Incident: " + json.dumps(items[0], indent=3))
+    demisto.debug("First Incident: " + json.dumps(items[0], indent=3))
     for item in items:
         incident_created_time = datetime.fromtimestamp(
             item["timestamp"]["value"] / 1000
@@ -566,8 +567,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             "country": item["country"],
             "sourceip": item["sourceip"],
             "riskscore": item["riskscore"],
-            # 'severity': item['severity'],
-            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "severity": item["severity"],
+            "occurred": incident_created_time.strftime(DATE_FORMAT),
             "rawJSON": json.dumps(item),
         }
 
@@ -594,14 +595,7 @@ def main() -> None:
     """
 
     base_url = demisto.params()["url"]
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get("insecure", False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get("proxy", False)
 
     demisto.debug(f"Command being called is {demisto.command()}")
@@ -618,23 +612,21 @@ def main() -> None:
 
         environments = None
         if _env is not None and len(_env) > 0:
-            environments = []
-            _env_list = _env.split(",")
-            for _env_item in _env_list:
-                environments.append(_env_item.strip())
+            environments = argToList(_env)
 
         apikey = demisto.params().get("credentials", {}).get("password")
         headers["Authorization"] = apikey
         headers["Content-Type"] = "application/json"
 
         client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+            base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
 
         client.set_security_score_category_list(securityScoreCategoryList)
         client.set_threat_category_list(threatCategoryList)
         client.set_ip_reputation_level_list(ipReputationLevelList)
         client.set_ip_abuse_velocity_list(ipAbuseVelocityList)
+        client.set_environments(environments)
         client.set_limit(limit)
 
         if demisto.command() == "test-module":

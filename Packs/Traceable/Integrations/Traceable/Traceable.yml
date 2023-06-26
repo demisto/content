@@ -14,6 +14,16 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+- display: Verify SSL Certificates for Connection?
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use Proxy through Environment Variables http_proxy, https_proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
