@@ -1042,7 +1042,7 @@ Gets a list of an incident's related entities from Azure Sentinel.
 | next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
 | entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional | 
 | filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: <https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter>. | Optional | 
-| subscription_id | The subscription ID. | Optional |	
+| subscription_id | The subscription ID. | Optional |
 | resource_group_name | The resource group name. | Optional |
 
 
