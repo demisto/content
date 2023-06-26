@@ -393,4 +393,3 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     # Args is always stronger. Get getIntegrationContext even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
     main(demisto.command(), demisto_params)
-

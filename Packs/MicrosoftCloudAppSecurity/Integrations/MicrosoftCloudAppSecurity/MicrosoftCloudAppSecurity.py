@@ -1,6 +1,8 @@
 from dateparser import parse
 from pytz import utc
 import urllib3
+
+from MicrosoftApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
@@ -102,7 +104,7 @@ class LegacyClient(BaseClient):
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, endpoint_type: str, base_url: str, auth_mode: str,
-                 tenant_id: str = None, enc_key: str = None, headers=None):
+                 azure_cloud: AzureCloud, tenant_id: str = None, enc_key: str = None, headers=None):
         if headers is None:
             headers = {}
         self.auth_mode = auth_mode
@@ -125,8 +127,8 @@ class Client:
                 resource = MICROSOFT_DEFENDER_FOR_APPLICATION_API[endpoint_type]
                 token_retrieval_url = f'{TOKEN_RETRIEVAL_ENDPOINTS[endpoint_type]}/organizations/oauth2/v2.0/token'
             else:
-               resource = None
-               token_retrieval_url = None
+                resource = None
+                token_retrieval_url = None
 
             client_args = assign_params(
                 base_url=base_url,
@@ -146,7 +148,9 @@ class Client:
                 token_retrieval_url=token_retrieval_url,
                 # used for client credentials flow
                 tenant_id=tenant_id,
-                enc_key=enc_key
+                enc_key=enc_key,
+                # Azure cloud
+                azure_cloud=azure_cloud,
             )
             self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -940,6 +944,7 @@ def main():  # pragma: no cover
 
         endpoint_type_name = params.get('endpoint_type', 'Worldwide')
         endpoint_type = MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE[endpoint_type_name]
+        azure_cloud = AZURE_CLOUDS[endpoint_type]  # The MDA endpoint type is a subset of the azure clouds.
         token = params.get('creds_token', {}).get('password', '') or params.get('token', '')
         base_url = f'{params.get("url")}/api/v1'
         client = Client(
@@ -951,6 +956,7 @@ def main():  # pragma: no cover
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_mode=auth_mode,
+            azure_cloud=azure_cloud,
             headers={'Authorization': f'Token {token}'}
         )
 
@@ -1004,9 +1010,6 @@ def main():  # pragma: no cover
     # Log exceptions
     except Exception as exc:
         return_error(f'Failed to execute {command} command. Error: {str(exc)}', error=exc)
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

@@ -611,6 +611,7 @@ def get_azure_cloud(params, integration_name):
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
 
+
 def microsoft_defender_for_applications_get_base_url(params_endpoint_type, params_url, is_gcc=None):
     # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
     if params_endpoint_type == MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE_CUSTOM or not params_endpoint_type:
@@ -750,7 +751,8 @@ class MicrosoftClient(BaseClient):
         self.managed_identities_client_id = managed_identities_client_id
         self.managed_identities_resource_uri = managed_identities_resource_uri
 
-    def is_command_executed_from_integration(self):
+    @staticmethod
+    def is_command_executed_from_integration():
         ctx = demisto.callingContext.get('context', {})
         executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
 
@@ -786,7 +788,7 @@ class MicrosoftClient(BaseClient):
         }
 
         if headers:
-            default_headers.update(headers)
+            default_headers |= headers
 
         if self.timeout:
             kwargs['timeout'] = self.timeout
@@ -798,8 +800,8 @@ class MicrosoftClient(BaseClient):
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
-        if should_http_retry_on_rate_limit and self.is_command_executed_from_integration():
-            self.create_api_metrics(response.status_code)
+        if should_http_retry_on_rate_limit and MicrosoftClient.is_command_executed_from_integration():
+            MicrosoftClient.create_api_metrics(response.status_code)
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
@@ -832,7 +834,7 @@ class MicrosoftClient(BaseClient):
             else:
                 demisto.info(f'Scheduling command {demisto.command()}')
                 command_args['ran_once_flag'] = True
-                return_results(self.run_retry_on_rate_limit(command_args))
+                return_results(MicrosoftClient.run_retry_on_rate_limit(command_args))
                 sys.exit(0)
 
         try:
@@ -864,8 +866,8 @@ class MicrosoftClient(BaseClient):
         integration context.
 
         Args:
-            resource (str): The resource identifier for which the generated token will have access to.
-            scope (str | None): A scope to get instead of the default on the API.
+            resource: The resource identifier for which the generated token will have access to.
+            scope: A scope to get instead of the default on the API.
 
         Returns:
             str: Access token that will be added to authorization header.
@@ -888,10 +890,15 @@ class MicrosoftClient(BaseClient):
 
         if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
+                expires_in = None
                 for resource_str in self.resources:
-                    access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
+                    access_token, current_expires_in, refresh_token = self._oproxy_authorize(resource_str)
                     self.resource_to_access_token[resource_str] = access_token
                     self.refresh_token = refresh_token
+                    expires_in = current_expires_in if expires_in is None else \
+                        min(expires_in, current_expires_in)  # type: ignore[call-overload]
+                if expires_in is None:
+                    raise DemistoException("No resource was provided to get access token from")
             else:
                 access_token, expires_in, refresh_token = self._oproxy_authorize(scope=scope)
 
@@ -930,9 +937,8 @@ class MicrosoftClient(BaseClient):
         """
         msg = 'Error in authentication. Try checking the credentials you entered.'
         try:
-            demisto.info(
-                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} {oproxy_response.text}'
-            )
+            demisto.info(f'Authentication failure from server: {oproxy_response.status_code} '
+                         f'{oproxy_response.reason} {oproxy_response.text}')
             err_response = oproxy_response.json()
             server_msg = err_response.get('message')
             if not server_msg:
@@ -989,9 +995,6 @@ class MicrosoftClient(BaseClient):
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
-            # Try to send request to the Oproxy server with the refresh token from the integration parameters
-            # (instance configuration).
-            # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
             if self.refresh_token_param:
                 demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
                               ' authorizing with the Oproxy, this time using the refresh token from the integration'
@@ -1000,16 +1003,15 @@ class MicrosoftClient(BaseClient):
                 oproxy_second_try_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
                 if not oproxy_second_try_response.ok:
-                    demisto.error('Authentication failure from server (second attempt - using refresh token from the'
-                                  ' integration parameters: {} {} {}'.format(oproxy_second_try_response.status_code,
-                                                                             oproxy_second_try_response.reason,
-                                                                             oproxy_second_try_response.text))
+                    demisto.error(f'Authentication failure from server (second attempt - using refresh token from the '
+                                  f'integration parameters: {oproxy_second_try_response.status_code} '
+                                  f'{oproxy_second_try_response.reason} {oproxy_second_try_response.text}')
                     MicrosoftClient._raise_authentication_error(oproxy_response)
 
                 else:  # Second try succeeded
                     oproxy_response = oproxy_second_try_response
 
-            else:  # no refresh token for a second auth try
+            else:
                 MicrosoftClient._raise_authentication_error(oproxy_response)
 
         # Oproxy authentication succeeded
@@ -1232,16 +1234,18 @@ class MicrosoftClient(BaseClient):
             return self.auth_code[len(refresh_prefix):]
         return ''
 
-    def run_retry_on_rate_limit(self, args_for_next_run: dict):
+    @staticmethod
+    def run_retry_on_rate_limit(args_for_next_run: dict):
         return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
                               scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
                                                                  args=args_for_next_run))
 
     def handle_error_with_metrics(self, res):
-        self.create_api_metrics(res.status_code)
+        MicrosoftClient.create_api_metrics(res.status_code)
         self.client_error_handler(res)
 
-    def create_api_metrics(self, status_code):
+    @staticmethod
+    def create_api_metrics(status_code):
         execution_metrics = ExecutionMetrics()
         ok_codes = (200, 201, 202, 204, 206)
 

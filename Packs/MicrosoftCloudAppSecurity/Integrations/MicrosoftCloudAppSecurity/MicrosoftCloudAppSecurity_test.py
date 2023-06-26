@@ -9,6 +9,7 @@ import demistomock as demisto
 from freezegun import freeze_time
 from CommonServerPython import DemistoException, timedelta
 from MicrosoftCloudAppSecurity import Client, fetch_incidents, module_test
+from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
 def get_fetch_data():
@@ -72,7 +73,7 @@ def test_args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filte
 
 
 client_mocker = Client(base_url='https://demistodev.eu2.portal.cloudappsecurity.com/api/v1', app_id='1234', verify=True,
-                       proxy=True, endpoint_type='Worldwide', auth_mode='legacy')
+                       proxy=True, endpoint_type='Worldwide', auth_mode='legacy', azure_cloud=AZURE_WORLDWIDE_CLOUD)
 
 
 def test_list_alerts_command(requests_mock):
@@ -922,7 +923,7 @@ class TestModuleTest:
         Then:
         - Ensure the client can list alerts.
         """
-        client = Client('app_id', True, True, 'Worldwide', 'https://test.com', 'legacy')
+        client = Client('app_id', True, True, 'Worldwide', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_alerts', return_value={})
 
@@ -943,7 +944,7 @@ class TestModuleTest:
         Then:
         - Ensure the client can list incidents.
         """
-        client = Client('app_id', True, True,  'com', 'https://test.com', 'legacy')
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_incidents', return_value={})
 
@@ -964,7 +965,7 @@ class TestModuleTest:
         Then:
         - Ensure a DemistoException is raised.
         """
-        client = Client('app_id', True, True, 'com', 'https://test.com', 'device code flow')
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'device code flow', AZURE_WORLDWIDE_CLOUD)
 
         assert module_test(
             client, False, None) == 'To test the device code flow Please run !microsoft-cas-auth-start and ' \
@@ -982,7 +983,7 @@ class TestModuleTest:
         Then:
         - Ensure a DemistoException is raised.
         """
-        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy')
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_incidents', return_value={})
 
@@ -1001,7 +1002,7 @@ class TestModuleTest:
         Then:
         - Ensure a connection error message is returned.
         """
-        client = Client('app_id', True, True, 'com', 'https://invalid-url.com', 'legacy')
+        client = Client('app_id', True, True, 'com', 'https://invalid-url.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('No connection'))
 
         result = module_test(client, False, None)
@@ -1020,7 +1021,7 @@ class TestModuleTest:
         Then:
         - Ensure an authorization error message is returned.
         """
-        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy')
+        client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('Invalid token'))
 
         result = module_test(client, False, None)
