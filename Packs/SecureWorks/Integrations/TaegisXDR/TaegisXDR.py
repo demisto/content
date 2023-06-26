@@ -1203,8 +1203,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         """ % (fields)
         variables = {
-            "page": arg_to_number(args.get("page")) or 0,
-            "perPage": arg_to_number(args.get("page_size")) or 10,
+            "page": args.get("page", 0),
+            "perPage": args.get("page_size", 10),
             "query": args.get("query", "deleted_at is null"),
             "orderByField": args.get("order_by", "created_at"),
             "orderDirection": args.get("order_direction", "desc")
@@ -1521,7 +1521,7 @@ def update_investigation_command(client: Client, env: str, args=None):
         if field == "assigneeId":
             if not args["assigneeId"].startswith("auth0") and args["assigneeId"] != "@secureworks":
                 raise ValueError("assigneeId MUST be in 'auth0|12345' format or '@secureworks'")
-        if field == "priority" and not 0 < arg_to_number(args.get("priority")) < 5:
+        if field == "priority" and not 0 < int(args.get("priority", 0)) < 5:
             raise ValueError("Priority must be between 1-4")
         if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
             raise ValueError((
