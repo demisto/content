@@ -1547,7 +1547,7 @@ def test_zoom_send_message_markdown_command_error_mentions(mocker):
                                   to_channel='channel1'
                                   )
 
-    assert str(e.value) == "too many mentions in text. you can provide only one mention in each message"
+    assert str(e.value) == "Too many mentions in text. you can provide only one mention in each message"
 
 
 def test_zoom_send_message_markdown_command_error_too_many_arguments(mocker):
