@@ -28,22 +28,25 @@ def get_pipeline_info(pipeline_id, token):
     return pipeline_info
 
 
-def get_upload_job_status(pipeline_id, token):
-    """
-    We poll and check the pipelines status, where we only want to make sure the job 'upload packs to marketplace' has
-    been reached. If not, this means some other job failed, and that the upload did not happen.
-    """
+def get_pipeline_request(pipeline_id, token):
     url = GITLAB_CONTENT_PIPELINES_BASE_URL + pipeline_id + '/jobs'
     res = requests.get(url, headers={'Authorization': f'Bearer {token}'})
     if res.status_code != 200:
         logging.error(f'Failed to get status of pipeline {pipeline_id}, request to '
                       f'{GITLAB_CONTENT_PIPELINES_BASE_URL} failed with error: {str(res.content)}')
         sys.exit(1)
+    return res
 
+
+def get_job_status(pipeline_response, job_name):
+    """
+    We poll and check the pipelines status, where we only want to make sure the job 'upload packs to marketplace' has
+    been reached. If not, this means some other job failed, and that the upload did not happen.
+    """
     try:
-        jobs_info = json.loads(res.content)
+        jobs_info = json.loads(pipeline_response.content)
         pipeline_status = jobs_info[0].get('pipeline', {}).get('status')
-        upload_job_status = get_job_status('upload-packs-to-marketplace', jobs_info)
+        upload_job_status = get_job_status_by_name(job_name, jobs_info)
     except Exception as e:
         logging.error(f'Unable to parse pipeline status response: {e}')
         sys.exit(1)
@@ -51,7 +54,7 @@ def get_upload_job_status(pipeline_id, token):
     return pipeline_status, upload_job_status
 
 
-def get_job_status(job_name, pipelines_jobs_response):
+def get_job_status_by_name(job_name, pipelines_jobs_response):
     for job in pipelines_jobs_response:
         if job.get('name') == job_name:
             return job.get('status')
@@ -63,16 +66,22 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-g', '--gitlab-api-token', help='Github api token')
     arg_parser.add_argument('-p', '--pipeline-id', help='Pipeline id')
+    arg_parser.add_argument('-vis', '--verify-upload-id-set-job', help='Pipeline id')
 
     args = arg_parser.parse_args()
 
     token = args.gitlab_api_token
     pipeline_id = args.pipeline_id
-    sys.exit(1)
-    print("True")
-    return None
+    verify_upload_id_set_job = args.verify_upload_id_set_job
 
-    pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)
+    pipline_response = get_pipeline_request(pipeline_id, token)
+    pipeline_status, upload_job_status = get_job_status(pipeline_response=pipline_response,
+                                                        job_name='upload-packs-to-marketplace')
+    if verify_upload_id_set_job:
+        _, upload_id_set_status = get_job_status(pipeline_response=pipline_response, job_name='upload-id-set-bucket')
+        if upload_id_set_status == 'failed':
+            logging.error('failed to upload id set to bucket')
+            sys.exit(1)
 
     # initialize timer
     start = time.time()
@@ -81,7 +90,14 @@ def main():
     while pipeline_status not in ['failed', 'success', 'canceled'] and elapsed < TIMEOUT:
         logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
         time.sleep(300)
-        pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)
+        pipline_response = get_pipeline_request(pipeline_id, token)
+        pipeline_status, upload_job_status = get_job_status(pipeline_response=pipline_response,
+                                                            job_name='upload-packs-to-marketplace')
+        if verify_upload_id_set_job:
+            _, upload_id_set_status = get_job_status(pipeline_response=pipline_response, job_name='upload-id-set-bucket')
+            if upload_id_set_status == 'failed':
+                logging.error('failed to upload id set to bucket')
+                sys.exit(1)
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
