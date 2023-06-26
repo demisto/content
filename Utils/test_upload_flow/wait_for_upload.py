@@ -73,6 +73,8 @@ def main():
     token = args.gitlab_api_token
     pipeline_id = args.pipeline_id
     verify_upload_id_set_job = args.verify_upload_id_set_job
+    logging.info(f"verify_upload_id_set_job: {verify_upload_id_set_job}")
+    logging.info(f"type verify_upload_id_set_job: {type(verify_upload_id_set_job)}")
 
     pipline_response = get_pipeline_request(pipeline_id, token)
     pipeline_status, upload_job_status = get_job_status(pipeline_response=pipline_response,
