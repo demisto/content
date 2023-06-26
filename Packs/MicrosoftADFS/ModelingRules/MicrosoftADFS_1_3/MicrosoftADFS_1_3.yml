@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Microsoft_ADFS_Collection
-name: Microsoft ADFS Collection
+id: Microsoft_ADFS_Collection_ModelingRule
+name: Microsoft ADFS Collection_ModelingRule
 rules: ''
 schema: ''
 tags: Microsoft Windows Active Directory Federation Services ADFS Event Colletion

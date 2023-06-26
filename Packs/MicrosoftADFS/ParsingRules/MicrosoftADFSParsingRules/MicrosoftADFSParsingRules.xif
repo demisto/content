@@ -1,2 +1,2 @@
-[INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_windows_raw", no_hit=keep]
+[INGEST:vendor="microsoft", product="adfs", target_dataset="microsoft_adfs_raw", no_hit=keep]
 alter _time = time_created;
