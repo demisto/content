@@ -1496,7 +1496,8 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(
+            params.get('admin_email_creds', {}).get('password') or params.get('user_service_account_json'))
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
@@ -1506,7 +1507,9 @@ def main() -> None:
 
         args = GSuiteClient.strip_dict(demisto.args())
 
-        admin_email = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
+        admin_email = args.get('admin_email')\
+            or params.get('admin_email_creds', {}).get('identifier')\
+            or params.get('admin_email')
 
         if admin_email and not is_email_valid(admin_email):
             raise ValueError(MESSAGES['INVALID_ADMIN_EMAIL'])

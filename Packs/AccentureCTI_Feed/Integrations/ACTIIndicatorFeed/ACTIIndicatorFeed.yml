@@ -156,7 +156,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: acti-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.61931
+  dockerimage: demisto/py3-tools:1.0.0.64131
   feed: true
   isfetch: false
   longRunning: false
