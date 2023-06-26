@@ -152,7 +152,7 @@ class BMCContainer(Generic[AnyStr]):
                             for b in [1, 2, 4]:
                                 if len(self.bdat) < len(t_hdr) + 64 * 64 * b + 8:
                                     break
-                                elif unpack("<H", self.bdat[len(t_hdr) + 64 * 64 * b + 8:][:2])[0] == 64:
+                                elif unpack("<H", self.bdat[len(t_hdr) + 64 * 64 * b + 8:][:2])[0] == 64:  # noqa: RET508
                                     bl = 64 * 64 * b
                                     break
                             if bl == 0:
@@ -353,10 +353,7 @@ class BMCContainer(Generic[AnyStr]):
                     msk = b"\x05"
                     ml = 1
                 else:
-                    if (rl % 8) != 0:
-                        ml = (rl // 8) + 1
-                    else:
-                        ml = rl // 8
+                    ml = rl // 8 + 1 if rl % 8 != 0 else rl // 8
                     if len(data) < ml:
                         self.b_log("error", False, "Unexpected end of compressed stream. Skipping tile.")
                         return b""
@@ -418,7 +415,7 @@ class BMCContainer(Generic[AnyStr]):
             if len(self.bmps) // self.STRIPE_WIDTH > 0:
                 m = len(self.bmps) % self.STRIPE_WIDTH
                 if m != 0:
-                    for i in range(self.STRIPE_WIDTH - m):
+                    for _ in range(self.STRIPE_WIDTH - m):
                         self.bmps.append(pad * 64 * 64)
                 w = self.STRIPE_WIDTH * 64
                 h *= len(self.bmps) // self.STRIPE_WIDTH

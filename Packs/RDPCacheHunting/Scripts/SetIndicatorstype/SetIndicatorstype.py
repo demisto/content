@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import collections
 import random
-from typing import Counter
+from collections import Counter
 
 
 def parse_data(list_content):
@@ -11,7 +11,7 @@ def parse_data(list_content):
     list_collections: Counter = collections.Counter(list_content)
     top_lists = list_collections.most_common(10)
 
-    for i in range(len(top_lists)):
+    for _i in range(len(top_lists)):
         for list_element in top_lists:
             random_number = random.randint(0, 16777215)
             hex_number = str(hex(random_number))  # convert to hexadecimal

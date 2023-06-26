@@ -12,7 +12,8 @@ def test_happy_path_score_zero(mocker):
         - Ensure that the expected HTML is returned
     """
     mocker.patch.object(demisto, 'context', return_value={'OverallScore': '0'})
-    expected_html = "<div style='color:#1DB846;font-size:32px;padding: 60px; text-align:center;padding-left: 70px'>0/100<br><br>No suspicious strings found</div>"
+    expected_html = ("<div style='color:#1DB846;font-size:32px;padding: 60px; text-align:center;padding-left: 70px'>0/100<br><br>"
+                     "No suspicious strings found</div>")
     main()
     result = mocker.context.call_args[0]
     assert result['Contents'] == expected_html
