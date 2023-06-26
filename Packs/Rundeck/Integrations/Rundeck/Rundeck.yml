@@ -9,8 +9,14 @@ configuration:
   type: 0
 - display: API Key
   name: token
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: token_creds
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -23,6 +29,7 @@ configuration:
   name: project_name
   required: false
   type: 0
+
 description: Rundeck is a runbook automation for incident management, business continuity, and self-service operations. |- The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack.
 display: Rundeck
 name: Rundeck
@@ -1092,7 +1099,7 @@ script:
     - contextPath: Rundeck.WebhookEvent.executionId
       description: The ID of the execution.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
