@@ -119,11 +119,13 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "case_id",
+                                "fieldId": "categoryname",
                                 "height": 26,
-                                "id": "70beacd0-1026-11ee-a716-b779911da89e",
+                                "id": "298513a0-ffa4-11ed-8065-135924776b58",
                                 "index": 2,
+                                "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -208,46 +210,26 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "assigneduser",
-                                "height": 26,
-                                "id": "644acf10-1026-11ee-a716-b779911da89e",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "categoryname",
-                                "height": 26,
-                                "id": "298513a0-ffa4-11ed-8065-135924776b58",
-                                "index": 1,
-                                "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 6,
                                 "fieldId": "mitreattcktactic",
                                 "height": 26,
                                 "id": "41242d10-ffa5-11ed-8065-135924776b58",
-                                "index": 2,
+                                "index": 0,
                                 "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 4
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 6,
                                 "fieldId": "mitreattcktechnique",
                                 "height": 26,
                                 "id": "42aceff0-ffa5-11ed-8065-135924776b58",
-                                "index": 3,
+                                "index": 1,
                                 "listId": "caseinfoid-psvkrie7fh-field-changed-caseinfoid-9d68c810-0d99-11ec-83df-e184d3cc52d9",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 4
                             }
                         ],
                         "maxW": 3,
@@ -420,7 +402,7 @@
                                 "endCol": 2,
                                 "fieldId": "isvpnipaddress",
                                 "height": 26,
-                                "id": "0b5e8060-1353-11ee-955e-8978257d3f2a",
+                                "id": "b65ebae0-141e-11ee-82aa-79d0d6f9a441",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
