@@ -586,7 +586,7 @@ Update IP list policy member.
 
 There is no context output for this command.
 #### Command example
-```!fortiwebvm-ip-list-member-update group_name=example member_id=1 ip_address=1.2.3.6```
+```!fortiwebvm-ip-list-member-update group_name=example member_id=1 ip_address=1.2.3.4```
 #### Human Readable Output
 
 >### IP List member successfully updated!
@@ -807,7 +807,7 @@ Get custom predefined global whitelist.
             "domain": "",
             "id": 100002,
             "name": "",
-            "path": "/browserconfig.xml",
+            "path": "test",
             "status": true
         }
     }
@@ -820,7 +820,7 @@ Get custom predefined global whitelist.
 >Showing 1 rows out of 36.
 >|Id|Name|Path|Domain|Status|
 >|---|---|---|---|---|
->| 100002 |  | /browserconfig.xml |  | true |
+>| 100002 |  | test |  | true |
 
 
 ### fortiwebvm-custom-whitelist-url-create
@@ -1496,7 +1496,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port1",
-                "ip_netmask": "192.168.30.137/24",
+                "ip_netmask": "1.2.3.4/24",
                 "label": 1,
                 "link": "Up",
                 "name": "port1",
@@ -1507,7 +1507,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port2",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 2,
                 "link": "Up",
                 "name": "port2",
@@ -1518,7 +1518,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port3",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 3,
                 "link": "Up",
                 "name": "port3",
@@ -1529,7 +1529,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port4",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 4,
                 "link": "Up",
                 "name": "port4",
@@ -1540,7 +1540,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port5",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 5,
                 "link": "Up",
                 "name": "port5",
@@ -1551,7 +1551,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port6",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 6,
                 "link": "Up",
                 "name": "port6",
@@ -1562,7 +1562,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port7",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 7,
                 "link": "Up",
                 "name": "port7",
@@ -1573,7 +1573,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port8",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 8,
                 "link": "Up",
                 "name": "port8",
@@ -1584,7 +1584,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port9",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 9,
                 "link": "Up",
                 "name": "port9",
@@ -1595,7 +1595,7 @@ There is no context output for this command.
             {
                 "alias": "",
                 "id": "port10",
-                "ip_netmask": "0.0.0.0/0",
+                "ip_netmask": "1.2.3.4/0",
                 "label": 10,
                 "link": "Up",
                 "name": "port10",
@@ -1613,16 +1613,16 @@ There is no context output for this command.
 >### Operation networks:
 >|Id|Name|Label|Alias|Ip Netmask|Speed Duplex|Tx|Rx|Link|
 >|---|---|---|---|---|---|---|---|---|
->| port1 | port1 | 1 |  | 192.168.30.137/24 | 10000 Mbps/Full Duplex | 18115 | 582306 | Up |
->| port2 | port2 | 2 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571254 | Up |
->| port3 | port3 | 3 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571338 | Up |
->| port4 | port4 | 4 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571252 | Up |
->| port5 | port5 | 5 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571246 | Up |
->| port6 | port6 | 6 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571245 | Up |
->| port7 | port7 | 7 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571239 | Up |
->| port8 | port8 | 8 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571283 | Up |
->| port9 | port9 | 9 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 572431 | Up |
->| port10 | port10 | 10 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 572083 | Up |
+>| port1 | port1 | 1 |  | 1.2.3.4/24 | 10000 Mbps/Full Duplex | 18115 | 582306 | Up |
+>| port2 | port2 | 2 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 571254 | Up |
+>| port3 | port3 | 3 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 571338 | Up |
+>| port4 | port4 | 4 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 571252 | Up |
+>| port5 | port5 | 5 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 571246 | Up |
+>| port6 | port6 | 6 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 571245 | Up |
+>| port7 | port7 | 7 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 571239 | Up |
+>| port8 | port8 | 8 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 571283 | Up |
+>| port9 | port9 | 9 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 572431 | Up |
+>| port10 | port10 | 10 |  | 1.2.3.4/0 | 10000 Mbps/Full Duplex | 141 | 572083 | Up |
 
 
 ### fortiwebvm-system-policy-status-get
@@ -1652,7 +1652,7 @@ There are no input arguments for this command.
             "name": "example",
             "session_count": 0,
             "status": "enable",
-            "vserver": "1.0.0.0/32/"
+            "vserver": "1.2.3.4/32/"
         }
     }
 }
@@ -1663,7 +1663,7 @@ There are no input arguments for this command.
 >### Policy status:
 >|Id|Name|Status|Vserver|Http Port|Https Port|Mode|Session Count|Connction Per Second|
 >|---|---|---|---|---|---|---|---|---|
->| example | example | enable | 1.0.0.0/32/ | 80 |  | Single Server/Server Pool | 0 | 0 |
+>| example | example | enable | 1.2.3.4/32/ | 80 |  | Single Server/Server Pool | 0 | 0 |
 
 #### Context Example - API Version 2
 ```json
@@ -1723,7 +1723,7 @@ There is no context output for this command.
             "antivirusService": {
                 "anti_expired": "Expired (1969-12-31)",
                 "anti_expired_text": "[Renew]",
-                "anti_expired_url": "http://support.fortinet.com/",
+                "anti_expired_url": "test/",
                 "anti_update_text": "[Update]",
                 "anti_update_url": "#navigate/SignatureUpdate",
                 "antivirusLastUpdateMethod": "Manual",
@@ -1736,7 +1736,7 @@ There is no context output for this command.
                 "databaseVersion": "0.00000",
                 "expired": "Expired (1969-12-31)",
                 "expired_text": "[Renew]",
-                "expired_url": "http://support.fortinet.com/",
+                "expired_url": "test/",
                 "lastUpdateTime": "1969-12-31"
             },
             "fileUploadLimitMax": 102400,
@@ -1751,7 +1751,7 @@ There is no context output for this command.
             "registration": {
                 "label": "[Unregistered]",
                 "text": "[Register]",
-                "url": "https://support.fortinet.com"
+                "url": "test"
             },
             "reputationService": {
                 "reputationBuildNumber": "1.00020",
@@ -1759,7 +1759,7 @@ There is no context output for this command.
                 "reputationLastUpdateTime": "1969-12-31",
                 "reputation_expired": "Expired (1969-12-31)",
                 "reputation_expired_text": "[Renew]",
-                "reputation_expired_url": "http://support.fortinet.com/",
+                "reputation_expired_url": "test/",
                 "reputation_update_text": "[Update]",
                 "reputation_update_url": "#navigate/SignatureUpdate"
             },
@@ -1767,7 +1767,7 @@ There is no context output for this command.
                 "buildNumber": "0.00240",
                 "expired": "Expired (1969-12-31)",
                 "expired_text": "[Renew]",
-                "expired_url": "http://support.fortinet.com/",
+                "expired_url": "test/",
                 "lastUpdateMethod": "Manual",
                 "lastUpdateTime": "1969-12-31",
                 "update_text": "[Update]",
@@ -1797,7 +1797,7 @@ There is no context output for this command.
             "administrativeDomain": "Disabled",
             "bufferSizeMax": 102400,
             "fileUploadLimitMax": 102400,
-            "firmwareVersion": "FortiWeb-AWS_OnDemand 7.03,build0111(GA),220912",
+            "firmwareVersion": "test",
             "firmware_partition": 2,
             "haStatus": "Standalone",
             "hostName": "FortiWeb",
@@ -1807,7 +1807,7 @@ There is no context output for this command.
             "registration": {
                 "label": "*",
                 "text": "[Login]",
-                "url": "https://support.fortinet.com"
+                "url": "test"
             },
             "serialNumber": "FVBAWS0001be9eec",
             "systemTime": "Sun Dec 25 02:06:38 2022\n",
@@ -1825,7 +1825,7 @@ There is no context output for this command.
 >### System Status:
 >|High Ability Status|Host Name|Serial Number|Operation Mode|System Time|Firmware Version|Administrative Domain|Manager Status|Sysyem Up Days|Sysyem Up Hrs|Sysyem Up Mins|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| Standalone | FortiWeb | FVBAWS0001be9eec | Reverse Proxy | Sun Dec 25 02:06:38 2022<br/> | FortiWeb-AWS_OnDemand 7.03,build0111(GA),220912 | Disabled | Standalone | 34 | 20 | 45 |
+>| Standalone | FortiWeb | FVBAWS0001be9eec | Reverse Proxy | Sun Dec 25 02:06:38 2022<br/> | test 7.03,build0111(GA),220912 | Disabled | Standalone | 34 | 20 | 45 |
 
 ### fortiwebvm-virtual-server-list
 ***
@@ -2753,11 +2753,11 @@ List the Server certificate that is stored locally on the FortiWeb appliance. Su
             "can_download": false,
             "can_view": true,
             "comments": "",
-            "extension": "Name: X509v3 Subject Key Identifier<br>\nCritical: no<br>\nContent: <br>\nA5:F1:B8:06:8B:1E:2A:7F:B9:EB:CC:22:F4:80:57:5B:81:76:92:9A<br>\nName: X509v3 Authority Key Identifier<br>\nCritical: no<br>\nContent: <br>\nkeyid:A5:F1:B8:06:8B:1E:2A:7F:B9:EB:CC:22:F4:80:57:5B:81:76:92:9A\n<br>\nName: X509v3 Basic Constraints<br>\nCritical: yes<br>\nContent: <br>\nCA:TRUE<br>\n",
+            "extension": "Name: X509v3 Subject Key Identifier<br>\nCritical: no<br>\nContent: <br>\ntest:Btest<br>\nName: X509v3 Authority Key Identifier<br>\nCritical: no<br>\nContent: <br>\nkeyid:test:Btest\n<br>\nName: X509v3 Basic Constraints<br>\nCritical: yes<br>\nContent: <br>\nCA:TRUE<br>\n",
             "id": "certificate",
             "issuer": "C = us, ST = nnew york, O = Internet Widgits Pty Ltd",
             "name": "certificate",
-            "serial_number": "62:f4:29:a6:9f:5f:16:b3:13:1e:c5:f4:f3:2c:97:33:aa:49:76:ab ",
+            "serial_number": "test",
             "status": "OK",
             "subject": "C = us, ST = nnew york, O = Internet Widgits Pty Ltd",
             "valid_from": "2023-04-23 08:47:47  GMT",
@@ -2832,7 +2832,7 @@ List the Network interfaces. A network interface is a connection point that enab
                 "http",
                 "FWB-manager"
             ],
-            "ipv4_netmask": "192.168.30.137/24",
+            "ipv4_netmask": "1.2.3.4/24",
             "ipv6_access": "",
             "ipv6_administrative_access": [],
             "ipv6_netmask": "::/0",
@@ -2854,7 +2854,7 @@ List the Network interfaces. A network interface is a connection point that enab
 > Current page size: 50
 >|Name|Ipv4 Netmask|Ipv4 Access|Ipv6 Netmask|Ipv6 Access|Status|Type|
 >|---|---|---|---|---|---|---|
->| port1 | 192.168.30.137/24 | HTTPS,PING,SSH,HTTP,FortiWeb Manager | ::/0 |  | up | Physical |
+>| port1 | 1.2.3.4/24 | HTTPS,PING,SSH,HTTP,FortiWeb Manager | ::/0 |  | up | Physical |
 
 
 
@@ -3206,7 +3206,7 @@ Create an URL access rule condition (URL access rule condition is a member of UR
 | meet_this_condition_if | Indicate how to use url_pattern when determining whether or not this rule’s condition has been met. Possible values are: Object matches the URL Pattern, Object does not match the URL Pattern. Default is Object matches the URL Pattern. | Optional |
 | source_address | Whether to enable source address. Possible values are: enable, disable. Default is disable. | Optional |
 | source_address_type | The source address type. Relevant when source_address=enable. . Possible values are: IP, IP Resolved by Specified Domain, Source Domain. | Optional |
-| ip_range | IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. . | Optional |
+| ip_range | IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.4 or 2001::1-2001::100. Relevant when source_address_type=IP. . | Optional |
 | ip_type | IP type. Relevant when source_address_type=IP Resolved by Specified Domain. . Possible values are: IPv4, IPv6. | Optional |
 | ip | IP resolved by specified domain. Relevant when source_address_type=IP Resolved by Specified Domain. . | Optional |
 | source_domain_type | Source domain type.  Relevant when source_address_type=Source Domain. . Possible values are: Simple String, Regular Expression. | Optional |
@@ -3262,7 +3262,7 @@ Update an URL access rule condition (URL access rule condition is a member of UR
 | meet_this_condition_if | Indicate how to use url_pattern when determining whether or not this rule’s condition has been met. Possible values are: Object matches the URL Pattern, Object does not match the URL Pattern. | Optional |
 | source_address | Whether to enable source address. Possible values are: enable, disable. | Optional |
 | source_address_type | The source address type. Possible values are: IP, IP Resolved by Specified Domain, Source Domain. | Optional |
-| ip_range | IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. . | Optional |
+| ip_range | IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.4 or 2001::1-2001::100. Relevant when source_address_type=IP. . | Optional |
 | ip_type | IP Type. Relevant when source_address_type=IP Resolved by Specified Domain. . Possible values are: IPv4, IPv6. | Optional |
 | ip | IP Resolved by Specified Domain. Relevant when source_address_type=IP Resolved by Specified Domain. . | Optional |
 | source_domain_type | Source Domain type.  Relevant when source_address_type=Source Domain. . Possible values are: Simple String, Regular Expression. | Optional |
@@ -3397,7 +3397,7 @@ Create a virtual server group. In API version 1, virtual server group defines th
 | --- | --- | --- |
 | name | Virtual server group name. | Required |
 | interface | The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). For example: port1. Required in API version 1. Supports API version 1 only. | Optional |
-| ipv4_address | The IPv4 address and subnet of the virtual server. For example: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
+| ipv4_address | The IPv4 address and subnet of the virtual server. For example: 1.2.3.4/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
 | ipv6_address | The IPv6 address and subnet of the virtual server. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. Supports API version 1 only. Default is ::/0. | Optional |
 | status | Wheter to enable the virtual server group. Supports API version 1 only. Possible values are: enable, disable. Default is enable. | Optional |
 | use_interface_ip | Whether uses interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address. Supports API version 1 only. Possible values are: enable, disable. Default is disable. | Optional |
@@ -3428,7 +3428,7 @@ Update a virtual server group. Supports API version 1 only.
 | --- | --- | --- |
 | name | Virtual server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all virtual server groups). | Required |
 | interface | The name of the network interface or bridge. (dependencies - use fortiwebvm-network-interface-list command to get all the network interfaces). For example: port1. Supports API version 1 only. | Optional |
-| ipv4_address | The IPv4 address and subnet of the virtual server. For exampl: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
+| ipv4_address | The IPv4 address and subnet of the virtual server. For exampl: 1.2.3.4/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
 | ipv6_address | The IPv4 address and subnet of the virtual server. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. | Optional |
 | status | Wheter to enable the virtual server group. Supports API version 1 only. Possible values are: enable, disable. | Optional |
 | use_interface_ip | Whether uses interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address. Possible values are: enable, disable. | Optional |
@@ -3508,7 +3508,7 @@ List the virtual server groups. Supports API versions 1 & 2.
             "enable": true,
             "id": "test",
             "interface": "port1",
-            "ipv4_address": "0.0.0.0/0.0.0.0",
+            "ipv4_address": "1.2.3.4/1.2.3.4",
             "ipv6_address": "::/0",
             "name": "test",
             "use_interface_ip": true
@@ -4124,7 +4124,7 @@ Create a rule for an offline protection server pool group (server pool rule is a
 | FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
 
 #### Command example
-```!fortiwebvm-server-pool-offline-protection-rule-create group_name=op ip=1.2.3.5```
+```!fortiwebvm-server-pool-offline-protection-rule-create group_name=op ip=1.2.3.4```
 #### Context Example
 ```json
 {
@@ -4215,7 +4215,7 @@ Create a rule for an true transparent server pool group (server pool rule is a m
 | FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
 
 #### Command example
-```!fortiwebvm-server-pool-true-transparent-proxy-rule-create group_name=ttp server_type=IP ip=1.2.3.6```
+```!fortiwebvm-server-pool-true-transparent-proxy-rule-create group_name=ttp server_type=IP ip=1.2.3.4```
 #### Context Example
 ```json
 {
@@ -4306,7 +4306,7 @@ Create a rule for an transparent inspection server pool group (server pool rule 
 | FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
 
 #### Command example
-```!fortiwebvm-server-pool-transparent-inspection-rule-create group_name=ti ip=1.2.3.7```
+```!fortiwebvm-server-pool-transparent-inspection-rule-create group_name=ti ip=1.2.3.4```
 #### Context Example
 ```json
 {
@@ -4392,7 +4392,7 @@ Create a rule for an WCCP server pool group (server pool rule is a member of ser
 | FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
 
 #### Command example
-```!fortiwebvm-server-pool-wccp-rule-create group_name=wccp ip=1.2.3.9 port=84```
+```!fortiwebvm-server-pool-wccp-rule-create group_name=wccp ip=1.2.3.4 port=84```
 #### Context Example
 ```json
 {
@@ -4486,7 +4486,7 @@ Create a rule for an FTP server pool group (server pool rule is a member of serv
 | FortiwebVM.ServerPoolGroup.Rule.id | String | The server pool rule ID. |
 
 #### Command example
-```!fortiwebvm-server-pool-ftp-rule-create group_name=ftp ip=1.2.3.9```
+```!fortiwebvm-server-pool-ftp-rule-create group_name=ftp ip=1.2.3.4```
 #### Context Example
 ```json
 {
@@ -4749,7 +4749,7 @@ List server pool rules (server pool rule is a member of server pool group). Supp
                     "domain": "test.com",
                     "http2": "disable",
                     "id": "1",
-                    "ip": "0.0.0.0",
+                    "ip": "1.2.3.4",
                     "port": 80,
                     "server_type": "domain",
                     "ssl_settings": "disable",
