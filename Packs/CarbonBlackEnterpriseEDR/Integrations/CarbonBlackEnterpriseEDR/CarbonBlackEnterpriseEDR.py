@@ -1295,8 +1295,10 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    cb_custom_key = demisto.params().get('custom_key')
-    cb_custom_id = demisto.params().get('custom_id')
+    cb_custom_key = demisto.params().get('credentials_custom', {}).get('password') or demisto.params().get('custom_key')
+    cb_custom_id = demisto.params().get('credentials_custom', {}).get('identifier') or demisto.params().get('custom_id')
+    if not (cb_custom_key and cb_custom_id):
+        raise DemistoException('Custom ID and Custom key must be provided.')
     cb_org_key = demisto.params().get('organization_key')
     token = f'{cb_custom_key}/{cb_custom_id}'
     # get the service API url
