@@ -129,7 +129,7 @@ configuration:
   section: Collect
   advanced: true
 - additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
-  defaultvalue: 'Detections'
+  defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
   required: false
@@ -4463,7 +4463,7 @@ script:
     - description: endCursor.
       name: next_token
       required: false
-    - description: Default is 50. The limist is 1000. The page size.
+    - description:  The maximum number of items to fetch per page. The maximum value allowed is 1000.
       name: page_size
       required: false
       defaultValue: 50

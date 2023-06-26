@@ -18,7 +18,7 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 INTEGRATION_NAME = 'CrowdStrike Falcon'
-IDP_DETECTION = "IDP Detection"
+IDP_DETECTION = "IDP detection"
 CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
 SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
@@ -39,6 +39,7 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+IDP_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -223,15 +224,15 @@ STATUS_NUM_TO_TEXT = {20: 'New',
                       30: 'In Progress',
                       40: 'Closed'}
 
-STATUS_TEXT_TO_NUM_IDP = {'new': "20",
-                          'reopened': "25",
-                          'in_progress': "30",
-                          'closed': "40"}
+STATUS_TEXT_TO_NUM_IDP = {'New': "20",
+                          'Reopened': "25",
+                          'In progress': "30",
+                          'Closed': "40"}
 
-STATUS_NUM_TO_TEXT_IDP = {20: 'new',
-                          25: 'reopened',
-                          30: 'in Progress',
-                          40: 'closed'}
+# STATUS_NUM_TO_TEXT_IDP = {20: 'New',
+#                           25: 'Reopened',
+#                           30: 'In progress',
+#                           40: 'Closed'}
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
 DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
@@ -284,7 +285,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 class IncidentType(Enum):
     INCIDENT = 'inc'
     DETECTION = 'ldt'
-    IDP_DETECTION = 'ind'
+    IDP_DETECTION = ':ind:'
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
@@ -575,13 +576,11 @@ def idp_detection_to_incident_context(idp_detection):
             :rtype ``dict``
         """
     add_mirroring_fields(idp_detection)
-    if idp_detection.get('status'):
-        demisto.debug(f"the status is: {idp_detection.get('status')}")
-        idp_detection['status'] = STATUS_TEXT_TO_NUM_IDP.get(idp_detection.get('status'))
-        demisto.debug(f"the status is now: {idp_detection.get('status')}")
+    if status := idp_detection.get('status'):
+        idp_detection['status'] = STATUS_TEXT_TO_NUM_IDP.get(status)
 
     incident_context = {
-        'name': f'Incident ID: {idp_detection.get("id")}',
+        'name': f'Incident ID: {idp_detection.get("composite_id")}',
         'occurred': idp_detection.get('start_time'),
         'last_updated': idp_detection.get('updated_timestamp'),
         'rawJSON': json.dumps(idp_detection)
@@ -1331,7 +1330,7 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
     return response
 
 
-def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True, limit=INCIDENTS_PER_FETCH):
+def get_idp_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FETCH):
     """
         Send a request to retrieve IDP detections IDs.
 
@@ -1341,20 +1340,21 @@ def get_idp_detections_ids(filter_arg=None, offset: int = 0, has_limit=True, lim
         :param offset: The offset for the query.
         :type has_limit: ``bool``
         :param has_limit: Wether there's limit param to add to the query.
+        :type limit: ``int``
+        :param limit: number of .
 
         :return: The response.
         :rtype ``dict``
     """
-    get_incidents_endpoint = '/alerts/queries/alerts/v1'
     params = {
-        'sort': 'start.asc',
+        'sort': 'created_timestamp.asc',
         'offset': offset,
         'filter': filter_arg
     }
-    if has_limit:
+    if limit:
         params['limit'] = limit
 
-    response = http_request('GET', get_incidents_endpoint, params)
+    response = http_request('GET', '/alerts/queries/alerts/v1', params)
     return response
 
 
@@ -1378,13 +1378,11 @@ def get_idp_detection_entities(incidents_ids: List):
         :return: The response.
         :rtype ``dict``
     """
-    ids_json = {'ids': incidents_ids}
-    response = http_request(
+    return http_request(
         'POST',
         '/alerts/entities/alerts/v1',
-        data=json.dumps(ids_json)
+        data=json.dumps({'ids': incidents_ids})
     )
-    return response
 
 
 def upload_ioc(ioc_type, value, policy=None, expiration_days=None,
@@ -1877,7 +1875,7 @@ def update_idp_detection_request(ids: List[str], status: str) -> Dict:
         :return: The response.
         :rtype ``dict``
     """
-    if status not in STATUS_TEXT_TO_NUM_IDP.keys():
+    if status not in STATUS_TEXT_TO_NUM_IDP:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM_IDP.keys()}')
     return resolve_idp_detection(ids=ids, status=status)
@@ -2100,7 +2098,7 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
         return IncidentType.DETECTION
-    if remote_incident_id[0:3] == (idp_val := IncidentType.IDP_DETECTION.value) or f":{idp_val}:" in remote_incident_id:
+    if IncidentType.IDP_DETECTION.value in remote_incident_id:
         return IncidentType.IDP_DETECTION
 
 
@@ -2354,12 +2352,12 @@ def update_remote_idp_detection(delta, inc_status: IncidentStatus, detection_id:
     """
         Sends the request the request to update the relevant IDP detection entity.
 
-        :type updated_object: ``dict``
-        :param updated_object: The updated IDP detection entity.
-        :type entries: ``list``
-        :param entries: The XSOAR entries list to update.
-        :type remote_detection_id: ``str``
-        :param remote_detection_id: The incident id to update.
+        :type delta: ``dict``
+        :param delta: The modified fields.
+        :type inc_status: ``IncidentStatus``
+        :param inc_status: The IDP detection status.
+        :type detection_id: ``str``
+        :param detection_id: The IDP detection ID to update.
     """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing detection with remote ID {detection_id} in remote system.')
@@ -2485,13 +2483,13 @@ def fetch_incidents():
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
-    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
-                                                                first_fetch=FETCH_TIME,
-                                                                look_back=look_back)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
 
     if 'Detections' in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
+                                                                    first_fetch=FETCH_TIME,
+                                                                    look_back=look_back)
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
@@ -2572,7 +2570,8 @@ def fetch_incidents():
     if "IDP Detection" in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_idp_detections,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=look_back)
+                                                                    look_back=look_back,
+                                                                    date_format=IDP_DATE_FORMAT)
         fetch_limit = current_fetch_info_idp_detections.get('limit') or INCIDENTS_PER_FETCH
         fetch_query = demisto.params().get('idp_detections_fetch_query', "")
         filter = f"product:'idp'+created_timestamp:>'{start_fetch_time}'"
@@ -2591,17 +2590,11 @@ def fetch_incidents():
             idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
                                                                       last_run=current_fetch_info_idp_detections,
                                                                       fetch_limit=fetch_limit, id_field='name')
-
-            for idp_detection in idp_detections:
-                if occurred := dateparser.parse(idp_detection["occurred"]):
-                    idp_detection["occurred"] = occurred.strftime(DATE_FORMAT)
-                    demisto.debug(
-                        f"CrowdStrikeFalconMsg: Incident {idp_detection['name']} occurred at {idp_detection['occurred']}")
-            last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=incidents,
+            last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
                                               look_back=look_back,
-                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+                                              created_time_field='occurred', id_field='name', date_format=IDP_DATE_FORMAT)
             current_fetch_info_idp_detections.update(last_run)
             demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
 
@@ -5421,9 +5414,9 @@ def list_identity_entities_command(args: dict) -> CommandResults:
 """)
     identity_entities_ls = []
     next_token = args.get("next_token", "")
-    limit = int(args.get("limit", "50"))
-    page = int(args.get("page", "0"))
-    page_size = int(args.get("page_size", "50"))
+    limit = arg_to_number(args.get("limit", "50"))
+    page = arg_to_number(args.get("page", "0"))
+    page_size = arg_to_number(args.get("page_size", "50"))
     res_ls = []
     has_next_page = True
     if page:
