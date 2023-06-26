@@ -5,12 +5,10 @@ commonfields:
 configuration:
 - display: User's Service Account JSON
   name: user_service_account_json
-  required: false
   type: 4
   hidden: true
 - display: Admin Email
   name: admin_email_creds
-  required: false
   type: 9
   displaypassword: User's Service Account JSON
 - display: Admin Email
@@ -2218,11 +2216,6 @@ script:
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.64077
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

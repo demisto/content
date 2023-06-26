@@ -553,7 +553,6 @@ script:
       description: Mutable user specified security marks belonging to the parent resource.
       type: String
   dockerimage: demisto/google-api-py3:1.0.0.64100
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

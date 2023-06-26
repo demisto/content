@@ -9,11 +9,9 @@ configuration:
   type: 0
 - display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<apikey>"
   name: APIKey
-  required: false
   type: 4
   hidden: true
 - name: credentials_api_key
-  required: false
   type: 9
   displaypassword: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<apikey>"
   hiddenusername: true

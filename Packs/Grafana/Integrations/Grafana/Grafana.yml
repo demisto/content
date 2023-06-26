@@ -645,7 +645,6 @@ script:
       description: Organization address.
       type: Unknown
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

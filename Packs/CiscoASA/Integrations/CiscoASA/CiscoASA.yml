@@ -29,21 +29,13 @@ script:
   commands:
   - arguments:
     - description: The object ID of the network group to retrieve. This can't be used with pagination arguments.
-      isArray: false
       name: object_id
-      required: false
     - description: 'Page number of paginated results. Minimum of 1; default 1.'
-      isArray: false
       name: page
-      required: false
     - name: page_size
       description: The number of items per page. Maximum of 100; default 50.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of records to retrieve. Maximum of 100; default 50.
-      required: false
-      isArray: false
       defaultValue: '50'
     description: Retrieve information about network object groups. Network object groups can contain multiple network objects as well as inline networks or hosts. Network object groups can include a mix of both IPv4 and IPv6 addresses/network.
     name: cisco-asa-list-network-object-group
@@ -68,21 +60,13 @@ script:
       type: String
   - arguments:
     - description: The object ID of the local user group to retrieve. This can't be used with pagination arguments.
-      isArray: false
       name: object_id
-      required: false
     - description: Page number of paginated results. Minimum of 1; default 1.
-      isArray: false
       name: page
-      required: false
     - name: page_size
       description: The number of items per page. Maximum of 100; default 50.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of records to retrieve. Maximum of 100; default 50.
-      required: false
-      isArray: false
       defaultValue: '50'
     description: Retrieve information about local user groups, which are collections of user accounts, either from the local database or imported from Active Directory, that manage access to network resources not defined globally.
     name: cisco-asa-list-local-user-group
@@ -104,21 +88,13 @@ script:
       description: The ID of the user.
   - arguments:
     - description: The object ID of the local user to retrieve. This can't be used with pagination arguments.
-      isArray: false
       name: object_id
-      required: false
     - description: Page number of paginated results. Minimum of 1; default 1.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page. Maximum of 100; default 50.
-      isArray: false
       name: page_size
-      required: false
     - name: limit
       description: The maximum number of records to retrieve. Maximum of 100; default 50.
-      required: false
-      isArray: false
       defaultValue: '50'
     description: Retrieve information about individual local user accounts within a network system. These local users can be part of local user groups and groups imported from Active Directory.
     name: cisco-asa-list-local-user
@@ -140,21 +116,13 @@ script:
       type: String
   - arguments:
     - description: The object ID of the time range to retrieve. This can't be used with pagination arguments.
-      isArray: false
       name: object_id
-      required: false
     - description: Page number of paginated results. Minimum of 1; default 1.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page. Maximum of 100; default 50.
-      isArray: false
       name: page_size
-      required: false
     - description: The maximum number of records to retrieve. Maximum of 100; default 50.
-      isArray: false
       name: limit
-      required: false
       defaultValue: '50'
     description: Retrieve information about time range objects. A time range object defines a specific time consisting of a start time, an end time, and optional recurring entries. You use these objects on ACL rules to provide time-based access to certain features or assets. For example, you could create an access rule that allows access to a particular server during working hours only.
     name: cisco-asa-list-time-range
@@ -188,21 +156,13 @@ script:
       type: Number
   - arguments:
     - description: The object ID of the security object group to retrieve. This can't be used with pagination arguments.
-      isArray: false
       name: object_id
-      required: false
     - description: Page number of paginated results. Minimum of 1; default 1.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page. Maximum of 100; default 50.
-      isArray: false
       name: page_size
-      required: false
     - name: limit
       description: The maximum number of records to retrieve. Maximum of 100; default 50.
-      required: false
-      isArray: false
       defaultValue: '50'
     description: Retrieve information about security groups, which are collections of security groups or identifiers that manage access and permissions to network resources. These groups can be used in features like Cisco TrustSec and are often part of extended access control lists, enabling centralized and localized security policy management.
     name: cisco-asa-list-security-object-group
@@ -227,21 +187,13 @@ script:
       description: The object ID of objectRef#SecurityObjGroup.
   - arguments:
     - description: The object ID of the user object to retrieve. This can't be used with pagination arguments.
-      isArray: false
       name: object_id
-      required: false
     - description: Page number of paginated results. Minimum of 1; default 1.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page. Maximum of 100; default 50.
-      isArray: false
       name: page_size
-      required: false
     - description: The maximum number of records to retrieve. Maximum of 100; default 50.
-      isArray: false
       name: limit
-      required: false
       defaultValue: '50'
     description: Retrieve information about user definitions within the system. This helps in managing and configuring user access and permissions in a network security context.
     name: cisco-asa-list-user-object
@@ -265,23 +217,15 @@ script:
       description: Shows a successful 'write memory' command execution on a Cisco ASA device, building the configuration and generating a cryptochecksum for integrity. The process is completed with an "[OK]" message.
       type: String
   - arguments:
-    - default: false
-      description: The name of the interface from which to get rules.
-      isArray: false
+    - description: The name of the interface from which to get rules.
       name: interface_name
-      required: false
-      secret: false
-    - default: false
-      description: 'The interface type. Can be "In", "Out", or "Global". '
+    - description: 'The interface type. Can be "In", "Out", or "Global". '
       name: interface_type
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - In
       - Out
       - Global
-    deprecated: false
     description: Gets a list all rules for the supplied interface.
     name: cisco-asa-list-rules
     outputs:
@@ -360,20 +304,14 @@ script:
     - contextPath: CiscoASA.Rules.TimeRange.objectId
       description: The object ID of the time range.
       type: String
-  - deprecated: false
-    description: Creates a backup of the current settings (i.e., the backup.cfg file).
-    execution: false
+  - description: Creates a backup of the current settings (i.e., the backup.cfg file).
     name: cisco-asa-backup
     arguments:
-    - default: false
-      description: The name of the backup.
-      isArray: false
+    - description: The name of the backup.
       name: backup_name
       required: true
     - description: The passphrase for the backup.
       name: passphrase
-      required: false
-      secret: false
   - arguments:
     - description: The rule ID.
       name: rule_id
@@ -483,11 +421,7 @@ script:
     - description: A list of remarks for the rule.
       isArray: true
       name: remarks
-      required: false
-      secret: false
-    - default: false
-      description: 'The position in which to create the rule.'
-      isArray: false
+    - description: 'The position in which to create the rule.'
       name: position
     - auto: PREDEFINED
       description: The log level of the rule. Can be "Default", "Emergencies", "Alerts", "Critical", "Errors", "Warnings", "Notifications", "Informational", or "Debugging".
@@ -508,8 +442,6 @@ script:
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
       defaultValue: 'True'
     - auto: PREDEFINED
       description: The interface type. Can be "In", "Out", or "Global".
@@ -523,15 +455,9 @@ script:
       name: interface_name
     - description: The service of the rule.
       name: service
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The destination address type in the ace. 
-      isArray: false
+      description: The destination address type in the ace.
       name: destination_kind
-      required: false
-      secret: false
       predefined:
       - AnyIPAddress
       - IPv4Address
@@ -548,12 +474,8 @@ script:
       - NetworkObj
       - NetworkObjGroup
     - auto: PREDEFINED
-      default: false
-      description: The source address type in the ace. 
-      isArray: false
+      description: The source address type in the ace.
       name: source_kind
-      required: false
-      secret: false
       predefined:
       - AnyIPAddress
       - IPv4Address
@@ -570,12 +492,8 @@ script:
       - NetworkObj
       - NetworkObjGroup
     - auto: PREDEFINED
-      default: false
-      description: The source service type. 
-      isArray: false
+      description: The source service type.
       name: service_kind
-      required: false
-      secret: false
       predefined:
       - AnyService
       - ICMP6Service
@@ -584,19 +502,11 @@ script:
       - NetworkServiceGroups
       - NetworkServiceObjects
       - TcpUdpService
-    - default: false
-      description: The destination service value.
-      isArray: false
+    - description: The destination service value.
       name: destination_service
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The destination service type. 
-      isArray: false
+      description: The destination service type.
       name: destination_service_kind
-      required: false
-      secret: false
       predefined:
       - AnyService
       - ICMP6Service
@@ -606,64 +516,35 @@ script:
       - NetworkServiceObjects
       - TcpUdpService
     - auto: PREDEFINED
-      default: false
       description: Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range.
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object
-      isArray: false
+    - description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object
       name: user
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj.
-      isArray: false
       name: user_kind
-      required: false
-      secret: false
       predefined:
       - LocalUserObjGroup
       - UserGroupObj
       - UserObj
-    - default: false
-      description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
-      isArray: false
+    - description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       name: source_security
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The source security type. 
-      isArray: false
+      description: The source security type.
       name: source_security_kind
-      required: false
-      secret: false
       predefined:
       - SecurityName
       - SecurityTag
       - SecurityObjGroup
-    - default: false
-      description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
-      isArray: false
+    - description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       name: destination_security
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The destination security type. 
-      isArray: false
+      description: The destination security type.
       name: destination_security_kind
-      required: false
-      secret: false
       predefined:
       - SecurityName
       - SecurityTag
       - SecurityObjGroup
-    deprecated: false
     description: Creates a rule.
     name: cisco-asa-create-rule
     outputs:
@@ -778,12 +659,8 @@ script:
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
       defaultValue: 'True'
-    - default: false
-      description: The log level of the rule.
-      isArray: false
+    - description: The log level of the rule.
       name: log_level
     - description: 'The position the rule will be in. '
       name: position
@@ -802,15 +679,9 @@ script:
       name: source
     - description: The service of the rule.
       name: service
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The destination address type in the ace. 
-      isArray: false
+      description: The destination address type in the ace.
       name: destination_kind
-      required: false
-      secret: false
       predefined:
       - AnyIPAddress
       - IPv4Address
@@ -827,12 +698,8 @@ script:
       - NetworkObj
       - NetworkObjGroup
     - auto: PREDEFINED
-      default: false
-      description: The source address type in the ace. 
-      isArray: false
+      description: The source address type in the ace.
       name: source_kind
-      required: false
-      secret: false
       predefined:
       - AnyIPAddress
       - IPv4Address
@@ -849,12 +716,8 @@ script:
       - NetworkObj
       - NetworkObjGroup
     - auto: PREDEFINED
-      default: false
-      description: The source service type. 
-      isArray: false
+      description: The source service type.
       name: service_kind
-      required: false
-      secret: false
       predefined:
       - AnyService
       - ICMP6Service
@@ -863,19 +726,11 @@ script:
       - NetworkServiceGroups
       - NetworkServiceObjects
       - TcpUdpService
-    - default: false
-      description: The destination service value.
-      isArray: false
+    - description: The destination service value.
       name: destination_service
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The destination service type. 
-      isArray: false
+      description: The destination service type.
       name: destination_service_kind
-      required: false
-      secret: false
       predefined:
       - AnyService
       - ICMP6Service
@@ -885,64 +740,35 @@ script:
       - NetworkServiceObjects
       - TcpUdpService
     - auto: PREDEFINED
-      default: false
       description: Object ID of for the time range object. Can be received with the command cisco-asa-list-time-range.
-      isArray: false
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object.
-      isArray: false
+    - description: The object ID to the user. Can be one of LocalUserObjGroup, UserGroupObj, UserObj. Can be received with existing commands; cisco-asa-list-local-user-group, cisco-asa-list-local-user, cisco-asa-list-user-object.
       name: user
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The type of the user. 
-      isArray: false
+      description: The type of the user.
       name: user_kind
-      required: false
-      secret: false
       predefined:
       - LocalUserObjGroup
       - UserGroupObj
       - UserObj
-    - default: false
-      description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
-      isArray: false
+    - description: Source security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       name: source_security
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The source security type. 
-      isArray: false
+      description: The source security type.
       name: source_security_kind
-      required: false
-      secret: false
       predefined:
       - SecurityName
       - SecurityTag
       - SecurityObjGroup
-    - default: false
-      description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
-      isArray: false
+    - description: Destination security group in the ace. Possible values are SecurityName, SecurityTag and SecurityObjGroup. Can be received with the existing command cisco-asa-list-security-object-group
       name: destination_security
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The destination security type. 
-      isArray: false
+      description: The destination security type.
       name: destination_security_kind
-      required: false
-      secret: false
       predefined:
       - SecurityName
       - SecurityTag
       - SecurityObjGroup
-    deprecated: false
     description: Updates an existing rule.
     name: cisco-asa-edit-rule
     outputs:
@@ -1085,8 +911,6 @@ script:
       description: The type of interface.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
-  runonce: false
   script: '-'
   type: python
   subtype: python3

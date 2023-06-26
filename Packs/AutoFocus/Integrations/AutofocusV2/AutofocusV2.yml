@@ -1111,10 +1111,6 @@ script:
       description: The domain name.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

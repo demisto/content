@@ -5,11 +5,9 @@ commonfields:
 configuration:
 - display: User's Service Account JSON
   name: user_service_account_json
-  required: false
   type: 4
   hidden: true
 - name: user_service_account_json_creds
-  required: false
   type: 9
   displaypassword: User's Service Account JSON
   hiddenusername: true
@@ -26,9 +24,7 @@ name: GoogleCalendar
 script:
   commands:
   - arguments:
-    - default: false
-      description: Identifier of the calendar. To access the primary calendar of the currently logged in user, use the "primary" keyword.
-      isArray: false
+    - description: Identifier of the calendar. To access the primary calendar of the currently logged in user, use the "primary" keyword.
       name: calendar_id
       required: true
     - description: The user's primary email address.
@@ -76,10 +72,7 @@ script:
       - group
       - domain
       required: true
-      secret: false
-    - default: false
-      description: The email address of a user or group, or the name of a domain, depending on the scope type. Omitted for type "default".
-      isArray: false
+    - description: The email address of a user or group, or the name of a domain, depending on the scope type. Omitted for type "default".
       name: scope_value
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -116,9 +109,7 @@ script:
       description: The role assigned to the scope.
       type: String
   - arguments:
-    - default: false
-      description: Calendar identifier. If you want to access the primary calendar of the currently logged in user, use the "primary" keyword.
-      isArray: false
+    - description: Calendar identifier. If you want to access the primary calendar of the currently logged in user, use the "primary" keyword.
       name: calendar_id
       required: true
     - description: The user's primary email address.
@@ -131,7 +122,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to include deleted ACLs in the result. Deleted ACLs are represented by the role "none". Deleted ACLs will always be included if syncToken is provided. Default is "false".
-      isArray: false
       name: show_deleted
       predefined:
       - 'true'
@@ -180,11 +170,6 @@ script:
       description: Token used at a later point in time to retrieve only the entries that have changed since this result was returned.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.63869
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

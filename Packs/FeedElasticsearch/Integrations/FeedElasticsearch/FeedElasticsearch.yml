@@ -18,7 +18,6 @@ configuration:
   options:
   - ElasticSearch
   - OpenSearch
-  required: false
   type: 15
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)

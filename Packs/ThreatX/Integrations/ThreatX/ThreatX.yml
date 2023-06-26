@@ -125,7 +125,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 1-Hour
       description: 'Look-back timeframe for the query. Options are 1-Hour, 1-Day, 1-Week, 1-Month, or 3-Months. Note: long look-back timeframes for a large number of Entities can timeout.'
-      isArray: false
       name: timeframe
       predefined:
       - 1-Hour
@@ -134,10 +133,7 @@ script:
       - 1-Month
       - 3-Months
       required: true
-      secret: false
-    deprecated: false
     description: 'Get high-level Entity information using the Entity ID, Entity Name, or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long look-back timeframes for a large number of Entities can timeout.'
-    execution: false
     name: threatx-get-entities
     outputs:
     - contextPath: Threatx.Entity.ID
@@ -153,9 +149,7 @@ script:
       description: Risk score of the entity.
       type: Unknown
   - arguments:
-    - default: false
-      description: 'ID hash of the Entity. Note: this value can be retrieved using the "!threatx-get-entities" command.'
-      isArray: false
+    - description: 'ID hash of the Entity. Note: this value can be retrieved using the "!threatx-get-entities" command.'
       name: entity_id
       required: true
     description: Returns the notes attached to an Entity, by Entity ID.
@@ -177,16 +171,12 @@ script:
       description: Author of the note.
       type: Unknown
   - arguments:
-    - default: false
-      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
-      isArray: false
+    - description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
       name: entity_id
       required: true
     - description: Contents of the note
       name: message
       required: true
-      secret: false
-    deprecated: false
     description: 'Add a new note to the entity. For example: !threatx-add-entity-note entity_id=566056709695514809 message="test note"'
     execution: true
     name: threatx-add-entity-note

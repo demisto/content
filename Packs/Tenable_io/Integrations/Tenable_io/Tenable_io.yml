@@ -10,22 +10,18 @@ configuration:
   type: 0
 - display: Access key
   name: access-key
-  required: false
   type: 4
   hidden: true
 - displaypassword: Access key
-  name:  credentials_access_key
-  required: false
+  name: credentials_access_key
   hiddenusername: true
   type: 9
 - display: Secret key
   name: secret-key
-  required: false
   type: 4
   hidden: true
 - displaypassword: secret key
-  name:  credentials_secret_key
-  required: false
+  name: credentials_secret_key
   hiddenusername: true
   type: 9
 - display: Trust any certificate (not secure)

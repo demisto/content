@@ -30,7 +30,6 @@ script:
   subtype: python3
   script: '-'
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
   commands:
   - name: cisco-wsa-access-policy-list
     description: |-

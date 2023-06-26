@@ -15,17 +15,14 @@ configuration:
   name: username
   defaultvalue: ""
   type: 0
-  required: false
   hidden: true
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - display: Username
   name: credentials
-  required: false
   type: 9
   displaypassword: Password
   section: Connect

@@ -18,19 +18,16 @@ configuration:
   section: Connect
 - display: Custom Key
   name: custom_key
-  required: false
   type: 4
   section: Connect
   hidden: true
 - display: Custom ID
   name: custom_id
-  required: false
   type: 0
   section: Connect
   hidden: true
 - display: Custom ID
   name: credentials_custom
-  required: false
   type: 9
   displaypassword: Custom Key
   section: Connect
@@ -1296,7 +1293,6 @@ script:
       description: The cumulative count of loaded scripts since process tracking started.
       type: Number
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

@@ -15,19 +15,16 @@ configuration:
   section: Connect
 - display: Customer ID
   name: h_id
-  required: false
   type: 0
   section: Connect
   hidden: true
 - display: API Token
   name: token
-  required: false
   type: 4
   section: Connect
   hidden: true
 - display: Customer ID
   name: h_id_creds
-  required: false
   type: 9
   section: Connect
   displaypassword: API Token
@@ -52,7 +49,6 @@ configuration:
 - advanced: true
   display: Use system proxy settings
   name: proxy
-  required: false
   section: Connect
   type: 8
 

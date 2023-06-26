@@ -773,12 +773,10 @@ script:
     arguments:
     - name: cve_id
       description: Deprecated. Use the `cve` argument instead.
-      required: false
       isArray: true
       defaultValue: ""
     - name: cve
       description: A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546.
-      required: false
       isArray: true
       defaultValue: ""
       default: true

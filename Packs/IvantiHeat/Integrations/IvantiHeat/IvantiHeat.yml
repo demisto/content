@@ -9,11 +9,9 @@ configuration:
   type: 0
 - display: API Token
   name: token
-  required: false
   type: 4
   hidden: true
 - name: token_creds
-  required: false
   type: 9
   displaypassword: API Token
   hiddenusername: true
@@ -276,7 +274,6 @@ script:
       description: Incident owner email address.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

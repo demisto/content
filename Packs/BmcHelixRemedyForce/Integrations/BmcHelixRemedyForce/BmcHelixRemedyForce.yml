@@ -13,23 +13,19 @@ configuration:
   defaultvalue: https://login.salesforce.com
 - display: Username
   name: username
-  required: false
   type: 0
   hidden: true
 - display: Password
   name: password
-  required: false
   type: 4
   hidden: true
 - display: Username
   name: username_creds
-  required: false
   type: 9
   displaypassword: Password
 - additionalinfo: Incidents will be fetched based on selected type.
   display: Type
   name: type
-  required: false
   type: 15
   defaultvalue: BMC Remedyforce Service Request
   options:
@@ -784,7 +780,6 @@ script:
       description: The type of the service request.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

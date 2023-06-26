@@ -55,7 +55,6 @@ configuration:
     Note: If type is present in the Filter parameter this value will be overwritten.'
   display: Alert Type
   name: alert_type
-  required: false
   type: 16
   section: Collect
   advanced: true
@@ -106,7 +105,6 @@ configuration:
 - advanced: true
   display: Use system proxy settings
   name: proxy
-  required: false
   section: Connect
   type: 8
 
@@ -759,7 +757,6 @@ script:
       description: Status of the failed alert recovery.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.64077
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

@@ -397,8 +397,6 @@ script:
       description: The text the message was updated with.
       type: String
   dockerimage: demisto/slackv3:1.0.0.63762
-  feed: false
-  isfetch: false
   longRunning: true
   script: '-'
   subtype: python3

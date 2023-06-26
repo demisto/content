@@ -15,11 +15,9 @@ configuration:
   name: api_key
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
 - name: credentials_api_key
   type: 9
-  required: false
   displaypassword: API Key
   hiddenusername: true
 - display: Use system proxy settings

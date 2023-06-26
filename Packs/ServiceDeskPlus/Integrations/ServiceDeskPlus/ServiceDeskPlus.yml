@@ -19,8 +19,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: Technician Key
-  name:  credentials_technician_key
-  required: false
+  name: credentials_technician_key
   hiddenusername: true
   type: 9
 - defaultvalue: https://example.com
@@ -37,7 +36,6 @@ configuration:
   hidden: true
 - display: Client ID
   name: credentials_client
-  required: false
   type: 9
   displaypassword: Client Secret
   section: Connect
@@ -46,8 +44,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: Refresh Token
-  name:  credentials_refresh_token
-  required: false
+  name: credentials_refresh_token
   hiddenusername: true
   type: 9
 - display: Trust any certificate (not secure)

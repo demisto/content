@@ -1531,11 +1531,6 @@ script:
       description: Signature ID.
       type: Number
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

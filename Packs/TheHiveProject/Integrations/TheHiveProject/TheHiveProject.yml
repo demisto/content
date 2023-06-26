@@ -15,11 +15,9 @@ configuration:
 - display: API Key
   name: apiKey
   type: 4
-  required: false
   hidden: true
 - displaypassword: API Key
-  name:  credentials_api_key
-  required: false
+  name: credentials_api_key
   hiddenusername: true
   type: 9
 - display: Fetch incidents

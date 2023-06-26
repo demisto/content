@@ -765,19 +765,11 @@ script:
       type: string
   - arguments:
     - description: Deprecated. Use the `cve` argument instead.
-      isArray: false
       name: cve_id
-      required: false
-      secret: false
     - default: true
       description: CVE ID.
-      isArray: false
       name: cve
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
-      isArray: false
+    - description: Maximum number of entries to return. A high number of entries might affect performance. The default value is "20".
       name: max_size
     description: Returns CVE information by CVE ID.
     name: cve
@@ -810,11 +802,6 @@ script:
       description: The indicator that was tested.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

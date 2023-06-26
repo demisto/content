@@ -13,18 +13,15 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
-  name:  credentials_auth_id
-  required: false
+  name: credentials_auth_id
   hiddenusername: true
   type: 9
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
+- display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
   hidden: true
 - displaypassword: Token (received from the admin consent - see Detailed Instructions (?)
-  name:  credentials_tenant_id
-  required: false
+  name: credentials_tenant_id
   hiddenusername: true
   type: 9
 - display: Key (received from the admin consent - see Detailed Instructions (?)
@@ -32,8 +29,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
-  name:  credentials_enc_key
-  required: false
+  name: credentials_enc_key
   hiddenusername: true
   type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
@@ -43,8 +39,7 @@ configuration:
   hidden: true
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
-  name:  credentials_certificate_thumbprint
-  required: false
+  name: credentials_certificate_thumbprint
   hiddenusername: true
   type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
@@ -587,10 +582,6 @@ script:
       description: "A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
   dockerimage: demisto/crypto:1.0.0.63672
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   type: python
   subtype: python3

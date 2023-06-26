@@ -13,12 +13,10 @@ configuration:
   type: 0
 - display: API3 Client Secret
   name: client_secret
-  required: false
   type: 4
   hidden: true
 - display: API3 Client ID
   name: credentials_api3_client
-  required: false
   type: 9
   displaypassword: API3 Client Secret
   section: Connect
@@ -175,8 +173,6 @@ script:
       description: The time that the look was last updated.
       type: Date
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
-  runonce: false
   script: '-'
   type: python
   subtype: python3

@@ -5,12 +5,10 @@ commonfields:
 configuration:
 - display: Service account private key file contents (JSON)
   name: credentials_json
-  required: false
   type: 4
   hidden: true
 - display: Default project ID
   name: project_id_creds
-  required: false
   type: 9
   displaypassword: Service account private key file contents (JSON)
 - display: Default project ID
@@ -111,8 +109,6 @@ script:
       description: Either a system or user-function generated error. Set if the execution was not successful.
       type: String
   dockerimage: demisto/google-api-py3:1.0.0.64100
-  isfetch: false
-  runonce: false
   script: '-'
   type: python
   subtype: python3

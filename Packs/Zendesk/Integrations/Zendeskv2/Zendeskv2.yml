@@ -44,7 +44,6 @@ configuration:
   - marketplacev2
 - display: Get incident attachments
   name: get_attachments
-  required: false
   type: 8
   section: Collect
   advanced: true
@@ -841,33 +840,33 @@ script:
     - name: page_number
       description: The page number (used for pagination).
     outputs:
-      - contextPath: Zendesk.Group.created_at
-        description: The time the group was created.
-        type: Date
-      - contextPath: Zendesk.Group.default
-        description: If the group is the default one for the account.
-        type: Boolean
-      - contextPath: Zendesk.Group.deleted
-        description: true if the group is deleted false otherwise.
-        type: Boolean
-      - contextPath: Zendesk.Group.description
-        description: The description of the group.
-        type: String
-      - contextPath: Zendesk.Group.id
-        description: The group ID.
-        type: Number
-      - contextPath: Zendesk.Group.is_public
-        description: If true, the group is public. If false, the group is private. You can't change a private group to a public group
-        type: Boolean
-      - contextPath: Zendesk.Group.name
-        description: The name of the group.
-        type: String
-      - contextPath: Zendesk.Group.updated_at
-        description: The time of the last update of the group.
-        type: Date
-      - contextPath: Zendesk.Group.url
-        description: The API URL of the group.
-        type: String
+    - contextPath: Zendesk.Group.created_at
+      description: The time the group was created.
+      type: Date
+    - contextPath: Zendesk.Group.default
+      description: If the group is the default one for the account.
+      type: Boolean
+    - contextPath: Zendesk.Group.deleted
+      description: true if the group is deleted false otherwise.
+      type: Boolean
+    - contextPath: Zendesk.Group.description
+      description: The description of the group.
+      type: String
+    - contextPath: Zendesk.Group.id
+      description: The group ID.
+      type: Number
+    - contextPath: Zendesk.Group.is_public
+      description: If true, the group is public. If false, the group is private. You can't change a private group to a public group
+      type: Boolean
+    - contextPath: Zendesk.Group.name
+      description: The name of the group.
+      type: String
+    - contextPath: Zendesk.Group.updated_at
+      description: The time of the last update of the group.
+      type: Date
+    - contextPath: Zendesk.Group.url
+      description: The API URL of the group.
+      type: String
   - name: zendesk-ticket-list
     description: |-
       List Zendesk tickets. 

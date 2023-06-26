@@ -9,17 +9,14 @@ configuration:
   type: 0
 - display: Integration Key
   name: integration_key
-  required: false
   type: 0
   hidden: true
 - display: Secret Key
   name: secret_key
-  required: false
   type: 4
   hidden: true
 - displaypassword: Secret Key
-  name:  credentials_key
-  required: false
+  name: credentials_key
   display: Integration Key
   type: 9
 - display: Trust any certificate (not secure)
@@ -323,7 +320,6 @@ script:
     description: Modify the user account.
     name: duoadmin-modify-user
   dockerimage: demisto/duoadmin3:1.0.0.63681
-  runonce: false
   script: ''
   type: python
   subtype: python3

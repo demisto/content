@@ -9,11 +9,9 @@ configuration:
   type: 0
 - display: API Key
   name: token
-  required: false
   type: 4
   hidden: true
 - name: token_creds
-  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
@@ -748,11 +746,6 @@ script:
       description: The ID of the execution.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python
