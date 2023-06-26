@@ -117,14 +117,17 @@ def test_uptycs_get_carves_link(mocker, requests_mock):
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_carves_link_command()
-
     assert response['Contents'] == mock_response
+
+    test_url = 'https://%s/public/api/customers/%s/carves/%s/link' % (DOMAIN, CUSTOMER_ID, carve_id)
+    requests_mock.get(test_url, json=mock_response)
 
     with open('test_data/blob.tar', 'rb') as file_mock:
         requests_mock.get(mock_response['url'], content=file_mock.read())
 
     result = uptycs_get_carves_file_command()
-    assert result['File'] == carve_id + '.tar'
+    assert result is None
+
 
 def test_uptycs_get_assets(mocker, requests_mock):
     """
@@ -1271,6 +1274,7 @@ def test_uptycs_get_users(mocker, requests_mock):
     user_id = "33436e24-f30f-42d0-8438-d948be12b5af"
     object_group_id = "8963abf8-9c8d-4ef5-8a80-af836fe69be4"
     mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
         "asset_group_id": object_group_id
     })
 
@@ -1297,17 +1301,21 @@ def test_uptycs_get_users(mocker, requests_mock):
     mock_response = {}
     mock_response['items'] = [mock_user]
 
-    test_url = 'https://%s/public/api/customers/%s/users' % (DOMAIN, CUSTOMER_ID)
+    test_url = 'https://%s/public/api/customers/%s/users?limit=1' % (DOMAIN, CUSTOMER_ID)
     requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_users_command()
 
+    test_url = 'https://%s/public/api/customers/%s/users' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.get(test_url, json=mock_response)
+
     test_url_extra = 'https://%s/public/api/customers/%s/users/%s' % (DOMAIN, CUSTOMER_ID, user_id)
     requests_mock.get(test_url_extra, json=mock_user)
 
+    asset_groups = uptycs_get_user_asset_groups_command()
+
     del mock_user['userObjectGroups']
     assert response['Contents'] == mock_response
-    asset_groups = uptycs_get_user_asset_groups_command()
 
     users_in_group = {
         mock_user['name']: {
@@ -2272,7 +2280,7 @@ def test_uptycs_get_asset_tags(mocker, requests_mock):
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
     test_url = 'https://%s/public/api/customers/%s/assets/%s' % (DOMAIN, CUSTOMER_ID, asset_id)
-    requests_mock.post(test_url, json=mock_response)
+    requests_mock.get(test_url, json=mock_response)
 
     response = uptycs_get_asset_tags_command()
     assert response['Contents'] == mock_response['tags']
