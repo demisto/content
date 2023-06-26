@@ -602,6 +602,8 @@ test-upload-flow:
     - section_start "Wait For Upload To Finish"
     - if [ "$DEMISTO_SDK_NIGHTLY" == "true" ]; then
     -   export verify_upload_id_set_job=true
+    - else
+    -   export verify_upload_id_set_job=true
     - fi
     - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN -vis $verify_upload_id_set_job
     - echo $successfully_upload_id_set
