@@ -416,6 +416,5 @@
                 "type": "custom"
             }
         ]
-    },
-    "marketplaces": ["xsoar"]
+    }
 }
