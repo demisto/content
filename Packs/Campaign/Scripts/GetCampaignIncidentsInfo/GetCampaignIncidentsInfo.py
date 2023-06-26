@@ -39,6 +39,11 @@ def update_incident_with_required_keys(incidents: List, required_keys: List):
         :param required_keys: keys need to be updated
 
     """
+
+    # If an incident is deleted, remove it from the list to avoid a key error
+    incidents = [incident for incident in incidents
+                 if demisto.executeCommand("GetIncidentsByQuery", {"query": f"id:({incident['id']})"})[0].get("Contents") != "[]"]
+
     ids = [str(incident['id']) for incident in incidents]
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': "id:({})".format(' '.join(ids))
@@ -52,6 +57,8 @@ def update_incident_with_required_keys(incidents: List, required_keys: List):
         updated_incident = id_to_updated_incident_map[incident['id']]
         for key in required_keys:
             incident[key] = updated_incident.get(key)
+
+    return incidents
 
 
 def convert_incident_to_hr(incident):
@@ -150,7 +157,7 @@ def main():
         incidents = get_campaign_incidents_from_context()
         fields_to_display = demisto.get(demisto.context(), 'EmailCampaign.fieldsToDisplay')
         if incidents:
-            update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
+            incidents = update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
             update_empty_fields()
             readable_output = get_incidents_info_md(incidents, fields_to_display)
         else:
