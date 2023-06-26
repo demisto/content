@@ -76,7 +76,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -155,7 +154,6 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-38c534a0-0cdc-11ed-89d1-e5ac65360f00",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -234,7 +232,6 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-42633610-0cdc-11ed-89d1-e5ac65360f00",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -245,62 +242,6 @@
                         "type": "indicators",
                         "w": 1,
                         "x": 1,
-                        "y": 2
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 4,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "caseinfoid-field-changed-caseinfoid-cd59c980-0cde-11ed-89d1-e5ac65360f00",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "stringsifter",
-                                "height": 106,
-                                "id": "dad1f7e0-0cde-11ed-89d1-e5ac65360f00",
-                                "index": 0,
-                                "listId": "caseinfoid-cd59c980-0cde-11ed-89d1-e5ac65360f00",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "String Sifter",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "caseinfoid-field-changed-caseinfoid-d01bcfb0-0cde-11ed-89d1-e5ac65360f00",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "stringssimilarity",
-                                "height": 22,
-                                "id": "df5e84e0-0cde-11ed-89d1-e5ac65360f00",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Strings Similarity",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
                         "y": 2
                     },
                     {
@@ -315,7 +256,6 @@
                         "h": 2,
                         "i": "caseinfoid-field-changed-caseinfoid-06e49f40-0cdf-11ed-89d1-e5ac65360f00",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -333,7 +273,6 @@
                         "h": 2,
                         "i": "caseinfoid-8c0f6750-0d83-11ed-9e08-b96f717afa75",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -358,7 +297,6 @@
                         "h": 2,
                         "i": "caseinfoid-8e64f340-0d87-11ed-a87d-ffc9245ec67b",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -384,7 +322,6 @@
                         "h": 2,
                         "i": "caseinfoid-99427990-0d87-11ed-a87d-ffc9245ec67b",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -401,7 +338,6 @@
                         "h": 2,
                         "i": "caseinfoid-4cf90f60-119a-11ed-bd36-d1bd96220a2e",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -418,7 +354,6 @@
                         "h": 2,
                         "i": "caseinfoid-87b6fcf0-1255-11ed-bd36-d1bd96220a2e",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -429,6 +364,60 @@
                         "type": "indicators",
                         "w": 1,
                         "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-e8540fc1-1426-11ee-a737-19f59cf74e83",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "stringssimilarity",
+                                "height": 22,
+                                "id": "e8540fc0-1426-11ee-a737-19f59cf74e83",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Strings Similarity",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-f42767c1-1426-11ee-a737-19f59cf74e83",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "stringsifter",
+                                "height": 106,
+                                "id": "f42767c0-1426-11ee-a737-19f59cf74e83",
+                                "index": 0,
+                                "listId": "caseinfoid-cd59c980-0cde-11ed-89d1-e5ac65360f00",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "String Sifter",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
                         "y": 4
                     }
                 ],
