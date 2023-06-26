@@ -31,7 +31,7 @@
                                 "id": "fe150880-4b33-11ed-ae73-495270f96710",
                                 "index": 0,
                                 "name": "Check Content Pack Upgrade Impacts on Custom Content",
-                                "scriptId": "7e6d1034-4493-4108-8fac-0a874b313542",
+                                "scriptId": "UpgradeCheck",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -44,7 +44,7 @@
                                 "id": "f71e24d0-5600-11ed-94cf-97931eb67777",
                                 "index": 1,
                                 "name": "Get Commit History for Local Changes",
-                                "scriptId": "f5b829d5-52a7-497f-89f0-d9e5eb563fd5",
+                                "scriptId": "ChangeHistory",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -240,7 +240,7 @@
                                 "id": "07af3ff0-5c78-11ed-8201-f5ce470fdb4b",
                                 "index": 0,
                                 "name": "Load Fields from Incident",
-                                "scriptId": "3aa09459-ff95-4f96-844c-43a9abfccd87",
+                                "scriptId": "UnitTestLoadFields",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -253,7 +253,7 @@
                                 "id": "b5884ef0-5c7d-11ed-8201-f5ce470fdb4b",
                                 "index": 1,
                                 "name": "Load Context from Incident",
-                                "scriptId": "039cdb60-d238-44a0-8b97-5da67ee7d77f",
+                                "scriptId": "UnitTestLoadContext",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -266,7 +266,7 @@
                                 "id": "a921bfd0-5ebb-11ed-aa90-278dc8b25b17",
                                 "index": 2,
                                 "name": "Save Fields to List",
-                                "scriptId": "e020194d-58d0-4c3a-8c10-77b6f7efc81a",
+                                "scriptId": "UnitTestSaveFieldsList",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -281,7 +281,7 @@
                                 "index": 3,
                                 "listId": "lfvtip6zqh-tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
                                 "name": "Save Context to List",
-                                "scriptId": "dfa2f10d-bd5a-48c3-84be-53fc42e8e876",
+                                "scriptId": "UnitTestSaveContextList",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -294,7 +294,7 @@
                                 "id": "aa7fc930-5ebb-11ed-aa90-278dc8b25b17",
                                 "index": 4,
                                 "name": "Load Fields from List",
-                                "scriptId": "d57e596c-6092-4b3a-8999-6984ab0e5c70",
+                                "scriptId": "UnitTestLoadFieldsList",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -307,7 +307,7 @@
                                 "id": "c004f160-5ebe-11ed-86c5-93661c2f1992",
                                 "index": 5,
                                 "name": "Load Context from List",
-                                "scriptId": "27560e97-4c14-4218-824e-d6662d91f09b",
+                                "scriptId": "UnitTestLoadContextList",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -320,7 +320,7 @@
                                 "id": "dc8910b0-5ec2-11ed-86c5-93661c2f1992",
                                 "index": 6,
                                 "name": "Set Field",
-                                "scriptId": "097321a4-2509-4d1d-8e1e-feccc7ddbe3b",
+                                "scriptId": "UnitTestSetField",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -386,7 +386,7 @@
                                 "id": "81badb80-a0cd-11ed-ac98-8545a9b867ac",
                                 "index": 10,
                                 "name": "Test Coverage",
-                                "scriptId": "17789943-d586-4c2b-8691-d848fb646f5d",
+                                "scriptId": "UnitTestCoverage",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
@@ -459,7 +459,7 @@
                                 "index": 0,
                                 "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
                                 "name": "Unit Test Automations",
-                                "scriptId": "9deeef6d-4329-4e3c-88bf-92d4c9971a51",
+                                "scriptId": "UnitTest",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -504,7 +504,7 @@
                                 "index": 2,
                                 "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
                                 "name": "Unit Test Subplaybooks",
-                                "scriptId": "9deeef6d-4329-4e3c-88bf-92d4c9971a51",
+                                "scriptId": "UnitTest",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -529,7 +529,7 @@
                                 "index": 3,
                                 "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
                                 "name": "Unit Test Playbooks",
-                                "scriptId": "9deeef6d-4329-4e3c-88bf-92d4c9971a51",
+                                "scriptId": "UnitTest",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -555,7 +555,7 @@
                                 "index": 4,
                                 "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
                                 "name": "Ad Hoc Test",
-                                "scriptId": "9deeef6d-4329-4e3c-88bf-92d4c9971a51",
+                                "scriptId": "UnitTest",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -717,7 +717,7 @@
                                 "index": 0,
                                 "listId": "lfvtip6zqh-eaef0ff0-9e88-11ed-baa8-b1aeca41b30f",
                                 "name": "Playbook Analyzer",
-                                "scriptId": "6e4a73cc-9448-4990-8a9d-990c8d9bd4d1",
+                                "scriptId": "UnitTestPlaybookAnalyzer",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
@@ -739,7 +739,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Task Average Duration (ms)",
-                        "query": "a21f363f-7ba8-4874-8ba0-81c069234bf5",
+                        "query": "UnitTestPBATaskAvg",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -755,7 +755,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Task Maximum Duration (ms)",
-                        "query": "c5b23735-0954-4713-8c4b-50bfe46b24a0",
+                        "query": "UnitTestPBATaskMax",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -796,7 +796,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Task Statistics ",
-                        "query": "3c4e931d-4c4b-4398-887c-88dacc4a7682",
+                        "query": "UnitTestPBAStats",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
