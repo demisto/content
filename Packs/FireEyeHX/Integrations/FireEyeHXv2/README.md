@@ -2109,9 +2109,9 @@ Create a new indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- |----------|
 | category | The indicator category. | Required |
-| display_name | Display Name for the Indicator. | Optional |
-| description | Description for the Indicator. | Optional |
-| platforms | Select Platform for the Indicator. If not selected, Indicator will be created for all platforms. | Optional |
+| display_name | Display name for the indicator. | Optional |
+| description | Description for the indicator. | Optional |
+| platforms | The platform for the Indicator. If not selected, the indicator will be created for all platforms. | Optional |
 
 
 #### Context Output
