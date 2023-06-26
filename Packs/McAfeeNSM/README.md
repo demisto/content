@@ -25,7 +25,7 @@ This pack includes Cortex XSIAM content.
 3. fill the fields "Server Name or IP Address" and "Port".
 4. on *facilities* dropdown select "Security/authorization (code 4)".
 5. severity mapping not touch, will be like:
-    ![link](https://raw.githubusercontent.com/demisto/content/)
+    ![link](https://raw.githubusercontent.com/demisto/content/53399299a79f6d8323502c6489c02b87a8720a7b/Packs/McAfeeNSM/doc_imgs/nsm_faults_severity_mapping.png)
 6. on *Forward Faults* dropdown select "informational and above".
 7. on *Message Preference* click on the checkbox "Syslog default" and click save.
 
@@ -36,7 +36,7 @@ This pack includes Cortex XSIAM content.
 4. select Protocol on *Protocol* dropdown.
 5. on *Facilities* dropdown select "Log Alert (note 1)".
 6. on severity mapping not touch, will be like:
-    ![link](https://raw.githubusercontent.com/demisto/content/)
+    ![link](https://raw.githubusercontent.com/demisto/content/53399299a79f6d8323502c6489c02b87a8720a7b/Packs/McAfeeNSM/doc_imgs/nsm_audit_severity_mapping.png)
 7. on *Forward audit* dropdown select "Allow All Auditlogs".
 7. on *Message Preference* click on the checkbox "Syslog default" and click save.
 
