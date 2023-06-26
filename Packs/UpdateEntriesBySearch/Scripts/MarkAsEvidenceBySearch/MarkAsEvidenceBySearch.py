@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import fnmatch
 import re
 from typing import Any, Dict, Iterator, List, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 def to_string(value: Any) -> Optional[str]:

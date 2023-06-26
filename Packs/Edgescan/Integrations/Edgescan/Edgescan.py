@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import time
 from typing import Tuple, cast
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from dateutil import parser
 import urllib3
 

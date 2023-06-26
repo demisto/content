@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Recorded Future Lists Integration for Demisto."""
 
 import platform
 import json
 
 # flake8: noqa: F402,F405 lgtm
-import demistomock as demisto
-from CommonServerPython import *
 
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 

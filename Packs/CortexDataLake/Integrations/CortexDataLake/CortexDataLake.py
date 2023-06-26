@@ -1,5 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
-from CommonServerPython import *
 import os
 import re
 import json
@@ -9,7 +10,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
-import demistomock as demisto
 from datetime import timedelta
 
 # disable insecure warnings

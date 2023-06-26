@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import emoji
 
-import demistomock as demisto
-from CommonServerPython import *
 import traceback
 import urllib3
 from datetime import date

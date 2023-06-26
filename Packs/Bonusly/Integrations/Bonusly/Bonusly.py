@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Bonusly Integration for Cortex XSOAR (aka DBot)
 
 This integration only has a few commands and more maybe added depending on feedback.
@@ -6,9 +8,7 @@ This integration only has a few commands and more maybe added depending on feedb
 
 import json
 
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import dateparser

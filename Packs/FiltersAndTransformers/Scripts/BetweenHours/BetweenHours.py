@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import dateparser
-import demistomock as demisto
-from CommonServerPython import *
 
 
 def is_between_hours(value, begin_time, end_time):

@@ -1,7 +1,7 @@
-import re
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
+
 
 
 def create_email_html(email_html='', entry_id_list=None):

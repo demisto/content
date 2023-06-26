@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 import os
 import base64

@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 import collections
 import time
 
-import demistomock as demisto
 import requests
-from CommonServerPython import *
 
 import trustar
 

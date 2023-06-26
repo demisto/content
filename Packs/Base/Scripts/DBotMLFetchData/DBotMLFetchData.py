@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import uuid
 from itertools import combinations
 
 import dateutil
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 import json
 import pickle

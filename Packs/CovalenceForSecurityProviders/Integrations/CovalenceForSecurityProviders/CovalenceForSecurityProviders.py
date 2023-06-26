@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 import requests
 import json
@@ -5,9 +7,7 @@ import traceback
 import dateparser
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
-from CommonServerPython import *
 from typing import List
-import demistomock as demisto
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 HOST = demisto.params().get('host')

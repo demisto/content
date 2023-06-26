@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 
 from abc import ABC
 from typing import Any, Callable, Optional
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 from enum import Enum

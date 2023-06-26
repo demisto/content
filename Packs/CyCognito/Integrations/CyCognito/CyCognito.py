@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Main Integration file for CyCognito."""
 from typing import Tuple
 import pycountry
 import urllib3
 from requests import Response
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings

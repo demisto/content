@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import mimetypes
 import time
 
 import dateutil.parser
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import *
 

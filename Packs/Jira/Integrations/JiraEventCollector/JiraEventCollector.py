@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from enum import Enum
 import urllib3
-from CommonServerPython import *
-import demistomock as demisto
 from pydantic import BaseConfig, BaseModel, AnyUrl, Json, Field  # pylint: disable=no-name-in-module
 import requests
 from requests.auth import HTTPBasicAuth

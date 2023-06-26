@@ -1,7 +1,7 @@
-import time
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import time
+
 
 secTimeout = 120
 

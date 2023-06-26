@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Tuple
 
 import pytz
 import urllib3
 from requests import Response
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()

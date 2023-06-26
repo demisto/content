@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Any, Tuple
 
-import demistomock as demisto  # noqa: F401
 import requests
 import urllib3
-from CommonServerPython import *  # noqa: F401
 
 # Disable warning for insecure requests when cert validation is disabled
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

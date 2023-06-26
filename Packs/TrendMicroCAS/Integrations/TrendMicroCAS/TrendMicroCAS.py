@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import dateparser
 import urllib3
 
-import demistomock as demisto
-from CommonServerPython import *
 
 import json
 from typing import Any, Dict, Tuple, List
