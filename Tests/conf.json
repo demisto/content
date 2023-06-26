@@ -21,6 +21,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": [
+                "ServiceNow v2",
+                "Cortex XDR - IR",
+                "jira-v2"
+            ],
+            "instance_names": [
+                "snow_basic_auth",
+                "Cortex XDR - IR",
+                "jira-v2-auth1"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR - True Positive Incident Handling",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
         },
