@@ -125,8 +125,8 @@ class AzureSentinelClient:
         :param managed_identities_client_id: The Azure Managed Identities client id.
         """
 
-        azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        base_url = f'{azure_cloud.endpoints.resource_manager}subscriptions/{subscription_id}/' \
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        base_url = f'{self.azure_cloud.endpoints.resource_manager}subscriptions/{subscription_id}/' \
                    f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                    f'{workspace_name}/providers/Microsoft.SecurityInsights'
         self._client = MicrosoftClient(
@@ -135,15 +135,15 @@ class AzureSentinelClient:
             enc_key=client_secret,
             self_deployed=True,
             grant_type=CLIENT_CREDENTIALS,
-            scope=f'{azure_cloud.endpoints.resource_manager}.default',
+            scope=f'{self.azure_cloud.endpoints.resource_manager}.default',
             ok_codes=(200, 201, 202, 204),
             verify=verify,
             proxy=proxy,
-            azure_cloud=azure_cloud,
+            azure_cloud=self.azure_cloud,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=azure_cloud.endpoints.resource_manager,
+            managed_identities_resource_uri=self.azure_cloud.endpoints.resource_manager,
             base_url=base_url
         )
 
@@ -1818,7 +1818,7 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
 
 def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:
 
-    full_url = 'https://management.azure.com/subscriptions?api-version=2020-01-01'
+    full_url = urljoin(client.azure_cloud.endpoints.resource_manager, 'subscriptions?api-version=2020-01-01')
 
     response = client.http_request('GET', full_url=full_url)
     data_from_response = response.get('value', [])
@@ -1846,8 +1846,8 @@ def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, An
     # extracting the tag name and value from the tag argument that is received from the user as a string
     filter_by_tag = azure_tag_formatter(tag) if tag else ''
 
-    full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?$filter=\
-{filter_by_tag}&$top={limit}&api-version=2021-04-01'
+    full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourcegroups?$filter=\
+{filter_by_tag}&$top={limit}&api-version=2021-04-01')
 
     response = client.http_request('GET', full_url=full_url)
     data_from_response = response.get('value', [])
