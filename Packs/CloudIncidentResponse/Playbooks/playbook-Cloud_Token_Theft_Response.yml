@@ -1649,7 +1649,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "55"
+      - "60"
       URL:
       - "53"
     separatecontext: false
@@ -1705,7 +1705,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "60"
     scriptarguments:
       extend-context:
         simple: VPNIPList=
@@ -1765,66 +1765,6 @@ tasks:
         "position": {
           "x": -230,
           "y": -890
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: 48a66fa5-c11b-489f-88b7-95c3a1c2e40d
-    type: condition
-    task:
-      id: 48a66fa5-c11b-489f-88b7-95c3a1c2e40d
-      version: -1
-      name: 'Is the attacker IP matches a VPN IP? '
-      description: Checks if the attacker's IP address is part of the VPN IP list.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "59"
-      "yes":
-      - "57"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: hostip
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.VPNIPList
-            iscontext: true
-          ignorecase: true
-        - operator: in
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: hostip
-            iscontext: true
-          right:
-            value:
-              simple: VPNIPList
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -630,
-          "y": -380
         }
       }
     note: false
@@ -1985,6 +1925,77 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 626d149e-03db-47df-8186-ed7b64bde19a
+    type: condition
+    task:
+      id: 626d149e-03db-47df-8186-ed7b64bde19a
+      version: -1
+      name: 'Is the attacker IP matches a VPN IP? '
+      description: Checks if the attacker's IP address is part of the VPN IP list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: alert.deviceexternalips
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+        - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1997,10 +2008,11 @@ view: |-
       "38_39_Yes": 0.42,
       "49_9_#default#": 0.14,
       "50_11_yes": 0.38,
+      "52_53_URL": 0.43,
       "54_59_#default#": 0.11,
-      "55_57_yes": 0.43,
-      "55_59_#default#": 0.21,
       "56_9_#default#": 0.12,
+      "60_57_yes": 0.4,
+      "60_59_#default#": 0.21,
       "8_49_#default#": 0.48
     },
     "paper": {
@@ -2043,12 +2055,11 @@ inputs:
 - key: VPNIPList
   value: {}
   required: false
-  description: |-
+  description: |
     This input can process to types of data:
-    1. A comma separated list of internal IPs assigned by the VPN provider using a XSIAM list or an hardcoded array.
-    2. A link to an IP list which will be processed and extract the IP dynamically which each execution.
-
-    For CIDRs please use the InternalRange input.
+    1. A comma separated list of IP addresses assigned by the VPN provider. (using a XSIAM list or an hardcoded array)
+    2. A comma separated list of CIDRs.
+    3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.
   playbookInputQuery:
 outputs: []
 tests:
