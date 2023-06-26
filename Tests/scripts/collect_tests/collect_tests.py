@@ -341,7 +341,6 @@ class TestCollector(ABC):
         :return: A CollectedTests object with only the pack_name_to_pack_metadata to install and tests to run,
                 with machines=None.
         """
-        pass
 
     def collect(self) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = self._collect()
