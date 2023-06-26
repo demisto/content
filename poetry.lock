@@ -1076,8 +1076,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "test-modeling-rules-support-for-dataset-loading"
-resolved_reference = "60aaefd333e8ae877b1aacbd2dc93ec87f2c04a6"
+reference = "master"
+resolved_reference = "16a3f4c915a07a2dfbca920d1f018e6a7b7a28cb"
 
 [[package]]
 name = "deprecated"
@@ -6245,4 +6245,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "9a0474a2c2326c2dea6536c3131dc653fd0d8a31d9d8ee2fce06a5bcdbc72195"
+content-hash = "a482b31c72784da51d7b377e7a3af3cc3e1bf83fe3e54d1d169dab50baca7950"
