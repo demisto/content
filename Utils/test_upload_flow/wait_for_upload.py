@@ -75,11 +75,15 @@ def main():
     verify_upload_id_set_job = args.verify_upload_id_set_job
     logging.info(f"verify_upload_id_set_job: {verify_upload_id_set_job}")
     logging.info(f"type verify_upload_id_set_job: {type(verify_upload_id_set_job)}")
+    verify_upload_id_set_job = bool(args.verify_upload_id_set_job)
+    logging.info(f"verify_upload_id_set_job: {verify_upload_id_set_job}")
+    logging.info(f"type verify_upload_id_set_job: {type(verify_upload_id_set_job)}")
 
     pipline_response = get_pipeline_request(pipeline_id, token)
     pipeline_status, upload_job_status = get_job_status(pipeline_response=pipline_response,
                                                         job_name='upload-packs-to-marketplace')
     if verify_upload_id_set_job:
+        logging.info(f"verify innnnn")
         _, upload_id_set_status = get_job_status(pipeline_response=pipline_response, job_name='upload-id-set-bucket')
         if upload_id_set_status == 'failed':
             logging.error('failed to upload id set to bucket')
