@@ -4291,7 +4291,10 @@ Display organization ids and names.
 
 #### Human Readable Output
 
-> MISP add user New user was added to MISP. Email:example@example.com
+>### MISP Organizations
+>|id|name|
+>|---|---|
+>| 1 | orgname |
 
 ### misp-get-role-info
 
@@ -4313,3 +4316,14 @@ Display role names and role ids.
 | --- | --- | --- |
 | MISP.Role.role_id | string | MISP Role ID. | 
 | MISP.Role.role_name | string | MISP Role Name. | 
+
+#### Command Example
+
+```!misp-get-role-info```
+
+#### Human Readable Output
+
+>### MISP Roles
+>|id|name|
+>|---|---|
+>| 1 | rolename |
