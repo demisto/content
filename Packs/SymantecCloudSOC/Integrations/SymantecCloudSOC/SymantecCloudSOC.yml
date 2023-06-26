@@ -25,6 +25,7 @@ configuration:
 - defaultvalue: 1000
   display: Maximum number of incidents per fetch.
   name: max_fetch
+  additionalinfo: Recommended max_fetch is 10,000.
   required: false
   type: 0
   section: Collect
