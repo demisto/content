@@ -1267,8 +1267,8 @@ def test_module(client: KeyVaultClient, params: Dict[str, any]) -> None:
      """
     try:
         subscription_id = params.get('subscription_id')
-        client.ms_client.get_access_token(resource=MANAGEMENT_RESOURCE)
-        client.ms_client.get_access_token(resource=VAULT_RESOURCE)
+        client.ms_client.get_access_token(resource=client.get_management_resource())
+        client.ms_client.get_access_token(resource=client.get_vault_resource())
         client.list_key_vaults_request(subscription_id=subscription_id, limit=1, offset=0)
         return_results('ok')
 
