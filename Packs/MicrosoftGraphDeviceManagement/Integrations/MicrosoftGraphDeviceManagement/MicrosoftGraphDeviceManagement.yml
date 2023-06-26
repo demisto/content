@@ -12,19 +12,44 @@ configuration:
   name: auth_id
   required: false
   type: 4
+  hidden: true
+- displaypassword: ID or Client ID - see Detailed Instructions (?)
+  name:  credentials_auth_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Token or Tenant ID - see Detailed Instructions (?)
   name: tenant_id
   required: false
   type: 4
+  hidden: true
+- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+  name:  credentials_tenant_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
   required: false
   type: 4
+  hidden: true
+- displaypassword: Key or Client Secret - see Detailed Instructions (?)
+  name:  credentials_enc_key
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
+- displaypassword: Certificate Thumbprint
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  name:  credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -886,7 +911,7 @@ script:
     - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
       description: Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured.
       type: string
-  dockerimage: demisto/crypto:1.0.0.62404
+  dockerimage: demisto/crypto:1.0.0.63672
   runonce: false
   script: ''
   subtype: python3
