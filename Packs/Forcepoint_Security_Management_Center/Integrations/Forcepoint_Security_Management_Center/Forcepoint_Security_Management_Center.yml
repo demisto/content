@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Forcepoint Security Management Center
+  id: Forcepoint_Security_Management_Center
   version: -1
 configuration:
 - display: Server URL
@@ -26,9 +26,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Will be added later'
+description: Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.
 display: 'Forcepoint Security Management Center'
-name: Forcepoint Security Management Center
+name: Forcepoint_Security_Management_Center
 script:
   commands:
   - arguments:
@@ -83,7 +83,6 @@ script:
       isArray: false
       name: is_overwrite
       required: false
-      defaultvalue: false
     description: 'Updates an IP List.'
     execution: false
     name: forcepoint-smc-ip-list-update
@@ -99,7 +98,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a specific IP List to fetch. If selected, returns only the specific 
+      description: The name of a specific IP List to fetch. If selected, returns only the specific
       isArray: false
       name: name
       required: false
@@ -108,14 +107,12 @@ script:
       description: The limit on the returned IP Lists. Default value is 50.
       isArray: false
       name: limit
-      defaultvalue: 50
       required: false
     - default: false
       description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
       isArray: false
       name: all_results
       required: false
-      defaultvalue: false
     description: 'Lists the IP Lists in the system.'
     execution: false
     name: forcepoint-smc-ip-list-list
@@ -148,7 +145,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The name of a specific host to fetch. 
+      description: The name of a specific host to fetch.
       isArray: false
       name: name
       required: false
@@ -157,14 +154,12 @@ script:
       description: The limit on the returned number Hosts. Default value is 50.
       isArray: false
       name: limit
-      defaultvalue: 50
       required: false
     - default: false
       description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
       isArray: false
       name: all_results
       required: false
-      defaultvalue: false
     description: 'Lists the Hosts in the system.'
     execution: false
     name: forcepoint-smc-host-list
@@ -186,7 +181,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a specific host to fetch. 
+      description: The name of a specific host to fetch.
       isArray: false
       name: name
       required: true
@@ -201,13 +196,11 @@ script:
       isArray: false
       name: ipv6_address
       required: false
-      defaultvalue: false
     - default: false
       description: The secondary_address of the host. A comma separated list.
       isArray: true
       name: secondary_address
       required: false
-      defaultvalue: false
     - default: false
       description: The comment to add to the host.
       isArray: false
@@ -234,7 +227,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a specific host to fetch. 
+      description: The name of a specific host to fetch.
       isArray: false
       name: name
       required: true
@@ -249,13 +242,11 @@ script:
       isArray: false
       name: ipv6_address
       required: false
-      defaultvalue: false
     - default: false
       description: The secondary_address of the host. A comma separated list.
       isArray: true
       name: secondary_address
       required: false
-      defaultvalue: false
     - default: false
       description: The comment to add to the host.
       isArray: false
@@ -266,7 +257,6 @@ script:
       isArray: false
       name: is_overwrite
       required: false
-      defaultvalue: false
     description: 'Updates a host.'
     execution: false
     name: forcepoint-smc-host-update
@@ -305,7 +295,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The name of the domain to create. 
+      description: The name of the domain to create.
       isArray: false
       name: name
       required: true
@@ -327,7 +317,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a specific domain to fetch. 
+      description: The name of a specific domain to fetch.
       isArray: false
       name: name
       required: false
@@ -336,14 +326,12 @@ script:
       description: The limit on the returned number Hosts. Default value is 50.
       isArray: false
       name: limit
-      defaultvalue: 50
       required: false
     - default: false
       description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
       isArray: false
       name: all_results
       required: false
-      defaultvalue: false
     description: 'Lists the Domains in the system.'
     execution: false
     name: forcepoint-smc-domain-list
@@ -376,14 +364,12 @@ script:
       description: The limit on the returned number Policy Template. Default value is 50.
       isArray: false
       name: limit
-      defaultvalue: 50
       required: false
     - default: false
       description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
       isArray: false
       name: all_results
       required: false
-      defaultvalue: false
     description: 'Lists the Domains in the system.'
     execution: false
     name: forcepoint-smc-policy-template-list
@@ -399,14 +385,12 @@ script:
       description: The limit on the returned number firewall policies. Default value is 50.
       isArray: false
       name: limit
-      defaultvalue: 50
       required: false
     - default: false
       description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
       isArray: false
       name: all_results
       required: false
-      defaultvalue: false
     description: 'Lists the firewall policies in the system.'
     execution: false
     name: forcepoint-smc-firewall-policy-list
@@ -422,14 +406,12 @@ script:
       description: The name of the firewall policy.
       isArray: false
       name: name
-      defaultvalue: 50
       required: true
     - default: false
-      description:  The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list to get the list of policy templates.
+      description: The template name to use to create the firewall policy. Run the forcepoint-smc-policy-template-list to get the list of policy templates.
       isArray: false
       name: template
       required: true
-      defaultvalue: false
     description: 'Creates a firewall policy.'
     execution: false
     name: forcepoint-smc-firewall-policy-create
@@ -463,4 +445,6 @@ script:
   type: python
   subtype: python3
   dockerimage: devdemisto/fp-smc:1.0.22.63061
-fromversion: 6.5.0
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
