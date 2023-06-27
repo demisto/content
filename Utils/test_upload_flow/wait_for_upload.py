@@ -62,6 +62,14 @@ def get_job_status_by_name(job_name, pipelines_jobs_response):
             return job.get('status')
 
 
+def check_upload_id_set_job_status(verify_upload_id_set_job, pipeline_response):
+    if verify_upload_id_set_job:
+        _, upload_id_set_status = get_job_status(pipeline_response=pipeline_response, job_name='upload-id-set-bucket')
+        if upload_id_set_status == 'failed':
+            logging.error('failed to upload id set to bucket')
+            sys.exit(1)
+
+
 def main():
     install_logging('wait_for_upload.log', logger=logging)
 
@@ -75,18 +83,11 @@ def main():
     token = args.gitlab_api_token
     pipeline_id = args.pipeline_id
     verify_upload_id_set_job = args.verify_upload_id_set_job
-    logging.info(f"verify_upload_id_set_job: {verify_upload_id_set_job}")
-    logging.info(f"type verify_upload_id_set_job: {type(verify_upload_id_set_job)}")
 
-    pipline_response = get_pipeline_request(pipeline_id, token)
-    pipeline_status, upload_job_status = get_job_status(pipeline_response=pipline_response,
+    pipeline_response = get_pipeline_request(pipeline_id, token)
+    pipeline_status, upload_job_status = get_job_status(pipeline_response=pipeline_response,
                                                         job_name='upload-packs-to-marketplace')
-    if verify_upload_id_set_job:
-        logging.info("verify innnnn")
-        _, upload_id_set_status = get_job_status(pipeline_response=pipline_response, job_name='upload-id-set-bucket')
-        if upload_id_set_status == 'failed':
-            logging.error('failed to upload id set to bucket')
-            sys.exit(1)
+    check_upload_id_set_job_status(verify_upload_id_set_job, pipeline_response)
 
     # initialize timer
     start = time.time()
@@ -95,14 +96,10 @@ def main():
     while pipeline_status not in ['failed', 'success', 'canceled'] and elapsed < TIMEOUT:
         logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
         time.sleep(300)
-        pipline_response = get_pipeline_request(pipeline_id, token)
-        pipeline_status, upload_job_status = get_job_status(pipeline_response=pipline_response,
+        pipeline_response = get_pipeline_request(pipeline_id, token)
+        pipeline_status, upload_job_status = get_job_status(pipeline_response=pipeline_response,
                                                             job_name='upload-packs-to-marketplace')
-        if verify_upload_id_set_job:
-            _, upload_id_set_status = get_job_status(pipeline_response=pipline_response, job_name='upload-id-set-bucket')
-            if upload_id_set_status == 'failed':
-                logging.error('failed to upload id set to bucket')
-                sys.exit(1)
+        check_upload_id_set_job_status(verify_upload_id_set_job, pipeline_response)
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
