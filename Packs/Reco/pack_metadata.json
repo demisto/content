@@ -2,7 +2,7 @@
     "name": "Reco",
     "description": "Reco - detects and protects against sensitive data leakage",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Reco",
     "url": "https://reco.ai",
     "email": "support@reco.ai",

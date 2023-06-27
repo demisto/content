@@ -696,11 +696,11 @@ class RecoClient(BaseClient):
         invalid_token_string = "Invalid token"
         try:
             response = self._http_request(
-                method="POST",
-                url_suffix="/incident-tables/tables",
+                method="GET",
+                url_suffix="/data-sources",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
-            if response.get("listTablesResponse") is None:
+            if response.get("dataSources") is None:
                 demisto.info(f"got bad response, {response}")
             else:
                 demisto.info(f"got good response, {response}")
@@ -1066,18 +1066,21 @@ def fetch_incidents(
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run = {}
+    incidents = []
     last_run_time = last_run.get("lastRun", None)
     if last_run_time is not None:
         after = dateutil.parser.parse(last_run_time)
 
-    incidents_raw = reco_client.get_incidents(
-        risk_level=risk_level,
-        source=source,
-        before=before,
-        after=after,
-        limit=max_fetch,
-    )
-    incidents = parse_incidents_objects(reco_client, incidents_raw)
+    try:
+        incidents_raw = reco_client.get_incidents(risk_level=risk_level,
+                                                  source=source,
+                                                  before=before,
+                                                  after=after,
+                                                  limit=max_fetch)
+        incidents = parse_incidents_objects(reco_client, incidents_raw)
+    except Exception as e:
+        demisto.info(f"Error fetching incidents: {e}")
+
     alerts = get_alerts(reco_client, risk_level, source, before, after, max_fetch)
     alerts_as_incidents = parse_alerts_to_incidents(alerts)
     incidents.extend(alerts_as_incidents)
