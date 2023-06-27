@@ -85,7 +85,7 @@ def main():
     auth_id = options.auth_id
     if investigation_id and api_key:
         client = demisto_client.configure(base_url=gold_server_url, api_key=api_key, auth_id=auth_id, verify_ssl=False)
-        wait_for_playbook_to_complete(investigation_id, client, gold_server_url)
+        wait_for_playbook_to_complete(investigation_id, client)
     else:
         print("Secrets detection step failed - API key or investigation ID were not supplied.")
         sys.exit(1)
