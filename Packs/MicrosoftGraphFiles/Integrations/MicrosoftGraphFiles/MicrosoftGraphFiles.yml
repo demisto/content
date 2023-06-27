@@ -14,7 +14,6 @@ configuration:
   type: 4
   hidden: true
 - name: credentials_auth_id
-  required: false
   type: 9
   displaypassword: ID (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
@@ -23,7 +22,6 @@ configuration:
   type: 4
   hidden: true
 - name: credentials_tenant_id
-  required: false
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
@@ -32,7 +30,6 @@ configuration:
   type: 4
   hidden: true
 - name: credentials_enc_key
-  required: false
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
@@ -42,7 +39,6 @@ configuration:
   type: 4
   hidden: true
 - name: credentials_certificate_thumbprint
-  required: false
   type: 9
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
@@ -626,7 +622,6 @@ script:
       description: The MD5 hash of the file.
       type: String
   dockerimage: demisto/python_pancloud:1.0.0.60733
-  runonce: false
   script: ''
   subtype: python3
   type: python

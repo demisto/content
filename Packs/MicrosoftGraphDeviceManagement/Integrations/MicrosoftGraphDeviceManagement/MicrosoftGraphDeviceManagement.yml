@@ -13,8 +13,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: ID or Client ID - see Detailed Instructions (?)
-  name:  credentials_auth_id
-  required: false
+  name: credentials_auth_id
   hiddenusername: true
   type: 9
 - display: Token or Tenant ID - see Detailed Instructions (?)
@@ -22,8 +21,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: Token or Tenant ID - see Detailed Instructions (?)
-  name:  credentials_tenant_id
-  required: false
+  name: credentials_tenant_id
   hiddenusername: true
   type: 9
 - display: Key or Client Secret - see Detailed Instructions (?)
@@ -31,8 +29,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: Key or Client Secret - see Detailed Instructions (?)
-  name:  credentials_enc_key
-  required: false
+  name: credentials_enc_key
   hiddenusername: true
   type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
@@ -42,8 +39,7 @@ configuration:
   hidden: true
 - displaypassword: Certificate Thumbprint
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  name:  credentials_certificate_thumbprint
-  required: false
+  name: credentials_certificate_thumbprint
   hiddenusername: true
   type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
@@ -902,7 +898,6 @@ script:
       description: Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured.
       type: string
   dockerimage: demisto/crypto:1.0.0.63672
-  runonce: false
   script: ''
   subtype: python3
   type: python

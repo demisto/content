@@ -10,17 +10,14 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: false
   type: 4
   hidden: true
 - display: Client Secret
   name: client_secret
-  required: false
   type: 4
   hidden: true
 - display: Client ID
   name: credentials_client
-  required: false
   type: 9
   displaypassword: Client Secret
   section: Connect

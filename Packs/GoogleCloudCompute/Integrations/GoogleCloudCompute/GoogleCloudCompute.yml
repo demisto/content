@@ -5,12 +5,10 @@ commonfields:
 configuration:
 - display: Service Account Private Key file contents (JSON)
   name: service
-  required: false
   type: 4
   hidden: true
 - displaypassword: Service Account Private Key file contents (JSON)
-  name:  credentials_service_account_json
-  required: false
+  name: credentials_service_account_json
   hiddenusername: true
   type: 9
 - display: Use system proxy settings
@@ -8417,7 +8415,6 @@ script:
       description: '] Type of the resource. Always compute#instance for instances.'
       type: string
   dockerimage: demisto/googleapi-python3:1.0.0.64077
-  runonce: false
   script: ''
   subtype: python3
   type: python

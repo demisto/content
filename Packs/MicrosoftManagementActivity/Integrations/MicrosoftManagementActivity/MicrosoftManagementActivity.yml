@@ -19,8 +19,7 @@ configuration:
   hidden: true
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
-  name:  credentials_auth_id
-  required: false
+  name: credentials_auth_id
   hiddenusername: true
   section: Connect
   type: 9
@@ -32,22 +31,19 @@ configuration:
   hidden: true
 - displaypassword: Token or Tenant ID
   additionalinfo: See the Help tab.
-  name:  credentials_refresh_token
-  required: false
+  name: credentials_refresh_token
   hiddenusername: true
   type: 9
   section: Connect
 - display: Key or Client Secret
   additionalinfo: See the Help tab.
   name: enc_key
-  required: false
   type: 4
   section: Connect
   hidden: true
 - displaypassword: Key or Client Secret
   additionalinfo: See the Help tab.
-  name:  credentials_enc_key
-  required: false
+  name: credentials_enc_key
   hiddenusername: true
   type: 9
   section: Connect
@@ -59,8 +55,7 @@ configuration:
   section: Connect
 - displaypassword: Certificate Thumbprint
   additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
-  name:  credentials_certificate_thumbprint
-  required: false
+  name: credentials_certificate_thumbprint
   hiddenusername: true
   type: 9
   section: Connect
@@ -86,15 +81,11 @@ configuration:
   section: Connect
   hidden: true
 - displaypassword: The authentication code you got for the service
-  additionalinfo: For instructions on how to receive it, see the Help tab. 
-  name:  credentials_auth_code
-  required: false
+  additionalinfo: For instructions on how to receive it, see the Help tab.
+  name: credentials_auth_code
   hiddenusername: true
   type: 9
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8

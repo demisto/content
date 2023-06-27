@@ -45,7 +45,6 @@ configuration:
   defaultvalue: '-100'
   display: DBot Score Malicious Threshold (-100 to 100)
   name: dboscore_threshold
-  required: false
   type: 0
 
 description: Cisco Umbrella Investigate

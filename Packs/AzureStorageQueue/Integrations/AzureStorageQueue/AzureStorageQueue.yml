@@ -234,7 +234,6 @@ script:
     execution: true
     name: azure-storage-queue-message-clear
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

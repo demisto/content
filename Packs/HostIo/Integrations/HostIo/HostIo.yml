@@ -137,7 +137,6 @@ script:
       type: String
     description: Returns domain information.
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

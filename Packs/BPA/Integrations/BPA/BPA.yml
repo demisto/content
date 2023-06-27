@@ -93,7 +93,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
-      isArray: false
       name: generate_zip_bundle
       predefined:
       - 'false'
@@ -114,7 +113,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to exclude passed checks. Can be "true" or "false". Default is "false".
-      isArray: false
       name: exclude_passed_checks
       predefined:
       - 'true'
@@ -154,11 +152,6 @@ script:
       description: File extension.
       type: string
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python
