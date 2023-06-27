@@ -17,7 +17,7 @@ def get_latest_merged() -> list[dict]:
     """
     latest_prs = []
     url = f'{CONTENT_REPO_URL}/pulls'
-
+    # page starts at 1 for Github API
     for i in range(1, LATEST_MERGED_PR + 1):
         params = {'sort': 'created', 'direction': 'desc', 'per_page': 100, 'page': i, 'state': 'closed'}
         try:
