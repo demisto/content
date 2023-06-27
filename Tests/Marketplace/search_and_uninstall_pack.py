@@ -16,6 +16,7 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
     """
 
     Args:
+        unremovable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
 
     Returns:
@@ -75,9 +76,10 @@ def uninstall_packs(client: demisto_client, pack_ids: list):
     return True
 
 
-def uninstall_all_packs(client: demisto_client, hostname):
+def uninstall_all_packs(client: demisto_client, hostname, unremovable_packs: list):
     """ Lists all installed packs and uninstalling them.
     Args:
+        unremovable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
         hostname (str): cloud hostname
 
@@ -86,7 +88,7 @@ def uninstall_all_packs(client: demisto_client, hostname):
     """
     logging.info(f'Starting to search and uninstall packs in server: {hostname}')
 
-    packs_to_uninstall: list = get_all_installed_packs(client)
+    packs_to_uninstall: list = get_all_installed_packs(client, unremovable_packs)
     if packs_to_uninstall:
         return uninstall_packs(client, packs_to_uninstall)
     logging.debug('Skipping packs uninstallation - nothing to uninstall')
@@ -124,7 +126,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
     retry = 0
     sleep_duration = 150
     try:
-        installed_packs = get_all_installed_packs(client)
+        installed_packs = get_all_installed_packs(client, unremovable_packs)
         # Monitoring when uninstall packs don't work
         installed_packs_amount_history, failed_uninstall_attempt_count = len(installed_packs), 0
         # new calculation for num of retries
@@ -138,7 +140,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for {sleep_duration} seconds.')
             sleep(sleep_duration)
-            installed_packs = get_all_installed_packs(client)
+            installed_packs = get_all_installed_packs(client, unremovable_packs)
 
             if len(installed_packs) == installed_packs_amount_history:
                 # did not uninstall any pack
@@ -207,9 +209,9 @@ def main():
     # in earlier builds they will appear in the bucket as it is cached.
     sync_marketplace(client=client)
     unremovable_packs = options.unremovable_packs.split(',')
-    success = reset_core_pack_version(client, unremovable_packs) and uninstall_all_packs(client,
-                                                                      host) and wait_for_uninstallation_to_complete(
-        client, unremovable_packs)
+    success = reset_core_pack_version(client, unremovable_packs) \
+              and uninstall_all_packs(client, host, unremovable_packs) \
+              and wait_for_uninstallation_to_complete(client, unremovable_packs)
     sync_marketplace(client=client)
     if not success:
         sys.exit(2)
