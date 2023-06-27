@@ -38,6 +38,13 @@ configuration:
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
+- displaypassword: Certificate Thumbprint
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  name: credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9 
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   name: private_key
   required: false
@@ -496,7 +503,7 @@ script:
     execution: false
     name: msgraph-groups-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.61689
+  dockerimage: demisto/crypto:1.0.0.63672
   isfetch: false
   longRunning: false
   longRunningPort: false
