@@ -142,8 +142,8 @@ class KeyVaultClient:
 
         data = {"location": location, "properties": properties}
 
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
+        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourceGroups/'
+                           f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}')
 
         return self.http_request('PUT', full_url=full_url, data=data, ok_codes=[200, 201])
 
@@ -160,8 +160,8 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
+        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourceGroups/'
+                           f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}')
 
         return self.http_request('DELETE', full_url=full_url, ok_codes=[200, 204])
 
@@ -178,8 +178,8 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}'
+        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourceGroups/'
+                           f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}')
         return self.http_request('GET', full_url=full_url, ok_codes=[200])
 
     def list_key_vaults_request(self, subscription_id: str = None,
@@ -194,8 +194,8 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        ful_url = f'https://management.azure.com/subscriptions/{subscription_id}/providers/Microsoft.KeyVault/' \
-            f'vaults?$top={limit}'
+        ful_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/providers/Microsoft.KeyVault/'
+                          f'vaults?$top={limit}')
         response = self.http_request(
             'GET', full_url=ful_url, ok_codes=[200])
         return self.get_entities_independent_of_pages(response, limit, offset)
@@ -225,8 +225,9 @@ class KeyVaultClient:
             keys, secrets, certificates, storage)
         data = {"properties": {"accessPolicies": [
             {"objectId": object_id, "permissions": permissions, "tenantId": self.ms_client.tenant_id}]}}
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}/accessPolicies/{operation_kind}'
+        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourceGroups/'
+                           f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/'
+                           f'{vault_name}/accessPolicies/{operation_kind}')
 
         return self.http_request('PUT', full_url=full_url, data=data, ok_codes=(200, 201))
 
@@ -404,7 +405,7 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = 'https://management.azure.com/subscriptions?'
+        url = urljoin(client.azure_cloud.endpoints.resource_manager, '/subscriptions?')
         response = self.http_request('GET', full_url=url, resource=self.get_management_resource(),
                                      params={'api-version': '2020-01-01'})
         return self.get_entities_independent_of_pages(first_page=response, resource=self.get_management_resource())
@@ -421,7 +422,7 @@ class KeyVaultClient:
         Returns:
             List[dict]: API response from Azure.
         """
-        full_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourcegroups?'
+        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourcegroups?')
         filter_by_tag = azure_tag_formatter(tag) if tag else None
 
         response = self.http_request('GET', full_url=full_url, resource=self.get_management_resource(),
