@@ -15,8 +15,10 @@ indicators = get_fetch_data()
 @pytest.mark.parametrize(
     "params, actors_filter, expected",
     [
-        ({}, '', '/intel/combined/actors/v1'),
-        ({}, 'blabla', '/intel/combined/actors/v1blabla'),
+        ({},
+         '', '/intel/combined/actors/v1'),
+        ({},
+         'blabla', '/intel/combined/actors/v1blabla'),
         ('last_modified_date%3A%3E{relevant_time}', 'blabla',
          '/intel/combined/actors/v1blabla%2Blast_modified_date%3A%3E{relevant_time}'),
         ('last_modified_date%3A%3E{relevant_time}', '',
@@ -80,7 +82,8 @@ def test_fetch_indicators_with_limit(mocker, requests_mock):
     from FeedCrowdstrikeFalconIntel import main
     mocker.patch.object(Client, '_get_access_token', return_value='test_token')
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
-    mocker.patch.object(demisto, 'params', return_value={'limit': '2'})
+    mocker.patch.object(demisto, 'params', return_value={'limit': '2', 'credentials_client': {
+                        'identifier': 'test_identifier', 'password': 'test_password'}})
     mocker.patch.object(demisto, 'setLastRun')
     requests_mock.get(re.compile('.*api.crowdstrike.com.*'),
                       json=indicators['list_data_cs'])
