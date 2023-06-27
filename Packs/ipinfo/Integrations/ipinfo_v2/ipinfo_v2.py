@@ -169,7 +169,6 @@ def parse_results(ip: str, raw_result: dict[str, Any], reliability: str) -> List
                                     outputs_key_field=outputs_key_field,
                                     indicator=indicator)
         command_results.append(map_output)
-        
 
     # do not change the order of the calls for CommandResults due to an issue where the ip command would not
     # present all of the information returned from the API.
