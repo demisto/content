@@ -204,13 +204,13 @@ def test_b_uncompress(data, bbp, expected_output):
 
     # Compare the result with the expected output
     assert result == expected_output
-    
+
     @pytest.mark.parametrize("width, height, data, expected", [
-            (10, 10, b"test_data", b"expected_output_without_palette"),
-            (10, 10, b"test_data", b"expected_output_with_palette"),
-            # Add more test cases as needed
-        ])
+        (10, 10, b"test_data", b"expected_output_without_palette"),
+        (10, 10, b"test_data", b"expected_output_with_palette"),
+        # Add more test cases as needed
+    ])
     def test_b_export_bmp(self, width, height, data, expected):
-        container = BMCContainer() 
+        container = BMCContainer()
         actual = container.b_export_bmp(width, height, data)
         assert actual == expected
