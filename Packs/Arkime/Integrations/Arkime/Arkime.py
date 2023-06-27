@@ -1064,6 +1064,8 @@ def test_module(client: Client) -> None:
 
 
 def main() -> None:
+    a = None
+    a == 3
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get('url')
