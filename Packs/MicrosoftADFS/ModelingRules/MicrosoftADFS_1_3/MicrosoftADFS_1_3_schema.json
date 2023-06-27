@@ -1,5 +1,5 @@
 {
-  "microsoft_windows_raw": {
+  "microsoft_adfs_raw": {
     "event_data": {
         "type": "string",
         "is_array": false
