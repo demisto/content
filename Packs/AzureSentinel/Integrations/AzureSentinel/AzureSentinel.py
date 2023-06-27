@@ -126,16 +126,16 @@ class AzureSentinelClient:
         """
 
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        base_url = f'{self.azure_cloud.endpoints.resource_manager}subscriptions/{subscription_id}/' \
-                   f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
-                   f'{workspace_name}/providers/Microsoft.SecurityInsights'
+        base_url = urljoin(self.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/'
+                           f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'
+                           f'{workspace_name}/providers/Microsoft.SecurityInsights')
         self._client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
             enc_key=client_secret,
             self_deployed=True,
             grant_type=CLIENT_CREDENTIALS,
-            scope=f'{self.azure_cloud.endpoints.resource_manager}.default',
+            scope=urljoin(self.azure_cloud.endpoints.resource_manager, '.default'),
             ok_codes=(200, 201, 202, 204),
             verify=verify,
             proxy=proxy,
