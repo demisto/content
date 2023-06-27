@@ -27,7 +27,7 @@ name: Abnormal Security
 script:
   commands:
   - arguments:
-    - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only keys that are supported for `/threats` are `receivedTime` and `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`.
+    - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/threats` is `receivedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`.
       isArray: false
       name: filter
       required: false
@@ -569,13 +569,6 @@ script:
     description: Submit a False Positive Report
     name: abnormal-security-submit-false-positive-report
 
-  - arguments:
-    - description: Returns test data if set to `True`
-      isArray: false
-      name: mock-data
-      required: false
-    description: Get the latest threat intel feed.
-    name: abnormal-security-get-latest-threat-intel-feed
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: false
   script: ''
