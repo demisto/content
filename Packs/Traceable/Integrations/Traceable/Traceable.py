@@ -564,19 +564,19 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     last_fetch = last_run.get("last_fetch")
 
     # Handle first time fetch
-    last_fetch = (
+    _last_fetch: datetime = (
         dateparser.parse(first_fetch_time)
         if last_fetch is None
         else dateparser.parse(last_fetch)
     )
 
-    latest_created_time = last_fetch
+    latest_created_time: datetime = _last_fetch
     incidents = []
-    items = client.get_threat_events(last_fetch, datetime.now())
+    items = client.get_threat_events(_last_fetch, datetime.now())
     demisto.info(f"Retrieved {len(items)} records.")
     demisto.debug(f"First Incident: {json.dumps(items[0], indent=3)}")
     for item in items:
-        incident_created_time = datetime.fromtimestamp(
+        incident_created_time: datetime = datetime.fromtimestamp(
             item["timestamp"]["value"] / 1000
         )
         incident = {

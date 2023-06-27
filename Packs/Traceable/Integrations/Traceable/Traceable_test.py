@@ -187,7 +187,7 @@ def response_handler(*args, **kwargs):
     return None
 
 
-def test_fetch_incidents(mocker):
+def test_fetch_incidents_last_fetch_none(mocker):
     from Traceable import Client, fetch_incidents
     import urllib3
 
@@ -207,6 +207,31 @@ def test_fetch_incidents(mocker):
     mocked_post.side_effect = response_handler
 
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 1
+
+
+def test_fetch_incidents_last_fetch_not_none(mocker):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    # client.set_threat_category_list(threatCategoryList)
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = response_handler
+
+    next_run, incidents = fetch_incidents(
+        client, {"last_fetch": "2023-06-26T15:34:53Z"}, "3 days"
+    )
     assert len(incidents) == 1
 
 
@@ -489,7 +514,7 @@ def test_datetime_to_string():
 def test_client_creation_no_headers():
     from Traceable import Client
 
-    client = Client("http://mock.url")
+    client = Client("https://mock.url")
     assert (
         type(client.headers) == dict
         and "Content-Type" in client.headers
@@ -503,7 +528,7 @@ def test_graphql_query_non_200(mocker, caplog, capfd):
     resp = Response()
     resp.status_code = 400
     resp.text = "error"
-    client = Client("http://mock.url")
+    client = Client("https://mock.url")
     mocked_post = mocker.patch("requests.post")
     mocked_post.return_value = resp
     encountered_exception = False
