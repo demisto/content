@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from  import str2bool
+from demisto_sdk.commands.common.tools import str2bool
 from Tests.scripts.utils import logging_wrapper as logging
 import sys
 import time
