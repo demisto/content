@@ -1452,7 +1452,7 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
                 if detection_id not in already_fetched:
                     detection.update(get_mirroring())
                     incident = {
-                        'name': str(detection.get("title", "")),
+                        'name': str(detection.get("type", "")),
                         'occurred': datetime.utcfromtimestamp(detection['start_time'] / 1000).strftime(
                             DATE_FORMAT),
                         'severity': next((severity for range_str, severity in TICKET_SEVERITY.items() if
