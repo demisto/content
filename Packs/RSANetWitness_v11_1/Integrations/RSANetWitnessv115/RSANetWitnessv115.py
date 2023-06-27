@@ -847,7 +847,7 @@ def fetch_incidents(client: Client, params: dict) -> list:
         item['incident_url'] = client.get_incident_url(inc_id)
 
         # add to incident object an array of all related alerts
-        if argToBoolean(params.get('import_alerts')):
+        if params.get('import_alerts'):
             fetch_alerts = fetch_alerts_related_incident(client, inc_id)
             item['alerts'] = fetch_alerts
             item['alerts_ids'] = [alert['id'] for alert in fetch_alerts if fetch_alerts]
