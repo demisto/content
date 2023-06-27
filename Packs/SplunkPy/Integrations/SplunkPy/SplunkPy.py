@@ -2632,7 +2632,7 @@ def main():  # pragma: no cover
         connection_args['password'] = password
         connection_args['autologin'] = True
 
-    if (proxy or not VERIFY_CERTIFICATE) and proxy:
+    if proxy:
         handle_proxy()
 
     connection_args['handler'] = requests_handler
