@@ -224,18 +224,15 @@ STATUS_NUM_TO_TEXT = {20: 'New',
                       30: 'In Progress',
                       40: 'Closed'}
 
-STATUS_TEXT_TO_NUM_IDP = {'New': "20",
-                          'Reopened': "25",
-                          'In progress': "30",
-                          'Closed': "40"}
+# STATUS_TEXT_TO_NUM_IDP = {'new': "20",
+#                           'reopened': "25",
+#                           'in_progress': "30",
+#                           'closed': "40"}
 
-# STATUS_NUM_TO_TEXT_IDP = {20: 'New',
-#                           25: 'Reopened',
-#                           30: 'In progress',
-#                           40: 'Closed'}
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
 DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
+IDP_DETECTION_STATUS = {'new', 'in_progress', 'closed', 'reopened'}
 
 CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
 
@@ -577,7 +574,7 @@ def idp_detection_to_incident_context(idp_detection):
         """
     add_mirroring_fields(idp_detection)
     if status := idp_detection.get('status'):
-        idp_detection['status'] = STATUS_TEXT_TO_NUM_IDP.get(status)
+        idp_detection['status'] = status
 
     incident_context = {
         'name': f'Incident ID: {idp_detection.get("composite_id")}',
@@ -1875,9 +1872,9 @@ def update_idp_detection_request(ids: List[str], status: str) -> Dict:
         :return: The response.
         :rtype ``dict``
     """
-    if status not in STATUS_TEXT_TO_NUM_IDP:
+    if status not in IDP_DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM_IDP.keys()}')
+                               f'Status given is {status} and it is not in {IDP_DETECTION_STATUS}')
     return resolve_idp_detection(ids=ids, status=status)
 
 
@@ -2079,7 +2076,8 @@ def get_remote_data_command(args: Dict[str, Any]):
 
         if not updated_object:
             demisto.debug(f'No delta was found for detection {remote_incident_id}.')
-
+        demisto.info(f"{updated_object=}")
+        demisto.info(f"{entries=}")
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
     except Exception as e:
@@ -2178,7 +2176,7 @@ def set_xsoar_idp_detection_entries(updated_object: Dict[str, Any], entries: Lis
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
-        elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM_IDP.keys()) - {'closed'}):
+        elif updated_object.get('status') in (set(IDP_DETECTION_STATUS) - {'closed'}):
             reopen_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
 
 
@@ -2264,9 +2262,9 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     raw_detections = get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
     for detection_id in raw_detections:
         modified_ids_to_mirror.append(str(detection_id))
-
-    raw_idp_detections = get_idp_detections_ids(filter_arg=f"updated_timestamp:>'{last_update_timestamp}'+product:'idp'",
-                                                has_limit=False).get('resources', [])
+    last_update_timestamp_idp_detections = last_update_utc.strftime(IDP_DATE_FORMAT)
+    raw_idp_detections = get_idp_detections_ids(filter_arg=f"updated_timestamp:>'{last_update_timestamp_idp_detections}'"
+                                                "+product:'idp'").get('resources', [])
     for raw_idp_detection in raw_idp_detections:
         modified_ids_to_mirror.append(str(raw_idp_detection))
 
@@ -2462,9 +2460,9 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
 
 
 def fetch_incidents():
-    incidents = []  # type:List
-    detections = []  # type:List
-    idp_detections = []  # type:List
+    incidents: list = [] 
+    detections: list = [] 
+    idp_detections: list = [] 
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
@@ -2477,7 +2475,7 @@ def fetch_incidents():
     current_fetch_info_incidents: dict = last_run[1]
     current_fetch_info_incidents.pop("offset", None)
 
-    current_fetch_info_idp_detections: dict = last_run[2]
+    current_fetch_info_idp_detections: dict = {} if len(last_run) < 3 else last_run[2] 
     current_fetch_info_idp_detections.pop("offset", None)
 
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
