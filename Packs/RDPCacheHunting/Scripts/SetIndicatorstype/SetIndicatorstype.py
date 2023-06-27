@@ -10,23 +10,22 @@ def parse_data(list_content):
 
     list_collections: Counter = collections.Counter(list_content)
     top_lists = list_collections.most_common(10)
+    
+    for list_element in top_lists:
+        random_number = random.randint(0, 16777215)
+        hex_number = str(hex(random_number))  # convert to hexadecimal
+        color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
+        list_widget_data = {
+            "data": [
+                list_element[1]
+            ],
+            "groups": None,
+            "name": str(list_element[0]),
+            "label": str(list_element[0]),
+            "color": color
+        }
 
-    for _i in range(len(top_lists)):
-        for list_element in top_lists:
-            random_number = random.randint(0, 16777215)
-            hex_number = str(hex(random_number))  # convert to hexadecimal
-            color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
-            list_widget_data = {
-                "data": [
-                    list_element[1]
-                ],
-                "groups": None,
-                "name": str(list_element[0]),
-                "label": str(list_element[0]),
-                "color": color
-            }
-
-            lists_data.append(list_widget_data)
+        lists_data.append(list_widget_data)
 
     return {
         "Type": 17,

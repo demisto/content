@@ -452,7 +452,8 @@ class BMCContainer(Generic[AnyStr]):
         self.o_bmps = []
 
 
-def main(args):
+def main():
+    args = demisto.args()
     verbose = args.get("verbose", False)
     width = int(args.get("width", 64))
     source = args.get("EntryID", '')
@@ -490,4 +491,4 @@ def main(args):
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
-    main(demisto.args())
+    main()

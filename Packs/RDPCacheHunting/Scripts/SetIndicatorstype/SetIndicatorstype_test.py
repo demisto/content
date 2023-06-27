@@ -1,4 +1,5 @@
-from SetIndicatorstype import parse_data
+from SetIndicatorstype import parse_data, main
+import demistomock as demisto
 
 # Tests that the function returns the expected dictionary when given valid data.
 
@@ -8,6 +9,7 @@ def test_parse_data_happy_path():
     list_content = ['apple', 'banana', 'orange', 'apple', 'banana', 'grape', 'kiwi', 'pear', 'peach', 'watermelon']
     # Act
     result = parse_data(list_content)
+    
     # Assert
     assert result['Type'] == 17
     assert result['ContentsFormat'] == 'pie'
