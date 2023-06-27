@@ -162,7 +162,6 @@ def parse_results(ip: str, raw_result: dict[str, Any], reliability: str) -> List
         organization_type=organization.get('Type') if organization else None,
         relationships=relationships)
 
-
     if lat and lon:
         raw_result.update({'lat': lat, 'lng': lon})
         map_output = CommandResults(raw_response={'lat': lat, 'lng': lon},
