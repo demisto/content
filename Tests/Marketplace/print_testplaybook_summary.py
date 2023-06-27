@@ -64,7 +64,11 @@ def print_table(table_name: str, table_data: dict) -> None:
 
 def main():
     try:
-        install_logging('Print_summary.log', logger=logging)
+        install_logging('print_summary.log', logger=logging)
+        logging.info("GOT HERE info")
+        logging.debug("GOT HERE debug")
+        logging.error("GOT HERE error")
+        logging.success("GOT HERE success")
         options = options_handler()
         print_test_summary(failed_tests_path=options.failed_tests_path,
                            skipped_tests_path=options.skipped_tests_path,
@@ -73,3 +77,7 @@ def main():
         logging.error(f'Failed to get the summary: {e}')
         logging.error(traceback.format_exc())
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
