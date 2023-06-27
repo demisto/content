@@ -5,8 +5,14 @@ commonfields:
 configuration:
 - display: API Key
   name: APIKey
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Service Key (for triggering, acknowledging and resolving events only)
   name: ServiceKey
   required: false
@@ -621,7 +627,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - PagerDuty Test
 fromversion: 5.0.0
