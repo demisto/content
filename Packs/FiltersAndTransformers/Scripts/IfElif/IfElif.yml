@@ -1,0 +1,26 @@
+commonfields:
+  id: If-Elif
+  version: -1
+name: If-Elif
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: A transformer for if-elseif-else logic.
+enabled: true
+args:
+- name: conditions
+  description: |-
+    A JSON formatted list, where all but the last value are dictionaries with the keys "condition" and "return".
+    The last value can be any valid JSON object.
+  required: true
+  default: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.9.40422
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
