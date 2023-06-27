@@ -613,9 +613,11 @@ handle-dev-secrets:
     - gke
   extends:
     - .default-job-settings
+  variables:
+    master_branch_name: master
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name
   stage: unittests-and-validations
   script:
     - |
