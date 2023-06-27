@@ -6,6 +6,22 @@ commonfields:
   id: Microsoft Graph API
   version: -1
 configuration:
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Azure AD endpoint parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
 - defaultvalue: 8922dd2d-7539-4711-b839-374f86083959
   display: Application ID
   name: app_id
@@ -62,17 +78,13 @@ configuration:
   type: 9
   section: Connect
   advanced: true
-- additionalinfo: Azure AD endpoint associated with a national cloud.
-  defaultvalue: https://login.microsoftonline.com
+- defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
   required: false
-  type: 15
-  options:
-  - https://login.microsoftonline.com
-  - https://login.microsoftonline.us
-  - https://login.microsoftonline.de
-  - https://login.chinacloudapi.cn
+  type: 0
+  advanced: true
+  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
 - display: Scope (Required for using Cortex XSOAR Azure app)
   name: scope
@@ -166,7 +178,7 @@ script:
     execution: false
     name: msgraph-api-request
   - deprecated: false
-    description: Run this command to start the autorization process and follow the instructions in the command results.
+    description: Run this command to start the authorization process and follow the instructions in the command results.
     execution: false
     name: msgraph-api-auth-start
   - deprecated: false

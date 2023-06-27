@@ -4,6 +4,7 @@ import os
 import pytest
 
 from MicrosoftGraphAPI import MsGraphClient, generic_command
+from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
 def load_test_data(test_data_filename):
@@ -24,7 +25,7 @@ def client(requests_mock):
         tenant_id='tenant_id',
         verify=False,
         proxy=False,
-
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
     )
 
 
@@ -136,7 +137,7 @@ def test_test_module(mocker, params):
     When:
         - Running the test-module command.
     Then:
-        - Ensure the command doesn't fails on ValueError (as for device-flow mode).
+        - Ensure the command doesn't fail on ValueError (as for device-flow mode).
     """
     from MicrosoftGraphAPI import demisto, main, MicrosoftClient
 
