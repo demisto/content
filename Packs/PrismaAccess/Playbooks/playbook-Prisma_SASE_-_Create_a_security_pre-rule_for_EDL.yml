@@ -273,9 +273,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
       - "9"
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"

@@ -181,6 +181,11 @@ tasks:
             value:
               simple: PrismaSase.Address.address_value
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Type
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {

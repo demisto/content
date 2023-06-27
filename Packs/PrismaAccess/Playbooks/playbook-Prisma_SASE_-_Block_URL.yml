@@ -576,33 +576,19 @@ tasks:
     taskid: af316618-dc9f-4475-89a4-b7fd5ad0e2f4
     type: condition
     task:
-      id: af316618-dc9f-4475-89a4-b7fd5ad0e2f4
+      id: 166e379f-9232-48ec-81ed-e1570c467865
       version: -1
-      name: Use Custom Block Rules?
-      description: Verify if custom block rule playbook input is set to true.
+      name: Choose to commit and push configuration automatically
+      description: Choose to commit and push configuration automatically
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "5"
-      "yes":
+      Push:
       - "12"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.CustomBlockRule
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-          right:
-            value:
-              simple: "true"
     continueonerrortype: ""
     view: |-
       {
@@ -614,6 +600,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Push
+      - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false
