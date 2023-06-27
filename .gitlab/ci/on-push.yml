@@ -606,11 +606,7 @@ test-upload-flow:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   script:
-    - |
-      if [[ -f $ARTIFACTS_FOLDER/failed_tests.txt ]]; then
-        cat $ARTIFACTS_FOLDER/failed_tests.txt
-        exit 1
-        fi
+    - python3 ./Tests/scripts/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt --skipped_tests_path $ARTIFACTS_FOLDER/skipped_tests.txt
   
 
 xsiam_server_ga-test_playbooks_results:
