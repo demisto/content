@@ -5,11 +5,12 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
-API_KEY = demisto.params()['apikey']
+API_KEY = demisto.params().get('apikey_creds', {}).get('password') or demisto.params().get('apikey')
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'

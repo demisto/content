@@ -1,0 +1,1178 @@
+id: Cloud IAM Enrichment - Generic
+version: -1
+name: Cloud IAM Enrichment - Generic
+description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9de5923c-c321-4257-8432-398d992279fd
+    type: start
+    task:
+      id: 9de5923c-c321-4257-8432-398d992279fd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 422b1bd0-3778-47d8-8d30-c9418c3b9a35
+    type: title
+    task:
+      id: 422b1bd0-3778-47d8-8d30-c9418c3b9a35
+      version: -1
+      name: Azure Enrichment Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ee5711c0-603e-4de7-8bea-b19f6f61e124
+    type: condition
+    task:
+      id: ee5711c0-603e-4de7-8bea-b19f6f61e124
+      version: -1
+      name: Select cloud provider
+      description: Checks the cloud provider.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      AWS:
+      - "17"
+      Azure:
+      - "11"
+      GCP:
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - IAM
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: Azure
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftGraphIdentityandAccess
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Graph Groups
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Graph User
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GSuiteAdmin
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GCP-IAM
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f80c87c9-d081-4fb9-8902-ed4688b60faf
+    type: regular
+    task:
+      id: f80c87c9-d081-4fb9-8902-ed4688b60faf
+      version: -1
+      name: Azure IAM - Get user information
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+        Permissions: - User.Read (Delegated) - User.Read.All (Application)
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      user:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ac99bbcf-26f3-4810-891c-bbf7df66a649
+    type: regular
+    task:
+      id: ac99bbcf-26f3-4810-891c-bbf7df66a649
+      version: -1
+      name: Azure IAM - List risky user history
+      description: Retrieve the risky users history in active directory.
+      script: '|||msgraph-identity-protection-risky-user-history-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      user_id:
+        complex:
+          root: MSGraphUser
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9ba1aabc-8faa-46ec-80c2-20f99ae5faac
+    type: regular
+    task:
+      id: 9ba1aabc-8faa-46ec-80c2-20f99ae5faac
+      version: -1
+      name: Azure IAM - List user groups
+      description: Provides a list of groups.
+      script: '|||msgraph-groups-list-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      filter:
+        simple: startsWith(Mail,'${inputs.username}')
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 817df662-98b0-4a53-809b-2bd38f28f289
+    type: condition
+    task:
+      id: 817df662-98b0-4a53-809b-2bd38f28f289
+      version: -1
+      name: MSGraph User ID exists?
+      description: Checks if MSGraph User ID exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MSGraphUser
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 81c59164-eb19-4eec-815c-87a7378443f5
+    type: title
+    task:
+      id: 81c59164-eb19-4eec-815c-87a7378443f5
+      version: -1
+      name: 'Azure Enrichment '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d9ef2f89-4ea7-4552-8afd-b4daf0d04743
+    type: regular
+    task:
+      id: d9ef2f89-4ea7-4552-8afd-b4daf0d04743
+      version: -1
+      name: AWS IAM - Get user information
+      description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
+      script: AWS - IAM|||aws-iam-get-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 219490f3-8185-4975-880b-0ea73d998606
+    type: regular
+    task:
+      id: 219490f3-8185-4975-880b-0ea73d998606
+      version: -1
+      name: AWS IAM - List user access keys
+      description: Returns information about the access key IDs associated with the specified IAM user.
+      script: AWS - IAM|||aws-iam-list-access-keys-for-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 8f0c652a-c419-4890-8b38-5916aba00faf
+    type: regular
+    task:
+      id: 8f0c652a-c419-4890-8b38-5916aba00faf
+      version: -1
+      name: AWS IAM - List user groups
+      description: Lists the IAM groups that the specified IAM user belongs to.
+      script: '|||aws-iam-list-groups-for-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b0d79051-aeee-4d78-8ea1-7ed02bbe01ab
+    type: regular
+    task:
+      id: b0d79051-aeee-4d78-8ea1-7ed02bbe01ab
+      version: -1
+      name: AWS IAM - List user attached policies
+      description: Lists all managed policies that are attached to the specified IAM user.
+      script: '|||aws-iam-list-attached-user-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e558a2a4-a714-4a0b-8790-77ad50c1bf23
+    type: regular
+    task:
+      id: e558a2a4-a714-4a0b-8790-77ad50c1bf23
+      version: -1
+      name: AWS IAM - List user inline policies
+      description: Lists the names of the inline policies embedded in the specified IAM user.
+      script: '|||aws-iam-list-user-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 74b022cf-4364-4577-8b6c-86ea90f2c84a
+    type: title
+    task:
+      id: 74b022cf-4364-4577-8b6c-86ea90f2c84a
+      version: -1
+      name: AWS Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9a3e648b-2540-41b8-8c66-61fab9915c09
+    type: title
+    task:
+      id: 9a3e648b-2540-41b8-8c66-61fab9915c09
+      version: -1
+      name: AWS Enrichment Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 656df064-9845-4858-8437-546c2fc64cd5
+    type: title
+    task:
+      id: 656df064-9845-4858-8437-546c2fc64cd5
+      version: -1
+      name: GCP Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 140c8bf9-6f93-4f30-8a67-0e4e5340abcd
+    type: condition
+    task:
+      id: 140c8bf9-6f93-4f30-8a67-0e4e5340abcd
+      version: -1
+      name: Check the user type
+      description: Checks the user type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      Service Account:
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: Service Account
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudIdentityType
+            iscontext: true
+          right:
+            value:
+              simple: Service Account
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudIdentityType
+            iscontext: true
+          right:
+            value:
+              simple: SERVICE_ACCOUNT
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 661bcee9-5e78-4ff6-819f-cc35c64d6a9f
+    type: regular
+    task:
+      id: 661bcee9-5e78-4ff6-819f-cc35c64d6a9f
+      version: -1
+      name: G Suite - Get user information
+      description: Retrieve a user's details given a user key.
+      script: '|||gsuite-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      user:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: fb11e5f3-52e7-4198-8317-b7899c9d117c
+    type: regular
+    task:
+      id: fb11e5f3-52e7-4198-8317-b7899c9d117c
+      version: -1
+      name: G Suite - List user role assinments
+      description: Retrieves a paginated list of all role assignments.
+      script: '|||gsuite-role-assignment-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      customer_id:
+        complex:
+          root: GSuite.User
+          accessor: customerId
+      user_key:
+        complex:
+          root: GSuite.User
+          accessor: primaryEmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7cf34b5f-d865-46ae-82bd-1d5e0e28c48e
+    type: regular
+    task:
+      id: 7cf34b5f-d865-46ae-82bd-1d5e0e28c48e
+      version: -1
+      name: GCP IAM - Get service account information
+      description: 'Lists service accounts in a project, or retrieves a specific service account information. One of the arguments: ''service_account_name'' or ''project_name''  must be provided.'
+      script: '|||gcp-iam-service-accounts-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      project_name:
+        complex:
+          root: inputs.GCPProjectName
+      service_account_name:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e6c9ee87-eca1-4da1-8709-83a3cc50cb8d
+    type: regular
+    task:
+      id: e6c9ee87-eca1-4da1-8709-83a3cc50cb8d
+      version: -1
+      name: GCP IAM - List roles for the user's project ID
+      description: Lists a project custom roles.
+      script: '|||gcp-iam-project-role-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      project_id:
+        complex:
+          root: GCPIAM.ServiceAccount
+          accessor: projectId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b92b83a2-fcdf-41f4-81e2-a38139eadac7
+    type: regular
+    task:
+      id: b92b83a2-fcdf-41f4-81e2-a38139eadac7
+      version: -1
+      name: GCP IAM - List service account access keys
+      description: 'Lists service account keys, or retrieves a specific service account key information. One of the arguments: ''service_account_name'' or ''key_name''  must be provided.'
+      script: '|||gcp-iam-service-account-keys-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      service_account_name:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c638f8a0-715c-442f-8b9b-66d7457dc8d8
+    type: title
+    task:
+      id: c638f8a0-715c-442f-8b9b-66d7457dc8d8
+      version: -1
+      name: GCP Enrichment Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 4ecfc3d0-1868-466b-8805-ec13817e5c08
+    type: title
+    task:
+      id: 4ecfc3d0-1868-466b-8805-ec13817e5c08
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 084173a0-9565-4d4e-899d-6c5cfc275d15
+    type: condition
+    task:
+      id: 084173a0-9565-4d4e-899d-6c5cfc275d15
+      version: -1
+      name: Gsuite Customer ID exists?
+      description: Checks if the Gsuite Customer ID exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GSuite.User
+                accessor: customerId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_5_#default#": 0.45,
+      "10_8_yes": 0.64,
+      "20_23_Service Account": 0.55,
+      "28_22_yes": 0.4,
+      "28_26_#default#": 0.42,
+      "6_11_Azure": 0.76,
+      "6_17_AWS": 0.59,
+      "6_27_#default#": 0.86
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1620,
+        "width": 2280,
+        "x": -500,
+        "y": 10
+      }
+    }
+  }
+inputs:
+- key: username
+  value: {}
+  required: false
+  description: User name.
+  playbookInputQuery:
+- key: GCPProjectName
+  value: {}
+  required: false
+  description: The GCP project name.
+  playbookInputQuery:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: cloudIdentityType
+  value: {}
+  required: false
+  description: The cloud identity type.
+  playbookInputQuery:
+outputs:
+- contextPath: AWS.IAM.Users
+  description: |-
+    AWS AM Users include:
+    UserId
+    Arn
+    CreateDate
+    Path
+    PasswordLastUsed
+  type: unknown
+- contextPath: AWS.IAM.Users.AccessKeys
+  description: |-
+    AWS IAM Users Access Keys include:
+    AccessKeyId
+    Status
+    CreateDate
+    UserName
+  type: unknown
+- contextPath: GCPIAM
+  description: GCP IAM information.
+  type: unknown
+- contextPath: GSuite
+  description: GSuite user information.
+  type: unknown
+- contextPath: GSuite.PageToken
+  description: Token to specify the next page in the list.
+  type: unknown
+- contextPath: MSGraphUser
+  description: MSGraph user information.
+  type: unknown
+- contextPath: MSGraphGroups
+  description: MSGraph groups information.
+  type: unknown
+- contextPath: MSGraph.identityProtection
+  description: MSGraph identity protection - risky user history.
+  type: unknown
+- contextPath: AWS.IAM.Users.AccessKeys.CreateDate
+  description: The date when the access key was created.
+- contextPath: AWS.IAM.Users.AccessKeys.UserName
+  description: The name of the IAM user that the key is associated with.
+- contextPath: AWS.IAM.Users.Groups
+  description: AWS IAM - User groups.
+  type: unknown
+- contextPath: AWS.IAM.UserPolicies
+  description: AWS IAM - user inline policies.
+  type: unknown
+- contextPath: AWS.IAM.AttachedUserPolicies
+  description: AWS IAM - User attached policies.
+  type: unknown
+- contextPath: MSGraphGroup
+  description: MSGraph group information.
+  type: unknown
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

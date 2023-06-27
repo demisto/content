@@ -1,0 +1,953 @@
+id: Autofocus Query Samples, Sessions and Tags
+version: -1
+name: Autofocus Query Samples, Sessions and Tags
+fromversion: 5.0.0
+description: |-
+  This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+
+  The playbook supports searching both the Samples API and the sessions API.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9745a269-e023-4903-88ec-065a56f9775e
+    type: start
+    task:
+      id: 9745a269-e023-4903-88ec-065a56f9775e
+      description: Playbook started.
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f4ed1739-4f96-4145-86cf-c941cea2cf48
+    type: regular
+    task:
+      id: f4ed1739-4f96-4145-86cf-c941cea2cf48
+      version: -1
+      name: Submit search to Autofocus - sample hash
+      description: Submit search to autofocus-search-samples.
+      script: '|||autofocus-search-samples'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+      file_hash:
+        complex:
+          root: inputs.Hash
+      ip:
+        complex:
+          root: inputs.IP
+      query:
+        complex:
+          root: inputs.SampleQuery
+      scope:
+        complex:
+          root: inputs.Scope
+      url:
+        complex:
+          root: inputs.URL
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b4492bfe-cd15-4815-835e-e926c94aba72
+    type: title
+    task:
+      id: b4492bfe-cd15-4815-835e-e926c94aba72
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d8d223e4-96dd-4069-81f5-adad2ff8759a
+    type: condition
+    task:
+      id: d8d223e4-96dd-4069-81f5-adad2ff8759a
+      version: -1
+      name: Is Autofocus enabled?
+      description: Checks if Autofocus is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "7"
+      - "8"
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AutoFocus V2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d8565659-495d-4e14-8d80-387359ac0af6
+    type: playbook
+    task:
+      id: d8565659-495d-4e14-8d80-387359ac0af6
+      version: -1
+      name: AutoFocusPolling
+      description: |-
+        Use this playbook as a sub-playbook to  query PANW Autofocus Threat intelligence system. This sub-playbook is the same as the generic polling sub-playbook besides that it provides outputs in the playbook. The reason for that is that in Autofocus its impossible to query the results of the same query more than once so the outputs have to be in the polling context.
+
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: AutoFocusPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Ids:
+        complex:
+          root: AutoFocus
+          accessor: SamplesSearch.AFCookie
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: af_cookie
+      PollingCommandName:
+        simple: autofocus-samples-search-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: AutoFocus.SamplesSearch(val.Status != 'complete').AFCookie
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6283e2d0-9044-496c-8394-6d2eca7e41b4
+    type: condition
+    task:
+      id: 6283e2d0-9044-496c-8394-6d2eca7e41b4
+      version: -1
+      name: Search samples?
+      description: Checks if search for samples is relevant.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.Search Type
+            iscontext: true
+          right:
+            value:
+              simple: sample
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Search Type
+            iscontext: true
+          right:
+            value:
+              simple: all
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2e8e9548-47bb-4007-8194-948267516219
+    type: condition
+    task:
+      id: 2e8e9548-47bb-4007-8194-948267516219
+      version: -1
+      name: Search Sessions?
+      description: Checks if search for sessions is relevant.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.Search Type
+            iscontext: true
+          right:
+            value:
+              simple: session
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Search Type
+            iscontext: true
+          right:
+            value:
+              simple: all
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6157126e-ff31-4e10-872e-4a1c8fede04d
+    type: regular
+    task:
+      id: 6157126e-ff31-4e10-872e-4a1c8fede04d
+      version: -1
+      name: Submit search to Autofocus - Sessions hash
+      description: Submit search to autofocus-search-sessions.
+      script: '|||autofocus-search-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+      file_hash:
+        complex:
+          root: inputs.Hash
+      ip:
+        complex:
+          root: inputs.IP
+      query:
+        complex:
+          root: inputs.SessionQuery
+      url:
+        complex:
+          root: inputs.URL
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ecc5d644-5a48-4d9b-82c2-30e927febd19
+    type: playbook
+    task:
+      id: ecc5d644-5a48-4d9b-82c2-30e927febd19
+      version: -1
+      name: AutoFocusPolling
+      description: |-
+        Use this playbook as a sub-playbook to  query PANW Autofocus Threat intelligence system. This sub-playbook is the same as the generic polling sub-playbook besides that it provides outputs in the playbook. The reason for that is that in Autofocus its impossible to query the results of the same query more than once so the outputs have to be in the polling context.
+
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: AutoFocusPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Ids:
+        complex:
+          root: AutoFocus
+          accessor: SessionsSearch.AFCookie
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: af_cookie
+      PollingCommandName:
+        simple: autofocus-sessions-search-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: AutoFocus.SessionsSearch(val.Status != 'complete').AFCookie
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1f715cc4-d33b-47b8-886e-7a022d2aec73
+    type: condition
+    task:
+      id: 1f715cc4-d33b-47b8-886e-7a022d2aec73
+      version: -1
+      name: Search Tags?
+      description: Checks if search for tags is relevant.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.Search Type
+            iscontext: true
+          right:
+            value:
+              simple: tag
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Search Type
+            iscontext: true
+          right:
+            value:
+              simple: all
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1167.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b0eae75d-921d-4f6e-822f-10a2b0d20934
+    type: regular
+    task:
+      id: b0eae75d-921d-4f6e-822f-10a2b0d20934
+      version: -1
+      name: Submit search to Autofocus - tags
+      description: Performs a search to identify the most popular tags.
+      script: '|||autofocus-top-tags-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      class:
+        complex:
+          root: inputs.Tags class
+      commodity:
+        complex:
+          root: inputs.Commodity
+      private:
+        complex:
+          root: inputs.Tags private
+      public:
+        complex:
+          root: inputs.Tags public
+      scope:
+        complex:
+          root: inputs.Tags scope
+      unit42:
+        complex:
+          root: inputs.Unit 42
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1167.5,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c2b392ae-5a29-474a-80fb-16416eef4c7c
+    type: playbook
+    task:
+      id: c2b392ae-5a29-474a-80fb-16416eef4c7c
+      version: -1
+      name: AutoFocusPolling
+      description: |-
+        Use this playbook as a sub-playbook to  query PANW Autofocus Threat intelligence system. This sub-playbook is the same as the generic polling sub-playbook besides that it provides outputs in the playbook. The reason for that is that in Autofocus its impossible to query the results of the same query more than once so the outputs have to be in the polling context.
+
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: AutoFocusPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Ids:
+        complex:
+          root: AutoFocus
+          accessor: TopTagsSearch.AFCookie
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: af_cookie
+      PollingCommandName:
+        simple: autofocus-top-tags-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: AutoFocus.TopTagsSearch(val.Status != 'complete').AFCookie
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1167.5,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 95013903-e251-4b1f-81b0-ea0be5be25f5
+    type: condition
+    task:
+      id: 95013903-e251-4b1f-81b0-ea0be5be25f5
+      version: -1
+      name: Was submit session search to AutoFocus successful?
+      description: "Checks whether the session search submitted to AutoFocus was successful."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: AutoFocus.SessionsSearch.AFCookie
+                      iscontext: true
+                accessor: SessionsSearch
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 711cd9a8-d641-45f8-8cbd-71f62451fe99
+    type: condition
+    task:
+      id: 711cd9a8-d641-45f8-8cbd-71f62451fe99
+      version: -1
+      name: Was submit sample search to AutoFocus successful?
+      description: "Checks whether the sample search submitted to AutoFocus was successful."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: AutoFocus.SamplesSearch.AFCookie
+                      iscontext: true
+                accessor: SamplesSearch
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8f4b9d0d-30f6-4d1c-8bd9-36967cf95fdd
+    type: condition
+    task:
+      id: 8f4b9d0d-30f6-4d1c-8bd9-36967cf95fdd
+      version: -1
+      name: Was submit tags search to AutoFocus successful?
+      description: "Checks whether the tag search submitted to AutoFocus was successful."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: AutoFocus.TopTagsSearch.AFCookie
+                      iscontext: true
+                accessor: TopTagsSearch
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1167.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_yes": 0.6,
+      "11_4_#default#": 0.18,
+      "14_10_yes": 0.61,
+      "14_4_#default#": 0.47,
+      "15_4_#default#": 0.46,
+      "15_6_yes": 0.34,
+      "16_13_yes": 0.57,
+      "16_4_#default#": 0.23,
+      "5_4_#default#": 0.1,
+      "7_1_yes": 0.62,
+      "7_4_#default#": 0.27,
+      "8_4_#default#": 0.27,
+      "8_9_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 1327.5,
+        "x": 220,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: Scope
+  value: {}
+  required: false
+  description: |-
+    Scope can be
+    Private
+    Public
+    Global
+  playbookInputQuery:
+- key: SampleQuery
+  value: {}
+  required: false
+  description: |
+    Query needs to be provided in order to determine what to search for. Query is currently only in JSON format which can be extracted from the Autofocus web console API radio button.
+
+    Query example for searching hashes can be
+
+    {"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}
+
+    Another example for searching for an IP
+    {"operator":"any","children":[{"field":"sample.src_ip","operator":"is","value":"1.1.1.1"},{"field":"sample.dst_ip","operator":"is","value":"1.1.1.1"},{"field":"sample.src_ip","operator":"is","value":"2.2.2.2"},{"field":"sample.dst_ip","operator":"is","value":"2.2.2.2"}]}
+  playbookInputQuery:
+- key: SessionQuery
+  value: {}
+  required: false
+  description: |
+    Query needs to be provided in order to determine what to search for. Query is currently only in JSON format which can be extracted from the Autofocus web console API radio button.
+
+    Query example for searching hashes can be
+
+    {"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}
+
+    Another example for searching for an IP
+    {"operator":"any","children":[{"field":"session.src_ip","operator":"is","value":"1.1.1.1"},{"field":"session.dst_ip","operator":"is","value":"1.1.1.1"},{"field":"session.src_ip","operator":"is","value":"2.2.2.2"},{"field":"session.dst_ip","operator":"is","value":"2.2.2.2"}]}
+  playbookInputQuery:
+- key: IP
+  value: {}
+  required: false
+  description: IP to query
+  playbookInputQuery:
+- key: Hash
+  value: {}
+  required: false
+  description: Hash to query
+  playbookInputQuery:
+- key: URL
+  value: {}
+  required: false
+  description: URL to query
+  playbookInputQuery:
+- key: Domain
+  value: {}
+  required: false
+  description: Domain to query
+  playbookInputQuery:
+- key: Search Type
+  value: {}
+  required: true
+  description: |
+    Values can be session, sample, tag,all
+  playbookInputQuery:
+- key: Wildfire Verdict
+  value: {}
+  required: false
+  description: Values can be Malware,Benign,Phishing,Greyware
+  playbookInputQuery:
+- key: Sessions time before
+  value: {}
+  required: false
+  description: |-
+    Timestamp in the following format
+    2019-09-12T00:00:00
+    This parameter checks for sessions prior to this timestamp
+  playbookInputQuery:
+- key: Sessions time after
+  value: {}
+  required: false
+  description: |-
+    Timestamp in the following format
+    2019-09-12T00:00:00
+    This parameter checks for sessions after this timestamp
+  playbookInputQuery:
+- key: Sample first seen
+  value: {}
+  required: false
+  description: |-
+    Timestamp in the following format
+    2019-09-12T00:00:00
+    This parameter checks for when the sample was first seen after this date.
+  playbookInputQuery:
+- key: Sample last modified
+  value: {}
+  required: false
+  description: |-
+    Timestamp in the following format
+    2019-09-12T00:00:00
+    This parameter checks for when the sample was last modified after this date.
+  playbookInputQuery:
+- key: Tags scope
+  value: {}
+  required: false
+  description: Values can be industry, organization, all, global.
+  playbookInputQuery:
+- key: Tags class
+  value: {}
+  required: false
+  description: Values can be Actor, Campaign, Exploit, Malicious Behavior, Malware Family
+  playbookInputQuery:
+- key: Tags private
+  value: {}
+  required: false
+  description: Values can be True, False. If true the search will only focus on private (non public) objects. Default is false
+  playbookInputQuery:
+- key: Tags public
+  value: {}
+  required: false
+  description: Values can be True, False. If true the search will only focus on public (non private) objects. Default is false.
+  playbookInputQuery:
+- key: Commodity
+  value: {}
+  required: false
+  description: Values can be True, False. Default is false.
+  playbookInputQuery:
+- key: Unit 42
+  value: {}
+  required: false
+  description: Values can be True, False. Default is false objects that have been analyzed by Palo Alto's Unit 42 global threat intelligence team.
+  playbookInputQuery:
+outputs:
+- contextPath: AutoFocus.SessionsResults
+  description: Results of Autofocus sessions search.
+  type: string
+- contextPath: AutoFocus.SamplesResults
+  description: Results of Autofocus samples search.
+  type: string
+- contextPath: AutoFocus.TopTagResults
+  description: Results of Autofocus tags search.
+  type: string
+tests:
+- Autofocus Query Samples, Sessions and Tags Test Playbook
+contentitemexportablefields:
+  contentitemfields: {}

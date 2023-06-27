@@ -18,3 +18,7 @@ If using a custom classifier the following fields are required for bidirectional
 | xsoar\_mirror\_last\_sync | dbotMirrorLastSync |
 | xsoar\_mirror\_tags | dbotMirrorTags |
 
+## Custom Playbook
+If using a custom playbook comments from before the alert was escalated will not be fetched.
+In order to fetch them call `ztap-get-alert-entries` during initial processing.
+Note that the escalation comment will be fetched during this step.

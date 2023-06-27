@@ -2,23 +2,29 @@ This playbook is part of the 'Malware Investigation And Response' pack. For more
 This playbook handles false-positive incident closures for Cortex XDR - Malware investigation.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Cortex XDR - Unisolate Endpoint
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * closeInvestigation
 * setIndicators
 * xdr-allowlist-files
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -31,9 +37,12 @@ This playbook does not use any scripts.
 | FileSha256 | The File SHA256 you want to block. | ${incident.filesha256} | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - False Positive Incident Handling](../doc_files/Cortex_XDR_-_False_Positive_Incident_Handling.png)

@@ -1,6 +1,8 @@
 import io
 import json
 
+import pytest
+
 from FeedUnit42IntelObjects import (Client, fetch_indicators_command,
                                     incremental_level_fetch)
 
@@ -61,3 +63,25 @@ def test_user_secrets():
     client = Client(api_key='%%This_is_API_key%%', base_url='url', verify=False, proxy=False)
     res = LOG(client.headers)
     assert "%%This_is_API_key%%" not in res
+
+
+def test_validate_created_time_from_refs():
+    from FeedUnit42IntelObjects import validate_created_time_from_refs
+    tags = util_load_json('test_data/build_iterator_results.json')
+    for tag in tags:
+        refs = json.loads(tag.get("tag", {}).get("refs", ''))[0]
+        created = refs.get("created", '')
+        res = validate_created_time_from_refs(created)
+        assert res == f'{created}Z'
+
+
+@pytest.mark.parametrize('created, expected_result', [
+    ('2016--08-10T14:27:05', '2016-08-10T14:27:05Z'),
+    ('2016', '2016-01-01T00:00:00Z'),
+    ('1-1', '1970-01-01T00:00:00Z'),
+    ('Test wrong format', '')
+])
+def test_validate_created_time_from_refs_incorrect_format(created, expected_result):
+    from FeedUnit42IntelObjects import validate_created_time_from_refs
+    res = validate_created_time_from_refs(created)
+    assert res == expected_result

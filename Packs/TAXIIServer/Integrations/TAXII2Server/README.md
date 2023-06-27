@@ -54,14 +54,14 @@ For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/ct
 
 ## TAXII v2.1 API Enpoints
 
-| **URL** | **Method** | **Response** | **TAXII2 Documentation** |
-| --- | --- | --- | --- |
-| /taxii2/ | GET | Server Discovery Information. | [Server Discovery](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107526) |
-| /{api_root}/ | GET | XSOAR API root is *threatintel*. | [API Root Information](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107528) |
-| /{api_root}/collections/ | GET | All Cortex XSOAR collections that configure in Collection JSON parameter. | [Collections Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107533) |
-| /{api_root}/collections/{collection_id}/ | GET | Cortex XSOAR Collection with given *collection_id*. | [Collection Response](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107535) |
-| /{api_root}/collections/{collection_id}/manifest/ | GET | Object manifests from the given collection. | [Objects Manifest Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107537) |
-| /{api_root}/collections/{collection_id}/objects/ | GET | Objects (Cortex XSOAR Indicators) from the given collection. | [Object Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107539) |
+| **URL**                                           | **Method** | **Response**                                                                   | **TAXII2 Documentation**                                                                                   |
+|---------------------------------------------------|------------|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| /taxii2/                                          | GET        | Server Discovery Information.                                                  | [Server Discovery](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107526)          |
+| /{api_root}/                                      | GET        | XSOAR API root is *threatintel*.                                               | [API Root Information](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107528)      |
+| /{api_root}/collections/                          | GET        | All Cortex XSOAR collections that configure in Collection JSON parameter.      | [Collections Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107533)      |
+| /{api_root}/collections/{collection_id}/          | GET        | Cortex XSOAR Collection with given *collection_id*.                            | [Collection Response](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107535)       |
+| /{api_root}/collections/{collection_id}/manifest/ | GET        | Object manifests from the given collection.                                    | [Objects Manifest Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107537) |
+| /{api_root}/collections/{collection_id}/objects/  | GET        | Objects (Cortex XSOAR Indicators and Relationships) from the given collection. | [Object Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107539)           |
 
 For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html).
 

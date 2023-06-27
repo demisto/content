@@ -1,0 +1,19 @@
+{
+  "trigger_id": "437fc412eafbec9c69d8af8322895b69",
+  "playbook_id": "Ransomware Response",
+  "suggestion_reason": "Recommended for Alerts triggered by the Anti Ransomware module",
+  "description": "This trigger is responsible for handling ransomware alerts",
+  "trigger_name": "Ransomware Response",
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+            "SEARCH_FIELD": "mitre_technique_id_and_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "T1486 - Data Encrypted for Impact"
+        }
+      ]
+    }
+  }
+}
+

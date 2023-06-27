@@ -24,14 +24,12 @@ configuration:
 - additionalinfo: First Fetch Time (e.g 1 hour)
   defaultvalue: 1 hour
   display: First Fetch Time (default 1 hour)
-  hidden: false
   name: first_fetch
   required: false
   type: 0
 - additionalinfo: Maximum number of incidents per fetch (Recommended less than 200)
   defaultvalue: '50'
   display: Max Fetch
-  hidden: false
   name: max_fetch
   required: false
   type: 0
@@ -43,16 +41,13 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: 'Note: When a space character is used, it must be enclosed in single
-    quotes. Query example: Alert.Info:''Registry Object Changed'''
+- additionalinfo: 'Note: When a space character is used, it must be enclosed in single quotes. Query example: Alert.Info:''Registry Object Changed'''
   defaultvalue: Alert.Category:*
   display: Query
-  hidden: false
   name: query
   required: false
   type: 0
-description: Logsign SIEM provides to collect and store unlimited data, investigate
-  and detect threats, and respond automatically.
+description: Logsign SIEM provides to collect and store unlimited data, investigate and detect threats, and respond automatically.
 display: LogsignSiem
 name: LogsignSiem
 script:
@@ -131,7 +126,7 @@ script:
     - contextPath: LogsignSiem.Count
       description: Count number returned as the result of the query
       type: Number
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.11.61265
   feed: false
   isfetch: true
   longRunning: false

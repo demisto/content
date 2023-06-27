@@ -1,3 +1,4 @@
+# JAMF
 This pack enables you to interact with Jamf Pro which is the product that allows you to manage Apple devices (Mac, iPhone, Apple TV, iPad). It can be used to control
   various configurations via different policies, install and uninstall applications, lock
   devices, perform smart groups searches, and more.
@@ -8,7 +9,7 @@ If an application on your Apple device has a security issue, you can check for t
 
 <br/>This pack includes XSIAM content.
 
-### Collect Events from jamf pro (XSIAM)
+### Collect Events from Jamf pro (XSIAM)
 
 We are currently support the retrieval of webhooks events from jamf by using an HTTP Log Collector.
 In order to configure the webhooks on jamf's side, please read [this documentation](https://docs.jamf.com/10.31.0/jamf-pro/administrator-guide/Webhooks.html). 
@@ -19,7 +20,7 @@ You will need to use the information described [here](https://docs.paloaltonetwo
 You can configure the specific vendor and product for this instance.
 
 **On XSIAM:**
-1. Navigate to **Settings** -> **Custom collectors** -> **HTTP**. Click on **Add Instance**, set the Name and Compression as you choose and then please set:
+1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source** -> **Custom - HTTP based Collector** -> Click on **Connect Another Instance**, set the Name and Compression as you choose and then please set:
    - Log Format as `JSON`
    - Vendor as `jamf`
    - Product as `pro`

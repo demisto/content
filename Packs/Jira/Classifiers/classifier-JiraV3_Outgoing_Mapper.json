@@ -1,0 +1,40 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "JiraV3 Outgoing Mapper",
+    "mapping": {
+        "JiraV3 Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "assignee": {
+                    "simple": "assigneduser"
+                },
+                "components": {
+                    "simple": "jiracomponent"
+                },
+                "description": {
+                    "simple": "jiradescription"
+                },
+                "due_date": {
+                    "simple": "jiraduedate"
+                },
+                "original_estimate": {
+                    "simple": "jiraestimate"
+                },
+                "labels": {
+                    "simple": "jiralabels"
+                },
+                "priority": {
+                    "simple": "jirapriority"
+                },
+                "summary": {
+                    "simple": "jirasummary"
+                }
+            }
+        }
+    },
+    "name": "JiraV3 Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

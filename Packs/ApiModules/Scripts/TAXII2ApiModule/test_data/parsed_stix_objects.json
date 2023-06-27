@@ -14,7 +14,8 @@
       "value": "windows-updates.com"
     },
     "fields": {
-      "tags": ["malicious-activity"]
+      "tags": ["malicious-activity"],
+      "trafficlightprotocol": null
     }
   },
   {

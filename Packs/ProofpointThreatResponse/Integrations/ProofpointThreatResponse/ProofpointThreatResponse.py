@@ -15,7 +15,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 BASE_URL = demisto.params().get('url')
 if BASE_URL and BASE_URL[-1] != '/':
     BASE_URL += '/'
-API_KEY = demisto.params().get('apikey')
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure')
 # How many time before the first fetch to retrieve incidents
 FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours',
@@ -152,7 +152,7 @@ def search_indicators(list_id, indicator_filter):
     found_items = []
     for item in list_indicators:
         item_indicator = demisto.get(item, 'host.host')
-        if indicator_filter in item_indicator:
+        if item_indicator and indicator_filter in item_indicator:
             found_items.append(item)
 
     return found_items

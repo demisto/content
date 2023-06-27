@@ -1,0 +1,32 @@
+{
+    "id": "incident_symantecedrrecommendedaction",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "modified": "2023-01-05T22:57:06.635647866+05:30",
+    "name": "SymantecEDR Recommended Action",
+    "ownerOnly": false,
+    "description": "Recommended action for this incident. Possible actions could be isolating an endpoint, deleting fle from endpoint, blacklist URL, or domain, etc.",
+    "cliName": "symantecedrrecommendedaction",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "group": 0,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Symantec EDR Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

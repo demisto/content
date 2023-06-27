@@ -1,0 +1,399 @@
+id: Unzip File
+version: -1
+name: Unzip File
+description: This playbook checks whether a file has an extension that supports unzipping, and unzips the file.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a15af2c-7e11-4bd8-8011-08b69036846c
+    type: start
+    task:
+      id: 1a15af2c-7e11-4bd8-8011-08b69036846c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2bd8c6c6-8e56-428a-8dd8-e4e05dd8f6fa
+    type: title
+    task:
+      id: 2bd8c6c6-8e56-428a-8dd8-e4e05dd8f6fa
+      version: -1
+      name: No File / Unsupported File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c5f41b44-aa87-40bb-81d7-16d14591a0b3
+    type: condition
+    task:
+      id: c5f41b44-aa87-40bb-81d7-16d14591a0b3
+      version: -1
+      name: Is there a zipped file?
+      description: 'Checks whether there is a zipped file in the incident. The following extensions are checked: 7z, gzip, tar, zip.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 7z
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: gzip
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tar
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: zip
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: rar
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: gz
+                    ignorecase: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a0822541-24c7-4c65-86f3-6afc288bbb2e
+    type: regular
+    task:
+      id: a0822541-24c7-4c65-86f3-6afc288bbb2e
+      version: -1
+      name: Unzip file
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entryID:
+        complex:
+          root: ZipFile
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      nonsensitive_password:
+        complex:
+          root: inputs.Password
+      zipTool:
+        complex:
+          root: inputs.ZipTool
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ee6e7c90-b233-4a54-8600-8f5e531fb4bd
+    type: regular
+    task:
+      id: ee6e7c90-b233-4a54-8600-8f5e531fb4bd
+      version: -1
+      name: Save zip file in a separate key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: ZipFile
+      value:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: 7z
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: gzip
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: tar
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: zip
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: rar
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: gz
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 51a28574-428c-401e-8ddf-608584b2190d
+    type: title
+    task:
+      id: 51a28574-428c-401e-8ddf-608584b2190d
+      version: -1
+      name: Zip Extraction
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5cc5f04e-34dd-490b-8d2c-370404c650d6
+    type: title
+    task:
+      id: 5cc5f04e-34dd-490b-8d2c-370404c650d6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_2_#default#": 0.46,
+      "3_7_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 840,
+        "x": -10,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: A file object.
+  playbookInputQuery:
+- key: Password
+  value: {}
+  required: false
+  description: The password used to protect the zipped file. Required for unzipping password-protected files.
+  playbookInputQuery:
+- key: ZipTool
+  value:
+    simple: 7z
+  required: false
+  description: 'The tool used to unzip the file. The options are: 7z, zipfile.'
+  playbookInputQuery:
+outputs:
+- contextPath: ExtractedFiles
+  description: Files that were unzipped.
+  type: unknown
+- contextPath: File
+  description: File objects - includes the zipped file and any unzipped files.
+  type: unknown
+tests:
+ - No tests
+fromversion: 6.5.0

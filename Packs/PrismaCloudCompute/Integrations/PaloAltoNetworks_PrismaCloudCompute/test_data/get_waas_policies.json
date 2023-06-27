@@ -1,0 +1,217 @@
+{
+    "_id": "containerAppFirewall",
+    "maxPort": 31000,
+    "minPort": 30000,
+    "rules": [
+        {
+            "applicationsSpec": [
+                {
+                    "apiSpec": {
+                        "effect": "disable",
+                        "endpoints": [
+                            {
+                                "basePath": "*",
+                                "exposedPort": 0,
+                                "grpc": false,
+                                "host": "*",
+                                "http2": false,
+                                "internalPort": 443,
+                                "tls": false
+                            },
+                            {
+                                "basePath": "*",
+                                "exposedPort": 0,
+                                "grpc": false,
+                                "host": "*",
+                                "http2": false,
+                                "internalPort": 80,
+                                "tls": false
+                            }
+                        ],
+                        "fallbackEffect": "disable",
+                        "queryParamFallbackEffect": "disable"
+                    },
+                    "appID": "app-DF33",
+                    "attackTools": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    },
+                    "banDurationMinutes": 5,
+                    "body": {
+                        "inspectionLimitExceededEffect": "disable",
+                        "inspectionSizeBytes": 131072
+                    },
+                    "botProtectionSpec": {
+                        "interstitialPage": false,
+                        "jsInjectionSpec": {
+                            "enabled": false,
+                            "timeoutEffect": "disable"
+                        },
+                        "knownBotProtectionsSpec": {
+                            "archiving": "disable",
+                            "businessAnalytics": "disable",
+                            "careerSearch": "disable",
+                            "contentFeedClients": "disable",
+                            "educational": "disable",
+                            "financial": "disable",
+                            "mediaSearch": "disable",
+                            "news": "disable",
+                            "searchEngineCrawlers": "disable"
+                        },
+                        "reCAPTCHASpec": {
+                            "allSessions": true,
+                            "enabled": false,
+                            "secretKey": {
+                                "encrypted": ""
+                            },
+                            "siteKey": "",
+                            "successExpirationHours": 24,
+                            "type": "checkbox"
+                        },
+                        "sessionValidation": "disable",
+                        "unknownBotProtectionSpec": {
+                            "apiLibraries": "disable",
+                            "botImpersonation": "disable",
+                            "browserImpersonation": "disable",
+                            "generic": "disable",
+                            "httpLibraries": "disable",
+                            "requestAnomalies": {
+                                "effect": "disable",
+                                "threshold": 9
+                            },
+                            "webAutomationTools": "disable",
+                            "webScrapers": "disable"
+                        },
+                        "userDefinedBots": []
+                    },
+                    "certificate": {
+                        "encrypted": ""
+                    },
+                    "clickjackingEnabled": true,
+                    "cmdi": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    },
+                    "codeInjection": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    },
+                    "csrfEnabled": true,
+                    "customBlockResponse": {},
+                    "dosConfig": {
+                        "alert": {},
+                        "ban": {},
+                        "enabled": false
+                    },
+                    "intelGathering": {
+                        "infoLeakageEffect": "disable",
+                        "removeFingerprintsEnabled": true
+                    },
+                    "lfi": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    },
+                    "malformedReq": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    },
+                    "maliciousUpload": {
+                        "allowedExtensions": [],
+                        "allowedFileTypes": [],
+                        "effect": "disable"
+                    },
+                    "networkControls": {
+                        "advancedProtectionEffect": "alert",
+                        "countries": {
+                            "allowMode": true,
+                            "enabled": false,
+                            "fallbackEffect": "alert"
+                        },
+                        "subnets": {
+                            "allowMode": true,
+                            "enabled": false,
+                            "fallbackEffect": "alert"
+                        }
+                    },
+                    "remoteHostForwarding": {},
+                    "sessionCookieSameSite": "Lax",
+                    "shellshock": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    },
+                    "sqli": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    },
+                    "tlsConfig": {
+                        "HSTSConfig": {
+                            "enabled": false,
+                            "includeSubdomains": false,
+                            "maxAgeSeconds": 31536000,
+                            "preload": false
+                        },
+                        "metadata": {
+                            "issuerName": "",
+                            "notAfter": "0001-01-01T00:00:00Z",
+                            "subjectName": ""
+                        },
+                        "minTLSVersion": "1.2"
+                    },
+                    "xss": {
+                        "effect": "alert",
+                        "exceptionFields": []
+                    }
+                }
+            ],
+            "autoProtectPorts": false,
+            "collections": [
+                {
+                    "accountIDs": [
+                        "*"
+                    ],
+                    "appIDs": [
+                        "*"
+                    ],
+                    "clusters": [
+                        "*"
+                    ],
+                    "codeRepos": [
+                        "*"
+                    ],
+                    "color": "#140677",
+                    "containers": [
+                        "*"
+                    ],
+                    "functions": [
+                        "*"
+                    ],
+                    "hosts": [
+                        "*"
+                    ],
+                    "images": [
+                        "vulnerables/web-dvwa:latest"
+                    ],
+                    "labels": [
+                        "*"
+                    ],
+                    "modified": "2023-01-09T16:16:45.929Z",
+                    "name": "dvwa",
+                    "namespaces": [
+                        "*"
+                    ],
+                    "owner": "admin",
+                    "prisma": false,
+                    "system": false
+                }
+            ],
+            "modified": "2023-01-12T03:23:08.294Z",
+            "name": "WaaS rule for DVWA",
+            "owner": "admin",
+            "previousName": "",
+            "readTimeoutSeconds": 5,
+            "skipAPILearning": false,
+            "trafficMirroring": {},
+            "windows": false
+        }
+    ]
+}

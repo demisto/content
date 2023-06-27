@@ -77,42 +77,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
-    type: condition
-    task:
-      id: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
-      version: -1
-      name: Is ePO enabled?
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-      description: Is the McAfee ePO integration installed and configured?
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "10"
-    scriptarguments:
-      value:
-        simple: ${modules(val.brand=="epo")}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: c906e63c-45c5-4540-8f42-b74db1943725
@@ -121,17 +85,18 @@ tasks:
       id: c906e63c-45c5-4540-8f42-b74db1943725
       version: -1
       name: List all agents that the hash has been executed on
-      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      description: Retrieves the set of systems which have referenced (typically executed) the specified hashes.
+      script: '|||tie-file-references'
       type: regular
       iscommand: true
-      brand: McAfee Threat Intelligence Exchange
-      description: Retrieves the set of systems which have been referenced (typically executed).
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       file:
-        simple: ${inputs.Hash}
+        complex:
+          root: inputs.Hash
     separatecontext: false
     view: |-
       {
@@ -163,8 +128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 155,
-          "y": 1962
+          "x": 162.5,
+          "y": 1492
         }
       }
     note: false
@@ -228,15 +193,17 @@ tasks:
       - "4"
     scriptarguments:
       searchText:
-        simple: ${File.References.AgentGuid}
+        complex:
+          root: McAfee.TIE.FilesReferences.References
+          accessor: AgentGuid
       verbose:
         simple: "false"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 1480
+          "x": 430,
+          "y": 1300
         }
       }
     note: false
@@ -295,8 +262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 976
+          "x": 430,
+          "y": 926
         }
       }
     note: false
@@ -320,7 +287,7 @@ tasks:
       description: Is the McAfee ePO v2 integration installed and configured?
     nexttasks:
       '#default#':
-      - "2"
+      - "4"
       "yes":
       - "6"
     separatecontext: false
@@ -354,8 +321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1140
+          "x": 430,
+          "y": 1090
         }
       }
     note: false
@@ -365,53 +332,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 8cd1ee6d-2943-42d3-8f28-a22905f59d0f
-    type: regular
-    task:
-      id: 8cd1ee6d-2943-42d3-8f28-a22905f59d0f
-      version: -1
-      name: Get Agent info from ePO
-      scriptName: EPOFindSystem
-      type: regular
-      iscommand: false
-      brand: ""
-      description: Finds computers within a specified group in the McAfee ePO system.
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      searchText:
-        simple: ${File.References.AgentGuid}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
       "1_4_#default#": 0.1,
-      "2_4_#default#": 0.17,
-      "5_4_#default#": 0.11
+      "5_4_#default#": 0.28,
+      "5_8_yes": 0.58,
+      "9_4_#default#": 0.44,
+      "9_6_yes": 0.59
     },
     "paper": {
       "dimensions": {
-        "height": 1977,
-        "width": 1375,
-        "x": 155,
+        "height": 1507,
+        "width": 647.5,
+        "x": 162.5,
         "y": 50
       }
     }

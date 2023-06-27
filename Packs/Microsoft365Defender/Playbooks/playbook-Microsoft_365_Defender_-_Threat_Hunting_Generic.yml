@@ -47,21 +47,33 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: be27eccb-3f14-4189-8816-4d45396953e9
+    taskid: af97b282-0811-44ff-8781-70514404a72d
     type: playbook
     task:
-      id: be27eccb-3f14-4189-8816-4d45396953e9
+      id: af97b282-0811-44ff-8781-70514404a72d
       version: -1
       name: Microsoft 365 Defender - Get Email URL Clicks
+      description: |-
+        This playbook retrieves email data based on the `URLDomain` and `MessageID` inputs. It will use the Microsoft 365 Defender's Advanced Hunting to search only for URL click events based on the playbook inputs and will enrich it with the full email data.
+
+        **URLDomain** - If the “URLDomain” value is found as a substring of URL(s) in the body of the email, the email is retrieved.
+
+        **MessageID** - The message ID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:
+        - The value of the header "Message-ID".
+        - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
+
+        Can be a single MessageID or an array of MessageIDs to search.
       playbookName: Microsoft 365 Defender - Get Email URL Clicks
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - "11"
     scriptarguments:
+      ListenerMailbox:
+        complex:
+          root: inputs.ListenerMailbox
       MessageID:
         complex:
           root: inputs.MessageID
@@ -100,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9f624d08-7363-4bf4-8bd2-8922f62c1186
+    taskid: 917d20f0-ac44-40f4-8cfb-d85c7686a345
     type: playbook
     task:
-      id: 9f624d08-7363-4bf4-8bd2-8922f62c1186
+      id: 917d20f0-ac44-40f4-8cfb-d85c7686a345
       version: -1
       name: Microsoft 365 Defender - Emails Indicators Hunt
       description: |-
@@ -117,11 +129,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "11"
     scriptarguments:
       IPAddress:
         complex:
           root: inputs.IPAddress
+      ListenerMailbox:
+        complex:
+          root: inputs.ListenerMailbox
       ResultsLimit:
         complex:
           root: inputs.ResultsLimit
@@ -158,155 +173,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 1f3e9431-0642-46f2-844b-f10fad7687ff
-    type: regular
-    task:
-      id: 1f3e9431-0642-46f2-844b-f10fad7687ff
-      version: -1
-      name: Set RetrievedEmailsJoined (emails objects without click events)
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: RetrievedEmailsJoined
-      value:
-        complex:
-          root: Microsoft365Defender.RetrievedEmails
-          filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
-                iscontext: true
-              right:
-                value:
-                  simple: RetrievedEmailsJoined.NetworkMessageId
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: a3199b7b-c3be-4daf-8d8f-2aad71de1780
-    type: regular
-    task:
-      id: a3199b7b-c3be-4daf-8d8f-2aad71de1780
-      version: -1
-      name: Set RetrievedEmailsJoined (emails objects with click events)
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      key:
-        simple: RetrievedEmailsJoined
-      value:
-        complex:
-          root: Microsoft365Defender.RetrievedEmails
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Microsoft365Defender.RetrievedEmails.ClickTimestamp
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 765
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: d28891e7-fa0c-4871-89ad-d2bd5be3bd3f
-    type: regular
-    task:
-      id: d28891e7-fa0c-4871-89ad-d2bd5be3bd3f
-      version: -1
-      name: Set RetrievedEmails (without duplicate emails)
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: Microsoft365Defender.RetrievedEmails
-      value:
-        complex:
-          root: RetrievedEmailsJoined
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 280,
-          "y": 1110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 0fb58176-a495-49d0-8cf7-81d69fc7e1d5
@@ -324,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 1300
+          "x": 270,
+          "y": 770
         }
       }
     note: false
@@ -335,12 +201,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 975,
+        "height": 445,
         "width": 920,
         "x": 10,
         "y": 390
@@ -371,7 +238,7 @@ inputs:
     - The value of the header "Message-ID".
     - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
 
-    Can be a single MessageID or an array of NMessageIDs to search.
+    Can be a single MessageID or an array of MessageIDs to search.
   playbookInputQuery:
 - key: Timeout
   value:
@@ -391,9 +258,14 @@ inputs:
   required: false
   description: Number of retrieved entries. Enter -1 for unlimited query. 50 is the default.
   playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: The mailbox of the listening integration. In case it is provided, the emails found in it will be ignored.
+  playbookInputQuery:
 outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails
-  description: Email objects containing relevant fields related to URL click events.
+  description: Email objects containing relevant fields related to URL clicks events.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
   description: Public-facing identifier for the email that is set by the sending email system. This will be the value of the "Message-ID" header.
@@ -468,7 +340,7 @@ outputs:
   description: Indicates whether the user was able to click through to the original URL or not.
   type: number
 - contextPath: Microsoft365Defender.RetrievedEmails.BulkComplaintLevel
-  description: Threshold assigned to email from bulk mailers. A high bulk complain level (BCL) means the email is more likely to generate complaints, and therefore more likely to be spam.
+  description: Threshold assigned to email from bulk mailers. A high bulk complain level (BCL) means the email is more likely to generate complaints, and thus more likely to be spam.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.IPAddress
   description: IP address assigned to the device during communication.

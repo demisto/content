@@ -1,0 +1,378 @@
+id: IPv6 CIDR extraction test
+version: -1
+name: IPv6 CIDR extraction test
+description: Test extraction flow of IPv6 CIDR in XSOAR
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: def7640e-da15-498b-8e70-6498f009d81c
+    type: start
+    task:
+      id: def7640e-da15-498b-8e70-6498f009d81c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fb706760-78dc-492f-8275-13c5f2a76ed7
+    type: regular
+    task:
+      id: fb706760-78dc-492f-8275-13c5f2a76ed7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 285ae48f-cbc7-44a6-8843-1737a26c6e87
+    type: title
+    task:
+      id: 285ae48f-cbc7-44a6-8843-1737a26c6e87
+      version: -1
+      name: IPV6 CIDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 2b81391f-0f78-4e51-848d-60dae287073e
+    type: regular
+    task:
+      id: 2b81391f-0f78-4e51-848d-60dae287073e
+      version: -1
+      name: Set valid IPv6s CIDR
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      key:
+        simple: valid_ipv6s_cidr
+      value:
+        simple: 2620:1ec:c::10/128
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: e0fb84e1-1653-44c4-8602-5803f6f4d4f3
+    type: regular
+    task:
+      id: e0fb84e1-1653-44c4-8602-5803f6f4d4f3
+      version: -1
+      name: Print valid IPv6s CIDR
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      value:
+        simple: ${valid_ipv6s_cidr}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: e45e61f9-2d51-4c6c-84b0-c005b44cab9e
+    type: condition
+    task:
+      id: e45e61f9-2d51-4c6c-84b0-c005b44cab9e
+      version: -1
+      name: Check auto-extract - 2620:1ec:c::10/128
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6CIDR.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2620:1ec:c::10/128
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 2d115c97-7f4a-4c4d-8e39-90370a8c22fa
+    type: regular
+    task:
+      id: 2d115c97-7f4a-4c4d-8e39-90370a8c22fa
+      version: -1
+      name: Set invalid IPv6s CIDR
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      key:
+        simple: invalid_ipv6s_cidr
+      value:
+        simple: 2620:1ec:c::10/328
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 7ae855d0-ec8b-4b4f-874e-f77b74061a3e
+    type: regular
+    task:
+      id: 7ae855d0-ec8b-4b4f-874e-f77b74061a3e
+      version: -1
+      name: Print invalid IPv6s CIDR
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      value:
+        simple: ${invalid_ipv6s_cidr}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: bb0f5ebe-fda0-41af-8e84-1fa156644512
+    type: condition
+    task:
+      id: bb0f5ebe-fda0-41af-8e84-1fa156644512
+      version: -1
+      name: Check non extraction of invalid IPv6s CIDR - 2620:1ec:c::10/328
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6CIDR.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2620:1ec:c::10/328
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 8e2eac50-17b2-42da-8f8c-4c78e2c7082c
+    type: regular
+    task:
+      id: 8e2eac50-17b2-42da-8f8c-4c78e2c7082c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0

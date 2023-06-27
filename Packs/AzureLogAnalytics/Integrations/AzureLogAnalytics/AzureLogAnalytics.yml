@@ -45,6 +45,20 @@ configuration:
   name: auth_code
   required: false
   type: 4
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Subscription ID
   name: subscriptionID
   required: true
@@ -321,7 +335,11 @@ script:
     description: Deletes a specified saved search in the Log Analytics workspace.
     execution: false
     name: azure-log-analytics-delete-saved-search
-  dockerimage: demisto/crypto:1.0.0.42817
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: azure-log-analytics-generate-login-url
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false

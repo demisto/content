@@ -1,9 +1,10 @@
 from CommonServerPython import *
 import demistomock as demisto
 import requests
+import urllib3
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warning
+urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
 API_KEY = demisto.params().get('apikey')
@@ -255,7 +256,7 @@ def transform(spydata, key):
 
 def test_module():
     """Simple test function to verify it works from the BYOI screen"""
-    URL_SUFFIX = BASE_URL + "breach/data/domains/google.com/"
+    URL_SUFFIX = BASE_URL + "breach/catalog"
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=30)
     if resp.status_code == 200:
         demisto.results('ok')

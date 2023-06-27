@@ -1,3 +1,4 @@
+// Development container for Content. Demisto-SDK 1.14.5
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -18,7 +19,7 @@
 	"remoteUser": "demisto",
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
-		"PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
+		"PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/.venv/bin",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
@@ -52,8 +53,6 @@
 			"extensions": [
 				"cortexxsoarext.xsoar",
 				"ms-python.python",
-				"ms-vscode.PowerShell",
-				"ms-toolsai.jupyter",
 				"timonwong.shellcheck",
 				"GitHub.vscode-pull-request-github",
 				"eamodio.gitlens",
@@ -71,10 +70,19 @@
 				"KevinRose.vsc-python-indent",
 				"rangav.vscode-thunder-client",
 				"ms-python.black-formatter",
-				"LittleFoxTeam.vscode-python-test-adapter"
+				"LittleFoxTeam.vscode-python-test-adapter",
+				"charliermarsh.ruff",
+				"ryanluker.vscode-coverage-gutters"
 			]
-	}
-},
+		},
+		"codespaces": {
+			"repositories": {
+				"demisto/demisto-sdk": {
+					"permissions": "write-all"
+				}
+			}
+		}
+	},
 // this is commented out until VSCode will fix self signed certificate issues
 // "features": {
 // 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
@@ -96,5 +104,11 @@
 // "overrideFeatureInstallOrder": [
 // 	"ghcr.io/devcontainers/features/common-utils:1"
 // ],
-"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh"
+"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
+"postStartCommand": "poetry install",
+"hostRequirements": {
+	"cpus": 4,
+	"memory": "8gb",
+	"storage": "32gb"
+ }
 }

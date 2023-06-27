@@ -12,6 +12,15 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  defaultvalue: OpenSearch
+  display: Client type
+  name: client_type
+  options:
+  - ElasticSearch
+  - OpenSearch
+  required: false
+  type: 15
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -21,13 +30,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch
-    index. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant
-    account in a multi-tenant environment. Generic Feed contains a feed in a format
-    specified by the user
+- additionalinfo: The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment. Generic Feed contains a feed in a format specified by the user
   defaultvalue: Cortex XSOAR MT Shared Feed
   display: Feed Type
-  hidden: false
   name: feed_type
   options:
   - Cortex XSOAR Feed
@@ -40,15 +45,13 @@ configuration:
   defaultvalue: 'true'
   required: false
   type: 8
-- additionalinfo: Determine how far to look back for fetched indicators (<number>
-    <time unit>, e.g., 12 hours, 7 days).
+- additionalinfo: Determine how far to look back for fetched indicators (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 3 days
   display: First Fetch Time
   name: fetch_time
   required: false
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -104,7 +107,6 @@ configuration:
   type: 19
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
   required: false
   type: 0
@@ -115,20 +117,16 @@ configuration:
   type: 8
 - additionalinfo: Source field that contains the indicator value in the index
   display: Indicator Value Field
-  hidden: false
   name: src_val
   required: false
   type: 0
 - additionalinfo: Source field that contains the indicator type in the index
   display: Indicator Type Field
-  hidden: false
   name: src_type
   required: false
   type: 0
-- additionalinfo: Default indicator type used in case no "Indicator Type Field" was
-    provided
+- additionalinfo: Default indicator type used in case no "Indicator Type Field" was provided
   display: Indicator Type
-  hidden: false
   name: default_type
   required: false
   type: 0
@@ -154,7 +152,6 @@ configuration:
 - additionalinfo: Elasticsearch query to execute when fetching indicators from Elasticsearch
   defaultvalue: '*'
   display: Query
-  hidden: false
   name: es_query
   required: false
   type: 0
@@ -175,7 +172,7 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.41748
+  dockerimage: demisto/py3-tools:1.0.0.64131
   feed: true
   isfetch: false
   longRunning: false

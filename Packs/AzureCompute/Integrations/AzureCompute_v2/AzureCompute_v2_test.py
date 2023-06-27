@@ -2,7 +2,8 @@ import pytest
 import json
 
 from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command,\
-    create_vm_parameters, get_network_interface_command, get_public_ip_details_command, create_nic_command
+    create_vm_parameters, get_network_interface_command, get_public_ip_details_command,\
+    get_all_public_ip_details_command, create_nic_command, get_single_ip_details_from_list_of_ip_details
 
 # test_create_vm_parameters data:
 CREATE_VM_PARAMS_ARGS = {"resource_group": "compute-integration",
@@ -96,17 +97,83 @@ INTERFACE_EC = {
 PUBLIC_IP_EC = {
     'Azure.Network.IPConfigurations(val.PublicIPAddressID === obj.PublicIPAddressID)':
         {
-            'PublicIPAddressID': 'ip_id',
+            'PublicIPAddressID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip',  # noqa: E501
             'PublicConfigName': 'webserver-ip',
             'Location': 'eastus',
-            'PublicConfigID': "ip_id",
-            'ResourceGroup': 'resource_group',
+            'PublicConfigID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkInterfaces/fake-network-interface-name-z1/ipConfigurations/ipconfig1',  # noqa: E501
+            'ResourceGroup': 'fake-resource-group',
             'PublicIPAddress': '1.1.1.1',
             'PublicIPAddressVersion': 'IPv4',
             'PublicIPAddressAllocationMethod': 'Static',
             'PublicIPAddressDomainName': 'tesdomain',
-            'PublicIPAddressFQDN': 'webserver.eastus.cloudapp.azure.com'
+            'PublicIPAddressFQDN': 'webserver.eastus.cloudapp.azure.com',
         }
+}
+
+PUBLIC_IP_DETAILS_LIST_ENTRY_EC = {
+    "name": "webserver-ip",
+    "id": "/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip",  # noqa: E501
+    "etag": "tag",
+    "location": "eastus",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceGuid": "ip_id",
+        "ipAddress": "1.1.1.1",
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+            "domainNameLabel": "tesdomain",
+            "fqdn": "webserver.eastus.cloudapp.azure.com"
+        },
+        "ipTags": [],
+        "ipConfiguration": {
+            "id": "/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkInterfaces/fake-network-interface-name-z1/ipConfigurations/ipconfig1"  # noqa: E501
+        }
+    },
+    "type": "Microsoft.Network/publicIPAddresses",
+    "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+    }
+}
+
+MANY_PUBLIC_IP_EC = {
+    'Azure.Network.IPConfigurations(val.PublicIPAddressID === obj.PublicIPAddressID)':
+        [{
+            'PublicIPAddressID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip',  # noqa: E501
+            'PublicConfigName': 'webserver-ip',
+            'Location': 'eastus',
+            'PublicConfigID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkInterfaces/fake-network-interface-name-z1/ipConfigurations/ipconfig1',  # noqa: E501
+            'ResourceGroup': 'fake-resource-group',
+            'PublicIPAddress': '1.1.1.1',
+            'PublicIPAddressVersion': 'IPv4',
+            'PublicIPAddressAllocationMethod': 'Static',
+            'PublicIPAddressDomainName': 'tesdomain',
+            'PublicIPAddressFQDN': 'webserver.eastus.cloudapp.azure.com',
+        }, {
+            'PublicIPAddressID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip2',  # noqa: E501
+            'PublicConfigName': 'webserver-ip2',
+            'Location': 'eastus',
+            'PublicConfigID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkInterfaces/fake-network-interface-2-z1/ipConfigurations/ipconfig2',  # noqa: E501
+            'ResourceGroup': 'fake-resource-group',
+            'PublicIPAddress': '1.1.1.2',
+            'PublicIPAddressVersion': 'IPv4',
+            'PublicIPAddressAllocationMethod': 'Static',
+            'PublicIPAddressDomainName': 'tesdomain',
+            'PublicIPAddressFQDN': 'webserver.eastus.cloudapp.azure.com',
+        }, {
+            'PublicIPAddressID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group2/providers/Microsoft.Network/publicIPAddresses/webserver-ip3',  # noqa: E501
+            'PublicConfigName': 'webserver-ip3',
+            'Location': 'eastus',
+            'PublicConfigID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group2/providers/Microsoft.Network/networkInterfaces/fake-network-interface-3-z1/ipConfigurations/ipconfig3',  # noqa: E501
+            'ResourceGroup': 'fake-resource-group2',
+            'PublicIPAddress': '1.1.1.3',
+            'PublicIPAddressVersion': 'IPv4',
+            'PublicIPAddressAllocationMethod': 'Static',
+            'PublicIPAddressDomainName': 'tesdomain',
+            'PublicIPAddressFQDN': 'webserver.eastus.cloudapp.azure.com',
+        }]
 }
 
 CREATE_NIC_EC = {
@@ -173,8 +240,48 @@ def test_get_network_interface_command(mocker):
 def test_get_public_ip_details_command(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command.json')
     mocker.patch.object(client, 'get_public_ip_details', return_value=ip_data)
-    _, ec, _ = get_public_ip_details_command(client, {'resource_group': 'resource_group', 'address_name': 'webserver-ip'})
+    _, ec, _ = get_public_ip_details_command(client, {'resource_group': 'fake-resource-group', 'address_name': 'webserver-ip'})
     assert PUBLIC_IP_EC == ec
+
+
+def test_get_public_ip_details_command_without_resource_group(mocker):
+    ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
+    mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
+    _, ec, _ = get_public_ip_details_command(client, {'address_name': '1.1.1.1'})
+    assert PUBLIC_IP_EC == ec
+
+
+def test_failure_get_public_ip_details_command_without_resource_group(mocker):
+    ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
+    mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
+    with pytest.raises(ValueError) as err:
+        get_public_ip_details_command(client, {'address_name': 'fake_name'})
+    if not err:
+        assert False
+    else:
+        err_msg = "'fake_name' was not found. Please try specifying the resource group the IP would be associated with."
+        assert str(err.value) == err_msg
+
+
+def test_get_all_public_ip_details_command(mocker):
+    ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
+    mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
+    _, ec, _ = get_all_public_ip_details_command(client, None)
+    assert MANY_PUBLIC_IP_EC == ec
+
+
+def test_get_single_ip_details_from_list_of_ip_details_function():
+    ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
+    test_target = "1.1.1.1"
+    ec = get_single_ip_details_from_list_of_ip_details(ip_data.get('value'), test_target)
+    assert PUBLIC_IP_DETAILS_LIST_ENTRY_EC == ec
+
+
+def test_get_single_ip_details_from_list_of_ip_details_function_is_none():
+    ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
+    invalid_test_target = "1.1.1.9"
+    ec = get_single_ip_details_from_list_of_ip_details(ip_data.get('value'), invalid_test_target)
+    assert ec is None
 
 
 def test_create_nic_command(mocker):

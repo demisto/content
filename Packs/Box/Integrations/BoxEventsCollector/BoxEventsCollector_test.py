@@ -8,6 +8,7 @@ from BoxEventsCollector import BoxEventsClient, main
 
 class TestBoxCollectEvents:
     params = {
+        'url': 'https://api.box.com',
         'credentials_json': {
             'password': json.dumps(
                 {
@@ -76,3 +77,15 @@ class TestBoxCollectEvents:
         assert not_gate('No')
         assert not not_gate(True)
         assert not not_gate('yes')
+
+    def test_url_as_param(self, mocker, requests_mock):
+        """Assert the request url changes when url parameter changes."""
+        new_url = 'https://api.triangle.com'
+        mocked_request = requests_mock.get(
+            f'{new_url}/2.0/events',
+            json={'next_stream_position': 0, 'entries': []},
+        )
+        different_url_params = self.params.copy()
+        different_url_params['url'] = new_url
+        main('box-get-events', different_url_params)
+        assert mocked_request.called

@@ -44,7 +44,7 @@ def list_queues(args, client):
         if args.get('queueNamePrefix') is not None:
             kwargs.update({'QueueNamePrefix': args.get('queueNamePrefix')})
         response = client.list_queues(**kwargs)
-        for queue in response['QueueUrls']:
+        for queue in response.get('QueueUrls', []):
             data.append({'QueueUrl': queue})
 
         ec = {'AWS.SQS.Queues': data}

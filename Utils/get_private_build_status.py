@@ -12,7 +12,8 @@ from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_
     GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()
 
 
 def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, str]:

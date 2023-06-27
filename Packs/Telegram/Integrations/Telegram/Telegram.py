@@ -6,11 +6,12 @@ import json
 import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-TOKEN = demisto.params().get('token')
+TOKEN = demisto.params().get('credentials_api_token', {}).get('password') or demisto.params().get('token')
 BASE_URL = 'https://api.telegram.org/bot{}/'.format(TOKEN)
 
 ''' HELPER FUNCTIONS '''
@@ -129,6 +130,8 @@ def get_user_id(username):
 
 
 def main():
+    if not TOKEN:
+        raise DemistoException('API Token must be provided.')
     LOG(f'command is {demisto.command()}')
 
     try:

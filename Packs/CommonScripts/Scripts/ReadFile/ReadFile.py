@@ -32,7 +32,7 @@ def read_file(args):
     if not output_metadata and len(data) == 0:
         raise DemistoException('No data could be read.')
 
-    message = f'Read {len(data)} bytes from file.'
+    message = f'Read {len(data)} bytes from file'
 
     if output_data_type == 'raw':
         if isinstance(data, bytes):
@@ -62,12 +62,12 @@ def read_file(args):
                                           'FileSize': file_size,
                                           'EOF': eof
                                       },
-                                      readable_output=message))
+                                      readable_output=message + ":\n" + str(data)))
     else:
         demisto.results({'Type': entryTypes['note'],
                          'ContentsFormat': formats['text'],
                          'Contents': {'FileData': data},
-                         'HumanReadable': message,
+                         'HumanReadable': message + ":\n" + str(data),
                          'EntryContext': {'FileData': data}
                          })
 

@@ -1,0 +1,9 @@
+{
+    "results": {
+        "q_type": 0,
+        "id": "5",
+        "type": "trust-ip",
+        "type_val": "0",
+        "ip": "1.1.1.80"
+    }
+}

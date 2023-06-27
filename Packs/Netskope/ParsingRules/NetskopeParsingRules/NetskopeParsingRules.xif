@@ -1,2 +1,0 @@
-[INGEST:vendor="netskope", product="netskope", target_dataset="netskope_netskope_raw", no_hit=keep]
-alter _time = to_timestamp(to_integer(timestamp), "SECONDS");

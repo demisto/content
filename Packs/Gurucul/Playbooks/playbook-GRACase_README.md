@@ -1,4 +1,4 @@
-Playbook for fetching cases assosiated to high risk users.
+Playbook for fetching cases associated to high risk users.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

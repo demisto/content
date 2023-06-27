@@ -194,6 +194,9 @@ def main():  # pragma: no cover
         elif command == 'core-get-endpoints':
             return_results(get_endpoints_command(client, args))
 
+        elif command == 'core-endpoint-alias-change':
+            return_results(endpoint_alias_change_command(client, **args))
+
         elif command == 'core-isolate-endpoint':
             polling_args = {
                 **args,
@@ -301,9 +304,6 @@ def main():  # pragma: no cover
 
         elif command == 'core-endpoint-scan-abort':
             return_results(endpoint_scan_abort_command(client, args))
-
-        elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
 
         elif command == 'core-delete-endpoints':
             return_outputs(*delete_endpoints_command(client, args))
@@ -448,6 +448,24 @@ def main():  # pragma: no cover
 
         elif command == 'core-remove-endpoint-tag':
             return_results(remove_tag_from_endpoints_command(client, args))
+
+        elif command == 'core-list-users':
+            return_results(list_users_command(client, args))
+
+        elif command == 'core-list-risky-users':
+            return_results(list_risky_users_or_host_command(client, "user", args))
+
+        elif command == 'core-list-risky-hosts':
+            return_results(list_risky_users_or_host_command(client, "host", args))
+
+        elif command == 'core-list-user-groups':
+            return_results(list_user_groups_command(client, args))
+
+        elif command == 'core-list-roles':
+            return_results(list_roles_command(client, args))
+
+        elif command in ('core-set-user-role', 'core-remove-user-role'):
+            return_results(change_user_role_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

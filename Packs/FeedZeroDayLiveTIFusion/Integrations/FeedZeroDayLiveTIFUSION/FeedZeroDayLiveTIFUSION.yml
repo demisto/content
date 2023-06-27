@@ -1,0 +1,122 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ZeroDayLiveTIFUSION Feed
+  version: -1
+configuration:
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: If selected, the indicator type will be auto detected for each indicator.
+  defaultvalue: "true"
+  display: Auto detect indicator type
+  name: auto_detect_type
+  required: false
+  type: 8
+- additionalinfo: Type of the indicator in the feed, If auto-detect is checked then the value set as Indicator Type will be ignored.
+  display: Indicator Type
+  name: indicator_type
+  required: false
+  type: 0
+- display: URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: The names to apply to the fields in the CSV feed. The name for the field containing the indicator should be "value".
+  display: Field Names
+  name: fieldnames
+  required: false
+  type: 0
+  defaultvalue: "value"
+- additionalinfo: Time (in seconds) before HTTP requests timeout.
+  defaultvalue: "20"
+  display: Request Timeout
+  name: polling_timeout
+  required: true
+  type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'Zero Day Live is Blackwired’s flagship product that delivers proprietary cyber threat intelligence, enabling our clients to operate at the same speed as the adversary. Zero Day Live specializes in unknown, zero day and early warning threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated, directly into the existing security infrastructure – measurably reducing the risk of breach.'
+display: Zero Day Live TI FUSION Feed
+name: ZeroDayLiveTIFUSION Feed
+script:
+  dockerimage: demisto/py3-tools:1.0.0.63856
+  feed: true
+  runonce: true
+  script: '-'
+  type: python
+  subtype: python3
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)

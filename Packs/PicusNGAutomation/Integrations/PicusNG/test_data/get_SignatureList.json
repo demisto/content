@@ -1,0 +1,50 @@
+[
+  {
+    "id": 141064,
+    "signature_id": "200007029",
+    "name": "Directory Traversal attempt \"../\" (URI)",
+    "vendor_severity": "5",
+    "signature_category": "Path Traversal",
+    "signature_version": "ASM:20221208_125147",
+    "description": "",
+    "reference": "",
+    "product_platform": "BIG-IP",
+    "product_version": "15.1.2"
+  },
+  {
+    "id": 143106,
+    "signature_id": "200010468",
+    "name": "\"/etc/passwd\" access (URI)",
+    "vendor_severity": "4",
+    "signature_category": "Predictable Resource Location",
+    "signature_version": "ASM:20221208_125147",
+    "description": "",
+    "reference": "",
+    "product_platform": "BIG-IP",
+    "product_version": "15.1.2"
+  },
+  {
+    "id": 145546,
+    "signature_id": "200101550",
+    "name": "Directory Traversal attempt (Content)",
+    "vendor_severity": "4",
+    "signature_category": "Path Traversal",
+    "signature_version": "ASM:20221208_125147",
+    "description": "",
+    "reference": "",
+    "product_platform": "BIG-IP",
+    "product_version": "15.1.2"
+  },
+  {
+    "id": 182352,
+    "signature_id": "200003056",
+    "name": "\"/etc\" execution attempt (URI)",
+    "vendor_severity": "4",
+    "signature_category": "Predictable Resource Location",
+    "signature_version": "ASM:20221208_125147",
+    "description": "",
+    "reference": "",
+    "product_platform": "BIG-IP",
+    "product_version": "15.1.2"
+  }
+]

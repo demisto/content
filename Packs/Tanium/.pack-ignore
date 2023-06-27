@@ -10,9 +10,15 @@ ignore=BA108,BA109,IN145
 [file:script-TaniumFilterComputersByIndexQueryFileDetails_README.md]
 ignore=RM106
 
-
 [file:Tanium_image.png]
 ignore=IM111
 
 [file:Tanium_v2_image.png]
 ignore=IM111
+
+[known_words]
+thr
+
+[file:TaniumFilterComputersByIndexQueryFileDetails.yml]
+ignore=BA124
+

@@ -1,0 +1,114 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Microsoft Sentinel - Outgoing Mapper",
+    "mapping": {
+        "Microsoft Sentinel Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "classification": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closeReason",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "False Positive"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "FalsePositive"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Resolved"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "TruePositive"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Duplicate"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Undetermined"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "Other"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Undetermined"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "classificationComment": {
+                    "simple": "closeNotes"
+                },
+                "classificationReason": {
+                    "simple": "closingreason"
+                },
+                "description": {
+                    "simple": "description"
+                },
+                "etag": {
+                    "simple": "resourceid"
+                },
+                "firstActivityTimeUtc": {
+                    "simple": "starttime"
+                },
+				"tags": {
+					"simple": "tags"
+				},
+                "lastActivityTimeUtc": {
+                    "simple": "lastseen"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "status": {
+                    "simple": "sourcestatus"
+                },
+                "title": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "Microsoft Sentinel - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

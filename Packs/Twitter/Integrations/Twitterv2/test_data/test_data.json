@@ -1,0 +1,652 @@
+{
+    "user_get_response": {
+      "data": [
+        {
+          "public_metrics": {
+            "followers_count": 12,
+            "following_count": 13,
+            "tweet_count": 15,
+            "listed_count": 16
+          },
+          "location": "0.0.0.0",
+          "description": "Some_description",
+          "profile_image_url": "https://url.jpg",
+          "name": "Some_name",
+          "created_at": "2024-11-09T09:55:45.000Z",
+          "username": "Some_user_name",
+          "protected": "False",
+          "url": "https://url",
+          "verified": "True",
+          "entities": {
+            "url": {
+              "urls": [
+                {
+                  "start": 0,
+                  "end": 23,
+                  "url": "https://url",
+                  "expanded_url": "https://url",
+                  "display_url": "url.com"
+                }
+              ]
+            }
+          },
+          "id": "0000000000"
+        }
+      ]
+    },
+    "search_tweets_response": {
+      "data": [
+        {
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "2020202020202020202",
+          "text": "some_tweet_text_1",
+          "edit_history_tweet_ids": [
+            "2020202020202020202"
+          ],
+          "conversation_id": "2020202020202020202",
+          "public_metrics": {
+            "retweet_count": 13,
+            "reply_count": 0,
+            "like_count": 0,
+            "quote_count": 0,
+            "impression_count": 0
+          },
+          "author_id": "1111111111111111111"
+        },
+        {
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "2929292929292929292",
+          "text": "some_tweet_text_2",
+          "attachments": {
+            "media_keys": [
+              "media_key_1"
+            ]
+          },
+          "edit_history_tweet_ids": [
+            "2929292929292929292"
+          ],
+          "conversation_id": "2929292929292929292",
+          "public_metrics": {
+            "retweet_count": 123,
+            "reply_count": 0,
+            "like_count": 0,
+            "quote_count": 0,
+            "impression_count": 0
+          },
+          "author_id": "2222222222222222222"
+        },
+        {
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "2828282828282828282",
+          "text": "some_tweet_text_3",
+          "attachments": {
+            "media_keys": [
+              "media_key_2",
+              "media_key_3",
+              "media_key_4",
+              "media_key_5"
+            ]
+          },
+          "edit_history_tweet_ids": [
+            "2828282828282828282"
+          ],
+          "conversation_id": "2828282828282828282",
+          "public_metrics": {
+            "retweet_count": 420,
+            "reply_count": 0,
+            "like_count": 0,
+            "quote_count": 0,
+            "impression_count": 0
+          },
+          "author_id": "3333333333333333333"
+        }
+      ],
+      "includes": {
+        "users": [
+          {
+            "description": "",
+            "username": "username_1",
+            "name": "name_1",
+            "created_at": "2020-11-18T00:00:00.000Z",
+            "id": "1111111111111111111",
+            "verified": false
+          },
+          {
+            "description": "",
+            "username": "username_2",
+            "name": "name_2",
+            "created_at": "2020-11-18T00:00:00.000Z",
+            "id": "2222222222222222222",
+            "verified": false
+          },
+          {
+            "description": "",
+            "username": "username_3",
+            "name": "name_3",
+            "created_at": "2020-11-18T00:00:00.000Z",
+            "id": "3333333333333333333",
+            "verified": false
+          }
+        ],
+        "media": [
+          {
+            "media_key": "media_key_1",
+            "public_metrics": {
+              "view_count": 41860
+            },
+            "type": "video"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_2",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_3",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_4",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_5",
+            "type": "photo"
+          }
+        ]
+      },
+      "meta": {
+        "newest_id": "0000000000000000000",
+        "oldest_id": "0000000000000000000",
+        "result_count": 10,
+        "next_token": "some_token"
+      }
+    },
+    "search_tweet_output": [
+      {
+        "created_at": "2020-11-18T00:00:00.000Z",
+        "id": "2020202020202020202",
+        "text": "some_tweet_text_1",
+        "edit_history_tweet_ids": [
+          "2020202020202020202"
+        ],
+        "conversation_id": "2020202020202020202",
+        "public_metrics": {
+          "retweet_count": 13,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "author": {
+          "description": "",
+          "username": "username_1",
+          "name": "name_1",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "1111111111111111111",
+          "verified": false
+        }
+      },
+      {
+        "created_at": "2020-11-18T00:00:00.000Z",
+        "id": "2929292929292929292",
+        "text": "some_tweet_text_2",
+        "edit_history_tweet_ids": [
+          "2929292929292929292"
+        ],
+        "conversation_id": "2929292929292929292",
+        "public_metrics": {
+          "retweet_count": 123,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "media": [
+          {
+            "media_key": "media_key_1",
+            "type": "video"
+          }
+        ],
+        "author": {
+          "description": "",
+          "username": "username_2",
+          "name": "name_2",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "2222222222222222222",
+          "verified": false
+        }
+      },
+      {
+        "created_at": "2020-11-18T00:00:00.000Z",
+        "id": "2828282828282828282",
+        "text": "some_tweet_text_3",
+        "edit_history_tweet_ids": [
+          "2828282828282828282"
+        ],
+        "conversation_id": "2828282828282828282",
+        "public_metrics": {
+          "retweet_count": 420,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "media": [
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_2",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_3",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_4",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_5",
+            "type": "photo"
+          }
+        ],
+        "author": {
+          "description": "",
+          "username": "username_3",
+          "name": "name_3",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "3333333333333333333",
+          "verified": false
+        }
+      }
+    ],
+    "search_tweets_human_readable": "### Tweets search results:\n|Tweet ID|Text|Created At|Author Name|Author Username|Likes Count|Attachments URL|\n|---|---|---|---|---|---|---|\n| 2020202020202020202 | some_tweet_text_1 | 2020-11-18T00:00:00.000Z | name_1 | username_1 | 0 |  |\n| 2929292929292929292 | some_tweet_text_2 | 2020-11-18T00:00:00.000Z | name_2 | username_2 | 0 |  |\n| 2828282828282828282 | some_tweet_text_3 | 2020-11-18T00:00:00.000Z | name_3 | username_3 | 0 | https://url.jpg,<br>https://url.jpg,<br>https://url.jpg,<br>https://url.jpg |\n",
+    "result_user_get_response": [
+      {
+        "public_metrics": {
+          "followers_count": 12,
+          "following_count": 13,
+          "tweet_count": 15,
+          "listed_count": 16
+        },
+        "location": "0.0.0.0",
+        "description": "Some_description",
+        "profile_image_url": "https://url.jpg",
+        "name": "Some_name",
+        "created_at": "2024-11-09T09:55:45.000Z",
+        "username": "Some_user_name",
+        "protected": "False",
+        "url": "https://url",
+        "verified": "True",
+        "entities": [
+          {
+            "url": "https://url",
+            "expanded_url": "https://url",
+            "display_url": "url.com"
+          }
+        ],
+        "id": "0000000000"
+      }
+    ],
+    "input_user_get_response": [
+      {
+        "public_metrics": {
+          "followers_count": 12,
+          "following_count": 13,
+          "tweet_count": 15,
+          "listed_count": 16
+        },
+        "location": "0.0.0.0",
+        "description": "Some_description",
+        "profile_image_url": "https://url.jpg",
+        "name": "Some_name",
+        "created_at": "2024-11-09T09:55:45.000Z",
+        "username": "Some_user_name",
+        "protected": "False",
+        "url": "https://url",
+        "verified": "True"
+      }
+    ],
+    "expected_output_create_context_search": [
+      {
+        "created_at": "2020-11-18T00:00:00.000Z",
+        "id": "2020202020202020202",
+        "text": "some_tweet_text_1",
+        "edit_history_tweet_ids": [
+          "2020202020202020202"
+        ],
+        "conversation_id": "2020202020202020202",
+        "public_metrics": {
+          "retweet_count": 13,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "author": {
+          "description": "",
+          "username": "username_1",
+          "name": "name_1",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "1111111111111111111",
+          "verified": false
+        }
+      },
+      {
+        "created_at": "2020-11-18T00:00:00.000Z",
+        "id": "2929292929292929292",
+        "text": "some_tweet_text_2",
+        "edit_history_tweet_ids": [
+          "2929292929292929292"
+        ],
+        "conversation_id": "2929292929292929292",
+        "public_metrics": {
+          "retweet_count": 123,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "media": [
+          {
+            "media_key": "media_key_1",
+            "type": "video"
+          }
+        ],
+        "author": {
+          "description": "",
+          "username": "username_2",
+          "name": "name_2",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "2222222222222222222",
+          "verified": false
+        }
+      },
+      {
+        "created_at": "2020-11-18T00:00:00.000Z",
+        "id": "2828282828282828282",
+        "text": "some_tweet_text_3",
+        "edit_history_tweet_ids": [
+          "2828282828282828282"
+        ],
+        "conversation_id": "2828282828282828282",
+        "public_metrics": {
+          "retweet_count": 420,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "media": [
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_2",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_3",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_4",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_5",
+            "type": "photo"
+          }
+        ],
+        "author": {
+          "description": "",
+          "username": "username_3",
+          "name": "name_3",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "3333333333333333333",
+          "verified": false
+        }
+      }
+    ],
+    "expected_output_dates": [
+      {
+        "created_at": "2020-11-10T00:00:00.000Z",
+        "id": "2020202020202020202",
+        "text": "some_tweet_text_1",
+        "edit_history_tweet_ids": [
+          "2020202020202020202"
+        ],
+        "conversation_id": "2020202020202020202",
+        "public_metrics": {
+          "retweet_count": 13,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "author": {
+          "description": "",
+          "username": "username_1",
+          "name": "name_1",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "1111111111111111111",
+          "verified": false
+        }
+      },
+      {
+        "created_at": "2020-11-11T00:00:00.000Z",
+        "id": "2929292929292929292",
+        "text": "some_tweet_text_2",
+        "edit_history_tweet_ids": [
+          "2929292929292929292"
+        ],
+        "conversation_id": "2929292929292929292",
+        "public_metrics": {
+          "retweet_count": 123,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "media": [
+          {
+            "media_key": "media_key_1",
+            "type": "video"
+          }
+        ],
+        "author": {
+          "description": "",
+          "username": "username_2",
+          "name": "name_2",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "2222222222222222222",
+          "verified": false
+        }
+      },
+      {
+        "created_at": "2020-11-12T00:00:00.000Z",
+        "id": "2828282828282828282",
+        "text": "some_tweet_text_3",
+        "edit_history_tweet_ids": [
+          "2828282828282828282"
+        ],
+        "conversation_id": "2828282828282828282",
+        "public_metrics": {
+          "retweet_count": 420,
+          "reply_count": 0,
+          "like_count": 0,
+          "quote_count": 0,
+          "impression_count": 0
+        },
+        "media": [
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_2",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_3",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_4",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_5",
+            "type": "photo"
+          }
+        ],
+        "author": {
+          "description": "",
+          "username": "username_3",
+          "name": "name_3",
+          "created_at": "2020-11-18T00:00:00.000Z",
+          "id": "3333333333333333333",
+          "verified": false
+        }
+      }
+    ],
+    "search_tweets_response_dates": {
+      "data": [
+        {
+          "created_at": "2020-11-10T00:00:00.000Z",
+          "id": "2020202020202020202",
+          "text": "some_tweet_text_1",
+          "edit_history_tweet_ids": [
+            "2020202020202020202"
+          ],
+          "conversation_id": "2020202020202020202",
+          "public_metrics": {
+            "retweet_count": 13,
+            "reply_count": 0,
+            "like_count": 0,
+            "quote_count": 0,
+            "impression_count": 0
+          },
+          "author_id": "1111111111111111111"
+        },
+        {
+          "created_at": "2020-11-11T00:00:00.000Z",
+          "id": "2929292929292929292",
+          "text": "some_tweet_text_2",
+          "attachments": {
+            "media_keys": [
+              "media_key_1"
+            ]
+          },
+          "edit_history_tweet_ids": [
+            "2929292929292929292"
+          ],
+          "conversation_id": "2929292929292929292",
+          "public_metrics": {
+            "retweet_count": 123,
+            "reply_count": 0,
+            "like_count": 0,
+            "quote_count": 0,
+            "impression_count": 0
+          },
+          "author_id": "2222222222222222222"
+        },
+        {
+          "created_at": "2020-11-12T00:00:00.000Z",
+          "id": "2828282828282828282",
+          "text": "some_tweet_text_3",
+          "attachments": {
+            "media_keys": [
+              "media_key_2",
+              "media_key_3",
+              "media_key_4",
+              "media_key_5"
+            ]
+          },
+          "edit_history_tweet_ids": [
+            "2828282828282828282"
+          ],
+          "conversation_id": "2828282828282828282",
+          "public_metrics": {
+            "retweet_count": 420,
+            "reply_count": 0,
+            "like_count": 0,
+            "quote_count": 0,
+            "impression_count": 0
+          },
+          "author_id": "3333333333333333333"
+        }
+      ],
+      "includes": {
+        "users": [
+          {
+            "description": "",
+            "username": "username_1",
+            "name": "name_1",
+            "created_at": "2020-11-18T00:00:00.000Z",
+            "id": "1111111111111111111",
+            "verified": false
+          },
+          {
+            "description": "",
+            "username": "username_2",
+            "name": "name_2",
+            "created_at": "2020-11-18T00:00:00.000Z",
+            "id": "2222222222222222222",
+            "verified": false
+          },
+          {
+            "description": "",
+            "username": "username_3",
+            "name": "name_3",
+            "created_at": "2020-11-18T00:00:00.000Z",
+            "id": "3333333333333333333",
+            "verified": false
+          }
+        ],
+        "media": [
+          {
+            "media_key": "media_key_1",
+            "public_metrics": {
+              "view_count": 41860
+            },
+            "type": "video"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_2",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_3",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_4",
+            "type": "photo"
+          },
+          {
+            "url": "https://url.jpg",
+            "media_key": "media_key_5",
+            "type": "photo"
+          }
+        ]
+      },
+      "meta": {
+        "newest_id": "0000000000000000000",
+        "oldest_id": "0000000000000000000",
+        "result_count": 10,
+        "next_token": "some_token"
+      }
+    }
+  }

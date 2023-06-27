@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Armis
+* Armis
 
 ### Scripts
 
@@ -18,28 +18,28 @@ This playbook does not use any scripts.
 
 ### Commands
 
-armis-search-devices
+* armis-search-devices
 
 ## Playbook Inputs
 
 ---
 
-| **Name**        | **Description**                                      | **Default Value**         | **Required** |
-| --------------- | ---------------------------------------------------- | ------------------------- | ------------ |
-| Armis_Device_ID | Get the device ID that is associated with the alert. | ${incident.armisdeviceid} | Required     |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Armis_Device_Identifier | Get the device ID that is associated with the alert. | ${incident.armisdeviceidentifier} | Required |
 
 ## Playbook Outputs
 
 ---
 
-| **Path**                      | **Description**                     | **Type** |
-| ----------------------------- | ----------------------------------- | -------- |
-| Device ID                     | Device ID.                          | string   |
-| Armis.SearchDevices.name      | Device name.                        | string   |
-| Armis.SearchDevices.riskLevel | Device risk level defined by Armis. | number   |
-| Armis.SearchDevices.ipaddress | IPv4 address.                       | string   |
-| Armis.SearchDevices.site      | Site name                           | string   |
-| Armis.SearchDevices.tags      | Tags.                               | string   |
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Device ID | Device ID | string |
+| Armis.Device.name | Device name. | string |
+| Armis.Device.riskLevel | Device risk level defined by Armis. | number |
+| Armis.Device.ipAddress | IPv4 address. | string |
+| Armis.Device.site | Site name | string |
+| Armis.Device.tags | Tags. | string |
 
 ## Playbook Image
 

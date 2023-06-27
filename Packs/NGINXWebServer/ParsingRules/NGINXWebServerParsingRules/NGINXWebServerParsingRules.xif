@@ -1,22 +1,19 @@
-[INGEST:vendor="nginx", product="nginx", target_dataset="nginx_nginx_raw", no_hit=drop]
+[INGEST:vendor="nginx", product="nginx", target_dataset="nginx_nginx_raw", no_hit=keep]
 alter
     tmp_date_part1 = arraystring(regextract(_raw_log, "\d{4}\/\d{2}\/\d{2}"), ""),
     tmp_time_part1 = arraystring(regextract(_raw_log, "\s(\d{2}\:\d{2}\:\d{2})\s"), ""),
     tmp_date_part2 = arraystring(regextract(_raw_log, "\[(\d{2}\/\w{3}\/\d{4})\:"), ""),
     tmp_time_part2 = arraystring(regextract(_raw_log, "\:(\d{2}\:\d{2}\:\d{2})\s"), ""),
-    tmp_zhrs_part = to_integer(arraystring(regextract(_raw_log, "\d{2}/\w{3}/\d{4}\:\d{2}:\d{2}:\d{2}\s[\+|\-](\d{2})\d{2}"), "")),
-    tmp_zmins_part = to_integer(arraystring(regextract(_raw_log, "\d{2}/\w{3}/\d{4}\:\d{2}:\d{2}:\d{2}\s[\+|\-]\d{2}(\d{2})"), ""))
+    tmp_zone_part2 = arraystring(regextract(_raw_log, "\[\d{2}\/\w{3}\/\d{4}\:\d{2}\:\d{2}\:\d{2}\s([\+|\-]\d{4})\]"), "")
 | alter
-    tmp_timestamp1 = to_epoch(parse_timestamp("%Y/%m/%d %H:%M:%S", arraystring(arraycreate(tmp_date_part1, tmp_time_part1), " ")), "seconds"),
-    tmp_timestamp2 = to_epoch(parse_timestamp("%d/%b/%Y %H:%M:%S", arraystring(arraycreate(tmp_date_part2, tmp_time_part2), " ")), "seconds"),
-    tmp_zhrssec_part = if(tmp_zhrs_part <= 24, multiply(tmp_zhrs_part, 3600), 0),
-    tmp_zminsec_part = if(tmp_zmins_part <= 60,multiply(tmp_zmins_part, 60), 0)
-| alter 
-    tmp_change_seconds = add(tmp_zhrssec_part, tmp_zminsec_part),
-    tmp_zone_validate_po_ne = arraystring(regextract(_raw_log, "\d{2}/\w{3}/\d{4}\:\d{2}:\d{2}:\d{2}\s(\+|\-)\d{2}"), ""),
+    tmp_timestamp1 = parse_timestamp("%Y/%m/%d %H:%M:%S", arraystring(arraycreate(tmp_date_part1, tmp_time_part1), " ")),
+    tmp_date_time2 = arraystring(arraycreate(tmp_date_part2, tmp_time_part2), " ")
+| alter
+    tmp_timestamp_zone2 = arraystring(arraycreate(tmp_date_time2, tmp_zone_part2), " ")
+| alter
+    tmp_timestamp2 = parse_timestamp("%d/%b/%Y %H:%M:%S %z", tmp_timestamp_zone2)
+| alter
     tmp_coalsce = coalesce(tmp_timestamp2, tmp_timestamp1)
 | alter
-    tmp_timeseconds = if(tmp_zone_validate_po_ne = "+", add(tmp_coalsce, tmp_change_seconds), subtract(tmp_coalsce, tmp_change_seconds))
-| alter
-    _time = if( tmp_timeseconds != null, to_timestamp(to_integer(tmp_timeseconds), "seconds"), _insert_time)
-| fields -tmp_date_part1, tmp_time_part1, tmp_date_part2, tmp_time_part2, tmp_zhrs_part, tmp_zmins_part, tmp_timestamp1, tmp_timestamp2, tmp_zhrssec_part, tmp_zminsec_part, tmp_change_seconds, tmp_zone_validate_po_ne, tmp_coalsce, tmp_timeseconds;
+    _time = tmp_coalsce
+| fields -tmp_date_part1, tmp_time_part1, tmp_date_part2, tmp_time_part2, tmp_zone_part2, tmp_timestamp1, tmp_date_time2, tmp_timestamp_zone2, tmp_timestamp2, tmp_coalsce;

@@ -3,7 +3,6 @@ commonfields:
   version: -1
 fromversion: 5.5.0
 name: Zoom Feed
-beta: false
 display: Zoom Feed
 category: Data Enrichment & Threat Intelligence
 description: Use the Zoom Feed integration to get indicators from the feed.
@@ -123,7 +122,7 @@ script:
       description: The maximum number of results to return. The default value is 10.
       defaultValue: "10"
     description: Gets indicators from the feed.
-  dockerimage: demisto/btfl-soup:1.0.1.40688
+  dockerimage: demisto/btfl-soup:1.0.1.45563
   feed: true
   runonce: false
   subtype: python3

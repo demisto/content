@@ -1,0 +1,177 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": [
+        {
+            "connector_guid": "data[0]_connector_guid",
+            "hostname": "data[0]_hostname",
+            "windows_processor_id": "data[0]_windows_processor_id",
+            "active": "data[0]_active",
+            "links": {
+                "computer": "data[0]_links_computer",
+                "trajectory": "data[0]_links_trajectory",
+                "group": "data[0]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[1]_connector_guid",
+            "hostname": "data[1]_hostname",
+            "windows_processor_id": "data[1]_windows_processor_id",
+            "active": "data[1]_active",
+            "links": {
+                "computer": "data[1]_links_computer",
+                "trajectory": "data[1]_links_trajectory",
+                "group": "data[1]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[2]_connector_guid",
+            "hostname": "data[2]_hostname",
+            "windows_processor_id": "data[2]_windows_processor_id",
+            "active": "data[2]_active",
+            "links": {
+                "group": "data[2]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[3]_connector_guid",
+            "hostname": "data[3]_hostname",
+            "windows_processor_id": "data[3]_windows_processor_id",
+            "active": "data[3]_active",
+            "links": {
+                "computer": "data[3]_links_computer",
+                "trajectory": "data[3]_links_trajectory",
+                "group": "data[3]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[4]_connector_guid",
+            "hostname": "data[4]_hostname",
+            "windows_processor_id": "data[4]_windows_processor_id",
+            "active": "data[4]_active",
+            "links": {
+                "computer": "data[4]_links_computer",
+                "trajectory": "data[4]_links_trajectory",
+                "group": "data[4]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[5]_connector_guid",
+            "hostname": "data[5]_hostname",
+            "windows_processor_id": "data[5]_windows_processor_id",
+            "active": "data[5]_active",
+            "links": {
+                "computer": "data[5]_links_computer",
+                "trajectory": "data[5]_links_trajectory",
+                "group": "data[5]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[6]_connector_guid",
+            "hostname": "data[6]_hostname",
+            "windows_processor_id": "data[6]_windows_processor_id",
+            "active": "data[6]_active",
+            "links": {
+                "computer": "data[6]_links_computer",
+                "trajectory": "data[6]_links_trajectory",
+                "group": "data[6]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[7]_connector_guid",
+            "hostname": "data[7]_hostname",
+            "windows_processor_id": "data[7]_windows_processor_id",
+            "active": "data[7]_active",
+            "links": {
+                "group": "data[7]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[8]_connector_guid",
+            "hostname": "data[8]_hostname",
+            "windows_processor_id": "data[8]_windows_processor_id",
+            "active": "data[8]_active",
+            "links": {
+                "computer": "data[8]_links_computer",
+                "trajectory": "data[8]_links_trajectory",
+                "group": "data[8]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[9]_connector_guid",
+            "hostname": "data[9]_hostname",
+            "windows_processor_id": "data[9]_windows_processor_id",
+            "active": "data[9]_active",
+            "links": {
+                "computer": "data[9]_links_computer",
+                "trajectory": "data[9]_links_trajectory",
+                "group": "data[9]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[10]_connector_guid",
+            "hostname": "data[10]_hostname",
+            "windows_processor_id": "data[10]_windows_processor_id",
+            "active": "data[10]_active",
+            "links": {
+                "computer": "data[10]_links_computer",
+                "trajectory": "data[10]_links_trajectory",
+                "group": "data[10]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[11]_connector_guid",
+            "hostname": "data[11]_hostname",
+            "windows_processor_id": "data[11]_windows_processor_id",
+            "active": "data[11]_active",
+            "links": {
+                "computer": "data[11]_links_computer",
+                "trajectory": "data[11]_links_trajectory",
+                "group": "data[11]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[12]_connector_guid",
+            "hostname": "data[12]_hostname",
+            "windows_processor_id": "data[12]_windows_processor_id",
+            "active": "data[12]_active",
+            "links": {
+                "computer": "data[12]_links_computer",
+                "trajectory": "data[12]_links_trajectory",
+                "group": "data[12]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[13]_connector_guid",
+            "hostname": "data[13]_hostname",
+            "windows_processor_id": "data[13]_windows_processor_id",
+            "active": "data[13]_active",
+            "links": {
+                "computer": "data[13]_links_computer",
+                "trajectory": "data[13]_links_trajectory",
+                "group": "data[13]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[14]_connector_guid",
+            "hostname": "data[14]_hostname",
+            "windows_processor_id": "data[14]_windows_processor_id",
+            "active": "data[14]_active",
+            "links": {
+                "computer": "data[14]_links_computer",
+                "trajectory": "data[14]_links_trajectory",
+                "group": "data[14]_links_group"
+            }
+        }
+    ]
+}

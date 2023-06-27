@@ -1,0 +1,9 @@
+{
+    "data": {
+        "id": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+        "name": "test@example.com"
+    },
+    "requestId": "777e2ff8-3d76-48ea-871d-8e4c12bd68bc",
+    "result": "Created",
+    "took": 0.848
+}

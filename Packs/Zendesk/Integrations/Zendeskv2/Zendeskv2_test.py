@@ -303,57 +303,6 @@ class TestUpdatedTickets:
             'ticket_events/mixed_ticket_events')['after_cursor']
 
 
-class TestCreatedTickets:
-    def test_first_run(self, zendesk_client):
-        updated_tickets = CreatedTickets(zendesk_client, {})
-        assert 'start_time' in updated_tickets.query_params()
-        assert 'after_cursor' not in updated_tickets.query_params()
-
-    def test_tickets_without_data(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/no_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {})
-        assert len(list(created_tickets.tickets())) == 0
-
-    def test_tickets_with_updated_only(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/updated_only_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {})
-        assert len(list(created_tickets.tickets())) == 2
-        assert created_tickets.query_params()['cursor'] == get_json_file(
-            'ticket_events/updated_only_ticket_events')['after_cursor']
-
-    def test_tickets_with_mixed_unhundled_events(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/mixed_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {})
-        assert len(list(created_tickets.tickets())) == 2
-        assert created_tickets.query_params()['cursor'] == get_json_file(
-            'ticket_events/mixed_ticket_events')['after_cursor']
-
-    def test_tickets_with_mixed_hundled_and_unhundled_events(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/mixed_ticket_events'))
-        created_tickets = CreatedTickets(zendesk_client, {'latest_ticket_id': 3})
-        assert len(list(created_tickets.tickets())) == 1
-        assert created_tickets.query_params()['cursor'] == get_json_file(
-            'ticket_events/mixed_ticket_events')['after_cursor']
-        assert created_tickets.next_run()['latest_ticket_id'] == 7
-
-    def test_with_older_data(self, zendesk_client, requests_mock):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/no_ticket_events'))
-        created_tickets = CreatedTickets(
-            zendesk_client, {'tickets': get_json_file('ticket_events/mixed_ticket_events')['tickets']})
-        assert len(created_tickets._tickets_list) == 2
-        assert len(list(created_tickets.tickets())) == 2
-        assert created_tickets._tickets_list == []
-
-    def test_when_tickets_arent_done(self, zendesk_client, requests_mock, mocker):
-        requests_mock.get(full_url('incremental/tickets/cursor'), json=get_json_file('ticket_events/no_ticket_events'))
-        mocker.patch.object(demisto, 'params', return_value={'max_fetch': 1})
-        created_tickets = CreatedTickets(
-            zendesk_client, {'tickets': get_json_file('ticket_events/mixed_ticket_events')['tickets']})
-        assert len(created_tickets._tickets_list) == 2
-        assert len(list(created_tickets.tickets())) == 1
-        assert created_tickets._tickets_list == created_tickets.next_run()['tickets']
-
-
 class TestZendeskClient:
 
     class TestHTTPRequest:
@@ -633,6 +582,12 @@ class TestZendeskClient:
             zendesk_client.zendesk_organization_list()
             mock_zendesk_organization_general.assert_called_once()
 
+        def test_zendesk_group_users_list_general(self, zendesk_client, mocker):
+            mock_zendesk_organization_general = mocker.patch.object(zendesk_client, '_paged_request')
+            mocker.patch.object(zendesk_client, '_ZendeskClient__command_results_zendesk_group_users')
+            zendesk_client.list_group_users(group_id=100)
+            mock_zendesk_organization_general.assert_called_once()
+
     class TestTicketList:
         def test_with_ticket_id(self, zendesk_client, requests_mock):
             ticket_mock = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
@@ -752,3 +707,290 @@ class TestZendeskClient:
         @pytest.mark.parametrize('input_str, expected_output', data_test_follower_and_email_cc_parsed)
         def test_follower_and_email_cc_parsed(self, input_str, expected_output):
             assert ZendeskClient.Ticket.follower_and_email_cc_parse(input_str) == expected_output
+
+
+class TestFetchIncidents:
+    """ticket_priority: str = None, ticket_status: str = None, ticket_types: str = None, **_)"""
+    data_test_fetch_query_builder = [
+        ({}, ''),
+        ({"ticket_priority": "all"}, ''),
+        ({"ticket_priority": "all", "ticket_status": "all", "ticket_types": "all"}, ''),
+        ({"test": "test"}, ''),
+        ({"ticket_priority": "low,high"}, 'priority:low priority:high'),
+        ({"ticket_priority": "low"}, 'priority:low'),
+        ({"ticket_status": "new,open"}, 'status:new status:open'),
+        ({"ticket_status": "new"}, 'status:new'),
+        ({"ticket_types": "question,incident"}, 'ticket_type:question ticket_type:incident'),
+        ({"ticket_types": "incident"}, 'ticket_type:incident'),
+        ({"ticket_types": "question,incident", "ticket_priority": "all"}, 'ticket_type:question ticket_type:incident'),
+    ]
+
+    @pytest.mark.parametrize('args, expected_outputs', data_test_fetch_query_builder)
+    def test_fetch_query_builder(self, args, expected_outputs):
+        assert ZendeskClient._fetch_query_builder(**args) == expected_outputs
+
+    data_test_fetch_args = [
+        ({}, {}, deque([]), '2023-01-12T12:00:00Z', 'created', '', 50, 1),
+        ({}, {'fetched_tickets': [1, 2]}, deque([1, 2]), '2023-01-12T12:00:00Z', 'created', '', 50, 1),
+        ({'first_fetch': '1 year'}, {'fetched_tickets': [1, 2]}, deque([1, 2]), '2022-01-15T12:00:00Z', 'created', '', 50, 1),
+        ({}, {'fetched_tickets': [1, 2], 'query': 'status:open'}, deque([1, 2]), '2023-01-12T12:00:00Z', 'created', '', 50, 1),
+        (
+            {}, {'fetched_tickets': [1, 2], 'query': 'status:open', 'page_number': 2},
+            deque([1, 2]), '2023-01-12T12:00:00Z', 'created', '', 50, 1
+        ),
+        (
+            {'fetch_query': 'status:open'},
+            {'fetched_tickets': [1, 2], 'query': 'status:open', 'time_filter': 'created', 'page_number': 2},
+            deque([1, 2]), '2023-01-12T12:00:00Z', 'created', 'status:open', 50, 2
+        ),
+        (
+            {'fetch_query': 'status:open'},
+            {'fetched_tickets': [1, 2], 'query': 'status:open', 'time_filter': 'updated', 'page_number': 2},
+            deque([1, 2]), '2023-01-12T12:00:00Z', 'created', 'status:open', 50, 1
+        ),
+        (
+            {'fetch_query': 'status:open', 'time_filter': 'updated-at'},
+            {'fetched_tickets': [1, 2], 'query': 'status:open', 'time_filter': 'updated', 'page_number': 2},
+            deque([1, 2]), '2023-01-12T12:00:00Z', 'updated', 'status:open', 50, 2
+        ),
+        (
+            {'fetch_query': 'status:open', 'time_filter': 'updated-at'},
+            {'fetched_tickets': [1, 2], 'query': 'status:open', 'time_filter': 'updated', 'page_number': 2, 'max_fetch': 3},
+            deque([1, 2]), '2023-01-12T12:00:00Z', 'updated', 'status:open', 3, 2
+        ),
+        (
+            {'fetch_query': 'status:open', 'time_filter': 'updated-at', 'max_fetch': 4},
+            {'fetched_tickets': [1, 2], 'query': 'status:open', 'time_filter': 'updated', 'page_number': 2, 'max_fetch': 3},
+            deque([1, 2]), '2023-01-12T12:00:00Z', 'updated', 'status:open', 3, 2
+        ),
+    ]
+    test_fetch_args_parametrize_str = 'params, last_run, expected_fetched_tickets, expected_last_fetch, ' \
+        'expected_time_filter, expected_query, expected_max_fetch, expected_page_number'
+
+    @freeze_time('2023-01-15T12:00:00Z')
+    @pytest.mark.parametrize(test_fetch_args_parametrize_str, data_test_fetch_args)
+    def test_fetch_args(self, params, last_run, expected_fetched_tickets, expected_last_fetch,
+                        expected_time_filter, expected_query, expected_max_fetch, expected_page_number):
+        fetched_tickets, last_fetch, time_filter, query, max_fetch, page_number, get_attachments = \
+            ZendeskClient._fetch_args(params, last_run)
+        assert fetched_tickets == expected_fetched_tickets
+        assert last_fetch == expected_last_fetch
+        assert time_filter == expected_time_filter
+        assert query == expected_query
+        assert max_fetch == expected_max_fetch
+        assert page_number == expected_page_number
+
+    def test_invalid_first_fetch(self):
+        with pytest.raises(DemistoException):
+            ZendeskClient._fetch_args({'first_fetch': 'invalid'}, {})
+
+    data_test_next_fetch_args = [
+        (
+            deque([]), [1, 2], '', 'created', 50, 1,
+            {
+                'fetch_time': '2023-01-15T12:00:00Z',
+                'fetched_tickets': [],
+            }
+        ),
+        (
+            deque([1, 2]), [1, 2], '', 'created', 50, 1,
+            {
+                'fetch_time': '2023-01-15T12:00:00Z',
+                'fetched_tickets': [1, 2],
+            }
+        ),
+        (
+            deque([1, 2]), [1, 2], '', 'created', 2, 1,
+            {
+                'fetch_time': '2023-01-15T11:00:00Z',
+                'fetched_tickets': [1, 2],
+                'query': '',
+                'time_filter': 'created',
+                'max_fetch': 2, 'page_number': 2
+            }
+        ),
+        (
+            deque([1, 2]), [1, 2], 'a query', 'created', 50, 1,
+            {
+                'fetch_time': '2023-01-15T12:00:00Z',
+                'fetched_tickets': [1, 2],
+            }
+        ),
+        (
+            deque([1, 2]), [1, 2], 'a query', 'created', 2, 1,
+            {
+                'fetch_time': '2023-01-15T11:00:00Z',
+                'fetched_tickets': [1, 2],
+                'query': 'a query',
+                'time_filter': 'created',
+                'max_fetch': 2, 'page_number': 2
+            }
+        ),
+        (
+            deque(list(range(2000))), [1, 2], 'a query', 'created', 2, 1,
+            {
+                'fetch_time': '2023-01-15T11:00:00Z',
+                'fetched_tickets': list(range(1000, 2000)),
+                'query': 'a query',
+                'time_filter': 'created',
+                'max_fetch': 2, 'page_number': 2
+            }
+        ),
+    ]
+    test_next_fetch_args_parametrize_str = 'fetched_tickets, search_results_ids, query, time_filter, ' \
+        'max_fetch, page_number, expected_next_run_args'
+
+    @pytest.mark.parametrize(test_next_fetch_args_parametrize_str, data_test_next_fetch_args)
+    def test_next_fetch_args(self, fetched_tickets, search_results_ids, query, time_filter,
+                             max_fetch, page_number, expected_next_run_args):
+        assert ZendeskClient._next_fetch_args(fetched_tickets, search_results_ids,
+                                              dateparser.parse('2023-01-15T12:00:00Z', settings={'TIMEZONE': 'UTC'}),
+                                              query, time_filter, max_fetch, page_number,
+                                              '2023-01-15T11:00:00Z') == expected_next_run_args
+
+    class TestFetchFlow:
+
+        @freeze_time('2023-01-15T12:00:00Z')
+        def test_initial_flow(self, mocker, zendesk_client, requests_mock):
+            ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
+            ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(demisto, 'getLastRun', return_value=None)
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results',
+                                return_value=[{'id': 10}, {'id': 20}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
+            demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
+            demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
+            zendesk_client.fetch_incidents({}, {})
+            assert ticket_mock_10.called_once
+            assert ticket_mock_20.called_once
+            assert demisto_incidents_mock.called_once()
+            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [10, 20]
+            assert demisto_set_lust_run_mock.call_args[0][0] == {'fetched_tickets': [
+                10, 20], 'fetch_time': '2023-01-15T11:59:00Z'}
+
+        @freeze_time('2023-01-15T12:00:00Z')
+        def test_continues_fetch_first_part(self, mocker, zendesk_client, requests_mock):
+            ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
+            ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(demisto, 'getLastRun', return_value=None)
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 10}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
+            demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
+            demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
+            zendesk_client.fetch_incidents({'max_fetch': 1}, {})
+            assert ticket_mock_10.called_once
+            assert ticket_mock_20.call_count == 0
+            assert demisto_incidents_mock.called_once()
+            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [10]
+            assert demisto_set_lust_run_mock.call_args[0][0] == {
+                'max_fetch': 1, 'page_number': 2,
+                'fetched_tickets': [10], 'query': '',
+                'fetch_time': '2023-01-12T12:00:00Z', 'time_filter': 'created'
+            }
+
+        @freeze_time('2023-01-15T12:00:00Z')
+        def test_continues_fetch_second_part(self, mocker, zendesk_client, requests_mock):
+            ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
+            ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(demisto, 'getLastRun', return_value=None)
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
+            demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
+            demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
+            zendesk_client.fetch_incidents(
+                {'max_fetch': 1},
+                json.dumps({
+                    "max_fetch": 1, "page_number": 3,
+                    "fetched_tickets": [10], "query": "",
+                    "fetch_time": "2023-01-12T12:00:00Z", "time_filter": "created"
+                })
+            )
+            assert ticket_mock_10.call_count == 0
+            assert ticket_mock_20.called_once
+            assert demisto_incidents_mock.called_once()
+            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
+            assert demisto_set_lust_run_mock.call_args[0][0] == {
+                'max_fetch': 1, 'page_number': 4,
+                'fetched_tickets': [10, 20], 'query': '',
+                'fetch_time': '2023-01-12T12:00:00Z', 'time_filter': 'created'
+            }
+
+        @freeze_time('2023-01-15T12:00:00Z')
+        def test_continues_fetch_last_part(self, mocker, zendesk_client, requests_mock):
+            ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
+            ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(demisto, 'getLastRun', return_value=None)
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
+            demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
+            demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
+            zendesk_client.fetch_incidents({'max_fetch': 1}, json.dumps({
+                'max_fetch': 1, 'page_number': 4, 'fetched_tickets': [10, 20],
+                'fetch_time': '2023-01-12T12:00:00Z', 'query': '', 'time_filter': 'created'
+            }))
+            assert ticket_mock_10.call_count == ticket_mock_20.call_count == 0
+            assert demisto_incidents_mock.called_once_with([])
+            assert demisto_set_lust_run_mock.call_args[0][0] == {
+                'fetched_tickets': [10, 20], 'fetch_time': '2023-01-15T11:59:00Z'}
+
+        @freeze_time('2023-01-15T12:00:00Z')
+        def test_usual_fetch(self, mocker, zendesk_client, requests_mock):
+            ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
+            ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(demisto, 'getLastRun', return_value=None)
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
+            mocker.patch.object(zendesk_client, '_get_comments', return_value=[])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries', return_value=[])
+            demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
+            demisto_set_lust_run_mock = mocker.patch.object(demisto, 'setLastRun')
+            zendesk_client.fetch_incidents({}, json.dumps({
+                "fetched_tickets": [10],
+                "fetch_time": "2023-01-12T12:00:00Z"
+            })
+            )
+            assert ticket_mock_10.call_count == 0
+            assert ticket_mock_20.called_once
+            assert demisto_incidents_mock.called_once()
+            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
+            assert demisto_set_lust_run_mock.call_args[0][0] == {
+                'fetched_tickets': [10, 20], 'fetch_time': '2023-01-15T11:59:00Z'}
+
+        @freeze_time('2023-01-15T12:00:00Z')
+        def test_usual_fetch_with_attachment(self, mocker, zendesk_client, requests_mock):
+            fetched_args = ([10], '2023-01-12T12:00:00Z', '2023-01-12T12:00:00Z', '', 50, 1, True)
+            ticket_mock_10 = requests_mock.get(full_url('tickets/10'), json=get_json_file('tickets/10'))
+            ticket_mock_20 = requests_mock.get(full_url('tickets/20'), json=get_json_file('tickets/20'))
+            mocker.patch.object(zendesk_client, '_fetch_args', return_value=fetched_args)
+            mocker.patch.object(demisto, 'getLastRun', return_value=None)
+            mocker.patch.object(zendesk_client, '_ZendeskClient__zendesk_search_results', return_value=[{'id': 20}])
+            mocker.patch.object(zendesk_client, 'get_attachments_ids', return_value=[1234])
+            mocker.patch.object(zendesk_client, 'zendesk_attachment_get',
+                                return_value={'url': 'testurl/api/v2/attachments/11656206786333.json', 'id': 11656206786333,
+                                              'file_name': 'TestFile.json',
+                                              'content_url': 'testurl/attachments/token/1234/?name=TestFile.json',
+                                              'mapped_content_url': 'testurl/attachments/token/1234/?name=TestFile.json',
+                                              'content_type': 'application/x-yaml', 'size': 44726, 'width': None,
+                                              'height': None, 'inline': False, 'deleted': False,
+                                              'malware_access_override': False, 'malware_scan_result': 'malware_not_found'})
+            mocker.patch.object(zendesk_client, 'get_file_entries', return_value=[{'Contents': '', 'ContentsFormat': 'text',
+                                                                                   'Type': 9, 'File': 'TestFile.json',
+                                                                                   'FileID': '77fe1c6d-3096-4f1c-80c7-'
+                                                                                             '4e7c8573d580'}])
+            mocker.patch.object(zendesk_client, 'get_attachment_entries',
+                                return_value=[{'path': '77fe1c6d-3096-4f1c-80c7-4e7c8573d580',
+                                               'name': 'TestFile.json'}])
+            demisto_incidents_mock = mocker.patch.object(demisto, 'incidents')
+            zendesk_client.fetch_incidents({}, json.dumps({
+                "fetched_tickets": [10],
+                "fetch_time": "2023-01-12T12:00:00Z"
+            }))
+            assert ticket_mock_10.call_count == 0
+            assert ticket_mock_20.called_once
+            assert demisto_incidents_mock.called_once()
+            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
+            assert demisto_incidents_mock.call_args[0][0][0]['attachment'] == [{
+                'path': '77fe1c6d-3096-4f1c-80c7-4e7c8573d580', 'name': 'TestFile.json'}]

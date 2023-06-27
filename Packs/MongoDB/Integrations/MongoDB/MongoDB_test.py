@@ -5,7 +5,8 @@ import pytest
 from bson.objectid import ObjectId
 
 from MongoDB import convert_id_to_object_id, convert_object_id_to_str, convert_str_to_datetime, Client, search_query, \
-    format_sort, pipeline_query_command
+    format_sort, pipeline_query_command, parse_and_validate_bulk_update_arguments, bulk_update_command, update_entry_command
+from CommonServerPython import DemistoException
 
 id_to_obj_inputs = [
     (
@@ -259,3 +260,197 @@ def test_pipeline_query_command(mocker):
 
     assert 'Total of 2 entries were found in MongoDB collection' in readable_outputs
     assert outputs.get('MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)') == expected_context
+
+
+class MockResponse:
+    """Mock response for TestUpdateQueryCommands and TestBulkUpdateQueryCommands classes.
+    represents a partial SDK response of the update_entry and bulk_update_entries functions.
+    """
+    def __init__(self, acknowledged, modified_count, upserted_count, upserted_id=False):
+        self.acknowledged = acknowledged
+        self.modified_count = modified_count
+        self.upserted_count = upserted_count
+        self.upserted_id = upserted_id
+
+
+class TestUpdateQueryCommands:
+    """Class for update_query_command UTs."""
+    client = Client(['aaaaa'], 'a', 'b', 'd')
+    case_upsert_with_no_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 0, 0, 1),
+        'A new entry was inserted to the collection.')
+    case_upsert_with_one_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 1, 0, 0),
+        'MongoDB: Total of 1 entries has been modified.')
+    case_upsert_with_many_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", False, True, MockResponse(True, 5, 0, 0),
+        'MongoDB: Total of 5 entries has been modified.')
+    case_upsert_with_matching_entry_no_modifications = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 0, 0, 0),
+        'MongoDB: Total of 0 entries has been modified.')
+    case_upsert_with_many_matching_entries_update_only_one = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 1, 0, 0),
+        'MongoDB: Total of 1 entries has been modified.')
+    case_no_upsert_with_no_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, False, MockResponse(True, 0, 0, 0),
+        'MongoDB: Total of 0 entries has been modified.')
+
+    update_query_cases = [case_upsert_with_no_matching_entry, case_upsert_with_one_matching_entry,
+                          case_upsert_with_many_matching_entry, case_upsert_with_matching_entry_no_modifications,
+                          case_upsert_with_many_matching_entries_update_only_one, case_no_upsert_with_no_matching_entry]
+
+    @pytest.mark.parametrize('filter, update, update_one, upsert, response, expected', update_query_cases)
+    def test_update_entry_command(self, mocker, filter, update, update_one, upsert, response, expected, client=client):
+        """
+        Given:
+            valid arguments
+
+        When:
+            running mongodb-update command in XSOAR
+
+        Then:
+            the expected human readable is returned
+        """
+        mocker.patch.object(client, 'update_entry', return_value=response)
+        return_value = update_entry_command(client, "test_collection", filter=filter,
+                                            update=update, update_one=update_one, upsert=upsert)
+        assert return_value[0] == expected
+
+    case_invalid_filter_argument = ("\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", MockResponse(
+        True, 0, 0, 0), 'The `filter` argument is not a valid json. Valid input example: `{"key": "value"}`')
+    case_invalid_update_argument = ("{\"Name\": \"dummy\"}", "\"$set\":{\"test\":0}}", MockResponse(
+        True, 0, 0, 0), 'The `update` argument is not a valid json. Valid input example: `{"$set": {"key": "value"}`')
+    case_invalid_response = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", None, 'Error occurred when trying to enter update entries.')
+
+    invalid_cases = [case_invalid_filter_argument, case_invalid_update_argument, case_invalid_response]
+
+    @pytest.mark.parametrize('filter, update, response, expected', invalid_cases)
+    def test_update_entry_command_fail(self, mocker, filter, update, response, expected, client=client):
+        """
+        Given:
+            invalid arguments
+
+        When:
+            running mongodb-update command in XSOAR
+
+        Then:
+            the expected error message is raised
+        """
+        mocker.patch.object(client, 'update_entry', return_value=response)
+        try:
+            update_entry_command(client, "test_collection", filter=filter, update=update)
+        except DemistoException as e:
+            assert str(e) == expected
+
+
+class TestBulkUpdateQueryCommands:
+    """ Class for bulk_update_query_command UTs. """
+    client = Client(['aaaaa'], 'a', 'b', 'd')
+    # valid command arguments
+    case_single_update_args = ("[{\"Name\": \"dummy\"}]", "[{\"$set\":{\"test\":0}}]",
+                               ([{"Name": "dummy"}], [{"$set": {"test": 0}}]))
+    case_simple_bulk_update_args = ("[{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"}]",
+                                    "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+                                    ([{"Name": "dummy1"},
+                                      {"Name": "dummy2"}],
+                                        [{"$set": {"test": 1}},
+                                         {"$set": {"test": 2}}]))
+    case_bulk_update_complex_filter = (
+        "[{\"$and\": [{\"value\":0,\"another_value\":1}],\"Name\":\"dummy1\",\
+            \"less_than\": {\"$lt\":3000}},{\"Name\":\"dummy2\"}]",
+        "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+        ([{"$and": [{"value": 0, "another_value": 1}],
+           "less_than": {"$lt": 3000},
+           "Name": "dummy1"},
+          {"Name": "dummy2"}],
+         [{"$set": {"test": 1}},
+          {"$set": {"test": 2}}]))
+    case_bulk_update_complex_update = (
+        "[{\"Name\":\"dummy1\"},{\"Name\":\"dummy2\"}]",
+        "[{\"$set\":{\"test\":1,\"value\":2,\"another_value\":{\"sub_value\": 4}}},{\"$set\":{\"test\":2}}]",
+        ([{"Name": "dummy1"},
+          {"Name": "dummy2"}],
+         [{"$set": {"test": 1, "value": 2, "another_value": {"sub_value": 4}}},
+          {"$set": {"test": 2}}]))
+    case_bulk_update_context_args = ([{"Name": "dummy1"}, {"Name": "dummy2"}],
+                                     [{"$set": {"test": 1}}, {"$set": {"test": 2}}],
+                                     ([{"Name": "dummy1"},
+                                      {"Name": "dummy2"}],
+                                      [{"$set": {"test": 1}},
+                                         {"$set": {"test": 2}}]))
+
+    # invalid command arguments
+    case_missing_brackets = ("{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"}]",
+                             "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+                             'The `filter` argument must be a json array.')
+    case_not_matching_number_of_filters_and_updates = (
+        "[{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"}]", "[{\"$set\":{\"test\":1}}]",
+        'The `filter` and `update` arguments must contain the same number of elements.')
+    case_invalid_json = ("{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"]",
+                         "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+                         'The `filter` argument contains an invalid json.')
+
+    @pytest.mark.parametrize('filter, update, expected_output', [
+        case_single_update_args,
+        case_simple_bulk_update_args,
+        case_bulk_update_complex_filter,
+        case_bulk_update_complex_update,
+        case_bulk_update_context_args
+    ])
+    def test_parse_and_validate_bulk_update_arguments(self, filter, update, expected_output):
+        """
+        Given:
+            valid arguments for bulk update command
+
+        When:
+            running mongodb-bulk-update command in XSOAR
+
+        Then:
+            parse_and_validate_bulk_update_arguments will parse validate the filter and update arguments
+        """
+        filter_list, update_list = parse_and_validate_bulk_update_arguments(filter, update)
+        assert filter_list == expected_output[0]
+        assert update_list == expected_output[1]
+
+    @pytest.mark.parametrize('filter, update, error_message', [
+        case_missing_brackets,
+        case_not_matching_number_of_filters_and_updates,
+        case_invalid_json
+    ])
+    def test_parse_and_validate_bulk_update_arguments_fail(self, filter, update, error_message):
+        """
+        Given:
+            invalid arguments for bulk update command
+
+        When:
+            running mongodb-bulk-update command in XSOAR
+
+        Then:
+            parse_and_validate_bulk_update_arguments will raise an error
+        """
+        with pytest.raises(DemistoException) as e:
+            parse_and_validate_bulk_update_arguments(filter, update)
+            assert error_message in str(e.value)
+
+    def test_bulk_update_command(
+            self, mocker, client=client, case_simple_bulk_update_args=case_simple_bulk_update_args):
+        """
+        Given:
+            valid arguments for bulk update command
+
+        When:
+            running mongodb-bulk-update command in XSOAR
+
+        Then:
+            the expected human readable is returned
+        """
+        response = MockResponse(acknowledged=True, modified_count=1, upserted_count=1)
+        mocker.patch.object(client, 'bulk_update_entries', return_value=response)
+        return_value = bulk_update_command(
+            client, "test_collection", filter=case_simple_bulk_update_args[0],
+            update=case_simple_bulk_update_args[1])
+        excepted_output = 'MongoDB: Total of 1 entries has been modified.\
+            \nMongoDB: Total of 1 entries has been inserted.'
+        # 'replace' method is used due to inconsistent spaces in the output
+        assert return_value[0].replace(' ', '') == excepted_output.replace(' ', '')

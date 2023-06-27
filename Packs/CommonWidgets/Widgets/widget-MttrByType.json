@@ -24,7 +24,7 @@
   ],
   "groupBy": [
    "occurred(d)",
-   "type"
+   "rawType"
   ]
  },
  "description": "Shows changes in Mean Time to Resolution (in hours), over time, while differentiating between incident types."

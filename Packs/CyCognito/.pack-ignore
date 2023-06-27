@@ -54,3 +54,10 @@ ignore=IF115
 
 [file:incidentfield-CyCognito-Summary.json]
 ignore=IF115
+
+[file:CyCognitoGetEndpoints.yml]
+ignore=BA124
+
+[file:ThreeDigitAlphaCountryCodeToCountryName.yml]
+ignore=BA124
+

@@ -1,9 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
-from CommonServerPython import *
+
 import urllib3
 urllib3.disable_warnings()
 
@@ -547,9 +551,10 @@ def get_project_id(project_key='', project_name=''):
         result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
     except DemistoException as de:
 
-        if de.message != 'Status code: 404\nMessage: Issue Does Not Exist':
+        if 'Status code: 404' not in de.message:
             raise de
 
+        demisto.debug('Exception after first api call: {de.message}')
         demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
                       f'Trying another endpoint: {BASE_URL}/api/latest/project.')
 
@@ -604,6 +609,13 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
 
     if not issue['fields'].get('issuetype') and issue_creating:
         issue['fields']['issuetype'] = {}
+
+    if issue_args.get('watchers'):
+        watchers = issue_args.get('watchers')
+        if isinstance(watchers, list):
+            issue['watchers'] = watchers
+        elif isinstance(watchers, str):
+            issue['watchers'] = argToList(watchers)
 
     if issue_args.get('summary'):
         issue['fields']['summary'] = issue_args['summary']
@@ -686,6 +698,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
             issue['fields']['reporter'] = {}
         issue['fields']['reporter']['name'] = issue_args['reporter']
 
+    demisto.debug(f'The issue after updating relevant fields: {issue}')
     return issue
 
 
@@ -717,6 +730,24 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     return human_readable, outputs, contents
 
 
+def get_project_role_command(project_key, role_name):
+    j_res = get_project_roles(project_key)
+    url = j_res.get(role_name)
+    if not url:
+        return_error(f"Role '{role_name}' not found")
+
+    role_id = url.split('/')[-1]
+    url = f'rest/api/latest/project/{project_key}/role/{role_id}'
+    j_res = jira_req('GET', url, resp_type='json')
+    return j_res
+
+
+def get_project_roles(project_key):
+    url = f'rest/api/latest/project/{project_key}/role'
+    j_res = jira_req('GET', url, resp_type='json')
+    return j_res
+
+
 def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
     nofields: set = set()
 
@@ -745,6 +776,20 @@ def create_issue_command():
     contents = j_res
     outputs = md_and_context['context']
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
+
+def add_user_to_project_command(user_email, project_key, role_name):
+    result = get_account_id_from_attribute(user_email)
+
+    if isinstance(result, CommandResults) and isinstance(result.raw_response, dict):
+        user_id = result.raw_response.get('AccountID')
+    else:
+        return_error(f'{result}')
+
+    role_id = get_project_role_command(project_key, role_name).get('id')
+    url = f'rest/projectconfig/latest/roles/{project_key}/{role_id}'
+    json_data = {'users': [user_id], "groups": []}
+    return jira_req('POST', url, json.dumps(json_data)).text
 
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
@@ -790,6 +835,13 @@ def _update_fields(issue_id, new_data):
         jira_req('PUT', url, json.dumps({'fields': new_data}))
 
 
+def get_organizations_command():
+    url = '/rest/servicedeskapi/organization'
+    res = jira_req('GET', url, resp_type='json').get('values')
+    [org.pop('_links') for org in res]
+    return CommandResults(outputs=res, outputs_prefix='Jira.Organizations')
+
+
 def get_field_command(issue_id, field):
     fields = argToList(field)
     return get_issue(issue_id, extra_fields=fields, is_update=False)
@@ -830,14 +882,15 @@ def edit_status(issue_id, status, issue):
     if not issue:
         issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
-    transitions = [transition.get('name') for transition in j_res.get('transitions')]
-    for i, transition in enumerate(transitions):
+    # When changing the status we search the transition that leads to this status
+    statuses = [transition.get('to', {}).get('name', '') for transition in j_res.get('transitions')]
+    for i, transition in enumerate(statuses):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
             return jira_req('POST', url, json.dumps(issue))
 
-    return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
+    return_error(f'Status "{status}" not found. \nValid statuses are: {statuses} \n')
 
 
 def list_transitions_data_for_issue(issue_id):
@@ -1020,6 +1073,18 @@ def delete_issue_command(issue_id_or_key):
         demisto.results('Issue deleted successfully.')
     else:
         demisto.results('Failed to delete issue.')
+
+
+def update_issue_assignee_command(issue_id, assignee=None, assignee_id=None):
+    if assignee:  # for jira server
+        body = {"name": assignee}
+    elif assignee_id:  # for jira cloud
+        body = {"accountId": assignee_id}
+    else:
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
+    url = f'rest/api/latest/issue/{issue_id}/assignee'
+    jira_req('PUT', url, json.dumps(body))
+    return get_issue(issue_id, is_update=True)
 
 
 def test_module() -> str:
@@ -1257,7 +1322,8 @@ def update_remote_system_command(args):
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data[k] for k in remote_args.delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
+            demisto.debug(f'sending the following data to edit the issue with: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
@@ -1288,7 +1354,7 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS)
+    return jira_req(method='GET', resource_url='rest/api/latest/myself', headers=HEADERS)
 
 
 def get_modified_remote_data_command(args):
@@ -1439,9 +1505,13 @@ def main():
             incidents = fetch_incidents(fetch_query, id_offset, fetch_attachments, fetch_comments, incoming_mirror,
                                         outgoing_mirror, comment_tag, attachment_tag, fetch_by_created)
             demisto.incidents(incidents)
+
         elif demisto.command() == 'jira-get-issue':
             human_readable, outputs, raw_response = get_issue(**snakify(demisto.args()))
             return_outputs(human_readable, outputs, raw_response)
+
+        elif demisto.command() == 'jira-get-project-role':
+            return_results(get_project_role_command(**demisto.args()))
 
         elif demisto.command() == 'jira-issue-query':
             human_readable, outputs, raw_response = issue_query_command(**snakify(demisto.args()))
@@ -1449,6 +1519,9 @@ def main():
 
         elif demisto.command() == 'jira-create-issue':
             create_issue_command()
+
+        elif demisto.command() == 'jira-add-user-to-project':
+            return_results(add_user_to_project_command(**demisto.args()))
 
         elif demisto.command() == 'jira-edit-issue':
             human_readable, outputs, raw_response = edit_issue_command(**snakify(demisto.args()))
@@ -1493,10 +1566,18 @@ def main():
         elif demisto.command() == 'jira-get-id-by-attribute':
             return_results(get_account_id_from_attribute(**demisto.args()))
 
+        elif demisto.command() == 'jira-get-organizations':
+            return_results(get_organizations_command())
+
         elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
+
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
+
+        elif demisto.command() == 'jira-issue-assign':
+            human_readable, outputs, raw_response = update_issue_assignee_command(**snakify(demisto.args()))
+            return_outputs(human_readable, outputs, raw_response)
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 

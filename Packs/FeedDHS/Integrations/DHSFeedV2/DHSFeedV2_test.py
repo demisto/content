@@ -151,11 +151,9 @@ class TestFetchIndicators:
         - returns an empty list of indicators
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch=[])
-        default_id = 1
-        mock_client.collections = [MockCollection(default_id, 'default')]
 
-        mock_client.collection_to_fetch = mock_client.collections[0]
-        mocker.patch.object(mock_client, 'build_iterator', side_effect=InvalidJSONError)
+        mocker.patch.object(mock_client, 'collection_to_fetch', spec=v20.Collection)
+        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=InvalidJSONError)
         indicators, last_run = fetch_indicators_command(mock_client, -1, {}, '1 day')
         assert indicators == []
         assert mock_client.collection_to_fetch.id in last_run

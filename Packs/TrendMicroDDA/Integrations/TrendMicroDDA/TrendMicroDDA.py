@@ -11,7 +11,7 @@ import os.path
 import copy
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
 
 if not demisto.params().get("proxy", True):
     del os.environ["HTTP_PROXY"]
@@ -48,7 +48,7 @@ def hash_file(filename):
 def hash_url(url):
     '''Calculate the SHA1 of a URL'''
     h = hashlib.sha1()  # nosec
-    h.update(url)
+    h.update(url.encode('utf-8'))
     return h.hexdigest()
 
 
@@ -72,12 +72,12 @@ def calculate_checksum(api_key, headers, body=''):
         for key in x_dtas_checksum_calculating_order_list:
             temp += headers[key]
     else:
-        for key, value in headers.iteritems():
+        for key, value in headers.items():
             if ('X-DTAS-' in key and 'X-DTAS-Checksum' not in key and 'X-DTAS-ChecksumCalculatingOrder' not in key):
                 temp += value
 
     temp += body
-    return hashlib.sha1(temp)  # nosec
+    return hashlib.sha1(temp.encode('utf-8'))  # nosec
 
 
 def http_request(uri, method, headers, body={}, params={}, files={}):
@@ -97,7 +97,7 @@ def http_request(uri, method, headers, body={}, params={}, files={}):
 
     if (res.status_code != 102 and (res.status_code < 200 or res.status_code >= 300)):
         raise Exception('Got status code ' + str(res.status_code) + ' with body '
-                        + res.content + ' with headers ' + str(res.headers))
+                        + str(res.content) + ' with headers ' + str(res.headers))
     return res
 
 

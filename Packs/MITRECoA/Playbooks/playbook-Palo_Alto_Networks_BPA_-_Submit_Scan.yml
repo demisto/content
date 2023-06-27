@@ -418,3 +418,6 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

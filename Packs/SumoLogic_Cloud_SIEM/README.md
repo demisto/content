@@ -8,5 +8,6 @@ This pack enables you to run commands that:
 - Get Insight comments
 - Add items to match list
 - Add Threat Intel Indicators to Threat Intel Sources
+- Mirror IN and OUT Sumo Logic Insights and Signals to XSOAR incidents
 
 ***Note***: This pack replaces the legacy JASK pack. For further details about the migration from JASK, visit our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack).

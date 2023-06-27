@@ -2445,7 +2445,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: LogRhythm.AlarmSummary.additionalDetails
@@ -3150,11 +3150,6 @@ tasks:
           left:
             value:
               simple: LogRhythm.Search.TaskId
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: LogRhythm.Search.Results
             iscontext: true
     view: |-
       {

@@ -1,0 +1,36 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 0,
+            "q_ref": 3,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "trigger1",
+            "email-policy": "",
+            "email-policy_val": "0",
+            "syslog-policy": "",
+            "syslog-policy_val": "0",
+            "analyzer-policy": "",
+            "analyzer-policy_val": "0",
+            "siem-policy": "",
+            "siem-policy_val": "0"
+        },
+        {
+            "id": 2,
+            "can_view": 0,
+            "q_ref": 0,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "triggerv2",
+            "email-policy": "",
+            "email-policy_val": "0",
+            "syslog-policy": "",
+            "syslog-policy_val": "0",
+            "analyzer-policy": "",
+            "analyzer-policy_val": "0",
+            "siem-policy": "",
+            "siem-policy_val": "0"
+        }
+    ]
+}

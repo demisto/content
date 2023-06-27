@@ -3,6 +3,8 @@ from typing import Any, Dict, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
 
 class Client(BaseClient):
 
@@ -84,7 +86,7 @@ class Client(BaseClient):
         data = {
             "pageSize": max_fetch,
             "sorting": {
-                "fieldName": "severity",
+                "fieldName": "createdTime",
                 "direction": 1
             },
             "filter": {
@@ -2042,8 +2044,7 @@ def parse_incident(alert: dict) -> dict:
     Returns:
         dict: XSOAR Incident.
     """
-    alert_date = datetime.strptime(alert.get("createdTime"),
-                                   '%Y-%m-%dT%H:%M:%S.%fZ')  # type: ignore
+    alert_date = datetime.strptime(alert.get("createdTime"), TIME_FORMAT)
     iso_time = FormatIso8601(alert_date) + 'Z'
 
     incident = {
@@ -2091,8 +2092,14 @@ def fetch_incidents(client: Client, args: dict) -> None:
     alert_list = client.findings_search_request(max_fetch, alert_severity, alert_region)
     incidents = []
 
+    # convert the last_run_time to dome9 time format
+    last_run_datetime = dateparser.parse(last_run_time)
+    last_run_str = last_run_datetime.strftime(TIME_FORMAT)
+    last_run_datetime = dateparser.parse(last_run_str)
+
     for alert in alert_list['findings']:
-        if alert.get('id') != last_run_id:
+        alert_time = dateparser.parse(alert['createdTime'])
+        if alert.get('id') != last_run_id and last_run_datetime < alert_time:
             incidents.append(parse_incident(alert))
 
     demisto.incidents(incidents)
@@ -2120,8 +2127,21 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     base_url = params.get('base_url')
+
     key_id = params.get('api_key_id')
     key_secret = params.get('api_key_secret')
+    api_key_id_cred = params.get('api_key_id_cred', {}).get('password')
+    api_key_secret_cred = params.get('api_key_secret_cred', {}).get('password')
+
+    # get the api key and secret credentials
+    key_id = api_key_id_cred or key_id
+    key_secret = api_key_secret_cred or key_secret
+
+    # validate the api key and secret credentials
+    if not key_id:
+        raise ValueError('Please provide a valid API key ID.')
+    if not key_secret:
+        raise ValueError('Please provide a valid API key secret.')
 
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)

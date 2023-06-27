@@ -5,11 +5,11 @@ from CommonServerUserPython import *
 
 import json
 import requests
-import os
+import urllib3
 import os.path
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 # remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
