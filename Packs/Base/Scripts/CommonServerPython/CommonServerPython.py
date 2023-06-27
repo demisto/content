@@ -11213,6 +11213,8 @@ def replace_spaces_in_credential(credential):
                       lambda match: match.group(0).replace(' ', '\n'), credential)
     return credential
 
+def send_assets_to_xsiam(assets):
+    pass
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #

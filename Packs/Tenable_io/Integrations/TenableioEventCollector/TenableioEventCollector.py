@@ -14,6 +14,7 @@ VENDOR = 'tenable'
 PRODUCT = 'io'
 NUM_ASSETS = 5000
 DATE_FORMAT = '%Y-%m-%d'
+MAX_CHUNK_SIZE = 5000
 
 ''' CLIENT CLASS '''
 
@@ -119,6 +120,51 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
                                   headers=self._headers)
 
+    def export_assets_request(self, chunk_size: int, fetch_from):
+        """
+
+        Args:
+            chunk_size: maximum number of assets in one chunk.
+            last_fetch: the last asset that was fetched previously.
+
+        Returns: The UUID of the assets export job.
+
+        """
+        payload = {
+            'chunk_size': chunk_size,
+            "filters": {
+                "created_at": last_fetch
+            }
+        }
+
+        res = self._http_request(method='POST', url_suffix='assets/export', json_data=payload,
+                                 headers=self._headers)
+        return res.get('export_uuid')
+
+    def get_export_assets_status(self, export_uuid):
+        """
+        Args:
+                export_uuid: The UUID of the vulnerabilities export job.
+
+        Returns: The assets' chunk id.
+
+        """
+        res = self._http_request(method='GET', url_suffix=f'assets/export/{export_uuid}/status', headers=self._headers)
+        return res.get('status'), res.get('chunks_available')
+
+    def download_assets_chunk(self, export_uuid: str, chunk_id: int):
+        """
+
+        Args:
+            export_uuid: The UUID of the assets export job.
+            chunk_id: The ID of the chunk you want to export.
+
+        Returns: Chunk of assets from API.
+
+        """
+        return self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
+                                  headers=self._headers)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -141,6 +187,23 @@ def try_get_chunks(client: Client, export_uuid: str):
             vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
     return vulnerabilities, status
 
+def try_get_assets_chunks(client: Client, export_uuid: str):
+    """
+    If job has succeeded (status FINISHED) get all information from all chunks available.
+    Args:
+        client: Client class object.
+        export_uuid: The UUID of the assets export job.
+
+    Returns: All information from all chunks available.
+
+    """
+    assets = []
+    status, chunks_available = client.get_export_assets_status(export_uuid=export_uuid)
+    demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
+    if status == 'FINISHED':
+        for chunk_id in chunks_available:
+            assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+    return assets, status
 
 def generate_export_uuid(client: Client, first_fetch: datetime, last_run: Dict[str, str | float | None],
                          severity: List[str]):
@@ -283,6 +346,83 @@ def get_vulnerabilities_command(args: Dict[str, Any], client: Client) -> Command
         return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid, **args},
                           response=results)
 
+@polling_function('tenable-export-assets', requires_polling_arg=False)
+def get_assets_command(client: Client, fetch_from, max_fetch, export_uuid=None):
+    """
+    Getting assets from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
+    Args:
+        args: arguments from user (last_found, severity and num_assets)
+        client: Client class object.
+
+    Returns: assets from API.
+
+    """
+    assets = []
+    if not export_uuid:
+        export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=fetch_from)
+
+    status, chunks_available = client.get_export_assets_status(export_uuid=export_uuid)
+
+    # if getting chunks from API has finished, or we reached the max amount required
+    if status == 'FINISHED' or MAX_CHUNK_SIZE * len(chunks_available) < max_fetch:
+        for chunk_id in chunks_available:
+            assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+            # todo: handle update last run, and return result to send to xsiam
+        return PollResult(response=assets)
+    elif status in ['CANCELLED', 'ERROR']:
+        results = CommandResults(readable_output='Export job failed',
+                                 entry_type=entryTypes['error'])
+        return PollResult(response=results)
+    else:
+        results = CommandResults(readable_output='Export job failed',
+                                 entry_type=entryTypes['error'])
+        return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid, **args},
+                          response=results)
+
+def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_last_run: Dict[str, str | float | None]):
+    """
+    Generate a job export uuid in order to fetch assets.
+
+    Args:
+        client: Client class object.
+        first_fetch: time to first fetch assets from.
+        assets_last_run: assets last run object.
+
+    """
+    demisto.info("Getting export uuid for report.")
+    fetch_from: float = assets_last_run.get('fetch_from') or time.mktime(first_fetch.timetuple())
+
+    export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=fetch_from)
+    demisto.info(f'assets export uuid is {export_uuid}')
+
+    assets_last_run.update({'fetch_from': fetch_from,'export_uuid': export_uuid})
+
+def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: check if there's a use to max_fetch
+    """
+    Fetches assets.
+    Args:
+        assets_last_run: last run object.
+        client: Client class object.
+
+    Returns:
+        assets fetched from the API.
+    """
+    assets = []
+    export_uuid = assets_last_run.get('export_uuid')    # if already in lastrun meaning its still polling chunks from api
+    fetch_from = assets_last_run.get('fetch_from')  # last run fetch time
+    if export_uuid:
+        demisto.info(f'Got export uuid from API {export_uuid}')
+        assets, status = try_get_assets_chunks(client=client, export_uuid=export_uuid)
+        # set params for next run
+        if status == 'FINISHED':
+            assets_last_run.update({'export_uuid': None})   # if the polling is over and we can start a new fetch
+        elif status in ['CANCELLED', 'ERROR'] and fetch_from:
+            export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=fetch_from)
+            assets_last_run.update({'export_uuid': export_uuid})
+
+    demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
+    return assets, assets_last_run
+
 
 ''' FETCH COMMANDS '''
 
@@ -387,9 +527,11 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
+    max_assets_fetch = arg_to_number(params.get("max_assets_fetch")) # todo: set default value
 
     # transform minutes to seconds
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
+    first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "3 days"))
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -439,6 +581,17 @@ def main() -> None:  # pragma: no cover
 
             demisto.debug(f'Setting new last_run to {new_last_run}')
             demisto.setLastRun(new_last_run)
+        elif command == 'fetch-assets':
+            assets_last_run = demisto.getAssetsLastRun()    # todo: make sure its implemented on the BE side
+
+            # starting new fetch for assets, not polling from prev call
+            if not assets_last_run.get('export_uuid'):
+                generate_assets_export_uuid(client, first_assets_fetch, assets_last_run)
+
+            assets, new_assets_last_run = fetch_assets_command(client,assets_last_run, max_fetch)
+            # todo: check if to move fetch vulnerabilities to here instead of fetch events.
+            send_assets_to_xsiam(assets=assets) # todo: to be implemented in CSP once we have the api endpoint from server
+            demisto.setAssetsLastRun(new_assets_last_run)
 
     # Log exceptions and return errors
     except Exception as e:
