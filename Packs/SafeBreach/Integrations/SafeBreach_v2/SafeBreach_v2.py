@@ -1,7 +1,7 @@
 """ IMPORTS """
 from ast import literal_eval
 from CommonServerPython import *
-
+import demistomock as demisto
 # disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
@@ -149,7 +149,11 @@ def contains(list_a, list_b):
 
 
 def unescape_string(string):
-    return string.encode('utf-8').decode('unicode_escape')
+    try:
+        return string.encode('utf-8').decode('unicode_escape')
+    except Exception as e:
+        demisto.debug('Failed to unescape_string', e)
+        return string
 
 
 def generate_readable_output(data):
@@ -456,8 +460,11 @@ def get_remediation_data_command(client: Client, args: dict, no_output_mode: boo
         demisto_data_type = SAFEBREACH_TO_DEMISTO_MAPPER.get(item['type'])  # SHA256,Port,Protocol,Data,Command,URI
 
         if item['type'] in ['DropPaths', 'URIs', 'URI', 'Command']:
-            item["value"] = item["value"].encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
-
+            try:
+                item["value"] = item["value"].encode('utf-8').decode('unicode_escape').encode('latin1').decode('utf-8')
+            except Exception as e:
+                demisto.debug('Failed to decode/encode', e)
+                item["value"] = item["value"]
         if demisto_data_type:
             is_behaveioral = item['type'] not in ['Domain', 'FQDN/IP', 'SHA256', 'URI', 'Hash']
             score_behavioral_reputation = DEMISTO_INDICATOR_REPUTATION.get(demisto.params().get('behavioralReputation'))
@@ -987,5 +994,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ['__main__', "__builtin__", "builtins"]:
     main()
