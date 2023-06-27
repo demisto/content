@@ -600,13 +600,12 @@ test-upload-flow:
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
-    - source verify_upload_id_set_job
     - if [ "$DEMISTO_SDK_NIGHTLY" == "true" ]; then
-    -   echo "verifying upload-id-set-job, $verify_upload_id_set_job"
+    -   echo "verifying upload-id-set-job"
     - else
     -   echo "skipping verifying upload-id-set-job"
     - fi
-    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN -vis $verify_upload_id_set_job
+    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN -vis $DEMISTO_SDK_NIGHTLY
     - section_end "Wait For Upload To Finish"
 
     - section_start "Verify Created Testing Bucket"
