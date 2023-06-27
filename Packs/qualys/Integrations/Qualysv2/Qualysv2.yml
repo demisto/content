@@ -2035,7 +2035,7 @@ script:
       description: Qualys response for the host update.
       type: String
   - arguments:
-    - description: Specify 1 for active schedules only, or 0 for deactivated schedules only
+    - description: Specify 1 for active schedules only, or 0 for deactivated schedules only.
       name: active
     - description: Specify 1 to distribute the scan to all scanner appliances in the network.
       name: scanners_in_network
