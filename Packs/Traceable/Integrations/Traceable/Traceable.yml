@@ -14,12 +14,12 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: Verify SSL Certificates for Connection?
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-- display: Use Proxy through Environment Variables http_proxy, https_proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
