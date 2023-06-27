@@ -53,8 +53,6 @@ tasks:
     scriptarguments:
       ignore-outputs:
         simple: "false"
-      limit:
-        simple: "100"
     separatecontext: false
     continueonerrortype: ""
     view: |-
