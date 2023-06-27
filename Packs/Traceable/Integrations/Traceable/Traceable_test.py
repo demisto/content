@@ -212,8 +212,15 @@ def test_fetch_incidents(mocker):
 def test_construct_filterby_expression():
     from Traceable import Helper
 
-    filterBy = Helper.construct_filterby_expression("a", "b", "c")
+    filterBy = Helper.construct_filterby_expression("a", "b", "c", None)
     assert filterBy == "filterBy: [a,b,c]"
+
+
+def test_construct_key_expression_key_none():
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", None)
+    assert key_exp == ""
 
 
 def test_construct_key_expression_in_str():
@@ -236,6 +243,16 @@ def test_construct_key_expression_in_int():
     )
 
 
+def test_construct_key_expression_in_int_list():
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", [1, 2])
+    assert (
+        key_exp
+        == '{keyExpression: {key: "key"}, operator: IN, value: [1,2], type: ATTRIBUTE}'
+    )
+
+
 def test_construct_key_expression_in_str_list():
     from Traceable import Helper
 
@@ -244,6 +261,14 @@ def test_construct_key_expression_in_str_list():
         key_exp
         == '{keyExpression: {key: "key"}, operator: IN, value: ["value1","value2"], type: ATTRIBUTE}'
     )
+
+
+def test_construct_key_expression_in_none(caplog):
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", None)
+    assert key_exp == ""
+    caplog.clear()
 
 
 def test_construct_key_expression_equals_str():
@@ -266,6 +291,18 @@ def test_construct_key_expression_equals_int():
     )
 
 
+def test_construct_key_expression_unknown_op():
+    from Traceable import Helper
+
+    encountered_exception = False
+    try:
+        Helper.construct_key_expression("key", 5, operator="NONEXISTENT")
+    except Exception as e:
+        assert str(e) == "Unknown Operator: NONEXISTENT"
+        encountered_exception = True
+    assert encountered_exception
+
+
 def test_is_error():
     from Traceable import Helper
 
@@ -273,6 +310,13 @@ def test_is_error():
     trace_results["data"] = {}
     trace_results["data"]["spans"] = {}
     is_error = Helper.is_error(trace_results, "data", "spans", "results")
+    assert is_error is True
+
+
+def test_is_error_none_obj():
+    from Traceable import Helper
+
+    is_error = Helper.is_error(None, "data", "spans", "results")
     assert is_error is True
 
 
@@ -428,3 +472,45 @@ def test_env_param_parsing():
     env = "a, b , c, d, e "
     env_list = argToList(env)
     assert len(env_list) == 5
+
+
+def test_datetime_to_string():
+    from Traceable import Helper, DATE_FORMAT
+    from datetime import datetime
+
+    test_date_str = "2023-06-26T15:34:53Z"
+    dt_object = datetime.strptime(test_date_str, DATE_FORMAT)
+    dt_str = Helper.datetime_to_string(dt_object)
+    assert dt_str == test_date_str
+
+
+def test_client_creation_no_headers():
+    from Traceable import Client
+
+    client = Client("http://mock.url")
+    assert (
+        type(client.headers) == dict
+        and "Content-Type" in client.headers
+        and client.headers["Content-Type"] == "application/json"
+    )
+
+
+def test_graphql_query_non_200(mocker, caplog, capfd):
+    from Traceable import Client
+    import json
+
+    resp = Response()
+    resp.status_code = 400
+    resp.text = "error"
+    client = Client("http://mock.url")
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.return_value = resp
+    encountered_exception = False
+    try:
+        client.graphql_query("query")
+    except Exception as e:
+        encountered_exception = True
+        assert str(e) == "Error occurred: error | Status Code: 400"
+    assert encountered_exception
+    caplog.clear()
+    capfd.readouterr()

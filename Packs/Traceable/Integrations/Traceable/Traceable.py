@@ -216,7 +216,8 @@ class Helper:
                     if type(value[0]) == str:
                         _value = ",".join(['"{}"'.format(v) for v in value])
                     elif type(value[0]) == int or type(value[0]) == float:
-                        _value = ",".join(value)
+                        _value = ",".join(["{}".format(str(v)) for v in value])
+
             else:
                 demisto.info(
                     "Value was found None. Returning without creating Key Expression. Key: "
@@ -324,22 +325,20 @@ class Client(BaseClient):
         demisto.debug("Running request...")
         response = requests.post(
             self.url,
-            json={"query": query, "variables": {}},
+            json={"query": query, "variables": params},
             headers=self.headers,
             verify=verify,
         )
         demisto.debug("Completed request...")
 
-        if response is not None and response.status_code != 200:
-            if response.text is not None:
-                msg = (
-                    "Error occurred: "
-                    + response.text
-                    + " | Status Code: "
-                    + str(response.status_code)
-                )
-                demisto.error(msg)
-                raise Exception(msg)
+        if (
+            response is not None
+            and response.status_code != 200
+            and response.text is not None
+        ):
+            msg = f"Error occurred: {response.text} | Status Code: {str(response.status_code)}"
+            demisto.error(msg)
+            raise Exception(msg)
 
         is_error, error = self.errors_in_response(response)
         if is_error:
