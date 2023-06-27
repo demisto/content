@@ -3461,6 +3461,7 @@ script:
     - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
       isArray: false
       name: port
+      defaultValue : '80'
       required: false
     - auto: PREDEFINED
       defaultValue: disable
@@ -3801,6 +3802,7 @@ script:
       isArray: false
       name: enable_ssl
       defaultValue: enable
+      isHidden: true
     - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
       isArray: false
       name: port
