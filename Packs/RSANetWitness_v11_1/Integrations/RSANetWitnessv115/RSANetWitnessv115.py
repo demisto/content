@@ -827,12 +827,14 @@ def fetch_alerts_related_incident(client: Client, incident_id: str) -> list[dict
                 id_=incident_id,
                 page_size=None
             )
-            alerts.extend(response_body.get('items', []))
-            has_next = response_body.get('hasNext', False)
-            page_number += 1
-        except DemistoException:
+        except Exception:
             demisto.error("Error occurred while fetching alerts.")
             raise
+
+        alerts.extend(response_body.get('items', []))
+        has_next = response_body.get('hasNext', False)
+        page_number += 1
+
     return alerts
 
 
@@ -841,18 +843,17 @@ def fetch_incidents(client: Client, params: dict) -> list:
     incidents: List[Dict] = []
     new_ids = []
     for item in total_items:
-        inc_id = item.get('id')
+        inc_id = item['id']
         new_ids.append(inc_id)
         item['incident_url'] = client.get_incident_url(inc_id)
 
         # add to incident object an array of all related alerts
         if argToBoolean(params.get('import_alerts')):
-            item['alerts'] = fetch_alerts_related_incident(client, item.get('id'))
-            if alerts := item.get('alerts'):
-                if alerts_ids := [alert.get('id') for alert in alerts]:
-                    item['alerts_ids'] = alerts_ids
+            fetch_alerts = fetch_alerts_related_incident(client, inc_id)
+            item['alerts'] = fetch_alerts
+            item['alerts_ids'] = [alert['id'] for alert in fetch_alerts if fetch_alerts]
 
-        incident = {"name": f"RSA NetWitness {item.get('id')} - {item.get('title')}",
+        incident = {"name": f"RSA NetWitness {inc_id} - {item.get('title')}",
                     "occurred": item.get('created'),
                     "rawJSON": json.dumps(item)}
         # items arrived from last to first - change order
