@@ -216,13 +216,53 @@ def test_construct_filterby_expression():
     assert filterBy == "filterBy: [a,b,c]"
 
 
-def test_construct_key_expression():
+def test_construct_key_expression_in_str():
     from Traceable import Helper
 
     key_exp = Helper.construct_key_expression("key", "value")
     assert (
         key_exp
         == '{keyExpression: {key: "key"}, operator: IN, value: ["value"], type: ATTRIBUTE}'
+    )
+
+
+def test_construct_key_expression_in_int():
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", 1)
+    assert (
+        key_exp
+        == '{keyExpression: {key: "key"}, operator: IN, value: [1], type: ATTRIBUTE}'
+    )
+
+
+def test_construct_key_expression_in_str_list():
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", ["value1", "value2"])
+    assert (
+        key_exp
+        == '{keyExpression: {key: "key"}, operator: IN, value: ["value1","value2"], type: ATTRIBUTE}'
+    )
+
+
+def test_construct_key_expression_equals_str():
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", "value", operator="EQUALS")
+    assert (
+        key_exp
+        == '{keyExpression: {key: "key"}, operator: EQUALS, value: "value", type: ATTRIBUTE}'
+    )
+
+
+def test_construct_key_expression_equals_int():
+    from Traceable import Helper
+
+    key_exp = Helper.construct_key_expression("key", 5, operator="EQUALS")
+    assert (
+        key_exp
+        == '{keyExpression: {key: "key"}, operator: EQUALS, value: 5, type: ATTRIBUTE}'
     )
 
 

@@ -202,7 +202,6 @@ class Helper:
 
     @staticmethod
     def construct_key_expression(key, value, _type="ATTRIBUTE", operator="IN"):
-        # "filterBy: [{keyExpression: {key: \"environment\"}, operator: IN, value: [\"" + environment + "\"], type: ATTRIBUTE}]"
         if key is None:
             demisto.info("Key was None. Couldn't create Key Expression.")
             return ""
@@ -210,12 +209,12 @@ class Helper:
             _value = value
             if value is not None:
                 if type(value) == str:
-                    _value = '"' + value + '"'
+                    _value = f'"{value}"'
                 elif isinstance(value, (int, float)):
                     _value = value
                 elif type(value) == list and len(value) > 0:
                     if type(value[0]) == str:
-                        _value = '"' + '","'.join(value) + '"'
+                        _value = ",".join(['"{}"'.format(v) for v in value])
                     elif type(value[0]) == int or type(value[0]) == float:
                         _value = ",".join(value)
             else:
@@ -230,21 +229,26 @@ class Helper:
                 + '"}, operator: '
                 + operator
                 + ", value: ["
-                + _value
+                + str(_value)
                 + "], type: "
                 + _type
                 + "}"
             )
         elif operator == "EQUALS":
+            _value = None
+            if type(value) == str:
+                _value = f'"{value}"'
+            else:
+                _value = value
             return (
                 '{keyExpression: {key: "'
                 + key
                 + '"}, operator: '
                 + operator
                 + ", value: "
-                + value
+                + str(_value)
                 + ", type: "
-                + type
+                + _type
                 + "}"
             )
         else:
