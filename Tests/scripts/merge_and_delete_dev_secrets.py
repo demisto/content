@@ -13,7 +13,8 @@ LATEST_MERGED_PR = 3
 
 def get_latest_merged() -> list[dict]:
     """
-    Get the 500 latest merged PR's
+    Get the latest merged PRs
+    :return: A list of the last PRs from Github
     """
     latest_prs = []
     url = f'{CONTENT_REPO_URL}/pulls'
@@ -29,7 +30,14 @@ def get_latest_merged() -> list[dict]:
     return latest_prs
 
 
-def merge_dev_secrets(dev_secrets_to_merge, gsm_project_id: str, secret_conf: GoogleSecreteManagerModule):
+def merge_dev_secrets(dev_secrets_to_merge: list[dict], gsm_project_id: str, secret_conf: GoogleSecreteManagerModule) -> list[dict]:
+    """
+    Merges dev secrets to the main store
+    :param dev_secrets_to_merge: A list of dev secrets to add to the main store
+    :param gsm_project_id: The GCP project ID
+    :param secret_conf: The GSM object to handle GSM API operations
+    :return: the parsed arguments that were passed to the script
+    """
     merged_dev_secrets_names = []
     for dev_secret in dev_secrets_to_merge:
         dev_secret_name = dev_secret.get('secret_name')
@@ -54,16 +62,28 @@ def merge_dev_secrets(dev_secrets_to_merge, gsm_project_id: str, secret_conf: Go
     return merged_dev_secrets_names
 
 
-def get_dev_secrets_to_merge(latest_pr_merges, secrets):
+def get_dev_secrets_to_merge(latest_pr_merges: list[dict], dev_secrets: list[dict]) -> list[dict]:
+    """
+    Returns the dev secret that should be merged to the main store
+    :param latest_pr_merges: A list of the recent PRs that had been merged
+    :param dev_secrets: A list of dev secrets from our dev store
+    :return: the parsed arguments that were passed to the script
+    """
     secrets_to_update = []
     merged_branches = [p.get('head').get('ref') for p in latest_pr_merges]
-    for secret in secrets:
+    for secret in dev_secrets:
         if secret.get('labels', {}).get('branch') in merged_branches:
             secrets_to_update.append(secret)
     return secrets_to_update
 
 
 def delete_dev_secrets(secrets_to_delete: list[str], secret_conf: GoogleSecreteManagerModule, project_id: str):
+    """
+        Delets the merged dev secret from our dev store
+        :param secrets_to_delete: A list of secret names that need to be deleted
+        :param secret_conf: The GSM object to handle GSM API operations
+        :return: the parsed arguments that were passed to the script
+        """
     for secret_name in secrets_to_delete:
         # secret_conf.delete_secret(project_id, secret_name)
         print(f'would delete {secret_name}')
