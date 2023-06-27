@@ -30,8 +30,7 @@ def get_latest_merged() -> list[dict]:
     return latest_prs
 
 
-def merge_dev_secrets(dev_secrets_to_merge: list[dict], gsm_project_id: str, secret_conf: GoogleSecreteManagerModule) -> \
-list[dict]:
+def merge_dev_secrets(dev_secrets_to_merge: list[dict], gsm_project_id: str, secret_conf: GoogleSecreteManagerModule) -> list[dict]:
     """
     Merges dev secrets to the main store
     :param dev_secrets_to_merge: A list of dev secrets to add to the main store
