@@ -17,11 +17,6 @@ DEFAULT_TIMEOUT = 60 * 12
 SLEEP_WAIT_SECONDS = 10
 
 
-def get_investigation_url(gold_server_url: str, inv_id: str) -> str:
-    url_parts = gold_server_url.split('api-')
-    return url_parts[0] + url_parts[1][:-len('xsoar')] + f'WorkPlan/{inv_id}'
-
-
 def get_playbook_state(client: demisto_client, inv_id: str):
     # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
     try:
@@ -35,8 +30,8 @@ def get_playbook_state(client: demisto_client, inv_id: str):
     return investigation_playbook.get('state', PB_Status.NOT_SUPPORTED_VERSION)
 
 
-def wait_for_playbook_to_complete(investigation_id, client, gold_server_url):
-    investigation_url = get_investigation_url(gold_server_url, investigation_id)
+def wait_for_playbook_to_complete(investigation_id, client):
+    investigation_url = f'<Content Gold URL>/WorkPlan/{investigation_id}'
     print(f'Investigation URL: {investigation_url}')
 
     timeout = time.time() + DEFAULT_TIMEOUT
