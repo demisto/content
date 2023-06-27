@@ -3204,7 +3204,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
+        demisto.debug('Adding a test.')
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
