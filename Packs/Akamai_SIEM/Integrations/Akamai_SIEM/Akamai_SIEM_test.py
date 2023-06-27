@@ -100,7 +100,7 @@ class TestCommandsFunctions:
         assert expected_incidents == tested_incidents, "Incidents - No last time exsits and no available data"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and no available data"
 
-    @pytest.mark.get_events
+    @pytest.mark.get_events_fetched_ascending_order
     def test_get_events_command_1(self, client, datadir, requests_mock):
         """Test query response without security events - check only enrty context"""
         from Akamai_SIEM import get_events_command
@@ -114,7 +114,7 @@ class TestCommandsFunctions:
 
         assert entry_context_tested == {}, "Test query response without security events - check only enrty context"
 
-    @pytest.mark.get_events
+    @pytest.mark.get_events_fetched_ascending_order
     def test_get_events_command_2(self, client, datadir, requests_mock):
         """Test query response with security events - check only entry context"""
         from Akamai_SIEM import get_events_command

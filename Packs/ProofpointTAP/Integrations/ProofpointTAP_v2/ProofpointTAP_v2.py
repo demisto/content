@@ -524,7 +524,7 @@ def get_events_command(client, args):
     since_seconds = int(args.get("sinceSeconds")) if args.get("sinceSeconds") else None
     event_type_filter = args.get("eventTypes")
 
-    raw_events = client.get_events(interval, since_time, since_seconds, threat_type, threat_status, event_type_filter)
+    raw_events = client.get_events_fetched_ascending_order(interval, since_time, since_seconds, threat_type, threat_status, event_type_filter)
 
     return (
         tableToMarkdown("Proofpoint Events", raw_events),
@@ -568,9 +568,9 @@ def fetch_incidents(
         start_query_time = fetch_times[i]
         end_query_time = fetch_times[i + 1]
         demisto.debug(f'{start_query_time=}  {end_query_time=}')
-        raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
-                                       event_type_filter=event_type_filter,
-                                       threat_status=threat_status, threat_type=threat_type)
+        raw_events = client.get_events_fetched_ascending_order(interval=start_query_time + "/" + end_query_time,
+                                                               event_type_filter=event_type_filter,
+                                                               threat_status=threat_status, threat_type=threat_type)
 
         message_delivered = raw_events.get("messagesDelivered", [])
         demisto.debug(f'Fetched {len(message_delivered)} messagesDelivered events')

@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 import pytest
 import pytz
 from urllib.parse import parse_qs, urlparse
-from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsTimeFields, UrlSuffixes, LogTypes
+from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsStartTimeFields, UrlSuffixes, LogTypes
 
 
 BASE_URL = 'https://api.xdr.trendmicro.com'
@@ -598,35 +598,35 @@ class TestFetchEvents:
         (
             None,
             '3 years',
-            LastRunLogsTimeFields.WORKBENCH.value,
+            LastRunLogsStartTimeFields.WORKBENCH.value,
             '2023-01-01T15:20:45Z',
             ('2020-01-01T15:20:45Z', '2023-01-01T15:20:45Z')
         ),
         (
             None,
             '3 years',
-            LastRunLogsTimeFields.AUDIT.value,
+            LastRunLogsStartTimeFields.AUDIT.value,
             '2023-01-01T15:20:45Z',
             ('2022-07-05T15:20:45Z', '2023-01-01T15:20:45Z')
         ),
         (
             None,
             '3 years ago',
-            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
+            LastRunLogsStartTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
             ('2020-01-01T15:20:45Z', '2020-01-02T15:20:45Z')
         ),
         (
             None,
             '1 month ago',
-            LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
+            LastRunLogsStartTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
             ('2022-12-01T15:20:45Z', '2022-12-02T15:20:45Z')
         ),
         (
             '2023-01-01T15:00:00Z',
             '1 month ago',
-            LastRunLogsTimeFields.SEARCH_DETECTIONS.value,
+            LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
             '2023-01-01T15:20:45Z',
             ('2023-01-01T15:00:00Z', '2023-01-01T15:20:45Z')
         )
