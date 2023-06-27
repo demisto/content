@@ -30,13 +30,17 @@ configuration:
   required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  defaultvalue: 7 days
+  defaultvalue: 1 days
   type: 0
   required: false
 - name: max_fetch
   required: false
   type: 0
   defaultvalue: '100'
+- name: span_fetch_threadpool
+  required: false
+  type: 0
+  defaultvalue: '10'
 - display: "Comma Separated Environment List To Process"
   name: environment
   type: 12

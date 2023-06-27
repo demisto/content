@@ -20,6 +20,7 @@ urllib3.disable_warnings()
 s = requests.Session()
 retries = Retry(
     total=30,
+    other=10,
     connect=10,
     read=10,
     backoff_factor=1,
@@ -289,6 +290,7 @@ class Client(BaseClient):
         self.ipAbuseVelocityList = None
         self.limit = None
         self.proxy = proxy
+        self.span_fetch_threadpool = 10
         self.environments = None
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth, timeout)
 
@@ -304,6 +306,9 @@ class Client(BaseClient):
     def set_ip_abuse_velocity_list(self, ipAbuseVelocityList):
         self.ipAbuseVelocityList = ipAbuseVelocityList
 
+    def set_span_fetch_threadpool(self, span_fetch_threadpool):
+        self.span_fetch_threadpool = span_fetch_threadpool
+
     def set_limit(self, limit):
         self.limit = limit
 
@@ -311,12 +316,15 @@ class Client(BaseClient):
         self.environments = environments
 
     def graphql_query(self, query, params={}, verify=False):
+        demisto.debug("Entered from graphql_query")
+        demisto.debug("Running request...")
         response = requests.post(
             self.url,
             json={"query": query, "variables": {}},
             headers=self.headers,
             verify=verify,
         )
+        demisto.debug("Completed request...")
 
         if response is not None and response.status_code != 200:
             if response.text is not None:
@@ -336,6 +344,7 @@ class Client(BaseClient):
 
         if response is not None and response.text is not None:
             response_obj = json.loads(response.text)
+            demisto.debug("Returning from graphql_query")
             return response_obj
 
         raise Exception(f"Something went wrong: {json.dumps(response, indent=2)}")
@@ -447,7 +456,7 @@ class Client(BaseClient):
         events = []
         first = True
         future_list = []
-        with ThreadPoolExecutor(max_workers=100) as executor:
+        with ThreadPoolExecutor(max_workers=self.span_fetch_threadpool) as executor:
             for domain_event in results:
                 if Helper.is_error(domain_event, "traceId", "value"):
                     demisto.info(
@@ -474,6 +483,7 @@ class Client(BaseClient):
                     traceid=trace_id,
                     spanid=span_id,
                 )
+                demisto.info("Submitted job successfully.")
                 future_list.append((domain_event, future))
                 demisto.info("Completed thread for span retrieval")
 
@@ -543,6 +553,20 @@ def test_module(client: Client) -> str:
     return message
 
 
+def get_severity_string_to_id(severity_string):
+    _severity_string = severity_string.lower()
+    if _severity_string == "critical":
+        return 4
+    elif _severity_string == "high":
+        return 3
+    elif _severity_string == "medium":
+        return 2
+    elif _severity_string == "low":
+        return 1
+    else:
+        return 0
+
+
 def fetch_incidents(client: Client, last_run, first_fetch_time):
     last_fetch = last_run.get("last_fetch")
 
@@ -555,8 +579,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     latest_created_time = last_fetch
     incidents = []
     items = client.get_threat_events(last_fetch, datetime.now())
-    demisto.info("Retrieved " + str(len(items)) + " records.")
-    demisto.debug("First Incident: " + json.dumps(items[0], indent=3))
+    demisto.info(f"Retrieved {len(items)} records.")
+    demisto.debug(f"First Incident: {json.dumps(items[0], indent=3)}")
     for item in items:
         incident_created_time = datetime.fromtimestamp(
             item["timestamp"]["value"] / 1000
@@ -567,7 +591,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             "country": item["country"],
             "sourceip": item["sourceip"],
             "riskscore": item["riskscore"],
-            "severity": item["severity"],
+            "severity": get_severity_string_to_id(item["severity"]),
             "occurred": incident_created_time.strftime(DATE_FORMAT),
             "rawJSON": json.dumps(item),
         }
@@ -607,6 +631,7 @@ def main() -> None:
         ipReputationLevelList = demisto.params().get("ipReputationLevel")
         ipAbuseVelocityList = demisto.params().get("ipAbuseVelocity")
         limit = int(demisto.params().get("max_fetch", 100))
+        span_fetch_threadpool = int(demisto.params().get("span_fetch_threadpool", 10))
 
         _env = demisto.params().get("environment")
 
@@ -627,6 +652,7 @@ def main() -> None:
         client.set_ip_reputation_level_list(ipReputationLevelList)
         client.set_ip_abuse_velocity_list(ipAbuseVelocityList)
         client.set_environments(environments)
+        client.set_span_fetch_threadpool(span_fetch_threadpool)
         client.set_limit(limit)
 
         if demisto.command() == "test-module":
