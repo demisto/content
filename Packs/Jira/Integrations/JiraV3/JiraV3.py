@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from pydoc import cli
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Callable, Tuple
@@ -2212,7 +2213,7 @@ def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
     """
     query = args.get('query', '')
     jql_query = f'{query} ORDER BY created ASC' if query else 'ORDER BY created ASC'
-    query_params = create_query_params(jql_query=jql_query)
+    query_params = create_query_params(jql_query=jql_query, max_results=1)
     res = client.run_query(query_params=query_params)
     if not (issues := res.get('issues', [])):
         return CommandResults(readable_output='No issues found to retrieve the ID offset', raw_response=res)
@@ -2962,11 +2963,28 @@ def test_module() -> str:
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    raise DemistoException(('In order to authorize the instance, first run the command `!jira-oauth-start`,'
-                            ' and complete the process in the URL that is returned. You will then be redirected'
-                            ' to the callback URL . Copy the authorization code found in the query parameter'
-                            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
-                            ' the process.'))
+    raise DemistoException('In order to authorize the instance, first run the command `!jira-oauth-start`,'
+                           ' and complete the process in the URL that is returned. You will then be redirected'
+                           ' to the callback URL . Copy the authorization code found in the query parameter'
+                           ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
+                           ' the process.')
+
+
+def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> int | None:
+    """Returns the smallest issue ID with respect to the query argument.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        query (str): The query that will be used to retrieve the first issue ID in it. 
+
+    Returns:
+        int | None: The smallest issue ID with respect to the query argument, and None if the query
+        returns an empty list.
+    """
+    jql_query = f'{query} ORDER BY created ASC' if query else 'ORDER BY created ASC'
+    query_params = create_query_params(jql_query=jql_query, max_results=1)
+    res = client.run_query(query_params=query_params)
+    return issues[0].get('id', '') if (issues := res.get('issues', [])) else None
 
 
 # Fetch Incidents
@@ -2978,7 +2996,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
 
     Args:
         client (JiraBaseClient): The Jira client.
-        issue_field_to_fetch_from (str): The issue field to fetch from, id or created time.
+        issue_field_to_fetch_from (str): The issue field to fetch from, id, created time, or updated time.
         fetch_query (str): The fetch query configured.
         id_offset (int): The id from which to start the fetching from if we are fetching using id.
         fetch_attachments (bool): Whether to fetch the attachments or not.
@@ -2999,11 +3017,17 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     last_run = demisto.getLastRun()
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
     # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
-    # incidents. Since when we get the list from the last run, and all the values in the list are strings, and we may need them
+    # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
     # we convert the list to hold integer values
     last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get('issue_ids', []))
     last_fetch_id = last_run.get('id', id_offset)
+    if last_fetch_id in [0, '0'] and issue_field_to_fetch_from == 'id':
+        # If last_fetch_id is equal to zero, and the user wants to fetch using the issue ID, then we automatically
+        # acquire the smallest issue ID with respect to the query
+        last_fetch_id = get_smallest_id_offset_for_query(client=client, query=fetch_query) or last_fetch_id
+        demisto.debug(f'The smallest ID offset with respect to the fetch query is {last_fetch_id}' if last_fetch_id else
+                      'No smallest ID found since the fetch query returns 0 results')
     new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
     new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
     incidents: List[Dict[str, Any]] = []
@@ -3021,24 +3045,34 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
     new_issue_ids: List[int] = []
     demisto.debug(f'Running the query with the following parameters {query_params}')
-    if query_res := client.run_query(query_params=query_params):
-        for issue in query_res.get('issues', []):
-            issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
-            demisto.debug(f'Creating an incident for Jira issue with ID: {str(issue_id)}')
-            new_issue_ids.append(issue_id)
-            last_fetch_id = issue_id
-            new_fetch_created_time = convert_string_date_to_specific_format(
-                string_date=demisto.get(issue, 'fields.created') or '')
-            new_fetch_updated_time = convert_string_date_to_specific_format(
-                string_date=demisto.get(issue, 'fields.updated') or '')
-            parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
-            incidents.append(create_incident_from_issue(
-                client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
-                mirror_direction=mirror_direction,
-                comment_tag_from_jira=comment_tag_from_jira,
-                comment_tag_to_jira=comment_tag_to_jira,
-                attachment_tag_from_jira=attachment_tag_from_jira,
-                attachment_tag_to_jira=attachment_tag_to_jira))
+    try:
+        if query_res := client.run_query(query_params=query_params):
+            for issue in query_res.get('issues', []):
+                issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
+                demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
+                new_issue_ids.append(issue_id)
+                last_fetch_id = issue_id
+                new_fetch_created_time = convert_string_date_to_specific_format(
+                    string_date=demisto.get(issue, 'fields.created') or '')
+                new_fetch_updated_time = convert_string_date_to_specific_format(
+                    string_date=demisto.get(issue, 'fields.updated') or '')
+                parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
+                incidents.append(create_incident_from_issue(
+                    client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
+                    mirror_direction=mirror_direction,
+                    comment_tag_from_jira=comment_tag_from_jira,
+                    comment_tag_to_jira=comment_tag_to_jira,
+                    attachment_tag_from_jira=attachment_tag_from_jira,
+                    attachment_tag_to_jira=attachment_tag_to_jira))
+    except Exception as e:
+        if 'Issue does not exist' in str(e) and issue_field_to_fetch_from == 'id' and str(id_offset) == str(last_fetch_id):
+            smallest_issue_id = get_smallest_id_offset_for_query(client=client, query=fetch_query)
+            raise DemistoException(
+                f'The smallest issue ID is {smallest_issue_id}'
+                if smallest_issue_id
+                else 'The id that was configured does not exist in the Jira instance, '
+                'and the fetch query returned 0 results'
+            ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
     if (

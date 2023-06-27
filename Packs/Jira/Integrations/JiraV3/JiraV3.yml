@@ -459,13 +459,13 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The fetch query to use.
+      description: The query that will be used to retrieve the first issue ID in it.
       isArray: false
       name: query
       required: false
       secret: false
     deprecated: false
-    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira instance. (you can use its result as the initial id when fetching incidents by the issue id field).
+    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira instance, or the first issue with respect to the given query argument if given. You can use its result as the initial id when fetching incidents by the issue id field.
     execution: false
     name: jira-get-id-offset
     outputs:

@@ -607,9 +607,26 @@ class TestJiraGetIDOffsetCommand:
         assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
         assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
 
+    def test_get_id_offset_command_with_custom_query_argument(self, mocker):
+        """
+        Given:
+            - A Jira client
+        When
+            - Calling the get_id_offset_command, with the argument `query` in order to retrieve the first issue id with respect
+            to the given query.
+        Then
+            - Validate that the correct query is being sent with the API call.
+        """
+        from JiraV3 import get_id_offset_command
+        client = jira_base_client_mock()
+        raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
+        run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
+        get_id_offset_command(client=client, args={'query': 'project = "Dummy Project"'})
+        assert run_query_mocker.call_args[1].get('query_params', {}).get(
+            'jql') == 'project = "Dummy Project" ORDER BY created ASC'
 
-class TestJiraEditCommentCommand:
-    def test_get_id_offset_command(self, mocker):
+
+    def test_edit_comment_command(self, mocker):
         """
         Given:
             - A Jira client
@@ -634,7 +651,7 @@ class TestJiraListIssueFieldsCommand:
     @ pytest.mark.parametrize('pagination_args', [
         ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
     ])
-    def test_get_id_offset_command(self, mocker, pagination_args):
+    def test_list_fields_command(self, mocker, pagination_args):
         """
         Given:
             - A Jira client
