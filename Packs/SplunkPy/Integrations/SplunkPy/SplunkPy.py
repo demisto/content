@@ -10,6 +10,8 @@ import pytz
 import requests
 from splunklib import client
 from splunklib import results
+from splunklib import client
+from splunklib import results
 from splunklib.data import Record
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -2635,7 +2637,7 @@ def main():  # pragma: no cover
         connection_args['password'] = password
         connection_args['autologin'] = True
 
-    if (proxy or not VERIFY_CERTIFICATE) and proxy:
+    if proxy:
         handle_proxy()
 
     connection_args['handler'] = requests_handler
