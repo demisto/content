@@ -224,11 +224,6 @@ STATUS_NUM_TO_TEXT = {20: 'New',
                       30: 'In Progress',
                       40: 'Closed'}
 
-# STATUS_TEXT_TO_NUM_IDP = {'new': "20",
-#                           'reopened': "25",
-#                           'in_progress': "30",
-#                           'closed': "40"}
-
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
 DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
@@ -2076,8 +2071,6 @@ def get_remote_data_command(args: Dict[str, Any]):
 
         if not updated_object:
             demisto.debug(f'No delta was found for detection {remote_incident_id}.')
-        demisto.info(f"{updated_object=}")
-        demisto.info(f"{entries=}")
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
     except Exception as e:
@@ -2305,7 +2298,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
             elif incident_type == IncidentType.IDP_DETECTION:
                 result = update_remote_idp_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
-                    demisto.debug(f'Detection updated successfully. Result: {result}')
+                    demisto.debug(f'IDP Detection updated successfully. Result: {result}')
 
             else:
                 raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
