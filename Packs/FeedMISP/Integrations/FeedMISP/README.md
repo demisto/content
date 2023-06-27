@@ -119,7 +119,7 @@ Gets indicators from the feed.
 Retrieved 7 indicators.
 
 ## Additional Information
-If you experience a timeout error while fetching indicators, the following query configurations may be helpful for you.
+If you experience a timeout error while fetching indicators, the following query configuration may be helpful for you.
 
 You can configure the feed to return results from the last 24 hours as shown below:
 ```json
@@ -132,20 +132,6 @@ You can configure the feed to return results from the last 24 hours as shown bel
         "OR": []
     },
     "last":"24h"
-}
-```
-
-Additionally, you can also configure the feed to return a limited amount of results using the following:
-```json
-{
-    "returnFormat": "json",
-    "type": {
-        "OR": []
-    },
-    "tags": {
-        "OR": []
-    },
-    "limit":250
 }
 ```
 
