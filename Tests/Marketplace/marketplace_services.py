@@ -2511,6 +2511,9 @@ class Pack(object):
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
 
+            if 'xsoar' in self.marketplaces:
+                self.marketplaces.append('xsoar_saas')
+
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
 
