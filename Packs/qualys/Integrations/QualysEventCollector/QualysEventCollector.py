@@ -272,7 +272,7 @@ def get_activity_logs_events(client, last_run, max_fetch) -> tuple[Optional[list
     Returns:
         Logs activity events, Next run datetime
     """
-    demisto.debug(f'Starting to fetch activity logs events: {last_run=}')
+    demisto.debug(f'Starting to fetch activity logs events: last_run={last_run}')
 
     activity_logs = client.get_user_activity_logs(since_datetime=last_run, max_fetch=max_fetch)
     activity_logs_events = csv2json(get_partial_response(activity_logs, BEGIN_RESPONSE_LOGS_CSV,
