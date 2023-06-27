@@ -1,8 +1,8 @@
 commonfields:
-  id: Jira V3
+  id: Jira V3 Test
   version: -1
-name: Jira V3
-display: Atlassian Jira v3
+name: Jira V3 Test
+display: Atlassian Jira v3 Test
 category: Case Management
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 configuration:
@@ -457,8 +457,15 @@ script:
     - contextPath: Ticket.LastUpdate
       description: The last time the ticket was updated.
       type: Date
-  - deprecated: false
-    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
+  - arguments:
+    - default: false
+      description: The fetch query to use.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the ID offset, which is the id of the first issue that was created in the current Jira instance. (you can use its result as the initial id when fetching incidents by the issue id field).
     execution: false
     name: jira-get-id-offset
     outputs:

@@ -2210,7 +2210,8 @@ def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    jql_query = 'ORDER BY created ASC'
+    query = args.get('query', '')
+    jql_query = f'{query} ORDER BY created ASC' if query else 'ORDER BY created ASC'
     query_params = create_query_params(jql_query=jql_query)
     res = client.run_query(query_params=query_params)
     if not (issues := res.get('issues', [])):
