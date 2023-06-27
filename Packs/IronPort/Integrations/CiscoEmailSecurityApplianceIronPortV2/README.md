@@ -18,6 +18,7 @@ This integration was integrated and tested with version 14.0 of Cisco Email Secu
     | Filter value | The message filter value by which to fetch results. | False |
     | Recipient filter operator | The message recipient filter operator by which to fetch results. | False |
     | Recipient filter value | The message recipient filter value by which to fetch results. | False |
+    | Time to live for the JWT connection token (in minutes). | Default is 30. This value is used to determine if a new session JWT token should be created.  Keep it highest as possible and decrees if you get inconsistent Authorization Errors | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
