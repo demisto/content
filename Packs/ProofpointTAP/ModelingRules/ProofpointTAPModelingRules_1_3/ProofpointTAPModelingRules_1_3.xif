@@ -1,6 +1,6 @@
 [MODEL: dataset=proofpoint_tap_raw]
 alter
-    xdm.email.cc = arraycreate(ccAddresses),
+    xdm.email.cc = arraymap(json_extract_array(ccAddresses, "$."), trim("@element", "\"")),
     xdm.email.sender = fromAddress,
     xdm.event.id = GUID,
     xdm.email.message_id = messageID,
