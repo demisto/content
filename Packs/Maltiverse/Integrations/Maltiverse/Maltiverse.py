@@ -503,7 +503,6 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 def main():
     params = demisto.params()
     server_url = params.get('server_url') if params.get('server_url') else SERVER_URL
-
     reliability = params.get('integrationReliability', 'C - Fairly reliable')
 
     if DBotScoreReliability.is_valid_type(reliability):
@@ -514,7 +513,7 @@ def main():
     client = Client(url=server_url,
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
-                    auth_token=params.get('api_key', None),
+                    auth_token=params.get('credentials_api_key', {}).get('password') or params.get('api_key', None),
                     reliability=reliability)
 
     commands = {
