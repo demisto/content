@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 """ IMPORTS """
 
 import urllib3
-from typing import Dict
 from string import Template
 from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
@@ -32,6 +31,14 @@ s.mount("https://", HTTPAdapter(max_retries=retries))
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+
+XSOAR_SEVERITY_BY_TRACEABLE_SEVERITY = {
+    "LOW": IncidentSeverity.LOW,
+    "MEDIUM": IncidentSeverity.MEDIUM,
+    "HIGH": IncidentSeverity.HIGH,
+    "CRITICAL": IncidentSeverity.CRITICAL,
+}
+
 
 get_threat_events_query = """{
   explore(
@@ -210,13 +217,13 @@ class Helper:
             if value is not None:
                 if type(value) == str:
                     _value = f'"{value}"'
-                elif isinstance(value, (int, float)):
+                elif isinstance(value, int | float):
                     _value = value
                 elif type(value) == list and len(value) > 0:
                     if type(value[0]) == str:
-                        _value = ",".join(['"{}"'.format(v) for v in value])
+                        _value = ",".join([f'"{v}"' for v in value])
                     elif type(value[0]) == int or type(value[0]) == float:
-                        _value = ",".join(["{}".format(str(v)) for v in value])
+                        _value = ",".join([f"{str(v)}" for v in value])
 
             else:
                 demisto.info(
@@ -237,10 +244,7 @@ class Helper:
             )
         elif operator == "EQUALS":
             _value = None
-            if type(value) == str:
-                _value = f'"{value}"'
-            else:
-                _value = value
+            _value = f'"{value}"' if type(value) == str else value
             return (
                 '{keyExpression: {key: "'
                 + key
@@ -278,7 +282,7 @@ class Client(BaseClient):
         base_url,
         verify=True,
         proxy=False,
-        ok_codes=tuple(),
+        ok_codes=(),
         headers=None,
         auth=None,
         timeout=REQUESTS_TIMEOUT,
@@ -336,7 +340,7 @@ class Client(BaseClient):
             and response.status_code != 200
             and response.text is not None
         ):
-            msg = f"Error occurred: {response.text} | Status Code: {str(response.status_code)}"
+            msg = f"Error occurred: {response.text} | Status Code: {(response.status_code)}"
             demisto.error(msg)
             raise Exception(msg)
 
@@ -556,28 +560,15 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_severity_string_to_id(severity_string):
-    _severity_string = severity_string.lower()
-    if _severity_string == "critical":
-        return 4
-    elif _severity_string == "high":
-        return 3
-    elif _severity_string == "medium":
-        return 2
-    elif _severity_string == "low":
-        return 1
-    else:
-        return 0
-
-
 def fetch_incidents(client: Client, last_run, first_fetch_time):
     last_fetch = last_run.get("last_fetch")
 
     # Handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time)
-    else:
-        last_fetch = dateparser.parse(last_fetch)
+    last_fetch = (
+        dateparser.parse(first_fetch_time)
+        if last_fetch is None
+        else dateparser.parse(last_fetch)
+    )
 
     latest_created_time = last_fetch
     incidents = []
@@ -594,8 +585,9 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             "country": item["country"],
             "sourceip": item["sourceip"],
             "riskscore": item["riskscore"],
-            "severity": get_severity_string_to_id(item["severity"]),
-            "occurred": incident_created_time.strftime(DATE_FORMAT),
+            "severity": XSOAR_SEVERITY_BY_TRACEABLE_SEVERITY.get(
+                item["severity"], IncidentSeverity.UNKNOWN
+            ),
             "rawJSON": json.dumps(item),
         }
 
@@ -627,7 +619,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        headers: Dict = {}
+        headers: dict = {}
         first_fetch_time = demisto.params().get("first_fetch", "3 days").strip()
         securityScoreCategoryList = demisto.params().get("securityScoreCategory")
         threatCategoryList = demisto.params().get("threatCategory")

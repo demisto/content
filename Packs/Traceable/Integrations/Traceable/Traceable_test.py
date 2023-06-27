@@ -184,6 +184,7 @@ def response_handler(*args, **kwargs):
     elif "spans(" in data:
         r.text = sample_span_result
         return r
+    return None
 
 
 def test_fetch_incidents(mocker):
@@ -360,7 +361,8 @@ def test_errors_in_response(caplog, mocker):
     result = None
     is_error, result = client.errors_in_response(resp)
     caplog.clear()
-    assert is_error is True and result == "error string"
+    assert is_error is True
+    assert result == "error string"
 
 
 def test_get_span_for_trace_id(caplog, mocker):
@@ -497,7 +499,6 @@ def test_client_creation_no_headers():
 
 def test_graphql_query_non_200(mocker, caplog, capfd):
     from Traceable import Client
-    import json
 
     resp = Response()
     resp.status_code = 400
