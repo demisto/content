@@ -9,12 +9,20 @@ configuration:
   type: 0
 - display: Panorama API Key
   name: key
-  required: true
   type: 4
+  hidden: true
+- name: key_creds
+  type: 9
+  displaypassword: Panorama API Key
+  hiddenusername: true
 - display: BPA Access Token
   name: token
-  required: true
   type: 4
+  hidden: true
+- name: token_creds
+  type: 9
+  displaypassword: BPA Access Token
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -23,8 +31,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama
-  configurations and compares them to the best practices.
+
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 display: Palo Alto Networks BPA
 name: BPA
 script:
@@ -93,8 +101,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to download the Panorama report. Can be "true" or "false".
-        Default is "false".
+      description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
       isArray: false
       name: generate_zip_bundle
       predefined:
@@ -127,8 +134,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to exclude passed checks. Can be "true" or "false". Default
-        is "false".
+      description: Whether to exclude passed checks. Can be "true" or "false". Default is "false".
       isArray: false
       name: exclude_passed_checks
       predefined:
@@ -180,7 +186,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
