@@ -1,6 +1,6 @@
 id: Recorded Future List Management
 version: -1
-description: "Manage, view and edit your lists in Recorded Future"
+description: Manage, view and edit your lists in Recorded Future
 name: Recorded Future List Management
 starttaskid: "0"
 tasks:
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7dd0f390-4eb0-415d-8c87-937e27aaf970
+    taskid: 91d36804-06a2-4828-8d82-77f91d060805
     type: regular
     task:
-      id: 7dd0f390-4eb0-415d-8c87-937e27aaf970
+      id: 91d36804-06a2-4828-8d82-77f91d060805
       version: -1
       name: Search List
       description: Search for lists in Recorded Future
@@ -53,6 +53,8 @@ tasks:
     scriptarguments:
       ignore-outputs:
         simple: "false"
+      limit:
+        simple: "100"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -226,10 +228,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 78557966-74fc-494b-8c20-be5d727b59fb
+    taskid: da0fedcd-8f14-4880-83bf-add93288f372
     type: regular
     task:
-      id: 78557966-74fc-494b-8c20-be5d727b59fb
+      id: da0fedcd-8f14-4880-83bf-add93288f372
       version: -1
       name: Add Entities
       description: Add entities to a list, separate entities by commas. "NOTE:" if
@@ -239,7 +241,7 @@ tasks:
       iscommand: true
       brand: RecordedFutureLists
     scriptarguments:
-      entity_ids:
+      freetext_names:
         simple: ${Add, Remove, View?.Answers.2}
       list_id:
         simple: ${ListID}
@@ -261,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 38d61f6a-c562-479b-84aa-0ad9f202b1da
+    taskid: 81b77ea8-6aca-4fd3-8207-a3d7e0eaa127
     type: regular
     task:
-      id: 38d61f6a-c562-479b-84aa-0ad9f202b1da
+      id: 81b77ea8-6aca-4fd3-8207-a3d7e0eaa127
       version: -1
       name: Remove Entities
       description: Remove entities from a list, separate entities by commas. "NOTE:"
@@ -274,7 +276,7 @@ tasks:
       iscommand: true
       brand: RecordedFutureLists
     scriptarguments:
-      entity_ids:
+      freetext_names:
         simple: ${Add, Remove, View?.Answers.2}
       list_id:
         simple: ${ListID}
@@ -296,10 +298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 49a8d9b3-1a5b-4af1-8aae-055d1e871edc
+    taskid: 7c6d84c0-cad7-4425-8979-9165e6e29656
     type: regular
     task:
-      id: 49a8d9b3-1a5b-4af1-8aae-055d1e871edc
+      id: 7c6d84c0-cad7-4425-8979-9165e6e29656
       version: -1
       name: View Entities
       description: Get the entities that are currently in given lists
