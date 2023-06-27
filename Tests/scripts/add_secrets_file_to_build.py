@@ -14,7 +14,6 @@ from pathlib import Path
 
 
 class FilterLabels(Enum):
-    DEV = 'dev'
     IGNORE_SECRET = 'ignore'
     SECRET_MERGE_TIME = 'merge'
     PACK_ID = 'pack_id'

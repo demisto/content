@@ -110,6 +110,26 @@ class GoogleSecreteManagerModule:
         name = self.client.secret_path(project_id, secret_id)
         self.client.delete_secret(request={"name": name})
 
+    def create_secret(self, project_id: str, secret_id: str, labels=None) -> None:
+        """
+        Creates a secret in GSM
+        :param project_id: The project ID for GCP
+        :param secret_id: The name of the secret in GSM
+        :param labels: A dict with the labels we want to add to th secret
+
+        """
+
+        if labels is None:
+            labels = {}
+        parent = f"projects/{project_id}"
+        self.client.create_secret(
+            request={
+                "parent": parent,
+                "secret_id": secret_id,
+                "secret": {"replication": {"automatic": {}}, "labels": labels},
+            }
+        )
+
     @staticmethod
     def init_secret_manager_client(service_account: str) -> secretmanager.SecretManagerServiceClient:
         """
