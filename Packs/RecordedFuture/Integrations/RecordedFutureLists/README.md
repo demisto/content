@@ -1,5 +1,5 @@
 Search and manage watchlists in Recorded Future
-This integration was integrated and tested with version xx of RecordedFutureLists
+This integration was integrated and tested with version 1.1 of RecordedFutureLists
 
 ## Configure Recorded Future - Lists on Cortex XSOAR
 
@@ -55,6 +55,12 @@ Search for lists in Recorded Future
 
 ***
 Add entities to a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
+When adding using IDs use the following for Recorded Future light entities:
++ IPaddress: "ip:x.x.x.x"
++ Domain: "idn:example.xyz"
++ Hash: "hash:examplehashvalue"
++ Email: "email:example@example.xyz"
++ Url: "url:https://example.xyz"
 
 #### Base Command
 
@@ -83,6 +89,12 @@ Add entities to a list, separate entities by commas. "NOTE:" if entity type is s
 
 ***
 Remove entities from a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
+When adding using IDs use the following for Recorded Future light entities:
++ IPaddress: "ip:x.x.x.x"
++ Domain: "idn:example.xyz"
++ Hash: "hash:examplehashvalue"
++ Email: "email:example@example.xyz"
++ Url: "url:https://example.xyz"
 
 #### Base Command
 

@@ -13,6 +13,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -77,6 +78,7 @@ tasks:
       version: -1
       name: List Options
       type: collection
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -175,6 +177,7 @@ tasks:
       version: -1
       name: Add, Remove, View
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
