@@ -2175,7 +2175,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 
 def splunk_submit_event_hec_command():
-    hec_token = demisto.params().get('hec_token')
+    hec_token = demisto.params().get('credentials_hec_token').get('pasword') or demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
         raise Exception('The HEC URL was not provided.')

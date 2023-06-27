@@ -131,6 +131,12 @@ configuration:
   name: hec_token
   required: false
   type: 4
+  hidden: true
+- displaypassword: HEC Token (HTTP Event Collector)
+  name:  credentials_hec_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: 'HEC URL (e.g: https://localhost:8088).'
   name: hec_url
   required: false
@@ -709,7 +715,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.49073
+  dockerimage: demisto/splunksdk:1.0.0.63775
   feed: false
   isfetch: true
   longRunning: false
