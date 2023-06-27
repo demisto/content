@@ -194,7 +194,8 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        ful_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/providers/Microsoft.KeyVault/'
+        ful_url = urljoin(client.azure_cloud.endpoints.resource_manager,
+                          f'/subscriptions/{subscription_id}/providers/Microsoft.KeyVault/'
                           f'vaults?$top={limit}')
         response = self.http_request(
             'GET', full_url=ful_url, ok_codes=[200])
