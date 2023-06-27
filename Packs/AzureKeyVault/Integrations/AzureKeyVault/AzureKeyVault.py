@@ -66,7 +66,7 @@ class KeyVaultClient:
         resource = resource or self.get_management_resource()
         if not params:
             params = {}
-        if 'api-version' not in params:
+        if 'api-version' not in params and 'api-version' not in full_url:
             params['api-version'] = '2022-07-01' if resource == self.get_management_resource() else '7.2'
         res = self.ms_client.http_request(method=method,
                                           url_suffix=url_suffix,
@@ -142,7 +142,7 @@ class KeyVaultClient:
 
         data = {"location": location, "properties": properties}
 
-        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourceGroups/'
+        full_url = urljoin(self.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourceGroups/'
                            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}')
 
         return self.http_request('PUT', full_url=full_url, data=data, ok_codes=[200, 201])
@@ -160,7 +160,7 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourceGroups/'
+        full_url = urljoin(self.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourceGroups/'
                            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}')
 
         return self.http_request('DELETE', full_url=full_url, ok_codes=[200, 204])
@@ -178,7 +178,7 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourceGroups/'
+        full_url = urljoin(self.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourceGroups/'
                            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/{vault_name}')
         return self.http_request('GET', full_url=full_url, ok_codes=[200])
 
@@ -194,7 +194,7 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        ful_url = urljoin(client.azure_cloud.endpoints.resource_manager,
+        ful_url = urljoin(self.azure_cloud.endpoints.resource_manager,
                           f'/subscriptions/{subscription_id}/providers/Microsoft.KeyVault/'
                           f'vaults?$top={limit}')
         response = self.http_request(
@@ -226,7 +226,7 @@ class KeyVaultClient:
             keys, secrets, certificates, storage)
         data = {"properties": {"accessPolicies": [
             {"objectId": object_id, "permissions": permissions, "tenantId": self.ms_client.tenant_id}]}}
-        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourceGroups/'
+        full_url = urljoin(self.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourceGroups/'
                            f'{resource_group_name}/providers/Microsoft.KeyVault/vaults/'
                            f'{vault_name}/accessPolicies/{operation_kind}')
 
@@ -406,10 +406,11 @@ class KeyVaultClient:
         Returns:
             Dict[str, Any]: API response from Azure.
         """
-        url = urljoin(client.azure_cloud.endpoints.resource_manager, '/subscriptions?')
+        url = urljoin(self.azure_cloud.endpoints.resource_manager, '/subscriptions?')
         response = self.http_request('GET', full_url=url, resource=self.get_management_resource(),
                                      params={'api-version': '2020-01-01'})
-        return self.get_entities_independent_of_pages(first_page=response, resource=self.get_management_resource())
+        return self.get_entities_independent_of_pages(first_page=response, limit=DEFAULT_LIMIT, offset=DEFAULT_OFFSET,
+                                                      resource=self.get_management_resource())
 
     def list_resource_groups_request(self, subscription_id: str, tag: Dict[str, str], limit: int) -> List[dict]:
         """
@@ -423,13 +424,14 @@ class KeyVaultClient:
         Returns:
             List[dict]: API response from Azure.
         """
-        full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourcegroups?')
+        full_url = urljoin(self.azure_cloud.endpoints.resource_manager, f'/subscriptions/{subscription_id}/resourcegroups?')
         filter_by_tag = azure_tag_formatter(tag) if tag else None
 
         response = self.http_request('GET', full_url=full_url, resource=self.get_management_resource(),
                                      params={'$filter': filter_by_tag, '$top': limit,
                                              'api-version': '2021-04-01'}, ok_codes=[200])
-        return self.get_entities_independent_of_pages(first_page=response, limit=limit, resource=self.get_management_resource())
+        return self.get_entities_independent_of_pages(first_page=response, limit=limit, offset=DEFAULT_OFFSET,
+                                                      resource=self.get_management_resource())
 
     ''' INTEGRATION HELPER METHODS  '''
 
@@ -547,8 +549,6 @@ class KeyVaultClient:
         next_page_url = first_page.get('nextLink')
         # more entities to get
         while next_page_url and len(entities) < offset + limit:
-            # to avoid duplication in 'api-version' parameter.
-            next_page_url = next_page_url.replace('api-version', '')
             response = self.http_request(
                 'GET', full_url=next_page_url, resource=resource)
 
