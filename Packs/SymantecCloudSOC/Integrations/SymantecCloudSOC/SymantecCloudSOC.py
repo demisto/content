@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -29,9 +29,9 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def get_events_request(self, max_fetch: Optional[int], app: Optional[str] = None, subtype: Optional[str] = None,
-                           next_url: Optional[str] = None, created_timestamp: str = None
-                           ) -> Tuple[list, Optional[str]]:
+    def get_events_request(self, max_fetch: int | None, app: str | None = None, subtype: str | None = None,
+                           next_url: str | None = None, created_timestamp: str = None
+                           ) -> tuple[list, str | None]:
         """ Retrieve information about events.
             Args:
                 max_fetch (int): Limit number of returned records.
@@ -119,13 +119,13 @@ def get_all_events(client: Client, first_fetch_time: str,
     # Initialize an empty lists of events to return
     # Each event is a dict with a string as a key
     demisto.debug(f'last_run in the get_all_events is {last_run}')
-    investigate_logs_events: List[Dict[str, Any]] = []
-    incident_logs_events: List[Dict[str, Any]] = []
+    investigate_logs_events: list[dict[str, Any]] = []
+    incident_logs_events: list[dict[str, Any]] = []
     # Initialize an empty next_run object to return for each log type
     next_run: dict[str, dict] = {}
     # Initialize an empty next_run object to return
     new_last_run: dict = {}
-    for log_type in LOG_TYPES.keys():
+    for log_type in LOG_TYPES:
         log_events, next_run = get_all_events_for_log_type(
             client=client,
             log_type=log_type,
@@ -224,7 +224,7 @@ def get_date_timestamp(str_date: str) -> datetime:
 
 
 def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
-                number_of_events: int, last_fetch: str) -> Tuple[list, dict]:
+                number_of_events: int, last_fetch: str) -> tuple[list, dict]:
     """
     Dedup mechanism for the fetch to check both log_id and created_timestamp/incident_start_time
     (since timestamp can be duplicate)
@@ -292,7 +292,7 @@ def dedup_by_id(last_run: dict, events: list, log_type: str, limit: int,
     return new_events, new_last_run
 
 
-def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, last_run: Dict[str, dict],
+def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, last_run: dict[str, dict],
                                 first_fetch_time: str, first_fetch_time_investigate: str):
     """
     Gets all the events for a specific log type.
@@ -307,7 +307,7 @@ def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, l
         Client: Client class to interact with Symantec Cloud SOC service API.
     """
     demisto.debug(f'SymantecEventCollector: last_run is {last_run}')
-    next_url: Optional[str] = ''
+    next_url: str | None = ''
     all_events_list: list = []
     subtype = dict_safe_get(LOG_TYPES, [log_type, "subtype"])
     app = dict_safe_get(LOG_TYPES, [log_type, "app"])
@@ -331,9 +331,9 @@ def get_all_events_for_log_type(client: Client, max_fetch: int, log_type: str, l
     return all_events_list, last_run_for_log_type
 
 
-def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, dict],
+def fetch_events_command(client: Client, max_fetch: int, last_run: dict[str, dict],
                          first_fetch_time: str,
-                         first_fetch_time_investigate: str) -> Tuple[Dict, List[dict]]:
+                         first_fetch_time_investigate: str) -> tuple[dict, list[dict]]:
     """
     This function retrieves new events every interval (default is 1 minute).
     It has to implement the logic of making sure that events are fetched only onces and no events are missed.
@@ -353,7 +353,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, dic
     """
     # Initialize an empty list of events to return
     # Each event is a dict with a string as a key
-    events: List[Dict[str, Any]] = []
+    events: list[dict[str, Any]] = []
     # Initialize an empty next_run object to return
     new_last_run: dict = {}
     investigate_logs_events, incident_logs_events, new_last_run = get_all_events(client, first_fetch_time,

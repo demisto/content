@@ -4,14 +4,13 @@ import demistomock as demisto
 from SymantecCloudSOC import Client
 import pytest
 import json
-import io
 
 
 ''' HELPER FUNCTIONS '''
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -320,7 +319,7 @@ def test_get_all_events_for_log_type_with_pagination(max_fetch, log_type, last_r
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
             url=get_mocked_url(app="Investigate", subtype="all",
-                               created_timestamp="2022-01-01T00%3A00%3A00Z", limit=1000),
+                               created_timestamp="2022-06-21T00%3A00%3A00Z", limit=1000),
             status_code=200, json=response_pagination_investigate["page_1_response"])
         detect_incidents_mocker = request_mocker.get(
             url=get_mocked_url(app="detect", subtype="incidents", limit=1000),
@@ -337,14 +336,16 @@ def test_get_all_events_for_log_type_with_pagination(max_fetch, log_type, last_r
 
         all_events_list, last_run_for_log_type = get_all_events_for_log_type(mocked_client, max_fetch, log_type, last_run,
                                                                              first_fetch_time, first_fetch_time_investigate)
-    detect_incidents_mocker.called
-    detect_incidents_mocker.called_once
-    investigate_mocker.called
-    investigate_mocker.called_once
-    detect_incidents_mocker_page.called
-    detect_incidents_mocker_page.called_once
-    detect_investigate_mocker_page.called
-    detect_investigate_mocker_page.called_once
+    if log_type == "Investigate_logs":
+        assert investigate_mocker.called
+        assert investigate_mocker.called_once
+        assert detect_investigate_mocker_page.called
+        assert detect_investigate_mocker_page.called_once
+    else:
+        assert detect_incidents_mocker_page.called
+        assert detect_incidents_mocker_page.called_once
+        assert detect_incidents_mocker.called
+        assert detect_incidents_mocker.called_once
     assert len(all_events_list) == max_fetch
     assert all_events_list == expected_all_events_list
     assert last_run_for_log_type == expected_last_run
@@ -379,18 +380,13 @@ def test_get_all_events_for_log_type_without_pagination(max_fetch, log_type, las
             url=get_mocked_url(app="Investigate", subtype="all",
                                created_timestamp="2022-01-01T00%3A00%3A00Z", limit=1000),
             status_code=200, json=response_pagination_investigate["page_1_response"])
-        detect_incidents_mocker = request_mocker.get(
-            url=get_mocked_url(app="detect", subtype="incidents", limit=1000),
-            status_code=200, json=response_pagination_incident["page_1_response"])
         investigate_mocker = request_mocker.get(
             url=get_mocked_url(app="Investigate", subtype="all", limit=1000),
             status_code=200, json=response_pagination_investigate["page_1_response"])
         all_events_list, last_run_for_log_type = get_all_events_for_log_type(mocked_client, max_fetch, log_type, last_run,
                                                                              first_fetch_time, first_fetch_time_investigate)
-    detect_incidents_mocker.called
-    detect_incidents_mocker.called_once
-    investigate_mocker.called
-    investigate_mocker.called_once
+    assert investigate_mocker.called
+    assert investigate_mocker.called_once
     assert all_events_list == expected_all_events_list
     assert last_run_for_log_type == expected_last_run
 
@@ -434,7 +430,8 @@ def test_fetch_events_command(mocker, max_fetch, last_run, first_fetch_time, fir
                                created_timestamp="2022-01-01T00%3A00%3A00Z", limit=1000),
             status_code=200, json=response_pagination_investigate["page_1_response"])
         detect_incidents_mocker = request_mocker.get(
-            url=get_mocked_url(app="detect", subtype="incidents", limit=1000),
+            url=get_mocked_url(app="detect", subtype="incidents",
+                               created_timestamp="2021-06-01T00%3A00%3A00", limit=1000),
             status_code=200, json=response_pagination_incident["page_1_response"])
         investigate_mocker = request_mocker.get(
             url=get_mocked_url(app="Investigate", subtype="all", limit=1000),
