@@ -39,7 +39,7 @@ jobs:
         npm install
         demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
     - name: Commit and push changes
-      if: always() && contains( github.event.pull_request.labels.*.name, 'autofix-enable')
+      if: always() && contains(github.event.pull_request.labels.*.name, 'autofix-enable') == true
       uses: stefanzweifel/git-auto-commit-action@v4
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
