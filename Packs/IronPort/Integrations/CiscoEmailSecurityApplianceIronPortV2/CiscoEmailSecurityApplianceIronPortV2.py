@@ -1880,7 +1880,7 @@ def main() -> None:
 
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    jwt_token_expiration_period = params.get("jwt_token_expiration_period", 30)
+    jwt_token_expiration_period = int(params.get("jwt_token_expiration_period") or 30)
     command = demisto.command()
     commands = {
         "cisco-esa-spam-quarantine-message-search": spam_quarantine_message_search_command,

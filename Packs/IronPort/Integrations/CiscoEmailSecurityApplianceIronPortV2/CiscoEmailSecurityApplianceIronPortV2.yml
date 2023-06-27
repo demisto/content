@@ -73,14 +73,10 @@ configuration:
   type: 0
   additionalinfo: The message recipient filter value by which to fetch results.
 - name: jwt_token_expiration_period
-  display: Time to live for the JWT connection token (in minutes). 
+  display: Time to live for JWT session token (in minutes). 
   required: false
   defaultvalue: 30
   type: 0
-  additionalinfo: |
-    Default is 30.
-    This value is used to determine if a new session JWT token should be created.
-    Keep it highest as possible and decrees if you get inconsistent Authorization Errors.
 - name: proxy
   display: Use system proxy settings
   required: false
