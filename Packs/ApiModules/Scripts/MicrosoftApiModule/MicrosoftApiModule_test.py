@@ -651,7 +651,7 @@ def test_get_from_args_or_params__when_the_key_dose_not_exists():
     """
     with pytest.raises(Exception) as e:
         get_from_args_or_params(args, params, 'mock')
-    assert 'No mock was provided. Please provide a mock in the instance parameters or in the command' in e.value.args
+    assert e.value.args[0] == 'No mock was provided. Please provide a mock either in the instance configuration or as a command argument.'
 
 
 def test_azure_tag_formatter__with_valid_input():
@@ -677,4 +677,4 @@ def test_azure_tag_formatter__with_invalid_input():
     """
     with pytest.raises(Exception) as e:
         azure_tag_formatter('{"key:value"}')
-    assert """Invalid tag format, please use the following format: '{"key_name":"value_name"}""" in e.value.args
+    assert e.value.args[0] == 'Invalid tag format, please use the following format: \'{"key_name":"value_name"}\''
