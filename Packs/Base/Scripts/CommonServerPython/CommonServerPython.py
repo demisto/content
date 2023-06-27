@@ -10759,9 +10759,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         new_last_run = {
             'time': latest_incident_fetched_time,
         }
-        if latest_incident_fetched_time == start_fetch_time:
-            # we are still on the same time, no need to remove current incident ids
-            remove_incident_ids = False
+        # we are still on the same time, no need to remove current incident ids
+        remove_incident_ids = False
 
     if look_back > 0:
         new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
