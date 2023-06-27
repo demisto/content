@@ -137,10 +137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "245":
     id: "245"
-    taskid: be51843d-817b-4286-8c43-88ac5ac630f2
+    taskid: 3b5e306c-d189-425e-8a69-4df9d0777bef
     type: playbook
     task:
-      id: be51843d-817b-4286-8c43-88ac5ac630f2
+      id: 3b5e306c-d189-425e-8a69-4df9d0777bef
       version: -1
       name: CrowdStrike Falcon - Retrieve File
       description: |-
@@ -494,10 +494,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "257":
     id: "257"
-    taskid: c7fabd5f-3201-4811-8021-d08c5a7124de
+    taskid: d1603e94-747e-4a92-8244-0d2728af6a18
     type: condition
     task:
-      id: c7fabd5f-3201-4811-8021-d08c5a7124de
+      id: d1603e94-747e-4a92-8244-0d2728af6a18
       version: -1
       name: Verify File Name
       description: |
@@ -514,18 +514,12 @@ tasks:
     conditions:
     - label: ' Verified'
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: CrowdStrike.File
                 accessor: FileName
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: CrowdStrike.Detections.behaviors
-                accessor: filename
             iscontext: true
     continueonerrortype: ""
     view: |-
