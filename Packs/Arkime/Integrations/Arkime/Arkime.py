@@ -762,7 +762,7 @@ def session_list_command(client: Client,
 
 
 def sessions_csv_get_command(client: Client,
-                             date: int = DEFAULT_DATE,
+                             # date: int = DEFAULT_DATE,
                              expression: str = None,
                              start_time: str = None,
                              stop_time: str = None,
