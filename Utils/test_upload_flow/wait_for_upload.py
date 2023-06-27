@@ -1,5 +1,7 @@
 import argparse
 import json
+
+from  import str2bool
 from Tests.scripts.utils import logging_wrapper as logging
 import sys
 import time
@@ -66,7 +68,7 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-g', '--gitlab-api-token', help='Github api token')
     arg_parser.add_argument('-p', '--pipeline-id', help='Pipeline id')
-    arg_parser.add_argument('-vis', '--verify-upload-id-set-job', help='Pipeline id', default=False)
+    arg_parser.add_argument('-vis', '--verify-upload-id-set-job', help='Pipeline id', type=str2bool)
 
     args = arg_parser.parse_args()
 
