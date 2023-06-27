@@ -14,7 +14,7 @@ LATEST_MERGED_PR = 3
 def get_latest_merged() -> list[dict]:
     """
     Get the latest merged PRs
-    :return: A list of the last PRs from Github
+    :return: A list of the latest PRs from Github
     """
     latest_prs = []
     url = f'{CONTENT_REPO_URL}/pulls'
@@ -36,7 +36,7 @@ def merge_dev_secrets(dev_secrets_to_merge: list[dict], gsm_project_id: str, sec
     :param dev_secrets_to_merge: A list of dev secrets to add to the main store
     :param gsm_project_id: The GCP project ID
     :param secret_conf: The GSM object to handle GSM API operations
-    :return: the parsed arguments that were passed to the script
+    :return: A list of names of secrets that were merged
     """
     merged_dev_secrets_names = []
     for dev_secret in dev_secrets_to_merge:
@@ -56,9 +56,8 @@ def merge_dev_secrets(dev_secrets_to_merge: list[dict], gsm_project_id: str, sec
         del dev_secret['secret_name']
         del dev_secret['labels']
         # Add a new version to master secret
-        # secret_conf.add_secret_version(gsm_project_id, main_secret_name, json5.dumps(dev_secret, quote_keys=True))
+        secret_conf.add_secret_version(gsm_project_id, main_secret_name, json5.dumps(dev_secret, quote_keys=True))
         logging.debug(f'dev secret {dev_secret_name} was merged to {main_secret_name} on main store')
-        print(f'dev secret {dev_secret_name} was merged to {main_secret_name} on main store')
     return merged_dev_secrets_names
 
 
@@ -67,7 +66,7 @@ def get_dev_secrets_to_merge(latest_pr_merges: list[dict], dev_secrets: list[dic
     Returns the dev secret that should be merged to the main store
     :param latest_pr_merges: A list of the recent PRs that had been merged
     :param dev_secrets: A list of dev secrets from our dev store
-    :return: the parsed arguments that were passed to the script
+    :return: A list of secrets from our dev store that should be merged to the main store
     """
     secrets_to_update = []
     merged_branches = [p.get('head').get('ref') for p in latest_pr_merges]
@@ -79,14 +78,13 @@ def get_dev_secrets_to_merge(latest_pr_merges: list[dict], dev_secrets: list[dic
 
 def delete_dev_secrets(secrets_to_delete: list[str], secret_conf: GoogleSecreteManagerModule, project_id: str):
     """
-        Delets the merged dev secret from our dev store
+        Deletes the merged dev secret from our dev store
         :param secrets_to_delete: A list of secret names that need to be deleted
         :param secret_conf: The GSM object to handle GSM API operations
-        :return: the parsed arguments that were passed to the script
+        :param project_id: The GCP project ID
         """
     for secret_name in secrets_to_delete:
-        # secret_conf.delete_secret(project_id, secret_name)
-        print(f'would delete {secret_name}')
+        secret_conf.delete_secret(project_id, secret_name)
 
 
 def run(options: argparse.Namespace):
@@ -106,8 +104,8 @@ def run(options: argparse.Namespace):
 def options_handler(args=None) -> argparse.Namespace:
     """
     Parse the passed parameters for the script
-    :param args: a list of arguments to add
-    :return: the parsed arguments that were passed to the script
+    :param args: A list of arguments to add
+    :return: The parsed arguments that were passed to the script
     """
     parser = argparse.ArgumentParser(description='Utility for Importing secrets from Google Secret Manager.')
     parser.add_argument('-gpid', '--gsm_project_id', help='The project id for the GSM.')
@@ -128,5 +126,6 @@ def options_handler(args=None) -> argparse.Namespace:
 
 
 if __name__ == '__main__':
+    print('start')
     options = options_handler()
     run(options)
