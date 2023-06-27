@@ -348,10 +348,7 @@ def fetch_indicators(client: Client,
                      feed_tags: Optional[List],
                      limit: int = -1,
                      is_fetch: bool = True) -> List[Dict]:
-    if query:
-        params_dict = clean_user_query(query)
-    else:
-        params_dict = build_params_dict(tags, attribute_type)
+    params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
 
     response = client.search_query(params_dict)
     indicators_iterator = build_indicators_iterator(response, url)
