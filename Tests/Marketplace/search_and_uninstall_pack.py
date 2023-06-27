@@ -24,6 +24,7 @@ def get_all_installed_packs(client: demisto_client):
         list of installed python
     """
     try:
+        # test
         logging.info("Attempting to fetch all installed packs.")
         response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                             path='/contentpacks/metadata/installed',
