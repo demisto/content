@@ -11,7 +11,7 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
 from time import sleep
 
-UNREMOVABLE_PACKS = ['Base', 'CoreAlertFields', 'Core']
+UNREMOVABLE_PACKS = ['Base', 'CoreAlertFields', 'Core', 'CortexAttackSurfaceManagement']
 
 
 def get_all_installed_packs(client: demisto_client):
