@@ -699,7 +699,7 @@ tasks:
       id: 1ce8289e-22cc-43ea-8107-0c06b4a96b06
       version: -1
       name: Set feedback to "Exception denied"
-      description: Set feedback to "Exception not requested".
+      description: Set feedback to "Exception denied".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
