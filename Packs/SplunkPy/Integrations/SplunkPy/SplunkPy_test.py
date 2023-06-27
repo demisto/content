@@ -11,7 +11,6 @@ from collections import namedtuple
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
-
 DICT_RAW_RESPONSE = '"1528755951, url="https://test.url.com", search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
                     'xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", distinct_hosts="5", ' \
