@@ -61,7 +61,7 @@ def test_module(client: Client):
         'ok' if test passed, anything else will fail the test.
     """
     cve_latest_command(client, 1)
-    return 'ok', None, None
+    return 'ok'
 
 
 def cve_latest_command(client: Client, limit) -> List[CommandResults]:
@@ -216,7 +216,8 @@ def generate_indicator(data: dict) -> Common.CVE:
             cvss_table.append({"metrics": key, "value": value})
 
     vulnerable_products = [Common.CPE(cpe) for cpe in data.get("vulnerable_product", [])]
-    vulnerable_configurations = [Common.CPE(cpe["id"]) for cpe in data.get("vulnerable_configuration", [])]
+    vulnerable_configurations = [Common.CPE(cpe.get("id")) if isinstance(cpe, dict) else Common.CPE(cpe)
+                                 for cpe in data.get("vulnerable_configuration", [])]
     cpes = set(vulnerable_products) | set(vulnerable_configurations)
 
     cve_object = Common.CVE(
@@ -274,7 +275,10 @@ def main():
             raise NotImplementedError(f'{command} is not an existing CVE Search command')
 
     except Exception as err:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(err)}')
+        if err.res.status_code == 404:
+            return_error(f'Failed to execute {demisto.command()} command.\nError: {"Invalid server URL"}')
+        else:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(err)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
