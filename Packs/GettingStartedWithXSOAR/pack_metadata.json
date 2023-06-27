@@ -1,0 +1,23 @@
+{
+    "name": "Getting Started with XSOAR",
+    "description": "This wizard is designed to provide a step-by-step walkthough on getting started with XSOAR",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Joe Cosgrove",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "joecosgrove5@gmail.com"
+    ],
+    "githubUser": []
+}
