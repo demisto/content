@@ -8,7 +8,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: https://decyfir.cyfirma.com
-  display: DeCYFIR Server URL (e.g. https://decyfir.cyfirma.comt)
+  display: DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com)
   name: url
   required: true
   type: 0

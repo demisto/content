@@ -6,14 +6,12 @@ import urllib3
 
 urllib3.disable_warnings()
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
+''' CONSTANTS '''
 IOC_API_STIX_2_1_PATH_SUFFIX = '/core/api-ua/threatioc/stix/v2.1?key={0}&delta=false&all=false'
 IOC_API_STIX_2_1_SEARCH_PATH_SUFFIX = '/core/api-ua/threatioc/stix/v2.1/search?key={0}&&indicatorType={1}&value={2}'
 
 TA_API_STIX_2_1_PATH_SUFFIX = '/core/api-ua/threatactor/ctc/stix/v2.1?key={0}'
 TA_API_STIX_2_1_SEARCH_PATH_SUFFIX = '/core/api-ua/threatactor/stix/v2.1?key={0}&name={1}'
-TA_MITRE_API_STIX_2_1_PATH_SUFFIX = '/core/api-ua/threatactor/mitre/stix/v2.1?key={0}&threat-actor={1}'
 
 LABEL_DECYFIR = "DeCYFIR"
 LABEL_INDICATOR = "indicator"
@@ -42,7 +40,6 @@ THREAT_INTEL_SCORES = {
 
 class Client(BaseClient):
     def get_indicator_or_threatintel_type(self, data):
-        demisto.info(">>>> data >> " + str(data) + "\n")
         indicator_mapping = {
             "[domain-name:value": FeedIndicatorType.Domain,
             "[email:value": FeedIndicatorType.Email,
@@ -142,7 +139,7 @@ class Client(BaseClient):
         in_ti["fields"]["aliases"].extend(data)
 
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
-        demisto.info(">>>> data.get(LABEL_TYPE) >> " + str(data.get(LABEL_TYPE)) + "\n")
+
         intel_type: str = self.get_indicator_or_threatintel_type(data.get(LABEL_TYPE))
 
         ti_data_obj: Dict = {
@@ -280,22 +277,18 @@ class Client(BaseClient):
                             else:
                                 target_ref_obj = raw_ta_data.get(raw_ta_rel_.get('targetRef', ''), {})
 
-                            source_ti_data_obj = {}
                             if source_ref_obj is not None and target_ref_obj is not None:
                                 if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                    source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color,
-                                                                                               feed_tags)
+                                    source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
                                     if source_ti_data_obj is not None and source_ti_data_obj:
                                         return_data.append(source_ti_data_obj)
                                 else:
                                     source_ti_data_obj = ta_source_obj
 
                                 if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(
-                                    LABEL_ID) and source_ti_data_obj is not None and source_ti_data_obj.get(
-                                    LABEL_ID) != target_ref_obj.get(LABEL_ID):
+                                    LABEL_ID) and source_ti_data_obj is not None and source_ti_data_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID):
 
-                                    target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color,
-                                                                                               feed_tags)
+                                    target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color, feed_tags)
                                     if target_ti_data_obj is not None and target_ti_data_obj:
                                         return_data.append(target_ti_data_obj)
                                 else:
@@ -303,8 +296,7 @@ class Client(BaseClient):
 
                                 if source_ti_data_obj and target_ti_data_obj:
                                     if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                          target_ti_data_obj)
+                                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = []
                                         if ti_relationships:
                                             if source_ti_data_obj[LABEL_RELATIONSHIPS]:
@@ -312,8 +304,7 @@ class Client(BaseClient):
                                             else:
                                                 source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
                                     else:
-                                        ti_relationships = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                    target_ti_data_obj)
+                                        ti_relationships = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
                                         if ti_relationships:
                                             src_ti_relationships_data.append(ti_relationships)
 
@@ -469,7 +460,7 @@ def fetch_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Op
 
 def main():
     try:
-        args = demisto.args()
+        #args = demisto.args()
         params = demisto.params()
         decyfir_url = params['url'].rstrip('/')
         decyfir_api_key = params.get('api_key').get("password")
