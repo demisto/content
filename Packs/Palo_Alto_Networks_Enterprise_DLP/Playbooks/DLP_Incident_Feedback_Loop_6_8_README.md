@@ -20,7 +20,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* EmailAskUser
+EmailAskUser
 
 ### Commands
 
@@ -40,7 +40,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SendMailInstance | This input is only relevant when the "UserMessageApp" or "ApproverMessageApp" are set to "Email".<br/>The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used \(default\). |  | Optional |
 | UserMessageApp | The communication method with the user.<br/>Can be one of the following:<br/><br/>- Slack<br/>- Microsoft Teams<br/>- Email<br/><br/>If you choose to set "Email", it's also possible to set the relevant email integration instance with the "SendEmailInstance" input. | Slack | Optional |
 | ApproverMessageApp | The communication method with the approver.<br/>Can be one of the following:<br/><br/>- Slack<br/>- Microsoft Teams<br/>- Email<br/>- Manual<br/><br/>If you choose to set "Email", it's also possible to set the relevant email integration instance with the "SendEmailInstance" input. | Slack | Optional |
-| DenyMessage | The message that users will receive when they got denied. | Thank you for the request. Your request was reviewed and denied. | Optional |
+| DenyMessage | The message that users will receive when they are denied. | Thank you for the request. Your request was reviewed and denied. | Optional |
 
 ## Playbook Outputs
 

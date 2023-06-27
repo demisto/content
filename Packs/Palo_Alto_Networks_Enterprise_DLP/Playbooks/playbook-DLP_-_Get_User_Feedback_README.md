@@ -6,11 +6,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* DLP - Get User Feedback via Email
+DLP - Get User Feedback via Email
 
 ### Integrations
 
-* Palo_Alto_Networks_Enterprise_DLP
+Palo_Alto_Networks_Enterprise_DLP
 
 ### Scripts
 

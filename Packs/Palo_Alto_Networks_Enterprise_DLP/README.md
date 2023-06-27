@@ -1,6 +1,6 @@
 ## Palo Alto Networks Enterprise DLP Content Pack
 
-This content pack enables Cortex XSOAR to integrate with Palo Alto Networks Enterprise DLP. Using this content pack, you can fetch DLP incidents using the `Long running instance` checkbox and update DLP incidents with user feedback. This pack includes the **Palo Alto Networks Enterprise DLP** integration and a sample Playbook to gather user feedback for a DLP incident using Slack.
+This content pack enables Cortex XSOAR to integrate with Palo Alto Networks Enterprise DLP. Using this content pack, you can fetch DLP incidents using the `Long running instance` checkbox and update DLP incidents with user feedback. This pack includes the **Palo Alto Networks Enterprise DLP** integration and a sample playbook to gather user feedback for a DLP incident using Slack.
 
 
 ### Palo Alto Networks Enterprise DLP Integration

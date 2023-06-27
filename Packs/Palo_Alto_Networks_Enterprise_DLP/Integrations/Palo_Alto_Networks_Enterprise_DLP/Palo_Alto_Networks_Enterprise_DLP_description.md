@@ -4,6 +4,6 @@ Palo Alto Networks Enterprise DLP discovers and protects company data across eve
 ### Authentication
 There are 2 methods to authenticate.
 1. Use Enterprise DLP API **Access Token** and **Refresh Token**.
-2. Use XSOAR's credentials store with a **Client ID** and **Client Secret** as the `username` and `password` in case you are using Enterprise DLP through a SASE platform.
+2. Use Cortex XSOAR's credentials store with a **Client ID** and **Client Secret** as the `username` and `password` in case you are using Enterprise DLP through a SASE platform.
 
-For more information on how to create the above credentials, please see [the documentation](https://docs.paloaltonetworks.com/enterprise-dlp/enterprise-dlp-admin/configure-enterprise-dlp/configure-exact-data-matching/configure-connectivity-to-the-dlp-cloud-service).
+For more information on how to create the above credentials, see [the documentation](https://docs.paloaltonetworks.com/enterprise-dlp/enterprise-dlp-admin/configure-enterprise-dlp/configure-exact-data-matching/configure-connectivity-to-the-dlp-cloud-service).

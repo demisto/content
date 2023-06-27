@@ -1,4 +1,4 @@
-Check if the given message app exist and configured and retrieve the user details from it.
+Check if the given message app exists and is configured and retrieve the user details from it.
 
 ## Dependencies
 
@@ -30,7 +30,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| UserEmail | Will be used through email communication in case both Slack and MS Teams are not enabled. |  | Optional |
+| UserEmail | The user email address that will be used through email communication in case both Slack and MS Teams are not enabled. |  | Optional |
 | UserDisplayName | The display name of the user. Will be used in case MS Teams or Email are the message app. |  | Optional |
 | UserMessageApp | The communication method with the user.<br/>Can be one of the following:<br/><br/>- Slack<br/>- Microsoft Teams<br/>- Email<br/><br/>If you choose to set "Email", it's also possible to set the relevant email integration instance with the "SendEmailInstance" input. |  | Optional |
 

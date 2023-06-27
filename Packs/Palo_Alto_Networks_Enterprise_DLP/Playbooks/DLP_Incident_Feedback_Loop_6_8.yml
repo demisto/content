@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: DLP Incident Feedback Loop
-description: Collects feedback from user  about blocked files.
+description: Collects feedback from the user about blocked files.
 starttaskid: "0"
 tasks:
   "0":
@@ -75,7 +75,7 @@ tasks:
       id: 3bf112c2-5c6a-48ab-8601-a3c80d565aa2
       version: -1
       name: Call API to save status
-      description: Call DLP API to save user feedback for the incident
+      description: Call DLP API to save user feedback for the incident.
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -158,7 +158,7 @@ tasks:
       id: 41fa4cc1-14f8-444d-84bb-10c4202df7c9
       version: -1
       name: Set feedback to "Exception Granted"
-      description: Set feedback to "Exception Granted"
+      description: Set feedback to "Exception Granted".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -194,7 +194,7 @@ tasks:
       id: c06cf63e-0b10-4efa-815f-54394f0e54db
       version: -1
       name: Set feedback to "Exception not requested"
-      description: Set feedback to "Exception not requested"
+      description: Set feedback to "Exception not requested".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -489,7 +489,7 @@ tasks:
         - Okta
         - AWS IAM
 
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -699,7 +699,7 @@ tasks:
       id: 1ce8289e-22cc-43ea-8107-0c06b4a96b06
       version: -1
       name: Set feedback to "Exception denied"
-      description: Set feedback to "Exception not requested"
+      description: Set feedback to "Exception not requested".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1127,7 +1127,7 @@ tasks:
       id: d7e176ab-c665-4409-88c1-679f46e26d26
       version: -1
       name: DLP - User Message App Check
-      description: Check if the given message app exist and configured and retrieve the user details from it.
+      description: Check if the given message app exists and is configured and retrieve the user details from it.
       playbookName: DLP - User Message App Check
       type: playbook
       iscommand: false
@@ -2101,7 +2101,7 @@ inputs:
   value:
     simple: Thank you for the request. Your request was reviewed and denied.
   required: false
-  description: The message that users will receive when they got denied.
+  description: The message that users will receive when they are denied.
   playbookInputQuery:
 outputs: []
 tests:

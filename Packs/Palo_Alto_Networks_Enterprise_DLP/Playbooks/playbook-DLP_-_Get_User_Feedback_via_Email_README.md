@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Palo_Alto_Networks_Enterprise_DLP
+Palo_Alto_Networks_Enterprise_DLP
 
 ### Scripts
 
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 
@@ -30,9 +30,9 @@ This playbook does not use any sub-playbooks.
 | UserDisplayName | The display name of the user. |  | Optional |
 | data_profile_name | The name of the DLP data profile that detected the violation. |  | Optional |
 | file_name | The name of the file that triggered the incident. |  | Optional |
-| question_type | Whether to ask the user about the file content or about exemption. |  | Optional |
+| question_type | Whether to ask the user about the file content or about an exemption. |  | Optional |
 | SendMailInstance | The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used \(default\). |  | Optional |
-| UserEmail | The use email address. |  | Optional |
+| UserEmail | The user email address. |  | Optional |
 | Snippets | The snippets of the violation. |  | Optional |
 
 ## Playbook Outputs
