@@ -1,8 +1,9 @@
 [file:Imperva_Skyfence]
 ignore=PA116
 
-[file:ImpervaSkyfence.yml]
-ignore=IN145
-
 [file:ImpervaSkyfence_image.png]
 ignore=IM111
+
+[known_words]
+Imperva
+Skyfence
