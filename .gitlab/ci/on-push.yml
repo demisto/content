@@ -608,3 +608,16 @@ test-upload-flow:
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
 
+handle-dev-secrets:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  stage: unittests-and-validations
+  script:
+    - |
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpid "$GSM_PROJECT_ID"  -ttl "1" >> $ARTIFACTS_FOLDER/del_test.txt
+

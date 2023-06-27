@@ -71,13 +71,44 @@ class GoogleSecreteManagerModule:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
                     secret_value['secret_name'] = secret.name
+                    secret_value['labels'] = labels
                     secrets.append(secret_value)
                 except Exception as e:
                     logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
             else:
+                secret.labels = labels
                 secrets.append(secret)
 
         return secrets
+
+    def add_secret_version(self, project_id: str, secret_id: str, payload: dict) -> None:
+        """
+        Add a new secret version to the given secret with the provided payload.
+        :param project_id: The project ID for GCP
+        :param secret_id: The name of the secret in GSM
+        :param payload: The secret value to update
+        """
+
+        parent = self.client.secret_path(project_id, secret_id)
+
+        payload = payload.encode("UTF-8")
+
+        self.client.add_secret_version(
+            request={
+                "parent": parent,
+                "payload": {"data": payload},
+            }
+        )
+
+    def delete_secret(self, project_id: str, secret_id: str) -> None:
+        """
+        Delete a secret from GSM
+        :param project_id: The project ID for GCP
+        :param secret_id: The name of the secret in GSM
+        """
+
+        name = self.client.secret_path(project_id, secret_id)
+        self.client.delete_secret(request={"name": name})
 
     @staticmethod
     def init_secret_manager_client(service_account: str) -> secretmanager.SecretManagerServiceClient:
