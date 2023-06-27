@@ -17,6 +17,15 @@ configuration:
   type: 9
   additionalinfo: ""
   displaypassword: Password
+- name: jwt_token_expiration_period
+  display: Time to live for the JWT connection token (in minutes). 
+  required: false
+  defaultvalue: 30
+  type: 0
+  additionalinfo: |
+    Default is 30.
+    This value is used to determine if a new session JWT token should be created.
+    Keep it highest as possible and decrees if you get inconsistent Authorization Errors
 - name: max_fetch
   display: Maximum incidents per fetch
   required: false
