@@ -68,17 +68,19 @@ def delete_dev_secrets(secrets_to_delete: list[str], secret_conf: GoogleSecreteM
         # secret_conf.delete_secret(project_id, secret_name)
         print(f'would delete {secret_name}')
 
+
 def run(options: argparse.Namespace):
-    secret_conf = GoogleSecreteManagerModule(options.service_account)
+    secret_conf_dev = GoogleSecreteManagerModule(options.service_account_dev)
+    secret_conf_prod = GoogleSecreteManagerModule(options.service_account_prod)
     latest_pr_merges = get_latest_merged()
     secrets_filter = {FilterLabels.PACK_ID.value: FilterOperators.NOT_NONE.value,
                       FilterLabels.IGNORE_SECRET.value: FilterOperators.NONE.value,
                       FilterLabels.SECRET_MERGE_TIME.value: FilterOperators.NONE.value,
                       FilterLabels.IS_DEV_BRANCH.value: FilterOperators.NOT_NONE.value}
-    secrets = secret_conf.list_secrets(options.gsm_project_id, secrets_filter, with_secrets=True)
-    dev_secrets_to_merge = get_dev_secrets_to_merge(latest_pr_merges, secrets)
-    secrets_to_delete = merge_dev_secrets(dev_secrets_to_merge, options.gsm_project_id, secret_conf)
-    delete_dev_secrets(secrets_to_delete, secret_conf, options.gsm_project_id)
+    dev_secrets = secret_conf_dev.list_secrets(options.gsm_project_id, secrets_filter, with_secrets=True)
+    dev_secrets_to_merge = get_dev_secrets_to_merge(latest_pr_merges, dev_secrets)
+    secrets_to_delete = merge_dev_secrets(dev_secrets_to_merge, options.gsm_project_id, secret_conf_prod)
+    delete_dev_secrets(secrets_to_delete, secret_conf_dev, options.gsm_project_id)
 
 
 def options_handler(args=None) -> argparse.Namespace:
@@ -90,7 +92,7 @@ def options_handler(args=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Utility for Importing secrets from Google Secret Manager.')
     parser.add_argument('-gpid', '--gsm_project_id', help='The project id for the GSM.')
     # disable-secrets-detection-start
-    parser.add_argument('-sa', '--service_account',
+    parser.add_argument('-sap', '--service_account_prod',
                         help=("Path to gcloud service account, for circleCI usage. "
                               "For local development use your personal account and "
                               "authenticate using Google Cloud SDK by running: "
@@ -98,6 +100,7 @@ def options_handler(args=None) -> argparse.Namespace:
                               "For more information see: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('-sad', '--service_account_dev', help='Service account for dev', required=False)
     # disable-secrets-detection-end
     options = parser.parse_args(args)
 

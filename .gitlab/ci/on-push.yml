@@ -619,5 +619,5 @@ handle-dev-secrets:
   stage: unittests-and-validations
   script:
     - |
-    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpid "$GSM_PROJECT_ID"  -ttl "1" >> $ARTIFACTS_FOLDER/del_test.txt
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sap "$GSM_SERVICE_ACCOUNT" -sad "$GSM_SERVICE_ACCOUNT" -gpid "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/del_test.txt
 
