@@ -262,7 +262,7 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         if demisto.command() == 'test-module':
-            return_outputs(*test_module(client))
+            return_results(test_module(client))
 
         elif demisto.command() == 'cve-latest':
             return_results(cve_latest_command(client, demisto.args().get('limit', 30)))
