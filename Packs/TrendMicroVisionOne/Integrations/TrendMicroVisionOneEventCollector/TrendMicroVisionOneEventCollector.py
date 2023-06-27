@@ -20,7 +20,7 @@ DEFAULT_MAX_LIMIT = 1000
 DEFAULT_URL = 'https://api.xdr.trendmicro.com'
 PRODUCT = 'vision_one'
 VENDOR = 'trend_micro'
-ONE_DAY = 24
+ONE_YEAR = 365
 
 
 class LastRunLogsTimeFields(Enum):
@@ -353,7 +353,6 @@ def get_datetime_range(
     first_fetch: str,
     log_type_time_field_name: str,
     date_format: str = DATE_FORMAT,
-    date_range_for_oat_and_search_logs: int = ONE_DAY
 ) -> tuple[str, str]:
     """
     Get a datetime range for any log type.
@@ -363,7 +362,6 @@ def get_datetime_range(
         first_fetch (str): First fetch time.
         log_type_time_field_name (str): the name of the field in the last run for a specific log type.
         date_format (str): The date format.
-        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[str, str]: start time and end time
@@ -391,13 +389,12 @@ def get_datetime_range(
             settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}
         )
 
-    if log_type_time_field_name in (
-        LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value, LastRunLogsTimeFields.SEARCH_DETECTIONS.value
-    ):
+    if log_type_time_field_name == LastRunLogsTimeFields.OBSERVED_ATTACK_TECHNIQUES.value:
+
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
         one_day_from_last_run_time = last_run_time_datetime + timedelta(  # type: ignore[operator]
-            hours=date_range_for_oat_and_search_logs  # type: ignore[operator]
+            days=ONE_YEAR  # type: ignore[operator]
         )
         end_time_datetime = now if one_day_from_last_run_time > now else one_day_from_last_run_time
     else:
@@ -601,7 +598,6 @@ def get_observed_attack_techniques_logs(
     last_run: dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-    date_range_for_oat_and_search_logs: int = ONE_DAY
 ) -> tuple[List[dict], dict]:
     """
     Get the observed attack techniques logs.
@@ -612,7 +608,6 @@ def get_observed_attack_techniques_logs(
         last_run (dict): last run time object
         limit (int): the maximum number of observed attack techniques logs to return.
         date_format (str): the date format.
-        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[List[Dict], Dict]: observed attack techniques logs & updated last run.
@@ -636,8 +631,7 @@ def get_observed_attack_techniques_logs(
         last_run_time=last_run.get(observed_attack_technique_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=observed_attack_technique_log_last_run_time,
-        date_format=date_format,
-        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
+        date_format=date_format
     )
 
     observed_attack_techniques_logs = client.get_observed_attack_techniques_logs(
@@ -684,7 +678,6 @@ def get_search_detection_logs(
     last_run: dict,
     limit: int = DEFAULT_MAX_LIMIT,
     date_format: str = DATE_FORMAT,
-    date_range_for_oat_and_search_logs: int = ONE_DAY
 ) -> tuple[List[dict], dict]:
     """
     Get the search detection logs.
@@ -695,7 +688,6 @@ def get_search_detection_logs(
         last_run (dict): last run time object
         limit (int): the maximum number of search detection logs to return.
         date_format (str): the date format.
-        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[List[Dict], Dict]: search detection logs & updated last run time
@@ -708,8 +700,7 @@ def get_search_detection_logs(
         last_run_time=last_run.get(search_detection_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=LastRunLogsTimeFields.SEARCH_DETECTIONS.value,
-        date_format=date_format,
-        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
+        date_format=date_format
     )
     search_detection_logs = client.get_search_detection_logs(
         start_datetime=start_time, top=limit, limit=limit
@@ -816,8 +807,7 @@ def get_audit_logs(
 def fetch_events(
     client: Client,
     first_fetch: str,
-    limit: int = DEFAULT_MAX_LIMIT,
-    date_range_for_oat_and_search_logs: int = ONE_DAY
+    limit: int = DEFAULT_MAX_LIMIT
 ) -> tuple[List[dict], dict]:
     """
     Get all the logs.
@@ -826,7 +816,6 @@ def fetch_events(
         client (Client): the client object
         first_fetch (str): the first fetch time
         limit (int): the maximum number of logs to fetch from each type
-        date_range_for_oat_and_search_logs (int): the date-range between each api call for oat and search detection logs.
 
     Returns:
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
@@ -848,8 +837,7 @@ def fetch_events(
         client=client,
         first_fetch=first_fetch,
         last_run=last_run,
-        limit=limit,
-        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
+        limit=limit
     )
     demisto.info(f'Fetched amount of observed attack techniques logs: {len(observed_attack_techniques_logs)}')
 
@@ -859,7 +847,6 @@ def fetch_events(
         first_fetch=first_fetch,
         last_run=last_run,
         limit=limit,
-        date_range_for_oat_and_search_logs=date_range_for_oat_and_search_logs
     )
     demisto.info(f'Fetched amount of search detection logs: {len(search_detection_logs)}')
 
@@ -1012,7 +999,6 @@ def main() -> None:
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch') or '3 days'
     limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_LIMIT
-    date_range = arg_to_number(params.get('date_range')) or ONE_DAY
 
     command = demisto.command()
 
@@ -1030,7 +1016,7 @@ def main() -> None:
             return_results(test_module(client=client, first_fetch=first_fetch))
         elif command == 'fetch-events':
             events, updated_last_run = fetch_events(
-                client=client, first_fetch=first_fetch, limit=limit, date_range_for_oat_and_search_logs=date_range
+                client=client, first_fetch=first_fetch, limit=limit
             )
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(updated_last_run)
