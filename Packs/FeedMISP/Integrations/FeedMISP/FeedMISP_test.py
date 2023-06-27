@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 import pytest
 import demistomock as demisto
 
@@ -374,7 +375,7 @@ def test_update_indicators_iterator_indicators_before_timestamp_different_query(
 
 
 @pytest.mark.parametrize(
-    "indicator, expected_calls",
+    "indicator, feed_tags, expected_calls",
     [
         (
             {
@@ -420,7 +421,7 @@ def test_update_indicators_iterator_indicators_before_timestamp_different_query(
     ],
 )
 def test_update_indicator_fields(
-    mocker, indicator: dict, feed_tags: list, expected_calls: int
+    mocker, indicator: dict, feed_tags: Optional[list], expected_calls: int
 ):
     """
     Given:
