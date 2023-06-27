@@ -4,6 +4,7 @@ import os
 import json
 from datetime import datetime
 from typing import Any, Generator, Iterable, Optional, Tuple, Union
+from pathlib import Path
 
 from git import Repo
 
@@ -108,6 +109,7 @@ class Checkout:  # pragma: no cover
             url = f"https://github.com/{fork_owner}/{repo_name}"
             try:
                 self.repo.create_remote(name=forked_remote_name, url=url)
+                print(f'Successfully created remote {forked_remote_name} for repo {url}')
             except Exception as error:
                 print(f'could not create remote from {url}, {error=}')
                 # handle the case where the name of the forked repo is not content
@@ -145,3 +147,20 @@ class Checkout:  # pragma: no cover
         """Checks out the previous branch"""
         self.repo.git.checkout(self._original_branch)
         print(f"Checked out to original branch {self._original_branch}")
+
+
+class ChangeCWD:
+    """
+    Temporary changes the cwd to the given dir and then reverts it.
+    Use with 'with' statement.
+    """
+
+    def __init__(self, directory):
+        self.current = Path().cwd()
+        self.directory = directory
+
+    def __enter__(self):
+        os.chdir(self.directory)
+
+    def __exit__(self, *args):
+        os.chdir(self.current)
