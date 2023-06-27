@@ -1,0 +1,41 @@
+commonfields:
+  id: 6a636bfc-bf2b-432d-835b-1a83a6083e95
+  version: 177
+vcShouldKeepItemLegacyProdMachine: false
+name: CalculateThreatScore
+script: ''
+type: python
+tags: []
+comment: |-
+  This script can be used to calculate a custom threat score. The factors used in this calculation are stored in a list - threat-score-factors.
+
+  For best results, use this script for the following indicators only: IP, Domain, URL, File
+enabled: true
+args:
+- name: indicator
+  required: true
+  description: The value of the indicator. For example, for an IP indicator, 1.1.1.1.
+  type: textArea
+- name: detailedResults
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Returns factors influencing the score, their values, and associated weights.
+  defaultValue: "false"
+  type: unknown
+outputs:
+- contextPath: threatScore
+  description: Threat Score
+  type: number
+- contextPath: indicator
+  description: Indicator
+  type: string
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.10.11.61265
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

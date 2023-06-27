@@ -1,0 +1,103 @@
+    {
+        "allRead": false,
+        "allReadWrite": false,
+        "data": {
+    "geocountry": {
+        "alias": "admincountry",
+        "weight": 1,
+        "type": "discrete",
+        "derived": false,
+        "search_related": "domain",
+        "factor_scores": {
+            "us": 90,
+            "ru": 60,
+            "cn": 60,
+            "gb": 10,
+            "default": 100
+        }
+    },
+    "organization": {
+        "alias": "adminname",
+        "weight": 1,
+        "type": "discrete",
+        "derived": false,
+        "search_related": "domain",
+        "factor_scores": {
+            "akamai": 0,
+            "cloudflare": 0,
+            "digitalocean-64-227-0-0": 0,
+            "google": 50,
+            "google llc": 50,
+            "default": 100
+        }
+    },
+    "weightedScore": {
+        "alias": "",
+        "weight": 4,
+        "type": "continuous",
+        "derived": true,
+        "search_related": "",
+        "factor_scores": {}
+    },
+    "age": {
+        "alias": "",
+        "weight": 1,
+        "type": "continuous",
+        "derived": true,
+        "search_related": "",
+        "factor_scores": {
+            "0": 100,
+            "7": 80,
+            "14": 70,
+            "21": 60
+        }
+    },
+    "indicator_type": {
+        "alias": "",
+        "weight": 3,
+        "type": "discrete",
+        "derived": false,
+        "search_related": "",
+        "factor_scores": {
+            "ip": 50,
+            "domain": 70,
+            "url": 90,
+            "file": 100,
+            "default": 100
+        }
+    },
+    "relatedIncCount": {
+        "alias": "",
+        "weight": 1,
+        "type": "continuous",
+        "derived": false,
+        "search_related": "",
+        "factor_scores":{
+            "10": 100,
+            "5": 80,
+            "3": 70,
+            "0": 60
+        }
+    }
+},
+        "dbotCreatedBy": "",
+        "description": "This list is used to define the factors used in the calculation of threat score for indicators.",
+        "fromVersion": "6.5.0",
+        "hasRole": false,
+        "id": "threat_score_factors",
+        "itemVersion": "",
+        "locked": false,
+        "name": "threat_score_factors",
+        "nameLocked": false,
+        "packID": "",
+        "previousAllRead": false,
+        "previousAllReadWrite": false,
+        "previousRoles": [],
+        "roles": [],
+        "system": false,
+        "tags": null,
+        "toVersion": "",
+        "truncated": false,
+        "type": "json",
+        "version": -1
+    }
