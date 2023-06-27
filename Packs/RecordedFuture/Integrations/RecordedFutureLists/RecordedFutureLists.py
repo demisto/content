@@ -111,14 +111,18 @@ class Client(BaseClient):
             )
 
         return self._call(
-            url_suffix=f'/v2/lists/{list_id}/entities/{operation}', demisto_args=parsed_args
+            url_suffix=f'/v2/lists/{list_id}/entities/{operation}',
+            demisto_args=parsed_args,
         )
 
     def entity_fetch(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
         if list_ids := parsed_args.get("list_ids"):
             parsed_args["list_ids"] = list_ids.split(",")
-        return self._call(url_suffix=f'/v2/lists/entities/lookup', demisto_args = parsed_args)
+        return self._call(
+            url_suffix=f'/v2/lists/entities/lookup', demisto_args=parsed_args
+        )
+
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === ACTIONS === === === === === === ===
@@ -239,10 +243,10 @@ def main() -> None:
 
         elif command == 'recordedfuture-lists-add-entities':
             return_results(actions.entity_add_command())
-        
+
         elif command == 'recordedfuture-lists-remove-entities':
             return_results(actions.entity_remove_command())
-        
+
         elif command == 'recordedfuture-lists-entities':
             return_results(actions.entities_get_command())
 
