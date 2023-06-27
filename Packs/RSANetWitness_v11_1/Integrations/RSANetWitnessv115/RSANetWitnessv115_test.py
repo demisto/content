@@ -1,5 +1,4 @@
 import json
-import io
 import pytest
 import demistomock as demisto
 
@@ -14,12 +13,12 @@ from RSANetWitnessv115 import Client, list_incidents_command, update_incident_co
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def write_to_json(path, new_data):
-    with io.open(path, mode='w') as f:
+    with open(path, mode='w') as f:
         f.write(json.dumps(new_data))
 
 

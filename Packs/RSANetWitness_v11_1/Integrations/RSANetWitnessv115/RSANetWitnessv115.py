@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 from urllib3 import disable_warnings
 
 # Disable insecure warnings
@@ -292,7 +291,7 @@ class Client(BaseClient):
         else:
             raise DemistoException("Error in authentication process- couldn't generate a token")
 
-    def get_incidents(self) -> Tuple[List[Any], Any, Optional[Any]]:
+    def get_incidents(self) -> tuple[List[Any], Any, Optional[Any]]:
         """Get incidents for fetch_incidents command.
 
         Return:
@@ -342,7 +341,7 @@ class Client(BaseClient):
 
 
 def paging_command(limit: Optional[int], page_size: Union[str, None, int], page_number: Optional[str], func_command,
-                   page_size_def='50', **kwargs) -> Tuple[Any, Union[list, Any]]:
+                   page_size_def='50', **kwargs) -> tuple[Any, Union[list, Any]]:
     """Generic command for requests that support paging.
 
        Args:
@@ -1028,7 +1027,7 @@ def exception_handler(res):
         exception = DemistoException(ERROR_TITLES.get(error_code, '') + error_msg)
 
     except Exception:
-        exception = DemistoException('Error in API call [{}] - {}'.format(res.status_code, res.reason))
+        exception = DemistoException(f'Error in API call [{res.status_code}] - {res.reason}')
 
     raise exception
 
@@ -1082,7 +1081,7 @@ def create_filter(args: dict) -> Optional[dict]:
        Returns:
            (str) The created filter.
        """
-    if 'ip' in args.keys():
+    if 'ip' in args:
         args['networkInterfaces.ipv4'] = args.pop('ip')
     expression_list = []
     for arg in args:
@@ -1107,7 +1106,7 @@ def create_filter(args: dict) -> Optional[dict]:
         return None
 
 
-def get_network_interfaces_info(endpoint: dict) -> Tuple[list, list]:
+def get_network_interfaces_info(endpoint: dict) -> tuple[list, list]:
     """Retrieve ip and mac lists from an endpoint item.
 
        Args:
@@ -1121,7 +1120,7 @@ def get_network_interfaces_info(endpoint: dict) -> Tuple[list, list]:
     mac_address_list = []
     for data in endpoint.get('networkInterfaces', []):
         ips_list.append(data.get('ipv4'))
-        mac_address_list.append((data.get('macAddress')))
+        mac_address_list.append(data.get('macAddress'))
 
     return ips_list, mac_address_list
 
