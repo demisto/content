@@ -1,0 +1,6 @@
+name: McAfeeNSM
+id: McAfeeNSM
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''

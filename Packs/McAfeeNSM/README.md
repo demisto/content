@@ -40,6 +40,20 @@ This pack includes Cortex XSIAM content.
 7. on *Forward audit* dropdown select "Allow All Auditlogs".
 7. on *Message Preference* click on the checkbox "Syslog default" and click save.
 
+## Event Time configuration
+
+By Default on Fault and IPS events (syslog) not have event time, to add event time do the followin steps:
+*IPS Events*
+1. on McAfee NSM go to Manager -> Setup -> Notification -> IPS Events -> syslog.
+2. choose target server and click on the pencil (edit)
+3. on message part add in the end of the string " at  $IV_ATTACK_TIME$"
+4. click save
+
+*Syslog Faults*
+1. on McAfee NSM go to Manager -> Setup -> Notification -> Faults -> syslog.
+2. on message preference click edit and add to the end of the message " at  $IV_FAULT_TIME$"
+3. click save
+
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
