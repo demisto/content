@@ -66,9 +66,9 @@ def test_get_host_list_detections_events_command(requests_mock):
 
 
 @pytest.mark.parametrize('last_run, fetch_interval_param, expected_should_run', [
-    ('2023-05-24T11:55:35Z', '12 hours', False),
-    ('2023-05-23T11:55:35Z', '12 hours', True),
-    ({}, '1 hour', True),
+    ('2023-05-24T11:55:35Z', '2023-05-24 00:00:00', False),
+    ('2023-05-23T11:55:35Z', '2023-05-24 00:00:00', True),
+    ({}, '2023-05-24 11:00:00', True),
 ])
 def test_should_run_host_detections_fetch(last_run, fetch_interval_param, expected_should_run):
     """
@@ -82,7 +82,8 @@ def test_should_run_host_detections_fetch(last_run, fetch_interval_param, expect
     - Ensure the expected result
     """
     datetime_now = datetime.strptime('2023-05-24 12:00:00', '%Y-%m-%d %H:%M:%S')
-    fetch_interval = datetime_now - dateparser.parse(fetch_interval_param)
+    delta = datetime.strptime(fetch_interval_param, '%Y-%m-%d %H:%M:%S')
+    fetch_interval = datetime_now - delta
     last_run_dict = {'host_last_fetch': last_run}
     should_run = should_run_host_detections_fetch(last_run=last_run_dict,
                                                   host_detections_fetch_interval=fetch_interval,
