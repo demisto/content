@@ -3,7 +3,7 @@ import pytest
 from splunklib.binding import AuthenticationError
 
 import SplunkPy as splunk
-import splunklib.client as client
+from splunklib import client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
@@ -240,15 +240,15 @@ def test_raw_to_dict():
     url_test = splunk.rawToDict(URL_TESTING_IN)
     character_check = splunk.rawToDict(RESPONSE)
 
-    assert EXPECTED == response
-    assert EXPECTED_WITH_MESSAGE_ID == response_with_message
+    assert response == EXPECTED
+    assert response_with_message == EXPECTED_WITH_MESSAGE_ID
     assert {} == list_response
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
     assert isinstance(raw_message, dict)
     assert empty == {}
-    assert URL_TESTING_OUT == url_test
-    assert POSITIVE == character_check
+    assert url_test == URL_TESTING_OUT
+    assert character_check == POSITIVE
     assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
@@ -320,7 +320,7 @@ data_test_replace_keys = [
 @pytest.mark.parametrize('dict_in, dict_out', data_test_replace_keys)
 def test_replace_keys(dict_in, dict_out):
     out = splunk.replace_keys(deepcopy(dict_in))
-    assert out == dict_out, 'replace_keys({}) got: {} instead: {}'.format(dict_in, out, dict_out)
+    assert out == dict_out, f'replace_keys({dict_in}) got: {out} instead: {dict_out}'
 
 
 def test_parse_time_to_minutes_no_error():
@@ -545,7 +545,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
     mocker.patch('SplunkPy.get_keys_and_types', return_value=fields)
     output = splunk.get_kv_store_config(Name())
-    expected_output = '{}{}'.format(START_OUTPUT, expected_output)
+    expected_output = f'{START_OUTPUT}{expected_output}'
     assert output == expected_output
 
 
@@ -769,8 +769,8 @@ def test_store_incidents_for_mapping(integration_context, incidents, output):
 
 @pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
     ({}, {}, False, "", ""),
-    ({"drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
-      "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME)},
+    ({"drilldown_earliest": f"${splunk.INFO_MIN_TIME}$",
+      "drilldown_latest": f"${splunk.INFO_MAX_TIME}$"},
      {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
     ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, True, '1', '2')
 ])
@@ -1049,7 +1049,7 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
     }
     mocker.patch.object(demisto, 'results')
 
-    requests_mock.post('{}services/notable_update'.format(test_base_url), json='ValueError: Invalid owner value.')
+    requests_mock.post(f'{test_base_url}services/notable_update', json='ValueError: Invalid owner value.')
 
     splunk.splunk_edit_notable_event_command(
         base_url=test_base_url,
@@ -1413,7 +1413,7 @@ def test_module__exception_raised(mocker, credentials):
     """
     # prepare
     def exception_raiser():
-        raise AuthenticationError()
+        raise AuthenticationError
 
     mocker.patch.object(AuthenticationError, '__init__', return_value=None)
     mocker.patch.object(client.Service, 'info', side_effect=exception_raiser)
@@ -1466,7 +1466,7 @@ def test_module_message_object(mocker):
     Then:
         - Validate the test_module run successfully and the info method was called once.
     """
-    import splunklib.results as results
+    from splunklib import results
     # prepare
     mocker.patch.object(demisto, 'params', return_value={'isFetch': True, 'fetchQuery': 'something'})
     message = results.Message("DEBUG", "There's something in that variable...")
@@ -1557,9 +1557,9 @@ def test_empty_string_as_app_param_value(mocker):
     assert connection_args.get('app') == '-'
 
 
-OWNER_MAPPING = [{u'xsoar_user': u'test_xsoar', u'splunk_user': u'test_splunk', u'wait': True},
-                 {u'xsoar_user': u'test_not_full', u'splunk_user': u'', u'wait': True},
-                 {u'xsoar_user': u'', u'splunk_user': u'test_not_full', u'wait': True}, ]
+OWNER_MAPPING = [{'xsoar_user': 'test_xsoar', 'splunk_user': 'test_splunk', 'wait': True},
+                 {'xsoar_user': 'test_not_full', 'splunk_user': '', 'wait': True},
+                 {'xsoar_user': '', 'splunk_user': 'test_not_full', 'wait': True}, ]
 
 MAPPER_CASES_XSOAR_TO_SPLUNK = [
     ('', 'unassigned',
@@ -1638,19 +1638,19 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
 
 COMMAND_CASES = [
     ({'xsoar_username': 'test_xsoar'},  # case normal single username was provided
-     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'}]),
+     [{'SplunkUser': 'test_splunk', 'XsoarUser': 'test_xsoar'}]),
     ({'xsoar_username': 'test_xsoar, Non existing'},  # case normal multiple usernames were provided
-     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+     [{'SplunkUser': 'test_splunk', 'XsoarUser': 'test_xsoar'},
       {'SplunkUser': 'unassigned', 'XsoarUser': 'Non existing'}]),
     ({'xsoar_username': 'Non Existing,'},  # case normal&empty multiple usernames were provided
      [{'SplunkUser': 'unassigned', 'XsoarUser': 'Non Existing'},
       {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': ''}]),
     ({'xsoar_username': ['test_xsoar', 'Non existing']},  # case normal&missing multiple usernames were provided
-     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+     [{'SplunkUser': 'test_splunk', 'XsoarUser': 'test_xsoar'},
       {'SplunkUser': 'unassigned', 'XsoarUser': 'Non existing'}]),
     ({'xsoar_username': ['test_xsoar', 'Non existing'], 'map_missing': False},
      # case normal & missing multiple usernames were provided without missing's mapping activated
-     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+     [{'SplunkUser': 'test_splunk', 'XsoarUser': 'test_xsoar'},
       {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': 'Non existing'}]),
     ({'xsoar_username': 'Non Existing,', 'map_missing': False},  # case missing&empty multiple usernames were provided
      [{'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': 'Non Existing'},
