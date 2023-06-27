@@ -161,7 +161,7 @@ tasks:
       id: b163796c-0cd3-485e-8598-fd3cadc97dc0
       version: -1
       name: Set feedback to "Exception Granted by By Approver"
-      description: Set feedback to "Exception Granted"
+      description: Set feedback to "Exception Granted".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -197,7 +197,7 @@ tasks:
       id: 8a8ed02f-d8cb-4426-89d0-4d466cc2aef0
       version: -1
       name: Set feedback to "Exception denied"
-      description: Set feedback to "Exception Granted"
+      description: Set feedback to "Exception Granted".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -261,7 +261,7 @@ tasks:
       id: 12ef48ca-c429-4891-885e-150e47f6cc47
       version: -1
       name: Is Slack v3 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -300,7 +300,7 @@ tasks:
       id: cb5b1ea5-66b5-4b8e-8c95-06cdc8712756
       version: -1
       name: Is Microsoft Teams enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false

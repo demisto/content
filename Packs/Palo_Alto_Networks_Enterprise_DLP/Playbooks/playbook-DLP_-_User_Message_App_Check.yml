@@ -1,7 +1,7 @@
 id: DLP - User Message App Check
 version: -1
 name: DLP - User Message App Check
-description: Check if the given message app exist and configured and retrieve the user details from it.
+description: Check if the given message app exists and is configured and retrieve the user details from it.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: 7d96386d-2657-44ae-819a-7346c6124fe7
       version: -1
       name: Is Slack v3 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -117,7 +117,7 @@ tasks:
       id: 08f87b86-f565-41be-8e72-f32d56778f24
       version: -1
       name: Update feedback status via API to "SEND_NOTIFICATION_FAILURE"
-      description: Set feedback status to "SEND_NOTIFICATION_FAILURE"
+      description: Set feedback status to "SEND_NOTIFICATION_FAILURE".
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -161,7 +161,7 @@ tasks:
       id: 984daff2-f3cf-4fbc-8438-005a57b0c84f
       version: -1
       name: Is Microsoft Teams enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -400,7 +400,7 @@ tasks:
       id: 4e4989f1-ac4b-4289-8901-c23526126cec
       version: -1
       name: Set incident feedback status to "Send notification failure"
-      description: Set feedback to "Exception not requested"
+      description: Set feedback to "Exception not requested".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -559,7 +559,7 @@ inputs:
 - key: UserEmail
   value: {}
   required: false
-  description: Will be used through email communication in case both Slack and MS Teams are not enabled.
+  description: The user email address that will be used through email communication in case both Slack and MS Teams are not enabled.
   playbookInputQuery:
 - key: UserDisplayName
   value: {}

@@ -126,7 +126,7 @@ tasks:
       id: 4424314b-6370-45eb-81b7-54731141f854
       version: -1
       name: Set feedback to "true positive"
-      description: Set incident feedback to "true positive"
+      description: Set incident feedback to "true positive".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -161,7 +161,7 @@ tasks:
       id: 0190e04d-589a-4b88-8a31-69baf349a053
       version: -1
       name: Set feedback to "False Positive"
-      description: Set feedback to "False Positive"
+      description: Set feedback to "False Positive".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -196,7 +196,7 @@ tasks:
       id: 4ad1815a-3671-4cfc-8dee-90ae6dd38e61
       version: -1
       name: 'Set feedback status to "Pending" '
-      description: Set feedback status to "Pending"
+      description: Set feedback status to "Pending".
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -243,7 +243,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -285,7 +285,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -468,7 +468,7 @@ inputs:
 - key: question_type
   value: {}
   required: false
-  description: Whether to ask the user about the file content or about exemption.
+  description: Whether to ask the user about the file content or about an exemption.
   playbookInputQuery:
 - key: SendMailInstance
   value: {}
@@ -478,7 +478,7 @@ inputs:
 - key: UserEmail
   value: {}
   required: false
-  description: The use email address.
+  description: The user email address.
   playbookInputQuery:
 - key: Snippets
   value: {}

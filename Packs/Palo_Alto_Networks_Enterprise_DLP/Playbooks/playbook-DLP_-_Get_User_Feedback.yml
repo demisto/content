@@ -159,7 +159,7 @@ tasks:
       id: 2cf63c10-e1f8-4201-8b1f-0de87b4bf0bf
       version: -1
       name: 'Set feedback status to "Pending" '
-      description: Set feedback status to "Pending"
+      description: Set feedback status to "Pending".
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -312,7 +312,7 @@ tasks:
       id: ed465bf1-d399-4964-8d83-755bf6ae769e
       version: -1
       name: Get eligibility for exemption
-      description: Determines whether exemption can be granted on incidents from a certain data profile.
+      description: Determines whether the exemption can be granted on incidents from a certain data profile.
       script: '|||pan-dlp-exemption-eligible'
       type: regular
       iscommand: true
@@ -501,7 +501,7 @@ tasks:
       id: 706c9b4d-4795-40fc-85a4-52aebb2f1265
       version: -1
       name: 'Set feedback status to "Pending" '
-      description: Set feedback status to "Pending"
+      description: Set feedback status to "Pending".
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -609,7 +609,7 @@ tasks:
       id: 32e1dcba-d9e4-4e08-88a5-f4c6ffa6d7cf
       version: -1
       name: Set include_violation_detail to False
-      description: Set include_violation_detail to False
+      description: Set include_violation_detail to False.
       scriptName: Set
       type: regular
       iscommand: false
@@ -650,7 +650,7 @@ tasks:
       id: bc30231f-272d-4d67-84dd-71ddc3a8ea22
       version: -1
       name: Set include_violation_detail to True
-      description: Set include_violation_detail to True
+      description: Set include_violation_detail to True.
       scriptName: Set
       type: regular
       iscommand: false
@@ -759,7 +759,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -801,7 +801,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
