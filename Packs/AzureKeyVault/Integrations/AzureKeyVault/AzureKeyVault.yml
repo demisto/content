@@ -1131,7 +1131,7 @@ script:
     - contextPath: AzureKeyVault.Subscription.state
       description: Subscription state.
       type: String
-    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies # noqa: E501
+    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies 
       description: Subscription policies.
       type: Unknown
     - contextPath: AzureKeyVault.Subscription.authorizationSource
@@ -1147,10 +1147,10 @@ script:
     description: List all resource groups for a subscription.
     arguments:
     - name: subscription_id
-      description: "The of subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       isArray: false
     - name: limit
-      description: Limit on the number of resource groups to return. Default value is 50.
+      description: Limit on the number of resource groups to return.
       required: false
       defaultValue: 50
     - name: tag

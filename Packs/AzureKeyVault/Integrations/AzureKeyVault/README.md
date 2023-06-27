@@ -72,7 +72,7 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 | bypass | Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. For example, use 'AzureServices' if you wish to give azure services access to key vault, although the default action is 'Deny' or the access for a specific IP address. Network acl property. Default value is 'AzureServices'. Possible values are: AzureServices, None. | Optional | 
 | vnet_subnet_id | Allow accessibility of a vault from a specific virtual network. This argument must be the full resource ID of a virtual network subnet. For example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1", you allow access to the Key Vault from subnet1. Network acl property. | Optional | 
 | ignore_missing_vnet_service_endpoint | Specifies whether the Network Resource Provider will ignore the check if parent subnet has serviceEndpoints configured.  This allows the configuration for the Key Vault to complete without error before the configuration to the virtual network's subnet is complete. Once the subnet configuration is complete, the Cosmos account will then be accessible through the configured subnet. Network Acl property. Possible values are: . Default is True. | Optional | 
-| ip_rules | The list of IP address rules. Each rule governing the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property. |
+| ip_rules | The list of IP address rules. Each rule defines the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property. |
 |subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.| Optional|
 resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
@@ -1396,7 +1396,7 @@ List all resource groups for a subscription.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
-| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
 #### Context Output
