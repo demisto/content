@@ -12,7 +12,7 @@ enabled: true
 args:
 - name: conditions
   description: |-
-    A JSON formatted list, where all but the last value are dictionaries with the keys "condition" and "return".
+    A JSON formatted list, where all but the last items are dictionaries with the keys "condition" and "return".
     The last value can be any valid JSON object.
   required: true
   default: true

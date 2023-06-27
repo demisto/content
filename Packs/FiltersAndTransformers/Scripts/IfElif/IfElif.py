@@ -9,18 +9,18 @@ CONTEXT = demisto.context()
 OVERRIDE_BUILTINS = {'__builtins__': None}
 
 
-def parse_json_for_keys(condition: str) -> str:
+def parse_json_for_context_keys(condition: str) -> str:
     '''Parses a json string for context keys.'''
 
-    matches = re.findall('\${([\S]+?)}', condition)
+    matches: list[str] = re.findall('\${([\S]+?)}', condition)
 
     for match in matches:
         replacement = dict_safe_get(CONTEXT, match.split('.'), KeyError)
 
         if replacement is KeyError:
-            raise replacement(f'Missing key {match!r} in context.')
+            raise KeyError(f'Missing key {match!r} in context.')
 
-        condition = condition.replace(f'${{{match}}}', json.dumps(replacement))
+        condition = condition.replace(f'${{{match}}}', json.dumps(replacement), 1)
 
     return condition
 
@@ -39,7 +39,7 @@ def evaluate_condition(condition: str) -> bool:
 
 
 def get_conditions_from_args() -> list[dict[str, str]]:
-    return json.loads(parse_json_for_keys(ARGS['conditions']))
+    return json.loads(parse_json_for_context_keys(ARGS['conditions']))
 
 
 def main():
