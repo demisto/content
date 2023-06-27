@@ -10,8 +10,6 @@ import pytz
 import requests
 from splunklib import client
 from splunklib import results
-from splunklib import client
-from splunklib import results
 from splunklib.data import Record
 import urllib3
 from CommonServerPython import *  # noqa: F401
