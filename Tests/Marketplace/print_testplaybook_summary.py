@@ -34,12 +34,6 @@ def print_test_summary(failed_tests_path, skipped_tests_path, succeeded_tests_pa
     logging.info("TEST RESULTS:")
     logging.info(f"Number of playbooks tested - {succeed_count + failed_count}")
 
-    if failed_count:
-        logging.error(f"Number of failed tests - {failed_count}:")
-        logging.error("Failed Tests:")
-        for playbook_id in failed_playbooks:
-            logging.error(f"\t- {playbook_id}")
-
     if succeed_count:
         logging.success(f"Number of succeeded tests - {succeed_count}")
         logging.success("Successful Tests:")
@@ -48,6 +42,13 @@ def print_test_summary(failed_tests_path, skipped_tests_path, succeeded_tests_pa
 
     if skipped_tests:
         print_table("Skipped Tests", skipped_tests)
+
+    if failed_count:
+        logging.error(f"Number of failed tests - {failed_count}:")
+        logging.error("Failed Tests:")
+        for playbook_id in failed_playbooks:
+            logging.error(f"\t- {playbook_id}")
+        exit(1)
 
 
 def print_table(table_name: str, table_data: dict) -> None:
