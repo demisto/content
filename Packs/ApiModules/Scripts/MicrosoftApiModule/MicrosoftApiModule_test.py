@@ -609,3 +609,73 @@ def test_get_token_managed_identities__error(requests_mock, mocker):
 
     err_message = 'Error in Microsoft authorization with Azure Managed Identities'
     assert err_message in MicrosoftApiModule.return_error.call_args[0][0]
+
+
+args = {'test': 'test_arg_value'}
+params = {'test': 'test_param_value', 'test_unique': 'test_arg2_value'}
+
+
+def test_get_from_args_or_params__when_the_key_exists_in_args_and_params():
+    """
+    Given:
+        args and params with the same key in both
+    When:
+        get value from args or params is called
+    Then:
+        Verify that the result are as expected = the value from args is returned
+    """
+
+    assert get_from_args_or_params(args, params, 'test') == 'test_arg_value'
+
+
+def test_get_from_args_or_params__when_the_key_exists_only_in_params():
+    """
+    Given:
+        args and params with the requested key exist only in params
+    When:
+        get value from args or params is called
+    Then:
+        Verify that the result are as expected = the value from params
+    """
+    assert get_from_args_or_params(args, params, 'test_unique') == 'test_arg2_value'
+
+
+def test_get_from_args_or_params__when_the_key_dose_not_exists():
+    """
+    Given:
+        args and params
+    When:
+        get value from args or params is called with a key that dose not exist
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        get_from_args_or_params(args, params, 'mock')
+    assert e.value.args[0] == "No mock was provided. Please provide a mock either in the instance \
+configuration or as a command argument."
+
+
+def test_azure_tag_formatter__with_valid_input():
+    """
+    Given:
+        A valid json as a string
+    When:
+        azure_tag_formatter is called
+    Then:
+        Verify that the result are as expected
+    """
+    assert azure_tag_formatter('{"key":"value"}') == "tagName eq 'key' and tagValue eq 'value'"
+
+
+def test_azure_tag_formatter__with_invalid_input():
+    """
+    Given:
+        A invalid json as a string
+    When:
+        azure_tag_formatter is called
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        azure_tag_formatter('{"key:value"}')
+    assert e.value.args[0] == 'Invalid tag format, please use the following format: \'{"key_name":"value_name"}\''

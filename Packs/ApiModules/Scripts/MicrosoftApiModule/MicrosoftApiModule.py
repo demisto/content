@@ -1416,3 +1416,41 @@ You will be automatically redirected to a link with the following structure:
 and paste it in your instance configuration under the **Authorization code** parameter.
     """
     return CommandResults(readable_output=result_msg)
+
+
+def get_from_args_or_params(args: Dict[str, Any], params: Dict[str, Any], key: str) -> Any:
+    """
+    Get a value from args or params, if the value is provided in both args and params, the value from args will be used.
+    if the value is not provided in args or params, an exception will be raised.
+    this function is used in commands that have a value that can be provided in the instance parameters or in the command,
+    e.g in azure-key-vault-delete 'subscription_id' can be provided in the instance parameters or in the command.
+    Args:
+        args (Dict[str, Any]): Demisto args.
+        params (Dict[str, Any]): Demisto params
+        key (str): Key to get.
+    """
+    if value := args.get(key, params.get(key)):
+        return value
+    else:
+        raise Exception(f'No {key} was provided. Please provide a {key} either in the \
+instance configuration or as a command argument.')
+
+
+def azure_tag_formatter(arg):
+    """
+    Formats a tag argument to the Azure format
+    Args:
+        arg (str): Tag argument as string
+    Returns:
+        str: Tag argument in Azure format
+    """
+    try:
+        tag = json.loads(arg)
+        tag_name = next(iter(tag))
+        tag_value = tag[tag_name]
+        return f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
+    except Exception as e:
+        raise Exception(
+            """Invalid tag format, please use the following format: '{"key_name":"value_name"}'""",
+            e,
+        ) from e
