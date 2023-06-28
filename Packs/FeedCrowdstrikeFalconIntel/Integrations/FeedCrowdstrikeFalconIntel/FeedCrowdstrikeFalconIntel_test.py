@@ -15,10 +15,8 @@ indicators = get_fetch_data()
 @pytest.mark.parametrize(
     "params, actors_filter, expected",
     [
-        ({},
-         '', '/intel/combined/actors/v1'),
-        ({},
-         'blabla', '/intel/combined/actors/v1blabla'),
+        ({}, '', '/intel/combined/actors/v1'),
+        ({}, 'blabla', '/intel/combined/actors/v1blabla'),
         ('last_modified_date%3A%3E{relevant_time}', 'blabla',
          '/intel/combined/actors/v1blabla%2Blast_modified_date%3A%3E{relevant_time}'),
         ('last_modified_date%3A%3E{relevant_time}', '',
