@@ -5396,7 +5396,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
 """)
     identity_entities_ls = []
     next_token = args.get("next_token", "")
-    limit = arg_to_number(args.get("limit", "50"))
+    limit = arg_to_number(args.get("limit", "50")) or 50
     page = arg_to_number(args.get("page", "0"))
     page_size = arg_to_number(args.get("page_size", "50"))
     res_ls = []

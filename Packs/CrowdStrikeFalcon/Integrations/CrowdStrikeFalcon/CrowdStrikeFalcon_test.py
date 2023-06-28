@@ -3963,10 +3963,11 @@ def test_get_modified_remote_data_command(mocker):
     mock_get_idp_detections = mocker.patch('CrowdStrikeFalcon.get_idp_detections_ids',
                                            return_value={'resources': [input_data.remote_idp_detection_id]})
     last_update = '2022-03-08T08:17:09Z'
+    last_update_idp_detection = '2022-03-08T08:17:09.000000Z'
     result = get_modified_remote_data_command({'lastUpdate': last_update})
     assert mock_get_incidents.call_args.kwargs['last_updated_timestamp'] == last_update
     assert mock_get_detections.call_args.kwargs['last_updated_timestamp'] == last_update
-    assert last_update in mock_get_idp_detections.call_args.kwargs['filter_arg']
+    assert last_update_idp_detection in mock_get_idp_detections.call_args.kwargs['filter_arg']
     assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id,
                                             input_data.remote_idp_detection_id]
 
