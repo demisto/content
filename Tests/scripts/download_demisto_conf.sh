@@ -33,6 +33,8 @@ if [ "$?" != "0" ]; then
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
 fi
 cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
+cp -r ./content-test-conf/secrets_build_scripts ./Tests/scripts/secrets_build_scripts
+cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
