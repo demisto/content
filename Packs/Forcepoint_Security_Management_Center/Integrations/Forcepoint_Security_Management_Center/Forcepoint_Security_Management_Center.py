@@ -3,6 +3,8 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from smc import session
 from smc.elements.network import IPList, DomainName, Host
+from smc.core.engine import Engine
+from smc.base.model import Element
 from smc.policy.layer3 import FirewallTemplatePolicy, FirewallPolicy
 from smc.api.exceptions import ElementNotFound
 import urllib3
@@ -31,13 +33,14 @@ class Client:
     def __init__(self, url: str, api_key: str, verify: bool, proxy: bool, port: str):
         self.url = url + ':' + port
         self.api_key = api_key
-        self.verify = verify  # How to use ssl?
+        self.verify = verify
         self.proxy = proxy
 
     def login(self):
         """Logs into a session of smc
         """
-        session.login(url=self.url, api_key=self.api_key, verify=False, timeout=60)
+        handle_proxy()
+        session.login(url=self.url, api_key=self.api_key, verify=self.verify)
 
     def logout(self):
         """logs out of a session in smc
@@ -67,6 +70,42 @@ def extract_host_address(host: Host):
         pass
 
     return address, ipv6_address
+
+
+def handle_rule_entities(ip_lists: list, host_list: list, domain_list: list):
+    """Returns a unified list of all of entities for rule creation.
+    Args:
+        ip_list (list): A list of IP List names
+        host_list (list):  A list of Host names
+        domain_list (list):  A list of Domain names
+
+    """
+    entities: List[Element] = []
+
+    for ip_list in ip_lists:
+        entities.append(IPList.objects.filter(ip_list))
+
+    for host in host_list:
+        entities.append(Host.objects.filter(host))
+
+    for domain in domain_list:
+        entities.append(DomainName.objects.filter(domain))
+
+    return entities
+
+
+def get_rule_from_policy(policy: FirewallPolicy, rule_id: str):
+    """Gets a rule from a policy based on its ID"""
+
+    for rule in policy.fw_ipv4_access_rules.all():
+        if rule.tag == rule_id:
+            return rule
+
+    for rule in policy.fw_ipv6_access_rules.all():
+        if rule.tag == rule_id:
+            return rule
+
+    raise DemistoException(f"Rule with id {rule_id} was not found in policy {policy.name}.")
 
 
 ''' COMMAND FUNCTIONS '''
@@ -114,6 +153,7 @@ def create_iplist_command(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='ForcepointSMC.IPList',
         outputs=outputs,
         raw_response=outputs,
+        outputs_key_field='Name',
         readable_output=f'IP List {name} was created successfully.'
     )
 
@@ -280,6 +320,7 @@ def create_host_command(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='ForcepointSMC.Host',
         outputs=outputs,
         raw_response=outputs,
+        outputs_key_field='Name',
         readable_output=f'Host {name} was created successfully.'
     )
 
@@ -371,6 +412,7 @@ def create_domain_command(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='ForcepointSMC.Domain',
         outputs=outputs,
         raw_response=outputs,
+        outputs_key_field='Name',
         readable_output=f'Domain {name} was created successfully.'
     )
 
@@ -523,6 +565,7 @@ def create_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='ForcepointSMC.Domain',
         outputs=outputs,
         raw_response=outputs,
+        outputs_key_field='Name',
         readable_output=f'Firewall policy {name} was created successfully.'
     )
 
@@ -555,6 +598,187 @@ def delete_firewall_policy_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def create_rule_command(args: Dict[str, Any]) -> CommandResults:
+    """Creating a rule.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    policy_name = args.get('policy_name')
+    rule_name = args.get('rule_name')
+    ip_version = args.get('ip_version')
+    source_ip_list = argToList(args.get('source_ip_list', []))
+    source_host = argToList(args.get('source_host', []))
+    source_domain = argToList(args.get('source_domain', []))
+    dest_ip_list = argToList(args.get('destination_ip_list', []))
+    dest_host = argToList(args.get('destination_host', []))
+    dest_domain = argToList(args.get('destination_domain', []))
+    action = args.get('action', '')
+    comment = args.get('comment', '')
+
+    if not any([source_ip_list, source_host, source_domain, dest_ip_list, dest_host, dest_domain]):
+        raise DemistoException('No sources or destinations were provided, provide at least one.')
+
+    firewall_policy = FirewallPolicy(policy_name)
+    sources = handle_rule_entities(source_ip_list, source_host, source_domain)
+    destinations = handle_rule_entities(dest_ip_list, dest_host, dest_domain)
+
+    if ip_version == 'V4':
+        rule = firewall_policy.fw_ipv4_access_rules.create(name=rule_name, sources=sources, destinations=destinations,
+                                                           action=action, comment=comment)
+    else:
+        rule = firewall_policy.fw_ipv6_access_rules.create(name=rule_name, sources=sources, destinations=destinations,
+                                                           action=action, comment=comment)
+    outputs = {'Name': rule.name,
+               'ID': rule.tag,
+               'Action': rule.action.action,
+               'Comment': rule.comment}
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.Rule',
+        outputs=outputs,
+        raw_response=outputs,
+        outputs_key_field='ID',
+        readable_output=f'The rule {rule_name} to the policy {policy_name} was created successfully.'
+    )
+
+
+def update_rule_command(args: Dict[str, Any]) -> CommandResults:
+    """Creating a Domain.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    policy_name = args.get('policy_name', '')
+    rule_id = args.get('rule_id', '')
+    is_override = args.get('is_override', False)
+    source_ip_list = argToList(args.get('source_ip_list', []))
+    source_host = argToList(args.get('source_host', []))
+    source_domain = argToList(args.get('source_domain', []))
+    dest_ip_list = argToList(args.get('destination_ip_list', []))
+    dest_host = argToList(args.get('destination_host', []))
+    dest_domain = argToList(args.get('destination_domain', []))
+    action = argToList(args.get('action', []))
+    comment = args.get('comment', '')
+
+    policy = FirewallPolicy(policy_name)
+    rule = get_rule_from_policy(policy, rule_id)
+    sources = handle_rule_entities(source_ip_list, source_host, source_domain)
+    destinations = handle_rule_entities(dest_ip_list, dest_host, dest_domain)
+    kwargs = {'sources': sources,
+              'destinations': destinations,
+              'action': action,
+              'comment': comment,
+              'append_lists': is_override}
+    remove_nulls_from_dictionary(kwargs)
+
+    rule.update(**kwargs)
+
+    return CommandResults(
+        readable_output=f'The rule {rule.name} to the policy {policy_name} was updated successfully.'
+    )
+
+
+def list_rule_command(args: Dict[str, Any]) -> CommandResults:
+    """Lists the policy templates in the system.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    policy_name = args.get('policy_name', '')
+    policy = FirewallPolicy(policy_name)
+
+    rules = []
+    for rule in policy.fw_ipv4_access_rules.all():
+        rules.append({'Name': rule.name,
+                      'ID': rule.tag,
+                      'Sources': [source.name for source in rule.sources.all()],
+                      'Destinations': [dest.name for dest in rule.destinations.all()],
+                      'Services': [service.name for service in rule.services.all()],
+                      'Actions': rule.action.action,
+                      'Comment': rule.comment
+                      })
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.Rule',
+        outputs=rules,
+        raw_response=rules,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown(name='Firewall policies:', t=rule, removeNull=True),
+    )
+
+
+def delete_rule_command(args: Dict[str, Any]) -> CommandResults:
+    """Deleting domain.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    policy_name = args.get('policy_name', '')
+    rule_id = args.get('rule_id', '')
+
+    if not list(FirewallPolicy.objects.filter(policy_name)):
+        raise DemistoException(f'Firewall policy {policy_name} was not found.')
+
+    policy = FirewallPolicy(policy_name)
+    rule = get_rule_from_policy(policy, rule_id)
+    rule.delete()
+
+    outputs = {'ID': rule_id,
+               'Deleted': True}
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.Rule',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=f'Rule {rule_id} was deleted successfully.'
+    )
+
+
+def list_engine_command(args: Dict[str, Any]) -> CommandResults:
+    """Lists the policy templates in the system.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', False))
+
+    engines = []
+    if all_results:
+        engines = list(Engine.objects.all())
+    else:
+        engines = list(Engine.objects.limit(limit))
+
+    outputs = []
+    for engine in engines:
+        outputs.append({'Name': engine.name,
+                        'Comment': engine.comment})
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.Engine',
+        outputs=outputs,
+        raw_response=outputs,
+        outputs_key_field='Name',
+        readable_output=tableToMarkdown(name='Engines:', t=outputs, removeNull=True),
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -567,8 +791,8 @@ def main() -> None:
     port = params.get('port')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    command = demisto.command()
 
+    command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
 
@@ -609,10 +833,22 @@ def main() -> None:
             return_results(delete_domain_command(demisto.args()))
         elif command == 'forcepoint-smc-policy-template-list':
             return_results(list_policy_template_command(demisto.args()))
+        elif command == 'forcepoint-smc-firewall-policy-list':
+            return_results(list_firewall_policy_command(demisto.args()))
         elif command == 'forcepoint-smc-firewall-policy-create':
             return_results(create_firewall_policy_command(demisto.args()))
         elif command == 'forcepoint-smc-firewall-policy-delete':
             return_results(delete_firewall_policy_command(demisto.args()))
+        elif command == 'forcepoint-smc-rule-create':
+            return_results(create_rule_command(demisto.args()))
+        elif command == 'forcepoint-smc-rule-update':
+            return_results(update_rule_command(demisto.args()))
+        elif command == 'forcepoint-smc-rule-list':
+            return_results(list_rule_command(demisto.args()))
+        elif command == 'forcepoint-smc-rule-delete':
+            return_results(delete_rule_command(demisto.args()))
+        elif command == 'forcepoint-smc-engine-list':
+            return_results(list_engine_command(demisto.args()))
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')

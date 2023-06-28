@@ -82,6 +82,10 @@ script:
       description: If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False.
       isArray: false
       name: is_overwrite
+      options:
+      - 'False'
+      - 'True'
+      defaultvalue: False
       required: false
     description: 'Updates an IP List.'
     execution: false
@@ -256,6 +260,10 @@ script:
       description: If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False.
       isArray: false
       name: is_overwrite
+      options:
+      - 'False'
+      - 'True'
+      defaultvalue: False
       required: false
     description: 'Updates a host.'
     execution: false
@@ -439,6 +447,235 @@ script:
     - contextPath: ForcepointSMC.Policy.Deleted
       description: 'Was the policy deleted or not'
       type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: policy_name
+      required: true
+    - default: false
+      description: The name of the rule to create.
+      isArray: false
+      name: rule_name
+      required: true
+    - default: false
+      description: The name of the rule to create.
+      isArray: false
+      name: ip_version
+      required: false
+      options:
+      - V4
+      - V6
+      defaultvalue: V4
+    - default: false
+      description: A comma-seperated list of ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: false
+      name: source_ip_list
+      required: false
+    - default: false
+      description: A comma-seperated list of host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: false
+      name: source_host
+      required: false
+    - default: false
+      description: A comma-seperated list of domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: false
+      name: source_domain
+      required: false
+    - default: false
+      description: A comma-seperated list of ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: false
+      name: destination_ip_list
+      required: false
+    - default: false
+      description: A comma-seperated list of host names to use to create the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: false
+      name: destination_host
+      required: false
+    - default: false
+      description: A comma-seperated list of domain names to use to create the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: false
+      name: destination_domain
+      required: false
+    - default: false
+      description: The action of the rule.
+      isArray: false
+      name: action
+      required: false
+      options:
+      - allow
+      - continue
+      - discard
+      - refuse
+      - enforce_vpn
+      - apply_vpn
+      - forward_vpn
+      - blacklist
+      - forced_next_hop
+    - default: false
+      description: The comment to add to the rule.
+      isArray: false
+      name: comment
+      required: false
+    description: 'Creates a rule.'
+    execution: false
+    name: forcepoint-smc-rule-create
+    outputs:
+    - contextPath: ForcepointSMC.Rule.Name
+      description: 'The name of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Rule.ID
+      description: 'The id of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Rule.Action
+      description: 'The action of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Policy.Comment
+      description: 'The comment of the rule.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: policy_name
+      required: true
+    - default: false
+      description: The name of the rule to update.
+      isArray: false
+      name: rule_name
+      required: true
+    - default: false
+      description: Override the existing values or not. Default value id False.
+      isArray: false
+      name: is_overwrite
+      required: false
+      options:
+      - 'False'
+      - 'True'
+      defaultvalue: False
+    - default: false
+      description: A comma-seperated list of ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: false
+      name: source_ip_list
+      required: false
+    - default: false
+      description: A comma-seperated list of host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: false
+      name: source_host
+      required: false
+    - default: false
+      description: A comma-seperated list of domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: false
+      name: source_domain
+      required: false
+    - default: false
+      description: A comma-seperated list of ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
+      isArray: false
+      name: destination_ip_list
+      required: false
+    - default: false
+      description: A comma-seperated list of host names to use to update the rule. Run the forcepoint-host-list command to get the list of hosts.
+      isArray: false
+      name: destination_host
+      required: false
+    - default: false
+      description: A comma-seperated list of domain names to use to update the rule. Run the forcepoint-domain-list command to get the list of domains.
+      isArray: false
+      name: destination_domain
+      required: false
+    - default: false
+      description: The action of the rule.
+      isArray: false
+      name: action
+      required: false
+      options:
+      - allow
+      - continue
+      - discard
+      - refuse
+      - enforce_vpn
+      - apply_vpn
+      - forward_vpn
+      - blacklist
+      - forced_next_hop
+    - default: false
+      description: The comment to add to the rule.
+      isArray: false
+      name: comment
+      required: false
+    description: 'Updates a rule.'
+    execution: false
+    name: forcepoint-smc-rule-update
+  - arguments:
+    - default: false
+      description: The name of the firewall policy.
+      isArray: false
+      name: policy_name
+      required: true
+    description: 'Lists the rules in a specific policy.'
+    execution: false
+    name: forcepoint-smc-rule-list
+    outputs:
+    - contextPath: ForcepointSMC.Rule.Name
+      description: 'The name of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Rule.ID
+      description: 'The ID of the rule.'
+      type: String
+    - contextPath: ForcepointSMC.Rule.Sources
+      description: 'The sources of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Destinations
+      description: 'The destinations of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Services
+      description: 'The services of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Actions
+      description: 'The actions of the rule.'
+      type: Unknown
+    - contextPath: ForcepointSMC.Rule.Comment
+      description: 'The comment of the rule.'
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the policy to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    description: 'Deletes a rule.'
+    execution: false
+    name: forcepoint-smc-rule-delete
+    outputs:
+    - contextPath: ForcepointSMC.Rule.Name
+      description: 'The name of the firewall policy'
+      type: String
+    - contextPath: ForcepointSMC.Rule.Deleted
+      description: 'Was the policy deleted or not'
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The limit on the returned number Engines. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Whether to return all of the results or not, overrides the other arguments if used. Default value is False.
+      isArray: false
+      name: all_results
+      defaultvalue: False
+      required: false
+    description: 'Lists the Engines in the system.'
+    execution: false
+    name: forcepoint-smc-engine-list
+    outputs:
+    - contextPath: ForcepointSMC.Engine.Name
+      description: 'The name of the engine.'
+      type: String
+    - contextPath: ForcepointSMC.Engine.Comment
+      description: 'The comment of the engine.'
+      type: String
   isfetch: false
   runonce: false
   script: '-'

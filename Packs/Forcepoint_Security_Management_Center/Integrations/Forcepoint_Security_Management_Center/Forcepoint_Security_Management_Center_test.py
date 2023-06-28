@@ -6,9 +6,9 @@ from Forcepoint_Security_Management_Center import (create_iplist_command, update
                                                    delete_host_command, update_host_command, create_domain_command,
                                                    list_domain_command, delete_domain_command, list_policy_template_command,
                                                    list_firewall_policy_command, create_firewall_policy_command,
-                                                   delete_firewall_policy_command, IPList, Host, DomainName, FirewallPolicy)
+                                                   delete_firewall_policy_command, list_engine_command,
+                                                   IPList, Host, DomainName, FirewallPolicy)
 from smc.api.exceptions import ElementNotFound
-from smc.base.model import Element
 from smc.base.collection import CollectionManager
 
 
@@ -38,6 +38,23 @@ class mock_Policy():
     def __init__(self, name: str, comment: str):
         self.name = name
         self.comment = comment
+
+
+class mock_Engine():
+    def __init__(self, name: str, comment: str):
+        self.name = name
+        self.comment = comment
+
+
+class mock_Rule():
+    def __init__(self):
+        self.name = 'name'
+        self.tag = 'tag'
+        self.sources = ['sources']
+        self.destinations = ['destinations']
+        self.actions = ['actions']
+        self.services = ['services']
+        self.comment = 'comment'
 
 
 def test_create_address_command(mocker):
@@ -410,3 +427,49 @@ def test_firewall_policy_domain_command(mocker):
     response = delete_firewall_policy_command({'name': 'name'})
 
     assert response.readable_output == 'Firewall policy name was not found.'
+
+
+@pytest.mark.parametrize('args,returned_results', [({'limit': '2'}, 2), ({'all_results': 'True'}, 3)])
+def test_list_engine_command(mocker, args, returned_results):
+    """
+    Given:
+        - demisto args:
+        Case 1: stating a specific Domain name
+        Case 2: getting 2 results
+        Case 3: getting all of the results (3 results)
+    When:
+        - Calling function list_domain_command
+    Then:
+        - Ensure the results holds the expected data and the correct number of results
+    """
+
+    engine = mock_Engine(name='name', comment='comment')
+    mocker.patch.object(CollectionManager, 'limit', return_value=[engine, engine])
+    mocker.patch.object(CollectionManager, 'all', return_value=[engine, engine, engine])
+    response = list_engine_command(args)
+
+    assert 'Engines:' in response.readable_output
+    assert len(response.outputs) == returned_results
+
+
+@pytest.mark.parametrize('args,returned_results', [({'limit': '2'}, 2), ({'all_results': 'True'}, 3)])
+def test_list_rule_command(mocker, args, returned_results):
+    """
+    Given:
+        - demisto args:
+        Case 1: stating a specific Domain name
+        Case 2: getting 2 results
+        Case 3: getting all of the results (3 results)
+    When:
+        - Calling function list_domain_command
+    Then:
+        - Ensure the results holds the expected data and the correct number of results
+    """
+
+    policy = mock_Policy(name='name', comment='comment')
+    rule = mock_Rule()
+    mocker.patch.object(policy, 'fw_ipv4_access_rules.all', return_value=[rule])
+    response = list_rule_command(args)
+
+    assert 'Engines:' in response.readable_output
+    assert len(response.outputs) == returned_results
