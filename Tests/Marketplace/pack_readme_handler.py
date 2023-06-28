@@ -16,7 +16,7 @@ def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, stor
                                         and then uplaoded to storage.
         storage_bucket: The storage bucket to upload the images to.
     """
-    with open(readme_urls_data_dict_path, 'r') as f:
+    with open(readme_urls_data_dict_path) as f:
         # reading the file generated in the sdk of all the packs readme images data.
         readme_urls_data_dict = json.load(f)
 
@@ -147,3 +147,5 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
                 logging.success(f"Copied readme images for {pack_name} pack.")
 
             return task_status
+        return None
+    return None
