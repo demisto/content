@@ -12,24 +12,17 @@ def get_plain_text(html_regex):
         entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ',
                     'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
         for e in entities:
-            data = data.replace('&' + e + ';', entities[e])
+            data = data.replace(f'&{e};', entities[e])
     return data
 
 
 def text_from_html(args):
     html = args['html']
+    html_tag = args.get('html_tag', 'body')
 
-    body = re.search(r'<body.*/body>', html, re.M + re.S + re.I + re.U)
+    body = re.search(fr'<{html_tag}.*/{html_tag}>', html, re.M + re.S + re.I + re.U)
     data = get_plain_text(body)
-
-    if data == '':
-        text = re.search(r'<p.*/p>', html, re.M + re.S + re.I + re.U)
-        data = get_plain_text(text)
-
-    if data != '':
-        return data
-    else:
-        return 'Could not extract text'
+    return data if data != '' else 'Could not extract text'
 
 
 if __name__ in ["__builtin__", "builtins"]:
