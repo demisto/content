@@ -526,7 +526,14 @@ def dedup_fetched_logs(
     return un_fetched_logs
 
 
-def get_dedup_logs(logs: List[Dict], last_run: Dict, log_cache_last_run_name_field_name: str, log_type: str, date_format: str = DATE_FORMAT):
+def get_dedup_logs(
+    logs: List[Dict],
+    last_run: Dict,
+    log_cache_last_run_name_field_name: str,
+    log_type: str,
+    date_format: str = DATE_FORMAT,
+    latest_log_time: str = None
+):
     logs = dedup_fetched_logs(
         logs=logs,
         last_run=last_run,
@@ -539,7 +546,8 @@ def get_dedup_logs(logs: List[Dict], last_run: Dict, log_cache_last_run_name_fie
         logs=logs,
         log_type=log_type,
         log_id_field_name='uuid',
-        date_format=date_format
+        date_format=date_format,
+        latest_log_time=latest_log_time
     )
 
     return logs, dedup_log_ids, latest_log_time
@@ -671,7 +679,8 @@ def get_observed_attack_techniques_logs(
             last_run=last_run,
             log_cache_last_run_name_field_name=observed_attack_technique_dedup,
             log_type=observed_attack_technique_log_type,
-            date_format=date_format
+            date_format=date_format,
+            latest_log_time=last_run_start_time
         )
         # save in cache logs for subsequent pagination(s) in case they have the latest log time
         if subsequent_pagination_log_ids:
@@ -767,7 +776,8 @@ def get_search_detection_logs(
             last_run=last_run,
             log_cache_last_run_name_field_name=search_detection_dedup,
             log_type=search_detections_log_type,
-            date_format=date_format
+            date_format=date_format,
+            latest_log_time=last_run_start_time
         )
         # save in cache logs for subsequent pagination(s) in case they have the latest log time
         if subsequent_pagination_log_ids:
@@ -907,14 +917,14 @@ def fetch_events(
     last_run = demisto.getLastRun()
     demisto.info(f'last run in the start of the fetch: {last_run}')
 
-    demisto.info(f'starting to fetch {LogTypes.WORKBENCH} logs')
-    workbench_logs, updated_workbench_last_run = get_workbench_logs(
-        client=client,
-        first_fetch=first_fetch,
-        last_run=last_run,
-        limit=limit
-    )
-    demisto.info(f'Fetched amount of workbench logs: {len(workbench_logs)}')
+    # demisto.info(f'starting to fetch {LogTypes.WORKBENCH} logs')
+    # workbench_logs, updated_workbench_last_run = get_workbench_logs(
+    #     client=client,
+    #     first_fetch=first_fetch,
+    #     last_run=last_run,
+    #     limit=limit
+    # )
+    # demisto.info(f'Fetched amount of workbench logs: {len(workbench_logs)}')
 
     demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
     observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
@@ -943,10 +953,10 @@ def fetch_events(
     )
     demisto.info(f'Fetched amount of audit logs: {len(audit_logs)}')
 
-    events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+    # events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
     for logs_last_run in [
-        updated_workbench_last_run,
+        # updated_workbench_last_run,
         updated_observed_attack_technique_last_run,
         updated_search_detection_last_run,
         updated_audit_last_run
@@ -954,7 +964,7 @@ def fetch_events(
         last_run.update(logs_last_run)
 
     demisto.info(f'last run after fetching all logs: {last_run}')
-    return events, last_run
+    # return events, last_run
 
 
 def test_module(client: Client, first_fetch: str) -> str:
