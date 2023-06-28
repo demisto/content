@@ -637,7 +637,8 @@ def get_workbench_logs(
         workbench_cache_time_field_name: latest_occurred_workbench_log_ids
     }
 
-    demisto.info(f'{workbench_logs=}, {workbench_updated_last_run=}')
+    demisto.info(f'{workbench_logs=}')
+    demisto.info(f'{workbench_updated_last_run=}')
     return workbench_logs, workbench_updated_last_run
 
 
@@ -745,7 +746,8 @@ def get_observed_attack_techniques_logs(
         observed_attack_technique_next_link: last_run_next_link
     }
 
-    demisto.info(f'{observed_attack_techniques_logs=}, {observed_attack_techniques_updated_last_run=}')
+    demisto.info(f'{observed_attack_techniques_logs=}')
+    demisto.info(f'{observed_attack_techniques_updated_last_run=}')
     return observed_attack_techniques_logs, observed_attack_techniques_updated_last_run
 
 
@@ -836,7 +838,8 @@ def get_search_detection_logs(
         search_detection_next_link: last_run_next_link
     }
 
-    demisto.info(f'{search_detection_logs=}, {search_detections_updated_last_run=}')
+    demisto.info(f'{search_detection_logs=}')
+    demisto.info(f'{search_detections_updated_last_run=}')
     return search_detection_logs, search_detections_updated_last_run
 
 
@@ -905,7 +908,8 @@ def get_audit_logs(
         audit_cache_time_field_name: latest_audit_log_ids
     }
 
-    demisto.info(f'{audit_logs=}, {audit_updated_last_run=}')
+    demisto.info(f'{audit_logs=}')
+    demisto.info(f'{audit_updated_last_run=}')
     return audit_logs, audit_updated_last_run
 
 
@@ -940,14 +944,14 @@ def fetch_events(
     )
     demisto.info(f'Fetched amount of workbench logs: {len(workbench_logs)}')
 
-    # demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
-    # observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
-    #     client=client,
-    #     first_fetch=first_fetch,
-    #     last_run=last_run,
-    #     limit=limit
-    # )
-    # demisto.info(f'Fetched amount of observed attack techniques logs: {len(observed_attack_techniques_logs)}')
+    demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
+    observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
+        client=client,
+        first_fetch=first_fetch,
+        last_run=last_run,
+        limit=limit
+    )
+    demisto.info(f'Fetched amount of observed attack techniques logs: {len(observed_attack_techniques_logs)}')
 
     demisto.info(f'starting to fetch {LogTypes.SEARCH_DETECTIONS} logs')
     search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
@@ -967,7 +971,7 @@ def fetch_events(
     )
     demisto.info(f'Fetched amount of audit logs: {len(audit_logs)}')
 
-    # events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+    events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
     for logs_last_run in [
         updated_workbench_last_run,
@@ -978,7 +982,7 @@ def fetch_events(
         last_run.update(logs_last_run)
 
     demisto.info(f'last run after fetching all logs: {last_run}')
-    # return events, last_run
+    return events, last_run
 
 
 def test_module(client: Client, first_fetch: str) -> str:
