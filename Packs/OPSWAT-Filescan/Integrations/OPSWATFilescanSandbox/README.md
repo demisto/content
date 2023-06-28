@@ -56,22 +56,22 @@ Scan URL with OPSWAT Filescan Sandbox
 | File.Name | String | The full file name. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| Filescan.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| Filescan.Analysis.allTags | Unknown | All tags. | 
-| Filescan.Analysis.overallState | String | Overall state of the scan. | 
-| Filescan.Analysis.taskReference.name | String | Name of the main scan task. | 
-| Filescan.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| Filescan.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| Filescan.Analysis.taskReference.state | String | State of the main scan task. | 
-| Filescan.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| Filescan.Analysis.taskReference.opcount | Number | Counter. | 
-| Filescan.Analysis.taskReference.processTime | Number | processTime. | 
-| Filescan.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| Filescan.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| Filescan.Analysis.resources | Unknown | Resources. | 
-| Filescan.Analysis.file.name | String | The name of the file. | 
-| Filescan.Analysis.file.hash | String | The SHA256 of the file. | 
-| Filescan.Analysis.file.type| String | The type of the submission. | 
+| OPSWAT.Filescan.Analysis.finalVerdict.verdict | String | The final verdict. | 
+| OPSWAT.Filescan.Analysis.allTags | Unknown | All tags. | 
+| OPSWAT.Filescan.Analysis.overallState | String | Overall state of the scan. | 
+| OPSWAT.Filescan.Analysis.taskReference.name | String | Name of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.ID | String | ID of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.state | String | State of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.opcount | Number | Counter. | 
+| OPSWAT.Filescan.Analysis.taskReference.processTime | Number | processTime. | 
+| OPSWAT.Filescan.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
+| OPSWAT.Filescan.Analysis.allSignalGroups | Unknown | All signal groups. | 
+| OPSWAT.Filescan.Analysis.resources | Unknown | Resources. | 
+| OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
+| OPSWAT.Filescan.Analysis.file.hash | String | The SHA256 of the file. | 
+| OPSWAT.Filescan.Analysis.file.type| String | The type of the submission. | 
 
 #### Command example
 
@@ -266,22 +266,22 @@ Scan File with OPSWAT Filescan Sandbox
 | File.Name | String | The full file name. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| Filescan.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| Filescan.Analysis.allTags | Unknown | All tags. | 
-| Filescan.Analysis.overallState | String | Overall state of the scan. | 
-| Filescan.Analysis.taskReference.name | String | Name of the main scan task. | 
-| Filescan.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| Filescan.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| Filescan.Analysis.taskReference.state | String | State of the main scan task. | 
-| Filescan.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| Filescan.Analysis.taskReference.opcount | Number | Counter. | 
-| Filescan.Analysis.taskReference.processTime | Number | processTime. | 
-| Filescan.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| Filescan.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| Filescan.Analysis.resources | Unknown | Resources. | 
-| Filescan.Analysis.file.name | String | The name of the file. | 
-| Filescan.Analysis.file.hash | String | The SHA256 of the file. | 
-| Filescan.Analysis.file.type| String | The type of the submission. | 
+| OPSWAT.Filescan.Analysis.finalVerdict.verdict | String | The final verdict. | 
+| OPSWAT.Filescan.Analysis.allTags | Unknown | All tags. | 
+| OPSWAT.Filescan.Analysis.overallState | String | Overall state of the scan. | 
+| OPSWAT.Filescan.Analysis.taskReference.name | String | Name of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.ID | String | ID of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.state | String | State of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
+| OPSWAT.Filescan.Analysis.taskReference.opcount | Number | Counter. | 
+| OPSWAT.Filescan.Analysis.taskReference.processTime | Number | processTime. | 
+| OPSWAT.Filescan.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
+| OPSWAT.Filescan.Analysis.allSignalGroups | Unknown | All signal groups. | 
+| OPSWAT.Filescan.Analysis.resources | Unknown | Resources. | 
+| OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
+| OPSWAT.Filescan.Analysis.file.hash | String | The SHA256 of the file. | 
+| OPSWAT.Filescan.Analysis.file.type| String | The type of the submission. | 
 
 #### Command example
 
@@ -458,15 +458,15 @@ Search for reports. Finds reports and uploaded files by various tokens.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Filescan.Analysis.id | String | The analysis id. | 
-| Filescan.Analysis.file.name | String | The name of the file. | 
-| Filescan.Analysis.file.sha256 | String | The SHA256 of the file. | 
-| Filescan.Analysis.verdict | String | The final verdict. | 
-| Filescan.Analysis.state | String | Overall state of the scan. | 
-| Filescan.Analysis.date | Date | The scan date. | 
-| Filescan.Analysis.file.mime_type | String | The file MimeType. |
-| Filescan.Analysis.file.short_type | String | The type of the submission. |
-| Filescan.Analysis.tags | Unknown | All tags. | 
+| OPSWAT.Filescan.Analysis.id | String | The analysis id. | 
+| OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
+| OPSWAT.Filescan.Analysis.file.sha256 | String | The SHA256 of the file. | 
+| OPSWAT.Filescan.Analysis.verdict | String | The final verdict. | 
+| OPSWAT.Filescan.Analysis.state | String | Overall state of the scan. | 
+| OPSWAT.Filescan.Analysis.date | Date | The scan date. | 
+| OPSWAT.Filescan.Analysis.file.mime_type | String | The file MimeType. |
+| OPSWAT.Filescan.Analysis.file.short_type | String | The type of the submission. |
+| OPSWAT.Filescan.Analysis.tags | Unknown | All tags. | 
 
 #### Command example
 
