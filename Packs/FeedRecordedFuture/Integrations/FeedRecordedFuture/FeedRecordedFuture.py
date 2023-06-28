@@ -142,7 +142,7 @@ class Client(BaseClient):
         )
         rkwargs['stream'] = True
         rkwargs['verify'] = self._verify
-        rkwargs['timeout'] = self.polling_timeout
+        rkwargs['timeout'] = self.polling_timeout  # type:ignore[typeddict-item]
 
         try:
             response = _session.send(prepared_request, **rkwargs)
