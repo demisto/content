@@ -101,7 +101,7 @@ def test_get_file_instance_command(mocker, raw_response, expected):
     """
     args = {"limit": 1}
     mocker.patch.object(client, 'get_file_instance', side_effect=[raw_response])
-    with open(os.path.join("test_data", "command_readable_output/file_instance_command_readable_output.md"), 'r') as f:
+    with open(os.path.join("test_data", "command_readable_output/file_instance_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_file_instance_command(client, args)
 
@@ -129,7 +129,7 @@ def test_get_domain_instance_command(mocker, raw_response, expected):
     """
     args = {"limit": 1}
     mocker.patch.object(client, 'get_domain_instance', side_effect=[raw_response])
-    with open(os.path.join("test_data", "command_readable_output/endpoint_domain_instance_readable_output.md"), 'r') \
+    with open(os.path.join("test_data", "command_readable_output/endpoint_domain_instance_readable_output.md")) \
             as f:
         readable_output = f.read()
     command_results = get_domain_instance_command(client, args)
@@ -159,7 +159,7 @@ def test_get_endpoint_instance_command(mocker, raw_response, expected):
     args = {"limit": 1}
     mocker.patch.object(client, 'get_endpoint_instance', side_effect=[raw_response])
     with open(os.path.join("test_data",
-                           "command_readable_output/endpoint_instance_command_readable_output.md"), 'r') as f:
+                           "command_readable_output/endpoint_instance_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_endpoint_instance_command(client, args)
 
@@ -189,7 +189,7 @@ def test_get_endpoint_file_association_list_command(mocker, raw_response, expect
     args = {"limit": 1}
     mocker.patch.object(client, 'list_endpoint_file', side_effect=[raw_response])
     with open(os.path.join(
-            "test_data", "command_readable_output/endpoint_file_association_command_readable_output.md"), 'r') as f:
+            "test_data", "command_readable_output/endpoint_file_association_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_endpoint_file_association_list_command(client, args)
 
@@ -219,7 +219,7 @@ def test_get_domain_file_association_list_command(mocker, raw_response, expected
     args = {"limit": 1}
     mocker.patch.object(client, 'list_domain_file', side_effect=[raw_response])
     with open(os.path.join(
-            "test_data", "command_readable_output/domain_file_association_command_readable_output.md"), 'r') as f:
+            "test_data", "command_readable_output/domain_file_association_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_domain_file_association_list_command(client, args)
 
@@ -246,7 +246,7 @@ def test_get_endpoint_domain_association_list_command(mocker, raw_response, expe
     args = {"limit": 1}
     mocker.patch.object(client, 'list_endpoint_domain', side_effect=[raw_response])
     with open(os.path.join(
-            "test_data", "command_readable_output/endpoint_domain_association_command_readable_output.md"), 'r') as f:
+            "test_data", "command_readable_output/endpoint_domain_association_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_endpoint_domain_association_list_command(client, args)
 
@@ -273,7 +273,7 @@ def test_get_deny_list_command(mocker, raw_response, expected):
     args = {"limit": 10}
     mocker.patch.object(client, 'get_deny_list', side_effect=[raw_response])
     with open(os.path.join(
-            "test_data", "command_readable_output/deny_list_command_readable_output.md"), 'r') as f:
+            "test_data", "command_readable_output/deny_list_command_readable_output.md")) as f:
         readable_output = f.read()
     command_results = get_deny_list_command(client, args)
 
@@ -509,7 +509,7 @@ def test_get_endpoint_status_command(mocker, raw_response, expected):
     with open(os.path.join(
             "test_data",
             "command_readable_output/endpoint_command_status_readable_output.md"
-    ), 'r') as f:
+    )) as f:
         readable_output = f.read()
     mocker.patch.object(client, 'get_status_endpoint', side_effect=[raw_response])
     command_results = get_endpoint_status_command(client, args)
@@ -540,7 +540,7 @@ def test_get_endpoint_command_isolate(mocker, raw_response, expected):
     with open(os.path.join(
             "test_data",
             "command_readable_output/endpoint_command_isolate_readable_output.md"
-    ), 'r') as f:
+    )) as f:
         readable_output = f.read()
     mocker.patch.object(client, 'get_isolate_endpoint', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-isolate')
@@ -571,7 +571,7 @@ def test_get_endpoint_command_rejoin(mocker, raw_response, expected):
     with open(os.path.join(
             "test_data",
             "command_readable_output/endpoint_command_rejoin_readable_output.md"
-    ), 'r') as f:
+    )) as f:
         readable_output = f.read()
     mocker.patch.object(client, 'get_rejoin_endpoint', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-rejoin')
@@ -605,7 +605,7 @@ def test_get_endpoint_command_delete(mocker, raw_response, expected):
     with open(os.path.join(
             "test_data",
             "command_readable_output/endpoint_command_delete_readable_output.md"
-    ), 'r') as f:
+    )) as f:
         readable_output = f.read()
     mocker.patch.object(client, 'get_delete_endpoint', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-delete-file')
@@ -636,7 +636,7 @@ def test_get_endpoint_command_cancel(mocker, raw_response, expected):
     with open(os.path.join(
             "test_data",
             "command_readable_output/endpoint_command_cancel_readable_output.md"
-    ), 'r') as f:
+    )) as f:
         readable_output = f.read()
     mocker.patch.object(client, 'get_cancel_endpoint', side_effect=[raw_response])
     command_results = get_endpoint_command(client, args, 'symantec-edr-endpoint-cancel-command')

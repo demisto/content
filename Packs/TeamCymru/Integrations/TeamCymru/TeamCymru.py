@@ -6,7 +6,6 @@ import demistomock as demisto
 import urllib3
 from cymruwhois import Client  # Python interface to whois.cymru.com
 import csv
-from typing import Tuple
 import socks
 import socket
 
@@ -102,7 +101,7 @@ def parse_ip_result(ip: str, ip_data: dict[str, str], reliability: str) -> Comma
     )
 
 
-def validate_ip_addresses(ips_list: list[str]) -> Tuple[list[str], list[str]]:
+def validate_ip_addresses(ips_list: list[str]) -> tuple[list[str], list[str]]:
     """
     Given a list of IP addresses, returns the invalid and valid ips.
     :param ips_list: list of ip addresses
@@ -265,7 +264,7 @@ def setup_proxy():  # pragma: no coverage
         port = int(port)
     proxy_type = scheme_to_proxy_type.get(scheme)
     if not proxy_type:
-        raise ValueError("Un supported proxy scheme: {}".format(scheme))
+        raise ValueError(f"Un supported proxy scheme: {scheme}")
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
     demisto.info("Proxy setup completed successfully.")

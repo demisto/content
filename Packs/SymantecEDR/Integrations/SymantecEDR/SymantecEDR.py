@@ -133,6 +133,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this implementation, no special attributes defined
     """
+
     def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str,
                  first_fetch: str = '3 days', fetch_limit: Optional[int] = 50, is_incident_event: bool = False,
                  is_fetch_comment: bool = False, fetch_status: list = None, fetch_priority: list = None):
@@ -766,7 +767,7 @@ def compile_command_title_string(context_name: str, args: dict, record: int) \
 
     if page_size is None and page:
         page_size = DEFAULT_PAGE_SIZE
-        if DEFAULT_PAGE_SIZE > record:
+        if record < DEFAULT_PAGE_SIZE:
             page_size = record
 
     if (page and page_size) and (page > 0 and page_size > 0):
@@ -1259,7 +1260,7 @@ def extract_raw_data(result: list | dict, ignore_key: list, prefix: str = None) 
          Return dict according to table field name and value
      """
     dataset: dict = {}
-    if not isinstance(result, (dict, list)):
+    if not isinstance(result, dict | list):
         raise ValueError(f'Unexpected data type {type(result)}:: must be either a list or dict.\ndata={result}')
 
     raw_data = {k: v for attribute in result for (k, v) in attribute.items()} if isinstance(result, list) \
@@ -1422,13 +1423,11 @@ def create_content_query(args: dict) -> dict[str, Any]:
         'offset': offset
     }
 
-    if raw_start_time := args.get('start_time'):
-        if start_time := convert_to_iso8601(raw_start_time):
-            payload['start_time'] = start_time
+    if (raw_start_time := args.get('start_time')) and (start_time := convert_to_iso8601(raw_start_time)):
+        payload['start_time'] = start_time
 
-    if raw_end_time := args.get('end_time'):
-        if end_time := convert_to_iso8601(raw_end_time):
-            payload['end_time'] = end_time
+    if (raw_end_time := args.get('end_time')) and (end_time := convert_to_iso8601(raw_end_time)):
+        payload['end_time'] = end_time
 
     return payload
 

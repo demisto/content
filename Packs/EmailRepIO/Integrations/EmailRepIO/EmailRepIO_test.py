@@ -4,7 +4,6 @@ import demistomock as demisto
 
 import pytest
 import json
-import io
 
 TEST_EMAIL_ADDRESS_1 = 'test@example.com'
 TEST_EMAIL_ADDRESS_2 = 'example@example.com'
@@ -18,7 +17,7 @@ def handle_calling_context(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

@@ -4,7 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +24,7 @@ INTEGRATION_NAME = 'EmailRepIO'
 class Client(BaseClient):
     """Client class to interact with the EmailRepIO service API"""
 
-    def get_email_address_reputation(self, email: str) -> Dict[str, Any]:
+    def get_email_address_reputation(self, email: str) -> dict[str, Any]:
         """Get email reputation using the '/{email}' API endpoint"""
 
         return self._http_request(
@@ -32,10 +32,10 @@ class Client(BaseClient):
             url_suffix=f"/{email}"
         )
 
-    def post_email_address_report(self, email: str, tags: List[str], description: Optional[str],
-                                  timestamp: Optional[int], expires: Optional[int]) -> Dict[str, Any]:
+    def post_email_address_report(self, email: str, tags: list[str], description: str | None,
+                                  timestamp: int | None, expires: int | None) -> dict[str, Any]:
         """Report email reputation using the '/report' API endpoint"""
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
         request_params["email"] = email
         request_params["tags"] = tags
 
@@ -70,7 +70,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def email_command(client: Client, args: Dict[str, Any], reliability: str) -> List[CommandResults]:
+def email_command(client: Client, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     """Get email address reputation from EmailRepIO and calculate DBotScore.
 
     DBot score:
@@ -133,7 +133,7 @@ def email_command(client: Client, args: Dict[str, Any], reliability: str) -> Lis
     return emails_results
 
 
-def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def email_reputation_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get email address reputation from EmailRepIO"""
 
     emails = argToList(args.get('email_address'))
@@ -153,7 +153,7 @@ def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def report_email_address_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def report_email_address_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Report email address to EmailRepIO"""
 
     email_address = args.get('email_address')
