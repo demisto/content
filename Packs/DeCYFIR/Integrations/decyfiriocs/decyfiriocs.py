@@ -239,11 +239,13 @@ class Client(BaseClient):
             if threat_intel_type is ThreatIntel.ObjectsNames.THREAT_ACTOR:
                 ta_name = data.get("name")
                 # Threat actor details search API
-                ta_rel_data: List[Dict] = self.get_decyfir_api_iocs_ti_data(
-                    TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, ta_name))
-
                 # Threat actors relationships
-                if ta_rel_data:
+
+                if ta_rel_data := self.get_decyfir_api_iocs_ti_data(
+                    TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(
+                        decyfir_api_key, ta_name
+                    )
+                ):
                     raw_ta_rels: List = []
                     raw_ta_data: Dict = {}
                     raw_ta_obj: Dict = {}
