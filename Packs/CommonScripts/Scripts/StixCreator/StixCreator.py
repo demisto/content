@@ -308,11 +308,11 @@ def main():
                     elif indicator_type == 'malware':
 
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
-                    
+
                     if indicator_type == 'report':
-                          kwargs['name'] = xsoar_indicator.get('name', '')
-                          kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
-                          kwargs['object_refs'] = [xsoar_indicator.get('id', '')]
+                        kwargs['name'] = xsoar_indicator.get('name', '')
+                        kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
+                        kwargs['object_refs'] = [xsoar_indicator.get('id', '')]
 
                     demisto.debug(f"Creating {indicator_type} indicator: {value}, with the following kwargs: {kwargs}")
                     indicator = SDOs[indicator_type](
