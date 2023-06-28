@@ -1,4 +1,3 @@
-import io
 import json
 import os
 from pathlib import Path
@@ -12,7 +11,7 @@ BASE_URL = 'https://cve.circl.lu/api/'
 
 
 def util_load_json(path: str):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

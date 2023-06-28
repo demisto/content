@@ -1,11 +1,10 @@
 
 from CommonServerPython import *
-from typing import Union
 import json
 import math
 
 
-def get_color(cvss: Union[int, float]) -> str:
+def get_color(cvss: int | float) -> str:
     """
     Gets a CVSS score as an integer\float and sends back the correct hex code for a color as a string.
 

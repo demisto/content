@@ -1,6 +1,6 @@
 import urllib3
 import contextlib
-from typing import Dict, Any, List, Union
+from typing import Any
 import re
 
 from CommonServerPython import *
@@ -22,14 +22,14 @@ class Client(BaseClient):
         }
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
-    def cve_latest(self, limit) -> List[Dict[str, Any]]:
+    def cve_latest(self, limit) -> list[dict[str, Any]]:
         return self._http_request(method='GET', url_suffix=f'/last/{limit}')
 
-    def cve(self, cve_id) -> Dict[str, Any]:
+    def cve(self, cve_id) -> dict[str, Any]:
         return self._http_request(method='GET', url_suffix=f'cve/{cve_id}')
 
 
-def cve_to_context(cve) -> Dict[str, str]:
+def cve_to_context(cve) -> dict[str, str]:
     """
     Returning a cve structure with the following fields:
     * ID: The cve ID.
@@ -64,7 +64,7 @@ def test_module(client: Client):
     return 'ok'
 
 
-def cve_latest_command(client: Client, limit) -> List[CommandResults]:
+def cve_latest_command(client: Client, limit) -> list[CommandResults]:
     """
     Returns the 30 latest updated CVEs.
 
@@ -74,7 +74,7 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
          Latest 30 CVE details containing ID, CVSS, modified date, published date and description.
     """
     res = client.cve_latest(limit)
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     for cve_details in res:
         data = cve_to_context(cve_details)
         indicator = generate_indicator(cve_details)
@@ -99,7 +99,7 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
     return command_results
 
 
-def cve_command(client: Client, args: dict) -> Union[List[CommandResults], CommandResults]:
+def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandResults:
     """
     Search for cve with the given ID and returns the cve data if found.
 
@@ -110,7 +110,7 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
         CVE details containing ID, CVSS, modified date, published date and description.
     """
     cve_ids = argToList(args.get('cve', ''))
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for _id in cve_ids:
         if not valid_cve_id_format(_id):
@@ -274,7 +274,7 @@ def main():
         else:
             raise NotImplementedError(f'{command} is not an existing CVE Search command')
 
-    except Exception as err:
+    except DemistoException as err:
         if err.res.status_code == 404:
             return_error(f'Failed to execute {demisto.command()} command.\nError: {"Invalid server URL"}')
         else:
