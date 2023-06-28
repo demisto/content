@@ -1,8 +1,8 @@
 commonfields:
-  id: OPSWAT Filescan
+  id: OPSWAT Filescan Sandbox
   version: -1
-name: OPSWAT Filescan
-display: OPSWAT Filescan
+name: OPSWAT Filescan Sandbox
+display: OPSWAT Filescan Sandbox
 category: Forensics & Malware Analysis
 description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction.
 configuration:
@@ -85,55 +85,55 @@ script:
         - contextPath: File.Malicious.Vendor
           description: The vendor that reported the file as malicious.
           type: String
-        - contextPath: OPSWAT.Filescan.Submission.flow_id
+        - contextPath: Filescan.Submission.flow_id
           description: The flow ID.
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.finalVerdict.verdict
+        - contextPath: Filescan.Analysis.finalVerdict.verdict
           description: The final verdict
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.allTags
+        - contextPath: Filescan.Analysis.allTags
           description: All tags
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.overallState
+        - contextPath: Filescan.Analysis.overallState
           description: Overall state of the scan
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.name
+        - contextPath: Filescan.Analysis.taskReference.name
           description: Name of the main scan task
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.additionalInfo
+        - contextPath: Filescan.Analysis.taskReference.additionalInfo
           description: Additional informations about the main scan task
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.ID
+        - contextPath: Filescan.Analysis.taskReference.ID
           description: ID of the main scan task
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.state
+        - contextPath: Filescan.Analysis.taskReference.state
           description: State of the main scan task
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.resourceReference
+        - contextPath: Filescan.Analysis.taskReference.resourceReference
           description: Resource reference of the main scan task
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.opcount
+        - contextPath: Filescan.Analysis.taskReference.opcount
           description: Counter
           type: Number
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.processTime
+        - contextPath: Filescan.Analysis.taskReference.processTime
           description: processTime
           type: Number
-        - contextPath: OPSWAT.Filescan.Analysis.subtaskReferences
+        - contextPath: Filescan.Analysis.subtaskReferences
           description: Status of scan subtasks
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.allSignalGroups
+        - contextPath: Filescan.Analysis.allSignalGroups
           description: All signal groups
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.resources
+        - contextPath: Filescan.Analysis.resources
           description: Resources
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.file.name
+        - contextPath: Filescan.Analysis.file.name
           description: The name of the file
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.file.hash
+        - contextPath: Filescan.Analysis.file.hash
           description: The SHA256 of the file
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.file.type
+        - contextPath: Filescan.Analysis.file.type
           description: The type of the submission
           type: String
 
@@ -189,55 +189,55 @@ script:
         - contextPath: File.Malicious.Vendor
           description: The vendor that reported the file as malicious.
           type: String
-        - contextPath: OPSWAT.Filescan.Submission.flow_id
+        - contextPath: Filescan.Submission.flow_id
           description: The flow ID.
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.finalVerdict.verdict
+        - contextPath: Filescan.Analysis.finalVerdict.verdict
           description: The final verdict
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.allTags
+        - contextPath: Filescan.Analysis.allTags
           description: All tags
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.overallState
+        - contextPath: Filescan.Analysis.overallState
           description: Overall state of the scan
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.name
+        - contextPath: Filescan.Analysis.taskReference.name
           description: Name of the main scan task
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.additionalInfo
+        - contextPath: Filescan.Analysis.taskReference.additionalInfo
           description: Additional informations about the main scan task
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.ID
+        - contextPath: Filescan.Analysis.taskReference.ID
           description: ID of the main scan task
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.state
+        - contextPath: Filescan.Analysis.taskReference.state
           description: State of the main scan task
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.resourceReference
+        - contextPath: Filescan.Analysis.taskReference.resourceReference
           description: Resource reference of the main scan task
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.opcount
+        - contextPath: Filescan.Analysis.taskReference.opcount
           description: Counter
           type: Number
-        - contextPath: OPSWAT.Filescan.Analysis.taskReference.processTime
+        - contextPath: Filescan.Analysis.taskReference.processTime
           description: processTime
           type: Number
-        - contextPath: OPSWAT.Filescan.Analysis.subtaskReferences
+        - contextPath: Filescan.Analysis.subtaskReferences
           description: Status of scan subtasks
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.allSignalGroups
+        - contextPath: Filescan.Analysis.allSignalGroups
           description: All signal groups
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.resources
+        - contextPath: Filescan.Analysis.resources
           description: Resources
           type: Unknown
-        - contextPath: OPSWAT.Filescan.Analysis.file.name
+        - contextPath: Filescan.Analysis.file.name
           description: The name of the file
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.file.hash
+        - contextPath: Filescan.Analysis.file.hash
           description: The SHA256 of the file
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.file.type
+        - contextPath: Filescan.Analysis.file.type
           description: The type of the submission
           type: String
 
@@ -256,40 +256,40 @@ script:
           description: Page size. Can be 5, 10 or 20
           auto: PREDEFINED
           predefined:
-          - '5'
-          - '10'
-          - '20'
+            - "5"
+            - "10"
+            - "20"
         - name: limit
           required: false
           description: Number of total results. Maximum 50. (If page and page_size was also provided, then it will be ignored.)
       outputs:
-        - contextPath: OPSWAT.Filescan.Analysis.id
+        - contextPath: Filescan.Analysis.id
           description: The analysis id
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.file.name
+        - contextPath: Filescan.Analysis.file.name
           description: The file name.
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.file.sha256
+        - contextPath: Filescan.Analysis.file.sha256
           description: The file SHA256
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.verdict
+        - contextPath: Filescan.Analysis.verdict
           description: The scan verdict
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.state
+        - contextPath: Filescan.Analysis.state
           description: The scan state. Eg. success, failed
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.date
+        - contextPath: Filescan.Analysis.date
           description: The scan date
           type: Date
-        - contextPath: OPSWAT.Filescan.Analysis.file.mime_type
+        - contextPath: Filescan.Analysis.file.mime_type
           description: The file MimeType
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.file.short_type
+        - contextPath: Filescan.Analysis.file.short_type
           description: The type of the submission
           type: String
-        - contextPath: OPSWAT.Filescan.Analysis.tags
+        - contextPath: Filescan.Analysis.tags
           description: Tags
           type: Unknown
 fromversion: 6.0.0
 tests:
-- No tests 
+  - No tests
