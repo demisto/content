@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 handle_proxy()
 params = demisto.params()
 server = params["server"].rstrip('/')
-prefix = f"{server}/awakeapi/v1"
+prefix = server + "/awakeapi/v1"
 verify = not params.get('unsecure', False)
 credentials = params["credentials"]
 identifier = credentials["identifier"]
