@@ -142,7 +142,7 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     return get_highest_support_label(packs_support_levels) if packs_support_levels else ''
 
 
-def get_highest_support_label(packs_support_levels: set[str]):
+def get_highest_support_label(packs_support_levels: set[str]) -> str:
     """
     Get the highest support level.
 
