@@ -179,9 +179,7 @@ class Client(BaseClient):
         if isinstance(data.get("xMitreDataSources"), List):
             self.add_tags(ti_data_obj, data.get("xMitreDataSources"))
 
-        external_ref = data.get("external_references", [])
-
-        if external_ref is not None and isinstance(external_ref, List):
+        if isinstance(data.get('external_references'), list):
             for ex_ref in list(external_ref):
                 ttps_id: str = str(ex_ref.get("external_id"))
                 if ttps_id:
