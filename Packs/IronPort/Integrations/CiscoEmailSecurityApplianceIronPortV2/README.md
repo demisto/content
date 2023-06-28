@@ -31,9 +31,9 @@ If you encounter multiple recurring errors similar to the following message:
 ```
 Authorization Error: make sure username and password are set correctly.
 ```
-This issue typically arises when the JWT session tokens have a shorter time to live than anticipated (usually lasting for 30 minutes).
-To resolve this, adjust the setting for the **Time to live for JWT session token** field.
-It is advisable to set this value as high as possible while keeping your system requirements in mind.
+By default, the integration assumes your JWT session tokens have a time to live of 30 minutes. 
+If the time to live is shorter, it can lead to the authorization error above. To resolve this error, reduce the value for the *Time to live* for JWT session token parameter. 
+By default, this value is 30 minutes and should only be reduced if these errors occur.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
