@@ -7156,6 +7156,12 @@ script:
     - name: dns_signature_source
       description: The EDL name to link to the profile.
       required: true
+    - name: ipv4_sinkhole_address
+      description: The IPv4 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
+      required: false
+    - name: ipv6_sinkhole_address
+      description: The IPv6 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
+      required: false
     - auto: PREDEFINED
       description: The action on the DNS queries.
       name: action
