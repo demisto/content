@@ -487,7 +487,7 @@ def get_all_latest_logs_ids(
             demisto.info(f'adding log with ID {log_id} to latest occurred time logs')
             latest_occurred_time_log_ids.add(log_id)
 
-    demisto.info(f'{latest_occurred_time_log_ids=}')
+    demisto.info(f'{latest_occurred_time_log_ids=} for {log_type=}')
     return list(latest_occurred_time_log_ids), latest_occurred_time_log
 
 
@@ -758,7 +758,6 @@ def get_search_detection_logs(
     pagination_log_ids = last_run.get(search_detection_pagination) or []
 
     if last_run_next_link:
-
         search_detection_logs, new_next_link = client.get_search_detection_logs(
             next_link=last_run_next_link, limit=limit
         )
@@ -955,7 +954,6 @@ def fetch_events(
         last_run.update(logs_last_run)
 
     demisto.info(f'last run after fetching all logs: {last_run}')
-
     return events, last_run
 
 
