@@ -136,6 +136,8 @@ xpanse-prepare-testing-bucket-upload-flow:
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - SECRET_CONF_PATH=$(cat secret_conf_path)
+    - ls ./Tests/scripts
+    - ls ./Tests/scripts/secrets_build_scripts
     - python3 ./Tests/scripts/secrets_build_scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID"
     - section_end "Download configuration"
     - !reference [.open-ssh-tunnel]
@@ -207,6 +209,8 @@ install-packs-in-server-master:
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - SECRET_CONF_PATH=$(cat secret_conf_path)
+    - ls ./Tests/scripts
+    - ls ./Tests/scripts/secrets_build_scripts
     - python3 ./Tests/scripts/secrets_build_scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidd "$GSM_PROJECT_ID"
     - section_end "Download configuration"
     - section_start "Lock Machine"
