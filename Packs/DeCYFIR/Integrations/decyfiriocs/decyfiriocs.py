@@ -117,10 +117,8 @@ class Client(BaseClient):
         if isinstance(data, str):
             data = [data]
 
-        if 'Unknown' in data:
-            data.remove('Unknown')
-        elif 'unknown' in data:
-            data.remove('unknown')
+    data = [item for item in data if item not in {'unknown', 'Unknown'}]
+
 
         in_ti["fields"]["tags"].extend(data)
 
