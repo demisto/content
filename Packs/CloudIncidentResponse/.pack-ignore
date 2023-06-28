@@ -21,3 +21,6 @@ ignore=GR101
 
 [file:README.md]
 ignore=RM108
+
+[file:incidentfield-Is_VPN_IP_Address.json]
+ignore=IF113
