@@ -2278,7 +2278,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
-    demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
+    demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta} for the following {remote_incident_id=}.')
     if delta:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
 
@@ -2351,7 +2351,7 @@ def update_remote_idp_detection(delta, inc_status: IncidentStatus, detection_id:
         :param detection_id: The IDP detection ID to update.
     """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f'Closing detection with remote ID {detection_id} in remote system.')
+        demisto.debug(f'Closing IDP detection with remote ID {detection_id} in remote system.')
         return str(update_idp_detection_request([detection_id], 'closed'))
 
     # status field in CS Falcon is mapped to State field in XSOAR
