@@ -7,7 +7,7 @@ import re
 ARGS = demisto.args()
 CONTEXT = demisto.context()
 OVERRIDE_BUILTINS = {'__builtins__': None}
-CONTEXT_REGEX = re.compile('${([\S]+?)}')
+CONTEXT_REGEX = re.compile('\${([\S]+?)}')
 
 
 def get_from_context(path: str) -> Any:
@@ -36,7 +36,7 @@ def evaluate_condition(condition: str) -> bool:
     try:
         parsed_condition = parse_condition_for_context_keys(condition)
         result = eval(parsed_condition, OVERRIDE_BUILTINS)  # noqa: PGH001
-    except Exception:  # hide the use of eval
+    except Exception:
         raise SyntaxError(f'Invalid expression: {condition!r}')
 
     if not isinstance(result, bool):
