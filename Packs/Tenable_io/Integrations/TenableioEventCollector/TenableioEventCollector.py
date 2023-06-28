@@ -347,7 +347,7 @@ def get_vulnerabilities_command(args: Dict[str, Any], client: Client) -> Command
                           response=results)
 
 @polling_function('tenable-export-assets', requires_polling_arg=False)
-def get_assets_command(client: Client, fetch_from, max_fetch, export_uuid=None):
+def get_assets_command(client: Client, args: Dict[str, Any]):
     """
     Getting assets from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
     Args:
@@ -357,6 +357,9 @@ def get_assets_command(client: Client, fetch_from, max_fetch, export_uuid=None):
     Returns: assets from API.
 
     """
+    fetch_from = arg_to_number(args.get('last_fetch'))
+    max_fetch = arg_to_number(args.get('chunk_size')) or MAX_CHUNK_SIZE
+    export_uuid = args.get('export_uuid')
     assets = []
     if not export_uuid:
         export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=fetch_from)
@@ -367,10 +370,15 @@ def get_assets_command(client: Client, fetch_from, max_fetch, export_uuid=None):
     if status == 'FINISHED' or MAX_CHUNK_SIZE * len(chunks_available) < max_fetch:
         for chunk_id in chunks_available:
             assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
-            # todo: handle update last run, and return result to send to xsiam
-        return PollResult(response=assets)
+        readable_output = tableToMarkdown('Assets List:', assets,
+                                          removeNull=True,
+                                          headerTransform=string_to_table_header)
+
+        results = CommandResults(readable_output=readable_output,
+                                 raw_response=assets)
+        return PollResult(response=results)
     elif status in ['CANCELLED', 'ERROR']:
-        results = CommandResults(readable_output='Export job failed',
+        results = CommandResults(readable_output='Assets export job failed',
                                  entry_type=entryTypes['error'])
         return PollResult(response=results)
     else:
@@ -389,13 +397,15 @@ def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_la
         assets_last_run: assets last run object.
 
     """
-    demisto.info("Getting export uuid for report.")
-    fetch_from: float = assets_last_run.get('fetch_from') or time.mktime(first_fetch.timetuple())
 
-    export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=fetch_from)
+    demisto.info("Getting export uuid.")
+    last_fetch: float = assets_last_run.get('last_fetch') or time.mktime(first_fetch.timetuple())
+
+    export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=last_fetch)
+    next_assets_fetch = time.mktime(datetime.now(tz=timezone.utc).timetuple())
     demisto.info(f'assets export uuid is {export_uuid}')
 
-    assets_last_run.update({'fetch_from': fetch_from,'export_uuid': export_uuid})
+    assets_last_run.update({'last_fetch': last_fetch, 'next_assets_fetch': next_assets_fetch, 'export_uuid': export_uuid})
 
 def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: check if there's a use to max_fetch
     """
@@ -409,15 +419,15 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
     """
     assets = []
     export_uuid = assets_last_run.get('export_uuid')    # if already in lastrun meaning its still polling chunks from api
-    fetch_from = assets_last_run.get('fetch_from')  # last run fetch time
+    last_fetch = assets_last_run.get('last_fetch')  # last run fetch time
     if export_uuid:
         demisto.info(f'Got export uuid from API {export_uuid}')
         assets, status = try_get_assets_chunks(client=client, export_uuid=export_uuid)
         # set params for next run
         if status == 'FINISHED':
             assets_last_run.update({'export_uuid': None})   # if the polling is over and we can start a new fetch
-        elif status in ['CANCELLED', 'ERROR'] and fetch_from:
-            export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=fetch_from)
+        elif status in ['CANCELLED', 'ERROR'] and last_fetch:
+            export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=last_fetch)
             assets_last_run.update({'export_uuid': export_uuid})
 
     demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
@@ -592,6 +602,9 @@ def main() -> None:  # pragma: no cover
             # todo: check if to move fetch vulnerabilities to here instead of fetch events.
             send_assets_to_xsiam(assets=assets) # todo: to be implemented in CSP once we have the api endpoint from server
             demisto.setAssetsLastRun(new_assets_last_run)
+        elif command == 'tenable-export-assets':
+            results = get_assets_command(client, args)
+            return_results(results)
 
     # Log exceptions and return errors
     except Exception as e:
