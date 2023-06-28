@@ -22,4 +22,8 @@ if [ $RETVAL -eq 0 ]; then
   touch "$filepath"
 fi
 
-exit 0 # change back when the change in the sdk will be merged
+if [ "$IS_NIGHTLY" = true ]; then
+  exit 0
+fi
+
+exit $RETVAL
