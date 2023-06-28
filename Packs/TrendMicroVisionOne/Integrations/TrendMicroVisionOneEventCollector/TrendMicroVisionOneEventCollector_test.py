@@ -432,8 +432,7 @@ class TestFetchEvents:
                 'oat_detection_logs_time': '2023-01-01T14:00:00Z',
                 'found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
             },
-            limit=500,
-            date_range_for_oat_and_search_logs=365
+            limit=500
         )
 
         assert len(observed_attack_techniques_logs) == 185

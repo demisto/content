@@ -37,9 +37,11 @@ class LastRunLogsNextLink(Enum):
 
 
 class LastRunTimeCacheTimeFieldNames(Enum):
-    OBSERVED_ATTACK_TECHNIQUES = 'found_oat_logs'
+    OBSERVED_ATTACK_TECHNIQUES_DEDUP = 'dedup_found_oat_logs'
+    OBSERVED_ATTACK_TECHNIQUES_PAGINATION = 'pagination_found_oat_logs'
     WORKBENCH = 'found_workbench_logs'
-    SEARCH_DETECTIONS = 'found_search_detection_logs'
+    SEARCH_DETECTIONS_DEDUP = 'dedup_found_search_detection_logs'
+    SEARCH_DETECTIONS_PAGINATION = 'pagination_found_search_detection_logs'
     AUDIT = 'found_audit_logs'
 
 
@@ -152,7 +154,7 @@ class Client(BaseClient):
         Returns:
             List[Dict]: a list of the requested logs.
         """
-        events: List[dict] = []
+        logs: List[dict] = []
 
         if next_link:
             response = self.http_request(method=method, headers=headers, next_link=next_link)
@@ -161,30 +163,30 @@ class Client(BaseClient):
 
         current_items = response.get('items') or []
         demisto.info(f'Received {current_items=} with {url_suffix=} and {params=}')
-        events.extend(current_items)
+        logs.extend(current_items)
 
-        while (next_link := response.get('nextLink')) and len(events) < limit:
+        while (next_link := response.get('nextLink')) and len(logs) < limit:
             response = self.http_request(method=method, headers=headers, next_link=next_link)
             current_items = response.get('items') or []
             demisto.info(f'Received {current_items=} with {next_link=}')
-            events.extend(current_items)
+            logs.extend(current_items)
 
-        events = events[:limit]
-        event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
+        log_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
+        logs = sorted(logs, key=lambda _log: _log[created_time_field])[:limit]
 
         if url_suffix == UrlSuffixes.SEARCH_DETECTIONS.value:
-            for event in events:
-                if event_time := event.get(created_time_field):
-                    event[created_time_field] = timestamp_to_datestring(
-                        timestamp=event_time, date_format=DATE_FORMAT, is_utc=True
+            for log in logs:
+                if log_time := log.get(created_time_field):
+                    log[created_time_field] = timestamp_to_datestring(
+                        timestamp=log_time, date_format=DATE_FORMAT, is_utc=True
                     )
 
-        for event in events:
-            event['event_type'] = event_type
-            if event_time := event.get(created_time_field):
-                event['_time'] = event_time
+        for log in logs:
+            log['event_type'] = log_type
+            if log_time := log.get(created_time_field):
+                log['_time'] = log_time
 
-        return events, next_link
+        return logs, next_link
 
     def get_workbench_logs(
         self,
@@ -451,6 +453,7 @@ def get_all_latest_logs_ids(
     log_id_field_name: str,
     log_created_time_field_name: str = '_time',
     date_format: str = DATE_FORMAT,
+    latest_log_time: str = None
 ) -> tuple[List[str], str]:
     """
     Get all the logs that their time is equal to the last or earliest log that occurred.
@@ -461,11 +464,12 @@ def get_all_latest_logs_ids(
         log_id_field_name (str): the id field name of the log type
         log_created_time_field_name (str): the created time field of the log
         date_format (str): the date format of the logs
+        latest_log_time (str): the latest log time from the logs list
 
     Returns: all the logs their created time is equal to the latest created time log & latest log time
 
     """
-    latest_occurred_time_log = get_latest_log_created_time(
+    latest_occurred_time_log = latest_log_time or get_latest_log_created_time(
         logs=logs,
         log_type=log_type,
         created_time_field=log_created_time_field_name,
@@ -627,17 +631,19 @@ def get_observed_attack_techniques_logs(
                     ) and isinstance(mitre_technique_ids, list):
                         _filter['mitreTechniqueIds'] = ','.join(mitre_technique_ids)
 
-    observed_attack_technique_cache_time_field_name = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES.value
     observed_attack_technique_log_type = LogTypes.OBSERVED_ATTACK_TECHNIQUES.value
     observed_attack_technique_start_run_time = LastRunLogsStartTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
     observed_attack_technique_next_link = LastRunLogsNextLink.OBSERVED_ATTACK_TECHNIQUES.value
+    observed_attack_technique_dedup = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES_DEDUP.value
+    observed_attack_technique_pagination = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES_PAGINATION.value
 
     last_run_next_link = last_run.get(observed_attack_technique_next_link)
-    last_run_log_ids = last_run.get(observed_attack_technique_cache_time_field_name) or []
     last_run_start_time = last_run.get(observed_attack_technique_start_run_time)
+    dedup_log_ids = last_run.get(observed_attack_technique_dedup) or []
+    pagination_log_ids = last_run.get(observed_attack_technique_pagination) or []
 
     start_time, end_time = get_datetime_range(
-        last_run_time=last_run.get(observed_attack_technique_start_run_time),
+        last_run_time=last_run_start_time,
         first_fetch=first_fetch,
         log_type_time_field_name=observed_attack_technique_start_run_time,
         date_format=date_format
@@ -650,38 +656,42 @@ def get_observed_attack_techniques_logs(
         next_link=last_run.get(observed_attack_technique_next_link)
     )
 
+    observed_attack_techniques_logs = dedup_fetched_logs(
+        logs=observed_attack_techniques_logs,
+        last_run=last_run,
+        log_id_field_name='uuid',
+        log_cache_last_run_name_field_name=observed_attack_technique_dedup,
+        log_type=observed_attack_technique_log_type
+    )
+
     if new_next_link:
         # first time of the pagination
         if not last_run_next_link:
             # save in cache only the latest log ids from first pagination
-            observed_attack_techniques_logs = dedup_fetched_logs(
-                logs=observed_attack_techniques_logs,
-                last_run=last_run,
-                log_id_field_name='uuid',
-                log_cache_last_run_name_field_name=observed_attack_technique_cache_time_field_name,
-                log_type=observed_attack_technique_log_type
-            )
-            last_run_log_ids, last_run_start_time = get_all_latest_logs_ids(
+            pagination_log_ids, last_run_start_time = get_all_latest_logs_ids(
                 logs=observed_attack_techniques_logs,
                 log_type=observed_attack_technique_log_type,
                 log_id_field_name='uuid'
             )
-
+        else:
+            # if in the subsequent pagination(s) there are logs with the latest time, add it to cache
+            subsequent_pagination_log_ids, _ = get_all_latest_logs_ids(
+                logs=observed_attack_techniques_logs,
+                log_type=observed_attack_technique_log_type,
+                log_id_field_name='uuid',
+                latest_log_time=last_run_start_time
+            )
+            if subsequent_pagination_log_ids:
+                pagination_log_ids.extend(subsequent_pagination_log_ids)
         # always update the next link
         last_run_next_link = new_next_link
     else:
-        if not last_run_next_link:
+        if last_run_next_link:
+            # pagination is over
+            dedup_log_ids = pagination_log_ids
+        else:
             # there wasn't any pagination
-            # take the latest incident that occurred and dedup them
-            observed_attack_techniques_logs = dedup_fetched_logs(
-                logs=observed_attack_techniques_logs,
-                last_run=last_run,
-                log_id_field_name='uuid',
-                log_cache_last_run_name_field_name=observed_attack_technique_cache_time_field_name,
-                log_type=observed_attack_technique_log_type
-            )
-
-            last_run_log_ids, latest_log_time = get_all_latest_logs_ids(
+            dedup_log_ids, latest_log_time = get_all_latest_logs_ids(
                 logs=observed_attack_techniques_logs,
                 log_type=observed_attack_technique_log_type,
                 log_id_field_name='uuid',
@@ -696,7 +706,8 @@ def get_observed_attack_techniques_logs(
 
     observed_attack_techniques_updated_last_run = {
         observed_attack_technique_start_run_time: last_run_start_time,
-        observed_attack_technique_cache_time_field_name: last_run_log_ids,
+        observed_attack_technique_dedup: dedup_log_ids,
+        observed_attack_technique_pagination: pagination_log_ids,
         observed_attack_technique_next_link: last_run_next_link
     }
 
