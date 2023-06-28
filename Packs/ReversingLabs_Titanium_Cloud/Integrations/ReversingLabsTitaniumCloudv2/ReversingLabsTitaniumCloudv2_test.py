@@ -20,8 +20,8 @@ def load_json(file_path):
 
 
 def test_file_reputation_output():
-    test_report = load_json("TestData/file_reputation_report.json")
-    test_context = load_json("TestData/file_reputation_context.json")
+    test_report = load_json("test_data/file_reputation_report.json")
+    test_context = load_json("test_data/file_reputation_context.json")
 
     result = file_reputation_output(response_json=test_report, hash_value=test_hash)
 
@@ -29,8 +29,8 @@ def test_file_reputation_output():
 
 
 def test_av_scanners_output():
-    test_report = load_json("TestData/av_scanners_report.json")
-    test_context = load_json("TestData/av_scanners_context.json")
+    test_report = load_json("test_data/av_scanners_report.json")
+    test_context = load_json("test_data/av_scanners_context.json")
 
     result = av_scanners_output(response_json=test_report, hash_value=test_hash)
 
@@ -38,8 +38,8 @@ def test_av_scanners_output():
 
 
 def test_file_analysis_output():
-    test_report = load_json("TestData/file_analysis_report.json")
-    test_context = load_json("TestData/file_analysis_context.json")
+    test_report = load_json("test_data/file_analysis_report.json")
+    test_context = load_json("test_data/file_analysis_context.json")
 
     result = file_analysis_output(response_json=test_report, hash_value=test_hash)
 
@@ -47,8 +47,8 @@ def test_file_analysis_output():
 
 
 def test_rha1_analytics_output():
-    test_report = load_json("TestData/rha1_analytics_report.json")
-    test_context = load_json("TestData/rha1_analytics_context.json")
+    test_report = load_json("test_data/rha1_analytics_report.json")
+    test_context = load_json("test_data/rha1_analytics_context.json")
 
     result = rha1_analytics_output(response_json=test_report, hash_value=test_hash)
 
@@ -56,8 +56,8 @@ def test_rha1_analytics_output():
 
 
 def test_uri_statistics_output():
-    test_report = load_json("TestData/uri_statistics_report.json")
-    test_context = load_json("TestData/uri_statistics_context.json")
+    test_report = load_json("test_data/uri_statistics_report.json")
+    test_context = load_json("test_data/uri_statistics_context.json")
 
     result = uri_statistics_output(response_json=test_report, uri=url)
 
@@ -65,8 +65,8 @@ def test_uri_statistics_output():
 
 
 def test_url_report_output():
-    test_report = load_json("TestData/url_report_report.json")
-    test_context = load_json("TestData/url_report_context.json")
+    test_report = load_json("test_data/url_report_report.json")
+    test_context = load_json("test_data/url_report_context.json")
 
     result = url_report_output(response_json=test_report, url=url)
 
@@ -74,8 +74,8 @@ def test_url_report_output():
 
 
 def test_imphash_similarity_output():
-    test_report = load_json("TestData/imphash_report.json")
-    test_context = load_json("TestData/imphash_context.json")
+    test_report = load_json("test_data/imphash_report.json")
+    test_context = load_json("test_data/imphash_context.json")
 
     result = imphash_similarity_output(imphash="f34d5f2d4577ed6d9ceec516c1f5a744", response=test_report)
 
