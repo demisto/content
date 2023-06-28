@@ -109,6 +109,13 @@ class Client(BaseClient):
 
         return response
 
+    def get_the_latest_threat_intel_feed_request(self):
+
+        headers = self._headers
+        response = self._http_request('get', 'threat-intel', headers=headers, timeout=120, resp_type='response')
+
+        return response
+
     def manage_a_threat_identified_by_abnormal_security_request(self, threat_id, action):
         headers = self._headers
         json_data = {'action': action}
@@ -400,6 +407,16 @@ def get_employee_login_information_for_last_30_days_in_csv_format_command(client
     return results
 
 
+def get_the_latest_threat_intel_feed_command(client, args=None):
+
+    response = client.get_the_latest_threat_intel_feed_request()
+    filename = 'threat_intel_feed.json'
+    file_content = response.text
+    results = fileResult(filename, file_content)
+
+    return results
+
+
 def manage_a_threat_identified_by_abnormal_security_command(client, args):
     threat_id = str(args.get('threat_id', ''))
     action = str(args.get('action', ''))
@@ -558,6 +575,9 @@ def main():
             'abnormal-security-check-case-action-status':
                 check_the_status_of_an_action_requested_on_a_case_command,
             'abnormal-security-get-case-analysis-and-timeline': provides_the_analysis_and_timeline_details_of_a_case_command,
+
+            # Threat Intel commands
+            'abnormal-security-get-latest-threat-intel-feed': get_the_latest_threat_intel_feed_command,
 
             # Abuse Mailbox commands
             'abnormal-security-list-abuse-mailbox-campaigns': get_a_list_of_campaigns_submitted_to_abuse_mailbox_command,
