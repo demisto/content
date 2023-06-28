@@ -1,8 +1,3 @@
-### Community Contributed Integration
- #### Integration Author: NVISO, Sameh El-Hakim, Tim Roberts, & Ali Sawyer
- No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
-***
-
 ## OpenAI
 - Create an API key on https://platform.openai.com/: 
   - Open user account settings (at upper right)

@@ -1,6 +1,6 @@
 category: Messaging and Conferencing
 commonfields:
-  id: OpenAIv2
+  id: OpenAI v2
   version: -1
 configuration:
 - defaultvalue: https://api.openai.com/
@@ -166,9 +166,11 @@ script:
     outputs:
     - contextPath: OpenAI.Summary
       description: Summary returned by the model
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: OpenAi ChatGPT v3
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
