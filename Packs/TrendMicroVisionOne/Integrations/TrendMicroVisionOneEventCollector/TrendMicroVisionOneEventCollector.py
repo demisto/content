@@ -269,7 +269,7 @@ class Client(BaseClient):
                 'top': top
             },
             limit=limit,
-            new_next_link=next_link
+            next_link=next_link
         )
 
     def get_search_detection_logs(
@@ -309,7 +309,7 @@ class Client(BaseClient):
             params=params,
             limit=limit,
             headers={'TMV1-Query': '*', "Authorization": f"Bearer {self.api_key}"},
-            new_next_link=next_link
+            next_link=next_link
         )
 
     def get_audit_logs(
