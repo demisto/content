@@ -204,7 +204,7 @@ class Helper:
         return "filterBy: [" + ",".join(non_null_list) + "]"
 
     @staticmethod
-    def datetime_to_string(d: datetime):
+    def datetime_to_string(d):
         return d.strftime(DATE_FORMAT)
 
     @staticmethod
@@ -223,7 +223,7 @@ class Helper:
                     if type(value[0]) == str:
                         _value = ",".join([f'"{v}"' for v in value])
                     elif type(value[0]) == int or type(value[0]) == float:
-                        _value = ",".join([f"{str(v)}" for v in value])
+                        _value = ",".join([f"{v}" for v in value])
 
             else:
                 demisto.info(
@@ -243,7 +243,6 @@ class Helper:
                 + "}"
             )
         elif operator == "EQUALS":
-            _value = None
             _value = f'"{value}"' if type(value) == str else value
             return (
                 '{keyExpression: {key: "'
@@ -389,7 +388,9 @@ class Client(BaseClient):
         return self.graphql_query(query)
 
     def get_threat_events_query(
-        self, starttime: datetime, endtime: datetime = datetime.now()
+        self,
+        starttime,
+        endtime=datetime.now(),
     ):
         environment_clause = None
         securityScoreCategory_clause = None
@@ -445,7 +446,9 @@ class Client(BaseClient):
         return query
 
     def get_threat_events(
-        self, starttime: datetime, endtime: datetime = datetime.now()
+        self,
+        starttime,
+        endtime=datetime.now(),
     ):
         query = self.get_threat_events_query(starttime, endtime)
         demisto.debug("Query is: " + query)
@@ -529,7 +532,6 @@ class Client(BaseClient):
                 demisto.info(msg)
             else:
                 demisto.info("Found Span with id: " + span_id + ". Adding to Event.")
-                domain_event["spans"] = []
                 domain_event["spans"] = trace_results["data"]["spans"]["results"]
                 events.append(domain_event)
                 if first:
@@ -565,7 +567,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
 
     # Handle first time fetch
     _last_fetch: datetime = (
-        dateparser.parse(first_fetch_time)
+        dateparser.parse(first_fetch_time)  # type: ignore
         if last_fetch is None
         else dateparser.parse(last_fetch)
     )

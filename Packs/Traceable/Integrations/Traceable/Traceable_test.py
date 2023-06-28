@@ -362,11 +362,9 @@ def test_graphql_query(mocker):
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
 
     response_obj = client.graphql_query("query")
-    assert (
-        response_obj is not None
-        and "data" in response_obj
-        and response_obj["data"] == "result"
-    )
+    assert response_obj is not None
+    assert "data" in response_obj
+    assert response_obj["data"] == "result"
 
 
 def test_errors_in_response(caplog, mocker):
@@ -515,11 +513,9 @@ def test_client_creation_no_headers():
     from Traceable import Client
 
     client = Client("https://mock.url")
-    assert (
-        type(client.headers) == dict
-        and "Content-Type" in client.headers
-        and client.headers["Content-Type"] == "application/json"
-    )
+    assert type(client.headers) == dict
+    assert "Content-Type" in client.headers
+    assert client.headers["Content-Type"] == "application/json"
 
 
 def test_graphql_query_non_200(mocker, caplog, capfd):

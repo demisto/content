@@ -34,10 +34,12 @@ configuration:
   type: 0
   required: false
 - name: max_fetch
+  display: Max number of records to fetch per API call to Traceable API Endpoint.
   required: false
   type: 0
   defaultvalue: '100'
 - name: span_fetch_threadpool
+  display: Number of span queries to run in parallel
   required: false
   type: 0
   defaultvalue: '10'
