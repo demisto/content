@@ -447,7 +447,8 @@ def test_module_command(client, decyfir_api_key):
     response = client._http_request(url_suffix=url, method='GET', resp_type='response')
     if response.status_code == 200:
         return 'ok'
-    elif response.status_code == 401 or response.status_code == 403:
+        elif response.status_code in [401, 403]:
+
         return 'Not Authorized'
     else:
         return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
