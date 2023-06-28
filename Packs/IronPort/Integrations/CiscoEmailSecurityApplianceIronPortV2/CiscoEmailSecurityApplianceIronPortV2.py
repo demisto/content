@@ -1,4 +1,4 @@
-from typing import Callable, Tuple
+from collections.abc import Callable
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -42,7 +42,7 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
-        self.jwt_token_expiration_period = self.jwt_token_expiration_period
+        self.jwt_token_expiration_period = jwt_token_expiration_period
         self.handle_request_headers()
 
     def handle_request_headers(self, force_retrieve_jwt: bool = False):
@@ -620,12 +620,7 @@ def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
     """
     try:
         if custom_query:
-            return {
-                key: value
-                for key, value in (
-                    field.split("=") for field in custom_query.split(";")
-                )
-            }
+            return dict(field.split("=") for field in custom_query.split(";"))
         else:
             return {}
     except ValueError:
@@ -780,7 +775,7 @@ def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str,
     return args
 
 
-def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tuple:
+def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tuple:
     """
     Executing Manual Pagination (using the page and page size arguments)
     or Automatic Pagination (display a number of total results).
