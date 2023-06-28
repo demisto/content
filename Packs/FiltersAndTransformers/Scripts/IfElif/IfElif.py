@@ -7,19 +7,25 @@ import re
 ARGS = demisto.args()
 CONTEXT = demisto.context()
 OVERRIDE_BUILTINS = {'__builtins__': None}
+CONTEXT_REGEX = re.compile('${([\S]+?)}')
 
 
-def parse_json_for_context_keys(condition: str) -> str:
-    '''Parses a json string for context keys.'''
+def get_from_context(path: str) -> Any:
+    '''Gets a value of the format from the context.'''
 
-    matches: list[str] = re.findall('\${([\S]+?)}', condition)
+    result = dict_safe_get(CONTEXT, path.split('.'), KeyError)
 
-    for match in matches:
-        replacement = dict_safe_get(CONTEXT, match.split('.'), KeyError)
+    if result is KeyError:
+        raise KeyError(f'Missing key {path!r} in context.')
 
-        if replacement is KeyError:
-            raise KeyError(f'Missing key {match!r} in context.')
+    return result
 
+
+def parse_condition_for_context_keys(condition: str) -> str:
+    '''Parses a string for context keys.'''
+
+    for match in CONTEXT_REGEX.findall(condition):
+        replacement = get_from_context(match)
         condition = condition.replace(f'${{{match}}}', json.dumps(replacement), 1)
 
     return condition
@@ -28,7 +34,8 @@ def parse_json_for_context_keys(condition: str) -> str:
 def evaluate_condition(condition: str) -> bool:
 
     try:
-        result = eval(condition, OVERRIDE_BUILTINS)  # noqa: PGH001
+        parsed_condition = parse_condition_for_context_keys(condition)
+        result = eval(parsed_condition, OVERRIDE_BUILTINS)  # noqa: PGH001
     except Exception:  # hide the use of eval
         raise SyntaxError(f'Invalid expression: {condition!r}')
 
@@ -39,7 +46,7 @@ def evaluate_condition(condition: str) -> bool:
 
 
 def get_conditions_from_args() -> list[dict[str, str]]:
-    return json.loads(parse_json_for_context_keys(ARGS['conditions']))
+    return json.loads(ARGS['conditions'])
 
 
 def main():
@@ -53,8 +60,12 @@ def main():
                 for condition in conditions
                 if evaluate_condition(condition['condition'])
             ),
-            default
+            default['else']
         )
+
+        if path := CONTEXT_REGEX.fullmatch(result):
+            result = get_from_context(path[1])
+
     except Exception as e:
         raise DemistoException(f'Error in IfElif Transformer:\n{e}')
 
