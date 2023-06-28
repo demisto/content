@@ -169,6 +169,7 @@ class Client(BaseClient):
             demisto.info(f'Received {current_items=} with {next_link=}')
             events.extend(current_items)
 
+        events = events[:limit]
         event_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
 
         if url_suffix == UrlSuffixes.SEARCH_DETECTIONS.value:
@@ -403,10 +404,10 @@ def get_datetime_range(
 
         # Note: The data retrieval time range cannot be greater than 365 days for oat logs,
         # it cannot exceed datetime.now, otherwise the api will return 400
-        one_day_from_last_run_time = last_run_time_datetime + timedelta(  # type: ignore[operator]
+        one_year_from_last_run_time = last_run_time_datetime + timedelta(  # type: ignore[operator]
             days=ONE_YEAR  # type: ignore[operator]
         )
-        end_time_datetime = now if one_day_from_last_run_time > now else one_day_from_last_run_time
+        end_time_datetime = now if one_year_from_last_run_time > now else one_year_from_last_run_time
     else:
         end_time_datetime = now
 
@@ -417,12 +418,11 @@ def get_datetime_range(
     return start_time, end_time
 
 
-def get_log_created_time(
+def get_latest_log_created_time(
     logs: List[dict],
     log_type: str,
     created_time_field: str = '_time',
     date_format: str = DATE_FORMAT,
-    latest: bool = True
 ) -> str:
     """
     Get the time of the latest or earliest occurred log from a list of logs.
@@ -432,35 +432,25 @@ def get_log_created_time(
         created_time_field (str): The created time field for the logs.
         log_type (str): The log type for debugging purposes.
         date_format (str): The date format.
-        latest (bool): If True, get the time of the latest log,If False, get the time of the earliest log.
 
     Returns:
-        str: The time of the latest or earliest occurred log, empty string if there aren't any logs.
+        str: The time of the latest occurred log, empty string if there aren't any logs.
     """
     if logs:
-        if latest:
-            # get latest log
-            log_time = max(logs, key=lambda log: datetime.strptime(log[created_time_field], date_format))[created_time_field]
-        else:
-            # get earliest log
-            log_time = min(logs, key=lambda log: datetime.strptime(log[created_time_field], date_format))[created_time_field]
-
-        additional_log = 'latest' if latest else 'earliest'
-
-        demisto.info(f'{log_time=} for {log_type=} which is the {additional_log}')
-        return log_time
+        latest_log_time = max(logs, key=lambda log: datetime.strptime(log[created_time_field], date_format))[created_time_field]
+        demisto.info(f'{latest_log_time=} for {log_type=}')
+        return latest_log_time
 
     demisto.info(f'No logs found for {log_type=}')
     return ''
 
 
-def get_all_logs_ids(
+def get_all_latest_logs_ids(
     logs: List[dict],
     log_type: str,
     log_id_field_name: str,
     log_created_time_field_name: str = '_time',
     date_format: str = DATE_FORMAT,
-    latest: bool = True
 ) -> tuple[List[str], str]:
     """
     Get all the logs that their time is equal to the last or earliest log that occurred.
@@ -471,32 +461,30 @@ def get_all_logs_ids(
         log_id_field_name (str): the id field name of the log type
         log_created_time_field_name (str): the created time field of the log
         date_format (str): the date format of the logs
-        latest (bool): If True, get the time of the latest log,If False, get the time of the earliest log.
 
     Returns: all the logs their created time is equal to the latest created time log & latest log time
 
     """
-    occurred_time_log = get_log_created_time(
+    latest_occurred_time_log = get_latest_log_created_time(
         logs=logs,
         log_type=log_type,
         created_time_field=log_created_time_field_name,
-        date_format=date_format,
-        latest=latest
+        date_format=date_format
     )
 
     # if there aren't any new logs, no need to cache anything
-    if not occurred_time_log:
-        return [], occurred_time_log
+    if not latest_occurred_time_log:
+        return [], latest_occurred_time_log
 
-    occurred_time_log_ids: Set[str] = set()
+    latest_occurred_time_log_ids: Set[str] = set()
 
     for log in logs:
-        if log.get(log_created_time_field_name) == occurred_time_log and (log_id := log.get(log_id_field_name)):
+        if log.get(log_created_time_field_name) == latest_occurred_time_log and (log_id := log.get(log_id_field_name)):
             demisto.info(f'adding log with ID {log_id} to latest occurred time logs')
-            occurred_time_log_ids.add(log_id)
+            latest_occurred_time_log_ids.add(log_id)
 
-    demisto.info(f'{occurred_time_log_ids=}')
-    return list(occurred_time_log_ids), occurred_time_log
+    demisto.info(f'{latest_occurred_time_log_ids=}')
+    return list(latest_occurred_time_log_ids), latest_occurred_time_log
 
 
 def dedup_fetched_logs(
@@ -589,7 +577,7 @@ def get_workbench_logs(
         log_type=workbench_log_type
     )
 
-    latest_occurred_workbench_log_ids, latest_log_time = get_all_logs_ids(
+    latest_occurred_workbench_log_ids, latest_log_time = get_all_latest_logs_ids(
         logs=workbench_logs,
         log_type=workbench_log_type,
         log_id_field_name='id',
@@ -673,11 +661,10 @@ def get_observed_attack_techniques_logs(
                 log_cache_last_run_name_field_name=observed_attack_technique_cache_time_field_name,
                 log_type=observed_attack_technique_log_type
             )
-            last_run_log_ids, last_run_start_time = get_all_logs_ids(
+            last_run_log_ids, last_run_start_time = get_all_latest_logs_ids(
                 logs=observed_attack_techniques_logs,
                 log_type=observed_attack_technique_log_type,
-                log_id_field_name='uuid',
-                latest=True
+                log_id_field_name='uuid'
             )
 
         # always update the next link
@@ -694,7 +681,7 @@ def get_observed_attack_techniques_logs(
                 log_type=observed_attack_technique_log_type
             )
 
-            last_run_log_ids, latest_log_time = get_all_logs_ids(
+            last_run_log_ids, latest_log_time = get_all_latest_logs_ids(
                 logs=observed_attack_techniques_logs,
                 log_type=observed_attack_technique_log_type,
                 log_id_field_name='uuid',
@@ -767,11 +754,10 @@ def get_search_detection_logs(
                 log_cache_last_run_name_field_name=search_detections_cache_time_field_name,
                 log_type=search_detections_log_type
             )
-            last_run_log_ids, last_run_start_time = get_all_logs_ids(
+            last_run_log_ids, last_run_start_time = get_all_latest_logs_ids(
                 logs=search_detection_logs,
                 log_type=search_detections_log_type,
-                log_id_field_name='uuid',
-                latest=True
+                log_id_field_name='uuid'
             )
 
         # always update the next link
@@ -788,7 +774,7 @@ def get_search_detection_logs(
                 log_type=search_detections_log_type
             )
 
-            last_run_log_ids, latest_log_time = get_all_logs_ids(
+            last_run_log_ids, latest_log_time = get_all_latest_logs_ids(
                 logs=search_detection_logs,
                 log_type=search_detections_log_type,
                 log_id_field_name='uuid',
@@ -856,7 +842,7 @@ def get_audit_logs(
         log_type=audit_log_type
     )
 
-    latest_audit_log_ids, latest_log_time = get_all_logs_ids(
+    latest_audit_log_ids, latest_log_time = get_all_latest_logs_ids(
         logs=audit_logs,
         log_type=audit_log_type,
         log_id_field_name='id',

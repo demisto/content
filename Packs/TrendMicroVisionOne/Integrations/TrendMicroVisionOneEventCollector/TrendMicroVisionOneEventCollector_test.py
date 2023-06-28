@@ -322,7 +322,9 @@ class TestFetchEvents:
         )
 
         assert len(workbench_logs) == 500
-        assert updated_last_run == {'workbench_logs_time': '2023-01-01T15:07:20Z', 'found_workbench_logs': [500]}
+        assert updated_last_run == {
+            LastRunLogsStartTimeFields.WORKBENCH.value: '2023-01-01T15:07:20Z', 'found_workbench_logs': [500]
+        }
         assert workbench_logs[-1]['_time'] == '2023-01-01T15:07:20Z'
 
     def test_get_workbench_logs_with_last_run(self, mocker, client: Client):
@@ -353,12 +355,12 @@ class TestFetchEvents:
         workbench_logs, updated_last_run = get_workbench_logs(
             client=client,
             first_fetch='1 month ago',
-            last_run={'workbench_logs_time': '2023-01-01T14:00:00Z', 'found_workbench_logs': [1, 2, 3, 4, 5, 6, 7, 8]},
+            last_run={LastRunLogsStartTimeFields.WORKBENCH.value: '2023-01-01T14:00:00Z', 'found_workbench_logs': [1, 2, 3, 4, 5, 6, 7, 8]},
             limit=500
         )
 
         assert len(workbench_logs) == 192
-        assert updated_last_run == {'workbench_logs_time': '2023-01-01T14:03:20Z', 'found_workbench_logs': [200]}
+        assert updated_last_run == {LastRunLogsStartTimeFields.WORKBENCH.value: '2023-01-01T14:03:20Z', 'found_workbench_logs': [200]}
         assert workbench_logs[-1]['_time'] == '2023-01-01T14:03:20Z'
 
     def test_get_observed_attack_techniques_logs_no_last_run(self, mocker, client: Client):
@@ -467,8 +469,7 @@ class TestFetchEvents:
             client=client,
             first_fetch='1 month ago',
             last_run={},
-            limit=500,
-            date_range_for_oat_and_search_logs=365
+            limit=500
         )
 
         assert len(search_detection_logs) == 500
@@ -506,8 +507,7 @@ class TestFetchEvents:
             client=client,
             first_fetch='1 month ago',
             last_run={'search_detection_logs_time': '2023-01-01T14:43:19Z', 'found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7]},
-            limit=500,
-            date_range_for_oat_and_search_logs=365
+            limit=500
         )
 
         assert len(search_detection_logs) == 193
@@ -547,7 +547,7 @@ class TestFetchEvents:
 
         assert len(audit_logs) == 500
         assert updated_last_run == {
-            'audit_logs_time': '2023-01-01T14:08:19Z',
+            LastRunLogsStartTimeFields.AUDIT.value: '2023-01-01T14:08:19Z',
             'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
         }
         assert audit_logs[-1]['_time'] == '2023-01-01T14:08:20Z'
@@ -579,13 +579,13 @@ class TestFetchEvents:
         audit_logs, updated_last_run = get_audit_logs(
             client=client,
             first_fetch='1 month ago',
-            last_run={'audit_logs_time': '2023-01-01T14:00:00Z'},
+            last_run={LastRunLogsStartTimeFields.AUDIT.value: '2023-01-01T14:00:00Z'},
             limit=500
         )
 
         assert len(audit_logs) == 200
         assert updated_last_run == {
-            'audit_logs_time': '2023-01-01T14:03:19Z',
+            LastRunLogsStartTimeFields.AUDIT.value: '2023-01-01T14:03:19Z',
             'found_audit_logs': ['4410bac4975e15bc234ee627129e46665744349bb59830968a2e4769fe0afc0e']
         }
         assert audit_logs[-1]['_time'] == '2023-01-01T14:03:20Z'
