@@ -319,7 +319,7 @@ def fetch_incidents(first_fetch, client):
     from_time = last_run.replace(microsecond=0).isoformat()
     to_time = now.replace(microsecond=0).isoformat()
     demisto.debug(f"IllusionBLACK: Getting raw events from {from_time} to {to_time}")
-    events, all_threat_parse = client.get_events_fetched_ascending_order(limit=1000, from_time=from_time, to_time=to_time)
+    events, all_threat_parse = client.get_logs(limit=1000, from_time=from_time, to_time=to_time)
     raw_incidents = process_events(events, all_threat_parse)
     incidents = []
 

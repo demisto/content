@@ -389,8 +389,7 @@ class TestFetchEvents:
             client=client,
             first_fetch='1 month ago',
             last_run={},
-            limit=500,
-            date_range_for_oat_and_search_logs=365
+            limit=500
         )
 
         assert len(observed_attack_techniques_logs) == 500
