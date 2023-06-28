@@ -165,10 +165,10 @@ class Client(BaseClient):
         demisto.info(f'Received {current_items=} with {url_suffix=} and {params=}')
         logs.extend(current_items)
 
-        while (next_link := response.get('nextLink')) and len(logs) < limit:
-            response = self.http_request(method=method, headers=headers, next_link=next_link)
+        while (new_next_link := response.get('nextLink')) and len(logs) < limit:
+            response = self.http_request(method=method, headers=headers, next_link=new_next_link)
             current_items = response.get('items') or []
-            demisto.info(f'Received {current_items=} with {next_link=}')
+            demisto.info(f'Received {current_items=} with {new_next_link=}')
             logs.extend(current_items)
 
         log_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
@@ -186,7 +186,7 @@ class Client(BaseClient):
             if log_time := log.get(created_time_field):
                 log['_time'] = log_time
 
-        return logs, next_link
+        return logs, new_next_link
 
     def get_workbench_logs(
         self,
@@ -269,7 +269,7 @@ class Client(BaseClient):
                 'top': top
             },
             limit=limit,
-            next_link=next_link
+            new_next_link=next_link
         )
 
     def get_search_detection_logs(
@@ -309,7 +309,7 @@ class Client(BaseClient):
             params=params,
             limit=limit,
             headers={'TMV1-Query': '*', "Authorization": f"Bearer {self.api_key}"},
-            next_link=next_link
+            new_next_link=next_link
         )
 
     def get_audit_logs(
