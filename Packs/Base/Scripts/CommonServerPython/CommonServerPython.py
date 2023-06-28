@@ -10677,7 +10677,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     return new_found_incidents_ids
 
 
-def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids):
+def get_found_incident_ids(last_run, incidents, look_back, id_field, created_time_field, remove_incident_ids):
     """
     Gets the found incident ids from the last run object and adds the new fetched incident IDs.
 
@@ -10702,7 +10702,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
     current_time = int(time.time())
 
     for incident in incidents:
-        found_incidents[incident[id_field]] = current_time
+        found_incidents[incident[id_field]] = int(dateparser.parse(incident[created_time_field]).timestamp())  # type: ignore[union-attr]
     if remove_incident_ids:
         found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
 
@@ -10829,7 +10829,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
                                                                            id_field=id_field,
                                                                            )
 
-    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, created_time_field, remove_incident_ids)
 
     if found_incidents:
         updated_last_run.update({'found_incident_ids': found_incidents})
