@@ -91,10 +91,10 @@ class Client(BaseClient):
             ThreatIntel.ObjectsNames.TOOL: EntityRelationship.Relationships.USES
         }
 
-        target_type: str = str(target_data.get(LABEL_TYPE))
-        target_value: str = str(target_data.get(LABEL_VALUE))
-        source_type: str = str(source_data.get(LABEL_TYPE))
-        source_value: str = str(source_data.get(LABEL_VALUE))
+        target_type = target_data.get(LABEL_TYPE)
+        target_value = target_data.get(LABEL_VALUE)
+        source_type = source_data.get(LABEL_TYPE)
+        source_value = source_data.get(LABEL_VALUE)
 
         relationship = relationship_mapping.get(target_type)
         if relationship:
