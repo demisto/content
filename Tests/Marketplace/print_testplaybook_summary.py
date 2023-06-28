@@ -1,6 +1,7 @@
 import argparse
 import traceback
 import sys
+import os
 import prettytable
 
 from Tests.scripts.utils.log_util import install_logging
@@ -16,8 +17,10 @@ def options_handler():
 
 
 def read_file_contents(file_path: str) -> list:
-    with open(file_path, 'r') as file:
-        contents = file.read().splitlines()
+    contents = []
+    if os.path.isfile(file_path):
+        with open(file_path, 'r') as file:
+            contents = file.read().splitlines()
     return contents
 
 
@@ -27,7 +30,7 @@ def print_test_summary(failed_tests_path, skipped_tests_path, succeeded_tests_pa
     """
     succeed_playbooks = read_file_contents(succeeded_tests_path)
     failed_playbooks = read_file_contents(failed_tests_path)
-    skipped_tests = read_file_contents(skipped_tests_path)
+    # skipped_tests = read_file_contents(skipped_tests_path)
 
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
@@ -40,8 +43,8 @@ def print_test_summary(failed_tests_path, skipped_tests_path, succeeded_tests_pa
         for playbook_id in succeed_playbooks:
             logging.success(f"\t- {playbook_id}")
 
-    if skipped_tests:
-        print_table("Skipped Tests", skipped_tests)
+    # if skipped_tests:
+    #     print_table("Skipped Tests", skipped_tests)
 
     if failed_count:
         logging.error(f"Number of failed tests - {failed_count}:")
@@ -51,25 +54,21 @@ def print_test_summary(failed_tests_path, skipped_tests_path, succeeded_tests_pa
         exit(1)
 
 
-def print_table(table_name: str, table_data: dict) -> None:
-    table = prettytable.PrettyTable()
-    table.field_names = ["Index", "Name", "Reason"]
-
-    for index, record in enumerate(table_data, start=1):
-        row = [index, record, table_data[record]]
-        table.add_row(row)
-
-    logging.info(f"{table_name}:")
-    logging.info(table.get_string())
+# def print_table(table_name: str, table_data: dict) -> None:
+#     table = prettytable.PrettyTable()
+#     table.field_names = ["Index", "Name", "Reason"]
+#
+#     for index, record in enumerate(table_data, start=1):
+#         row = [index, record, table_data[record]]
+#         table.add_row(row)
+#
+#     logging.info(f"{table_name}:")
+#     logging.info(table.get_string())
 
 
 def main():
     try:
         install_logging('print_summary.log', logger=logging)
-        logging.info("GOT HERE info")
-        logging.debug("GOT HERE debug")
-        logging.error("GOT HERE error")
-        logging.success("GOT HERE success")
         options = options_handler()
         print_test_summary(failed_tests_path=options.failed_tests_path,
                            skipped_tests_path=options.skipped_tests_path,

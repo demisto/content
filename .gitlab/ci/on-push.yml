@@ -617,11 +617,6 @@ test-upload-flow:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   script:
     - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt --skipped_tests_path $ARTIFACTS_FOLDER/skipped_tests.txt
-  
-
-xsiam_server_ga-test_playbooks_results:
-  extends: .server_test_playbooks_report
-  needs: ["xsiam_server_ga"]
 
 xsoar_ng_server_ga-test_playbooks_results:
   extends: .server_test_playbooks_report
