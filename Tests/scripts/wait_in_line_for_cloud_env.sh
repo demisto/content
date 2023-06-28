@@ -12,6 +12,8 @@ set -e
 
 touch CloudEnvVariables
 
+LOCK_MACHINE_NAME="qa2-test-9992169942140"
+
 gsutil cp gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST # copy TestMachines locally for faster perf
 export NUM_OF_TEST_MACHINES=`sed -n '$=' $TEST_MACHINES_LIST`	# reads num of lines in file (this is the num of machines)
 
