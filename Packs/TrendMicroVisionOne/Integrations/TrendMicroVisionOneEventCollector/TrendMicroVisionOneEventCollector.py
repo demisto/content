@@ -274,7 +274,7 @@ class Client(BaseClient):
 
     def get_search_detection_logs(
         self,
-        start_datetime: str,
+        start_datetime: str = '',
         end_datetime: str | None = None,
         top: int = DEFAULT_MAX_LIMIT,
         limit: int = DEFAULT_MAX_LIMIT,
@@ -526,6 +526,25 @@ def dedup_fetched_logs(
     return un_fetched_logs
 
 
+def get_dedup_logs(logs: List[Dict], last_run: Dict, log_cache_last_run_name_field_name: str, log_type: str, date_format: str = DATE_FORMAT):
+    logs = dedup_fetched_logs(
+        logs=logs,
+        last_run=last_run,
+        log_id_field_name='uuid',
+        log_cache_last_run_name_field_name=log_cache_last_run_name_field_name,
+        log_type=log_type
+    )
+
+    dedup_log_ids, latest_log_time = get_all_latest_logs_ids(
+        logs=logs,
+        log_type=log_type,
+        log_id_field_name='uuid',
+        date_format=date_format
+    )
+
+    return logs, dedup_log_ids, latest_log_time
+
+
 def get_workbench_logs(
     client: Client,
     first_fetch: str,
@@ -644,27 +663,19 @@ def get_observed_attack_techniques_logs(
 
     if last_run_next_link:
         observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
-            next_link=last_run_next_link
+            next_link=last_run_next_link, limit=limit
         )
 
-        observed_attack_techniques_logs = dedup_fetched_logs(
+        observed_attack_techniques_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
-            log_id_field_name='uuid',
             log_cache_last_run_name_field_name=observed_attack_technique_dedup,
-            log_type=observed_attack_technique_log_type
-        )
-
-        logs_ids, _ = get_all_latest_logs_ids(
-            logs=observed_attack_techniques_logs,
             log_type=observed_attack_technique_log_type,
-            log_id_field_name='uuid',
-            latest_log_time=last_run_start_time
+            date_format=date_format
         )
-
         # save in cache logs for subsequent pagination(s) in case they have the latest log time
-        if logs_ids:
-            pagination_log_ids.extend(logs_ids)
+        if subsequent_pagination_log_ids:
+            pagination_log_ids.extend(subsequent_pagination_log_ids)
 
     else:
         start_time, end_time = get_datetime_range(
@@ -680,18 +691,11 @@ def get_observed_attack_techniques_logs(
             limit=limit
         )
 
-        observed_attack_techniques_logs = dedup_fetched_logs(
+        observed_attack_techniques_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
-            log_id_field_name='uuid',
             log_cache_last_run_name_field_name=observed_attack_technique_dedup,
-            log_type=observed_attack_technique_log_type
-        )
-
-        dedup_log_ids, latest_log_time = get_all_latest_logs_ids(
-            logs=observed_attack_techniques_logs,
             log_type=observed_attack_technique_log_type,
-            log_id_field_name='uuid',
             date_format=date_format
         )
 
@@ -753,52 +757,53 @@ def get_search_detection_logs(
     dedup_log_ids = last_run.get(search_detection_dedup) or []
     pagination_log_ids = last_run.get(search_detection_pagination) or []
 
-    start_time, end_time = get_datetime_range(
-        last_run_time=last_run.get(last_run_start_time),
-        first_fetch=first_fetch,
-        log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
-        date_format=date_format
-    )
-    search_detection_logs, new_next_link = client.get_search_detection_logs(
-        start_datetime=start_time, top=limit, limit=limit
-    )
+    if last_run_next_link:
+
+        search_detection_logs, new_next_link = client.get_search_detection_logs(
+            next_link=last_run_next_link, limit=limit
+        )
+
+        search_detection_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
+            logs=search_detection_logs,
+            last_run=last_run,
+            log_cache_last_run_name_field_name=search_detection_dedup,
+            log_type=search_detections_log_type,
+            date_format=date_format
+        )
+        # save in cache logs for subsequent pagination(s) in case they have the latest log time
+        if subsequent_pagination_log_ids:
+            pagination_log_ids.extend(subsequent_pagination_log_ids)
+    else:
+        start_time, end_time = get_datetime_range(
+            last_run_time=last_run.get(last_run_start_time),
+            first_fetch=first_fetch,
+            log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
+            date_format=date_format
+        )
+        search_detection_logs, new_next_link = client.get_search_detection_logs(
+            start_datetime=start_time, top=limit, limit=limit
+        )
+
+        search_detection_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
+            logs=search_detection_logs,
+            last_run=last_run,
+            log_cache_last_run_name_field_name=search_detection_dedup,
+            log_type=search_detections_log_type,
+            date_format=date_format
+        )
+
+        last_run_start_time = latest_log_time or end_time
 
     if new_next_link:
-        # first time of the pagination
+        # save in cache the latest log ids from first pagination
         if not last_run_next_link:
-            # save in cache only the latest log ids from first pagination
-            pagination_log_ids, last_run_start_time = get_all_latest_logs_ids(
-                logs=search_detection_logs,
-                log_type=search_detections_log_type,
-                log_id_field_name='uuid'
-            )
-        else:
-            # if in the subsequent pagination(s) there are logs with the latest time, add it to cache
-            subsequent_pagination_log_ids, _ = get_all_latest_logs_ids(
-                logs=search_detection_logs,
-                log_type=search_detections_log_type,
-                log_id_field_name='uuid',
-                latest_log_time=last_run_start_time
-            )
-            if subsequent_pagination_log_ids:
-                pagination_log_ids.extend(subsequent_pagination_log_ids)
+            pagination_log_ids = dedup_log_ids
         # always update the next link
         last_run_next_link = new_next_link
     else:
         if last_run_next_link:
             # pagination is over
             dedup_log_ids = pagination_log_ids
-        else:
-            # there wasn't any pagination
-            dedup_log_ids, latest_log_time = get_all_latest_logs_ids(
-                logs=search_detection_logs,
-                log_type=search_detections_log_type,
-                log_id_field_name='uuid',
-                date_format=date_format
-            )
-
-            last_run_start_time = latest_log_time or end_time
-
         last_run_next_link = ''
 
     search_detections_updated_last_run = {
