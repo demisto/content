@@ -1,4 +1,3 @@
-import io
 import json
 import pytest
 import demistomock as demisto
@@ -8,12 +7,12 @@ from CommonServerPython import *
 
 
 def util_load_json(path: str):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_bytes_file(path: str):
-    with io.open(path, mode='rb') as f:
+    with open(path, mode='rb') as f:
         return f.read()
         # return json.loads(f.read())
 
@@ -340,7 +339,7 @@ class TestJiraGetCommentsCommand:
         comment_raw_response = {
             "id": "18322",
             "author": {
-                "displayName": "Tomer Malache",
+                "displayName": "Example User",
             },
             "body": {
                 "version": 1,
@@ -359,14 +358,14 @@ class TestJiraGetCommentsCommand:
             },
             "renderedBody": "<p>Hello there</p>",
             "updateAuthor": {
-                "displayName": "Tomer Malache",
+                "displayName": "Example User",
             },
             "created": "2023-03-23T07:45:29.056+0200",
             "updated": "2023-03-23T07:45:29.056+0200",
         }
-        expected_comment_entry = {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache',
+        expected_comment_entry = {'Id': '18322', 'Comment': 'Hello there', 'User': 'Example User',
                                   'Created': '2023-03-23T07:45:29.056+0200', 'Updated': '2023-03-23T07:45:29.056+0200',
-                                  'UpdateUser': 'Tomer Malache'}
+                                  'UpdateUser': 'Example User'}
         comment_entry = extract_comment_entry_from_raw_response(comment_response=comment_raw_response)
         assert comment_entry == expected_comment_entry
 
@@ -605,7 +604,7 @@ class TestJiraGetIDOffsetCommand:
         raw_response = util_load_json('test_data/issue_query_test/raw_response.json')
         run_query_mocker = mocker.patch.object(client, 'run_query', return_value=raw_response)
         command_result = get_id_offset_command(client=client, args={})
-        assert 'ORDER BY created ASC' == run_query_mocker.call_args[1].get('query_params', {}).get('jql')
+        assert run_query_mocker.call_args[1].get('query_params', {}).get('jql') == 'ORDER BY created ASC'
         assert {'Ticket': {'idOffSet': '10161'}} == command_result.to_context()['EntryContext']
 
 
@@ -892,7 +891,7 @@ class TestJiraIssueToIssueCommand:
         client = jira_base_client_mock()
         mocker.patch.object(client, 'create_issue_link', return_value=requests.Response())
         command_results = link_issue_to_issue_command(client=client, args={})
-        assert 'Issue link created successfully' == command_results.to_context()['HumanReadable']
+        assert command_results.to_context()['HumanReadable'] == 'Issue link created successfully'
 
 
 class TestJiraSprintIssueMoveCommand:
@@ -909,7 +908,7 @@ class TestJiraSprintIssueMoveCommand:
         client = jira_base_client_mock()
         mocker.patch.object(client, 'issues_to_sprint', return_value=requests.Response())
         command_results = issues_to_sprint_command(client=client, args={})
-        assert 'Issues were moved to the Sprint successfully' == command_results.to_context()['HumanReadable']
+        assert command_results.to_context()['HumanReadable'] == 'Issues were moved to the Sprint successfully'
 
 
 class TestJiraEpicIssuesCommand:
@@ -1398,7 +1397,7 @@ class TestJiraUpdateRemoteSystem:
         update_remote_system_res = update_remote_system_command(client=client, args=args,
                                                                 comment_tag_to_jira='', attachment_tag_to_jira='')
         assert update_remote_system_res == '17757'
-        edit_issue_mocker.call_args[1]['json_data'] == {'fields': {'summary': 'data'}}
+        assert edit_issue_mocker.call_args[1]['json_data'] == {'fields': {'summary': 'data'}}
 
     def test_update_remote_system_using_file_entry_with_correct_tag(self, mocker):
         """
@@ -1582,9 +1581,9 @@ class TestJiraGetRemoteData:
             close_reason = "Issue was marked as \"Resolved\", or status was changed to \"Done\""
             closed_entry = [{"Type": 1, "Contents": {"dbotIncidentClose": True,
                                                      "closeReason": close_reason}, "ContentsFormat": "json"}]
-            parsed_entries == closed_entry
+            assert parsed_entries == closed_entry
         else:
-            parsed_entries == []
+            assert parsed_entries == []
 
     def test_get_remote_data_response_is_returned(self, mocker):
         """
@@ -1683,14 +1682,14 @@ class TestJiraFetchIncidents:
         mocker.patch.object(client, 'get_comments', return_value=comments_raw_response)
         comments_entries = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key='1234')
         expected_comments_entries = [
-            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
-             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'},
-            {'Id': '18329', 'Comment': 'Second comment', 'User': 'Tomer Malache', 'Created': '2023-03-27T20:54:15.878+0300',
-             'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Tomer Malache'},
-            {'Id': '18394', 'Comment': 'This is a comment from Jira demo', 'User': 'Tomer Malache',
-             'Created': '2023-04-24T15:41:54.472+0300', 'Updated': '2023-04-24T15:41:54.472+0300', 'UpdateUser': 'Tomer Malache'}
+            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Example User', 'Created': '2023-03-23T07:45:29.056+0200',
+             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Example User'},
+            {'Id': '18329', 'Comment': 'Second comment', 'User': 'Example User', 'Created': '2023-03-27T20:54:15.878+0300',
+             'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Example User'},
+            {'Id': '18394', 'Comment': 'This is a comment from Jira demo', 'User': 'Example User',
+             'Created': '2023-04-24T15:41:54.472+0300', 'Updated': '2023-04-24T15:41:54.472+0300', 'UpdateUser': 'Example User'}
         ]
-        expected_comments_entries == comments_entries
+        assert expected_comments_entries == comments_entries
 
     def test_get_attachments_entries_for_fetched_incident(self, mocker):
         """
@@ -1715,7 +1714,7 @@ class TestJiraFetchIncidents:
             attachments_metadata=[attachment_metadata_raw_response,
                                   attachment_metadata_raw_response]
         )
-        expected_attachments_entries == attachments_entries
+        assert expected_attachments_entries == attachments_entries
 
     def test_get_fetched_attachments(self, mocker):
         """
@@ -1749,10 +1748,10 @@ class TestJiraFetchIncidents:
         """
         from JiraV3 import get_fetched_comments
         expected_comments_entries = [
-            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
-             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'},
-            {'Id': '18329', 'Comment': 'Second comment', 'User': 'Tomer Malache', 'Created': '2023-03-27T20:54:15.878+0300',
-             'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Tomer Malache'}]
+            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Example User', 'Created': '2023-03-23T07:45:29.056+0200',
+             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Example User'},
+            {'Id': '18329', 'Comment': 'Second comment', 'User': 'Example User', 'Created': '2023-03-27T20:54:15.878+0300',
+             'Updated': '2023-03-27T20:54:15.878+0300', 'UpdateUser': 'Example User'}]
         mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=expected_comments_entries)
         attachments_entries = [
             {'Contents': '', 'ContentsFormat': 'dummy_format', 'Type': 'dummy_type', 'File': 'dummy_filename_1',
@@ -2005,8 +2004,8 @@ class TestJiraFetchIncidents:
         mocker.patch.object(client, 'run_query', return_value=query_raw_response)
         mocker.patch('JiraV3.get_fetched_attachments', return_value=[{'FileID': '1'}, {'FileID': '2'}])
         comments_entries = [
-            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Tomer Malache', 'Created': '2023-03-23T07:45:29.056+0200',
-             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Tomer Malache'}]
+            {'Id': '18322', 'Comment': 'Hello there', 'User': 'Example User', 'Created': '2023-03-23T07:45:29.056+0200',
+             'Updated': '2023-03-23T07:45:29.056+0200', 'UpdateUser': 'Example User'}]
         mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=comments_entries)
         incidents = fetch_incidents(
             client=client,
@@ -2023,4 +2022,4 @@ class TestJiraFetchIncidents:
             attachment_tag_to_jira='attachment_tag_to_jira',
             attachment_tag_from_jira='attachment_tag_from_jira'
         )
-        json.dumps(issue_incident) == incidents[0].get('rawJSON')
+        assert json.dumps(issue_incident) == incidents[0].get('rawJSON')
