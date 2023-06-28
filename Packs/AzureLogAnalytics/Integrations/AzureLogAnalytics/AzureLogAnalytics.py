@@ -337,8 +337,7 @@ def main():
         managed_identities_client_id = get_azure_managed_identities_client_id(params)
         self_deployed = self_deployed or client_credentials or managed_identities_client_id is not None
         refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
-        auth_code = params.get('credentials_auth_code', {}).get('password') or (
-            params.get('auth_code') if not client_credentials else '')
+        auth_code = params.get('credentials_auth_code', {}).get('password') or params.get('auth_code')
         if not refresh_token:
             raise DemistoException('Token / Tenant ID must be provided.')
         if not managed_identities_client_id:
@@ -356,7 +355,7 @@ def main():
             refresh_token=refresh_token,  # tenant_id or token
             enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
-            auth_code=auth_code,
+            auth_code=auth_code if not client_credentials else '',
             subscription_id=params.get('subscriptionID'),
             resource_group_name=params.get('resourceGroupName'),
             workspace_name=params.get('workspaceName'),
