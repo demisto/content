@@ -735,17 +735,19 @@ def get_search_detection_logs(
     Returns:
         Tuple[List[Dict], Dict]: search detection logs & updated last run time
     """
-    search_detections_cache_time_field_name = LastRunTimeCacheTimeFieldNames.SEARCH_DETECTIONS.value
     search_detections_log_type = LogTypes.SEARCH_DETECTIONS.value
-    search_detection_log_last_run_time = LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value
-    search_detection_technique_next_link = LastRunLogsNextLink.OBSERVED_ATTACK_TECHNIQUES.value
+    search_detection_start_run_time = LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value
+    search_detection_next_link = LastRunLogsNextLink.SEARCH_DETECTIONS.value
+    search_detection_dedup = LastRunTimeCacheTimeFieldNames.SEARCH_DETECTIONS_DEDUP.value
+    search_detection_pagination = LastRunTimeCacheTimeFieldNames.SEARCH_DETECTIONS_PAGINATION.value
 
-    last_run_next_link = last_run.get(search_detection_technique_next_link)
-    last_run_log_ids = last_run.get(search_detections_cache_time_field_name) or []
-    last_run_start_time = last_run.get(search_detection_log_last_run_time)
+    last_run_next_link = last_run.get(search_detection_next_link)
+    last_run_start_time = last_run.get(search_detection_start_run_time)
+    dedup_log_ids = last_run.get(search_detection_dedup) or []
+    pagination_log_ids = last_run.get(search_detection_pagination) or []
 
     start_time, end_time = get_datetime_range(
-        last_run_time=last_run.get(search_detection_log_last_run_time),
+        last_run_time=last_run.get(last_run_start_time),
         first_fetch=first_fetch,
         log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
         date_format=date_format
@@ -758,34 +760,30 @@ def get_search_detection_logs(
         # first time of the pagination
         if not last_run_next_link:
             # save in cache only the latest log ids from first pagination
-            search_detection_logs = dedup_fetched_logs(
-                logs=search_detection_logs,
-                last_run=last_run,
-                log_id_field_name='uuid',
-                log_cache_last_run_name_field_name=search_detections_cache_time_field_name,
-                log_type=search_detections_log_type
-            )
-            last_run_log_ids, last_run_start_time = get_all_latest_logs_ids(
+            pagination_log_ids, last_run_start_time = get_all_latest_logs_ids(
                 logs=search_detection_logs,
                 log_type=search_detections_log_type,
                 log_id_field_name='uuid'
             )
-
+        else:
+            # if in the subsequent pagination(s) there are logs with the latest time, add it to cache
+            subsequent_pagination_log_ids, _ = get_all_latest_logs_ids(
+                logs=search_detection_logs,
+                log_type=search_detections_log_type,
+                log_id_field_name='uuid',
+                latest_log_time=last_run_start_time
+            )
+            if subsequent_pagination_log_ids:
+                pagination_log_ids.extend(subsequent_pagination_log_ids)
         # always update the next link
         last_run_next_link = new_next_link
     else:
-        if not last_run_next_link:
+        if last_run_next_link:
+            # pagination is over
+            dedup_log_ids = pagination_log_ids
+        else:
             # there wasn't any pagination
-            # take the latest incident that occurred and dedup them
-            search_detection_logs = dedup_fetched_logs(
-                logs=search_detection_logs,
-                last_run=last_run,
-                log_id_field_name='uuid',
-                log_cache_last_run_name_field_name=search_detections_cache_time_field_name,
-                log_type=search_detections_log_type
-            )
-
-            last_run_log_ids, latest_log_time = get_all_latest_logs_ids(
+            dedup_log_ids, latest_log_time = get_all_latest_logs_ids(
                 logs=search_detection_logs,
                 log_type=search_detections_log_type,
                 log_id_field_name='uuid',
@@ -797,9 +795,10 @@ def get_search_detection_logs(
         last_run_next_link = ''
 
     search_detections_updated_last_run = {
-        search_detection_log_last_run_time: last_run_start_time,
-        search_detections_cache_time_field_name: last_run_log_ids,
-        search_detection_technique_next_link: last_run_next_link
+        search_detection_start_run_time: last_run_start_time,
+        search_detection_dedup: dedup_log_ids,
+        search_detection_pagination: pagination_log_ids,
+        search_detection_next_link: last_run_next_link
     }
 
     demisto.info(f'{search_detection_logs=}, {search_detections_updated_last_run=}')
