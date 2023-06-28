@@ -1529,7 +1529,7 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
         client.pull_request_comment_delete_request(repo, pr_id, comment_id)
         return CommandResults(readable_output='The comment was deleted successfully.')
     except DemistoException as e:
-        raise Exception(f'Could not XXXdelete the comment in the pull request - {e.message}')
+        raise Exception(f'Could not XXXXdelete the comment in the pull request - {e.message}')
 
 
 def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
