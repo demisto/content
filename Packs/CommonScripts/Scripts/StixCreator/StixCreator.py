@@ -279,6 +279,8 @@ def main():
                     indicator_type = hash_type(value)
                 if indicator_type not in SCOs and indicator_type not in SDOs:
                     indicator_type = guess_indicator_type(indicator_type, value)
+                demisto.debug(f"Creating an indicator with the following pattern: [{SCOs[indicator_type]} = '{value}']")
+
                 indicator = Indicator(pattern=f"[{SCOs[indicator_type]} = '{value}']",
                                       pattern_type='stix',
                                       **kwargs)
