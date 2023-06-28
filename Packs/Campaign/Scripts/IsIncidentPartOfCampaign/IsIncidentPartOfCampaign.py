@@ -49,15 +49,17 @@ def check_incidents_ids_in_campaign(campaign_id: str, incidents_ids_set: Set[str
     Returns:
         True if at least one id from the incidents_ids_set is linked to the campaign incident, otherwise False.
     """
-    campaign_context = execute_command("getContext", {'id': campaign_id})['context']
+    try:
+        campaign_context = execute_command("getContext", {'id': campaign_id})['context']
 
-    connected_incidents_list = demisto.get(campaign_context, 'EmailCampaign.incidents')
-    if connected_incidents_list:
-        connected_campaign_incidents_ids = {incident.get('id') for incident in connected_incidents_list}
-        is_incidents_in_campaign = bool(incidents_ids_set & connected_campaign_incidents_ids)
-        if is_incidents_in_campaign:
-            return True
-
+        connected_incidents_list = demisto.get(campaign_context, 'EmailCampaign.incidents')
+        if connected_incidents_list:
+            connected_campaign_incidents_ids = {incident.get('id') for incident in connected_incidents_list}
+            is_incidents_in_campaign = bool(incidents_ids_set & connected_campaign_incidents_ids)
+            if is_incidents_in_campaign:
+                return True
+    except Exception as e:
+        demisto.info(f"skipping for incident {campaign_id},\nThe reason: {e}")
     return False
 
 
