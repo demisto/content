@@ -674,7 +674,7 @@ class TestCommands:
         ) = try_pull_unique_messages(
             client, sub_name, previous_msg_ids, last_run_time, retry_times=1
         )
-        assert not any(call[0][0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
+        assert not any(call.args[0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
         assert res_msgs == [
             {
                 "ackId": "321",
@@ -718,7 +718,7 @@ class TestCommands:
         ) = try_pull_unique_messages(
             client, sub_name, previous_msg_ids, last_run_time, retry_times=1
         )
-        assert len(list(filter(lambda x: x[0][0].startswith('GCP_PUBSUB_MSG'), debug_mock.call_args_list))) == 1
+        assert len(list(filter(lambda x: x.args[0].startswith('GCP_PUBSUB_MSG'), debug_mock.call_args_list))) == 1
         assert res_msgs == [
             {
                 "ackId": "654",
@@ -759,7 +759,7 @@ class TestCommands:
         ) = try_pull_unique_messages(
             client, sub_name, previous_msg_ids, last_run_time, retry_times=1
         )
-        assert not any(call[0][0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
+        assert not any(call.args[0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
         assert res_msgs == [
             {
                 "ackId": "654",
