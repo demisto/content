@@ -1,7 +1,6 @@
 """ IMPORTS """
 from ast import literal_eval
 from CommonServerPython import *
-import demistomock as demisto
 # disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
