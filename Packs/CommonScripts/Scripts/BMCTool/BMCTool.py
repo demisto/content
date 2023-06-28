@@ -140,7 +140,8 @@ class BMCContainer(Generic[AnyStr]):
             elif self.btype == self.BMC_CONTAINER:
                 t_bmp = ""
                 t_len, t_params = unpack("<LL", t_hdr[-0x8:])
-                if t_params & 0x08:  # This bit is always ONE when relevant data is smaller than expected data, thus it is most likely the "compression" bit flag.  # noqa: E501
+                if t_params & 0x08:  # This bit is always ONE when relevant data is smaller than expected data, 
+                                     # thus it is most likely the "compression" bit flag.
                     if bl == 0:
                         if "22.bmc" in self.fname:
                             bl = 64 * 64 * 2
@@ -152,7 +153,7 @@ class BMCContainer(Generic[AnyStr]):
                             for b in [1, 2, 4]:
                                 if len(self.bdat) < len(t_hdr) + 64 * 64 * b + 8:
                                     break
-                                elif unpack("<H", self.bdat[len(t_hdr) + 64 * 64 * b + 8:][:2])[0] == 64:  # noqa: RET508
+                                if unpack("<H", self.bdat[len(t_hdr) + 64 * 64 * b + 8:][:2])[0] == 64:
                                     bl = 64 * 64 * b
                                     break
                             if bl == 0:
@@ -163,8 +164,10 @@ class BMCContainer(Generic[AnyStr]):
                     t_bmp = self.b_uncompress(self.bdat[len(t_hdr):len(t_hdr) + t_len], bl // (64 * 64))
                     if len(t_bmp) > 0:
                         if len(t_bmp) != t_width * t_height * bl // (64 * 64):
-                            self.b_log("error", False,
-                                       f"Uncompressed tile data seems bogus (uncompressed {len(t_bmp)} bytes while expecting {t_width * t_height * bl // (64 * 64)}). Discarding tile.")  # noqa: E501
+                            self.b_log("error", False, (f"Uncompressed tile data seems bogus (uncompressed {len(t_bmp)} bytes "
+                                                        f"while expecting {t_width * t_height * bl // (64 * 64)}). "
+                                                        f"Discarding tile."
+                                                        ))
                             t_bmp = b""
                         else:
                             t_bmp = self.b_parse_rgb565(t_bmp)
@@ -422,7 +425,8 @@ class BMCContainer(Generic[AnyStr]):
             c_bmp = b"" if not self.pal else self.PALETTE
             if self.btype == self.BIN_CONTAINER:
                 def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
-                    return b"".join([b"".join([a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j:64 * PAD * (j + 1)] for k in WIDTH]) for j in range(64)])  # noqa: E501
+                    return b"".join([b"".join([a.bmps[a.STRIPE_WIDTH * (x + 1) - 1 - k][64 * PAD * j:64 * PAD * (j + 1)] 
+                                               for k in WIDTH]) for j in range(64)])
             else:
                 def collage_builder(x, a=self, PAD=len(pad), WIDTH=range(w // 64)):
                     return b"".join([b"".join([a.bmps[a.STRIPE_WIDTH * x + k][64 * PAD * j:64 * PAD * (j + 1)]
@@ -435,12 +439,15 @@ class BMCContainer(Generic[AnyStr]):
         if not self.pal:
             return b"BM" + pack("<L", len(data) + 122) + b"\x00\x00\x00\x00\x7A\x00\x00\x00\x6C\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x20\x00\x03\x00\x00\x00" + pack("<L",
-                                                                                               len(data)) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\x00\x00\xFF\x00\x00\xFF\x00\x00\x00\x00\x00\x00\xFF niW" + (  # noqa: E501
+                                                                                               len(data)) + \
+                b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\x00\x00\xFF\x00\x00\xFF\x00\x00 \
+                    \x00\x00\x00\x00\xFF niW" + (
                 b"\x00" * 36) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
         else:
             return b"BM" + pack("<L", len(data) + 0x36) + b"\x00\x00\x00\x00\x36\x04\x00\x00\x28\x00\x00\x00" + pack(
                 "<L", width) + pack("<L", height) + b"\x01\x00\x08\x00\x00\x00\x00\x00" + pack("<L",
-                                                                                               len(data) - 0x400) + b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data  # noqa: E501
+                                                                                               len(data) - 0x400) + \
+                                                        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" + data
 
     def b_write(self, fname, data):
         collage = fileResult(fname, data)
