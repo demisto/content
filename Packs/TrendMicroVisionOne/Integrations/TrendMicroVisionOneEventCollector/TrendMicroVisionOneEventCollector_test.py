@@ -613,14 +613,14 @@ class TestFetchEvents:
             '3 years ago',
             LastRunLogsStartTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
-            ('2020-01-01T15:20:45Z', '2020-01-02T15:20:45Z')
+            ('2020-01-01T15:20:45Z', '2020-12-31T15:20:45Z')
         ),
         (
             None,
             '1 month ago',
             LastRunLogsStartTimeFields.OBSERVED_ATTACK_TECHNIQUES.value,
             '2023-01-01T15:20:45Z',
-            ('2022-12-01T15:20:45Z', '2022-12-02T15:20:45Z')
+            ('2022-12-01T15:20:45Z', '2023-01-01T15:20:45Z')
         ),
         (
             '2023-01-01T15:00:00Z',
