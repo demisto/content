@@ -8,6 +8,7 @@ configuration:
   name: server_url
   required: false
   type: 0
+
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   required: false
@@ -59,6 +60,7 @@ configuration:
   name: default_sub_id
   required: false
   type: 4
+  hidden: true
 - displaypassword: Default subscription ID to use
   name:  credentials_default_sub_id
   required: false
