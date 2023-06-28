@@ -21,10 +21,10 @@
 				"Behaviour Tactic": {
 					"simple": "tactic"
 				},
-				"Crawled Timestamp": {
+				"CrowdStrike Falcon Crawled Timestamp": {
 					"simple": "crawled_timestamp"
 				},
-				"Detection Type": {
+				"CrowdStrike Falcon Detection Type": {
 					"simple": "type"
 				},
 				"Display Name": {
@@ -42,7 +42,7 @@
 				"OS": {
 					"simple": "platform"
 				},
-				"Pattern ID": {
+				"CrowdStrike Falcon Pattern ID": {
 					"simple": "pattern_id"
 				},
 				"Source Hostname": {
