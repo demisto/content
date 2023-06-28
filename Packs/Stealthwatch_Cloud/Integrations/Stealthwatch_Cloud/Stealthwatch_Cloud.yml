@@ -9,18 +9,24 @@ configuration:
   type: 0
 - display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<apikey>"
   name: APIKey
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: credentials_api_key
+  required: false
+  type: 9
+  displaypassword: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<apikey>"
+  hiddenusername: true
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -465,7 +471,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage:  demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No test
 fromversion: 5.0.0

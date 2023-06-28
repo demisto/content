@@ -1,0 +1,17 @@
+{
+    "kind": "object#SecurityObjGroup",
+    "selfLink": "selfLink",
+    "name": "oneSecurityGroup",
+    "description": "test12",
+    "members": [
+        {
+            "kind": "SecurityName",
+            "value": "beep"
+        },
+        {
+            "kind": "SecurityTag",
+            "value": "71"
+        }
+    ],
+    "objectId": "oneSecurityGroup"
+}
