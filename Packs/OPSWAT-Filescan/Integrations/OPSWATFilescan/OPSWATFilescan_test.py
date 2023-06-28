@@ -5,7 +5,7 @@ import pytest
 import io
 import importlib
 
-OPSWAT_Filescan = importlib.import_module("OPSWATFilescanSandbox")
+OPSWAT_Filescan = importlib.import_module("OPSWATFilescan")
 
 
 def util_load_json(path: str) -> Any:
