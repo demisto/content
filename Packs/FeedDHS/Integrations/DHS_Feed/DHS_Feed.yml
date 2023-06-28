@@ -15,20 +15,30 @@ configuration:
 - additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
   display: Key File as Text
   name: key
-  required: true
   type: 4
-- additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
-  display: Certificate File as Text
+  hidden: true
+- name: key_creds
+  type: 9
+  displaypassword: Key File as Text
+  hiddenusername: true
+  additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
+- display: Certificate File as Text
   name: crt
-  required: true
+  hidden: true
   type: 12
+  additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
+- name: crt_creds
+  type: 9
+  displaypassword: Certificate File as Text
+  hiddenusername: true
+  additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
 - display: Feed Type
   name: collection
-  required: true
-  type: 15
   options:
   - AIS
   - CISCP
+  required: true
+  type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) fetch from feed.
   display: Filter by Traffic Light Protocol Color
   name: tlp_color
@@ -48,9 +58,8 @@ configuration:
   - Suspicious
   - Bad
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: F - Reliability cannot be judged
-  display: Source Reliability
+- defaultvalue: F - Reliability cannot be judged
+  display: 'Source Reliability'
   name: feedReliability
   options:
   - A - Completely reliable
@@ -61,15 +70,17 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: indicatorType
+  additionalinfo: Reliability of the source providing the intelligence data.
+- defaultvalue: 'indicatorType'
   display: ''
   name: feedExpirationPolicy
+  required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  type: 17
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
@@ -78,10 +89,10 @@ configuration:
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
-- defaultvalue: 1 day
-  display: First fetch time
+- display: First fetch time
   name: first_fetch
   type: 0
+  defaultvalue: 1 day
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -133,7 +144,7 @@ script:
     - contextPath: DHS.tlp
       description: The traffic light protocol.
       type: string
-  dockerimage: demisto/xml-feed:1.0.0.15261
+  dockerimage: demisto/xml-feed:1.0.0.63829
   feed: true
   script: '-'
   subtype: python3

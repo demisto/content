@@ -4525,7 +4525,8 @@ script:
     deprecated: true
     description: Use extrahop-packets-search instead. Search for specific packets in Reveal(x).
     name: extrahop-search-packets
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
+  feed: false
   isfetch: true
   script: '-'
   subtype: python3
