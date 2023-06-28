@@ -47,7 +47,7 @@ configuration:
   type: 0
   section: Collect
 - additionalinfo: Time to start fetching the first incidents.
-  defaultvalue: 3 day
+  defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
