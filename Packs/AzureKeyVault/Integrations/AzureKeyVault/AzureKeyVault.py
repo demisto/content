@@ -1405,7 +1405,7 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
     return datetime.utcfromtimestamp(timestamp).isoformat()
 
 
-def main() -> None:
+def main() -> None:     # pragma: no cover
     params: Dict[str, Any] = demisto.params() or {}
     args: Dict[str, Any] = demisto.args() or {}
     key_vaults_to_fetch_from = argToList(params.get('key_vaults', []))
