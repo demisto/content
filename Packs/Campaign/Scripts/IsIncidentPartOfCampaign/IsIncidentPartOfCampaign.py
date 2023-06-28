@@ -1,4 +1,4 @@
-from typing import Iterable, Set
+from collections.abc import Iterable
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -39,7 +39,7 @@ def get_incidents_ids_by_type(incident_type: str) -> Iterable[str]:
 ''' COMMAND FUNCTION '''
 
 
-def check_incidents_ids_in_campaign(campaign_id: str, incidents_ids_set: Set[str]) -> bool:
+def check_incidents_ids_in_campaign(campaign_id: str, incidents_ids_set: set[str]) -> bool:
     """
     Check for each incident in the campaigns_ids_list if any of the ids in incidents_ids_set is linked.
     Args:
