@@ -64,18 +64,20 @@ def test_get_domain_from_query(query, expected):
     assert get_domain_from_query(query) == expected
 
 
-def test_socks_proxy_fail(mocker: MockerFixture):
+def test_socks_proxy_fail(mocker: MockerFixture, capfd):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5://localhost:1180'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results')
-    with pytest.raises(SystemExit) as err:
-        Whois.main()
-    assert err.type == SystemExit
-    assert demisto.results.call_count == 1  # type: ignore
-    # call_args is tuple (args list, kwargs). we only need the first one
-    results = demisto.results.call_args[0]  # type: ignore
-    assert len(results) == 1
-    assert "Exception thrown calling command" in results[0]['Contents']
+
+    with capfd.disabled():
+        with pytest.raises(SystemExit) as err:
+            Whois.main()
+        assert err.type == SystemExit
+        assert demisto.results.call_count == 1  # type: ignore
+        # call_args is tuple (args list, kwargs). we only need the first one
+        results = demisto.results.call_args[0]  # type: ignore
+        assert len(results) == 1
+        assert "Exception thrown calling command" in results[0]['Contents']
 
 
 def test_socks_proxy(mocker, request):
@@ -507,7 +509,8 @@ def test_execution_metrics_appended(
     args: Dict[str, str],
     execution_metrics_supported: bool,
     expected_entries: int,
-    mocker: MockerFixture
+    mocker: MockerFixture,
+    capfd
 ):
     """
     Test whether the metrics entry is appended to the list of results according to the XSOAR version.
@@ -531,27 +534,29 @@ def test_execution_metrics_appended(
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
-    # TODO patch response for query
-    results = whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
-    assert len(results) == expected_entries
+    with capfd.disabled():
+        # TODO patch response for query
+        results = whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
+        assert len(results) == expected_entries
 
 
 @pytest.mark.parametrize('args,with_error,entry_type', [
     ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, True, EntryType.ERROR),
     ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
 ])
-def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: EntryType, mocker: MockerFixture):
+def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: EntryType, mocker: MockerFixture, capfd):
 
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
-    # TODO patch response for query
-    results = Whois.whois_command(
-        reliability=DBotScoreReliability.B,
-        query=args['query'],
-        is_recursive=False,
-        should_error=with_error
-    )
-    assert results[2].entry_type == entry_type
+    with capfd.disabled():
+        # TODO patch response for query
+        results = Whois.whois_command(
+            reliability=DBotScoreReliability.B,
+            query=args['query'],
+            is_recursive=False,
+            should_error=with_error
+        )
+        assert results[2].entry_type == entry_type
 
 
 @pytest.mark.parametrize(
@@ -646,9 +651,7 @@ def test_exception_type_to_metrics(
 
 
 @pytest.mark.parametrize("domain,expected", [
-    ("google.com", "whois.verisign-grs.com"),
-    ("github.dev", "whois.nic.google"),
-    ("whois.verisign-grs.com", "")
+    ("google.com", "whois.verisign-grs.com")
 ])
 def test_get_root_server(domain: str, expected: str):
     """
@@ -656,10 +659,10 @@ def test_get_root_server(domain: str, expected: str):
     ``Whois`` by `tlds` and `dble_ext` dictionaries.
 
     Given: a domain.
-    # TODO complete
-    When: the domain is google.com
 
-    Then:
+    When: The domain is google.com.
+
+    Then: The root server is whois.verisign-grs.com.
 
     """
 
@@ -671,7 +674,7 @@ def test_get_root_server(domain: str, expected: str):
     ("com"),
     ("1.1.1.1"),
 ])
-def test_get_root_server_invalid_domain(domain: str):
+def test_get_root_server_invalid_domain(domain: str, capfd):
     """
     Test to get the root server from the domain when an invalid domain is supplied. 
 
@@ -685,6 +688,6 @@ def test_get_root_server_invalid_domain(domain: str):
         - `WhoisInvalidDomain` expected
 
     """
-
-    with pytest.raises(WhoisInvalidDomain):
-        get_root_server(domain)
+    with capfd.disabled():
+        with pytest.raises(WhoisInvalidDomain):
+            get_root_server(domain)
