@@ -348,10 +348,7 @@ def fetch_indicators(client: Client,
                      feed_tags: Optional[List],
                      limit: int = -1,
                      is_fetch: bool = True) -> List[Dict]:
-    if query:
-        params_dict = clean_user_query(query)
-    else:
-        params_dict = build_params_dict(tags, attribute_type)
+    params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
 
     response = client.search_query(params_dict)
     indicators_iterator = build_indicators_iterator(response, url)
@@ -485,7 +482,7 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
     if tlp_color:
         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
-    if tags:
+    if tags or feed_tags:
         handle_tags_fields(indicator_obj, tags, feed_tags)
 
     if 'md5' in raw_type or 'sha1' in raw_type or 'sha256' in raw_type:
