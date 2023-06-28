@@ -8,8 +8,8 @@ var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
 
 var getToken = function() {
     let token = params.credentials_api_token ? params.credentials_api_token.password : params.token;
-    let email = credentials_login ? params.credentials_login.identifier : params.email;
-    let password = credentials_login ? params.credentials_login.password : params.password;
+    let email = params.credentials_login ? params.credentials_login.identifier : params.email;
+    let password = params.credentials_login ? params.credentials_login.password : params.password;
     if (token && token.length === 0) {
         if ((email&&email.length === 0) || (password&&password.length === 0)){
             throw 'If token configuration is empty , you must provide email+password configuration params for auth';
