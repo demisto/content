@@ -1,7 +1,7 @@
 id: Cortex ASM - Remediation Objectives
 version: -1
 name: Cortex ASM - Remediation Objectives
-description: Playbook that populates remediation objectives field uses to display the remediation actions to the end user
+description: Playbook that populates remediation objectives field that is used to display the remediation actions to the end user
 starttaskid: "0"
 tasks:
   "0":
