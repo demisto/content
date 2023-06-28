@@ -172,7 +172,7 @@ A playbook that pulls remediation guidance off of a list based on ASM RuleID to 
 
 A playbook that populates remediation objectives field uses to display the remediation actions to the end user.
 
-!TODO - ADD LINK
+![CCortex ASM - Remediation Objectives]https://raw.githubusercontent.com/demisto/content/5f71853b59431ca60b1b783867b89f819accfefd/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Objectives.png)
 
 #### Cortex ASM - Remediation Path Rules
 
