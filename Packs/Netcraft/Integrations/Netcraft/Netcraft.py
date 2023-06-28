@@ -488,6 +488,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
+    # Only for testing
     test_result = report_attack("https://www.test.com", "test", True)
     if test_result[0] != MALICIOUS_REPORT_SUCCESS:
         raise Exception("Test request failed.")

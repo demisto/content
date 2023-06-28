@@ -211,6 +211,7 @@ def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
+    # Only testing
 
     params = demisto.params()
     args = demisto.args()
