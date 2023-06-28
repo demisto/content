@@ -2,7 +2,7 @@
     "id": "incident_decyfircategory",
     "version": -1,
     "modified": "2022-11-22T13:35:30.129250779Z",
-    "name": "DeCYFIR-Category",
+    "name": "DeCYFIR Category",
     "ownerOnly": false,
     "description": "DeCYFIR Category",
     "cliName": "decyfircategory",
