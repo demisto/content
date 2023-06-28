@@ -1067,7 +1067,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "test-modeling-rules-support-for-dataset-loading"
-resolved_reference = "e386324a92d4c2eb2b71f83a56a6d9a945b7b7e6"
+resolved_reference = "dab665912f2ed9ecdcce37c237b36df429d8b949"
 
 [[package]]
 name = "deprecated"
