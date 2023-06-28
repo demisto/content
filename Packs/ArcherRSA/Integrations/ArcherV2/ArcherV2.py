@@ -756,7 +756,6 @@ class Client(BaseClient):
         if errors:
             return_error(errors)
 
-        field = {}
         if res.get('RequestedObject') and res.get('IsSuccessful'):
             field_obj = res['RequestedObject']
             cache['fieldValueNames'][field_obj.get('Id')] = field_obj.get('Name')
