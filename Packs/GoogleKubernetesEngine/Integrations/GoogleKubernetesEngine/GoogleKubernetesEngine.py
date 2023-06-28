@@ -7,7 +7,6 @@ from collections.abc import Callable
 # 3-rd party packages
 from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.message import Message
-from google.cloud.container_v1 import types
 from google.oauth2 import service_account
 import proto
 # Local packages
@@ -376,7 +375,6 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
         "username": "admin" if basic_auth == "enable" else ""
     }
     raw_response_msg: Message = client.set_master_auth(
-        action=types.SetMasterAuthRequest.Action.SET_USERNAME,  # pylint: disable=E1101
         project_id=project,
         zone=zone,
         cluster_id=cluster,
