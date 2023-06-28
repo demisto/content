@@ -17,7 +17,7 @@ API_KEY = 'test-api-key'
 
 
 def load_json_file(directory: str, file_name: str):
-    with open(Path(__file__).parent / 'test_data' / directory / file_name, 'r') as json_file:
+    with open(Path(__file__).parent / 'test_data' / directory / file_name) as json_file:
         json_data = json.load(json_file)
     return json_data
 
