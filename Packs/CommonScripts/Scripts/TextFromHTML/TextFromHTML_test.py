@@ -160,7 +160,7 @@ def test_extract_text_from_complex_html():
 def test_extract_text_from_specific_tag():
     """
     Given
-    - html string:        
+    - html string:
         <p>HTML links are defined with the a tag:</p>
     When
     - extracting text from the html
@@ -173,9 +173,8 @@ def test_extract_text_from_specific_tag():
 
     args = {
         'html': html,
-        'html_tag': 'p' 
+        'html_tag': 'p'
     }
     res = TextFromHTML.text_from_html(args)
 
     assert res == 'HTML links are defined with the a tag:'
-
