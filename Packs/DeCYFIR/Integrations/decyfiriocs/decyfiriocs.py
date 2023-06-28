@@ -17,6 +17,8 @@ LABEL_DECYFIR = "DeCYFIR"
 LABEL_INDICATOR = "indicator"
 LABEL_THREAT_ACTOR = "threat-actor"
 LABEL_INTRUSION_SET = "intrusion-set"
+LABEL_CAMPAIGN = "campaign"
+LABEL_MALWARE = "malware"
 LABEL_RELATIONSHIP = "relationship"
 LABEL_RELATIONSHIPS = "relationships"
 LABEL_ATTACK_PATTERN = "attack-pattern"
@@ -62,7 +64,7 @@ class Client(BaseClient):
             "tool": ThreatIntel.ObjectsNames.TOOL
         }
 
-        return(indicator_mapping.get(data))
+        return (indicator_mapping.get(data))
 
     def get_decyfir_api_iocs_ti_data(self, decyfir_api_path: str) -> List[Dict]:
         response = self._http_request(url_suffix=decyfir_api_path, method='GET', resp_type='response')
@@ -113,9 +115,7 @@ class Client(BaseClient):
         if isinstance(data, str):
             data = [data]
 
-    data = [item for item in data if item not in {'unknown', 'Unknown'}]
-
-
+        data = [item for item in data if item not in {'unknown', 'Unknown'}]
         in_ti["fields"]["tags"].extend(data)
 
     def add_aliases(self, in_ti: Dict, data: Optional[List[str] | str]):
@@ -125,11 +125,7 @@ class Client(BaseClient):
         if isinstance(data, str):
             data = [data]
 
-        if 'Unknown' in data:
-            data.remove('Unknown')
-        elif 'unknown' in data:
-            data.remove('unknown')
-
+        data = [item for item in data if item not in {'unknown', 'Unknown'}]
         in_ti["fields"]["aliases"].extend(data)
 
     def build_threat_intel_indicator_obj(self, data: Dict, tlp_color: Optional[str], feed_tags: Optional[List]):
@@ -177,7 +173,7 @@ class Client(BaseClient):
 
         if isinstance(data.get('external_references'), list):
             for ex_ref in data['external_references']:
-                if ttps_id := ex_ref.get('external_id')
+                if ttps_id := ex_ref.get('external_id'):
                     self.add_tags(ti_data_obj, ttps_id)
 
         if intel_type is ThreatIntel.ObjectsNames.MALWARE:
@@ -231,30 +227,28 @@ class Client(BaseClient):
             # Threat actors Data
             if threat_intel_type is ThreatIntel.ObjectsNames.THREAT_ACTOR:
                 ta_name = data.get("name")
+
                 # Threat actor details search API
                 # Threat actors relationships
-
-                if ta_rel_data := self.get_decyfir_api_iocs_ti_data(
-                    TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(
-                        decyfir_api_key, ta_name
-                    )
+                if ta_rel_data_coll := self.get_decyfir_api_iocs_ti_data(
+                    TA_API_STIX_2_1_SEARCH_PATH_SUFFIX.format(decyfir_api_key, ta_name)
                 ):
                     raw_ta_rels: List = []
                     raw_ta_data: Dict = {}
                     raw_ta_obj: Dict = {}
                     # Only source object getting from the iterating
-                    for data1 in ta_rel_data:
-                        if LABEL_THREAT_ACTOR == data1.get(LABEL_TYPE):
-                            raw_ta_obj = data1
-                            ta_source_obj = self.build_threat_intel_indicator_obj(data1, tlp_color, feed_tags)
+                    for ta_rel_data in ta_rel_data_coll:
+                        if LABEL_THREAT_ACTOR == ta_rel_data.get(LABEL_TYPE):
+                            raw_ta_obj = ta_rel_data
+                            ta_source_obj = self.build_threat_intel_indicator_obj(ta_rel_data, tlp_color, feed_tags)
 
-                        if LABEL_RELATIONSHIP == data1.get(LABEL_TYPE):
-                            raw_ta_rels.append(data1)
+                        if LABEL_RELATIONSHIP == ta_rel_data.get(LABEL_TYPE):
+                            raw_ta_rels.append(ta_rel_data)
                         else:
-                            if raw_ta_obj.get(LABEL_ID) != data1.get(LABEL_ID):
-                                if LABEL_INTRUSION_SET == data1.get(LABEL_TYPE):
-                                    data1["labels"] = raw_ta_obj.get("labels", [])
-                            raw_ta_data[data1.get(LABEL_ID)] = data1
+                            if raw_ta_obj.get(LABEL_ID) != ta_rel_data.get(LABEL_ID):
+                                if ta_rel_data.get(LABEL_TYPE) in [LABEL_INTRUSION_SET, LABEL_CAMPAIGN, LABEL_MALWARE]:
+                                    ta_rel_data["labels"] = raw_ta_obj.get("labels", [])
+                            raw_ta_data[ta_rel_data.get(LABEL_ID)] = ta_rel_data
 
                     # Mapping the relations with source and target objects
                     if raw_ta_rels is not None and raw_ta_rels:
@@ -272,16 +266,19 @@ class Client(BaseClient):
 
                             if source_ref_obj is not None and target_ref_obj is not None:
                                 if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                    source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color, feed_tags)
+                                    source_ti_data_obj = self.build_threat_intel_indicator_obj(source_ref_obj, tlp_color,
+                                                                                               feed_tags)
                                     if source_ti_data_obj is not None and source_ti_data_obj:
                                         return_data.append(source_ti_data_obj)
                                 else:
                                     source_ti_data_obj = ta_source_obj
 
                                 if raw_ta_obj.get(LABEL_ID) != target_ref_obj.get(
-                                    LABEL_ID) and source_ti_data_obj is not None and source_ti_data_obj.get(LABEL_ID) != target_ref_obj.get(LABEL_ID):
+                                    LABEL_ID) and source_ti_data_obj is not None and source_ti_data_obj.get(
+                                    LABEL_ID) != target_ref_obj.get(LABEL_ID):
 
-                                    target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color, feed_tags)
+                                    target_ti_data_obj = self.build_threat_intel_indicator_obj(target_ref_obj, tlp_color,
+                                                                                               feed_tags)
                                     if target_ti_data_obj is not None and target_ti_data_obj:
                                         return_data.append(target_ti_data_obj)
                                 else:
@@ -289,7 +286,8 @@ class Client(BaseClient):
 
                                 if source_ti_data_obj and target_ti_data_obj:
                                     if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
+                                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                                          target_ti_data_obj)
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = []
                                         if ti_relationships:
                                             if source_ti_data_obj[LABEL_RELATIONSHIPS]:
@@ -297,7 +295,8 @@ class Client(BaseClient):
                                             else:
                                                 source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
                                     else:
-                                        ti_relationships = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
+                                        ti_relationships = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                                    target_ti_data_obj)
                                         if ti_relationships:
                                             src_ti_relationships_data.append(ti_relationships)
 
@@ -440,8 +439,7 @@ def test_module_command(client, decyfir_api_key):
     response = client._http_request(url_suffix=url, method='GET', resp_type='response')
     if response.status_code == 200:
         return 'ok'
-        elif response.status_code in [401, 403]:
-
+    elif response.status_code in [401, 403]:
         return 'Not Authorized'
     else:
         return f"Error_code: {response.status_code}, Please contact the DeCYFIR team to assist you further on this."
@@ -454,7 +452,6 @@ def fetch_indicators_command(client: Client, decyfir_api_key: str, tlp_color: Op
 
 def main():
     try:
-        #args = demisto.args()
         params = demisto.params()
         decyfir_url = params['url'].rstrip('/')
         decyfir_api_key = params.get('api_key').get("password")
@@ -462,8 +459,6 @@ def main():
         proxy = params.get('proxy', False)
         feed_tags = argToList(params.get('feedTags'))
         tlp_color = params.get('tlp_color')
-        # indicator_type = params.get('indicatorType')
-        # indicator = params.get('indicator')
         feed_reputation = params.get('feedReputation')
 
         demisto.info(f'Command being called is {demisto.command()}')

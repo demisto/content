@@ -1,5 +1,5 @@
 DeCYFIR API's provides External Threat Landscape Management insights.
-This integration was integrated and tested with version xx of decyfiriocs
+This integration was integrated and tested with version v1 of decyfiriocs
 
 ## Configure DeCYFIR Indicators & Threat Intelligence on Cortex XSOAR
 
