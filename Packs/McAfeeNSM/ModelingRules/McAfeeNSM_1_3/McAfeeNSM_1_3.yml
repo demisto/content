@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: McAfee_NSM_Collection
-name: McAfee NSM Collection
+id: McAfee_NSM_ModelingRule
+name: McAfee NSM Modeling Rule
 rules: ''
 schema: ''
-tags: McAfee NSM Event Colletion
+tags: McAfee NSM Modeling Rule
