@@ -10670,7 +10670,9 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
 
         if current_time - addition_time < deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
-
+            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
+        else:
+            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
@@ -10760,7 +10762,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
             'time': latest_incident_fetched_time,
         }
         # we are still on the same time, no need to remove current incident ids
-        remove_incident_ids = False
+        if latest_incident_fetched_time == start_fetch_time:
+            remove_incident_ids = False
 
     if look_back > 0:
         new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
@@ -10831,9 +10834,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     if found_incidents:
         updated_last_run.update({'found_incident_ids': found_incidents})
 
-    last_run.update(updated_last_run)
-
-    return last_run
+    return updated_last_run
 
 
 # YML metadata collector mocked classes.
