@@ -2270,8 +2270,8 @@ class TestFetch:
     def test_fetch_returns_all_types(self, requests_mock, set_up_mocks, mocker, expected_name,
                                      fetch_incidents_or_detections, incidents_len):
         """
-        Tests that fetch incidents returns incidents, detections, endpoint incidents, endpoint detection, and idp detections types.
-        depends on the value of fetch_incidents_or_detections.
+        Tests that fetch incidents returns incidents, detections, endpoint incidents, endpoint detection,
+        and idp detections types. depends on the value of fetch_incidents_or_detections.
         Given:
             fetch_incidents_or_detections parameter.
         When:
