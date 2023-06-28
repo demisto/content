@@ -4,7 +4,7 @@ BRANCH=$2
 SHOULD_CHECKOUT=$3
 
 if [[ -n $BRANCH ]]; then
-    BRANCH=$(git branch --show-current)
+    BRANCH=$(git rev-parse HEAD)
 fi
 
 # Checks if there's any diff from master
@@ -27,7 +27,7 @@ if [[ $(git diff origin/master -G"." -- ${FILE_TO_CHECK}) ]]; then
         fi
 
         if [[ $BRANCH =~ pull/[0-9]+ ]]; then
-          echo "Run ./Utils/git_pull_master_into_fork.sh or merge manually from upstream demisto content"
+            echo "Run ./Utils/git_pull_master_into_fork.sh or merge manually from upstream demisto content"
         fi
 
         exit 1
