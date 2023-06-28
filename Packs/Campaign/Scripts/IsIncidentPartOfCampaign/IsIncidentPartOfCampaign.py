@@ -52,14 +52,13 @@ def check_incidents_ids_in_campaign(campaign_id: str, incidents_ids_set: Set[str
     try:
         campaign_context = execute_command("getContext", {'id': campaign_id})['context']
 
-        connected_incidents_list = demisto.get(campaign_context, 'EmailCampaign.incidents')
-        if connected_incidents_list:
+        if (connected_incidents_list := demisto.get(campaign_context, 'EmailCampaign.incidents')):
             connected_campaign_incidents_ids = {incident.get('id') for incident in connected_incidents_list}
             is_incidents_in_campaign = bool(incidents_ids_set & connected_campaign_incidents_ids)
             if is_incidents_in_campaign:
                 return True
     except Exception as e:
-        demisto.info(f"skipping for incident {campaign_id},\nThe reason: {e}")
+        demisto.info(f"skipping for incident {campaign_id}, reason: {e}")
     return False
 
 
