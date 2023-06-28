@@ -7,7 +7,7 @@ from AbnormalSecurity import Client, check_the_status_of_an_action_requested_on_
     get_a_list_of_abnormal_cases_identified_by_abnormal_security_command, get_a_list_of_threats_command, \
     get_details_of_an_abnormal_case_command, manage_a_threat_identified_by_abnormal_security_command, \
     manage_an_abnormal_case_command, submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command, \
-    download_data_from_threat_log_in_csv_format_command, \
+    get_the_latest_threat_intel_feed_command, download_data_from_threat_log_in_csv_format_command, \
     get_a_list_of_campaigns_submitted_to_abuse_mailbox_command, get_details_of_an_abuse_mailbox_campaign_command, \
     get_employee_identity_analysis_genome_data_command, get_employee_information_command, \
     get_employee_login_information_for_last_30_days_in_csv_format_command, \
@@ -241,6 +241,18 @@ def test_submit_a_false_positive_command(mocker):
 
     results = submit_false_positive_report_command(client, args)
     assert results.readable_output == 'Thank you for your feedback! We have sent your inquiry to our support staff.'
+
+
+def test_get_the_latest_threat_intel_feed_command(mocker):
+    """
+        When:
+            - Retrieve intel feed
+        Then
+            - Assert downloaded file name is as expected
+    """
+    client = mock_client(mocker, util_load_response('test_data/test_get_threat_intel_feed.json'))
+    results = get_the_latest_threat_intel_feed_command(client)
+    assert results["File"] == 'threat_intel_feed.json'
 
 
 def test_download_data_from_threat_log_in_csv_format_command(mocker):
