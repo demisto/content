@@ -3542,36 +3542,6 @@ List the virtual server groups. Supports API versions 1 & 2.
 >| test |  |
 
 
-### fortiwebvm-network-interface-list
-
-***
-List the Network interfaces. A network interface is a connection point that enables communication between the FortiWeb device and the network, allowing traffic to flow through for inspection and protection. Supports API versions 1 & 2.
-
-#### Base Command
-
-`fortiwebvm-network-interface-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
-| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
-| page_size | The number of items per page. Default is 50. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| FortiwebVM.NetworkInterface.name | String | Network interface name. |
-| FortiwebVM.NetworkInterface.ipv4_netmask | String | IPv4 network mask. |
-| FortiwebVM.NetworkInterface.ipv4_access | String | IPv4 allowed access list. |
-| FortiwebVM.NetworkInterface.ipv6_netmask | String | IPv6 network mask. |
-| FortiwebVM.NetworkInterface.ipv6_access | String | IPv6 allowed access list. |
-| FortiwebVM.NetworkInterface.status | String | The network interface status. |
-| FortiwebVM.NetworkInterface.type | String | The network interface type. |
-
 ### fortiwebvm-virtual-server-item-create
 
 ***
@@ -3937,55 +3907,6 @@ List server pool groups. Supports API versions 1 & 2.
 >|---|---|---|---|---|---|---|---|
 >| rp | Reverse Proxy | 0 | Single Server |  |  |  |  |
 
-
-### fortiwebvm-persistence-policy-list
-
-***
-List all the Persistence policies. The persistence policy applies to all members of the server pool. Supports API versions 1 & 2.
-
-#### Base Command
-
-`fortiwebvm-persistence-policy-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
-| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
-| page_size | The number of items per page. Default is 50. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| FortiwebVM.PersistencePolicy.id | String | Persistence policy name. |
-| FortiwebVM.PersistencePolicy.type | String | The persistence policy type. |
-
-### fortiwebvm-server-health-check-list
-
-***
-List all the server health check policies. Tests for server responsiveness (called “server health checks” in the web UI) poll web servers that are members of a server pool to determine their availability before forwarding traffic. Supports API versions 1 & 2.
-
-#### Base Command
-
-`fortiwebvm-server-health-check-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| search | Return all objects that include the specified string. For example: search=test will return objects like 'test1', 'test2', '5test', and any other objects containing the test string. | Optional |
-| page | Page number of paginated results. Minimum value: 1. Default is 1. | Optional |
-| page_size | The number of items per page. Default is 50. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| FortiwebVM.ServerHealthCheck.id | String | Server Health Check name. |
 
 ### fortiwebvm-server-pool-reverse-proxy-rule-create
 

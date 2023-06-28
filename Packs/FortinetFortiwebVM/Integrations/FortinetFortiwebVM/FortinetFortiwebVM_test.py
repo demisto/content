@@ -7592,8 +7592,8 @@ def test_server_pool_group_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = server_pool_group_list_command(mock_client, args)
-    if isinstance(result.outputs, list):
-        assert len(result.outputs) == expected
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == expected
     assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"
 
 
@@ -7667,7 +7667,8 @@ def test_server_pool_rule_create_command(
     requests_mock.get(url=get_url, json=group_get_response, status_code=200)
     result = server_pool_rule_create_command(mock_client, args, group_type=group_type)
     assert result.outputs_prefix == "FortiwebVM.ServerPoolGroup"
-    assert isinstance(result.outputs, dict) and result.outputs['Rule']["id"] == expected_value
+    assert isinstance(result.outputs, dict)
+    assert result.outputs['Rule']["id"] == expected_value
 
 
 @pytest.mark.parametrize(

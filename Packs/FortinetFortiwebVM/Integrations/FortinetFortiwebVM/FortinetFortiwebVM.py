@@ -17,12 +17,12 @@ MAX_CONNECTION_LIMIT = 1048576
 
 
 class CommandAction(Enum):
-    CREATE = "CREATE"
-    UPDATE = "UPDATE"
+    CREATE = "create"
+    UPDATE = "update"
 
 
 class ArgumentValues(Enum):
-    SOURCE_ADDRESS_IP = "IP"
+    IP = "IP"
     SOURCE_ADDRESS_IP_RESOLVED = "IP Resolved by Specified Domain"
     SOURCE_ADDRESS_SOURCE_DOMAIN = "Source Domain"
     URL_ACTION = ["Pass", "Alert & Deny", "Continue", "Deny (no log)"]
@@ -31,11 +31,10 @@ class ArgumentValues(Enum):
     DISABLE = "disable"
     ENABLE_DISABLE = [ENABLE, DISABLE]
     SOURCE_ADDRESS_TYPE = [
-        SOURCE_ADDRESS_IP,
+        IP,
         SOURCE_ADDRESS_IP_RESOLVED,
         SOURCE_ADDRESS_SOURCE_DOMAIN,
     ]
-    SERVER_POOL_RULE_IP = "IP"
     SERVER_POOL_RULE_DOMAIN = "Domain"
     SERVER_POOL_RULE_EXTERNAL = "External connector"
     REVERSE_PROXY = "Reverse Proxy"
@@ -247,9 +246,9 @@ class Parser:
     def create_output_headers(
         self,
         version: str,
-        common_headers: List[str],
-        v1_only_headers: List[str],
-        v2_only_headers: List[str],
+        common_headers: List[str] = [],
+        v1_only_headers: List[str] = [],
+        v2_only_headers: List[str] = [],
     ) -> List[str]:
         pass
 
@@ -366,6 +365,12 @@ class Parser:
     @abstractmethod
     def parse_url_access_rule_condition(
         self, url_access_rule_condition: dict[str, Any]
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def parse_virtual_server_group(
+        self, virtual_server_group: dict[str, Any]
     ) -> dict[str, Any]:
         pass
 
@@ -575,9 +580,9 @@ class ParserV1(Parser):
     def create_output_headers(
         self,
         version: str,
-        common_headers: List[str],
-        v1_only_headers: List[str],
-        v2_only_headers: List[str],
+        common_headers: List[str] = [],
+        v1_only_headers: List[str] = [],
+        v2_only_headers: List[str] = [],
     ) -> List[str]:
         """Create headers for xsoar output.
 
@@ -915,6 +920,11 @@ class ParserV1(Parser):
             "source_domain": url_access_rule_condition.get("source_domain"),
         }
 
+    def parse_virtual_server_group(
+        self, virtual_server_group: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.parse_snakify_with_id(virtual_server_group)
+
     @property
     def sub_object_id_key(self) -> str:
         """Hold sub object id key in Fortiweb V1
@@ -1110,6 +1120,10 @@ class ParserV1(Parser):
     def server_pool_group_type_user_to_api_mapper(
         self,
     ) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             ArgumentValues.REVERSE_PROXY.value: 1,
             ArgumentValues.OFFLINE_PROTECTION.value: 2,
@@ -1122,27 +1136,43 @@ class ParserV1(Parser):
     def server_pool_group_type_api_to_user_mapper(
         self,
     ) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_pool_group_type_user_to_api_mapper)
 
     @property
     def lb_algo_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool lb_algo to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
-            "Round Robin": 1,
-            "Weighted Round Robin": 2,
-            "Least Connection": 3,
-            "URI Hash": 5,
-            "Full URI Hash": 6,
-            "Host Hash": 7,
-            "Host Domain Hash": 8,
-            "Source IP Hash": 9,
+            ArgumentValues.ROUND_ROBIN.value: 1,
+            ArgumentValues.WEIGHTED_ROUND_ROBIN.value: 2,
+            ArgumentValues.LEAST_CONNECTION.value: 3,
+            ArgumentValues.URI_HASH.value: 5,
+            ArgumentValues.FULL_URI_HASH.value: 6,
+            ArgumentValues.HOST_HASH.value: 7,
+            ArgumentValues.HOST_DOMAIN_HASH.value: 8,
+            ArgumentValues.SOURCE_IP_HASH.value: 9,
         }
 
     @property
     def lb_algo_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool lb_algo to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.lb_algo_user_to_api_mapper)
 
     @property
     def server_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool server_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             ArgumentValues.SINGLE_SERVER.value: 1,
             ArgumentValues.SERVER_BALANCE.value: 2,
@@ -1150,21 +1180,37 @@ class ParserV1(Parser):
 
     @property
     def server_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool server_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_type_user_to_api_mapper)
 
     @property
     def server_pool_rule_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool rule type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
-            ArgumentValues.SERVER_POOL_RULE_IP.value: 1,
+            ArgumentValues.IP.value: 1,
             ArgumentValues.SERVER_POOL_RULE_DOMAIN.value: 2,
         }
 
     @property
     def server_pool_rule_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool rule type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_pool_rule_type_user_to_api_mapper)
 
     @property
     def server_pool_rule_status_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool rule status to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             "disable": 1,
             "enable": 2,
@@ -1173,6 +1219,10 @@ class ParserV1(Parser):
 
     @property
     def server_pool_rule_status_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool rule status to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_pool_rule_status_user_to_api_mapper)
 
     def parse_persistence_policy(
@@ -1225,9 +1275,9 @@ class ParserV2(Parser):
     def create_output_headers(
         self,
         version: str,
-        common_headers: List[str],
-        v1_only_headers: List[str],
-        v2_only_headers: List[str],
+        common_headers: List[str] = [],
+        v1_only_headers: List[str] = [],
+        v2_only_headers: List[str] = [],
     ) -> List[str]:
         """Create headers for xsoar output.
 
@@ -1573,6 +1623,22 @@ class ParserV2(Parser):
             "count": access_rule_group.get("sz_match-condition"),
         }
 
+    def parse_virtual_server_group(
+        self, virtual_server_group: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Parse for URL access rule group dict.
+
+        Args:
+            access_rule_group (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        return {
+            "id": virtual_server_group.get("name"),
+            "items_count": virtual_server_group.get("sz_vip-list"),
+        }
+
     def parse_url_access_rule_condition(
         self, url_access_rule_condition: dict[str, Any]
     ) -> dict[str, Any]:
@@ -1674,7 +1740,7 @@ class ParserV2(Parser):
         Returns:
             dict[str, int]: Mapped dictionary.
         """
-        return {"High": 1, "Medium": 2, "Low": 3, "Informative": 4}
+        return {"High": 1, "Medium": 2, "Low": 3, "Continue": 4}
 
     @property
     def severity_api_to_user_mapper(self) -> dict[int, str]:
@@ -1768,8 +1834,8 @@ class ParserV2(Parser):
             dict[int, str]: Mapped dictionary.
         """
         return {
-            "Object matches the URL Pattern": "yes",
-            "Object does not match the URL Pattern": "no",
+            "Object matches the URL Pattern": "no",
+            "Object does not match the URL Pattern": "yes",
         }
 
     @property
@@ -1839,6 +1905,10 @@ class ParserV2(Parser):
     def server_pool_group_type_user_to_api_mapper(
         self,
     ) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             ArgumentValues.REVERSE_PROXY.value: "reverse-proxy",
             ArgumentValues.OFFLINE_PROTECTION.value: "offline-protection",
@@ -1851,27 +1921,43 @@ class ParserV2(Parser):
     def server_pool_group_type_api_to_user_mapper(
         self,
     ) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_pool_group_type_user_to_api_mapper)
 
     @property
     def lb_algo_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool lb_algo to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
-            "Round Robin": "round-robin",
-            "Weighted Round Robin": "weighted-round-robin",
-            "Least Connection": "least-connections",
-            "URI Hash": "uri-hash",
-            "Full URI Hash": "full-uri-hash",
-            "Host Hash": "host-hash",
-            "Host Domain Hash": "host-domain-hash",
-            "Source IP Hash": "src-ip-hash",
+            ArgumentValues.ROUND_ROBIN.value: "round-robin",
+            ArgumentValues.WEIGHTED_ROUND_ROBIN.value: "weighted-round-robin",
+            ArgumentValues.LEAST_CONNECTION.value: "least-connections",
+            ArgumentValues.URI_HASH.value: "uri-hash",
+            ArgumentValues.FULL_URI_HASH.value: "full-uri-hash",
+            ArgumentValues.HOST_HASH.value: "host-hash",
+            ArgumentValues.HOST_DOMAIN_HASH.value: "host-domain-hash",
+            ArgumentValues.SOURCE_IP_HASH.value: "src-ip-hash",
         }
 
     @property
     def lb_algo_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool lb_algo to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.lb_algo_user_to_api_mapper)
 
     @property
     def server_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool server_type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             ArgumentValues.SINGLE_SERVER.value: "disable",
             ArgumentValues.SERVER_BALANCE.value: "enable",
@@ -1879,22 +1965,38 @@ class ParserV2(Parser):
 
     @property
     def server_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool server_type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_type_user_to_api_mapper)
 
     @property
     def server_pool_rule_type_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool rule type to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
-            ArgumentValues.SERVER_POOL_RULE_IP.value: "physical",
+            ArgumentValues.IP.value: "physical",
             ArgumentValues.SERVER_POOL_RULE_DOMAIN.value: "domain",
             ArgumentValues.SERVER_POOL_RULE_EXTERNAL.value: "sdn-connector",
         }
 
     @property
     def server_pool_rule_type_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool rule type to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_pool_rule_type_user_to_api_mapper)
 
     @property
     def server_pool_rule_status_user_to_api_mapper(self) -> dict[str, int] | dict[str, str]:
+        """Mapping the user input for server pool rule status to the API input.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return {
             "disable": "disable",
             "enable": "enable",
@@ -1903,6 +2005,10 @@ class ParserV2(Parser):
 
     @property
     def server_pool_rule_status_api_to_user_mapper(self) -> dict[int, str] | dict[str, str]:
+        """Mapping the API output for server pool rule status to the user output.
+        Returns:
+            dict[int, str]: Mapped dictionary.
+        """
         return reverse_dict(self.server_pool_rule_status_user_to_api_mapper)
 
     def parse_persistence_policy(
@@ -2603,7 +2709,7 @@ class Client(BaseClient):
         validate = partial(validate_argument, args=args)
         if args.get("source_address") == ArgumentValues.ENABLE.value:
             validate(key_="source_address_type")
-            if args.get("source_address_type") == ArgumentValues.SOURCE_ADDRESS_IP.value:
+            if args.get("source_address_type") == ArgumentValues.IP.value:
                 validate(key_="ip_range")
 
             if args.get("source_address_type") == ArgumentValues.SOURCE_ADDRESS_IP_RESOLVED.value:
@@ -2648,12 +2754,13 @@ class Client(BaseClient):
         """
         pass
 
-    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str):
+    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str, command_action: str):
         """Virtual server pool rule args validator.
 
         Args:
             args (Dict[str, Any]): Command arguments from XSOAR.
             group_type (str): Server pool group type.
+            command_action (str): The command action.
 
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
@@ -3238,7 +3345,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def server_pool_group_delete_request(self, name: str) -> dict[str, Any]:
+    def server_pool_group_delete_request(self, name: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -3264,13 +3371,13 @@ class Client(BaseClient):
 
     @abstractmethod
     def server_pool_rule_delete_request(
-        self, group_name: str, rule_id: str
+        self, group_name: str | None, rule_id: str | None
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     def server_pool_rule_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         pass
 
@@ -3428,12 +3535,13 @@ class ClientV1(Client):
         )
         return member_data["_id"] if member_data else "Can not find the id"
 
-    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str):
+    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str, command_action: str):
         """Virtual server pool rule args validator.
 
         Args:
             args (Dict[str, Any]): Command arguments from XSOAR.
             group_type (str): Server pool group type.
+            command_action (str): The command action.
 
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
@@ -3445,8 +3553,10 @@ class ClientV1(Client):
         parsed = self.parser.parse_server_pool(res)
         key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
         if group_type != parsed[key_]:
-            raise ValueError(f'The group type is "{parsed["type"]}", the rule type is "{group_type}"')
-        super().validate_server_pool_rule(args, group_type)
+            raise ValueError(f'Can not {command_action} the rule. The group {key_} is "{parsed[key_]}", '
+                             + f'the rule type is "{group_type}". Please use group with "{parsed[key_]}" {key_} '
+                             + f'or use {group_type} {command_action} command.')
+        super().validate_server_pool_rule(args, group_type, command_action)
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -4729,7 +4839,7 @@ class ClientV1(Client):
             source_address_type if source_address == ArgumentValues.ENABLE.value else None
         )
         match source_address_type:
-            case ArgumentValues.SOURCE_ADDRESS_IP.value:
+            case ArgumentValues.IP.value:
                 ip_type = None
                 ip = None
                 source_domain_type = None
@@ -5191,7 +5301,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def server_pool_group_delete_request(self, name: str) -> dict[str, Any]:
+    def server_pool_group_delete_request(self, name: str | None) -> dict[str, Any]:
         """Delete a virtual server group.
 
         Args:
@@ -5278,7 +5388,7 @@ class ClientV1(Client):
         )
 
     def server_pool_rule_delete_request(
-        self, group_name: str, rule_id: str
+        self, group_name: str | None, rule_id: str | None
     ) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
@@ -5295,7 +5405,7 @@ class ClientV1(Client):
         )
 
     def server_pool_rule_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         """List URL access rule conditions.
 
@@ -5614,22 +5724,25 @@ class ClientV2(Client):
             validate_argument(args=args, key_='health_check_source_ip_v6')
         super().validate_server_pool_group(args, action)
 
-    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str):
+    def validate_server_pool_rule(self, args: dict[str, Any], group_type: str, command_action: str):
         """Virtual server pool rule args validator.
 
         Args:
             args (Dict[str, Any]): Command arguments from XSOAR.
             group_type (str): Server pool group type.
+            command_action (str): The command action.
 
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        res = self.server_pool_group_list_request(name=args.get("group_name")).get('results') or {}
+        res = self.server_pool_group_list_request(name=args.get("group_name")).get('results', {})
         parsed = self.parser.parse_server_pool(res)
         key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
         if group_type != parsed[key_]:
-            raise ValueError(f'The group {key_} is "{parsed[key_]}", the rule type is "{group_type}"')
-        super().validate_server_pool_rule(args, group_type)
+            raise ValueError(f'Can not {command_action} the rule. The group {key_} is "{parsed[key_]}", '
+                             + f'the rule type is "{group_type}". Please use group with "{parsed[key_]}" {key_} '
+                             + f'or use {group_type} {command_action} command.')
+        super().validate_server_pool_rule(args, group_type, command_action)
 
     def protected_hostname_create_request(
         self, name: str, default_action: str
@@ -6769,7 +6882,7 @@ class ClientV2(Client):
                     "name": name,
                     "action": dict_safe_get(self.parser.url_action_user_to_api_mapper, [action]),
                     "trigger": trigger_policy,
-                    "severity": dict_safe_get(self.parser.severity_user_to_api_mapper, [severity]),
+                    "severity": severity,
                     "host-status": host_status,
                     "host": host,
                 }
@@ -6809,9 +6922,9 @@ class ClientV2(Client):
             "data": remove_empty_elements(
                 {
                     "name": name,
-                    "action": self.parser.url_action_user_to_api_mapper.get(action) if action else None,
+                    "action": dict_safe_get(self.parser.url_action_user_to_api_mapper, [action]),
                     "trigger": trigger_policy,
-                    "severity": self.parser.severity_user_to_api_mapper.get(severity) if severity else None,
+                    "severity": severity,
                     "host-status": host_status,
                     "host": host,
                 }
@@ -6892,7 +7005,7 @@ class ClientV2(Client):
         )
 
         match source_address_type:
-            case ArgumentValues.SOURCE_ADDRESS_IP.value:
+            case ArgumentValues.IP.value:
                 ip_type = None
                 ip = None
                 source_domain_type = None
@@ -7901,7 +8014,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def server_pool_group_delete_request(self, name: str) -> dict[str, Any]:
+    def server_pool_group_delete_request(self, name: str | None) -> dict[str, Any]:
         """Delete a virtual server group.7859
 
         Args:
@@ -8060,7 +8173,7 @@ class ClientV2(Client):
         )
 
     def server_pool_rule_delete_request(
-        self, group_name: str, rule_id: str
+        self, group_name: str | None, rule_id: str | None
     ) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
@@ -8079,7 +8192,7 @@ class ClientV2(Client):
         )
 
     def server_pool_rule_list_request(
-        self, group_name: str, **kwargs
+        self, group_name: str | None, **kwargs
     ) -> dict[str, Any]:
         """List URL access rule conditions.
 
@@ -9583,9 +9696,7 @@ def url_access_rule_group_list_command(
     )
     headers = client.parser.create_output_headers(
         client.version,
-        ["id", "action", "host", "severity", "count"],
-        [],
-        [],
+        common_headers=["id", "action", "host", "severity", "count"],
     )
     readable_output = tableToMarkdown(
         name=OutputTitle.URL_ACCESS_RULE_GROUP.value,
@@ -9753,7 +9864,7 @@ def url_access_rule_condition_list_command(
     outputs = {"id": group_name, "Condition": parsed_data}
     headers = client.parser.create_output_headers(
         client.version,
-        [
+        common_headers=[
             "id",
             "url_type",
             "url_pattern",
@@ -9765,8 +9876,6 @@ def url_access_rule_condition_list_command(
             "source_domain_type",
             "source_domain",
         ],
-        [],
-        [],
     )
     readable_output = tableToMarkdown(
         name=OutputTitle.URL_ACCESS_RULE_CONDITION.value,
@@ -10608,7 +10717,7 @@ def paginate_results(
             return output[first_item: (first_item + page_size)], pagination_message
 
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
-        return output[:page_size], pagination_message
+        return output, pagination_message
 
     return output, pagination_message
 
@@ -10755,7 +10864,9 @@ def generate_simple_context_data_command_results(
     """
     outputs = outputs or {key: value}
     readable_output = tableToMarkdown(
-        message, readable_outputs or outputs, headerTransform=string_to_table_header
+        message,
+        readable_outputs or outputs,
+        headerTransform=string_to_table_header
     )
     command_results = CommandResults(
         readable_output=readable_output,
@@ -11116,7 +11227,7 @@ def virtual_server_group_list_command(
     parsed_data, pagination_message, _ = list_response_handler(
         client=client,
         response=response,
-        data_parser=client.parser.parse_snakify_with_id,
+        data_parser=client.parser.parse_virtual_server_group,
         args=args,
         sub_object_id=name,
         sub_object_key=client.parser.sub_object_id_key,
@@ -11262,9 +11373,7 @@ def virtual_server_item_list_command(
     outputs = {"id": group_name, "Item": parsed_data}
     headers = client.parser.create_output_headers(
         client.version,
-        [],
-        [],
-        ["id", "interface", "status", "use_interface_ip", "virtual_ip"],
+        v2_only_headers=["id", "interface", "status", "use_interface_ip", "virtual_ip"],
     )
     readable_output = tableToMarkdown(
         name=OutputTitle.VIRTUAL_SERVER_ITEM.value,
@@ -11343,7 +11452,7 @@ def server_pool_group_delete_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    name = args["name"]
+    name = args.get("name")
     response = client.server_pool_group_delete_request(name)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.SERVER_POOL_GROUP.value,
@@ -11378,7 +11487,7 @@ def server_pool_group_list_command(
     )
     headers = client.parser.create_output_headers(
         client.version,
-        [
+        common_headers=[
             "id",
             "type",
             "pool_count",
@@ -11388,8 +11497,7 @@ def server_pool_group_list_command(
             "health_check",
             "persistence",
         ],
-        [],
-        ["protocol"],
+        v2_only_headers=["protocol"],
     )
     readable_output = tableToMarkdown(
         name=OutputTitle.SERVER_POOL_GROUP.value,
@@ -11421,8 +11529,8 @@ def server_pool_rule_create_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    group_name = args["group_name"]
-    client.validate_server_pool_rule(args=args, group_type=group_type)
+    group_name = args.get("group_name")
+    client.validate_server_pool_rule(args=args, group_type=group_type, command_action=CommandAction.CREATE.value)
     response = client.server_pool_rule_create_request(**args)
     search = "domain" if args.get("server_type") == ArgumentValues.SERVER_POOL_RULE_DOMAIN.value else "ip"
     member_id = client.get_object_id(
@@ -11457,8 +11565,8 @@ def server_pool_rule_update_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    client.validate_server_pool_rule(args=args, group_type=group_type)
-    rule_id = args["rule_id"]
+    client.validate_server_pool_rule(args=args, group_type=group_type, command_action=CommandAction.CREATE.value)
+    rule_id = args.get("rule_id")
     response = client.server_pool_rule_update_request(**args)
     return generate_simple_command_results(
         object_type=OutputTitle.SERVER_POOL_RULE.value,
@@ -11481,8 +11589,8 @@ def server_pool_rule_delete_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    group_name = args["group_name"]
-    rule_id = args["rule_id"]
+    group_name = args.get("group_name")
+    rule_id = args.get("rule_id")
     response = client.server_pool_rule_delete_request(group_name, rule_id)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.SERVER_POOL_RULE.value,
@@ -11505,7 +11613,7 @@ def server_pool_rule_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    group_name = args["group_name"]
+    group_name = args.get("group_name")
     rule_id = args.get("rule_id")
     response = client.server_pool_rule_list_request(
         group_name, rule_id=rule_id
@@ -11520,7 +11628,7 @@ def server_pool_rule_list_command(
     outputs = {"group_name": group_name, "Rule": parsed_data}
     headers = client.parser.create_output_headers(
         client.version,
-        [
+        common_headers=[
             "id",
             "server_type",
             "ip",
@@ -11530,8 +11638,6 @@ def server_pool_rule_list_command(
             "connection_limit",
             "http2",
         ],
-        [],
-        [],
     )
     readable_output = tableToMarkdown(
         name=OutputTitle.SERVER_POOL_RULE.value,

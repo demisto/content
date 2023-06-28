@@ -4585,7 +4585,7 @@ script:
       name: trigger_policy
       required: false
     - auto: PREDEFINED
-      description: 'Severity level. Required when: action=Alert & Deny or Deny (no log).'
+      description: 'Severity level that FortiWeb appliance will use when a blocklisted IP address attempts to connect to your web servers. Relevant when: action=Alert & Deny or Deny (no log). The default value is Low.'
       isArray: false
       name: severity
       predefined:
