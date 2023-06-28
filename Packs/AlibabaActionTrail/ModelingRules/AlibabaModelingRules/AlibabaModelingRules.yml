@@ -1,5 +1,5 @@
 fromversion: 6.8.0
-id: alibaba_modeling_rule
+id: alibaba_ModelingRule
 name: Alibaba Modeling Rule
 rules: ''
 schema: ''

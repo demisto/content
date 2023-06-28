@@ -56,7 +56,7 @@ display: Generic Webhook
 name: Generic Webhook
 script:
   commands: []
-  dockerimage: demisto/fastapi:1.0.0.43666
+  dockerimage: demisto/fastapi:1.0.0.63688
   feed: false
   isfetch: false
   longRunning: true
