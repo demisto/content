@@ -4195,7 +4195,6 @@ def test_error_in_get_detections_by_behaviors(mocker):
 
     # prepare
     from CrowdStrikeFalcon import get_detection_for_incident_command
-    mocker.patch.object
     mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
                  return_value={'resources': [{'dummy': 'test'}], 'meta': {'pagination': {'total': 1}}})
 
