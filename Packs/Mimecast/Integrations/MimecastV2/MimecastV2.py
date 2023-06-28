@@ -711,6 +711,9 @@ def test_module():
 
 
 def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
+    if not query_xml:
+        return ()
+    
     if not (fields := ElementTree.fromstring(query_xml).find('.//return-fields')):  # noqa:S314 - argument set by user
         demisto.debug("could not find a 'return-fields' section - will only return default fields")
         return ()
@@ -722,11 +725,10 @@ DEFAULT_QUERY_KEYS = frozenset(('subject', 'displayfrom', 'displayto', 'received
 
 def query():
     args = demisto.args()
-    query_xml = args.get('queryXml') or parse_query_args(args)
-    additional_keys = sorted(set(parse_queried_fields(query_xml)).difference(
-        DEFAULT_QUERY_KEYS))  # non-default keys found in query)
-    headers = ['Subject', 'Display From', 'Display To', 'Received Date',
-               'Size', 'Attachment Count', 'Status', 'ID'] + additional_keys
+    query_xml = args.get('queryXml') or ''
+    additional_keys = sorted(set(parse_queried_fields(query_xml)).difference(DEFAULT_QUERY_KEYS))  # non-default keys in query)
+    headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status',
+               'ID'] + additional_keys
 
     contents = []
     context = {}
