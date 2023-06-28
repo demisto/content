@@ -62,11 +62,7 @@ class Client(BaseClient):
             "tool": ThreatIntel.ObjectsNames.TOOL
         }
 
-        for key, value in indicator_mapping.items():
-            if key in data:
-                return value
-
-        return None
+        return(indicator_mapping.get(data))
 
     def get_decyfir_api_iocs_ti_data(self, decyfir_api_path: str) -> List[Dict]:
         response = self._http_request(url_suffix=decyfir_api_path, method='GET', resp_type='response')
