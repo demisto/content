@@ -1,4 +1,4 @@
 [INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_adfs_raw", no_hit=drop]
 config case_sensitive=false 
-| filter provider_name contains "AD FS Auditing"
+| filter provider_name="AD FS Auditing"
 | alter _time = time_created;
