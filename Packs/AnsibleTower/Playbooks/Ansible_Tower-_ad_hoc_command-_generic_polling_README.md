@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-* Ansible Automation Controller
+* Ansible Automation Platform
 
 ### Scripts
 This playbook does not use any scripts.
