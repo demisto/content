@@ -193,6 +193,9 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
+    
+    from urllib3 import disable_warnings
+    disable_warnings()
 
     import dateparser  # type: ignore
     from datetime import timezone  # type: ignore
