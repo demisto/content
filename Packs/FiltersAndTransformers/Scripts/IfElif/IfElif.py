@@ -11,7 +11,7 @@ CONTEXT_REGEX = re.compile('\${([\S]+?)}')
 
 
 def get_from_context(path: str) -> Any:
-    '''Gets a value of the format from the context.'''
+    '''Gets a value of the format ${<path>} from the context.'''
 
     result = dict_safe_get(CONTEXT, path.split('.'), KeyError)
 
@@ -26,7 +26,7 @@ def parse_condition_for_context_keys(condition: str) -> str:
 
     for match in CONTEXT_REGEX.findall(condition):
         replacement = get_from_context(match)
-        condition = condition.replace(f'${{{match}}}', json.dumps(replacement), 1)
+        condition = condition.replace(f'${{{match}}}', repr(replacement), 1)
 
     return condition
 
