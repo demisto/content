@@ -651,7 +651,8 @@ def test_get_from_args_or_params__when_the_key_dose_not_exists():
     """
     with pytest.raises(Exception) as e:
         get_from_args_or_params(args, params, 'mock')
-    assert e.value.args[0] == 'No mock was provided. Please provide a mock either in the instance configuration or as a command argument.'
+    assert e.value.args[0] == "No mock was provided. Please provide a mock either in the instance \
+configuration or as a command argument."
 
 
 def test_azure_tag_formatter__with_valid_input():
