@@ -181,8 +181,7 @@ class Client(BaseClient):
 
         if isinstance(data.get('external_references'), list):
             for ex_ref in data['external_references']:
-                ttps_id: str = str(ex_ref.get("external_id"))
-                if ttps_id:
+                if ttps_id := ex_ref.get('external_id')
                     self.add_tags(ti_data_obj, ttps_id)
 
         if intel_type is ThreatIntel.ObjectsNames.MALWARE:
