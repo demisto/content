@@ -4,6 +4,8 @@ ignore=PA125
 [file:Palo_Alto_Networks_Enterprise_DLP.yml]
 ignore=BA108,BA109,IN145
 
-
 [file:Palo_Alto_Networks_Enterprise_DLP_image.png]
 ignore=IM111
+
+[file:DLP_Incident_Feedback_Loop_6_8.yml]
+ignore=PB106
