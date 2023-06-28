@@ -62,7 +62,6 @@ configuration:
   defaultvalue: 3 days
   display: First fetch time.
   name: first_fetch_time
-  required: false
   section: Collect
   type: 0
 description: Google Cloud Pub/Sub is a fully-managed real-time messaging service that enables you to send and receive messages between independent applications.
@@ -518,7 +517,6 @@ script:
     description: Acknowledge previously pulled message or messages.
     name: gcp-pubsub-topic-ack-messages
   dockerimage: demisto/googleapi-python3:1.0.0.64222
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

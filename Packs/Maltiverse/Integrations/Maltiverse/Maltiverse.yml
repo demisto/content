@@ -12,8 +12,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: API Key
-  name:  credentials_api_key
-  required: false
+  name: credentials_api_key
   hiddenusername: true
   type: 9
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -363,11 +362,6 @@ script:
       description: Attribute to label an IoC.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

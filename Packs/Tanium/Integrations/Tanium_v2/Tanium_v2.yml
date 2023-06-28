@@ -19,7 +19,6 @@ configuration:
   type: 4
   hidden: true
 - name: credentials_api_token
-  required: false
   type: 9
   additionalinfo: The API token was created in the Tanium platform and should be used for OAuth 2 authentication. See Help (?) for more information.
   displaypassword: API Token
@@ -1349,7 +1348,6 @@ script:
       description: The action results ID.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   script: ''
   subtype: python3
   type: python

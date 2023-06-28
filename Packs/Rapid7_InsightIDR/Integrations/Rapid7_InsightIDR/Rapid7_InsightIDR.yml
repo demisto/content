@@ -54,7 +54,6 @@ configuration:
 - advanced: true
   display: Use system proxy settings
   name: proxy
-  required: false
   section: Connect
   type: 8
 

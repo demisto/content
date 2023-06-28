@@ -74,7 +74,6 @@ configuration:
 - defaultvalue: 'indicatorType'
   display: ''
   name: feedExpirationPolicy
-  required: false
   type: 17
   options:
   - never
