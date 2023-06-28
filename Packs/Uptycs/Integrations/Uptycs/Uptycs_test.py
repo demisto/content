@@ -2346,3 +2346,84 @@ def test_uptycs_set_alert_status(mocker, requests_mock):
     mock_response["updatedBy"] = "B schmoll"
 
     assert response['Contents'] == mock_response
+
+
+def test_uptycs_create_lookuptable(mocker, requests_mock):
+    """
+    Tests uptycs-create-lookuptable command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate lookuptble API
+              response when the correct uptycs-create-lookuptable API request is performed.
+
+        When:
+            - Running the 'uptycs-create-lookuptable'.
+            - Running the 'uptycs_post_lookuptable_data_source_command'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_post_new_lookuptable_command, uptycs_post_lookuptable_data_source_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    table_id = "984d4a7a-9f3a-580a-a3ef-2841a561669b"
+    id_field = "remote_address"
+    description = "look up table with remote address"
+    mocker.patch.object(demisto, 'args', return_value={
+        "name": "test_table_new",
+        "id_field": id_field,
+        "description": description,
+        "table_id": table_id,
+        "filename": "test_data/look_up_table_test.csv"
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    mock_response = {
+        "active": True,
+        "createdAt": "2023-04-21T08:27:20.888Z",
+        "createdBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
+        "dataLookupTable": "",
+        "description": description,
+        "fetchRowsquery": "SELECT id_field_value,data FROM upt_lookup_rows",
+        "forRuleEngine": "",
+        "idField": id_field,
+        "name": "test_table_new",
+        "rowCount": 24,
+        "seedId": "",
+        "updatedAt": "2023-04-25T04:11:04.664Z",
+        "updatedBy": "f976bda8-d5dc-468f-8283-20d5368352e2",
+        "id": table_id
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/lookupTables' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response)
+
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s/csvdata' % (DOMAIN, CUSTOMER_ID, table_id)
+    requests_mock.post(test_url, json=mock_response)
+
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s' % (DOMAIN, CUSTOMER_ID, table_id)
+    requests_mock.put(test_url, json=mock_response)
+
+    response = uptycs_post_new_lookuptable_command()
+
+    assert response['Contents'] == mock_response
+
+    test_url = 'https://%s/public/api/customers/%s/lookupTables/%s/csvdata' % (DOMAIN, CUSTOMER_ID, table_id)
+    requests_mock.post(test_url, json=mock_response)
+
+    response = uptycs_post_lookuptable_data_source_command()
+
+    assert response['Contents'] == mock_response

@@ -2370,10 +2370,10 @@ def uptycs_test_module():
 
     if query_results.get('items') is not None:
         if len(query_results.get('items')) == 0:
-            return False
+            raise Exception("Test api returned zero results")
         return True
     else:
-        return False
+        raise Exception("Test api did not return any results")
 
 
 def uptycs_fetch_incidents():
@@ -2803,7 +2803,7 @@ def uptycs_delete_assets_tag_command():
 def uptycs_post_lookuptable_data_source(table_id=None):
     """post data to look up table"""
     if table_id is None:
-        table_id = demisto.getFilePath(demisto.args().get('table_id'))
+        table_id = demisto.args().get('table_id')
 
     url = ("https://%s/public/api/customers/%s/lookupTables/%s/csvdata" %
            (DOMAIN, CUSTOMER_ID, table_id))
@@ -2956,10 +2956,13 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            if uptycs_test_module():
-                demisto.results('ok')
-            else:
-                demisto.results('test failed')
+            try:
+                if uptycs_test_module():
+                    demisto.results('ok')
+                else:
+                    demisto.results('Test failed')
+            except Exception as ex:
+                demisto.results('Test failed - %s' % str(ex))
 
         if demisto.command() == 'fetch-incidents':
             demisto.incidents(uptycs_fetch_incidents())
