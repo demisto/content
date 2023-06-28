@@ -374,7 +374,7 @@ class Client(BaseClient):
                 }
             }
             if file_hash_values:
-                for key_ in file_hash_values.keys():
+                for key_ in file_hash_values:
                     ioc_data['fields'][key_] = file_hash_values.get(key_)
 
             if feed_tags:
