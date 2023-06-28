@@ -13,7 +13,7 @@
         {"severity":"NORMAL","type":"SPOOLER_SERVICE_RUNNING"}],"riskScore":0.65,"riskScoreSeverity":"MEDIUM",
         "secondaryDisplayName":"dc1env11adc02.env11.ferrum-techs.local"}],
         "pageInfo":{"endCursor":"eyJfaWQiOiIwYjI2MmYzMS04YmU2LTRiMTYtOGRiMS1mZjA1NTRlNGJmMTIifQ==","hasNextPage":true}}}],
-        "expected_hr": "### Identity entities:\n|Primary Display Name|Secondary Display Name|Is Human|Is Programmatic|Risk Score|Risk Score Severity|riskFactors|\n|---|---|---|---|---|---|---|\n| DC1ENV11ADC02 | dc1env11adc02.env11.ferrum-techs.local | false | false | 0.65 | MEDIUM | {'severity': 'MEDIUM', 'type': 'LDAPS_CHANNEL_BINDING'},<br>{'severity': 'NORMAL', 'type': 'LDAP_SIGNING_DISABLED'},<br>{'severity': 'NORMAL', 'type': 'SPOOLER_SERVICE_RUNNING'} |\n",
+        "expected_hr": "### Identity entities:\n|Primary Display Name|Secondary Display Name|Is Human|Is Programmatic|Risk Score|Risk Score Severity|Risk Factors|\n|---|---|---|---|---|---|---|\n| DC1ENV11ADC02 | dc1env11adc02.env11.ferrum-techs.local | false | false | 0.65 | MEDIUM | {'severity': 'MEDIUM', 'type': 'LDAPS_CHANNEL_BINDING'},<br>{'severity': 'NORMAL', 'type': 'LDAP_SIGNING_DISABLED'},<br>{'severity': 'NORMAL', 'type': 'SPOOLER_SERVICE_RUNNING'} |\n",
         "expected_ec": [
             {
               "Ishuman": false,
@@ -58,7 +58,7 @@
         {"severity":"NORMAL","type":"SPOOLER_SERVICE_RUNNING"}],"riskScore":0.65,"riskScoreSeverity":"MEDIUM",
         "secondaryDisplayName":"second item"}],
         "pageInfo":{"endCursor":"eyJfaWQiOiIwYjI2MmYzMS04YmU2LTasdfadfgfsg32ZjA1NTRlNGJmMTIifQ==","hasNextPage":true}}}],
-        "expected_hr": "### Identity entities:\n|Primary Display Name|Secondary Display Name|Is Human|Is Programmatic|Risk Score|Risk Score Severity|riskFactors|\n|---|---|---|---|---|---|---|\n| This is the second entity | second item | false | false | 0.65 | MEDIUM | {'severity': 'MEDIUM', 'type': 'LDAPS_CHANNEL_BINDING'},<br>{'severity': 'NORMAL', 'type': 'LDAP_SIGNING_DISABLED'},<br>{'severity': 'NORMAL', 'type': 'SPOOLER_SERVICE_RUNNING'} |\n",
+        "expected_hr": "### Identity entities:\n|Primary Display Name|Secondary Display Name|Is Human|Is Programmatic|Risk Score|Risk Score Severity|Risk Factors|\n|---|---|---|---|---|---|---|\n| This is the second entity | second item | false | false | 0.65 | MEDIUM | {'severity': 'MEDIUM', 'type': 'LDAPS_CHANNEL_BINDING'},<br>{'severity': 'NORMAL', 'type': 'LDAP_SIGNING_DISABLED'},<br>{'severity': 'NORMAL', 'type': 'SPOOLER_SERVICE_RUNNING'} |\n",
         "expected_ec": [
             {
               "Ishuman": false,

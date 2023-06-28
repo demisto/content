@@ -83,6 +83,12 @@ def test_incident_to_incident_context():
     assert res == incident_context
 
 
+def test_idp_detectionin_to_incident_context():
+    from CrowdStrikeFalcon import idp_detection_to_incident_context
+    res = idp_detection_to_incident_context(input_data.response_idp_detection.copy())
+    assert res == input_data.context_idp_detection
+
+
 def test_create_json_iocs_list():
     from CrowdStrikeFalcon import create_json_iocs_list
 
@@ -2254,14 +2260,18 @@ class TestFetch:
         [
             ('Incident ID:', ['Incidents'], 2),
             ('Detection ID:', ['Detections'], 2),
-            ('Detection ID:', ['Detections', 'Incidents'], 4)
+            ('Detection ID:', ['Detections', 'Incidents'], 4),
+            ('Incident ID:', ['Endpoint Incident'], 2),
+            ('Detection ID:', ['Endpoint Detection'], 2),
+            ('Detection ID:', ['Endpoint Detection', 'Endpoint Incident'], 4),
+            ('IDP Detection ID: ', ['IDP Detection'], 2)
         ],
     )
     def test_fetch_returns_all_types(self, requests_mock, set_up_mocks, mocker, expected_name,
                                      fetch_incidents_or_detections, incidents_len):
         """
-        Tests that fetch incidents returns incidents and detections types, depends on
-        the value of fetch_incidents_or_detections.
+        Tests that fetch incidents returns incidents, detections, endpoint incidents, endpoint detection, and idp detections types.
+        depends on the value of fetch_incidents_or_detections.
         Given:
             fetch_incidents_or_detections parameter.
         When:
@@ -2271,6 +2281,11 @@ class TestFetch:
             Validate the results contains only incidents when fetch_incidents_or_detections = ['Incidents']
             Validate the results contains detection and incidents when
              fetch_incidents_or_detections = ['Detections', 'Incidents']
+            Validate the results contains only detection when fetch_incidents_or_detections = ['Endpoint Detections'],
+            Validate the results contains only incidents when fetch_incidents_or_detections = ['Endpoint Incidents']
+            Validate the results contains detection and incidents when
+             fetch_incidents_or_detections = ['Endpoint Detections', 'Endpoint Incidents']
+            Validate the results contains only IDP detection when fetch_incidents_or_detections = ['IDP Detections'],
 
         """
         from CrowdStrikeFalcon import fetch_incidents
@@ -2280,6 +2295,10 @@ class TestFetch:
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
+        requests_mock.get(f'{SERVER_URL}/alerts/queries/alerts/v1', json={'resources': ['a:ind:1', 'a:ind:2']})
+        requests_mock.post(f'{SERVER_URL}/alerts/entities/alerts/v1',
+                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z'},
+                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z'}]})
 
         mocker.patch.object(
             demisto,

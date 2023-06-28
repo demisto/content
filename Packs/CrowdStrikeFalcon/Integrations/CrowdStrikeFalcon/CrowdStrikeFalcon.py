@@ -573,7 +573,7 @@ def idp_detection_to_incident_context(idp_detection):
         idp_detection['status'] = status
 
     incident_context = {
-        'name': f'Incident ID: {idp_detection.get("composite_id")}',
+        'name': f'IDP Detection ID: {idp_detection.get("composite_id")}',
         'occurred': idp_detection.get('start_time'),
         'last_updated': idp_detection.get('updated_timestamp'),
         'rawJSON': json.dumps(idp_detection)
@@ -1331,10 +1331,8 @@ def get_idp_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER
         :param filter_arg: The filter to add to the query.
         :type offset: ``int``
         :param offset: The offset for the query.
-        :type has_limit: ``bool``
-        :param has_limit: Wether there's limit param to add to the query.
         :type limit: ``int``
-        :param limit: number of .
+        :param limit: limit of idp detections to retrieve each request.
 
         :return: The response.
         :rtype ``dict``
@@ -2167,12 +2165,25 @@ def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, r
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
 
 
-def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str):
+def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str):
+    """
+        Send the updated object to the relevant status handler
+
+        :type updated_object: ``dict``
+        :param updated_object: The updated object.
+        :type entries: ``list``
+        :param entries: The list of entries to add the new entry into.
+        :type remote_idp_detection_id: ``str``
+        :param remote_idp_detection_id: the remote idp detection id
+
+        :return: The response.
+        :rtype ``dict``
+    """
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
-            close_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
+            close_in_xsoar(entries, remote_idp_detection_id, IDP_DETECTION)
         elif updated_object.get('status') in (set(IDP_DETECTION_STATUS) - {'closed'}):
-            reopen_in_xsoar(entries, remote_detection_id, IDP_DETECTION)
+            reopen_in_xsoar(entries, remote_idp_detection_id, IDP_DETECTION)
 
 
 def close_in_xsoar(entries: list, remote_incident_id: str, incident_type_name: str):
@@ -2518,7 +2529,7 @@ def fetch_incidents():
                                               created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
             current_fetch_info_detections.update(last_run)
 
-    if 'Incidents' in fetch_incidents_or_detections:
+    if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
                                                                     first_fetch=FETCH_TIME,
                                                                     look_back=look_back)
@@ -5428,31 +5439,26 @@ def list_identity_entities_command(args: dict) -> CommandResults:
             if has_next_page:
                 next_token = pageInfo.get("endCursor", "")
             limit -= 1000
-    mapped_identity_entities_ls = [
-        {
-            "Primary Display Name": identity_entity.get("primaryDisplayName", ""),
-            "Secondary Display Name": identity_entity.get("secondaryDisplayName", ""),
-            "Is Human": identity_entity.get("isHuman", ""),
-            "Is Programmatic": identity_entity.get("isProgrammatic", ""),
-            "Is Admin": identity_entity.get("isAdmin", ""),
-            "Email Addresses": identity_entity.get("emailAddresses", ""),
-            "Risk Score": identity_entity.get("riskScore", ""),
-            "Risk Score Severity": identity_entity.get("riskScoreSeverity", ""),
-            "riskFactors": identity_entity.get("riskFactors", "")
-        }
-        for identity_entity in identity_entities_ls]
-    headers = ["Primary Display Name", "Secondary Display Name", "Is Human", "Is Programmatic", "Is Admin", "Email Addresses",
-               "Risk Score", "Risk Score Severity", "riskFactors"]
+    headers = ["primaryDisplayName", "secondaryDisplayName", "isHuman", "isProgrammatic", "isAdmin", "emailAddresses",
+               "riskScore", "riskScoreSeverity",  "riskFactors"]
 
     return CommandResults(
         outputs_prefix='CrowdStrike.IDPEntity',
         outputs=createContext(response_to_context(identity_entities_ls), removeNull=True),
-        readable_output=tableToMarkdown("Identity entities:", mapped_identity_entities_ls, headers=headers, removeNull=True),
+        readable_output=tableToMarkdown("Identity entities:", identity_entities_ls, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace),
         raw_response=res_ls,
     )
 
 
 def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
+    """
+        Creates a gql client to handle the gql requests.
+    Args:
+        url_suffix: The url suffix for the request.
+    Returns:
+        The created client.
+    """
     url_suffix = url_suffix['url'][1:] if url_suffix.startswith('/') else url_suffix
     kwargs = {
         'url': f"{SERVER}/{url_suffix}",
