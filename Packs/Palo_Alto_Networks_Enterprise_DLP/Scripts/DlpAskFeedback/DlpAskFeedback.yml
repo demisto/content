@@ -6,7 +6,7 @@ script: ''
 type: python
 tags: []
 enabled: true
-comment: Sends a message via Slack or MS Teams to the user whose file upload violated DLP policies and triggered the incident.
+comment: Sends a message via Slack or MS Teams to the user whose activity violated DLP policies and triggered the incident.
 args:
 - name: messenger
   required: false
@@ -23,7 +23,7 @@ args:
   required: true
   description: The name of the DLP data profile that detected the violation.
 - name: app_name
-  description: The application that performed the upload.
+  description: The application that performed the activity.
   required: false
 - name: task
   description: A manual task that this task can close.
@@ -60,7 +60,7 @@ dependson:
   should:
   - SlackV3|||send-notification
 runonce: false
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
