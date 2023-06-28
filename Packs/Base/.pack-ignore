@@ -76,6 +76,8 @@ refang
 indicatorssearcher
 FeedIndicatorType
 str
+FileResult
+JavaScript
 
 [tests_require_network]
 CommonServerPython

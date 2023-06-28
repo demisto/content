@@ -79,61 +79,61 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Prisma Cloud Enrichment](#cortex-asm---prisma-cloud-enrichment)
   - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
+  - [Cortex ASM - Remediation Confirmation Scan](#cortex-asm---remediation-confirmation-scan)
   - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
   - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
   - [Cortex ASM - Remediation](#cortex-asm---remediation)
   - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
   - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
-  - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
 - Automation Scripts
   - [GenerateASMReport](#generateasmreport)
+  - [GetProjectOwners](#getprojectowners)
   - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
-  - [SnmpDetection](#snmpdetection)
 
-### Playbooks 
+### Playbooks
 
 #### Cortex ASM - ASM Alert
 
-Playbook that enriches asset information for ASM alerts and provides means of remediation.
+A playbook that enriches asset information for ASM alerts and provides the means for remediation.
 
 ![Cortex ASM - ASM Alert](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ASM_Alert.png)
 
 #### Cortex ASM - AWS Enrichment
 
-Playbook that given the IP address enriches AWS information relevant to ASM alerts.
+A playbook that given the IP address enriches AWS information relevant to ASM alerts.
 
 ![Cortex ASM - AWS Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_AWS_Enrichment.png)
 
 #### Cortex ASM - Azure Enrichment
 
-Playbook that given the IP address enriches Azure information relevant to ASM alerts.
+A playbook that given the IP address enriches Azure information relevant to ASM alerts.
 
 ![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
 
 #### Cortex ASM - Decision
 
-Playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
+A playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
 
 ![Cortex ASM - Decision](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Decision.png)
 
 #### Cortex ASM - Detect Service
 
-Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP, SNMP).
+A playbook that utilizes the Remediation Confirmation Scan service to check for mitigated vulnerabilities.
 
 ![Cortex ASM - Detect Service](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Detect_Service.png)
 
 #### Cortex ASM - Enrichment
 
-Playbook that is used as a container folder for all enrichments of ASM alerts.
+A playbook that is used as a container folder for all enrichments of ASM alerts.
 
 ![Cortex ASM - Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Enrichment.png)
 
 #### Cortex ASM - GCP Enrichment
 
-Playbook that given the IP address enriches GCP information relevant to ASM alerts.
+A playbook that given the IP address enriches GCP information relevant to ASM alerts.
 
 ![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
 
@@ -151,25 +151,30 @@ Playbook that given the IP address enriches Qualys information relevant to ASM a
 
 #### Cortex ASM - Rapid7 Enrichment
 
-Playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
+A playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
 
 ![Cortex ASM - Rapid7 Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Rapid7_Enrichment.png)
 
+#### Cortex ASM - Remediation Confirmation Scan
+
+A playbook that creates an ASM Remediation Confirmation Scan using an existing service ID, if the scan does not already exist;. It then polls for results of a scan.
+
+![Cortex ASM - Remediation Confirmation Scan](https://raw.githubusercontent.com/demisto/content/ec3ba284d4f60e27928a2dc4db19d8758a36fe98/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Confirmation_Scan.png)
 #### Cortex ASM - Remediation Guidance
 
-Playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
+A playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
 
 ![Cortex ASM - Remediation Guidance](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Guidance.png)
 
 #### Cortex ASM - Remediation Path Rules
 
-Playbook that returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
+A playbook that returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
 
 ![Cortex ASM - Remediation Path Rules](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Path_Rules.png)
 
 #### Cortex ASM - Remediation
 
-Playbook that is used as a container folder for all remediation of ASM alerts.
+A playbook that is used as a container folder for all remediation of ASM alerts.
 
 ![Cortex ASM - Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation.png)
 
@@ -181,55 +186,46 @@ Playbook that identifies and recommends the most likely owners of a given servic
 
 #### Cortex ASM - ServiceNow CMDB Enrichment
 
-Playbook that given the IP address enriches ServiceNow CMDB information relevant to ASM alerts.
+A playbook that given the IP address enriches ServiceNow CMDB information relevant to ASM alerts.
 
 ![Cortex ASM - ServiceNow CMDB Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
 
-#### Cortex ASM - SNMP Check
-
-Playbook that given the IP address checks if SNMP is enabled or not and returns versions running.
-
-![Cortex ASM - SNMP Check](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_SNMP_Check.png)
-
 #### Cortex ASM - Splunk Enrichment
 
-Playbook that given the IP address enriches Splunk information relevant to ASM alerts.
+A playbook that given the IP address enriches Splunk information relevant to ASM alerts.
 
 ![Cortex ASM - Splunk Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Splunk_Enrichment.png)
 
 #### Cortex ASM - Tenable.io Enrichment
 
-Playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
+A playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
 
 ![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
 
 ### Automation Scripts
 
-This content pack includes the [generateASMReport](#generateasmreport) script:
-
 #### GenerateASMReport
 
-This automation helps generate an ASM alert summary report with important information found via the playbook run.
+An automation used to generate an ASM alert summary report with important information found via the playbook run.
 
 ![GenerateASMReport](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
 
 #### InferWhetherServiceIsDev
 
-This automation identifies whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
+An automation that identifies whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
 
 ![InferWhetherServiceIsDev](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/InferWhetherServiceIsDev.png)
 
 #### RankServiceOwners
 
-This automation recommends the most likely service owners from those surfaced by Cortex ASM Enrichment and updates content.
+An automation that recommends the most likely service owners from those surfaced by Cortex ASM Enrichment and updates content.
+
+#### GetProjectOwners
+
+This automation parses a GCP service account email for the project ID, then looks up the project owners and adds them to a list of potential service owners for ranking.
 
 #### RemediationPathRuleEvaluation
 
-This automation attempts to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
+An automation that is used to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
 
 ![RemediationPathRuleEvaluation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/RemediationPathRuleEvaluation.png)
-
-#### SnmpDetection
-
-This automation checks if SNMP is enabled or not and gets the running version on the remote server.
-![SnmpDetection](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
