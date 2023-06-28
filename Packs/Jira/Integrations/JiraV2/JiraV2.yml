@@ -116,7 +116,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
+description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2
 script:
