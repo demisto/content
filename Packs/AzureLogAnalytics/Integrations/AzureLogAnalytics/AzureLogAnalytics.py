@@ -157,7 +157,6 @@ def tags_arg_to_request_format(tags):
 
 
 def test_connection(client, params):
-    auth_code = params.get('credentials_auth_code', {}).get('password') or params.get('auth_code')
     if not client.ms_client.managed_identities_client_id:
         if params.get('self_deployed', False) and not params.get('client_credentials') and not auth_code:
             return_error('You must enter an authorization code in a self-deployed configuration.')
