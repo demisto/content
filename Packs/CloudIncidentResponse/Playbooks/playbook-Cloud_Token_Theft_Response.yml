@@ -52,7 +52,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -310
+          "y": -1470
         }
       }
     note: false
@@ -81,8 +81,7 @@ tasks:
     scriptarguments:
       alert_ids:
         complex:
-          root: alert
-          accessor: id
+          root: inputs.alert_id
       extend-context:
         simple: alertData=
       ignore-outputs:
@@ -93,7 +92,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -180
+          "y": -1340
         }
       }
     note: false
@@ -141,7 +140,7 @@ tasks:
       {
         "position": {
           "x": -230,
-          "y": -20
+          "y": -1180
         }
       }
     note: false
@@ -158,22 +157,21 @@ tasks:
     task:
       id: 98397e62-31c7-4b49-876f-a6c4210260ee
       version: -1
-      name: Enrichment
+      name: Check VPN
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "4"
-      - "43"
+      - "54"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -230,
-          "y": 140
+          "y": -1020
         }
       }
     note: false
@@ -233,7 +231,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -450,
+          "x": -640,
           "y": 280
         }
       }
@@ -1098,7 +1096,15 @@ tasks:
       - "8"
     scriptarguments:
       fromDate:
-        simple: 16 days ago
+        complex:
+          root: alert
+          accessor: created
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 2 hours ago
       sourceIP:
         complex:
           root: alert
@@ -1173,7 +1179,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
+          "x": 190,
           "y": 280
         }
       }
@@ -1628,6 +1634,369 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 24ed2963-3107-45ad-8a3b-b155ad9ff72e
+    type: condition
+    task:
+      id: 24ed2963-3107-45ad-8a3b-b155ad9ff72e
+      version: -1
+      name: Check the VPN list type
+      description: Checks if the provided data is comma separated or an URL.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      URL:
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: URL
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value:
+              simple: http://
+          ignorecase: true
+        - operator: startWith
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value:
+              simple: https://
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: bf94c5a6-0100-4e60-89bc-e35364b5415a
+    type: regular
+    task:
+      id: bf94c5a6-0100-4e60-89bc-e35364b5415a
+      version: -1
+      name: Process the VPN IP list
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      url:
+        complex:
+          root: inputs.VPNIPList
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Device External IPs
+      output:
+        simple: ${http.parsedBlog.indicators}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: eaaa946c-8d95-4186-8584-793b17a4fc7b
+    type: condition
+    task:
+      id: eaaa946c-8d95-4186-8584-793b17a4fc7b
+      version: -1
+      name: Was a VPN list provided?
+      description: Checks if data was provided for the VPNIPList input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": -890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 6fd2afb3-27a8-4018-8316-b3bd6bc4e1ea
+    type: condition
+    task:
+      id: 6fd2afb3-27a8-4018-8316-b3bd6bc4e1ea
+      version: -1
+      name: Should continue and investigate a known VPN IP address?
+      description: Once the attacker's IP address is part of the VPN IP list, the analyst will be required to decide whether to continue with the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 1c16c7d0-ffb1-4d5f-8d92-6a0a7e0d8e0c
+    type: regular
+    task:
+      id: 1c16c7d0-ffb1-4d5f-8d92-6a0a7e0d8e0c
+      version: -1
+      name: Set Is VPN IP Address to true
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      isvpnipaddress:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: fd775e61-aee3-4cee-8f4f-af31b9676081
+    type: playbook
+    task:
+      id: fd775e61-aee3-4cee-8f4f-af31b9676081
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
+      playbookName: TIM - Indicator Relationships Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: alert
+          accessor: hostip
+      LimitResults:
+        simple: "200"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 7651a4bf-66c5-4880-894e-b9e89ee7f3b9
+    type: title
+    task:
+      id: 7651a4bf-66c5-4880-894e-b9e89ee7f3b9
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "58"
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 626d149e-03db-47df-8186-ed7b64bde19a
+    type: condition
+    task:
+      id: 626d149e-03db-47df-8186-ed7b64bde19a
+      version: -1
+      name: 'Is the attacker IP matches a VPN IP? '
+      description: Checks if the attacker's IP address is part of the VPN IP list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: alert.deviceexternalips
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+        - operator: IsInCidrRanges
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: hostip
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.VPNIPList
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1640,14 +2009,19 @@ view: |-
       "38_39_Yes": 0.42,
       "49_9_#default#": 0.14,
       "50_11_yes": 0.38,
+      "52_53_URL": 0.43,
+      "54_59_#default#": 0.11,
+      "56_9_#default#": 0.12,
+      "60_57_yes": 0.4,
+      "60_59_#default#": 0.21,
       "8_49_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 4675,
-        "width": 1720,
-        "x": -450,
-        "y": -310
+        "height": 5835,
+        "width": 2130,
+        "x": -860,
+        "y": -1470
       }
     }
   }
@@ -1678,6 +2052,15 @@ inputs:
   description: |-
     Whether to execute early containment.
     This action allows you to respond rapidly but have higher probability for false positives.
+  playbookInputQuery:
+- key: VPNIPList
+  value: {}
+  required: false
+  description: |
+    This input can process to types of data:
+    1. A comma separated list of IP addresses assigned by the VPN provider. (using a XSIAM list or an hardcoded array)
+    2. A comma separated list of CIDRs.
+    3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.
   playbookInputQuery:
 outputs: []
 tests:
