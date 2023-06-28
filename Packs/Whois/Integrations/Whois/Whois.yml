@@ -3,8 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  # TODO change
-  id: Whois_CIAC-6900
+  id: Whois
   version: -1
 configuration:
 - display: Return Errors
@@ -69,10 +68,8 @@ configuration:
   advanced: true
   hidden: false
 description: Provides data enrichment for domains.
-# TODO change
-display: Whois_CIAC-6900
-# TODO change
-name: Whois_CIAC-6900
+display: Whois
+name: Whois
 script:
   commands:
   - arguments:
