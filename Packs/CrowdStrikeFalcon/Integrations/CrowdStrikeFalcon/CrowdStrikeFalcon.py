@@ -5440,7 +5440,7 @@ def list_identity_entities_command(args: dict) -> CommandResults:
                 next_token = pageInfo.get("endCursor", "")
             limit -= 1000
     headers = ["primaryDisplayName", "secondaryDisplayName", "isHuman", "isProgrammatic", "isAdmin", "emailAddresses",
-               "riskScore", "riskScoreSeverity",  "riskFactors"]
+               "riskScore", "riskScoreSeverity", "riskFactors"]
 
     return CommandResults(
         outputs_prefix='CrowdStrike.IDPEntity',
