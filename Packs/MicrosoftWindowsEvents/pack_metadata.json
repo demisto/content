@@ -12,16 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "MicrosoftCore": {
-            "mandatory": true,
-            "display_name": "Microsoft Logs Base"
-        },
-        "MicrosoftADFS": {
-            "mandatory": false,
-            "display_name": "Microsoft AD FS Collection"
-        }
-    },
     "marketplaces": [
         "marketplacev2"
     ]
