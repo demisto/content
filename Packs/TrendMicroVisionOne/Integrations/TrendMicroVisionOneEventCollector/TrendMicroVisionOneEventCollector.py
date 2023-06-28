@@ -533,7 +533,21 @@ def get_dedup_logs(
     log_type: str,
     date_format: str = DATE_FORMAT,
     latest_log_time: str = None
-):
+) -> Tuple[List[Dict], List[str], str]:
+    """
+    dedup the logs and returns the IDs of all the latest logs.
+
+    Args:
+        logs (list): a list of logs.
+        last_run (dict): the last run object.
+        log_cache_last_run_name_field_name (str): the name of the field that saves IDs of the logs in the last run
+        log_type (str): the log type
+        date_format (str): the date format
+        latest_log_time (str): latest log time for dedup
+
+    Returns:
+        tuple: dudped logs, new log ids for next dedup, latest time of the logs
+    """
     logs = dedup_fetched_logs(
         logs=logs,
         last_run=last_run,
@@ -623,7 +637,7 @@ def get_workbench_logs(
         workbench_cache_time_field_name: latest_occurred_workbench_log_ids
     }
 
-    demisto.info(f'{workbench_logs=}, {latest_workbench_log_time=}, {workbench_updated_last_run=}')
+    demisto.info(f'{workbench_logs=}, {workbench_updated_last_run=}')
     return workbench_logs, workbench_updated_last_run
 
 
@@ -891,7 +905,7 @@ def get_audit_logs(
         audit_cache_time_field_name: latest_audit_log_ids
     }
 
-    demisto.info(f'{audit_logs=}, {latest_audit_log_time=}, {audit_updated_last_run=}')
+    demisto.info(f'{audit_logs=}, {audit_updated_last_run=}')
     return audit_logs, audit_updated_last_run
 
 
@@ -917,14 +931,14 @@ def fetch_events(
     last_run = demisto.getLastRun()
     demisto.info(f'last run in the start of the fetch: {last_run}')
 
-    # demisto.info(f'starting to fetch {LogTypes.WORKBENCH} logs')
-    # workbench_logs, updated_workbench_last_run = get_workbench_logs(
-    #     client=client,
-    #     first_fetch=first_fetch,
-    #     last_run=last_run,
-    #     limit=limit
-    # )
-    # demisto.info(f'Fetched amount of workbench logs: {len(workbench_logs)}')
+    demisto.info(f'starting to fetch {LogTypes.WORKBENCH} logs')
+    workbench_logs, updated_workbench_last_run = get_workbench_logs(
+        client=client,
+        first_fetch=first_fetch,
+        last_run=last_run,
+        limit=limit
+    )
+    demisto.info(f'Fetched amount of workbench logs: {len(workbench_logs)}')
 
     demisto.info(f'starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs')
     observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
@@ -953,10 +967,10 @@ def fetch_events(
     )
     demisto.info(f'Fetched amount of audit logs: {len(audit_logs)}')
 
-    # events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+    events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
     for logs_last_run in [
-        # updated_workbench_last_run,
+        updated_workbench_last_run,
         updated_observed_attack_technique_last_run,
         updated_search_detection_last_run,
         updated_audit_last_run
@@ -964,7 +978,7 @@ def fetch_events(
         last_run.update(logs_last_run)
 
     demisto.info(f'last run after fetching all logs: {last_run}')
-    # return events, last_run
+    return events, last_run
 
 
 def test_module(client: Client, first_fetch: str) -> str:
