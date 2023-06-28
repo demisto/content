@@ -103,6 +103,12 @@ HTTP_ERRORS = {
     503: '503 Service Unavailable'
 }
 
+VERDICT_TO_SCORE_DICT = {
+    'clean': Common.DBotScore.GOOD,
+    'file_type_unrecognized': Common.DBotScore.SUSPICIOUS,
+    'malware': Common.DBotScore.BAD
+}
+
 # Map severity to Demisto severity for incident creation
 XSOAR_SEVERITY_MAP = {
     'High': 3,
@@ -2272,12 +2278,7 @@ def get_sandbox_verdict(client: Client, args: Dict[str, Any]) -> CommandResults:
     indicator = None
     if response_verdict:
         readable_output = generic_readable_output([response_verdict], title)
-        verdict_to_score_dict = {
-            'clean': Common.DBotScore.GOOD,
-            'file_type_unrecognized': Common.DBotScore.SUSPICIOUS,
-            'malware': Common.DBotScore.BAD
-        }
-        score = verdict_to_score_dict.get(response_verdict.get('verdict', '').lower(), Common.DBotScore.NONE)
+        score = VERDICT_TO_SCORE_DICT.get(response_verdict.get('verdict', '').lower(), Common.DBotScore.NONE)
         dbot_score = Common.DBotScore(
             indicator=sha2,
             indicator_type=DBotScoreType.FILE,
