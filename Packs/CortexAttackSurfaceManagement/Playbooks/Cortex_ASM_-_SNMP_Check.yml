@@ -1,7 +1,8 @@
 id: Cortex ASM - SNMP Check
 version: -1
 name: Cortex ASM - SNMP Check
-description: Sub-playbook that performs an SNMP scan and checks if SNMP is enabled or not and obtains running versions.
+deprecated: true
+description: "Deprecated. No available replacement."
 starttaskid: "0"
 tasks:
   "0":
