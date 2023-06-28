@@ -112,4 +112,3 @@ script:
 tests:
 - CVE Search v2 - Test
 fromversion: 5.0.0
-toversion: 6.4.9
