@@ -64,7 +64,7 @@ def test_get_domain_from_query(query, expected):
     assert get_domain_from_query(query) == expected
 
 
-def test_socks_proxy_fail(mocker: MockerFixture, capfd):
+def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5://localhost:1180'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results')
@@ -544,7 +544,13 @@ def test_execution_metrics_appended(
     ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, True, EntryType.ERROR),
     ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
 ])
-def test_error_entry_type(args: Dict[str, str], with_error: bool, entry_type: EntryType, mocker: MockerFixture, capfd):
+def test_error_entry_type(
+    args: Dict[str, str],
+    with_error: bool,
+    entry_type: EntryType,
+    mocker: MockerFixture,
+    capfd: pytest.CaptureFixture
+):
 
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
@@ -665,16 +671,14 @@ def test_get_root_server(domain: str, expected: str):
     Then: The root server is whois.verisign-grs.com.
 
     """
-
-    actual = get_root_server(domain)
-    actual == expected
+    assert expected == get_root_server(domain)
 
 
 @pytest.mark.parametrize("domain", [
     ("com"),
     ("1.1.1.1"),
 ])
-def test_get_root_server_invalid_domain(domain: str, capfd):
+def test_get_root_server_invalid_domain(domain: str, capfd: pytest.CaptureFixture):
     """
     Test to get the root server from the domain when an invalid domain is supplied. 
 
