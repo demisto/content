@@ -285,20 +285,14 @@ class Client(BaseClient):
                                     target_ti_data_obj = ta_source_obj
 
                                 if source_ti_data_obj and target_ti_data_obj:
+                                    ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
                                     if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                        ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                          target_ti_data_obj)
                                         source_ti_data_obj[LABEL_RELATIONSHIPS] = []
                                         if ti_relationships:
-                                            if source_ti_data_obj[LABEL_RELATIONSHIPS]:
-                                                source_ti_data_obj[LABEL_RELATIONSHIPS].append(ti_relationships)
-                                            else:
-                                                source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
-                                    else:
-                                        ti_relationships = self.build_threat_actor_relationship_obj(source_ti_data_obj,
-                                                                                                    target_ti_data_obj)
+                                            source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
+                                else:
                                         if ti_relationships:
-                                            src_ti_relationships_data.append(ti_relationships)
+                                            src_ti_relationships_data = [ti_relationships]
 
             ta_source_obj[LABEL_RELATIONSHIPS] = src_ti_relationships_data
             return_data.append(ta_source_obj)
