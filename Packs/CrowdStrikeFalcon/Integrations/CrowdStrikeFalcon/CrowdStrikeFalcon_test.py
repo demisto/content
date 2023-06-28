@@ -15,7 +15,7 @@ SERVER_URL = 'https://4.4.4.4'
 
 
 def load_json(file: str):
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 
@@ -2353,12 +2353,12 @@ class TestIncidentFetch:
 
 
 def get_fetch_data():
-    with open('./test_data/test_data.json', 'r') as f:
+    with open('./test_data/test_data.json') as f:
         return json.loads(f.read())
 
 
 def get_fetch_data2():
-    with open('./test_data/test_data2.json', 'r') as f:
+    with open('./test_data/test_data2.json') as f:
         return json.loads(f.read())
 
 
@@ -2565,7 +2565,7 @@ def test_upload_ioc_command_fail(requests_mock, mocker):
     )
     with pytest.raises(DemistoException) as excinfo:
         upload_ioc_command(ioc_type='md5', value='testmd5')
-    assert "Failed to create IOC. Please try again." == excinfo.value.args[0]
+    assert excinfo.value.args[0] == "Failed to create IOC. Please try again."
 
 
 def test_upload_ioc_command_successful(requests_mock):
@@ -2987,6 +2987,7 @@ def test_update_custom_ioc_command(requests_mock):
             'indicators': [{'id': ioc_id, 'severity': updated_severity}]
         }:
             return True
+        return None
 
     requests_mock.patch(
         f'{SERVER_URL}/iocs/entities/indicators/v1',
@@ -3051,7 +3052,7 @@ def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
     )
     mocker.patch(RETURN_ERROR_TARGET)
     res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
-    assert 'No results found for md5 - testmd5' == res
+    assert res == 'No results found for md5 - testmd5'
 
 
 def test_get_ioc_device_count_command_exists(requests_mock):
@@ -3074,8 +3075,8 @@ def test_get_ioc_device_count_command_exists(requests_mock):
         status_code=200,
     )
     result = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
-    assert 'Indicator of Compromise **md5:testmd5** device count: **1**' == result['HumanReadable']
-    assert 'md5:testmd5' == result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID']
+    assert result['HumanReadable'] == 'Indicator of Compromise **md5:testmd5** device count: **1**'
+    assert result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID'] == 'md5:testmd5'
 
 
 def test_get_process_details_command_not_exists(requests_mock, mocker):
@@ -3247,7 +3248,7 @@ def test_search_device_command(requests_mock):
     result = outputs[0].to_context()
 
     context = result.get('EntryContext')
-    for key, value in context.items():
+    for key, _value in context.items():
         if 'Device' in key:
             assert context[key] == device_context
         if 'Endpoint' in key:
@@ -5364,6 +5365,7 @@ class mocker_gql_client:
             response = self.mock_responses[self.index]
             self.index += 1
             return response
+        return None
 
 
 @pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
