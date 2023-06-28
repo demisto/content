@@ -229,8 +229,8 @@ class Client(BaseClient):
 
     def get_observed_attack_techniques_logs(
         self,
-        detected_start_datetime: str,
-        detected_end_datetime: str,
+        detected_start_datetime: str = '',
+        detected_end_datetime: str = '',
         top: int = 1000,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None
@@ -642,64 +642,71 @@ def get_observed_attack_techniques_logs(
     dedup_log_ids = last_run.get(observed_attack_technique_dedup) or []
     pagination_log_ids = last_run.get(observed_attack_technique_pagination) or []
 
-    start_time, end_time = get_datetime_range(
-        last_run_time=last_run_start_time,
-        first_fetch=first_fetch,
-        log_type_time_field_name=observed_attack_technique_start_run_time,
-        date_format=date_format
-    )
+    if last_run_next_link:
+        observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
+            next_link=last_run_next_link
+        )
 
-    observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
-        detected_start_datetime=start_time,
-        detected_end_datetime=end_time,
-        limit=limit,
-        next_link=last_run.get(observed_attack_technique_next_link)
-    )
+        observed_attack_techniques_logs = dedup_fetched_logs(
+            logs=observed_attack_techniques_logs,
+            last_run=last_run,
+            log_id_field_name='uuid',
+            log_cache_last_run_name_field_name=observed_attack_technique_dedup,
+            log_type=observed_attack_technique_log_type
+        )
 
-    observed_attack_techniques_logs = dedup_fetched_logs(
-        logs=observed_attack_techniques_logs,
-        last_run=last_run,
-        log_id_field_name='uuid',
-        log_cache_last_run_name_field_name=observed_attack_technique_dedup,
-        log_type=observed_attack_technique_log_type
-    )
+        logs_ids, _ = get_all_latest_logs_ids(
+            logs=observed_attack_techniques_logs,
+            log_type=observed_attack_technique_log_type,
+            log_id_field_name='uuid',
+            latest_log_time=last_run_start_time
+        )
+
+        # save in cache logs for subsequent pagination(s) in case they have the latest log time
+        if logs_ids:
+            pagination_log_ids.extend(logs_ids)
+
+    else:
+        start_time, end_time = get_datetime_range(
+            last_run_time=last_run_start_time,
+            first_fetch=first_fetch,
+            log_type_time_field_name=observed_attack_technique_start_run_time,
+            date_format=date_format
+        )
+
+        observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
+            detected_start_datetime=start_time,
+            detected_end_datetime=end_time,
+            limit=limit
+        )
+
+        observed_attack_techniques_logs = dedup_fetched_logs(
+            logs=observed_attack_techniques_logs,
+            last_run=last_run,
+            log_id_field_name='uuid',
+            log_cache_last_run_name_field_name=observed_attack_technique_dedup,
+            log_type=observed_attack_technique_log_type
+        )
+
+        dedup_log_ids, latest_log_time = get_all_latest_logs_ids(
+            logs=observed_attack_techniques_logs,
+            log_type=observed_attack_technique_log_type,
+            log_id_field_name='uuid',
+            date_format=date_format
+        )
+
+        last_run_start_time = latest_log_time or end_time
 
     if new_next_link:
-        # first time of the pagination
+        # save in cache the latest log ids from first pagination
         if not last_run_next_link:
-            # save in cache only the latest log ids from first pagination
-            pagination_log_ids, last_run_start_time = get_all_latest_logs_ids(
-                logs=observed_attack_techniques_logs,
-                log_type=observed_attack_technique_log_type,
-                log_id_field_name='uuid'
-            )
-        else:
-            # if in the subsequent pagination(s) there are logs with the latest time, add it to cache
-            subsequent_pagination_log_ids, _ = get_all_latest_logs_ids(
-                logs=observed_attack_techniques_logs,
-                log_type=observed_attack_technique_log_type,
-                log_id_field_name='uuid',
-                latest_log_time=last_run_start_time
-            )
-            if subsequent_pagination_log_ids:
-                pagination_log_ids.extend(subsequent_pagination_log_ids)
+            pagination_log_ids = dedup_log_ids
         # always update the next link
         last_run_next_link = new_next_link
     else:
         if last_run_next_link:
             # pagination is over
             dedup_log_ids = pagination_log_ids
-        else:
-            # there wasn't any pagination
-            dedup_log_ids, latest_log_time = get_all_latest_logs_ids(
-                logs=observed_attack_techniques_logs,
-                log_type=observed_attack_technique_log_type,
-                log_id_field_name='uuid',
-                date_format=date_format
-            )
-
-            last_run_start_time = latest_log_time or end_time
-
         last_run_next_link = ''
 
     parse_observed_attack_techniques_logs(observed_attack_techniques_logs)
