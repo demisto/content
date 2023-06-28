@@ -2491,3 +2491,43 @@ Lists all resource groups.
 | AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
 | AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
 | AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+
+#### Command example
+```!azure-sentinel-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureSentinel": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-/resourceGroups/cloud-shell",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4/resourceGroups/demisto",
+                "location": "centralus",
+                "name": "demisto",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demisto"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+    ]}
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Resource Groups
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell | eastus |  |
+>| demisto | centralus | Owner: Demisto |
