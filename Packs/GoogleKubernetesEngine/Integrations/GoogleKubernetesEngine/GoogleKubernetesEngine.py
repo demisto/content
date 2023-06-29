@@ -5,7 +5,7 @@
 from typing import Any
 from collections.abc import Callable
 # 3-rd party packages
-from google.cloud.container_v1 import ClusterManagerClient
+from google.cloud.container_v1 import ClusterManagerClient, SetMasterAuthRequest
 from google.protobuf.message import Message
 from google.oauth2 import service_account
 import proto
@@ -371,15 +371,20 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
         dict: Operation raw response.
     """
     # Perform cluster update
-    upadte = {
+    update = {
         "username": "admin" if basic_auth == "enable" else ""
     }
-    raw_response_msg: Message = client.set_master_auth(
+    request = SetMasterAuthRequest(
+        action="SET_USERNAME",
         project_id=project,
         zone=zone,
         cluster_id=cluster,
-        update=upadte,
-        timeout=API_TIMEOUT)
+        update=update,
+    )
+    raw_response_msg: Message = client.set_master_auth(
+        request=request,
+        timeout=API_TIMEOUT,
+    )
     raw_response_dict: dict = proto.Message.to_dict(raw_response_msg)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
