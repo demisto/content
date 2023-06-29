@@ -43,7 +43,7 @@ Configure Syslog Faults Events:
 
 ## Event Time configuration
 
-By Default on Fault and IPS events (syslog) not have event time, to add event time do the followin steps:
+By default, on Fault and IPS events (syslog) do not have an event time. To add an event time, perform the following:
 *IPS Events*
 1. In McAfee NSM, go to **Manager** > **Setup**> **Notification** > **IPS Events** > **syslog**.
 2. Choose the target server and click the pencil (edit).
