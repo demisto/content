@@ -7,7 +7,7 @@ type: javascript
 tags:
 - cve
 - reputation
-comment: Provides severity of CVE based on CVSS score where available
+comment: Deprecated. Use CveReputationV2 (in CommonScripts) instead.
 enabled: true
 args:
 - name: input
@@ -21,3 +21,4 @@ dependson:
 timeout: 2.4µs
 runonce: false
 fromversion: 5.0.0
+deprecated: true

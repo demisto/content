@@ -142,7 +142,7 @@ class Client(BaseClient):
         )
         rkwargs['stream'] = True
         rkwargs['verify'] = self._verify
-        rkwargs['timeout'] = self.polling_timeout
+        rkwargs['timeout'] = self.polling_timeout  # type:ignore[typeddict-item]
 
         try:
             response = _session.send(prepared_request, **rkwargs)
@@ -500,7 +500,10 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
+    api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
+    if not api_token:
+        raise DemistoException('API Token must be provided.')
+    client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
