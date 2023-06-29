@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 REQUEST_DATE_FORMAT = '%Y-%m-%d'
 RESPONSE_TIME_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-VENDOR = 'Zoom'
+VENDOR = 'Zoom2'
 PRODUCT = 'Zoom'
 
 

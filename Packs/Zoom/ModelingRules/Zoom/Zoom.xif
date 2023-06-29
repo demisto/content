@@ -1,4 +1,4 @@
-[MODEL: dataset=zoom_zoom_raw]
+[MODEL: dataset=zoom2_zoom_raw]
 filter
     event_type = "operation_log"
 | alter

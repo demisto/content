@@ -2,9 +2,9 @@
   "data": [
     {
       "test_data_event_id": "458ad2d7-294d-4445-8f36-7aaa1284e20a",
-      "vendor": "zoom",
+      "vendor": "zoom2",
       "product": "zoom",
-      "dataset": "zoom_zoom_raw",
+      "dataset": "zoom2_zoom_raw",
       "event_data": {
         "event_type": "operation_log",
         "time": "2023-04-03T08:58:05Z",
@@ -23,9 +23,9 @@
     },
     {
       "test_data_event_id": "f8f2c4a0-e6d0-4c5b-9520-512b1bd35207",
-      "vendor": "zoom",
+      "vendor": "zoom2",
       "product": "zoom",
-      "dataset": "zoom_zoom_raw",
+      "dataset": "zoom2_zoom_raw",
       "event_data": {
         "event_type": "activity_log",
         "email": "test@test.com",
@@ -33,7 +33,8 @@
         "type": "Sign in",
         "ip_address": "8.8.8.8",
         "client_type": "Browser",
-        "version": "-"
+        "version": "-",
+        "test": "some_value"
       },
       "expected_values": {
         "xdm.source.user.upn": "test@test.com",
