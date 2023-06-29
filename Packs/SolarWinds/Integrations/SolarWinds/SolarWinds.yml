@@ -451,7 +451,6 @@ script:
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     name: swis-query
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

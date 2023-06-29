@@ -663,10 +663,6 @@ script:
       description: Sheet title.
       type: String
   dockerimage: demisto/googleapi-python3:1.0.0.64222
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3

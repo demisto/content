@@ -22,7 +22,6 @@ configuration:
   type: 0
   section: Connect
 - name: credentials
-  required: false
   type: 9
   displaypassword: Client Secret
   hiddenusername: true
@@ -257,19 +256,12 @@ script:
     - description: 'The list of IP address rules. Each rule governing the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property.'
       isArray: true
       name: ip_rules
-      required: false
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Create or update a key vault in the specified subscription. If the Key Vault exists, the updated properties will overwrite the existing ones. Please use azure-key-vault-access-policy-update command if you wish to update the access policy of an existing Key Vault.
     name: azure-key-vault-create-update
     outputs:
@@ -328,18 +320,12 @@ script:
     - description: Key Vault name to delete.
       name: vault_name
       required: true
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Delete the specified key vault.
     execution: true
     name: azure-key-vault-delete
@@ -347,18 +333,12 @@ script:
     - description: Key Vault name.
       name: vault_name
       required: true
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Get the specified key vault.
     name: azure-key-vault-get
     outputs:
@@ -418,14 +398,9 @@ script:
       name: limit
     - description: First index to retrieve from. Default value is 0.
       name: offset
-      required: false
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: The List operation gets information about the vaults associated with the subscription. For a limit greater than 25, more than one API call will be required and the command might take longer time.
     name: azure-key-vault-list
     outputs:
@@ -567,19 +542,12 @@ script:
       - backup
       - restore
       - purge
-      required: false
-      secret: false
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       type: String
-      isArray: false
-      required: false
     - name: resource_group_name
       description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       type: String
-      isArray: false
-      required: false
-    deprecated: false
     description: Update access policies in a key vault in the specified subscription. The update regards only the access policy for the specified object ID.
     execution: true
     name: azure-key-vault-access-policy-update
@@ -936,7 +904,7 @@ script:
     - contextPath: AzureKeyVault.Subscription.state
       description: Subscription state.
       type: String
-    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies 
+    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies
       description: Subscription policies.
       type: Unknown
     - contextPath: AzureKeyVault.Subscription.authorizationSource
@@ -953,14 +921,11 @@ script:
     arguments:
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-      isArray: false
     - name: limit
       description: Limit on the number of resource groups to return.
-      required: false
       defaultValue: 50
     - name: tag
       description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
-      required: false
     outputs:
     - contextPath: AzureKeyVault.ResourceGroup.id
       description: Resource group ID.

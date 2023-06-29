@@ -393,19 +393,15 @@ script:
       required: true
     - description: The interval, in seconds, to poll for scan results of an existing Remediation Confirmation Scan.
       name: interval_in_seconds
-      required: false
       defaultValue: "600"
     - description: The timeout, in seconds, for polling for scan results of an existing Remediation Confirmation Scan.
       name: timeout_in_seconds
-      required: false
       defaultValue: "11000"
     - name: hide_polling_output
       description: Whether to hide the polling result (automatically filled by polling).
     - auto: PREDEFINED
       description: Whether to poll until there is at least one result.
       name: polling
-      required: false
-      isArray: false
       defaultValue: true
       predefined:
       - "true"

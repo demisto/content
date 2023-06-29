@@ -23,7 +23,6 @@ args:
   description: The name of the DLP data profile that detected the violation.
 - name: app_name
   description: The application that performed the activity.
-  required: false
 - name: task
   description: A manual task that this task can close.
 - name: user_display_name

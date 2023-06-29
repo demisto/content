@@ -550,7 +550,6 @@ script:
       description: The date and time the object was updated. Formatted according to ISO 8601.
       type: Date
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   script: '-'
   subtype: python3

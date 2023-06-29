@@ -15,7 +15,6 @@ args:
   default: true
   description: The HTML to strip tags from
 - name: html_tag
-  required: false
   default: true
   defaultValue: body
   description: Specify HTML tag to extract the text from within.
