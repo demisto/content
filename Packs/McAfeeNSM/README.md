@@ -10,7 +10,7 @@ McAfee NSM syslog event types:
 
 *config Syslog IPS Events:*
 1. In McAfee NSM, go to **Manager** > **Setup**> **Notification** > **IPS Events** > **syslog**.
-2. click *YES* on "Enable Syslog Notification".
+2. In Enable Syslog Notification, click **YES .
 3. bellow click on *+* and add Target server. 
    * if you not configured target server alick add neer the "Target Server" and  fill the target server details.
    ![link](https://raw.githubusercontent.com/demisto/content/2063d324e6515a85b484705df5e4d153425e5110/Packs/McAfeeNSM/doc_imgs/nsm_add_target_server.png)
