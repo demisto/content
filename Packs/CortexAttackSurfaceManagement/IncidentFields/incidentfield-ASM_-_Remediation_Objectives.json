@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "test"
         },
         {
             "displayName": "2",
