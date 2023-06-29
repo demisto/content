@@ -4527,6 +4527,7 @@ script:
     name: extrahop-search-packets
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

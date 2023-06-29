@@ -1280,6 +1280,7 @@ script:
       description: The tracking code Google Analytics.
       type: Number
   dockerimage: demisto/python3:3.10.11.54132
+  runonce: false
   script: '-'
   type: python
   subtype: python3

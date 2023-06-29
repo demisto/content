@@ -34,6 +34,7 @@ script:
       description: Extracted text from the passed image file.
       type: String
   dockerimage: demisto/tesseract:1.0.0.62842
+  runonce: false
   script: '-'
   type: python
   subtype: python3

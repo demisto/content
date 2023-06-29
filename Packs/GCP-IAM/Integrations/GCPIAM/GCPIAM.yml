@@ -1234,6 +1234,7 @@ script:
       description: The resource name of the role.
       type: String
   dockerimage: demisto/google-api-py3:1.0.0.55175
+  runonce: false
   script: '-'
   subtype: python3
   type: python

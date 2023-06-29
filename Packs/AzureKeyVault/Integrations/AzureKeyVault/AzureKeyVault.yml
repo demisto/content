@@ -942,6 +942,7 @@ script:
     - contextPath: AzureKeyVault.ResourceGroup.properties.provisioningState
       description: Resource group provisioning state.
   dockerimage: demisto/crypto:1.0.0.63672
+  runonce: false
   script: '-'
   subtype: python3
   type: python

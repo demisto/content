@@ -411,6 +411,7 @@ script:
       type: Boolean
   dockerimage: demisto/slack:1.0.0.42956
   longRunning: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

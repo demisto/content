@@ -145,6 +145,7 @@ script:
     name: opencti-reset-fetch-indicators
   dockerimage: demisto/opencti:1.0.0.41469
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

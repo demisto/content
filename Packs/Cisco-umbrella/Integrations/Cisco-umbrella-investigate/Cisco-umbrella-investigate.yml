@@ -1167,6 +1167,7 @@ script:
     - contextPath: Umbrella.Timeline.Data.Timestamp
       description: The time when the attribution for this URL changed.
       type: date
+  runonce: false
   script: '-'
   type: python
   subtype: python3

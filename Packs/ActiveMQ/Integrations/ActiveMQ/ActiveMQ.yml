@@ -72,6 +72,7 @@ script:
     name: activemq-subscribe
   dockerimage: demisto/py3-tools:1.0.0.49475
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

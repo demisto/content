@@ -107,6 +107,7 @@ script:
     name: alienvaultotx-get-indicators
   dockerimage: demisto/taxii:1.0.0.43208
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

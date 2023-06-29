@@ -599,6 +599,7 @@ script:
     - contextPath: Machine.Tags
       description: Machine tags
     description: Returns details on the analysis machine associated with the given name.
+  runonce: false
 fromversion: 5.0.0
 tests:
 - CuckooTest

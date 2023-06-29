@@ -154,6 +154,7 @@ script:
       type: String
   dockerimage: demisto/akamai:1.0.0.63810
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

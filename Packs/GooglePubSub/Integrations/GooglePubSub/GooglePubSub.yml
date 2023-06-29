@@ -518,6 +518,7 @@ script:
     name: gcp-pubsub-topic-ack-messages
   dockerimage: demisto/googleapi-python3:1.0.0.64222
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

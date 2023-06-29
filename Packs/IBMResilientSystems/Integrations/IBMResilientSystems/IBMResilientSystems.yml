@@ -728,6 +728,7 @@ script:
       type: Boolean
   dockerimage: demisto/resilient:2.0.0.45701
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -472,6 +472,7 @@ script:
     - contextPath: Bigfix.QueryResults
       description: The results of the query
       type: unknown
+  runonce: false
   script: '-'
   subtype: python3
   type: python

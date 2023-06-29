@@ -260,6 +260,7 @@ script:
     - contextPath: CircleCI.WorkflowTrigger.state
       description: The workflow state.
       type: number
+  runonce: false
   script: '-'
   type: python
   subtype: python3

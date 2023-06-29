@@ -393,6 +393,7 @@ script:
       type: string
   dockerimage: demisto/pyotrs:1.0.0.44880
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -2012,6 +2012,7 @@ script:
       description: The date for the displayed number of messages.
       type: Date
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -1071,6 +1071,7 @@ script:
     description: Uploads indicators from Demisto to Qradar. This command requires Cortex SOAR v5.5 or later.
     name: qradar-upload-indicators
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python2
   type: python

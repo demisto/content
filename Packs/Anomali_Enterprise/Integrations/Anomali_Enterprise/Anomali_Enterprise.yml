@@ -169,6 +169,7 @@ script:
       description: A description of the malicious domain.
       type: String
   dockerimage: demisto/python3:3.10.11.54132
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -1748,6 +1748,7 @@ script:
       description: Galaxy type.
       type: number
   dockerimage: demisto/pymisp:1.0.0.19190
+  runonce: false
   script: '-'
   subtype: python3
   type: python

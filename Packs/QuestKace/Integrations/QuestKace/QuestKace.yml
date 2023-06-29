@@ -450,6 +450,7 @@ script:
     name: kace-ticket-delete
   dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

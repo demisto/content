@@ -890,6 +890,7 @@ script:
     description: Adds a label to an alert.
     name: fidelis-manage-alert-label
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   dockerimage: demisto/python3:3.10.10.48392

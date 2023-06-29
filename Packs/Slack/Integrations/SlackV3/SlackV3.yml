@@ -398,6 +398,7 @@ script:
       type: String
   dockerimage: demisto/slackv3:1.0.0.63762
   longRunning: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

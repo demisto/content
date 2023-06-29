@@ -45,6 +45,7 @@ script:
       description: Whois created for domain name variations.
       type: string
   dockerimage: demisto/dnstwist:1.0.0.46433
+  runonce: false
   script: '-'
   type: python
   subtype: python3

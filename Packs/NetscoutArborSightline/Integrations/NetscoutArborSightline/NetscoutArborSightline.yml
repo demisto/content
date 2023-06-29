@@ -768,6 +768,7 @@ script:
     name: na-sightline-tms-group-list
   dockerimage: demisto/python3:3.10.8.37753
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

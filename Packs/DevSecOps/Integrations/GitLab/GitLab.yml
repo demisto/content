@@ -875,6 +875,7 @@ script:
       type: String
     deprecated: true
   dockerimage: demisto/python3:3.10.7.35188
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -67,7 +67,6 @@ configuration:
   additionalinfo: The message recipient filter value by which to fetch results.
 - name: jwt_token_expiration_period
   display: Time to live for JWT session token (in minutes).
-  required: false
   defaultvalue: 30
   type: 0
 - name: proxy

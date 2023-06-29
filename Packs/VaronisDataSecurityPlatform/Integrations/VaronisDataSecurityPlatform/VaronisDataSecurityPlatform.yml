@@ -367,6 +367,7 @@ script:
       type: Number
   dockerimage: demisto/ntlm:1.0.0.31381
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

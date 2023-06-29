@@ -445,6 +445,7 @@ script:
       required: true
     description: Downloads a file from VirusTotal's store given one of its hashes. This call can be used in conjuction with the file searching call in order to download samples that match a given set of criteria.
     name: vt-private-download-file
+  runonce: false
   script: '-'
   subtype: python2
   type: python

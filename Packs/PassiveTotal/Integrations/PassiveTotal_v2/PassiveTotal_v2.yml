@@ -2281,6 +2281,7 @@ script:
       description: Link to the next page.
       type: String
   dockerimage: demisto/python3:3.10.11.61265
+  runonce: false
   script: '-'
   subtype: python3
   type: python

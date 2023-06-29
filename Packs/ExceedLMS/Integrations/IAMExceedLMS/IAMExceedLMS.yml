@@ -226,6 +226,7 @@ script:
   dockerimage: demisto/python3:3.10.11.61265
   ismappable: true
   isremotesyncout: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

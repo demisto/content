@@ -118,6 +118,7 @@ script:
       required: true
     description: Retrieves all incident metadata from Threat Response by specifying filter criteria such as the state of the incident or time of closure.
     name: proofpoint-trap-get-events
+  runonce: false
   script: '-'
   subtype: python3
   type: python

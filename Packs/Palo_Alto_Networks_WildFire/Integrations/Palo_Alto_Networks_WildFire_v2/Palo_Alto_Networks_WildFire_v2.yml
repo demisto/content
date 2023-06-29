@@ -1246,6 +1246,7 @@ script:
       description: The web artifacts file type.
       type: string
   dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
   script: '-'
   subtype: python3
   type: python

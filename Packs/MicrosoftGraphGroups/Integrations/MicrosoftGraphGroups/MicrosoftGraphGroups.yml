@@ -406,6 +406,7 @@ script:
     name: msgraph-groups-generate-login-url
     arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
+  runonce: false
   script: '-'
   subtype: python3
   type: python

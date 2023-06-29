@@ -853,6 +853,7 @@ script:
       type: String
   dockerimage: demisto/lacework:1.0.0.47313
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -77,6 +77,7 @@ script:
       description: The raw message to send.
       type: String
   dockerimage: demisto/m2crypto:1.0.0.63715
+  runonce: false
   script: '-'
   type: python
   subtype: python3

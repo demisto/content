@@ -418,6 +418,7 @@ script:
     - name: wireless_id
       description: UUID of the wireless LAN to remove.
       required: true
+  runonce: false
   script: '-'
   type: python
   subtype: python3

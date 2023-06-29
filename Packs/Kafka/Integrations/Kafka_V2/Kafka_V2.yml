@@ -123,6 +123,7 @@ script:
       type: number
   dockerimage: demisto/pykafka:1.0.0.19034
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python2
   type: python

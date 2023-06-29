@@ -69,6 +69,7 @@ script:
     - description: First fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: from
+  runonce: false
   script: '-'
   isfetchevents: true
   type: python

@@ -120,6 +120,7 @@ script:
       type: String
   dockerimage: demisto/python3:3.9.8.24399
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

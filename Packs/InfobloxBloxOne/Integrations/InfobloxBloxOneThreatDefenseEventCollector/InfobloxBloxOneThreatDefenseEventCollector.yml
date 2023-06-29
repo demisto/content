@@ -60,6 +60,7 @@ script:
       contextPath: TestGetEvents
     description: "Gets events. This command is for debugging purposes."
     name: bloxone-td-event-collector-get-events
+  runonce: false
   isfetchevents: true
   script: "-"
   type: python

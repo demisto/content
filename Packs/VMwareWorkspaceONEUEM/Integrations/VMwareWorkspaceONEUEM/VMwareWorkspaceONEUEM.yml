@@ -569,6 +569,7 @@ script:
       description: The universally unique identifier of the OS update.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -2481,6 +2481,7 @@ script:
       description: Name of warninglists where the value was found.
       type: string
   dockerimage: demisto/pymisp2:1.0.0.63745
+  runonce: false
   script: ''
   subtype: python3
   type: python

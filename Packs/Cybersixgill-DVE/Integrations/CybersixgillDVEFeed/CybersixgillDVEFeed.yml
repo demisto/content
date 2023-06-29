@@ -99,6 +99,7 @@ script:
     name: cybersixgill-get-indicators
   dockerimage: demisto/sixgill:1.0.0.23434
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -177,6 +177,7 @@ script:
     description: Sends a message to Syslog.
     name: syslog-send
   dockerimage: demisto/syslog:1.0.0.48738
+  runonce: false
   script: '-'
   subtype: python3
   type: python

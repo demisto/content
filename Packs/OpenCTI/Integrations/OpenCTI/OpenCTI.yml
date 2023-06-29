@@ -288,6 +288,7 @@ script:
       description: The last ID of the previous fetch to use for pagination.
       type: String
   dockerimage: demisto/opencti-v4:1.0.0.61509
+  runonce: false
   script: '-'
   subtype: python3
   type: python

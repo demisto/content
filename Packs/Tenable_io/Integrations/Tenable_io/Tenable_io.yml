@@ -1082,6 +1082,7 @@ script:
     - contextPath: TenableIO.Vulnerability.indexed
       description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
       type: Date
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -112,6 +112,7 @@ script:
     - contextPath: KMSat.Event.event_type.name
       description: The name of the event type.
       type: String
+  runonce: false
   script: '-'
   type: python
   subtype: python3

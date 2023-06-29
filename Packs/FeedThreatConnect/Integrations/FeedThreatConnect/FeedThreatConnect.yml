@@ -216,6 +216,7 @@ script:
     name: tc-get-owners
   dockerimage: demisto/python3:3.10.12.62631
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

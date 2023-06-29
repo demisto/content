@@ -925,6 +925,7 @@ script:
       description: The actual score.
       type: number
     description: Get phishing indicators that match the given criteria.
+  runonce: false
   script: ''
   type: python
   subtype: python3

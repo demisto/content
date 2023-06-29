@@ -137,6 +137,7 @@ script:
     name: idefense-get-indicators
   dockerimage: demisto/jmespath:1.0.0.23980
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

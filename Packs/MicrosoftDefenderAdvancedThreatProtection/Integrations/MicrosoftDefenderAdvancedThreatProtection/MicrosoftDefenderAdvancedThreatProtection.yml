@@ -5462,6 +5462,7 @@ script:
     arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

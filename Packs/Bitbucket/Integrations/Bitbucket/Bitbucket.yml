@@ -2322,6 +2322,7 @@ script:
     - contextPath: Bitbucket.WorkspaceMember.workspace.links
       description: Links to information about the workspace.
       type: String
+  runonce: false
   script: "-"
   type: python
   subtype: python3

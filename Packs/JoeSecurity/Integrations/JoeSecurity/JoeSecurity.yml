@@ -630,6 +630,7 @@ script:
     - contextPath: File.Extension
       description: File Extension
       type: string
+  runonce: false
   script: '-'
   type: python
   subtype: python2

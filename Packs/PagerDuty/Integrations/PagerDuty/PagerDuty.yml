@@ -451,6 +451,7 @@ script:
     name: PagerDuty-run-response-play
     description: Run a response play on PagerDuty (based on its UUID)
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -567,6 +567,7 @@ script:
       description: Axonius Tags
       type: Unknown
   dockerimage: demisto/axonius:1.0.0.40908
+  runonce: false
   script: '-'
   subtype: python3
   type: python

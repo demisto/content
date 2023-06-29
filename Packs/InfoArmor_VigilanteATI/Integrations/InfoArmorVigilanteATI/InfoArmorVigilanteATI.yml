@@ -414,6 +414,7 @@ script:
   - description: Returns the usage data for your account.
     name: vigilante-account-usage-info
   dockerimage: demisto/python3:3.10.11.61265
+  runonce: false
   script: '-'
   subtype: python3
   type: python

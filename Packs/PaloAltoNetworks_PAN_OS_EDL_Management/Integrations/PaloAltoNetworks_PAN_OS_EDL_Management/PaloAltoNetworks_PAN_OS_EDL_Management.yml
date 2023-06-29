@@ -222,6 +222,7 @@ script:
     description: Updates a remote file with the contents of an internal list.
     name: pan-os-edl-update-external-file
   dockerimage: demisto/openssh:1.0.0.12410
+  runonce: false
   script: '-'
   type: python
   subtype: python3

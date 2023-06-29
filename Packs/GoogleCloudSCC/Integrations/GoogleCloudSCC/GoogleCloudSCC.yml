@@ -554,6 +554,7 @@ script:
       type: String
   dockerimage: demisto/google-api-py3:1.0.0.64100
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

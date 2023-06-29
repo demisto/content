@@ -767,6 +767,7 @@ script:
   isremotesyncout: true
   ismappable: true
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

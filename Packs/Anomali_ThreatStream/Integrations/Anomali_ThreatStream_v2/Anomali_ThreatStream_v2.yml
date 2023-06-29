@@ -1215,6 +1215,7 @@ script:
       description: (List) Tags of the URL.
       type: Unknown
   dockerimage: demisto/py3-tools:1.0.0.43697
+  runonce: false
   script: '-'
   subtype: python3
   type: python

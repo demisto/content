@@ -204,6 +204,7 @@ script:
     name: taxii2-reset-fetch-indicators
   dockerimage: demisto/taxii2:1.0.0.61540
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

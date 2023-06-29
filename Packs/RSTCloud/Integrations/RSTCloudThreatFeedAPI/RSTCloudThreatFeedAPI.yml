@@ -505,6 +505,7 @@ script:
     description: Submits a potential False Positive to RST Threat Feed.
     name: rst-submit-fp
   dockerimage: demisto/python3:3.10.5.31928
+  runonce: false
   script: '-'
   subtype: python3
   type: python

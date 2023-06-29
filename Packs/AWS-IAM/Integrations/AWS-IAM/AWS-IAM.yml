@@ -1498,6 +1498,7 @@ script:
       description: The date when the given access key was last used.
       type: string
   dockerimage: demisto/boto3py3:1.0.0.63846
+  runonce: false
   script: '-'
   subtype: python3
   type: python

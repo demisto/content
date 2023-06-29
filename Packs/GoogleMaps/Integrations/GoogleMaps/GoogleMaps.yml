@@ -53,6 +53,7 @@ script:
       description: The country or region where the provided location is, according to Google Maps.
       type: String
   dockerimage: demisto/python3:3.10.8.37233
+  runonce: false
   script: '-'
   subtype: python3
   type: python

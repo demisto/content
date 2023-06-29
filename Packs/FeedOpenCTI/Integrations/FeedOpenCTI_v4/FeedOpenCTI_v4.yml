@@ -143,6 +143,7 @@ script:
     name: opencti-get-indicators
   dockerimage: demisto/opencti-v4:1.0.0.46493
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

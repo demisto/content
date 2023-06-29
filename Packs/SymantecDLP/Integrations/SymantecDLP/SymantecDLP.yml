@@ -345,6 +345,7 @@ script:
       type: String
   dockerimage: demisto/zeep:1.0.0.23423
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

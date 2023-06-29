@@ -2038,6 +2038,7 @@ script:
       - "false"
     - name: interval_in_seconds
       description: The interval between status checks.
+  runonce: false
   script: '-'
   type: python
   subtype: python3

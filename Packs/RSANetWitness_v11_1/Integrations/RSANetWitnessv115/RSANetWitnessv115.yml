@@ -1986,6 +1986,7 @@ script:
     name: rsa-nw-endpoint-isolation-remove
   dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

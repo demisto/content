@@ -554,6 +554,7 @@ script:
       description: The quota action.
       type: String
   dockerimage: demisto/python3:3.10.11.54132
+  runonce: false
   script: '-'
   subtype: python3
   type: python

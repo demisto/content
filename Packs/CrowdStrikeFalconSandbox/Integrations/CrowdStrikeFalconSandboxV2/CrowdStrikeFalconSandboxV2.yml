@@ -2324,6 +2324,7 @@ script:
     - contextPath: CrowdStrike.State.error
       description: 'The error description.'
       type: String
+  runonce: false
 tests:
 - CrowdstrikeFalconSandbox2 Test
 fromversion: 6.2.0

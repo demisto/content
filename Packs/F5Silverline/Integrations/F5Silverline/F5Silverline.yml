@@ -130,6 +130,7 @@ script:
     description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
     name: f5-silverline-ip-object-delete
   dockerimage: demisto/python3:3.10.11.54132
+  runonce: false
   script: '-'
   subtype: python3
   type: python

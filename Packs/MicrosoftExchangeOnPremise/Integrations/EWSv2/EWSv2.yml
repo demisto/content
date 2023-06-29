@@ -999,6 +999,7 @@ script:
     name: reply-mail
   dockerimage: demisto/py-ews:5.0.2.63879
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

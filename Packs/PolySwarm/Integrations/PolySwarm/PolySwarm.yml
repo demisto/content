@@ -248,6 +248,7 @@ script:
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
       type: String
+  runonce: false
   script: '-'
   subtype: python2
   type: python

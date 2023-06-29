@@ -66,6 +66,7 @@ script:
       description: Entropy.
     description: Return list of app secrets.
   dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:

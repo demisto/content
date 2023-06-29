@@ -119,6 +119,7 @@ script:
       description: Verdict Reasons for the provided Nameserver.
       type: Unknown
   dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
   script: '-'
   subtype: python3
   type: python

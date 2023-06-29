@@ -153,6 +153,7 @@ script:
     name: aws-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.64131
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -280,6 +280,7 @@ script:
     deprecated: true
     description: Deletes a specified virtual machine.
     name: azure-vm-delete-instance
+  runonce: false
   script: '-'
   type: python
   subtype: python2

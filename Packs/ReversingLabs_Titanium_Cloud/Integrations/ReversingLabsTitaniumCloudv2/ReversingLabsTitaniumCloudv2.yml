@@ -305,6 +305,7 @@ script:
       description: ''
       type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.40822
+  runonce: false
   script: '-'
   subtype: python3
   type: python

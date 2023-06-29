@@ -25,7 +25,7 @@ configuration:
   type: 4
   hidden: true
 - displaypassword: Authentication token
-  name:  credentials_token
+  name: credentials_token
   hiddenusername: true
   type: 9
 - display: Vault enterprise namespace

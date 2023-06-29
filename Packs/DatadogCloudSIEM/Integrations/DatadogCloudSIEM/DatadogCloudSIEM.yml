@@ -1056,6 +1056,7 @@ script:
       type: Date
   dockerimage: demisto/datadog-api-client:1.0.0.63675
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

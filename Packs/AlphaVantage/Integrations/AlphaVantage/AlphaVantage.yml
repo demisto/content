@@ -100,6 +100,7 @@ script:
       description: 'List of all stock data samples'
       type: Unknown
   dockerimage: demisto/python3:3.10.11.54132
+  runonce: false
   script: '-'
   subtype: python3
   type: python

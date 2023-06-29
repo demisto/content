@@ -1016,6 +1016,7 @@ script:
     - name: per_page
       description: Per Page Amount
     description: returns the status of the User Event request
+  runonce: false
   script: "-"
   type: python
   subtype: python3

@@ -160,6 +160,7 @@ script:
     description: Uploads data from a stream to an object in a bucket.
     name: minio-put-object
   dockerimage: demisto/minio:1.0.0.19143
+  runonce: false
   script: '-'
   subtype: python3
   type: python

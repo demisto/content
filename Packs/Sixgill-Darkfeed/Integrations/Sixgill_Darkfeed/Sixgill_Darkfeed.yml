@@ -114,6 +114,7 @@ script:
     name: sixgill-get-indicators
   dockerimage: demisto/sixgill:1.0.0.63753
   feed: true
+  runonce: false
   subtype: python3
   type: python
 fromversion: 5.5.0

@@ -84,6 +84,7 @@ script:
     name: gcp-whitelist-get-indicators
   dockerimage: demisto/dnspython:1.0.0.24037
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

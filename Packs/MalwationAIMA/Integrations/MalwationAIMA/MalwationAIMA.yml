@@ -210,6 +210,7 @@ script:
       description: The status of the submission scanning process.
       type: String
   dockerimage: demisto/python3:3.10.12.62631
+  runonce: false
   script: '-'
   subtype: python3
   type: python

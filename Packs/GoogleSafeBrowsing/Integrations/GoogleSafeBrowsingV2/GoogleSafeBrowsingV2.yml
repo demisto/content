@@ -91,6 +91,7 @@ script:
       description: The URL threat entry type.
       type: string
   dockerimage: demisto/python3:3.10.8.37233
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -75,6 +75,7 @@ script:
     - contextPath: Alexa.Domain.Rank
       description: Alexa rank as determined by Amazon
       type: string
+  runonce: false
   script: ''
   type: python
   subtype: python2

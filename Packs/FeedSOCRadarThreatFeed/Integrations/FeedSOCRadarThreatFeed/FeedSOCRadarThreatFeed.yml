@@ -189,6 +189,7 @@ script:
     name: socradar-reset-fetch-indicators
   dockerimage: demisto/python3:3.10.11.61265
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -306,6 +306,7 @@ script:
       description: The type of the image/pdf file
       type: string
   dockerimage: demisto/chromium:1.0.0.56296
+  runonce: false
   script: '-'
   subtype: python3
   type: python

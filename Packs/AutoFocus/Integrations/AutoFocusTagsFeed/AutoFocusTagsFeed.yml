@@ -101,6 +101,7 @@ script:
     name: autofocus-tags-feed-get-indicators
   dockerimage: demisto/python3:3.10.10.49934
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

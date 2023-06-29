@@ -547,6 +547,7 @@ script:
       description: The address ID.
       type: String
   dockerimage: demisto/crypto:1.0.0.62171
+  runonce: false
   script: '-'
   subtype: python3
   type: python

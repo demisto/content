@@ -551,6 +551,7 @@ script:
       description: An Active Directory (AD) domain
       type: Unknown
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python2
   type: python

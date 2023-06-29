@@ -363,6 +363,7 @@ script:
       description: A JSON string that contains a representation of the event returned.
       type: string
   dockerimage: demisto/boto3:2.0.0.52592
+  runonce: false
   script: '-'
   subtype: python3
   type: python

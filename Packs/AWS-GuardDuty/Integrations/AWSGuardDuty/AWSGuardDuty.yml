@@ -854,6 +854,7 @@ script:
       type: string
   dockerimage: demisto/boto3py3:1.0.0.63846
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

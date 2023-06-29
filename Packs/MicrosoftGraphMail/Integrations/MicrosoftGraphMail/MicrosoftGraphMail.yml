@@ -1026,6 +1026,7 @@ script:
     description: Update the status of an email to read / unread.
   dockerimage: demisto/crypto:1.0.0.63672
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

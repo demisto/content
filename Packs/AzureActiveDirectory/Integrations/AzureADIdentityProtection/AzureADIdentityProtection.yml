@@ -317,6 +317,7 @@ script:
     name: azure-ad-identity-protection-risky-user-dismiss
   dockerimage: demisto/crypto:1.0.0.51288
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

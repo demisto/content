@@ -661,6 +661,7 @@ script:
       type: Boolean
   dockerimage: demisto/python3:3.10.10.50695
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

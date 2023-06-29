@@ -157,6 +157,7 @@ script:
       type: String
   dockerimage: demisto/taxii2:1.0.0.57584
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

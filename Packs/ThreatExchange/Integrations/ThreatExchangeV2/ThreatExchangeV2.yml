@@ -655,6 +655,7 @@ script:
       description: ID of a ThreatExchange object.
       type: String
   dockerimage: demisto/python3:3.10.5.31928
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -161,6 +161,7 @@ script:
     deprecated: true
     description: Download samples obtained through the unpacking process
     name: reversinglabs-download-unpacked
+  runonce: false
   script: ''
   subtype: python2
   type: python

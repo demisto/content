@@ -2102,6 +2102,7 @@ script:
       name: username
     description: Update an existing shared credential.
     name: nexpose-update-shared-credential
+  runonce: false
   script: '-'
   type: python
   subtype: python3

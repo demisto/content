@@ -798,6 +798,7 @@ script:
     name: azure-storage-generate-login-url
     arguments: []
   dockerimage: demisto/crypto:1.0.0.52480
+  runonce: false
   script: '-'
   subtype: python3
   type: python

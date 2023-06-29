@@ -53,6 +53,7 @@ script:
     description: Get events.
     name: box-get-events
   dockerimage: demisto/pydantic-jwt3:1.0.0.62282
+  runonce: false
   script: '-'
   subtype: python3
   type: python

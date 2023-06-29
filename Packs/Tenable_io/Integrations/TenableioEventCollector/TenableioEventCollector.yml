@@ -93,6 +93,7 @@ script:
     description: Returns vulnerabilities extracted from Tenable io.
     polling: true
     name: tenable-get-vulnerabilities
+  runonce: false
   script: '-'
   isfetchevents: true
   type: python

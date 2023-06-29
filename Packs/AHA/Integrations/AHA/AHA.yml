@@ -165,6 +165,7 @@ script:
     - contextPath: AHA.Idea.created_at
       description: The idea creation date.
       type: Date
+  runonce: false
   script: "-"
   type: python
   subtype: python3

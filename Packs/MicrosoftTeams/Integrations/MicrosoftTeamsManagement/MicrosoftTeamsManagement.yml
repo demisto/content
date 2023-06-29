@@ -672,6 +672,7 @@ script:
       description: An optional description for the group.
       type: String
   dockerimage: demisto/crypto:1.0.0.63672
+  runonce: false
   script: '-'
   subtype: python3
   type: python

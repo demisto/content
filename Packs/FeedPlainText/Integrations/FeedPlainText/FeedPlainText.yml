@@ -149,6 +149,7 @@ script:
     name: plaintext-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.44868
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -212,6 +212,7 @@ script:
     name: crowdstrike-reset-fetch-indicators
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

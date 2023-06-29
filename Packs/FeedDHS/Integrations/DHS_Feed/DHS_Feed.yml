@@ -145,6 +145,7 @@ script:
       type: string
   dockerimage: demisto/xml-feed:1.0.0.63829
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

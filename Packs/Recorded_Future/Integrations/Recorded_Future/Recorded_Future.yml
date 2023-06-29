@@ -1205,6 +1205,7 @@ script:
       description: Alert rule name
       type: string
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python2
   type: python

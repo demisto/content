@@ -537,6 +537,7 @@ script:
       description: Timeline IP address.
       type: string
   dockerimage: demisto/greynoise:1.0.0.61972
+  runonce: false
   script: '-'
   subtype: python3
   type: python

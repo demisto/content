@@ -43,6 +43,7 @@ script:
     name: create-sample-incidents
   dockerimage: demisto/paho-mqtt:1.0.0.19143
   longRunning: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

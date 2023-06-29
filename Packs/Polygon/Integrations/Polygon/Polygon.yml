@@ -364,6 +364,7 @@ script:
       type: string
     description: Check file reputation
   dockerimage: demisto/python3:3.10.5.31928
+  runonce: false
   script: '-'
   subtype: python3
   type: python

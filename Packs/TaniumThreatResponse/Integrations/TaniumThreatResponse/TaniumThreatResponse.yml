@@ -1356,6 +1356,7 @@ script:
       type: number
   dockerimage: demisto/python3:3.10.4.30607
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -805,6 +805,7 @@ script:
       description: Security and compliance search action Tenant ID.
       type: String
   dockerimage: demisto/powershell-ubuntu:7.3.0.49844
+  runonce: false
   script: '-'
   type: powershell
 fromversion: 5.5.0

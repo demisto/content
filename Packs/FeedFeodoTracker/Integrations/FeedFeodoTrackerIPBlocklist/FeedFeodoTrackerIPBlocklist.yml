@@ -87,6 +87,7 @@ script:
     name: feodotracker-ipblocklist-get-indicators
   dockerimage: demisto/python3:3.10.11.54132
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -138,6 +138,7 @@ script:
     description: The push hash to the DXL fabric.
     name: dxl-push-hash
   dockerimage: demisto/dxl:1.0.0.35274
+  runonce: false
   script: '-'
   subtype: python3
   type: python

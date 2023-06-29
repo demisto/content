@@ -75,6 +75,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
+  runonce: false
   script: ''
   subtype: python2
   type: python

@@ -338,6 +338,7 @@ script:
     description: Delete entries from the Active List.
     name: as-delete-entries
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   dockerimage: demisto/python3:3.10.11.54132

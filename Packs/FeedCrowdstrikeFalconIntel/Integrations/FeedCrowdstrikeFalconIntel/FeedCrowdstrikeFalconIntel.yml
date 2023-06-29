@@ -126,6 +126,7 @@ script:
     name: crowdstrike-falcon-intel-get-indicators
   dockerimage: demisto/python3:3.10.11.56082
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

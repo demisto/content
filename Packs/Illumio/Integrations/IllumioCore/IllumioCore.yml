@@ -1399,6 +1399,7 @@ script:
       description: Consumers resolve labels.
       type: String
   dockerimage: demisto/illumio:1.0.0.63702
+  runonce: false
   script: '-'
   subtype: python3
   type: python

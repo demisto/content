@@ -93,6 +93,7 @@ script:
     description: Retrieves a limited number of the indicators.
     name: snxfeeds-get-indicators
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

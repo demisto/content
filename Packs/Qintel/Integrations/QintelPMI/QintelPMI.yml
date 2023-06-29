@@ -72,6 +72,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score.
       type: String
+  runonce: false
   script: '-'
   type: python
   subtype: python3

@@ -91,6 +91,7 @@ script:
     name: helloworld-get-indicators
   dockerimage: demisto/python3:3.10.11.55362
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

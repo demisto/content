@@ -1529,6 +1529,7 @@ script:
       type: Date
   dockerimage: demisto/powershell-ubuntu:7.1.4.24032
   # Please do not change the docker image until CIAC-5623 is handled.
+  runonce: false
   script: '-'
   type: powershell
 tests:

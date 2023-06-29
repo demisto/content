@@ -26,6 +26,7 @@ script:
   script: ''
   type: python
   dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
   subtype: python3
   commands:
   - name: fireeye-dod-get-hashes

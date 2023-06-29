@@ -122,4 +122,5 @@ script:
     name: cyren-threat-indepth-get-client-offset
   dockerimage: demisto/python3:3.10.12.63474
   feed: true
+  runonce: false
   subtype: python3

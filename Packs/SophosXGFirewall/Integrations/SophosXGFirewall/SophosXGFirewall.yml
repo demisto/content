@@ -2912,6 +2912,7 @@ script:
       description: Whether the policy is deleted.
       type: Bool
   dockerimage: demisto/python3:3.10.5.31928
+  runonce: false
   script: '-'
   subtype: python3
   type: python

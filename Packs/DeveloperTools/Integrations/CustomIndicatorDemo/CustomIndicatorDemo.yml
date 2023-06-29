@@ -17,6 +17,7 @@ script:
     - contextPath: Demo.Result.Output
       description: Dummy output.
       type: String
+  runonce: false
   script: '-'
   type: python
   subtype: python3

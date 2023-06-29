@@ -177,6 +177,7 @@ script:
     - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.rank
       description: Rank for the exposed password.
       type: String
+  runonce: false
 tests:
 - No tests
 fromversion: 6.0.0

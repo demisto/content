@@ -146,6 +146,7 @@ script:
       description: Full report
       type: String
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.40822
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -20,6 +20,7 @@ name: RSS
 script:
   dockerimage: demisto/feed-parser:1.0.0.14495
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

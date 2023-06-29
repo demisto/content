@@ -148,6 +148,7 @@ script:
       description: The Office 365 service where the activity occurred.
       type: String
     description: Use the o365-search-auditlog command to search the unified audit log. This log contains events from Exchange Online, SharePoint Online, OneDrive for Business, Azure Active Directory, Microsoft Teams, Power BI, and other Microsoft 365 services. You can search for all events in a specified date range, or you can filter the results based on specific criteria, such as the action, the user who performed the action, or the target object.
+  runonce: false
   script: '-'
   type: powershell
   dockerimage: demisto/powershell-ubuntu:7.3.0.49844

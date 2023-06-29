@@ -642,6 +642,7 @@ script:
       type: Unknown
   dockerimage: demisto/python3:3.9.5.21272
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

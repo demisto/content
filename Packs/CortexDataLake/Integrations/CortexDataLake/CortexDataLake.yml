@@ -1977,6 +1977,7 @@ script:
     name: cdl-reset-authentication-timeout
   dockerimage: demisto/python_pancloud_v2:1.0.0.62401
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

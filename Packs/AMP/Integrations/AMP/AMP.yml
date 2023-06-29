@@ -259,6 +259,7 @@ script:
       default: true
       description: connector GUID.
     description: 'Returns a fine grained isolation status for a computer.  The available flag is set to true if isolation can be performed on the computer.  status will be set to one of:  not_isolated pending_start isolated pending_stop'
+  runonce: false
 fromversion: 5.0.0
 tests:
 - No test - missing instace

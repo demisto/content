@@ -994,6 +994,7 @@ script:
       description: Size of the file attached to the ticket
       type: String
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   dockerimage: demisto/python3:3.10.8.37233

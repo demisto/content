@@ -2839,6 +2839,7 @@ script:
       isArray: true
     name: core-remove-user-role
     description: Remove one or more users from a role.
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -48,6 +48,7 @@ script:
   commands: []
   dockerimage: demisto/python3:3.10.11.54132
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

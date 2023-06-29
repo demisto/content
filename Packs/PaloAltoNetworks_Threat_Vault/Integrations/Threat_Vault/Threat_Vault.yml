@@ -301,6 +301,7 @@ script:
       description: A list of all the signatures found for this specific search.
       type: Unknown
   dockerimage: demisto/python3:3.10.1.26972
+  runonce: false
   script: '-'
   subtype: python3
   type: python

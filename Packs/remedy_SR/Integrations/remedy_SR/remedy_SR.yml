@@ -174,6 +174,7 @@ script:
   - deprecated: true
     description: Update a ticket
     name: remedy-update-ticket
+  runonce: false
   script: '-'
   type: python
   subtype: python3

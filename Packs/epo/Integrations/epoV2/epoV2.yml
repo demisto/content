@@ -813,6 +813,7 @@ script:
       description: Properties of the issue.
     description: Update an issue.
   dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
   script: '-'
   subtype: python3
   type: python

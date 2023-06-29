@@ -704,6 +704,7 @@ script:
     description: Verify if an email has been quarantined.
     name: proofpoint-tr-verify-quarantine
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

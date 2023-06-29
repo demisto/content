@@ -120,6 +120,7 @@ script:
     name: sis-get-indicators
   dockerimage: demisto/boto3py3:1.0.0.63846
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

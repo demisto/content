@@ -145,6 +145,7 @@ script:
       description: The time the system first referenced the file.
       type: Unknown
   dockerimage: demisto/dxl2:1.0.0.38570
+  runonce: false
   script: '-'
   subtype: python2
   type: python

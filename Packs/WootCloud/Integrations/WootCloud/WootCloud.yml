@@ -928,6 +928,7 @@ script:
       description: 'connections connection count'
       type: Number
   isfetch: true
+  runonce: false
   script: '-'
   type: python
   subtype: python3

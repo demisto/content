@@ -48,4 +48,5 @@ script:
     - contextPath: Wisdom.Flag
       description: The AlphaSOC security category or feature
     description: Returns a list of flags (categories and features) assigned to an IP connection (defined by protocol, destination address and port number) by AlphaSOC Threat Intelligence
+  runonce: false
 fromversion: 5.0.0

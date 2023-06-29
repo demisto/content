@@ -147,6 +147,7 @@ script:
       type: Unknown
   dockerimage: demisto/py3-tools:1.0.0.45904
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -59,6 +59,7 @@ description: |-
 display: Intel471 Watcher Alerts
 name: Intel471 Watcher Alerts
 script:
+  runonce: false
   isfetch: true
   script: '-'
   type: python

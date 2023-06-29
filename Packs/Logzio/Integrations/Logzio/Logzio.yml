@@ -108,8 +108,7 @@ script:
     - contextPath: Logzio.Result.timestamp
       description: The log's timestamp
       type: date
-    description: Fetches the logs that triggered a security event in Logz.io Cloud
-      SIEM
+    description: Fetches the logs that triggered a security event in Logz.io Cloud SIEM
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   subtype: python3

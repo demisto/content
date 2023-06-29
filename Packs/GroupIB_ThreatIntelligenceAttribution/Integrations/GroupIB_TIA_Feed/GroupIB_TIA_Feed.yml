@@ -162,6 +162,7 @@ script:
     name: gibtia-get-indicators
   dockerimage: demisto/python3:3.10.4.29342
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

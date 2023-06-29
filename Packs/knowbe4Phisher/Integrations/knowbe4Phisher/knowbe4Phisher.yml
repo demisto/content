@@ -167,6 +167,7 @@ script:
     name: phisher-tags-delete
   dockerimage: demisto/python3:3.10.9.46807
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

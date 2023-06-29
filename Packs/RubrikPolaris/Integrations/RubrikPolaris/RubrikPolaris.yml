@@ -2243,6 +2243,7 @@ script:
       type: String
   dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.63756
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -9298,6 +9298,7 @@ script:
     name: pan-os-delete-tag
   dockerimage: demisto/pan-os-python:1.0.0.63723
   isfetch: true
+  runonce: false
   script: ''
   subtype: python3
   type: python

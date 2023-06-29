@@ -97,6 +97,7 @@ script:
     name: spamhaus-get-indicators
   dockerimage: demisto/python3:3.10.8.37233
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

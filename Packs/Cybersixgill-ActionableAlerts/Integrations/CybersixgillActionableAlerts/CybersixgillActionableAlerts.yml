@@ -101,6 +101,7 @@ script:
       name: aggregate_alert_id
   dockerimage: demisto/sixgill:1.0.0.50510
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

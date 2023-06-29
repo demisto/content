@@ -113,6 +113,7 @@ script:
   - description: Lists all incidents in the collection.
     name: mongodb-list-incidents
   dockerimage: demisto/py3-tools:1.0.0.45685
+  runonce: false
   script: '-'
   type: python
   subtype: python3

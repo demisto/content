@@ -228,6 +228,7 @@ script:
     - contextPath: Username.Malicious.Description
       description: For malicious usernames, the reason that the vendor made the decision.
       type: String
+  runonce: false
   script: '-'
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474

@@ -1694,6 +1694,7 @@ script:
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   isremotesyncin: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

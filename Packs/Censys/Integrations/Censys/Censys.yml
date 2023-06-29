@@ -59,6 +59,7 @@ script:
     description: Searches for an attribute within the specified index.
     name: cen-search
   dockerimage: demisto/python:2.7.18.24398
+  runonce: false
   script: '-'
   subtype: python2
   type: python

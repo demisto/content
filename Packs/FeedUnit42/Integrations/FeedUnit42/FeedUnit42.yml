@@ -86,6 +86,7 @@ script:
     name: unit42-get-indicators
   dockerimage: demisto/taxii2:1.0.0.23423
   feed: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

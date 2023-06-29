@@ -1038,6 +1038,7 @@ script:
     description: Update user group
   dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python

@@ -492,6 +492,7 @@ script:
     name: illusive-get-forensics-artifacts
   dockerimage: demisto/python3:3.10.11.61265
   isfetch: true
+  runonce: false
   script: '-'
   subtype: python3
   type: python
