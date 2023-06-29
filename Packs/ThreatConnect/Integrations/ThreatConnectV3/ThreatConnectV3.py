@@ -1122,7 +1122,7 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
     if args.get('incidentId', incident_id):
         payload['associatedGroups'] = {'data': [{'id': args.get('incidentId', incident_id)}], 'mode': mode}
     url = f'/api/v3/indicators/{indicator}'
-    response = client.make_request(Method.PUT, url, payload=json.dumps(payload))
+    response = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore[arg-type]
 
     if return_raw:
         return response.get('data'),
