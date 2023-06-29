@@ -101,10 +101,11 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
 
 def test_error_parser(mocker):
     mocker.patch.object(demisto, 'error')
+    client = self_deployed_client()
     err = Response()
     err.status_code = 401
     err._content = b'{"error":{"code":"code","message":"message"}}'
-    response = MicrosoftClient.error_parser(err)
+    response = client.error_parser(err)
     assert response == 'code: message'
 
 

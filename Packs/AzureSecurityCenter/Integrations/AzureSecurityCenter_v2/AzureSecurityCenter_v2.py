@@ -100,7 +100,9 @@ class MsClient:
             ok_codes=ok_codes, scope="https://management.azure.com/.default",
             certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure)
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix = "azure-sc"
+        )
         self.server = server
         self.subscription_id = subscription_id
 
@@ -1352,7 +1354,7 @@ def main():
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
                           server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-                          managed_identities_client_id=managed_identities_client_id, command_prefix="azure-sc")
+                          managed_identities_client_id=managed_identities_client_id)
 
         if demisto.command() == "test-module":
             # If the command will fail, error will be thrown from the request itself

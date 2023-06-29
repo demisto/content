@@ -36,7 +36,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
                  mark_fetched_read: bool = False,
                  look_back: int | None = 0,
                  **kwargs):
-        super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph, **kwargs)
+        super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph,
+                         command_prefix="msgraph-mail",
+                         **kwargs)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval

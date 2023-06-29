@@ -17,7 +17,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
     """
 
     def __init__(self, **kwargs):
-        super().__init__(grant_type=AUTHORIZATION_CODE, command_prefix="msgraph-mail", **kwargs)
+        super().__init__(grant_type=AUTHORIZATION_CODE, **kwargs)
 
     @staticmethod
     def _get_next_run_time(fetched_emails, start_time):

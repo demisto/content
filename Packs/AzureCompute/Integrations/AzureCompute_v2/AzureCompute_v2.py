@@ -344,7 +344,10 @@ class MsGraphClient:
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
             proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, scope=Scopes.management_azure,
-            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key,
+            command_prefix = "azure-vm",
+        )
+
         self.server = server
         self.subscription_id = subscription_id
 
@@ -1137,7 +1140,7 @@ def main():
             base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME,
             verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server,
             subscription_id=subscription_id, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key, command_prefix="azure-vm")
+            private_key=private_key)
 
         if command == 'azure-vm-auth-reset':
             return_results(reset_auth())

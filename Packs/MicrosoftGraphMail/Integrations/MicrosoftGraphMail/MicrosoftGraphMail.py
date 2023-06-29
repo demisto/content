@@ -331,9 +331,7 @@ def main():
             display_full_email_body=display_full_email_body,
             mark_fetched_read=mark_fetched_read,
             look_back=look_back,
-            managed_identities_client_id=managed_identities_client_id,
-            command_prefix="msgraph-mail",
-        )
+            managed_identities_client_id=managed_identities_client_id)
 
         command = demisto.command()
         LOG(f'Command being called is {command}')
