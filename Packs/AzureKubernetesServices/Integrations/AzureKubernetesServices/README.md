@@ -521,3 +521,81 @@ Gets all resource groups for a subscription.
 >| cloud-shell-storage-eastus | eastus |  |
 >| demi | centralus | Owner: Demi |
 >| compute-integration | eastus |  |
+### azure-ks-subscriptions-list
+
+***
+Gets all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-ks-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureKS.Subscription.id | String | The unique identifier of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.authorizationSource | String | The source of authorization for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionId | String | The ID of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.tenantId | String | The ID of the tenant associated with the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.displayName | String | The display name of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.state | String | The current state of the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Kubernetes subscription. | 
+| AzureKS.Subscription.count.type | String | The type of the Azure Kubernetes subscription count. | 
+| AzureKS.Subscription.count.value | Number | The value of the Azure Kubernetes subscription count. | 
+
+#### Command example
+```!azure-ks-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureKS": {
+        "Subscription": [
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Access to Azure Active Directory",
+                "id": "/subscriptions/057b1785-fd7",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "057b1785-fd7",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                },
+                "tenantId": "ebac1a16-81bf"
+            },
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Pay-As-You-Go",
+                "id": "/subscriptions/0f907ea4-",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "0f907ea4-",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                },
+                "tenantId": "ebac1a16"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Kubernetes Subscriptions list
+>|subscriptionId|tenantId|displayName|state|
+>|---|---|---|---|
+>| 057b1785-fd7b-4ca3- | ebac1a16-81bf-449b- | Access to Azure Active Directory | Enabled |
+>| 0f907ea4-bc8b-4c11- | ebac1a16-81bf-449b- | Pay-As-You-Go | Enabled |
+
