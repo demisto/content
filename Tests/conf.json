@@ -21,6 +21,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
         },
