@@ -2418,7 +2418,7 @@ There are no input arguments for this command.
 | AzureSentinel.SubscriptionId | String | Fully qualified resource ID for the resource. | 
 | AzureSentinel.Subscription.displayName | String | The name of the resource. | 
 | AzureSentinel.Subscription.authorizationSource | String | The authorization source of the resource. | 
-| AzureSentinel.Subscription.managedByTenants | String | The managedByTenants of the resource. | 
+| AzureSentinel.Subscription.managedByTenants | String | The subscriptions that are managed by tenants of the resource. | 
 | AzureSentinel.Subscription.tenetId | String | The tenet ID of the resource. | 
 | AzureSentinel.Subscription.state | String | The state of the resource. | 
 | AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
