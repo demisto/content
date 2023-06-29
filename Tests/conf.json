@@ -5751,8 +5751,7 @@
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
-        "SentinelOne V2": "No instance - developed by partner",
-        "CheckPhish": "Issue CRTX-86562"
+        "SentinelOne V2": "No instance - developed by partner"
     },
     "nightly_packs": [
         "CommonScripts",
