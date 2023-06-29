@@ -44,11 +44,11 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get(self, query_uri: str, params: dict[str, str] = None):
+    def get(self, query_uri: str, params: Dict[str, str] = None):
         """Handles Darktrace GET API calls"""
         return self._darktrace_api_call(query_uri, method='GET', params=params)
 
-    def post(self, query_uri: str, data: dict = None, json: dict = None):
+    def post(self, query_uri: str, data: Dict = None, json: Dict = None):
         """Handles Darktrace POST API calls"""
         return self._darktrace_api_call(query_uri, method='POST', data=data, json=json)
 
@@ -56,10 +56,10 @@ class Client(BaseClient):
         self,
         query_uri: str,
         method: str,
-        params: dict = None,
-        data: dict = None,
-        json: dict = None,
-        headers: dict[str, str] = None,
+        params: Dict = None,
+        data: Dict = None,
+        json: Dict = None,
+        headers: Dict[str, str] = None,
     ):
         """Handles Darktrace API calls"""
         headers = {
@@ -108,14 +108,14 @@ class Client(BaseClient):
         elif res.status_code >= 300:
             raise Exception(DARKTRACE_API_ERRORS['UNDETERMINED_ERROR'])
 
-    def _create_headers(self, query_uri: str, query_data: dict = None, is_json: bool = False) -> dict[str, str]:
+    def _create_headers(self, query_uri: str, query_data: Dict = None, is_json: bool = False) -> Dict[str, str]:
         """Create headers required for successful authentication"""
         public_token, _ = self._auth
         date = (datetime.now(timezone.utc)).isoformat(timespec="auto")
         signature = _create_signature(self._auth, query_uri, date, query_data, is_json=is_json)
         return {'DTAPI-Token': public_token, 'DTAPI-Date': date, 'DTAPI-Signature': signature}
 
-    def get_events(self, start_time, end_time) -> list[dict[str, Any]]:
+    def get_events(self, start_time, end_time) -> List[Dict[str, Any]]:
         """
         Get events from Darktrace API using the modelbreaches endpoint and the start and end time.
         """
@@ -128,11 +128,11 @@ class Client(BaseClient):
 
 
 def stringify_data(data: Mapping) -> str:
-    """Stringify a params or data dict without encoding"""
+    """Stringify a params or data Dict without encoding"""
     return "&".join([f"{k}={v}" for k, v in data.items()])
 
 
-def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict = None, is_json: bool = False) -> str:
+def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: Dict = None, is_json: bool = False) -> str:
     """Create signature from Darktrace private token"""
     public_token, private_token = tokens
     query_string = f'?{json.dumps(query_data)}' if is_json else f'?{stringify_data(query_data)}' if query_data else ''
@@ -144,15 +144,15 @@ def _create_signature(tokens: tuple, query_uri: str, date: str, query_data: dict
     ).hexdigest()
 
 
-def filter_events(events: list[dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> list[dict[str, Any]]:
-    """Filters events by pbid and max_fetch"""
+def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> List[Dict[str, Any]]:
+    """Filters events by ascending pbid and max_fetch"""
     for index, event in enumerate(events):
         if event.get('pbid', 0) > last_fetched_pid:
             return events[index:index + max_fetch]
     return []
 
 
-def add_time_field(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def add_time_field(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Adds time field to the events"""
     for event in events:
         event['_time'] = timestamp_to_datestring(event['creationTime'])
@@ -186,9 +186,9 @@ def test_module(client: Client, first_fetch_time: int) -> str:
     return 'ok'
 
 
-def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any],
+def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any],
                  start_time: int, end_time: int) -> \
-        tuple[list[dict[str, Any]], dict[str, Any]]:
+        tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
        Fetches events from Darktrace API.
     """
@@ -212,8 +212,8 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any],
     return retrieve_events, last_run
 
 
-def get_events_command(client: Client, args: dict[str, str], first_fetch_time_timestamp: int) -> \
-        tuple[list[dict[str, Any]], CommandResults]:
+def get_events_command(client: Client, args: Dict[str, Any], first_fetch_time_timestamp: int) -> \
+        tuple[List[Dict[str, Any]], CommandResults]:
     """
         Gets events from Darktrace API.
     """
@@ -253,7 +253,6 @@ def main() -> None:  # pragma: no cover
         )
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client, first_fetch_time_timestamp))
         elif demisto.command() == 'darktrace-get-events':
             events, results = get_events_command(client=client,
