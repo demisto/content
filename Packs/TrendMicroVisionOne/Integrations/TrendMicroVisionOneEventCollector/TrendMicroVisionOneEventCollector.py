@@ -172,7 +172,10 @@ class Client(BaseClient):
             logs.extend(current_items)
 
         log_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
-        logs = sorted(logs, key=lambda _log: _log[created_time_field])[:limit]
+
+        if log_type not in (LogTypes.OBSERVED_ATTACK_TECHNIQUES.value, LogTypes.SEARCH_DETECTIONS.value):
+            # only limit cases where the logs are in ascending order in order not to lose part of events of nextLink
+            logs = logs[:limit]
 
         if url_suffix == UrlSuffixes.SEARCH_DETECTIONS.value:
             for log in logs:
