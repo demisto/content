@@ -14,7 +14,7 @@ McAfee NSM syslog event types:
 3. Click *+* and add the target server. 
    If you do not have a configured target server, click **Add** near Target Server and  fill in the target server details.
    ![link](https://raw.githubusercontent.com/demisto/content/2063d324e6515a85b484705df5e4d153425e5110/Packs/McAfeeNSM/doc_imgs/nsm_add_target_server.png)
-4. on Facility select "Log Alert (note 1)".
+4. In Facility, select **Log Alert (note 1)**.
 5. Severity mapping - not touch, need to be:
  ![link](https://raw.githubusercontent.com/demisto/content/95eff3fe52a33695a10a76209cf8f2c4edbc185f/Packs/McAfeeNSM/doc_imgs/nsm_ips_severity_mapping.png)
 6. click on the Checkbox to enable "Notify for all Alerts" and click save.
