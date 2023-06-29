@@ -20,7 +20,7 @@ McAfee NSM syslog event types:
 6. Click the Notify for all Alerts checkbox.
 7. Click **Save**.
 
-*config Syslog Faults Events:*
+Configure Syslog Faults Events:
 1. on McAfee NSM go to Manager -> Setup -> Notification -> Faults -> syslog.
 2. click *YES* on "Enable Syslog Notification".
 3. fill the fields "Server Name or IP Address" and "Port".
