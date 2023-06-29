@@ -150,8 +150,8 @@ Run this command to get the all or specific account storage details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | The name of the storage account, optional. | Optional | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -316,8 +316,8 @@ account storage.
 | network_ruleset_default_action | Specifies the default action of allow or deny when no other rules match. | Optional | 
 | network_ruleset_ipRules | Sets the IP ACL rules. | Optional | 
 | virtual_network_rules | Sets the virtual network rules. | Optional | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -454,8 +454,8 @@ Run this command to get the blob service properties of a specific account storag
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | The name of the storage account. | Required | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -538,8 +538,8 @@ the blob service in a specific account storage
 | restore_policy_enabled | Blob restore is enabled if set to true. Possible values are: true, false. | Optional | 
 | restore_policy_min_restore_time | The minimum date and time that the restore can be started. | Optional | 
 | restore_policy_days | how long this blob can be restored. | Optional | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -610,8 +610,8 @@ Run this command to create a blob container.
 | default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional | 
 | deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional | 
 | public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional |
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional| 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional| 
 
 
 #### Context Output
@@ -671,8 +671,8 @@ blob container.
 | default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional | 
 | deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional | 
 | public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 #### Context Output
 
@@ -733,8 +733,8 @@ Run this command to get the all or specific blob container details.
 | container_name | The name of the container. | Optional | 
 | include_deleted | Specifies whether include the properties for soft deleted blob containers. Possible values are: true, false. | Optional | 
 | maxpagesize | Specified maximum number of containers that can be included in the list. | Optional | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -821,8 +821,8 @@ Run this command to delete a specific blob container.
 | --- | --- | --- |
 | account_name | The name of the storage account. | Required | 
 | container_name | The name of the container. | Required | 
-|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -978,298 +978,17 @@ There is no context output for this command.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/000000000000/resourceGroups/demisto",
+                "id": "/subscriptions/000000000000/resourceGroups/demi",
                 "location": "centralus",
                 "name": "demisto",
                 "properties": {
                     "provisioningState": "Succeeded"
                 },
                 "tags": {
-                    "Owner": "Demisto"
+                    "Owner": "Demi"
                 },
                 "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/compute-integration",
-                "location": "eastus",
-                "name": "compute-integration",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/NetworkWatcherRG",
-                "location": "westeurope",
-                "name": "NetworkWatcherRG",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/echoteamsbot",
-                "location": "centralus",
-                "name": "echoteamsbot",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/testingteamsbot",
-                "location": "centralus",
-                "name": "testingteamsbot",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/socbot",
-                "location": "eastasia",
-                "name": "socbot",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/us-east-rg-backups",
-                "location": "westus",
-                "name": "us-east-rg-backups",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/us-east-rg",
-                "location": "eastus",
-                "name": "us-east-rg",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/xcloud",
-                "location": "westeurope",
-                "name": "xcloud",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/MSDE",
-                "location": "westeurope",
-                "name": "MSDE",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-WEU",
-                "location": "westeurope",
-                "name": "DefaultResourceGroup-WEU",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {},
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/aks-integration-test_group",
-                "location": "centralus",
-                "name": "aks-integration-test_group",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/aks-integration-tes_group",
-                "location": "centralus",
-                "name": "aks-integration-tes_group",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/XDR_Event_Hub_API_Automation",
-                "location": "centralus",
-                "name": "XDR_Event_Hub_API_Automation",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-CUS",
-                "location": "centralus",
-                "name": "DefaultResourceGroup-CUS",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/storage-integration",
-                "location": "eastus",
-                "name": "storage-integration",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/ferrum-collector",
-                "location": "eastus",
-                "name": "ferrum-collector",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {
-                    "Name": "ferrum collector"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-EUS",
-                "location": "eastus",
-                "name": "DefaultResourceGroup-EUS",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {},
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/intune-xdr-eventhub",
-                "location": "eastus",
-                "name": "intune-xdr-eventhub",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {
-                    "Name": "intune-xdr-eventhub"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/DefaultResourceGroup-WUS",
-                "location": "westus",
-                "name": "DefaultResourceGroup-WUS",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/aks-integration",
-                "location": "westus",
-                "name": "aks-integration",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/LogAnalyticsDefaultResources",
-                "location": "westus",
-                "name": "LogAnalyticsDefaultResources",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/MC_aks-integration_aks-integration_westus",
-                "location": "westus",
-                "managedBy": "/subscriptions/000000000000/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
-                "name": "MC_aks-integration_aks-integration_westus",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {
-                    "aks-managed-cluster-name": "aks-integration",
-                    "aks-managed-cluster-rg": "aks-integration",
-                    "type": "aks-slb-managed-outbound-ip"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/Elastic_Search",
-                "location": "westus2",
-                "name": "Elastic_Search",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/Purview-RG",
-                "location": "westus2",
-                "name": "Purview-RG",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/managed-rg-demistodevpurview",
-                "location": "westus2",
-                "managedBy": "/subscriptions/000000000000/resourceGroups/Purview-RG/providers/Microsoft.Purview/accounts/demistodevpurview",
-                "name": "managed-rg-demistodevpurview",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {
-                    "Name": "demistodevpurview"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/demisto-es",
-                "location": "germanywestcentral",
-                "name": "demisto-es",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {},
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/Azure_Firewall",
-                "location": "eastus",
-                "name": "Azure_Firewall",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "tags": {},
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/SecAndCompRG",
-                "location": "eastus",
-                "name": "SecAndCompRG",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            },
-            {
-                "id": "/subscriptions/000000000000/resourceGroups/demisto-sentinel2",
-                "location": "centralus",
-                "name": "demisto-sentinel2",
-                "properties": {
-                    "provisioningState": "Succeeded"
-                },
-                "type": "Microsoft.Resources/resourceGroups"
-            }
+            },  
         ]
     }
 }
@@ -1281,34 +1000,6 @@ There is no context output for this command.
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell-storage-eastus | eastus |  |
->| demisto | centralus | Owner: Demisto |
->| compute-integration | eastus |  |
->| NetworkWatcherRG | westeurope |  |
->| echoteamsbot | centralus |  |
->| testingteamsbot | centralus |  |
->| socbot | eastasia |  |
->| us-east-rg-backups | westus |  |
->| us-east-rg | eastus |  |
->| xcloud | westeurope |  |
->| MSDE | westeurope |  |
->| DefaultResourceGroup-WEU | westeurope |  |
->| aks-integration-test_group | centralus |  |
->| aks-integration-tes_group | centralus |  |
->| XDR_Event_Hub_API_Automation | centralus |  |
->| DefaultResourceGroup-CUS | centralus |  |
->| storage-integration | eastus |  |
->| ferrum-collector | eastus | Name: ferrum collector |
->| DefaultResourceGroup-EUS | eastus |  |
->| intune-xdr-eventhub | eastus | Name: intune-xdr-eventhub |
->| DefaultResourceGroup-WUS | westus |  |
->| aks-integration | westus |  |
->| LogAnalyticsDefaultResources | westus |  |
->| MC_aks-integration_aks-integration_westus | westus | aks-managed-cluster-name: aks-integration<br/>aks-managed-cluster-rg: aks-integration<br/>type: aks-slb-managed-outbound-ip |
->| Elastic_Search | westus2 |  |
->| Purview-RG | westus2 |  |
->| managed-rg-demistodevpurview | westus2 | Name: demistodevpurview |
->| demisto-es | germanywestcentral |  |
->| Azure_Firewall | eastus |  |
->| SecAndCompRG | eastus |  |
->| demisto-sentinel2 | centralus |  |
+>| demi | centralus | Owner: Demi |
+
 
