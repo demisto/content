@@ -576,6 +576,7 @@ script:
       required: false
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
+    deprecated: true
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: false
   script: ''
