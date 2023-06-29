@@ -33,7 +33,7 @@ Configure Syslog Faults Events:
 
 Configure Syslog User Activity (audit logs) Events:
 1. In McAfee NSM, go to **Manager** > **Setup**> **Notification** > **User Activity** > **syslog**.
-2. click *YES* on "Enable Syslog Notification".
+2. In Enable Syslog Notification, click **YES**.
 3. fill *Server Name or IP Address* and *port*.  
 4. select Protocol on *Protocol* dropdown.
 5. on *Facilities* dropdown select "Log Alert (note 1)".
