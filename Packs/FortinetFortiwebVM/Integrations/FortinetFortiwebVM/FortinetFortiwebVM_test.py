@@ -1124,11 +1124,9 @@ def test_protected_hostname_member_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = protected_hostname_member_list_command(mock_client, args)
-    assert (
-        isinstance(result.outputs, dict)
-        and isinstance(result.outputs["Members"], list)
-        and len(result.outputs["Members"]) == expected
-    )
+    assert isinstance(result.outputs, dict)
+    assert isinstance(result.outputs["Members"], list)
+    assert len(result.outputs["Members"]) == expected
     assert result.outputs_prefix == "FortiwebVM.ProtectedHostnameMember"
 
 
@@ -2205,11 +2203,9 @@ def test_ip_list_member_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = ip_list_member_list_command(mock_client, args)
-    assert (
-        isinstance(result.outputs, dict)
-        and isinstance(result.outputs["Members"], list)
-        and len(result.outputs["Members"]) == expected
-    )
+    assert isinstance(result.outputs, dict)
+    assert isinstance(result.outputs["Members"], list)
+    assert len(result.outputs["Members"]) == expected
     assert result.outputs_prefix == "FortiwebVM.IpListMember"
 
 
@@ -2694,11 +2690,9 @@ def test_http_content_routing_member_list_command(
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = http_content_routing_member_list_command(mock_client, args)
-    assert (
-        isinstance(result.outputs, dict)
-        and isinstance(result.outputs["Members"], list)
-        and len(result.outputs["Members"]) == expected
-    )
+    assert isinstance(result.outputs, dict)
+    assert isinstance(result.outputs["Members"], list)
+    assert len(result.outputs["Members"]) == expected
     assert result.outputs_prefix == "FortiwebVM.HttpContentRoutingMember"
 
 

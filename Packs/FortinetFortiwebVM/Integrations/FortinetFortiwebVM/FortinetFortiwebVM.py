@@ -2773,7 +2773,7 @@ class Client(BaseClient):
             and not SERVER_POOL_MIN_PORT <= port <= SERVER_POOL_MAX_PORT
         ):
             raise ValueError(
-                f"The port valid range is {SERVER_POOL_MIN_PORT}–{SERVER_POOL_MAX_PORT}."
+                f"The port valid range is {SERVER_POOL_MIN_PORT}-{SERVER_POOL_MAX_PORT}."
             )
         if (
             connection_limit is not None
