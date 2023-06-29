@@ -363,3 +363,21 @@ Relevant only for Alerts v2, create a comment for an existing alert.
 | comment | Cortex XSOAR MS Graph Dev | 2023-04-17T10:57:18.5231438Z |
 | comment | Cortex XSOAR MS Graph Dev | 2023-04-17T11:01:31.7427859Z |
 | comment | Cortex XSOAR MS Graph Dev | 2023-04-17T13:30:22.3995128Z |
+
+
+### ms-graph-security-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`ms-graph-security-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

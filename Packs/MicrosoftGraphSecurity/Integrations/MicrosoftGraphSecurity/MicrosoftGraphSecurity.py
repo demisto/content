@@ -180,7 +180,7 @@ class MsGraphClient:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.graph,
-            command_prefix="",
+            command_prefix=APP_NAME,
         )
         if api_version == API_V1:
             global CMD_URL, API_VER
@@ -767,7 +767,8 @@ def main():
                                         filter=fetch_filter, providers=fetch_providers,
                                         service_sources=fetch_service_sources)
             demisto.incidents(incidents)
-        elif command ==
+        elif command == "ms-graph-security-auth-reset":
+            return_results(reset_auth())
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)

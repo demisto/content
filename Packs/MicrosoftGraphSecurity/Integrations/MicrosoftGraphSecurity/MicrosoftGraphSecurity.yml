@@ -863,6 +863,10 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: ms-graph-security-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.58768
   feed: false
   isfetch: true
