@@ -779,3 +779,79 @@ There are no input arguments for this command.
 >| 057b1785-fd7b-4 | ebac1a16-81bf-449 | Access to Azure Active Directory | Enabled |
 >| 0f907ea4-bc8b-4 | ebac1a16-81bf-449 | Pay-As-You-Go | Enabled |
 
+
+
+### azure-nsg-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-nsg-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.ResourceGroup.id | String | The unique identifier of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.name | String | The name of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.type | String | The type of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.location | String | The location of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.properties.provisioningState | String | The provisioning state of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.Owner | String | The owner tag of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags | Unknown | The tags associated with the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.Name | String | The name tag of the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.managedBy | String | The entity that manages the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-name | String | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. | 
+| AzureNSG.ResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. | 
+
+#### Command example
+```!azure-nsg-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7/resourceGroups/cloud-shell-storage-eastus",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7/resourceGroups/demi",
+                "location": "centralus",
+                "name": "demi",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demi"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resource Groups List
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell-storage-eastus | eastus |  |
+>| demi | centralus | Owner: Demi |
