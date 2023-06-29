@@ -89,7 +89,7 @@ script:
       type: String
     description: Queries an IP address in ipstack.
   runonce: false
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Ipstack_Test
 fromversion: 5.0.0
