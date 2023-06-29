@@ -1,0 +1,6 @@
+name: Microsoft Windows Events ParsingRule
+id: Microsoft_Windows_Events_ParsingRule
+fromversion: 8.2.0
+tags: []
+rules: ''
+samples: ''
