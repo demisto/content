@@ -140,7 +140,10 @@ class MsGraphClient:
                                          proxy=proxy, self_deployed=self_deployed,
                                          certificate_thumbprint=certificate_thumbprint, private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
-                                         managed_identities_resource_uri=Resources.graph)
+                                         managed_identities_resource_uri=Resources.graph,
+                                         command_prefix="msgraph-calendar",
+                                         )
+
         self.default_user = default_user
 
     def test_function(self):
@@ -539,7 +542,7 @@ def main():
         'msgraph-calendar-get-event': get_event_command,
         'msgraph-calendar-create-event': create_event_command,
         'msgraph-calendar-update-event': update_event_command,
-        'msgraph-calendar-delete-event': delete_event_command
+        'msgraph-calendar-delete-event': delete_event_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -552,10 +555,13 @@ def main():
                                               managed_identities_client_id=managed_identities_client_id)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
-        # Run the command
-        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-        # create a war room entry
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        if command == 'msgraph-calendar-auth-reset':
+            return_results(reset_auth())
+        else:
+            # Run the command
+            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+            # create a war room entry
+            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
         return_error(str(err))

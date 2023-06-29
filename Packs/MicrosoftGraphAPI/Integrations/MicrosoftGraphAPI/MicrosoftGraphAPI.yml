@@ -177,6 +177,10 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-api-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: false

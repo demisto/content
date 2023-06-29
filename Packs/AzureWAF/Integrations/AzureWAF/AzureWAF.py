@@ -538,7 +538,6 @@ def main() -> None:
         'azure-waf-auth-start': start_auth,
         'azure-waf-auth-complete': complete_auth,
         'azure-waf-auth-test': test_connection,
-        'azure-waf-auth-reset': reset_auth,
         'azure-waf-resource-group-list': resource_group_list_command,
     }
     params = demisto.params()
@@ -572,6 +571,8 @@ def main() -> None:
             return_results(generate_login_url(client.ms_client))
         elif command == 'azure-waf-subscriptions-list':
             return_results(subscriptions_list_command(client))
+        elif command == 'azure-waf-auth-reset':
+            return_results(reset_auth())
         else:
             return_results(demisto_commands[command](client, **args))
 

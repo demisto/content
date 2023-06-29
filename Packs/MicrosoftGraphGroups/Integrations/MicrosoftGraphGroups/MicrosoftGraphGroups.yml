@@ -503,6 +503,10 @@ script:
     execution: false
     name: msgraph-groups-generate-login-url
     arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-groups-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
   isfetch: false
   longRunning: false

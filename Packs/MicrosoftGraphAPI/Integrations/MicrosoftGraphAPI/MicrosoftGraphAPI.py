@@ -37,6 +37,7 @@ class MsGraphClient:
             'certificate_thumbprint': certificate_thumbprint,
             'managed_identities_client_id': managed_identities_client_id,
             'managed_identities_resource_uri': Resources.graph,
+            'command_prefix': "msgraph-api",
         }
         if not (app_secret and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
@@ -176,6 +177,8 @@ def main() -> None:  # pragma: no cover
             return_results(complete_auth(client))
         elif command == 'msgraph-api-test':
             return_results(test_command(client))
+        elif command == 'msgraph-api-auth-reset':
+            return_results(reset_auth())
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

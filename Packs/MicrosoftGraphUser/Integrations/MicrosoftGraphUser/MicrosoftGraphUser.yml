@@ -730,6 +730,9 @@ script:
     execution: false
     name: msgraph-user-generate-login-url
     arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: msgraph-mail-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false

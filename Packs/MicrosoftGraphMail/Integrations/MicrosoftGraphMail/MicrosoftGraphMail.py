@@ -331,7 +331,9 @@ def main():
             display_full_email_body=display_full_email_body,
             mark_fetched_read=mark_fetched_read,
             look_back=look_back,
-            managed_identities_client_id=managed_identities_client_id)
+            managed_identities_client_id=managed_identities_client_id,
+            command_prefix="msgraph-mail",
+        )
 
         command = demisto.command()
         LOG(f'Command being called is {command}')
@@ -379,6 +381,8 @@ def main():
             return_results(reply_email_command(client, args))
         elif command == 'send-mail':
             return_results(send_email_command(client, args))
+        elif command == 'msgraph-mail-auth-reset':
+            return_results(reset_auth())
 
     # Log exceptions
     except Exception as e:

@@ -116,7 +116,10 @@ class MsGraphClient:
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
             certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph)
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix="msgraph-files",
+        )
+
 
     def list_sharepoint_sites(self, keyword):
         """
@@ -864,7 +867,8 @@ def main():
             return_outputs(*list_drives_in_site_command(client, demisto.args()))
         elif demisto.command() == "msgraph-upload-new-file":
             return_outputs(*upload_new_file_command(client, demisto.args()))
-
+        elif demisto.command() == "msgraph-files-auth-reset":
+            return_results(reset_auth())
     # Log exceptions
     except Exception as err:
         return_error(

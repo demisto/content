@@ -1408,3 +1408,21 @@ List all resource groups for a subscription.
 | AzureKeyVault.ResourceGroup.location | String | Resource group location. | 
 | AzureKeyVault.ResourceGroup.tags | Unknown | Resource group tags. | 
 | AzureKeyVault.ResourceGroup.properties.provisioningState | unknown | Resource group provisioning state. | 
+
+
+### azure-key-vault-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-key-vault-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

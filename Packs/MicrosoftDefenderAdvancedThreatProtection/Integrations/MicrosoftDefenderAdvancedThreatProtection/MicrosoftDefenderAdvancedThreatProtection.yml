@@ -6711,6 +6711,10 @@ script:
     execution: false
     name: microsoft-atp-generate-login-url
     arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: microsoft-atp-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: true

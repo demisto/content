@@ -849,6 +849,10 @@ script:
       description: "A URL for an online meeting, used only when an organizer specifies\
         \ an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-calendar-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
   isfetch: false
   longRunning: false

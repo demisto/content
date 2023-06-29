@@ -39,7 +39,10 @@ class MsGraphClient:
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
-                                         managed_identities_resource_uri=Resources.graph)
+                                         managed_identities_resource_uri=Resources.graph,
+                                         command_prefix="msgraph-device",
+                                         )
+
 
     def list_managed_devices(self, limit: int) -> Tuple[list, Any]:
         url_suffix: str = '/deviceManagement/managedDevices'
@@ -480,6 +483,8 @@ def main():
             update_windows_device_account_command(client, args)
         elif command == 'msgraph-find-managed-devices-by-name':
             find_managed_devices_command(client, args)
+        elif command == 'msgraph-device-auth-reset':
+            return_results(reset_auth())
 
     # log exceptions
     except Exception as err:

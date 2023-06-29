@@ -102,7 +102,8 @@ class Client(BaseClient):
                                          certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
-                                         managed_identities_resource_uri=Resources.manage_office
+                                         managed_identities_resource_uri=Resources.manage_office,
+                                         command_prefix="ms-management-activity"
                                          )
 
     def http_request(self, method, url_suffix='', full_url=None, headers=None, params=None, timeout=None, ok_codes=None,
@@ -613,6 +614,9 @@ def main():
 
         elif command == 'ms-management-activity-generate-login-url':
             return_results(generate_login_url(client.ms_client))
+
+        elif command == 'ms-management-activity-auth-reset':
+            return_results(reset_auth())
 
     # Log exceptions
     except Exception as e:

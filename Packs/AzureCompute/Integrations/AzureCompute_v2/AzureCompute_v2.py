@@ -1120,7 +1120,6 @@ def main():
         'azure-vm-get-public-ip-details': get_public_ip_details_command,
         'azure-vm-get-all-public-ip-details': get_all_public_ip_details_command,
         'azure-vm-create-nic': create_nic_command,
-        'azure-vm-auth-reset': reset_auth,
     }
 
     '''EXECUTION'''
@@ -1139,8 +1138,11 @@ def main():
             subscription_id=subscription_id, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key, command_prefix="azure-vm")
 
-        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        if command == 'azure-vm-auth-reset':
+            return_results(reset_auth())
+        else:
+            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as e:
         screened_error_message = screen_errors(str(e), tenant)

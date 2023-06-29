@@ -179,7 +179,9 @@ class MsGraphClient:
             proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph)
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix="",
+        )
         if api_version == API_V1:
             global CMD_URL, API_VER
             API_VER = API_V1
@@ -765,6 +767,7 @@ def main():
                                         filter=fetch_filter, providers=fetch_providers,
                                         service_sources=fetch_service_sources)
             demisto.incidents(incidents)
+        elif command ==
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)

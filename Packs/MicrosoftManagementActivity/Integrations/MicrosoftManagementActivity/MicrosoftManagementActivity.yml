@@ -352,6 +352,9 @@ script:
     execution: false
     name: ms-management-activity-generate-login-url
     arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: ms-management-activity
+    arguments: []
   dockerimage: demisto/pyjwt3:1.0.0.63826
   feed: false
   isfetch: true

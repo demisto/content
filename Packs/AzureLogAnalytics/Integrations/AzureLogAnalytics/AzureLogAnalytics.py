@@ -370,7 +370,6 @@ def main():
             'azure-log-analytics-get-saved-search-by-id': get_saved_search_by_id_command,
             'azure-log-analytics-create-or-update-saved-search': create_or_update_saved_search_command,
             'azure-log-analytics-delete-saved-search': delete_saved_search_command,
-            'azure-log-analytics-auth-reset': reset_auth,
         }
 
         if demisto.command() == 'test-module':
@@ -388,6 +387,9 @@ def main():
         elif demisto.command() == 'azure-log-analytics-test':
             test_connection(client, params)
             return_outputs('```✅ Success!```')
+
+        elif demisto.command() == 'azure-log-analytics-auth-reset':
+            return_results(reset_auth())
 
         elif demisto.command() in commands:
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore

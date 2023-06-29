@@ -635,6 +635,10 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-files-auth-reset
+    arguments: []
   dockerimage: demisto/python_pancloud:1.0.0.60733
   runonce: false
   script: ''

@@ -96,7 +96,8 @@ class MsGraphClient:
                                          resource=resource, certificate_thumbprint=certificate_thumbprint,
                                          private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
-                                         managed_identities_resource_uri=Resources.graph)
+                                         managed_identities_resource_uri=Resources.graph,
+                                         command_prefix="msgraph-user")
         self.handle_error = handle_error
 
     #  If successful, this method returns 204 No Content response code.
@@ -526,6 +527,8 @@ def main():
                                               managed_identities_client_id=managed_identities_client_id)
         if command == 'msgraph-user-generate-login-url':
             return_results(generate_login_url(client.ms_client))
+        elif command == 'msgraph-user-auth-reset':
+            return_results(reset_auth())
         else:
             human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)

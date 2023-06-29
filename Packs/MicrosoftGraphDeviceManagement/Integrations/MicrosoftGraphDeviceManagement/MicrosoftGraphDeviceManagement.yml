@@ -911,6 +911,10 @@ script:
     - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
       description: Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured.
       type: string
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-device-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.63672
   runonce: false
   script: ''

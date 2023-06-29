@@ -405,7 +405,6 @@ def main() -> None:
             'azure-nsg-security-rule-get': get_rule_command,
             'azure-nsg-auth-start': start_auth,
             'azure-nsg-auth-complete': complete_auth,
-            'azure-nsg-auth-reset': reset_auth,
         }
         if command == 'test-module':
             return_results(test_module(client))
@@ -414,6 +413,8 @@ def main() -> None:
             return_results(test_connection(client, params))
         elif command == 'azure-nsg-generate-login-url':
             return_results(generate_login_url(client.ms_client))
+        elif command == 'azure-nsg-auth-reset':
+            return_results(reset_auth())
         else:
             return_results(commands[command](client, **args))
 

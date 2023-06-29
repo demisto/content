@@ -1453,7 +1453,6 @@ def main() -> None:     # pragma: no cover
             'azure-key-vault-certificate-get': get_certificate_command,
             'azure-key-vault-certificate-list': list_certificates_command,
             'azure-key-vault-certificate-policy-get': get_certificate_policy_command,
-            'azure-key-vault-auth-reset': reset_auth,
         }
         commands_without_args = {'azure-key-vault-subscriptions-list': list_subscriptions_command}
 
@@ -1478,6 +1477,8 @@ def main() -> None:     # pragma: no cover
             return_results(commands_with_args_and_params[command](client, args, params))
         elif demisto.command() == 'fetch-credentials':
             fetch_credentials(client, key_vaults_to_fetch_from, secrets_to_fetch, identifier)
+        elif demisto.command() == 'azure-key-vault-auth-reset':
+            return_results(reset_auth())
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

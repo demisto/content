@@ -2035,6 +2035,8 @@ def main():
             return_results(list_subscriptions_command(client))
         elif command == 'azure-sentinel-resource-group-list':
             return_results(list_resource_groups_command(client, args, subscription_id))
+        elif command == 'azure-sentinel-auth-reset':
+            return_results(reset_auth())
 
         elif command in commands:
             return_results(commands[command](client, args))  # type: ignore

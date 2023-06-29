@@ -1133,7 +1133,8 @@ class MsClient:
             private_key=private_key,
             retry_on_rate_limit=True,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
+            managed_identities_resource_uri=MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type],
+            command_prefix="microsoft-atp"
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
@@ -5705,6 +5706,8 @@ def main():  # pragma: no cover
             return_results(request_download_investigation_package_command(client, args))
         elif command == 'microsoft-atp-generate-login-url':
             return_results(generate_login_url_command(client))
+        elif command == 'microsoft-atp-auth-reset':
+            return_results(reset_auth())
 
     except Exception as err:
         return_error(str(err))
