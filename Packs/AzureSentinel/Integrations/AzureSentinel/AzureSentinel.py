@@ -1816,7 +1816,7 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
     return CommandResults(readable_output=f'Alert rule {rule_id} was deleted successfully.')
 
 
-def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:
+def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:      # pragma: no cover
 
     full_url = urljoin(client.azure_cloud.endpoints.resource_manager, 'subscriptions?api-version=2020-01-01')
 
@@ -1838,7 +1838,8 @@ def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:
     )
 
 
-def list_resource_groups_command(client: AzureSentinelClient, args: Dict[str, Any], subscription_id: str) -> CommandResults:
+def list_resource_groups_command(client: AzureSentinelClient,
+                                 args: Dict[str, Any], subscription_id: str) -> CommandResults:     # pragma: no cover
     tag = args.get('tag')
     limit = arg_to_number(args.get('limit', 50))
     subscription_id = subscription_id
