@@ -980,16 +980,16 @@ class Pack:
                                                      f' "{secondary_encryption_key}"'
             subprocess.call(full_command_with_secondary_encryption, shell=True)
 
-            new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
-            if os.path.exists(new_artefacts):
+            new_artefacts = Path(current_working_dir, private_artifacts_dir)
+            if new_artefacts.exists():
                 shutil.rmtree(new_artefacts)
-            os.mkdir(path=new_artefacts)
-            shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
-            shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
-            shutil.copy(secondary_encryption_key_output_file, os.path.join(new_artefacts, f'{pack_name}.enc2.zip'))
+            new_artefacts.mkdir(parents=True, exist_ok=True)
+            shutil.copy(zip_pack_path, new_artefacts / f'{pack_name}_not_encrypted.zip')
+            shutil.copy(output_file, new_artefacts / f'{pack_name}.zip')
+            shutil.copy(secondary_encryption_key_output_file, new_artefacts / f'{pack_name}.enc2.zip')
             os.chdir(current_working_dir)
         except (subprocess.CalledProcessError, shutil.Error) as error:
-            print(f"Error while trying to encrypt pack. {error}")
+            logging.error(f"Error while trying to encrypt pack. {error}")
 
     def decrypt_pack(self, encrypted_zip_pack_path, decryption_key):
         """ decrypt the pack in order to see that the pack was encrypted in the first place.
@@ -1004,7 +1004,7 @@ class Pack:
         try:
             current_working_dir = os.getcwd()
             extract_destination_path = f'{current_working_dir}/decrypt_pack_dir'
-            os.mkdir(extract_destination_path)
+            Path(extract_destination_path).mkdir(parents=True, exist_ok=True)
 
             shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
             secondary_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
@@ -2159,6 +2159,9 @@ class Pack:
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                             'fromversion': self._server_min_version,
                             'toversion': metadata_toversion,
+                            'isfetch': content_item.get('script', {}).get('isfetch', False),
+                            'isfetchevents': content_item.get('script', {}).get('isfetchevents', False),
+                            'deprecated': content_item.get('deprecated', False),
                         }
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
