@@ -678,7 +678,6 @@ class MicrosoftClient(BaseClient):
             self.auth_id = auth_id
             self.enc_key = enc_key
             self.refresh_token = refresh_token
-            self.refresh_token_param = refresh_token_param
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
