@@ -6,16 +6,31 @@ configuration:
 - additionalinfo: Received from the authorization process or from the self-deployed configuration process (find the tenant ID in your app overview page in the Azure portal)
   display: Token / Tenant ID
   name: refresh_token
-  required: true
+  required: false
+  hidden: true
   type: 4
-- additionalinfo: Received from the authorization process or from the self-deployed configuration process.
+- displaypassword: Token / Tenant ID
+  name:  credentials_refresh_token
+  required: false
+  hiddenusername: true
+  type: 9
+- additionalinfo: Received from the authorization process or from the self-deployed
+    configuration process.
   display: ID / (Client ID :For client credentials flow)
   name: credentials
   type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
+  required: false
+  hidden: true
   type: 4
+- displaypassword: Certificate Thumbprint
+  name:  credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -34,7 +49,18 @@ configuration:
   display: Authorization code
   name: auth_code
   type: 4
-- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  hidden: true
+- displaypassword: Authorization code
+  name:  credentials_auth_code
+  required: false
+  hiddenusername: true
+  type: 9
+  additionalinfo: Get the Authorization code from steps 3-5 in the self deployed authorization
+    process.
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
@@ -230,7 +256,12 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-log-analytics-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.63672
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
   script: '-'
   subtype: python3
   type: python
