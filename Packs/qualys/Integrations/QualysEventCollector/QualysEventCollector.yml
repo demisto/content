@@ -128,7 +128,7 @@ script:
     description: Gets host detections from Qualys.
     execution: false
     name: qualys-get-host-detections
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true
   runonce: false
   script: ''

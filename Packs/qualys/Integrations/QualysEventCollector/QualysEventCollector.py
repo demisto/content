@@ -1,7 +1,7 @@
 import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Optional, Any
+from typing import Any
 import urllib3
 import csv
 import io
@@ -55,7 +55,7 @@ class Client(BaseClient):
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-        params: Dict[str, Any] = {
+        params: dict[str, Any] = {
             "truncation_limit": max_fetch
         }
         if since_datetime:
@@ -84,7 +84,7 @@ class Client(BaseClient):
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-        params: Dict[str, Any] = {
+        params: dict[str, Any] = {
             "truncation_limit": max_fetch
         }
         if since_datetime:
@@ -149,7 +149,7 @@ def get_next_page_activity_logs(footer):
     return max_id
 
 
-def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[Optional[List], Optional[str]]:
+def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[List | None, str | None]:
     """
     Handles Host list detection response - parses xml to json and gets the list
     Args:
@@ -172,7 +172,7 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
     return response_requested_value, response_next_url
 
 
-def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
+def parse_raw_response(response: Union[bytes, requests.Response]) -> dict:
     """
     Parses raw response from Qualys.
     Tries to load as JSON. If fails to do so, tries to load as XML.
@@ -186,7 +186,7 @@ def parse_raw_response(response: Union[bytes, requests.Response]) -> Dict:
     return json.loads(xml2json(response))
 
 
-def get_simple_response_from_raw(raw_response: Any) -> Union[Any, Dict]:
+def get_simple_response_from_raw(raw_response: Any) -> Union[Any, dict]:
     """
     Gets the simple response from a given JSON dict structure returned by Qualys service
     If object is not a dict, returns the response as is.
@@ -299,7 +299,7 @@ def get_detections_from_hosts(hosts):
     return fetched_events
 
 
-def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
+def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) -> tuple[list | None, dict]:
     """ Get logs activity from qualys
     Args:
         client: Qualys client
@@ -333,7 +333,7 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client, last_time, max_fetch, next_page=None) -> tuple[Optional[list], dict]:
+def get_host_list_detections_events(client, last_time, max_fetch, next_page=None) -> tuple[list | None, dict]:
     """ Get host list detections from qualys
     Args:
         client: Qualys client
@@ -373,7 +373,7 @@ def get_host_list_detections_events(client, last_time, max_fetch, next_page=None
 
 
 def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_event_field, next_page_field,
-                 previous_run_time_field, max_fetch: Optional[int] = 0):
+                 previous_run_time_field, max_fetch: int | None = 0):
     """ Fetches activity logs and host list detections
     Args:
         client: command client
@@ -480,7 +480,7 @@ def get_host_list_detections_events_command(client, args, first_fetch_time):
     return limited_host_list_detection_events, results
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: str) -> str:
+def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -565,7 +565,7 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
-        headers: Dict = {"X-Requested-With": "Cortex XSIAM"}
+        headers: dict = {"X-Requested-With": "Cortex XSIAM"}
 
         client = Client(
             base_url=base_url,

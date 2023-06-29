@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: qualys_modeling_rule
+id: qualys_ModelingRule
 name: Qualys Modeling Rule
 rules: ''
 schema: ''
