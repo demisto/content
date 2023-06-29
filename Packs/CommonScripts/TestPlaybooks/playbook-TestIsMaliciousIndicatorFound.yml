@@ -1345,7 +1345,7 @@ tasks:
       - "35"
     scriptarguments:
       seconds:
-        simple: "4"
+        simple: "8"
     separatecontext: false
     view: |-
       {
@@ -1413,7 +1413,7 @@ tasks:
       - "37"
     scriptarguments:
       seconds:
-        simple: "4"
+        simple: "8"
     separatecontext: false
     view: |-
       {
@@ -1480,7 +1480,7 @@ tasks:
       - "39"
     scriptarguments:
       seconds:
-        simple: "4"
+        simple: "8"
     separatecontext: false
     view: |-
       {
@@ -1547,7 +1547,7 @@ tasks:
       - "41"
     scriptarguments:
       seconds:
-        simple: "4"
+        simple: "8"
     separatecontext: false
     view: |-
       {
@@ -1842,7 +1842,7 @@ tasks:
       - "46"
     scriptarguments:
       seconds:
-        simple: "4"
+        simple: "8"
     separatecontext: false
     view: |-
       {

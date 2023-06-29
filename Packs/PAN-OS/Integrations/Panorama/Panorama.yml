@@ -213,7 +213,7 @@ configuration:
   required: false
   type: 13
   section: Connect
-description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
+description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation
 display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
@@ -1595,12 +1595,12 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object names for the rule. to create.
+      description: A comma-separated list of application object names for the rule to create.
       isArray: true
       name: application
-    - defaultValue: any
-      description: The source user for the rule to create.
+    - description: A comma-separated list of source users for the rule to create.
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -2262,41 +2262,119 @@ script:
     deprecated: true
     name: panorama-list-rules
     outputs:
-    - contextPath: Panorama.SecurityRule.Name
-      description: The rule name.
-      type: String
-    - contextPath: Panorama.SecurityRule.Action
-      description: The action for the rule.
-      type: String
     - contextPath: Panorama.SecurityRule.Location
-      description: The rule location.
+      description: The location of the security rule.
       type: String
-    - contextPath: Panorama.SecurityRule.Category
-      description: The rule category.
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Indicates whether the destination is negated in the security rule.
       type: String
-    - contextPath: Panorama.SecurityRule.Application
-      description: The application for the rule.
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Indicates whether the security rule is disabled.
       type: String
-    - contextPath: Panorama.SecurityRule.Destination
-      description: The destination address.
+    - contextPath: Panorama.SecurityRule.ICMPUnreachable
+      description: Specifies the behavior for ICMP unreachable messages.
+      type: String
+    - contextPath: Panorama.SecurityRule.Description
+      description: The description of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.GroupTag
+      description: The group tag of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.LogForwardingProfile
+      description: The log forwarding profile applied to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Indicates whether the source is negated in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfileGroup
+      description: The security profile group assigned to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.url-filtering
+      description: The security profile setting for url-filtering in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.data-filtering
+      description: The security profile setting for data-filtering in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.file-blocking
+      description: The security profile setting for file-blocking in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.virus
+      description: The security profile setting for viruses in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.spyware
+      description: The security profile setting for spyware in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.vulnerability
+      description: The security profile setting for vulnerability in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile.wildfire-analysis
+      description: The security profile setting for wildfire-analysis in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Target.devices
+      description: The devices targeted by the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Target.negate
+      description: Indicates whether the target is negated in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Name
+      description: The name of the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.From
-      description: The rule from zone.
+      description: The source zone of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.DestinationDevice
+      description: The destination device of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Action
+      description: The action taken by the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SourceDevice
+      description: The source device of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Tags
+      description: The tags associated with the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SourceUser
+      description: The source user of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Application
+      description: The application used in the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.Service
-      description: The service for the rule.
+      description: The service used in the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.To
-      description: The rule to zone.
+      description: The destination zone of the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.Source
-      description: The source address.
+      description: The source address of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.CustomUrlCategory
+      description: The custom URL category targeted by the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Destination
+      description: The destination address of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.LogAtSessionStart
+      description: Indicates whether the session start is logged.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.LogForwarding
+      description: Indicates whether log forwarding is enabled for the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.Schedule
+      description: The schedule applied to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.QoSMarking
+      description: The QoS marking applied to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.DisableServerResponseInspection
+      description: Specifies whether to disable server response inspection for the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.DeviceGroup
-      description: The device group for the rule (Panorama instances).
-      type: string
-    - contextPath: Panorama.SecurityRules.Tags
-      description: The rule tags.
+      description: The device group of the security rule (Panorama instances only).
+      type: String
+    - contextPath: Panorama.SecurityRule.Type
+      description: Represents the type of the security rule (e.g., pre-rule, post-rule, intra-zone, inter-zone).
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -5027,12 +5105,12 @@ script:
       - Yes
       - No
     - defaultValue: any
-      description: A comma-separated list of application object names for the rule. to create.
+      description: A comma-separated list of application object names for the rule to create.
       isArray: true
       name: application
-    - defaultValue: any
-      description: The source user for the rule to create.
+    - description: A comma-separated list of source users for the rule to create.
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -5786,45 +5864,102 @@ script:
     description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
     name: pan-os-list-rules
     outputs:
-    - contextPath: Panorama.SecurityRule.Name
-      description: The rule name.
-      type: String
-    - contextPath: Panorama.SecurityRule.Action
-      description: The action for the rule.
-      type: String
     - contextPath: Panorama.SecurityRule.Location
-      description: The rule location.
+      description: The location of the security rule.
       type: String
-    - contextPath: Panorama.SecurityRule.Category
-      description: The rule category.
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Indicates whether the destination is negated in the security rule.
       type: String
-    - contextPath: Panorama.SecurityRule.Application
-      description: The application for the rule.
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Indicates whether the security rule is disabled.
       type: String
-    - contextPath: Panorama.SecurityRule.Destination
-      description: The destination address.
+    - contextPath: Panorama.SecurityRule.ICMPUnreachable
+      description: Specifies the behavior for ICMP unreachable messages.
+      type: String
+    - contextPath: Panorama.SecurityRule.Description
+      description: The description of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.GroupTag
+      description: The group tag of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.LogForwardingProfile
+      description: The log forwarding profile applied to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Indicates whether the source is negated in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfileGroup
+      description: The security profile group assigned to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SecurityProfile
+      description: The security profile settings applied to the security rule.
+      type: Unknown
+    - contextPath: Panorama.SecurityRule.Target.devices
+      description: The devices targeted by the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Target.negate
+      description: Indicates whether the target is negated in the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Name
+      description: The name of the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.From
-      description: The rule from zone.
+      description: The source zone of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.DestinationDevice
+      description: The destination device of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Action
+      description: The action taken by the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SourceDevice
+      description: The source device of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Tags
+      description: The tags associated with the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.SourceUser
+      description: The source user of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Application
+      description: The application used in the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.Service
-      description: The service for the rule.
+      description: The service used in the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.To
-      description: The rule to zone.
+      description: The destination zone of the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.Source
-      description: The source address.
+      description: The source address of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.CustomUrlCategory
+      description: The custom URL category targeted by the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Destination
+      description: The destination address of the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.LogAtSessionStart
+      description: Indicates whether the session start is logged.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.LogForwarding
+      description: Indicates whether log forwarding is enabled for the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.Schedule
+      description: The schedule applied to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.QoSMarking
+      description: The QoS marking applied to the security rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Options.DisableServerResponseInspection
+      description: Specifies whether to disable server response inspection for the security rule.
       type: String
     - contextPath: Panorama.SecurityRule.DeviceGroup
-      description: The device group for the rule (Panorama instances).
-      type: string
-    - contextPath: Panorama.SecurityRules.Tags
-      description: The rule tags.
+      description: The device group of the security rule (Panorama instances only).
       type: String
-    - contextPath: Panorama.SecurityRules.Disabled
-      description: Whether the rule is disabled.
-      type: string
+    - contextPath: Panorama.SecurityRule.Type
+      description: Represents the type of the security rule (e.g., pre-rule, post-rule, intra-zone, inter-zone).
+      type: String
   - arguments:
     - description: The log type.
       name: log-type
@@ -6880,6 +7015,33 @@ script:
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
   - arguments:
+    - description: The security profile type.
+      name: profile_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+    - description: The rule name to apply.
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      description: The location of the rules. Mandatory for Panorama instances.
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group for which to apply security profiles.
+      name: device-group
+      required: false
+    description: Removes a security profile to specific rules or rules with a specific tag.
+    name: pan-os-remove-security-profile
+  - arguments:
     - description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
       auto: PREDEFINED
@@ -6994,6 +7156,12 @@ script:
     - name: dns_signature_source
       description: The EDL name to link to the profile.
       required: true
+    - name: ipv4_sinkhole_address
+      description: The IPv4 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
+      required: false
+    - name: ipv6_sinkhole_address
+      description: The IPv6 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
+      required: false
     - auto: PREDEFINED
       description: The action on the DNS queries.
       name: action
@@ -7868,6 +8036,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: false
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       isArray: false
       name: sync
@@ -8055,6 +8224,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: false
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       isArray: false
       name: sync
@@ -9557,7 +9727,106 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.61510
+  - arguments:
+    - description: Whether to include shared tags in the list.
+      isArray: false
+      name: include_shared_tags
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'Yes'
+      - 'No'
+      defaultValue: 'No'
+    - description: The device group that the tags are part of.
+      isArray: false
+      name: device-group
+      required: false
+    description: Returns a list of tags from Panorama.
+    name: pan-os-list-tag
+    outputs:
+    - contextPath: Panorama.Tag.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Panorama.Tag.color
+      description: The color of the tag.
+      type: String
+    - contextPath: Panorama.Tag.comment
+      description: The comment in the tag.
+      type: String
+    - contextPath: Panorama.Tag.disable-override
+      description: Whether overriding the tag is disabled.
+      type: String
+    - contextPath: Panorama.Tag.location
+      description: The tag's device group location.
+      type: String
+  - arguments:
+    - description: The name for the new tag to be created.
+      isArray: false
+      name: name
+      required: true
+    - description: The device group that the tag will be part of.
+      isArray: false
+      name: device-group
+      required: false
+    - description: Whether to disable overriding the tag.
+      isArray: false
+      name: disable_override
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: Whether the tag should be generated in a shared location.
+      isArray: false
+      name: is_shared
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - description: The comment for the tag.
+      isArray: false
+      name: comment
+      required: false
+    description: Creates a new tag in Panorama.
+    name: pan-os-create-tag
+  - arguments:
+    - description: The existing name for the tag to be edited.
+      isArray: false
+      name: name
+      required: true
+    - description: The new name for the tag to be replaced with.
+      isArray: false
+      name: new_name
+      required: false
+    - description: The device group of the tag.
+      isArray: false
+      name: device-group
+      required: false
+    - description: Whether to disable overriding the tag.
+      isArray: false
+      name: disable_override
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The comment for the tag.
+      isArray: false
+      name: comment
+      required: false
+    description: Edits a tag in Panorama.
+    name: pan-os-edit-tag
+  - arguments:
+    - description: The name of the tag to delete.
+      isArray: false
+      name: name
+      required: true
+    description: Deletes a tag from Panorama.
+    name: pan-os-delete-tag
+  dockerimage: demisto/pan-os-python:1.0.0.63723
   feed: false
   isfetch: true
   longRunning: false

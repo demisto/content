@@ -2,6 +2,7 @@ Deploy and manage containerized applications with a fully managed Kubernetes ser
 This integration was integrated and tested with API version 2023-02-01 of AKS.
 
 # Self-Deployed Application
+
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
 * The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
@@ -29,6 +30,7 @@ Follow these steps for a self-deployed configuration:
 In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
 
 ### Authentication Using the Device Code Flow
+
 Follow these steps for a self-deployed configuration:
 
 1. Fill in the required parameters.
@@ -45,24 +47,37 @@ At end of the process you'll see a message that you've logged in successfully.
 2. Search for Azure Kubernetes Services.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Application ID |  | False |
-    | Authentication Type | Type of authentication - can be Authorization Code Flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
-    | Tenant ID (for authorization code mode) |  | False |
-    | Client Secret (for authorization code mode) |  | False |
-    | Client Secret (for authorization code mode) |  | False |
-    | Application redirect URI (for authorization code mode) |  | False |
-    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
-    | Authorization code |  | False |
-    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
-    | Default Subscription ID | There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value. | True |
-    | Default Resource Group Name | There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value. | True |
-    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter**                      | **Description**                                                                                                | **Required** |
+    |------------------------------------|----------------------------------------------------------------------------------------------------------------|--------------|
+    | Azure Cloud                        | Azure Cloud the K8S cluster resides in. See table below.                                                       | False        |
+    | app_id                             | Application ID                                                                                                 | False        |
+    | subscription_id                    | Subscription ID                                                                                                | True         |
+    | resource_group_name                | Resource Group Name                                                                                            | True         |
+    | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud. See note below.                                     | False        |
+    | insecure                           | Trust any certificate \(not secure\)                                                                           | False        |
+    | proxy                              | Use system proxy settings                                                                                      | False        |
+    | Tenant ID (for User Auth mode)     | Tenant ID                                                                                                      | False        |
+    | Client Secret (for User Auth mode) | Encryption key given by the admin                                                                              | False        |
+    | Authentication Type                | The request authentication type for the instance                                                               | False        |
+    | Authorization code                 | Received from the authorization step                                                                        | False        |
+    | Application redirect URI           | The redirect URI entered in the Azure portal                                                                   | False        |
+    | Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM. | False        |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Azure cloud options
+
+    | Azure Cloud | Description                                                              |
+    |-------------|--------------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud                                      |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
+    | Germany     | Azure cloud for the German Government                                    |
+    | China       | Azure cloud for the Chinese Government                                   |
+    | Custom      | Custom endpoint configuration to the Azure cloud. See note below. |
+
+   * Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom proxy URL is required for accessing a national cloud.
+
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
@@ -83,6 +98,7 @@ Tests the connectivity to Azure.
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >✅ Success!
 
 
@@ -100,7 +116,9 @@ Run this command to start the authorization process and follow the instructions 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >### Authorization instructions
+>
 >        1. To sign in, use a web browser to open the page:
 >            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >           and enter the code **XXXXXXXX** to authenticate.
@@ -109,6 +127,7 @@ There are no input arguments for this command.
 
 
 ### azure-ks-auth-complete
+
 ***
 Run this command to complete the authorization process. Should be used after running the ***azure-ks-auth-start*** command.
 
@@ -116,15 +135,18 @@ Run this command to complete the authorization process. Should be used after run
 #### Base Command
 
 `azure-ks-auth-complete`
+
 #### Input
 
 There are no input arguments for this command.
 
 #### Human Readable Output
+>
 >✅ Authorization completed successfully.
 
 
 ### azure-ks-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
@@ -132,6 +154,7 @@ Run this command if for some reason you need to rerun the authentication process
 #### Base Command
 
 `azure-ks-auth-reset`
+
 #### Input
 
 There are no input arguments for this command.
@@ -192,9 +215,13 @@ Gets a list of managed clusters in the specified subscription.
 | AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled | Boolean | Whether the ingress is configured with automatic public DNS name creation. | 
 | AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | String | The subscription DNS zone name. | 
 
-#### Command example
-```!azure-ks-clusters-list```
+
+#### Command Example
+
+`!azure-ks-clusters-list`
+
 #### Context Example
+
 ```json
 {
     "AzureKS": {
@@ -335,6 +362,7 @@ Gets a list of managed clusters in the specified subscription.
 #### Human Readable Output
 
 >### AKS Clusters List
+>
 >|Name|Status|Location|Tags|Kubernetes version|API server address|Network type (plugin)|
 >|---|---|---|---|---|---|---|
 >| aks-integration | Succeeded | westus | type: aks-slb-managed-outbound-ip | 1.21.7 | aks-integration-dns.hcp.westus.azmk8s.io | kubenet |
@@ -364,8 +392,11 @@ Updates a managed cluster with the specified configuration.
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!azure-ks-cluster-addon-update resource_name=aks-integration location=westus http_application_routing_enabled=true```
+
+#### Command Example
+
+`!azure-ks-cluster-addon-update resource_name=aks-integration location=westus http_application_routing_enabled=true`
+
 #### Human Readable Output
 
 >The request to update the managed cluster was sent successfully.
@@ -378,23 +409,6 @@ Generate the login url used for Authorization code flow.
 #### Base Command
 
 `azure-ks-generate-login-url`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-### azure-ks-subscriptions-list
-
-***
-Gets all subscriptions for a tenant.
-
-#### Base Command
-
-`azure-ks-subscriptions-list`
 
 #### Input
 
@@ -417,53 +431,19 @@ There are no input arguments for this command.
 | AzureKS.Subscription.count.type | String | The type of the Azure Kubernetes subscription count. | 
 | AzureKS.Subscription.count.value | Number | The value of the Azure Kubernetes subscription count. | 
 
-#### Command example
-```!azure-ks-subscriptions-list```
-#### Context Example
-```json
-{
-    "AzureKS": {
-        "Subscription": [
-            {
-                "authorizationSource": "RoleBased",
-                "displayName": "Access to Azure Active Directory",
-                "id": "/subscriptions/000000000000000",
-                "managedByTenants": [],
-                "state": "Enabled",
-                "subscriptionId": "000000000000000",
-                "subscriptionPolicies": {
-                    "locationPlacementId": "Public_2014-09-01",
-                    "quotaId": "AAD_2015-09-01",
-                    "spendingLimit": "On"
-                },
-                "tenantId": "000000000000000"
-            },
-            {
-                "authorizationSource": "RoleBased",
-                "displayName": "Pay-As-You-Go",
-                "id": "/subscriptions/00000000",
-                "managedByTenants": [],
-                "state": "Enabled",
-                "subscriptionId": "00000000",
-                "subscriptionPolicies": {
-                    "locationPlacementId": "Public_2014-09-01",
-                    "quotaId": "PayAsYouGo_2014-09-01",
-                    "spendingLimit": "Off"
-                },
-                "tenantId": "000000000000000"
-            }
-        ]
-    }
-}
-```
+#### Command Example
+
+`azure-ks-generate-login-url`
 
 #### Human Readable Output
 
->### Azure Kubernetes Subscriptions list
->|subscriptionId|tenantId|displayName|state|
->|---|---|---|---|
->| 000000000000000 | 000000000000000 | Access to Azure Active Directory | Enabled |
->| 00000000 | 000000000000000 | Pay-As-You-Go | Enabled |
+>### Authorization instructions
+>
+>1. Click the [login URL](https://login.microsoftonline.com) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+`REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE`
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
 
 
 ### azure-ks-resource-group-list

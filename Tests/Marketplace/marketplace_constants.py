@@ -87,6 +87,8 @@ class GCPConfig(object):
     INDEX_NAME = "index"  # main index folder name
     INDEX_V2_NAME = "index_v2"
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
+    VERSIONS_METADATA_FILE = 'versions-metadata.json'
+    COREPACKS_OVERRIDE_FILE = 'corepacks_override.json'
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_xsoar_list_file:
@@ -105,6 +107,13 @@ class GCPConfig(object):
         CORE_PACKS_XPANSE_LIST = packs_list_xpanse.get('core_packs_list')
         CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list_xpanse.get('update_core_packs_list')
 
+    with open(os.path.join(os.path.dirname(__file__), VERSIONS_METADATA_FILE), 'r') as server_versions_metadata:
+        versions_metadata_contents = json.load(server_versions_metadata)
+        core_packs_file_versions = versions_metadata_contents.get('version_map')
+
+    with open(os.path.join(os.path.dirname(__file__), COREPACKS_OVERRIDE_FILE), 'r') as corepacks_override_file:
+        corepacks_override_contents = json.load(corepacks_override_file)
+
     @classmethod
     def get_core_packs(cls, marketplace):
         mapping = {
@@ -122,6 +131,21 @@ class GCPConfig(object):
             'xpanse': cls.CORE_PACKS_XPANSE_LIST_TO_UPDATE,
         }
         return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST_TO_UPDATE)
+
+    @classmethod
+    def get_core_packs_unlocked_files(cls, marketplace):
+        """
+        Find the current server versions that are unlocked and return the matching corepacks files.
+        """
+        unlocked_corepacks_files = []
+        for version, core_pack_file_value in cls.core_packs_file_versions.items():
+            # check if the file is unlocked
+            if not core_pack_file_value.get('core_packs_file_is_locked'):
+                # check if version should be used for this marketplace (all are used by default if none was specified)
+                supported_marketplaces = core_pack_file_value.get('marketplaces', [])
+                if not supported_marketplaces or marketplace in supported_marketplaces:
+                    unlocked_corepacks_files.append(core_pack_file_value.get('core_packs_file'))
+        return unlocked_corepacks_files
 
 
 class PackTags(object):

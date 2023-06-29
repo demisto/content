@@ -28,10 +28,7 @@ def get_zip_path(args):
             fn = demisto.get(entry, 'File')
 
             # We check the python version to prevent encoding issues. Effects Demisto 4.5+
-            if sys.version_info > (3, 0):
-                is_text = type(fn) is str
-            else:
-                is_text = type(fn) in [unicode, str]  # pylint: disable=E0602
+            is_text = type(fn) is str  # pylint: disable=E0602
 
             is_correct_file = args.get('fileName', '').lower() == fn.lower()
             is_zip = fn.lower().endswith('.zip')
@@ -105,6 +102,8 @@ def extract(file_info, dir_path, zip_tool='7z', password=None):
         if zip_tool == '7z':
             stdout = extract_using_7z(file_path, dir_path, password=password)
         elif zip_tool == 'zipfile':
+            if password:
+                password = bytes(password, 'utf-8')
             extract_using_zipfile(file_path, dir_path, password=password)
         else:
             return_error(f'There is no zipTool named: {zip_tool}')

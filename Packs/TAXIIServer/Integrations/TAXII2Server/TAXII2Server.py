@@ -913,12 +913,9 @@ def create_extension_definition(object_type, extensions_dict, xsoar_type,
         the updated Stix object, its extension and updated extensions_dict.
     """
     extension_definition = {}
-    if object_type in extensions_dict:
-        extension_id = extensions_dict.get(object_type, {}).get('extension_id')
-        xsoar_indicator_to_return = extensions_dict.get(object_type, {}).get('xsoar_indicator_to_return')
-    else:
-        xsoar_indicator_to_return['extension_type'] = 'property_extension'
-        extension_id = f'extension-definition--{uuid.uuid4()}'
+    xsoar_indicator_to_return['extension_type'] = 'property_extension'
+    extension_id = f'extension-definition--{uuid.uuid4()}'
+    if object_type not in extensions_dict:
         extension_definition = {
             'id': extension_id,
             'type': 'extension-definition',
@@ -934,7 +931,7 @@ def create_extension_definition(object_type, extensions_dict, xsoar_type,
             'version': '1.0',
             'extension_types': ['property-extension']
         }
-        extensions_dict[object_type] = {'extension_id': extension_id, 'xsoar_indicator_to_return': xsoar_indicator_to_return}
+        extensions_dict[object_type] = True
     stix_object['extensions'] = {
         extension_id: xsoar_indicator_to_return
     }

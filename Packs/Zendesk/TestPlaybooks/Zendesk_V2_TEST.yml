@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: eff64d56-8c8a-4f04-8b55-be6aa7aceeb9
+    taskid: 1a58b3e2-39c3-4309-88e0-37b7a9e06326
     type: start
     task:
-      id: eff64d56-8c8a-4f04-8b55-be6aa7aceeb9
+      id: 1a58b3e2-39c3-4309-88e0-37b7a9e06326
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ce2d645f-9d5e-4c81-8929-440fd5f53287
+    taskid: 78a80279-336d-4401-8c99-3465dba7e409
     type: title
     task:
-      id: ce2d645f-9d5e-4c81-8929-440fd5f53287
+      id: 78a80279-336d-4401-8c99-3465dba7e409
       version: -1
       name: Users tasks
       type: title
@@ -66,10 +66,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: af405b2f-8066-488f-8136-49309574a913
+    taskid: a46347a2-036d-4f0a-8838-3b9b5c5374b9
     type: regular
     task:
-      id: af405b2f-8066-488f-8136-49309574a913
+      id: a46347a2-036d-4f0a-8838-3b9b5c5374b9
       version: -1
       name: get users (init - might fail)
       script: 'Zendesk v2|||zendesk-user-list'
@@ -98,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 08ee78d7-1e25-4ab0-8ae6-452144b14103
+    taskid: 6a204bf3-2b1c-4f03-808b-fd9ccaac1c1f
     type: regular
     task:
-      id: 08ee78d7-1e25-4ab0-8ae6-452144b14103
+      id: 6a204bf3-2b1c-4f03-808b-fd9ccaac1c1f
       version: -1
       name: delete context
       description: |-
@@ -138,10 +138,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e133df15-4c9b-4794-8055-dc1a277b15e1
+    taskid: 47f8adab-1624-43d6-8d88-ca198c82ba0f
     type: regular
     task:
-      id: e133df15-4c9b-4794-8055-dc1a277b15e1
+      id: 47f8adab-1624-43d6-8d88-ca198c82ba0f
       version: -1
       name: delete user (init - might fail)
       script: 'Zendesk v2|||zendesk-user-delete'
@@ -194,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 17962174-5da9-4ed9-8115-b5ff26318763
+    taskid: 054ea3d3-9243-494f-84e0-5efa8e7d2bb5
     type: regular
     task:
-      id: 17962174-5da9-4ed9-8115-b5ff26318763
+      id: 054ea3d3-9243-494f-84e0-5efa8e7d2bb5
       version: -1
       name: create user
       script: 'Zendesk v2|||zendesk-user-create'
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 53bb421c-dab7-45ea-8c3d-51019f319f60
+    taskid: 3ac6fdd8-cc5f-4930-8225-d4994fce5d4c
     type: regular
     task:
-      id: 53bb421c-dab7-45ea-8c3d-51019f319f60
+      id: 3ac6fdd8-cc5f-4930-8225-d4994fce5d4c
       version: -1
       name: delete users content
       description: |-
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f93beeea-d84a-4590-84f5-a8a2c9288929
+    taskid: 3e789545-b2e2-431b-840a-0dd5903b5c6f
     type: regular
     task:
-      id: f93beeea-d84a-4590-84f5-a8a2c9288929
+      id: 3e789545-b2e2-431b-840a-0dd5903b5c6f
       version: -1
       name: list users
       script: 'Zendesk v2|||zendesk-user-list'
@@ -311,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a13c60ac-27d6-4325-8b78-8adb1f980103
+    taskid: 6f799e61-420f-4348-8bcd-c69d27a4d3af
     type: condition
     task:
-      id: a13c60ac-27d6-4325-8b78-8adb1f980103
+      id: 6f799e61-420f-4348-8bcd-c69d27a4d3af
       version: -1
       name: check that the user exists
       type: condition
@@ -371,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: c43849b5-a12b-4b0b-8c77-4578fc9e6443
+    taskid: a9028e8b-e5ac-41a3-862f-b8c921f73fd0
     type: regular
     task:
-      id: c43849b5-a12b-4b0b-8c77-4578fc9e6443
+      id: a9028e8b-e5ac-41a3-862f-b8c921f73fd0
       version: -1
       name: update user
       script: 'Zendesk v2|||zendesk-user-update'
@@ -428,10 +428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e28d747b-7f32-46e5-83f0-2dd4d918035e
+    taskid: a6111c8a-405b-446c-80d1-01ea3d43e570
     type: regular
     task:
-      id: e28d747b-7f32-46e5-83f0-2dd4d918035e
+      id: a6111c8a-405b-446c-80d1-01ea3d43e570
       version: -1
       name: delete users content
       description: |-
@@ -456,7 +456,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2790
+          "y": 2965
         }
       }
     note: false
@@ -468,10 +468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: d5f7b7d5-c51b-427a-8edc-28b9d97827d0
+    taskid: 02f88c4f-5d4a-48fc-84f6-72ece1bbf421
     type: condition
     task:
-      id: d5f7b7d5-c51b-427a-8edc-28b9d97827d0
+      id: 02f88c4f-5d4a-48fc-84f6-72ece1bbf421
       version: -1
       name: check user update
       type: condition
@@ -481,7 +481,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "25"
+      - "42"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -533,10 +533,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ff05dc3d-8aac-4b5f-8ee1-7119dbfc74bf
+    taskid: f1776775-1df6-4854-8299-1eb9460a09cb
     type: regular
     task:
-      id: ff05dc3d-8aac-4b5f-8ee1-7119dbfc74bf
+      id: f1776775-1df6-4854-8299-1eb9460a09cb
       version: -1
       name: delete user
       script: 'Zendesk v2|||zendesk-user-delete'
@@ -576,7 +576,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2615
+          "y": 2790
         }
       }
     note: false
@@ -588,10 +588,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: fce06ff8-fcf8-408a-8b72-2c895fc3974f
+    taskid: 634b0a2f-47bc-41e4-8f9e-150c7c612a7a
     type: regular
     task:
-      id: fce06ff8-fcf8-408a-8b72-2c895fc3974f
+      id: 634b0a2f-47bc-41e4-8f9e-150c7c612a7a
       version: -1
       name: get users
       script: 'Zendesk v2|||zendesk-user-list'
@@ -607,7 +607,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2965
+          "y": 3140
         }
       }
     note: false
@@ -619,10 +619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 419b5928-a2fc-4975-853e-2e62b66cba59
+    taskid: c5b67662-bece-4308-84d1-16fa83ed8ce7
     type: condition
     task:
-      id: 419b5928-a2fc-4975-853e-2e62b66cba59
+      id: c5b67662-bece-4308-84d1-16fa83ed8ce7
       version: -1
       name: 'check that user does not exist '
       type: condition
@@ -667,7 +667,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 3140
+          "y": 3315
         }
       }
     note: false
@@ -679,10 +679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1faa4883-dd2e-4674-87d7-7db996024bfa
+    taskid: 2e70ee63-6349-4b46-8c85-52b92b00f793
     type: title
     task:
-      id: 1faa4883-dd2e-4674-87d7-7db996024bfa
+      id: 2e70ee63-6349-4b46-8c85-52b92b00f793
       version: -1
       name: users test done
       type: title
@@ -698,7 +698,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 3315
+          "y": 3490
         }
       }
     note: false
@@ -710,10 +710,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 02d3a099-c70d-46ab-895b-647be93e934f
+    taskid: d48a9f95-3aaa-421c-8f3d-4d9fb483632a
     type: regular
     task:
-      id: 02d3a099-c70d-46ab-895b-647be93e934f
+      id: d48a9f95-3aaa-421c-8f3d-4d9fb483632a
       version: -1
       name: validation error
       description: Prints an error entry with a given message
@@ -730,7 +730,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6870
+          "y": 7715
         }
       }
     note: false
@@ -742,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4fe2aaee-0c89-463f-8833-e489937878a0
+    taskid: e9a334b7-6468-469c-8939-f497e26ec59b
     type: title
     task:
-      id: 4fe2aaee-0c89-463f-8833-e489937878a0
+      id: e9a334b7-6468-469c-8939-f497e26ec59b
       version: -1
       name: Organization tasks
       type: title
@@ -761,7 +761,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 3635
+          "y": 3810
         }
       }
     note: false
@@ -773,10 +773,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 99ff2555-6dca-4eeb-8dcd-4aad8d167b77
+    taskid: f3fca523-a00a-47e1-8163-965f54697fb0
     type: regular
     task:
-      id: 99ff2555-6dca-4eeb-8dcd-4aad8d167b77
+      id: f3fca523-a00a-47e1-8163-965f54697fb0
       version: -1
       name: list organizations
       script: 'Zendesk v2|||zendesk-organization-list'
@@ -792,7 +792,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 3780
+          "y": 3955
         }
       }
     note: false
@@ -804,10 +804,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 7083346e-c9ad-4876-820e-f5f6505aaf60
+    taskid: 6c4251af-6312-4538-8dc2-2d2f1463c5f1
     type: condition
     task:
-      id: 7083346e-c9ad-4876-820e-f5f6505aaf60
+      id: 6c4251af-6312-4538-8dc2-2d2f1463c5f1
       version: -1
       name: check organizations
       type: condition
@@ -832,7 +832,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 3955
+          "y": 4130
         }
       }
     note: false
@@ -844,10 +844,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: a978f2d9-7a78-4d14-854a-5a23cfb645f2
+    taskid: d72b255a-47ae-41a3-8b37-cdf72239d5ad
     type: title
     task:
-      id: a978f2d9-7a78-4d14-854a-5a23cfb645f2
+      id: d72b255a-47ae-41a3-8b37-cdf72239d5ad
       version: -1
       name: Organizations test done
       type: title
@@ -863,7 +863,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4130
+          "y": 4305
         }
       }
     note: false
@@ -875,10 +875,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 22f60cca-be39-4e2a-86cf-063b16725a1e
+    taskid: 87cdb0fc-15ba-4387-872e-15ae7841e96d
     type: title
     task:
-      id: 22f60cca-be39-4e2a-86cf-063b16725a1e
+      id: 87cdb0fc-15ba-4387-872e-15ae7841e96d
       version: -1
       name: Done
       type: title
@@ -891,7 +891,7 @@ tasks:
       {
         "position": {
           "x": 705,
-          "y": 6885
+          "y": 7730
         }
       }
     note: false
@@ -903,10 +903,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d06c6dab-8549-4b4e-8920-a0c3e86c97f3
+    taskid: 7beb3bc7-3492-4eb8-814c-c9d124b45e7d
     type: title
     task:
-      id: d06c6dab-8549-4b4e-8920-a0c3e86c97f3
+      id: 7beb3bc7-3492-4eb8-814c-c9d124b45e7d
       version: -1
       name: Ticket tests
       type: title
@@ -922,7 +922,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4450
+          "y": 5295
         }
       }
     note: false
@@ -934,10 +934,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b6b7ad55-5302-4363-859c-b9ac1afd41e8
+    taskid: 3d47a2d7-0aa8-49e0-800d-809900ebc4c6
     type: regular
     task:
-      id: b6b7ad55-5302-4363-859c-b9ac1afd41e8
+      id: 3d47a2d7-0aa8-49e0-800d-809900ebc4c6
       version: -1
       name: create ticket
       script: 'Zendesk v2|||zendesk-ticket-create'
@@ -966,7 +966,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4770
+          "y": 5615
         }
       }
     note: false
@@ -978,10 +978,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 011293ae-aaf8-4772-8f83-9b24d3b74821
+    taskid: 5a50bc4d-c4d2-4043-869f-7312a591bc5c
     type: regular
     task:
-      id: 011293ae-aaf8-4772-8f83-9b24d3b74821
+      id: 5a50bc4d-c4d2-4043-869f-7312a591bc5c
       version: -1
       name: get user
       script: 'Zendesk v2|||zendesk-user-list'
@@ -1006,7 +1006,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4595
+          "y": 5440
         }
       }
     note: false
@@ -1018,10 +1018,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 29d973de-56dd-4b4e-83ac-8ff293fbdbba
+    taskid: c4302dc7-2bdf-4311-89c6-cb210a34940f
     type: regular
     task:
-      id: 29d973de-56dd-4b4e-83ac-8ff293fbdbba
+      id: c4302dc7-2bdf-4311-89c6-cb210a34940f
       version: -1
       name: delete users content
       description: |-
@@ -1046,7 +1046,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2265
+          "y": 2440
         }
       }
     note: false
@@ -1058,10 +1058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 858d776f-00e2-4549-853b-495126bfe2e5
+    taskid: cba83f35-0dff-4e79-8091-795f8052f5a4
     type: regular
     task:
-      id: 858d776f-00e2-4549-853b-495126bfe2e5
+      id: cba83f35-0dff-4e79-8091-795f8052f5a4
       version: -1
       name: get users
       script: 'Zendesk v2|||zendesk-user-list'
@@ -1077,7 +1077,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 2440
+          "y": 2615
         }
       }
     note: false
@@ -1089,10 +1089,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e092f74f-7d43-47f5-83a2-2b57665ca482
+    taskid: 55a3f4c8-ff43-4b33-8b80-9cc70031b8be
     type: regular
     task:
-      id: e092f74f-7d43-47f5-83a2-2b57665ca482
+      id: 55a3f4c8-ff43-4b33-8b80-9cc70031b8be
       version: -1
       name: ' update ticket'
       script: 'Zendesk v2|||zendesk-ticket-update'
@@ -1113,7 +1113,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4945
+          "y": 5790
         }
       }
     note: false
@@ -1125,10 +1125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 1d0b86cc-5e69-4314-83b5-0b6577441543
+    taskid: 356520fe-2c6e-4d24-86cc-2d03e9cdb667
     type: regular
     task:
-      id: 1d0b86cc-5e69-4314-83b5-0b6577441543
+      id: 356520fe-2c6e-4d24-86cc-2d03e9cdb667
       version: -1
       name: list comments
       script: 'Zendesk v2|||zendesk-ticket-comment-list'
@@ -1147,7 +1147,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5470
+          "y": 6315
         }
       }
     note: false
@@ -1159,10 +1159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 97de5712-fa86-4a93-8509-3d4646e1a886
+    taskid: becdbbb8-09da-4ad0-88d4-cbffdbd86a86
     type: regular
     task:
-      id: 97de5712-fa86-4a93-8509-3d4646e1a886
+      id: becdbbb8-09da-4ad0-88d4-cbffdbd86a86
       version: -1
       name: create a file to upload
       description: |
@@ -1187,7 +1187,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5120
+          "y": 5965
         }
       }
     note: false
@@ -1199,10 +1199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 42c6bfc1-1f8f-49de-8013-1b7a10dd5732
+    taskid: e682ed0e-476a-4969-8607-58586a4e4daf
     type: regular
     task:
-      id: 42c6bfc1-1f8f-49de-8013-1b7a10dd5732
+      id: e682ed0e-476a-4969-8607-58586a4e4daf
       version: -1
       name: upload attachment
       script: 'Zendesk v2|||zendesk-ticket-attachment-add'
@@ -1225,7 +1225,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5295
+          "y": 6140
         }
       }
     note: false
@@ -1237,10 +1237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 10e203d0-04c8-4a72-88e2-30571615f50d
+    taskid: ab243edb-793a-40bd-847f-c768c5fb65ef
     type: regular
     task:
-      id: 10e203d0-04c8-4a72-88e2-30571615f50d
+      id: ab243edb-793a-40bd-847f-c768c5fb65ef
       version: -1
       name: get attacment
       script: 'Zendesk v2|||zendesk-attachment-get'
@@ -1267,7 +1267,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5645
+          "y": 6490
         }
       }
     note: false
@@ -1279,10 +1279,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 589b00bd-e3a0-4f39-8165-ae0bea120941
+    taskid: b81918db-94c9-48a2-872c-3169e520b8f4
     type: regular
     task:
-      id: 589b00bd-e3a0-4f39-8165-ae0bea120941
+      id: b81918db-94c9-48a2-872c-3169e520b8f4
       version: -1
       name: read file
       description: Load the contents of a file into context.
@@ -1304,7 +1304,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5820
+          "y": 6665
         }
       }
     note: false
@@ -1316,10 +1316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 564f579a-4ab4-4452-805d-f199868ecc3f
+    taskid: 94fd3436-82c2-453c-80c6-d2ebe4b35e18
     type: condition
     task:
-      id: 564f579a-4ab4-4452-805d-f199868ecc3f
+      id: 94fd3436-82c2-453c-80c6-d2ebe4b35e18
       version: -1
       name: check file content
       type: condition
@@ -1348,7 +1348,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 6695
+          "y": 7540
         }
       }
     note: false
@@ -1360,10 +1360,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 65adce83-0f82-43b6-8c95-89dca04ca86f
+    taskid: 6cd71a41-ea4b-4252-803b-8f544758e98b
     type: regular
     task:
-      id: 65adce83-0f82-43b6-8c95-89dca04ca86f
+      id: 6cd71a41-ea4b-4252-803b-8f544758e98b
       version: -1
       name: read info file
       description: Load the contents of a file into context.
@@ -1385,7 +1385,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 6345
+          "y": 7190
         }
       }
     note: false
@@ -1397,10 +1397,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: bb9d9a02-e580-4ded-8f44-c33061a41403
+    taskid: 357ca8e7-fe53-42c1-8a95-b442394031cd
     type: regular
     task:
-      id: bb9d9a02-e580-4ded-8f44-c33061a41403
+      id: 357ca8e7-fe53-42c1-8a95-b442394031cd
       version: -1
       name: set file data
       description: Set a value in context under the key you entered.
@@ -1422,7 +1422,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5995
+          "y": 6840
         }
       }
     note: false
@@ -1434,10 +1434,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 994cbaab-d5ae-4c11-85fc-6af955d82af5
+    taskid: 15e2d39d-6456-4362-88d0-b494bc6b712e
     type: regular
     task:
-      id: 994cbaab-d5ae-4c11-85fc-6af955d82af5
+      id: 15e2d39d-6456-4362-88d0-b494bc6b712e
       version: -1
       name: set file data
       description: Set a value in context under the key you entered.
@@ -1459,7 +1459,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 6520
+          "y": 7365
         }
       }
     note: false
@@ -1471,10 +1471,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 800a417b-ea81-4520-8fbe-f4add52200bb
+    taskid: bab8eb32-892f-4af2-879d-a1750f065ac8
     type: regular
     task:
-      id: 800a417b-ea81-4520-8fbe-f4add52200bb
+      id: bab8eb32-892f-4af2-879d-a1750f065ac8
       version: -1
       name: delete old file content
       description: |-
@@ -1499,7 +1499,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 6170
+          "y": 7015
         }
       }
     note: false
@@ -1511,10 +1511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: bfa25e3d-6d39-4675-8e11-ba075be0e122
+    taskid: 882e9c30-766f-42c3-8cdb-6e5322846d76
     type: regular
     task:
-      id: bfa25e3d-6d39-4675-8e11-ba075be0e122
+      id: 882e9c30-766f-42c3-8cdb-6e5322846d76
       version: -1
       name: list tickets with this user (init - might fail)
       description: List Zendesk tickets.
@@ -1567,12 +1567,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "39":
     id: "39"
-    taskid: 97215936-ecb1-4586-8e8b-63a1180340a7
+    taskid: 75cae003-5bf0-4b10-8a99-0e07b2603695
     type: regular
     task:
-      id: 97215936-ecb1-4586-8e8b-63a1180340a7
+      id: 75cae003-5bf0-4b10-8a99-0e07b2603695
       version: -1
       name: close tickets (init - might fail).
       description: Updates a Zendesk ticket.
@@ -1604,12 +1605,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "40":
     id: "40"
-    taskid: defd7008-9f45-4444-8c1a-dcef9df73094
+    taskid: d27415d5-0b82-4265-8620-a78262ab541b
     type: regular
     task:
-      id: defd7008-9f45-4444-8c1a-dcef9df73094
+      id: d27415d5-0b82-4265-8620-a78262ab541b
       version: -1
       name: delete context
       description: |-
@@ -1624,7 +1626,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "43"
     scriptarguments:
       all:
         simple: "yes"
@@ -1634,7 +1636,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4275
+          "y": 4450
         }
       }
     note: false
@@ -1646,10 +1648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: c6b496f8-6cdb-4ef4-8e59-e13e5d221eb3
+    taskid: ae40dae8-9541-400c-8c69-40116cef7c2e
     type: regular
     task:
-      id: c6b496f8-6cdb-4ef4-8e59-e13e5d221eb3
+      id: ae40dae8-9541-400c-8c69-40116cef7c2e
       version: -1
       name: delete context
       description: |-
@@ -1674,7 +1676,183 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 3460
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 555736d4-8bba-4cdc-8da8-edb6c04194ce
+    type: regular
+    task:
+      id: 555736d4-8bba-4cdc-8da8-edb6c04194ce
+      version: -1
+      name: Get the user's group
+      description: "Get group's users. \nAllowed for: Admins, Agents and Light Agents."
+      script: '|||zendesk-group-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      group_id:
+        simple: ${Zendesk.User.default_group_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 137abb2d-84d3-4f47-8bbb-284d8464c86b
+    type: title
+    task:
+      id: 137abb2d-84d3-4f47-8bbb-284d8464c86b
+      version: -1
+      name: Group Test
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: bc54dd3d-c27e-476b-887b-0d3c8840985a
+    type: regular
+    task:
+      id: bc54dd3d-c27e-476b-887b-0d3c8840985a
+      version: -1
+      name: Get Zendesk groups
+      description: "Get Zendesk groups. \nAllowed for: Admins, Agents."
+      script: '|||zendesk-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 8bb2112d-114a-4124-86a1-73c159c92eeb
+    type: condition
+    task:
+      id: 8bb2112d-114a-4124-86a1-73c159c92eeb
+      version: -1
+      name: Check Groups
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Zendesk.Group.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 3027a175-8d79-461f-8981-2948507d9e2e
+    type: regular
+    task:
+      id: 3027a175-8d79-461f-8981-2948507d9e2e
+      version: -1
+      name: Delete context - done group test
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5120
         }
       }
     note: false
@@ -1689,7 +1867,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6915,
+        "height": 7760,
         "width": 1035,
         "x": 50,
         "y": 50

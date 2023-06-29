@@ -64,15 +64,16 @@ configuration:
   required: false
   type: 0
 - additionalinfo: |-
-    Applies a filter to the list of detections or metrics based on a JSON-specific query.
+    Applies a filter to the list of detections based on a JSON-specific query.
 
     Example for detections:
     {
-      "category": "sec",
+      "categories": ["sec.attack"],
       "risk_score_min": 51
     }
 
-    For a complete reference to the Extrahop detections  filter fields , please refer to the ExtraHop REST API documentation at
+    If the categories and category are not specified, then categories will be set to ["sec.attack"]. The category field is deprecated by the API, so please use the categories field instead.
+    For a complete reference to the Extrahop detections filter fields, please refer to the ExtraHop REST API documentation at
     https://docs.extrahop.com/current/rest-api-guide/
   display: Advanced Filter
   name: advanced_filter
@@ -1676,11 +1677,12 @@ script:
       description: |-
         Detection-specific filters.
         For eg:
-        filter={
-                "category": "sec",
-                "risk_score_min": 51
-            }
+        {
+          "categories": ["sec.attack"],
+          "risk_score_min": 51
+        }
 
+        If the categories and category are not specified, then categories will be set to ["sec.attack"]. The category field is deprecated by the API, so please use the categories field instead.
         Refer to the ExtraHop REST API guide at https://docs.extrahop.com/current/rest-api-guide/
       isArray: false
       name: filter
@@ -5471,7 +5473,7 @@ script:
     description: Use extrahop-packets-search instead. Search for specific packets in Reveal(x).
     execution: false
     name: extrahop-search-packets
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

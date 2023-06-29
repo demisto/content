@@ -453,7 +453,7 @@ script:
           description: A complex type that describes change information about changes
             made to your hosted zone.
           type: string
-  dockerimage: demisto/boto3py3:1.0.0.62114
+  dockerimage: demisto/boto3py3:1.0.0.63846
   runonce: false
   script: ''
   subtype: python3
