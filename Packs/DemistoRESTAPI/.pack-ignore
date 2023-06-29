@@ -20,4 +20,4 @@ ignore=RM106
 ignore=SC106
 
 [file:CoreRESTAPI.yml]
-ignore=IN139
+ignore=IN139,RM110

@@ -83,6 +83,7 @@ script:
     - name: verbose
       description: Whether to add the raw response as a dictionary to the context. Default value is False.
       required: false
+      defaultValue: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -602,7 +603,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.61823
+  dockerimage: demisto/ippysocks-py3:1.0.0.63627
   feed: false
   isfetch: false
   longRunning: false

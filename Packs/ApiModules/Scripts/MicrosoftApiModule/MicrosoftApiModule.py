@@ -133,6 +133,7 @@ class MicrosoftClient(BaseClient):
             self.enc_key = enc_key
             self.tenant_id = tenant_id
             self.refresh_token = refresh_token
+            self.refresh_token_param = refresh_token_param
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
@@ -581,8 +582,7 @@ class MicrosoftClient(BaseClient):
             if not use_system_assigned:
                 params['client_id'] = self.managed_identities_client_id
 
-            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params,
-                                         headers={'Metadata': 'True'}).json()
+            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={'Metadata': 'True'}).json()
             access_token = response_json.get('access_token')
             expires_in = int(response_json.get('expires_in', 3595))
             if access_token:
@@ -662,7 +662,8 @@ class MicrosoftClient(BaseClient):
             execution_metrics.general_error += 1
         return_results(execution_metrics.metrics)
 
-    def error_parser(self, error: requests.Response) -> str:
+    @staticmethod
+    def error_parser(error: requests.Response) -> str:
         """
 
         Args:
@@ -765,7 +766,7 @@ class MicrosoftClient(BaseClient):
         try:
             headers = get_x_content_info_headers()
         except Exception as e:
-            demisto.error(f'Failed getting integration info: {str(e)}')
+            demisto.error('Failed getting integration info: {}'.format(str(e)))
 
         return headers
 
@@ -814,7 +815,8 @@ class NotFoundError(Exception):
 
 
 def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
-    """"extract the Azure Managed Identities from the demisto params
+    """
+    Extract the Azure Managed Identities from the demisto params
 
     Args:
         params (dict): the demisto params
@@ -832,15 +834,25 @@ def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
     return None
 
 
-def generate_login_url(client: MicrosoftClient) -> CommandResults:
-    assert client.tenant_id \
-           and client.scope \
-           and client.client_id \
-           and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
+def generate_login_url(client: MicrosoftClient,
+                       login_url: str = "https://login.microsoftonline.com/") -> CommandResults:
 
-    login_url = f'https://login.microsoftonline.com/{client.tenant_id}/oauth2/v2.0/authorize?' \
-                f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}' \
-                f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
+    missing = []
+    if not client.client_id:
+        missing.append("client_id")
+    if not client.tenant_id:
+        missing.append("tenant_id")
+    if not client.scope:
+        missing.append("scope")
+    if not client.redirect_uri:
+        missing.append("redirect_uri")
+    if missing:
+        raise DemistoException("Please make sure you entered the Authorization configuration correctly. "
+                               f"Missing:{','.join(missing)}")
+
+    login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
+                                   f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
+                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
@@ -850,6 +862,44 @@ You will be automatically redirected to a link with the following structure:
 and paste it in your instance configuration under the **Authorization code** parameter.
     """
     return CommandResults(readable_output=result_msg)
+
+
+def get_from_args_or_params(args: Dict[str, Any], params: Dict[str, Any], key: str) -> Any:
+    """
+    Get a value from args or params, if the value is provided in both args and params, the value from args will be used.
+    if the value is not provided in args or params, an exception will be raised.
+    this function is used in commands that have a value that can be provided in the instance parameters or in the command,
+    e.g in azure-key-vault-delete 'subscription_id' can be provided in the instance parameters or in the command.
+    Args:
+        args (Dict[str, Any]): Demisto args.
+        params (Dict[str, Any]): Demisto params
+        key (str): Key to get.
+    """
+    if value := args.get(key, params.get(key)):
+        return value
+    else:
+        raise Exception(f'No {key} was provided. Please provide a {key} either in the \
+instance configuration or as a command argument.')
+
+
+def azure_tag_formatter(arg):
+    """
+    Formats a tag argument to the Azure format
+    Args:
+        arg (str): Tag argument as string
+    Returns:
+        str: Tag argument in Azure format
+    """
+    try:
+        tag = json.loads(arg)
+        tag_name = next(iter(tag))
+        tag_value = tag[tag_name]
+        return f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
+    except Exception as e:
+        raise Exception(
+            """Invalid tag format, please use the following format: '{"key_name":"value_name"}'""",
+            e,
+        ) from e
 
 
 def reset_auth() -> CommandResults:

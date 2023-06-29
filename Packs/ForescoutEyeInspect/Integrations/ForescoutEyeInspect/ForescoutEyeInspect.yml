@@ -168,6 +168,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: false
       description: Indicates whether the result list should be sorted in ascending or descending order.
       isArray: false
       name: sort_ascending
@@ -287,6 +288,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: false
       description: Indicates whether the result list should be sorted in ascending or descending order.
       isArray: false
       name: sort_ascending
@@ -648,6 +650,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: false
       description: Whether to retrieve all the sensors (ICS Patrol and passive) or only the passive ones.
       isArray: false
       name: all_sensors
@@ -1510,7 +1513,7 @@ script:
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_mac_addresses
       description: The MAC addresses associated to the host.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false
