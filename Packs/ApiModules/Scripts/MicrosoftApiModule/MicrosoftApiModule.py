@@ -133,7 +133,6 @@ class MicrosoftClient(BaseClient):
             self.enc_key = enc_key
             self.tenant_id = tenant_id
             self.refresh_token = refresh_token
-            self.refresh_token_param = refresh_token_param
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
@@ -662,8 +661,7 @@ class MicrosoftClient(BaseClient):
             execution_metrics.general_error += 1
         return_results(execution_metrics.metrics)
 
-    @staticmethod
-    def error_parser(error: requests.Response) -> str:
+    def error_parser(self, error: requests.Response) -> str:
         """
 
         Args:
@@ -766,7 +764,7 @@ class MicrosoftClient(BaseClient):
         try:
             headers = get_x_content_info_headers()
         except Exception as e:
-            demisto.error('Failed getting integration info: {}'.format(str(e)))
+            demisto.error(f'Failed getting integration info: {str(e)}')
 
         return headers
 
