@@ -1121,8 +1121,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "13367e72d12bfa7be64bba6655bf0b9dd82ef22a"
-resolved_reference = "13367e72d12bfa7be64bba6655bf0b9dd82ef22a"
+reference = "249d570f83af3b2c63bf306e57f9ad5da1f561ea"
+resolved_reference = "249d570f83af3b2c63bf306e57f9ad5da1f561ea"
 
 [[package]]
 name = "deprecated"
@@ -2322,14 +2322,14 @@ files = [
 
 [[package]]
 name = "joblib"
-version = "1.3.0"
+version = "1.3.1"
 description = "Lightweight pipelining with Python functions"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "joblib-1.3.0-py3-none-any.whl", hash = "sha256:172d56d4c43dd6bcd953bea213018c4084cf754963bbf54b8dae40faea716b98"},
-    {file = "joblib-1.3.0.tar.gz", hash = "sha256:0b12a65dc76c530dbd790dd92881f75c40932b4254a7c8e608a868df408ca0a3"},
+    {file = "joblib-1.3.1-py3-none-any.whl", hash = "sha256:89cf0529520e01b3de7ac7b74a8102c90d16d54c64b5dd98cafcd14307fdf915"},
+    {file = "joblib-1.3.1.tar.gz", hash = "sha256:1f937906df65329ba98013dc9692fe22a4c5e4a648112de500508b18a21b41e3"},
 ]
 
 [[package]]
@@ -6560,4 +6560,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "d45719e7379eb2c95d35812e38a289ebd1f56b9d410b7bcbcba5088c60b0e726"
+content-hash = "a6717301282edd93f5e365e78b59ced0645635c3eef843a3e12857d73158d3d5"
