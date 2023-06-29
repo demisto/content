@@ -1,6 +1,6 @@
 # Cloud Incident Response
 
-**Short Description:** This content Pack helps you automate collection, investigation, and remediation of incidents related to cloud infrastructure activities in AWS, Azure, and GCP.
+This content Pack helps you automate collection, investigation, and remediation of incidents related to cloud infrastructure activities in AWS, Azure, and GCP.
 
 **Pack Description:**
 

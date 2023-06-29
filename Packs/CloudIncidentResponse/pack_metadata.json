@@ -17,9 +17,14 @@
         "Cloud",
         "IR",
         "Incident Response",
-        "Token Theft"
+        "Token Theft",
+        "Credentials",
+        "XDR",
+        "XCloud",
+        "Response"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "marketplacev2",
+        "xsoar"
     ]
 }
