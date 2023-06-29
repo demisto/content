@@ -2,6 +2,10 @@
 
 The Use Case builder contains tools to help you measure and track use cases through your automation journey, quickly autogenerate OOTB playbooks and custom workflows and more.
 
+## Setup And Configuration
+
+To run this content you will need to setup the **Cortex REST API** integration. To do this, simply download and install the content from the marketplace, generate a api key, then add your api key to the instance (Choosing the standard authentication method.) Once that is complete, you can start using the Use Case Builder!
+
 ## Default Incident Type
 
 This Pack includes an Incident Type of '**Use Case Builder**', which is the starting point for creating new Use Cases.  To use this, navigate to the +New Incidents -> Select Type -> Use Case Builder+ and fill out the form to begin.
