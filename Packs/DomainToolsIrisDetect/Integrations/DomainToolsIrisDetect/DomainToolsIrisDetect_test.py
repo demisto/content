@@ -108,6 +108,7 @@ CREATE_INDICATOR_FROM_DETECT_DOMAIN_OUTPUT = {
     "rawJSON": {
         "state": "new",
         "domain": "dummy.com",
+        "monitor_term": "dummy",
         "status": "active",
         "discovered_date": "2023-01-07T03:18:40.704000+00:00",
         "changed_date": "2023-01-07T03:20:16.000000+00:00",
