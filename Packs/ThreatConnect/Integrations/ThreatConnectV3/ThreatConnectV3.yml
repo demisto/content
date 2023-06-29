@@ -1226,12 +1226,6 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: Whether the updated indicator is a false positive.
-      name: falsePositive
-      predefined:
-      - 'True'
-      - 'False'
-    - auto: PREDEFINED
       description: The security label applied to the incident.
       name: securityLabel
       predefined:
