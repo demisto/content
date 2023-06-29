@@ -8,23 +8,49 @@ configuration:
   name: server_url
   required: false
   type: 0
+
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   required: false
   type: 4
+  hidden: true
+- displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
+  name:  credentials_auth_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   required: false
   type: 4
+  hidden: true
+- displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
+  name:  credentials_tenant_id
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   required: false
   type: 4
+  hidden: true
+- displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
+  name:  credentials_enc_key
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  hidden: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  displaypassword: Certificate Thumbprint
+  name:  credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -34,6 +60,12 @@ configuration:
   name: default_sub_id
   required: false
   type: 4
+  hidden: true
+- displaypassword: Default subscription ID to use
+  name:  credentials_default_sub_id
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Relevant only if the integration is running on Azure VM. 
     If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
     If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
