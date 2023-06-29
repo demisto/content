@@ -2301,15 +2301,12 @@ script:
     - name: subscription_id
       description: "The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided."
       type: String
-      required: false
     - name: tag
       description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
-      isArray: false
       type: String
     - name: limit
       description: The maximum number of resource groups to return.
       defaultValue: 50
-      isArray: false
       type: Number
     outputs:
     - contextPath: AzureSentinel.ResourceGroup.id
