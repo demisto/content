@@ -635,6 +635,7 @@ def test_module(client):
     elif params.get('auth_type') == 'Azure Managed Identities':
         client.ms_client.get_access_token()
         return 'ok'
+    return None
 
 
 def command_with_multiple_resource_group_name(client: Client, args: Dict, command: str, resource_group_name: List) -> List:

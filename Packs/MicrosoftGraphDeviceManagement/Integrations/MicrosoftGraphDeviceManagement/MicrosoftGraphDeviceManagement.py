@@ -1,6 +1,6 @@
 ''' IMPORTS '''
 import json
-from typing import Any, Tuple
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -43,18 +43,17 @@ class MsGraphClient:
                                          command_prefix="msgraph-device",
                                          )
 
-
-    def list_managed_devices(self, limit: int) -> Tuple[list, Any]:
+    def list_managed_devices(self, limit: int) -> tuple[list, Any]:
         url_suffix: str = '/deviceManagement/managedDevices'
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', [])[:limit], raw_response
 
-    def find_managed_devices(self, device_name: str) -> Tuple[Any, str]:
+    def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', []), raw_response
 
-    def get_managed_device(self, device_id: str) -> Tuple[Any, str]:
+    def get_managed_device(self, device_id: str) -> tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
         return self.ms_client.http_request('GET', url_suffix), device_id
 
@@ -127,7 +126,7 @@ def parse_device_action_results(raw_device_action_results: list) -> list:
     :param raw_device_action_results: The raw list of device action results
     :return: The parsed list of device action results
     """
-    action_results: list = list()
+    action_results: list = []
     for device_action_result in raw_device_action_results:
         action_result = assign_params(**{
             'Name': device_action_result.get('actionName'),

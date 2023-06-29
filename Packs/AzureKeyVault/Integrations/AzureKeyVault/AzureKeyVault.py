@@ -1,6 +1,6 @@
 # type: ignore
 from CommonServerPython import *
-from typing import Dict, List, Any
+from typing import Any
 import requests
 from datetime import datetime
 import copy
@@ -92,14 +92,14 @@ class KeyVaultClient:
     def create_or_update_key_vault_request(self, subscription_id: str, resource_group_name: str,
                                            vault_name: str, object_id: str, location: str,
                                            sku_name: str,
-                                           keys_permissions: List[str], secrets_permissions: List[str],
-                                           certificates_permissions: List[str], storage_accounts: List[str],
+                                           keys_permissions: list[str], secrets_permissions: list[str],
+                                           certificates_permissions: list[str], storage_accounts: list[str],
                                            enabled_for_deployment: bool,
                                            enabled_for_disk_encryption: bool,
                                            enabled_for_template_deployment: bool,
                                            default_action: str, bypass: str, vnet_subnet_id: str,
                                            ignore_missing_vnet_service_endpoint: bool,
-                                           ip_rules: List[str]) -> Dict[str, Any]:
+                                           ip_rules: list[str]) -> dict[str, Any]:
         """
         Create or update a key vault in the specified subscription..
 
@@ -149,7 +149,7 @@ class KeyVaultClient:
         return self.http_request('PUT', full_url=full_url, data=data, ok_codes=[200, 201])
 
     def delete_key_vault_request(self, subscription_id: str, resource_group_name: str,
-                                 vault_name: str) -> Dict[str, Any]:
+                                 vault_name: str) -> dict[str, Any]:
         """
         Delete Key Vault by name.
 
@@ -167,7 +167,7 @@ class KeyVaultClient:
         return self.http_request('DELETE', full_url=full_url, ok_codes=[200, 204])
 
     def get_key_vault_request(self, subscription_id: str, resource_group_name: str,
-                              vault_name: str) -> Dict[str, Any]:
+                              vault_name: str) -> dict[str, Any]:
         """
         Retrieve Key Vault by name.
 
@@ -184,7 +184,7 @@ class KeyVaultClient:
         return self.http_request('GET', full_url=full_url, ok_codes=[200])
 
     def list_key_vaults_request(self, subscription_id: str = None,
-                                limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET) -> List[dict]:
+                                limit: int = DEFAULT_LIMIT, offset: int = DEFAULT_OFFSET) -> list[dict]:
         """
         List Key Vaults by limit and offset arguments from the specified resource group and subscription.
 
@@ -204,8 +204,8 @@ class KeyVaultClient:
 
     def update_access_policy_request(self, subscription_id: str, resource_group_name: str,
                                      vault_name: str, operation_kind: str, object_id: str,
-                                     keys: List[str], secrets: List[str], certificates: List[str],
-                                     storage: List[str]) -> Dict[str, Any]:
+                                     keys: list[str], secrets: list[str], certificates: list[str],
+                                     storage: list[str]) -> dict[str, Any]:
         """
         Update access policy of an existing Key Vault.
 
@@ -233,7 +233,7 @@ class KeyVaultClient:
 
         return self.http_request('PUT', full_url=full_url, data=data, ok_codes=(200, 201))
 
-    def get_key_request(self, vault_name: str, key_name: str, key_version: str) -> Dict[str, Any]:
+    def get_key_request(self, vault_name: str, key_name: str, key_version: str) -> dict[str, Any]:
         """
         Get the public part of a stored key.
 
@@ -254,7 +254,7 @@ class KeyVaultClient:
 
         return response
 
-    def list_keys_request(self, vault_name: str, limit: int, offset: int) -> List[dict]:
+    def list_keys_request(self, vault_name: str, limit: int, offset: int) -> list[dict]:
         """ List keys in the specified Key Vault.
 
         Args:
@@ -272,7 +272,7 @@ class KeyVaultClient:
 
         return self.get_entities_independent_of_pages(response, limit, offset, self.get_vault_resource())
 
-    def delete_key_request(self, vault_name: str, key_name: str) -> Dict[str, Any]:
+    def delete_key_request(self, vault_name: str, key_name: str) -> dict[str, Any]:
         """
         Delete a key of any type from storage in Azure Key vault.
 
@@ -289,7 +289,7 @@ class KeyVaultClient:
 
         return response
 
-    def get_secret_request(self, vault_name: str, secret_name: str, secret_version: str) -> Dict[str, Any]:
+    def get_secret_request(self, vault_name: str, secret_name: str, secret_version: str) -> dict[str, Any]:
         """
         Retrieve secret by name from the specified key vault.
 
@@ -308,7 +308,7 @@ class KeyVaultClient:
 
         return response
 
-    def list_secrets_request(self, vault_name: str, limit: int, offset: int) -> List[dict]:
+    def list_secrets_request(self, vault_name: str, limit: int, offset: int) -> list[dict]:
         """
         List secrets by limit and offset from the specified Key Vault.
 
@@ -326,7 +326,7 @@ class KeyVaultClient:
 
         return self.get_entities_independent_of_pages(response, limit, offset, self.get_vault_resource())
 
-    def delete_secret_request(self, vault_name: str, secret_name: str) -> Dict[str, Any]:
+    def delete_secret_request(self, vault_name: str, secret_name: str) -> dict[str, Any]:
         """
         Delete a secret by name from the specified Key Vault.
 
@@ -344,7 +344,7 @@ class KeyVaultClient:
 
     def get_certificate_request(self, vault_name: str,
                                 certificate_name: str,
-                                certificate_version: str) -> Dict[str, Any]:
+                                certificate_version: str) -> dict[str, Any]:
         """
         Retrieve certificate from the specified Key Vault.
 
@@ -364,7 +364,7 @@ class KeyVaultClient:
 
         return response
 
-    def list_certificates_request(self, vault_name: str, limit: int, offset: int) -> List[dict]:
+    def list_certificates_request(self, vault_name: str, limit: int, offset: int) -> list[dict]:
         """
         List certificates from the specified Key Vault.
 
@@ -383,7 +383,7 @@ class KeyVaultClient:
 
         return self.get_entities_independent_of_pages(response, limit, offset, self.get_vault_resource())
 
-    def get_certificate_policy_request(self, vault_name: str, certificate_name: str) -> Dict[str, Any]:
+    def get_certificate_policy_request(self, vault_name: str, certificate_name: str) -> dict[str, Any]:
         """
         Retrieve policy of the specified certificate.
 
@@ -413,7 +413,7 @@ class KeyVaultClient:
         return self.get_entities_independent_of_pages(first_page=response, limit=DEFAULT_LIMIT, offset=DEFAULT_OFFSET,
                                                       resource=self.get_management_resource())
 
-    def list_resource_groups_request(self, subscription_id: str, tag: Dict[str, str], limit: int) -> List[dict]:
+    def list_resource_groups_request(self, subscription_id: str, tag: dict[str, str], limit: int) -> list[dict]:
         """
         List all resource groups.
 
@@ -436,8 +436,8 @@ class KeyVaultClient:
 
     ''' INTEGRATION HELPER METHODS  '''
 
-    def config_vault_permission(self, keys: List[str], secrets: List[str], certificates: List[str],
-                                storage: List[str]) -> Dict[str, Any]:
+    def config_vault_permission(self, keys: list[str], secrets: list[str], certificates: list[str],
+                                storage: list[str]) -> dict[str, Any]:
         """
         Returns the permissions field of an access policy property of a Key Vault.
 
@@ -463,7 +463,7 @@ class KeyVaultClient:
 
     def config_vault_network_acls(self, default_action: str, bypass: str, vnet_sub_id: str,
                                   ignore_missing_vnet_service_endpoint: bool,
-                                  ip_rules: List[str]) -> Dict[str, Any]:
+                                  ip_rules: list[str]) -> dict[str, Any]:
         """
         Configure the network acl property of a Key Vault.
 
@@ -477,7 +477,7 @@ class KeyVaultClient:
         Returns:
             Dict[str,Any]: Network acls property.
         """
-        network_acls: Dict[str, Any] = {}
+        network_acls: dict[str, Any] = {}
         if default_action:
             network_acls['defaultAction'] = default_action
         if bypass:
@@ -497,7 +497,7 @@ class KeyVaultClient:
     def config_vault_properties(self, object_id: str, tenant_id: str, enabled_for_deployment: bool,
                                 enabled_for_disk_encryption: bool,
                                 enabled_for_template_deployment: bool, sku_name: str,
-                                permissions: Dict[str, Any], network_acls: Dict[str, Any]):
+                                permissions: dict[str, Any], network_acls: dict[str, Any]):
         """
         Configure the properties of a vault on create or update command.
 
@@ -527,8 +527,8 @@ class KeyVaultClient:
 
         return properties
 
-    def get_entities_independent_of_pages(self, first_page: Dict[str, Any], limit: int, offset: int,
-                                          resource: Optional[str] = None) -> List[dict]:
+    def get_entities_independent_of_pages(self, first_page: dict[str, Any], limit: int, offset: int,
+                                          resource: Optional[str] = None) -> list[dict]:
         """
         List the entities according to the offset and limit arguments,
         following the first API call to the endpoint.
@@ -575,8 +575,8 @@ class KeyVaultClient:
 ''' INTEGRATIONS COMMANDS'''
 
 
-def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, Any],
-                                       params: Dict[str, Any]) -> CommandResults:
+def create_or_update_key_vault_command(client: KeyVaultClient, args: dict[str, Any],
+                                       params: dict[str, Any]) -> CommandResults:
     """
     Create or update Key Vault in the specified subscription.
 
@@ -653,7 +653,7 @@ def create_or_update_key_vault_command(client: KeyVaultClient, args: Dict[str, A
     )
 
 
-def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def delete_key_vault_command(client: KeyVaultClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """
     Delete Key Vault by name.
 
@@ -686,7 +686,7 @@ def delete_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], param
     )
 
 
-def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def get_key_vault_command(client: KeyVaultClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """
     Retrieve Key Vault by name.
 
@@ -720,7 +720,7 @@ def get_key_vault_command(client: KeyVaultClient, args: Dict[str, Any], params: 
     )
 
 
-def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def list_key_vaults_command(client: KeyVaultClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """ List Key Vaults associated with the subscription and within the specified resource group.
 
     Args:
@@ -755,7 +755,7 @@ def list_key_vaults_command(client: KeyVaultClient, args: Dict[str, Any], params
     return command_results
 
 
-def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def update_access_policy_command(client: KeyVaultClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """
     Updates access policy of a key vault in the specified subscription.
 
@@ -797,7 +797,7 @@ def update_access_policy_command(client: KeyVaultClient, args: Dict[str, Any], p
     )
 
 
-def get_key_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def get_key_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """ Get the public part of a stored key.
 
     Args:
@@ -841,7 +841,7 @@ def get_key_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResu
     return command_results
 
 
-def list_keys_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def list_keys_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     List keys in the specified vault, in XSOAR's format, according to limit and offset arguments.
 
@@ -888,7 +888,7 @@ def list_keys_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def delete_key_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def delete_key_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     Delete a key of any type from storage in Azure Key vault.
 
@@ -934,7 +934,7 @@ def delete_key_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def get_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def get_secret_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     Retrieve secret from the specified Key Vault
 
@@ -975,7 +975,7 @@ def get_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def list_secrets_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def list_secrets_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     List secrets in the specified key vault.
 
@@ -1020,7 +1020,7 @@ def list_secrets_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def delete_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def delete_secret_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     Delete secret from the specified Key Vault.
 
@@ -1066,7 +1066,7 @@ def delete_secret_command(client: KeyVaultClient, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def get_certificate_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def get_certificate_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     Get information about a certificate.
 
@@ -1109,7 +1109,7 @@ def get_certificate_command(client: KeyVaultClient, args: Dict[str, Any]) -> Com
     return command_results
 
 
-def list_certificates_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def list_certificates_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     List certificates in the specified Key Vault.
 
@@ -1157,7 +1157,7 @@ def list_certificates_command(client: KeyVaultClient, args: Dict[str, Any]) -> C
     return command_results
 
 
-def get_certificate_policy_command(client: KeyVaultClient, args: Dict[str, Any]) -> CommandResults:
+def get_certificate_policy_command(client: KeyVaultClient, args: dict[str, Any]) -> CommandResults:
     """
     Retrieve policy of the specified certificate.
 
@@ -1221,7 +1221,7 @@ def list_subscriptions_command(client: KeyVaultClient) -> CommandResults:
     )
 
 
-def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def list_resource_groups_command(client: KeyVaultClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """
     List all resource groups in the subscription.
 
@@ -1257,7 +1257,7 @@ def list_resource_groups_command(client: KeyVaultClient, args: Dict[str, Any], p
     )
 
 
-def test_module(client: KeyVaultClient, params: Dict[str, any]) -> None:
+def test_module(client: KeyVaultClient, params: dict[str, any]) -> None:
     """
      Test instance parameters validity.
      Displays an appropriate message in case of invalid parameters.
@@ -1281,8 +1281,8 @@ def test_module(client: KeyVaultClient, params: Dict[str, any]) -> None:
 
 
 def fetch_credentials(client: KeyVaultClient,
-                      key_vaults_to_fetch_from: List[str],
-                      secrets_to_fetch: List[str], credentials_name: str) -> None:
+                      key_vaults_to_fetch_from: list[str],
+                      secrets_to_fetch: list[str], credentials_name: str) -> None:
     """
      Fetch credentials from secrets which reside in the specified Key Vaults list.
      This command supports two scenarios:
@@ -1319,7 +1319,7 @@ def fetch_credentials(client: KeyVaultClient,
     demisto.credentials(credentials)
 
 
-def convert_attributes_to_readable(attributes: Dict[str, Any]) -> Dict[str, Any]:
+def convert_attributes_to_readable(attributes: dict[str, Any]) -> dict[str, Any]:
     """
     Convert attributes fields to be readable for the user.
 
@@ -1346,7 +1346,7 @@ def convert_attributes_to_readable(attributes: Dict[str, Any]) -> Dict[str, Any]
     return attributes
 
 
-def convert_key_info_to_readable(key_info: Dict[str, Any]) -> Dict[str, Any]:
+def convert_key_info_to_readable(key_info: dict[str, Any]) -> dict[str, Any]:
     """
     Convert key fields to be readable for the user.
 
@@ -1370,7 +1370,7 @@ def convert_key_info_to_readable(key_info: Dict[str, Any]) -> Dict[str, Any]:
     return key_info
 
 
-def convert_time_attributes_to_iso(attributes: Dict[str, Any]) -> Dict[str, Any]:
+def convert_time_attributes_to_iso(attributes: dict[str, Any]) -> dict[str, Any]:
     """
     Convert attributes fields to be readable for the user.
 
@@ -1407,8 +1407,8 @@ def convert_timestamp_to_readable_date(timestamp: int) -> str:
 
 
 def main() -> None:     # pragma: no cover
-    params: Dict[str, Any] = demisto.params() or {}
-    args: Dict[str, Any] = demisto.args() or {}
+    params: dict[str, Any] = demisto.params() or {}
+    args: dict[str, Any] = demisto.args() or {}
     key_vaults_to_fetch_from = argToList(params.get('key_vaults', []))
     secrets_to_fetch = argToList(params.get('secrets', []))
     verify_certificate: bool = not params.get('insecure', False)

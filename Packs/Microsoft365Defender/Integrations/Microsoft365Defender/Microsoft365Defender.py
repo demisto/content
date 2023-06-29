@@ -1,5 +1,4 @@
 import json
-from typing import Dict
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -62,7 +61,7 @@ class Client:
     @logger
     def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
-                       skip: Optional[int] = None, odata: Optional[dict] = None) -> Dict:
+                       skip: Optional[int] = None, odata: Optional[dict] = None) -> dict:
         """
         GET request from the client using OData operators:
             - $top: how many incidents to receive, maximum value is 100
@@ -116,7 +115,7 @@ class Client:
     @logger
     def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
                         classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> Dict:
+                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> dict:
         """
         PATCH request to update single incident.
         Args:
@@ -146,7 +145,7 @@ class Client:
         return updated_incident
 
     @logger
-    def get_incident(self, incident_id: int, timeout: int) -> Dict:
+    def get_incident(self, incident_id: int, timeout: int) -> dict:
         """
         GET request to get single incident.
         Args:
@@ -245,7 +244,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
+def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     """
     Calculated metadata for the gicen incident
     Args:
@@ -283,7 +282,7 @@ def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
     }
 
 
-def convert_incident_to_readable(raw_incident: Dict) -> Dict:
+def convert_incident_to_readable(raw_incident: dict) -> dict:
     """
     Converts incident received from microsoft 365 defender to readable format
     Args:
@@ -323,7 +322,7 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
 
 
 @logger
-def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_incidents_list_command(client: Client, args: dict) -> CommandResults:
     """
     Returns list of the latest incidents in microsoft 365 defender in readable table.
     The list can be filtered using the following arguments:
@@ -370,7 +369,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
 
 
 @logger
-def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_incident_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update an incident.
     Args:
@@ -412,7 +411,7 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
 
 
 @logger
-def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get an incident.
     Args:
@@ -439,7 +438,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> C
 
 
 @logger
-def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[Dict]:
+def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -477,7 +476,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
 
     if len(incidents_queue) < fetch_limit:
 
-        incidents = list()
+        incidents = []
 
         # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
         # incident we skip (offset) the number of incidents we already fetched.
@@ -554,7 +553,7 @@ def _query_set_limit(query: str, limit: int) -> str:
 
 
 @logger
-def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) -> CommandResults:
     """
     Sends a query for the advanced hunting tool.
     Args:

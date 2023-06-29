@@ -61,7 +61,7 @@ class Client:  # pragma: no cover
         Docs:
             https://docs.microsoft.com/en-us/graph/api/directoryrole-list?view=graph-rest-1.0&tabs=http
         """
-        results = list()
+        results = []
         res = self.ms_client.http_request(
             'GET', 'v1.0/directoryRoles')
         results.extend(res.get('value'))

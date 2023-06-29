@@ -110,7 +110,7 @@ class Client:
                 proxy=proxy)
 
         else:
-            self.client_credentials = True if auth_mode == 'client credentials' else False
+            self.client_credentials = auth_mode == 'client credentials'
             if '@' in app_id:
                 app_id, refresh_token = app_id.split('@')
                 integration_context = get_integration_context()
@@ -329,10 +329,7 @@ def args_to_filter_close_alerts(alert_ids: Optional[List] = None,
                                 reason: Optional[int] = None,
                                 ):
     if custom_filter:
-        if isinstance(custom_filter, str):
-            request_data = json.loads(custom_filter)
-        else:
-            request_data = custom_filter
+        request_data = json.loads(custom_filter) if isinstance(custom_filter, str) else custom_filter
     elif alert_ids:
         request_data = {
             'filters': {
@@ -466,7 +463,7 @@ def list_alerts_command(client: Client, args: dict):
     arguments = assign_params(**args)
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, alert_id)
     alerts_response_data = client.list_alerts(url_suffix, request_data)
-    list_alert = alerts_response_data.get('data') if 'data' in alerts_response_data.keys() else [alerts_response_data]
+    list_alert = alerts_response_data.get('data') if 'data' in alerts_response_data else [alerts_response_data]
     if list_alert:  # organize the output
         alerts = arrange_alerts_by_incident_type(list_alert)
         alerts = arrange_alerts_descriptions(alerts)
@@ -536,10 +533,10 @@ def activity_to_human_readable(activity: dict):
 def arrange_entities_data(activities: List[dict]):
     for activity in activities:
         entities_data = []
-        if 'entityData' in activity.keys():
+        if 'entityData' in activity:
             entity_data = activity['entityData']
             if entity_data:
-                for key, value in entity_data.items():
+                for _key, value in entity_data.items():
                     if value:
                         entities_data.append(value)
                 activity['entityData'] = entities_data

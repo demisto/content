@@ -222,10 +222,9 @@ def test_module(client: Client):
         client.get_access_token_data()
         return 'ok'
 
-    if params.get('self_deployed'):
-        if not params.get('auth_code') or not params.get('redirect_uri'):
-            raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
-                                   'redirect uri cannot be empty.')
+    if params.get('self_deployed') and (not params.get('auth_code') or not params.get('redirect_uri')):
+        raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
+                               'redirect uri cannot be empty.')
     raise DemistoException('The basic parameters are ok, authentication cannot be checked using the test module. '
                            'Please run ms-management-activity-list-subscriptions to test your credentials.')
 
@@ -239,7 +238,7 @@ def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
 
 
 def get_start_or_stop_subscription_context(content_type, start_or_stop):
-    is_subscription_enabled = True if start_or_stop == 'start' else False
+    is_subscription_enabled = start_or_stop == 'start'
     subscription_context = {
         'ContentType': content_type,
         'Enabled': is_subscription_enabled
@@ -466,7 +465,7 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
 
 
 def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
-    all_content_records: List = list()
+    all_content_records: List = []
     content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str \
         else content_types_to_fetch
     for content_type in content_types_to_fetch:

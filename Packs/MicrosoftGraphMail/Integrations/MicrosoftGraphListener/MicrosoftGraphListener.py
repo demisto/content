@@ -95,11 +95,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
 
-        if self._display_full_email_body:
-            body = email.get('body', {}).get('content', '')
-
-        else:
-            body = email.get('bodyPreview', '')
+        body = email.get('body', {}).get('content', '') if self._display_full_email_body else email.get('bodyPreview', '')
 
         incident = {
             'name': parsed_email['Subject'],
@@ -166,7 +162,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
 
         fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
                                                                      exclude_ids=exclude_ids)
-        incidents = list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails))
+        incidents = [self._parse_email_as_incident(email, True) for email in fetched_emails]
         next_run_time = self._get_next_run_time(fetched_emails, last_fetch)
         next_run = {
             'LAST_RUN_TIME': next_run_time,

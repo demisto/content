@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, List, Any
+from typing import Any
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -46,10 +46,7 @@ def create_search_alerts_filters(args, is_fetch=False):
     time_to = args.get('time_to')
     filter_query = args.get('filter')
     page = args.get('page')
-    if (is_fetch and args.get('page_size')) or not is_fetch:
-        page_size = int(args.get('page_size', 50))
-    else:
-        page_size = 0
+    page_size = int(args.get('page_size', 50)) if is_fetch and args.get('page_size') or not is_fetch else 0
     filters = []
     params: dict[str, str] = {}
     if last_modified:
@@ -72,7 +69,7 @@ def create_search_alerts_filters(args, is_fetch=False):
     if page and page_size:
         page = int(page)
         page = page * page_size
-        if API_VER == API_V1 and API_V1_PAGE_LIMIT < page:
+        if API_VER == API_V1 and page > API_V1_PAGE_LIMIT:
             raise DemistoException(f"Please note that the maximum amount of alerts you can skip in {API_VER} is"
                                    f" {API_V1_PAGE_LIMIT}")
         params['$skip'] = page
@@ -98,7 +95,7 @@ def create_data_to_update(args):
     if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
         raise DemistoException(f"No data relevant for {API_VER} to update was provided, please provide at least one of the"
                                f" following: {(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
-    data: Dict[str, Any] = {}
+    data: dict[str, Any] = {}
     if API_VER == API_V1:
         vendor_information = args.get('vendor_information')
         provider_information = args.get('provider_information')
@@ -112,7 +109,7 @@ def create_data_to_update(args):
         data['assignedTo'] = assigned_to
     for relevant_args_key, relevant_data_key in relevant_data_to_update_per_version_dict.items():
         if val := args.get(relevant_args_key):
-            if 'tags' == relevant_args_key or 'comments' == relevant_args_key:
+            if relevant_args_key == 'tags' or relevant_args_key == 'comments':
                 data[relevant_data_key] = [val]
             else:
                 data[relevant_data_key] = val
@@ -271,7 +268,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
         new_last_run = last_run
-    demisto_incidents: List = list()
+    demisto_incidents: list = []
     time_from = new_last_run.get('time')
     time_to = datetime.now().strftime(timestamp_format)
 
@@ -377,7 +374,7 @@ def get_alert_details_command(client: MsGraphClient, args):
             validate_fields_list(fields_list)
         else:
             fields_list = []
-        show_all_fields = True if 'All' in fields_list else False
+        show_all_fields = 'All' in fields_list
 
         basic_properties_title = 'Basic Properties'
         basic_properties = {

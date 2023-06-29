@@ -38,8 +38,8 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
     @staticmethod
     def get_email_content_as_text_and_html(email):
-        email_body = email.get('body') or tuple()  # email body including replyTo emails.
-        email_unique_body = email.get('uniqueBody') or tuple()  # email-body without replyTo emails.
+        email_body = email.get('body') or ()  # email body including replyTo emails.
+        email_unique_body = email.get('uniqueBody') or ()  # email-body without replyTo emails.
 
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
@@ -216,7 +216,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
         # remove duplicate incidents which were already fetched
         incidents = filter_incidents_by_duplicates_and_limit(
-            incidents_res=list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails)),
+            incidents_res=[self._parse_email_as_incident(email, True) for email in fetched_emails],
             last_run=last_run,
             fetch_limit=self._emails_fetch_limit,
             id_field='ID'

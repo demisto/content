@@ -5,7 +5,6 @@ from MicrosoftApiModule import *  # noqa: E402
 
 import urllib3
 import traceback
-from typing import List, Union
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -104,7 +103,7 @@ class AzureNSGClient:
 '''HELPER FUNCTIONS'''
 
 
-def format_rule(rule_json: Union[dict, List], security_rule_name: str):
+def format_rule(rule_json: dict | list, security_rule_name: str):
     """
     format the rule and create the commandResult object with it
     Args:
@@ -175,7 +174,7 @@ def list_rules_command(client: AzureNSGClient, security_group_name: str, limit: 
     security_groups = argToList(security_group_name)
     rules_limit = int(limit)
     rules_offset = int(offset) - 1  # As offset will start at 1
-    rules: List = list()
+    rules: list = []
     for group in security_groups:
         rules_returned = client.list_rules(group)
         rules.extend(rules_returned.get('value', []))

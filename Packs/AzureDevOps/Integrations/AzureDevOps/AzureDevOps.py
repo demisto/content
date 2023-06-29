@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 import copy
 from requests import Response
-from typing import Callable
+from collections.abc import Callable
 
 INCIDENT_TYPE_NAME = "Azure DevOps"
 OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',

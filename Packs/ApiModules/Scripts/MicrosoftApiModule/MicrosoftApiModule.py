@@ -8,7 +8,6 @@ import requests
 import re
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Tuple, List, Optional
 
 
 class Scopes:
@@ -129,6 +128,7 @@ MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005,
                              }  # See: https://login.microsoftonline.com/error?code=
+
 
 class CloudEndpointNotSetException(Exception):
     pass
@@ -501,11 +501,11 @@ class AzureCloudNames:
 
 
 def create_custom_azure_cloud(origin: str,
-                              name: Optional[str] = None,
-                              abbreviation: Optional[str] = None,
-                              defaults: Optional[AzureCloud] = None,
-                              endpoints: Optional[Dict] = None,
-                              suffixes: Optional[Dict] = None):
+                              name: str | None = None,
+                              abbreviation: str | None = None,
+                              defaults: AzureCloud | None = None,
+                              endpoints: dict | None = None,
+                              suffixes: dict | None = None):
     defaults = defaults or AzureCloud(origin, name, abbreviation)
     endpoints = endpoints or {}
     suffixes = suffixes or {}
@@ -601,7 +601,7 @@ def get_azure_cloud(params, integration_name):
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
-                 enc_key: Optional[str] = '',
+                 enc_key: str | None = '',
                  token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
@@ -609,22 +609,22 @@ class MicrosoftClient(BaseClient):
                  scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
-                 resource: Optional[str] = '',
+                 resource: str | None = '',
                  multi_resource: bool = False,
-                 resources: List[str] = None,
+                 resources: list[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
-                 timeout: Optional[int] = None,
+                 timeout: int | None = None,
                  azure_ad_endpoint: str = '{endpoint}',
                  azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
                  endpoint: str = "__NA__",  # Deprecated
-                 certificate_thumbprint: Optional[str] = None,
+                 certificate_thumbprint: str | None = None,
                  retry_on_rate_limit: bool = False,
-                 private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None,
-                 managed_identities_resource_uri: Optional[str] = None,
-                 base_url: Optional[str] = None,
-                 command_prefix: Optional[str] = "command_prefix",
+                 private_key: str | None = None,
+                 managed_identities_client_id: str | None = None,
+                 managed_identities_resource_uri: str | None = None,
+                 base_url: str | None = None,
+                 command_prefix: str | None = "command_prefix",
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -713,7 +713,7 @@ class MicrosoftClient(BaseClient):
         self.multi_resource = multi_resource
         if self.multi_resource:
             self.resources = resources if resources else []
-            self.resource_to_access_token: Dict[str, str] = {}
+            self.resource_to_access_token: dict[str, str] = {}
 
         # for Azure Managed Identities purpose
         self.managed_identities_client_id = managed_identities_client_id
@@ -730,7 +730,7 @@ class MicrosoftClient(BaseClient):
 
     def http_request(
             self, *args, resp_type='json', headers=None,
-            return_empty_response=False, scope: Optional[str] = None,
+            return_empty_response=False, scope: str | None = None,
             resource: str = '', overwrite_rate_limit_retry=False, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
@@ -820,9 +820,9 @@ class MicrosoftClient(BaseClient):
                     ET.fromstring(response.text)
             return response
         except ValueError as exception:
-            raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
+            raise DemistoException(f'Failed to parse json object from response: {response.content}', exception)
 
-    def get_access_token(self, resource: str = '', scope: Optional[str] = None) -> str:
+    def get_access_token(self, resource: str = '', scope: str | None = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
@@ -849,9 +849,8 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        if access_token and valid_until:
-            if self.epoch_seconds() < valid_until:
-                return access_token
+        if access_token and valid_until and self.epoch_seconds() < valid_until:
+            return access_token
 
         if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
@@ -918,8 +917,8 @@ class MicrosoftClient(BaseClient):
                    f'You can run the ***{self.command_prefix}-auth-reset*** command to reset the authentication process.'
         raise Exception(msg)
 
-    def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
-                                        scope: Optional[str] = None, resource: str = ''
+    def _oproxy_authorize_build_request(self, headers: dict[str, str], content: str,
+                                        scope: str | None = None, resource: str = ''
                                         ) -> requests.Response:
         """
         Build the Post request sent to the Oproxy server.
@@ -945,7 +944,7 @@ class MicrosoftClient(BaseClient):
             verify=self.verify
         )
 
-    def _oproxy_authorize(self, resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _oproxy_authorize(self, resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing with oproxy.
         Args:
@@ -977,9 +976,9 @@ class MicrosoftClient(BaseClient):
 
     def _get_self_deployed_token(self,
                                  refresh_token: str = '',
-                                 scope: Optional[str] = None,
-                                 integration_context: Optional[dict] = None
-                                 ) -> Tuple[str, int, str]:
+                                 scope: str | None = None,
+                                 integration_context: dict | None = None
+                                 ) -> tuple[str, int, str]:
         if self.managed_identities_client_id:
 
             if not self.multi_resource:
@@ -1015,8 +1014,8 @@ class MicrosoftClient(BaseClient):
                 return '', expires_in, refresh_token
             return self._get_self_deployed_token_client_credentials(scope=scope)
 
-    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None,
-                                                    resource: Optional[str] = None) -> Tuple[str, int, str]:
+    def _get_self_deployed_token_client_credentials(self, scope: str | None = None,
+                                                    resource: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
@@ -1060,7 +1059,7 @@ class MicrosoftClient(BaseClient):
         return access_token, expires_in, ''
 
     def _get_self_deployed_token_auth_code(
-            self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+            self, refresh_token: str = '', resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
         Returns:
@@ -1069,7 +1068,7 @@ class MicrosoftClient(BaseClient):
         data = assign_params(
             client_id=self.client_id,
             client_secret=self.client_secret,
-            resource=self.resource if not resource else resource,
+            resource=resource if resource else self.resource,
             redirect_uri=self.redirect_uri
         )
 
@@ -1136,10 +1135,11 @@ class MicrosoftClient(BaseClient):
             err = f'{str(e)}'
 
         return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+        return None
 
     def _get_token_device_code(
-            self, refresh_token: str = '', scope: Optional[str] = None, integration_context: Optional[dict] = None
-    ) -> Tuple[str, int, str]:
+            self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
+    ) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
@@ -1257,7 +1257,7 @@ class MicrosoftClient(BaseClient):
         return datetime.utcfromtimestamp(_time)
 
     @staticmethod
-    def get_encrypted(content: str, key: Optional[str]) -> str:
+    def get_encrypted(content: str, key: str | None) -> str:
         """
         Encrypts content with encryption key.
         Args:
@@ -1302,7 +1302,7 @@ class MicrosoftClient(BaseClient):
         return encrypted
 
     @staticmethod
-    def _add_info_headers() -> Dict[str, str]:
+    def _add_info_headers() -> dict[str, str]:
         # pylint: disable=no-member
         headers = {}
         try:
@@ -1356,7 +1356,7 @@ class NotFoundError(Exception):
         self.message = message
 
 
-def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
+def get_azure_managed_identities_client_id(params: dict) -> str | None:
     """
     Extract the Azure Managed Identities from the demisto params
 
@@ -1406,7 +1406,7 @@ and paste it in your instance configuration under the **Authorization code** par
     return CommandResults(readable_output=result_msg)
 
 
-def get_from_args_or_params(args: Dict[str, Any], params: Dict[str, Any], key: str) -> Any:
+def get_from_args_or_params(args: dict[str, Any], params: dict[str, Any], key: str) -> Any:
     """
     Get a value from args or params, if the value is provided in both args and params, the value from args will be used.
     if the value is not provided in args or params, an exception will be raised.

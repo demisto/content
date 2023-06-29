@@ -195,6 +195,7 @@ def test_module(client):
     elif params.get('auth_type') == 'Azure Managed Identities':
         test_connection(client=client)
         return 'ok'
+    return None
 
 
 def main() -> None:

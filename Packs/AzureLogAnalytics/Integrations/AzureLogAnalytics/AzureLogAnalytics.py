@@ -57,7 +57,7 @@ class Client:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.management_azure,
-            command_prefix = "azure-log-analytics",
+            command_prefix="azure-log-analytics",
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -99,7 +99,7 @@ def format_query_table(table):
     columns = [column.get('name') for column in table.get('columns')]
     rows = table.get('rows')
     data = [
-        {k: v for k, v in zip(columns, row)} for row in rows
+        dict(zip(columns, row)) for row in rows
     ]
 
     return name, columns, data
@@ -155,7 +155,7 @@ def tags_arg_to_request_format(tags):
 def test_connection(client, params):
     if not client.ms_client.managed_identities_client_id:
         if (params.get('self_deployed', False) and not params.get('client_credentials')
-           and not(params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
+           and not (params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
             return_error('You must enter an authorization code in a self-deployed configuration.')
 
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error

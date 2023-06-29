@@ -71,7 +71,7 @@ class Client:
             )
             return res['value']
         else:  # unlimited, should page
-            results = list()
+            results = []
             res = self.ms_client.http_request(
                 'GET',
                 suffix

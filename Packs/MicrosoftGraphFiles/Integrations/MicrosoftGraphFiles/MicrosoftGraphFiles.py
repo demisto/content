@@ -120,7 +120,6 @@ class MsGraphClient:
             command_prefix="msgraph-files",
         )
 
-
     def list_sharepoint_sites(self, keyword):
         """
         This function lists the tenant sites
@@ -298,7 +297,7 @@ class MsGraphClient:
         try:
             response = requests.put(url=upload_url, data=chunk_data, headers=headers)
         except Exception as e:
-            raise(e)
+            raise (e)
         return response
 
     def upload_file_with_upload_session(self, upload_url: str, file_data: bytes, file_size: int) -> dict:
@@ -408,7 +407,7 @@ class MsGraphClient:
         """
         file_path = demisto.getFilePath(entry_id).get("path")
 
-        if "drives" == object_type:
+        if object_type == "drives":
             uri = f"{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content"
 
         elif object_type in ["groups", "users", "sites"]:
@@ -571,10 +570,7 @@ def list_sharepoint_sites_command(client: MsGraphClient, args):
     This function runs list tenant site command
     :return: human_readable, context, result
     """
-    if args.get('keyword'):
-        keyword = args.get('keyword')
-    else:
-        keyword = '*'
+    keyword = args.get("keyword") if args.get("keyword") else "*"
     result = client.list_sharepoint_sites(keyword)
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
 

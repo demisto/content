@@ -74,7 +74,7 @@ def get_unsupported_chars_in_user(user: Optional[str]) -> set:
     Extracts the invalid user characters found in the provided string.
     """
     if not user:
-        return set([])
+        return set()
     return set(INVALID_USER_CHARS_REGEX.findall(user))
 
 
@@ -217,7 +217,7 @@ class MsGraphClient:
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def assign_manager(self, user, manager):
-        manager_ref = "{}users/{}".format(self.ms_client._base_url, manager)
+        manager_ref = f"{self.ms_client._base_url}users/{manager}"
         body = {"@odata.id": manager_ref}
         self.ms_client.http_request(
             method='PUT',

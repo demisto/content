@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from typing import Dict, Optional, Any, Union
+from typing import Any
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
@@ -81,7 +81,7 @@ class Client:
                     ' IdentityRiskyUser.ReadWrite.All offline_access')
 
     @staticmethod
-    def get_token_retrieval_url_by_auth_type(authentication_type: str) -> Union[None, str]:
+    def get_token_retrieval_url_by_auth_type(authentication_type: str) -> None | str:
         """
         Gets the token retrieval url by the given authentication type.
         Args:
@@ -95,7 +95,7 @@ class Client:
         else:  # Device Code Flow
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
-    def risky_users_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
+    def risky_users_list_request(self, risk_state: str | None, risk_level: str | None,
                                  limit: int, skip_token: str = None) -> dict:
         """
         List risky users.
@@ -130,8 +130,8 @@ class Client:
         return self.ms_client.http_request(method='GET',
                                            url_suffix=f'identityProtection/riskyUsers/{id}')
 
-    def risk_detections_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
-                                     detected_date_time_before: Optional[str], detected_date_time_after: Optional[str],
+    def risk_detections_list_request(self, risk_state: str | None, risk_level: str | None,
+                                     detected_date_time_before: str | None, detected_date_time_after: str | None,
                                      limit: int, order_by: str, skip_token: str = None) -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
@@ -186,9 +186,9 @@ def update_query(query: str, filter_name: str, filter_value: str, filter_operato
         return filter_str
 
 
-def build_query_filter(risk_state: Optional[str], risk_level: Optional[str],
-                       detected_date_time_before: Optional[str] = None,
-                       detected_date_time_after: Optional[str] = None) -> Optional[str]:
+def build_query_filter(risk_state: str | None, risk_level: str | None,
+                       detected_date_time_before: str | None = None,
+                       detected_date_time_after: str | None = None) -> str | None:
     """
     Build query filter for API call, in order to get filtered results.
     API query syntax reference: https://docs.microsoft.com/en-us/graph/query-parameters.
@@ -210,8 +210,8 @@ def build_query_filter(risk_state: Optional[str], risk_level: Optional[str],
     return query
 
 
-def get_skip_token(next_link: Optional[str], outputs_prefix: str, outputs_key_field: str,
-                   readable_output: str) -> Union[CommandResults, str]:
+def get_skip_token(next_link: str | None, outputs_prefix: str, outputs_key_field: str,
+                   readable_output: str) -> CommandResults | str:
     if not next_link:
         return CommandResults(outputs_prefix=outputs_prefix,
                               outputs_key_field=outputs_key_field,
@@ -223,7 +223,7 @@ def get_skip_token(next_link: Optional[str], outputs_prefix: str, outputs_key_fi
         return parse_qs(parsed_url.query)['$skiptoken'][0]
 
 
-def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     List all risky users.
     Args:
@@ -281,7 +281,7 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
                           raw_response=raw_response)
 
 
-def risky_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def risky_user_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get a risky user by ID.
 
@@ -312,7 +312,7 @@ def risky_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResul
                           raw_response=raw_response)
 
 
-def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def risk_detections_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieve a list of the Risk-Detection objects and their properties.
 
@@ -382,7 +382,7 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
                           raw_response=raw_response)
 
 
-def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Read the properties and relationships of a riskDetection object.
 
