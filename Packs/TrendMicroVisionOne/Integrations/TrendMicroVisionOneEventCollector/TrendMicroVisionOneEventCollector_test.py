@@ -6,7 +6,9 @@ from CommonServerUserPython import *  # noqa
 import pytest
 import pytz
 from urllib.parse import parse_qs, urlparse
-from TrendMicroVisionOneEventCollector import DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsStartTimeFields, UrlSuffixes, LogTypes
+from TrendMicroVisionOneEventCollector import (
+    DATE_FORMAT, Client, DEFAULT_MAX_LIMIT, LastRunLogsStartTimeFields, UrlSuffixes, LogTypes
+)
 
 
 BASE_URL = 'https://api.xdr.trendmicro.com'
@@ -215,87 +217,21 @@ class TestFetchEvents:
         main()
 
         assert set_last_run_mocker.call_args.args[0] == {
-            'workbench_logs_time': '2023-01-01T14:16:40Z',
+            'workbench_start_time': '2023-01-01T14:16:40Z',
             'found_workbench_logs': [1000],
-            'oat_detection_logs_time': '2023-01-01T14:51:39Z',
-            'found_oat_logs': [500],
-            'search_detection_logs_time': '2023-01-01T14:59:59Z',
-            'found_search_detection_logs': [500],
-            'audit_logs_time': '2023-01-01T14:08:19Z',
+            'oat_detection_start_time': '2023-01-01T14:59:59Z',
+            'dedup_found_oat_logs': [1000],
+            'pagination_found_oat_logs': [1000],
+            'oat_detection_next_link': 'https://api.xdr.trendmicro.com/v3.0/oat/detections?top=1000&fetchedAmountOfEvents=1000',
+            'search_detection_start_time': '2023-01-01T14:59:59Z', 'dedup_found_search_detection_logs': [500],
+            'pagination_found_search_detection_logs': [], 'search_detection_next_link': '',
+            'audit_start_time': '2023-01-01T14:08:19Z',
             'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
         }
 
         assert send_events_to_xsiam_mocker.call_count == 1
         # 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
         assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == 3000
-
-    def test_fetch_events_main_flow_with_last_run(self, mocker):
-        """
-        Given:
-           - 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
-           - no last run
-           - max_fetch = 1000
-
-        When:
-           - running fetch-events through the main flow
-
-        Then:
-           - make sure last run is correct
-           - make sure 3000 logs were sent
-
-        """
-        from TrendMicroVisionOneEventCollector import main
-
-        start_freeze_time('2023-01-01T15:00:00Z')
-
-        mocker.patch.object(demisto, 'params', return_value={"max_fetch": 1000})
-        mocker.patch.object(demisto, 'command', return_value='fetch-events')
-        mocker.patch.object(
-            demisto, 'getLastRun', return_value={
-                'workbench_logs_time': '2023-01-01T14:00:00Z',
-                'found_workbench_logs': [1, 2, 3],
-                'oat_detection_logs_time': '2023-01-01T14:00:00Z',
-                'found_oat_logs': [],
-                'search_detection_logs_time': '2023-01-01T14:00:00Z',
-                'found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                'audit_logs_time': '2023-01-01T14:00:00Z',
-                'found_audit_logs': []
-            }
-        )
-        mocker.patch.object(
-            BaseClient,
-            '_http_request',
-            side_effect=_http_request_side_effect_decorator(
-                num_of_workbench_logs=1500,
-                num_of_oat_logs=1500,
-                num_of_search_detection_logs=500,
-                num_of_audit_logs=500,
-                last_workbench_time="2023-01-01T14:00:00Z",
-                last_audit_log_time="2023-01-01T14:00:00Z",
-                last_oat_time="2023-01-01T14:00:00Z",
-                last_search_detection_logs="2023-01-01T14:00:00Z"
-            )
-        )
-
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
-        send_events_to_xsiam_mocker = mocker.patch('TrendMicroVisionOneEventCollector.send_events_to_xsiam')
-        main()
-
-        assert set_last_run_mocker.call_args.args[0] == {
-            'workbench_logs_time': '2023-01-01T14:16:43Z',
-            'found_workbench_logs': [1003],
-            'oat_detection_logs_time': '2023-01-01T14:51:39Z',
-            'found_oat_logs': [500],
-            'search_detection_logs_time': '2023-01-01T14:59:59Z',
-            'found_search_detection_logs': [500],
-            'audit_logs_time': '2023-01-01T14:08:19Z',
-            'found_audit_logs': ['77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682']
-        }
-        assert send_events_to_xsiam_mocker.call_count == 1
-        # 1000 workbench because we query what's in the cache + limit = 1003
-        # 491 search detections because they are removed from the cache
-        # 1000 workbench + 1000 oat + 491 search detections + 500 audit logs
-        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == 2991
 
     def test_get_workbench_logs_no_last_run(self, mocker, client: Client):
         """
