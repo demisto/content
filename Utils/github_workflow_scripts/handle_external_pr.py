@@ -2,7 +2,6 @@
 import json
 import os
 
-from typing import List, Set
 from pathlib import Path
 
 import urllib3
@@ -17,7 +16,7 @@ from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-REVIEWERS = ['thefrieddan1', 'michal-dagan', 'RotemAmit']
+REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
@@ -34,7 +33,7 @@ COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
 
 
-def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
+def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have either been assigned to a user or a review
     was requested from the user for each potential reviewer and returns the user with the smallest amount
 
@@ -67,7 +66,7 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_packs_support_levels(pack_dirs: Set[str]) -> Set[str]:
+def get_packs_support_levels(pack_dirs: set[str]) -> set[str]:
     """
     Get the pack support levels from the pack metadata.
 
@@ -86,7 +85,7 @@ def get_packs_support_levels(pack_dirs: Set[str]) -> Set[str]:
     return packs_support_levels
 
 
-def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str) -> str:
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
     """
     Get The contributions' support level label.
 
@@ -143,7 +142,7 @@ def get_packs_support_level_label(file_paths: List[str], external_pr_branch: str
     return get_highest_support_label(packs_support_levels) if packs_support_levels else ''
 
 
-def get_highest_support_label(packs_support_levels: Set[str]):
+def get_highest_support_label(packs_support_levels: set[str]) -> str:
     """
     Get the highest support level.
 
@@ -206,7 +205,7 @@ def main():
         branch_prefix = 'contrib/'
         new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
         existant_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
-        potential_conflicting_branch_names = [branch.ref.lstrip('refs/heads/') for branch in existant_branches]
+        potential_conflicting_branch_names = [branch.ref.removeprefix('refs/heads/') for branch in existant_branches]
         # make sure new branch name does not conflict with existing branch name
         while new_branch_name in potential_conflicting_branch_names:
             # append or increment digit
