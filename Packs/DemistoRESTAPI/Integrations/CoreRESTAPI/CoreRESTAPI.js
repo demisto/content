@@ -1,4 +1,5 @@
 
+
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
 
 var serverURL = params.url;
@@ -150,6 +151,8 @@ var sendRequest = function(method, uri, body, raw) {
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
+    log(requestUrl)
+    log(body)
     var res = http(
         requestUrl,
         {
@@ -329,7 +332,7 @@ Returns:
  */
 var uploadFile= function(incident_id, file_content, file_name) {
     var body = {
-        file: 
+        file:
         {
             value: [file_content],
             options: {
@@ -370,7 +373,7 @@ var deleteContextRequest = function (incident_id, key_to_delete) {
 /**
  * deletes a file  by entryID
 Arguments:
-    @param {String} delete_artifact  -- in order to delete the artifact 
+    @param {String} delete_artifact  -- in order to delete the artifact
     @param {String} entry_id  -- entry ID of the file
 Returns:
     CommandResults
@@ -380,7 +383,7 @@ var deleteFileRequest = function (entry_id, delete_artifact = true) {
     const body_content = JSON.stringify({
         id: entry_id,
         deleteArtifact: delete_artifact});
-    
+
     return sendRequest( 'POST', '/entry/delete/v2', body_content);
 };
 
@@ -408,7 +411,7 @@ var deleteAttachmentRequest=function(incident_id, attachment_path, field_name = 
             path: attachment_path
           }
         ]
-      });    
+      });
     try{
         return sendRequest('POST', `/incident/remove/${incident_id}`, body);
     }
@@ -428,7 +431,7 @@ Returns:
     CommandResults -- Readable output
 Note:
     You can give either the entryID or file_name.
-""" 
+"""
  */
 var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
     incident_id = (incident_id === 'undefined')? investigation.id: incident_id;
@@ -476,7 +479,7 @@ Arguments:
 Returns:
     Message that the file was deleted successfully + entry_id
 """
- */ 
+ */
 // getting the context data
 var fileDeleteCommand = function(EntryID) {
     files =  invContext['File'];
@@ -486,7 +489,7 @@ var fileDeleteCommand = function(EntryID) {
     files = (invContext['File'] instanceof Array)? invContext['File']:[invContext['File']];
     if (files[0]=='undefined'){
         throw new Error(`Files not found.`);
-        
+
     }
     var edit_content_data_files = []
     var not_found = true
@@ -495,9 +498,9 @@ var fileDeleteCommand = function(EntryID) {
             edit_content_data_files.push(files[i]);
         }
         else{
-            not_found= false 
+            not_found= false
         }
-        
+
       }
     if(not_found){
         throw new Error(`File already deleted or not found.`);
@@ -534,7 +537,7 @@ function coreApiFileCheckCommand(EntryID) {
                 file_found= true ;
                 human_readable = `File ${EntryID} exists`;
             }
-          }    
+          }
     }
     return {
         Type: entryTypes.note,
@@ -542,7 +545,7 @@ function coreApiFileCheckCommand(EntryID) {
         HumanReadable: human_readable,
         EntryContext: {[`IsFileExists(val.${EntryID}==${EntryID})`]:{[EntryID]:file_found}}
     };
-        
+
 
 };
 
@@ -556,7 +559,7 @@ function coreApiFileCheckCommand(EntryID) {
         Show a message that the file was deleted successfully
 */
 var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
-    incident_id = (incident_id=='undefined')? investigation.id: incident_id;    
+    incident_id = (incident_id=='undefined')? investigation.id: incident_id;
     deleteAttachmentRequest(incident_id, attachment_path, field_name);
     return `Attachment ${attachment_path} deleted `;
 };
