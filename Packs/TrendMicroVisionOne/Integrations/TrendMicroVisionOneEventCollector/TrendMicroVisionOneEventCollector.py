@@ -975,7 +975,7 @@ def fetch_events(
 
     for logs_last_run in [
         updated_workbench_last_run,
-        # updated_observed_attack_technique_last_run,
+        updated_observed_attack_technique_last_run,
         updated_search_detection_last_run,
         updated_audit_last_run
     ]:
