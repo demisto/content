@@ -39,7 +39,8 @@ Configure Syslog Faults Events:
 6. on severity mapping not touch, will be like:
     ![link](https://raw.githubusercontent.com/demisto/content/53399299a79f6d8323502c6489c02b87a8720a7b/Packs/McAfeeNSM/doc_imgs/nsm_audit_severity_mapping.png)
 7. on *Forward audit* dropdown select "Allow All Auditlogs".
-7. on *Message Preference* click on the checkbox "Syslog default" and click save.
+7. In Message Preference, click the Syslog default checkbox.
+8. Click **Save**.
 
 ## Event Time configuration
 
