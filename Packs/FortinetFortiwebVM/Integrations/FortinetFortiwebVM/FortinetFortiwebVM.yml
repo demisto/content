@@ -417,7 +417,7 @@ script:
       - Black IP
       - Allow Only Ip
       required: true
-    - description: IPv4/IPv6/IP range.
+    - description: IPv4/IPv6 IP range.
       isArray: false
       name: ip_address
       required: true
@@ -460,7 +460,7 @@ script:
       - Black IP
       - Allow Only Ip
       required: false
-    - description: IPv4/IPv6/IP range.
+    - description: IPv4/IPv6 IP range.
       isArray: false
       name: ip_address
       required: false
@@ -2424,7 +2424,7 @@ script:
       - Single Server
       - Server Balance
       required: false
-    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Relevant when server_balance=Server Balance.
+    - description: The name of the server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Relevant when server_balance=Server Balance.
       isArray: false
       name: health_check
       required: false
@@ -2511,11 +2511,11 @@ script:
       isArray: false
       name: adfs_server_name
       required: false
-    - description: Health Check Source IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty.
+    - description: Health check source IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty.
       isArray: false
       name: health_check_source_ip
       required: false
-    - description: Health Check Source v6 IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty.
+    - description: Health check source v6 IP. Supports API version 2 only. Required when the system operation type is True Transparent Proxy and health_check is not empty.
       isArray: false
       name: health_check_source_ip_v6
       required: false
@@ -2551,12 +2551,12 @@ script:
       - Single Server
       - Server Balance
       required: false
-    - description: The name of a server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Relevant when server_balance=Server Balance.
+    - description: The name of the server health check FortiWeb uses to determine the responsiveness of server pool members (dependencies - use fortiwebvm-server-health-check-list command to get all health check policies). Relevant when server_balance=Server Balance.
       isArray: false
       name: health_check
       required: false
     - auto: PREDEFINED
-      description: The load-balancing algorithms that FortiWeb uses when it distributes new connections among server pool members.. Relevant when server_balance=Server Balance.
+      description: The load-balancing algorithms that FortiWeb uses when it distributes new connections among server pool members. Relevant when server_balance=Server Balance.
       isArray: false
       name: lb_algo
       predefined:
@@ -2632,11 +2632,11 @@ script:
       isArray: false
       name: adfs_server_name
       required: false
-    - description: Health Check Source IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty.
+    - description: Health check source IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty.
       isArray: false
       name: health_check_source_ip
       required: false
-    - description: Health Check Source v6 IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty.
+    - description: Health check source v6 IP. Supports API version 2 only. Required when the type="True Transparent Proxy" and health_check is not empty.
       isArray: false
       name: health_check_source_ip_v6
       required: false
@@ -2659,7 +2659,7 @@ script:
       name: name
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -2679,22 +2679,22 @@ script:
     name: fortiwebvm-server-pool-group-list
     outputs:
     - contextPath: FortiwebVM.ServerPoolGroup.id
-      description: Server Pool group ID.
+      description: Server pool group ID.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.pool_count
       description: The number of rule members.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.server_balance
-      description: 'Whether the pool contains a single server or multiple members. '
+      description: Whether the pool contains a single server or multiple members.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.type
       description: Server pool type.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.comments
-      description: Comments that attached to the Server Pool.
+      description: Comments that are attached to the server pool.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.lb_algorithm
-      description: Server Pool LB Algorithm.
+      description: Server pool load balancing algorithm.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.health_check
       description: The name of the server health check.
@@ -2703,10 +2703,10 @@ script:
       description: The name of the persistence policy that specifies a session persistence method and timeout to apply to the pool.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.protocol
-      description: Sever Pool protocol. Supports API version 2 only.
+      description: Server pool protocol. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.http_reuse
-      description: Sever Pool HTTP reuse. Supports API version 2 only.
+      description: Server pool HTTP reuse. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.reuse_conn_total_time
       description: The maximum time limit in which a cached server connection may be reused. If a cached server connection exists for longer than the set limit, it will be closed. Supports API version 2 only.
@@ -2715,13 +2715,13 @@ script:
       description: Idle time limit for a cached server connection. If a cached server connection remains idle for the set duration, it will be closed. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.ServerPoolGroup.reuse_conn_max_request
-      description: "The maximum number of HTTP responses that the cached server connection may handle. If a cached server connection meets the set number, it will be closed. Supports API version 2 only."
+      description: The maximum number of HTTP responses that the cached server connection may handle. If a cached server connection meets the set number, it will be closed. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.ServerPoolGroup.reuse_conn_max_count
       description: The maximum number of allowed cached server connections. If FortiWeb meets the set number, no more cached server connections will be established. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.ServerPoolGroup.adfs_server_name
-      description: The name for the AD FS Server that related. Supports API version 2 only.
+      description: The name for the AD FS Server. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.server_pool_id
       description: A 64-bit random integer assigned to each server policy. Supports API version 2 only.
@@ -2732,7 +2732,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -2747,7 +2747,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: List all the Persistence policies. The persistence policy applies to all members of the server pool. Supports API versions 1 & 2.
+    description: List all the persistence policies. The persistence policy applies to all members of the server pool. Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-persistence-policy-list
     outputs:
@@ -2763,7 +2763,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -2778,12 +2778,12 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: "List all the server health check policies. Tests for server responsiveness (called “server health checks” in the web UI) poll web servers that are members of a server pool to determine their availability before forwarding traffic. Supports API versions 1 & 2."
+    description: "List all the server health check policies. Tests for server responsiveness (called “server health checks” in the web UI) and polls web servers that are members of a server pool to determine their availability before forwarding traffic. Supports API versions 1 & 2."
     execution: false
     name: fortiwebvm-server-health-check-list
     outputs:
     - contextPath: FortiwebVM.ServerHealthCheck.id
-      description: Server Health Check name.
+      description: Server health check name.
       type: String
   - arguments:
     - description: Server pool group name (dependencies - use fortiwebvm-server-pool-group-list command to get all server pool groups).
@@ -2801,7 +2801,7 @@ script:
       - maintenance
       required: false
     - auto: PREDEFINED
-      description: "Specify whether to specify the pool member by IP address, domain, or automatically pulled by SDN connector. The value “External connector” Supports by API V2 only."
+      description: Specify whether to specify the pool member by IP address, domain, or automatically pulled by SDN connector. The value “External connector”. Supports API version 2 only.
       isArray: false
       name: server_type
       predefined:
@@ -2810,7 +2810,7 @@ script:
       - External connector
       required: true
     - auto: PREDEFINED
-      description: Select whether you want FortiWeb to get the public or private addresses of your application's VM instances, or select all to get both the public and the private addresses. Relevant when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only.
+      description: Select whether you want FortiWeb to get the public or private addresses of your application's VM instances, or select all to get both the public and the private addresses. Relevant when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       isArray: false
       name: sdn_address_type
       predefined:
@@ -2819,14 +2819,14 @@ script:
       - All
       required: false
     - auto: PREDEFINED
-      description: Select the SDN connector you have created (dependencies - use fortiwebvm-sdn-connector-list command to get all the SDN connectors). Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only.
+      description: Select the SDN connector you have created (dependencies - use fortiwebvm-sdn-connector-list command to get all the SDN connectors). Required when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       isArray: false
       name: sdn_connector
       predefined:
       - aws
       - azure
       required: false
-    - description: Once you select the SDN collector that you have created, choose filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only.
+    - description: Once you select the SDN collector that you have created, choose the filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       isArray: false
       name: filter
       required: false
@@ -2839,12 +2839,12 @@ script:
       name: domain
       required: false
     - defaultValue: ' 80'
-      description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+      description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
     - defaultValue: '0'
-      description: 'Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
       isArray: false
       name: connection_limit
       required: false
@@ -2869,7 +2869,7 @@ script:
       name: client_certificate_file
       required: false
     - defaultValue: '0'
-      description: 'Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
       isArray: false
       name: recover
       required: false
@@ -2879,29 +2879,29 @@ script:
       name: warm_up
       required: false
     - defaultValue: '10'
-      description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
+      description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       isArray: false
       name: warm_rate
       required: false
     - defaultValue: '1'
-      description: 'Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+      description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
       isArray: false
       name: weight
       required: false
     - auto: PREDEFINED
-      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: health_check_inherit
       predefined:
       - enable
       - disable
       required: false
-    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports by API V2 only.
+    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports API version 2 only.
       isArray: false
       name: health_check_domain
       required: false
     - auto: PREDEFINED
-      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance
+      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: backup_server
       predefined:
@@ -2909,7 +2909,7 @@ script:
       - disable
       required: false
     deprecated: false
-    description: "Create a rule for an reverse proxy server pool group (server pool rule is a member of server pool group). Reverse proxy — Requests are destined for a virtual server’s network interface and IP address on the FortiWeb appliance.. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command."
+    description: "Create a rule for a reverse proxy server pool group (server pool rule is a member of server pool group). Reverse proxy — Requests are destined for a virtual server’s network interface and IP address on the FortiWeb appliance. Supports API versions 1 & 2. Server pool rule advanced SSL settings are not supported in this command."
     execution: false
     name: fortiwebvm-server-pool-reverse-proxy-rule-create
     outputs:
@@ -2935,7 +2935,7 @@ script:
       - maintenance
       required: false
     - auto: PREDEFINED
-      description: "Specify whether to specify the pool member by IP address, domain, or automatically pulled by SDN connector. The value “External connector” Supports by API V2 only."
+      description: Specify whether to specify the pool member by IP address, domain, or automatically pulled by SDN connector. The value “External connector”. Supports API version 2 only.
       isArray: false
       name: server_type
       predefined:
@@ -2944,7 +2944,7 @@ script:
       - External connector
       required: false
     - auto: PREDEFINED
-      description: Select whether you want FortiWeb to get the public or private addresses of your application's VM instances, or select all to get both the public and the private addresses. Relevant when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only.
+      description: Select whether you want FortiWeb to get the public or private addresses of your application's VM instances, or select all to get both the public and the private addresses. Relevant when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       isArray: false
       name: sdn_address_type
       predefined:
@@ -2953,14 +2953,14 @@ script:
       - All
       required: false
     - auto: PREDEFINED
-      description: Select the SDN connector you have created (dependencies - use fortiwebvm-sdn-connector-list command to get all the SDN connectors). Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only.
+      description: Select the SDN connector you have created (dependencies - use fortiwebvm-sdn-connector-list command to get all the SDN connectors). Required when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       isArray: false
       name: sdn_connector
       predefined:
       - aws
       - azure
       required: false
-    - description: Once you select the SDN collector that you have created, choose filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports by API V2 only.
+    - description: Once you select the SDN collector that you have created, choose the filter for your VMs in your public cloud account. You should know the filter name (there is no helper command). For example (AWS filter) instance-id=i-12345678. Required when the server pool group server balance=Server Balance and server_type=External connector. Supports API version 2 only.
       isArray: false
       name: filter
       required: false
@@ -2972,11 +2972,11 @@ script:
       isArray: false
       name: domain
       required: false
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
-    - description: 'Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit.  Size range: 0-1048576'
+    - description: 'The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
       isArray: false
       name: connection_limit
       required: false
@@ -3000,7 +3000,7 @@ script:
       isArray: false
       name: client_certificate_file
       required: false
-    - description: 'Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
       isArray: false
       name: recover
       required: false
@@ -3008,28 +3008,28 @@ script:
       isArray: false
       name: warm_up
       required: false
-    - description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
+    - description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       isArray: false
       name: warm_rate
       required: false
-    - description: 'Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+    - description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
       isArray: false
       name: weight
       required: false
     - auto: PREDEFINED
-      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: health_check_inherit
       predefined:
       - enable
       - disable
       required: false
-    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports by API V2 only.
+    - description: The domain name of the server pool. Required when the server pool group server balance=Server Balance and health_check_inherit=enable. Supports API version 2 only.
       isArray: false
       name: health_check_domain
       required: false
     - auto: PREDEFINED
-      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance
+      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: backup_server
       predefined:
@@ -3037,7 +3037,7 @@ script:
       - disable
       required: false
     deprecated: false
-    description: Update a rule for an reverse proxy server pool group. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Update a rule for a reverse proxy server pool group. Supports API versions 1 & 2. Server pool rule advanced SSL settings are not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-reverse-proxy-rule-update
   - arguments:
@@ -3059,7 +3059,7 @@ script:
       name: ip
       required: true
     - defaultValue: '80'
-      description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535."
+      description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
@@ -3072,24 +3072,24 @@ script:
       - enable
       - disable
       required: false
-    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Requried when ssl=enable."
+    - description: The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. Required when ssl=enable.
       isArray: false
       name: certificate_file
       required: false
     - auto: PREDEFINED
-      description: Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only.
+      description: Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports API version 2 only.
       isArray: false
       name: enable_sni
       predefined:
       - enable
       - disable
       required: false
-    - description: The name of the Server Name Indication (SNI) certificate that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports by API V2 only.
+    - description: The name of the Server Name Indication (SNI) certificate that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports API version 2 only.
       isArray: false
       name: sni_certificate
       required: false
     deprecated: false
-    description: "Create a rule for an offline protection server pool group (server pool rule is a member of server pool group). Offline Protection  -  Requests are destined for a real web server instead of the FortiWeb appliance; traffic is duplicated to the FortiWeb through a span port. Supports API versions 1 & 2."
+    description: "Create a rule for an offline protection server pool group (server pool rule is a member of server pool group). Offline Protection - Requests are destined for a real web server instead of the FortiWeb appliance; traffic is duplicated to the FortiWeb through a span port. Supports API versions 1 & 2."
     execution: false
     name: fortiwebvm-server-pool-offline-protection-rule-create
     outputs:
@@ -3117,7 +3117,7 @@ script:
       isArray: false
       name: ip
       required: false
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535."
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
@@ -3129,19 +3129,19 @@ script:
       - enable
       - disable
       required: false
-    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Requried when ssl=enable."
+    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Required when ssl=enable."
       isArray: false
       name: certificate_file
       required: false
     - auto: PREDEFINED
-      description: Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only.
+      description: Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports API version 2 only.
       isArray: false
       name: enable_sni
       predefined:
       - enable
       - disable
       required: false
-    - description: The name of the Server Name Indication (SNI) policy that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports by API V2 only.
+    - description: The name of the Server Name Indication (SNI) policy that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports API version 2 only.
       isArray: false
       name: sni_certificate
       required: false
@@ -3163,12 +3163,12 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: The IP address of the web server to include in the pool.
       isArray: false
       name: ip
       required: true
     - defaultValue: '80'
-      description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+      description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
@@ -3190,7 +3190,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: Local
-      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certificate / Letsencrypt certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
@@ -3235,7 +3235,7 @@ script:
       name: health_check
       required: false
     deprecated: false
-    description: "Create a rule for an true transparent server pool group (server pool rule is a member of server pool group). True transparent proxy  -  Requests are destined for a real web server instead of the FortiWeb appliance. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command."
+    description: "Create a rule for a true transparent server pool group (server pool rule is a member of server pool group). True transparent proxy  -  Requests are destined for a real web server instead of the FortiWeb appliance. Supports API versions 1 & 2. Server pool rule advanced SSL settings are not supported in this command."
     execution: false
     name: fortiwebvm-server-pool-true-transparent-proxy-rule-create
     outputs:
@@ -3259,11 +3259,11 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: The IP address of the web server to include in the pool.
       isArray: false
       name: ip
       required: false
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
@@ -3284,7 +3284,7 @@ script:
       - disable
       required: false
     - auto: PREDEFINED
-      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte / Letsencrypt certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certificate / Letsencrypt certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
@@ -3329,7 +3329,7 @@ script:
       name: health_check
       required: false
     deprecated: false
-    description: Update a rule for an true transparent server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Update a rule for a true transparent server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings are not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-true-transparent-proxy-rule-update
   - arguments:
@@ -3345,12 +3345,12 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: The IP address of the web server to include in the pool.
       isArray: false
       name: ip
       required: true
     - defaultValue: '80'
-      description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+      description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
@@ -3362,24 +3362,24 @@ script:
       - enable
       - disable
       required: false
-    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Requried when ssl=enable."
+    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Required when ssl=enable."
       isArray: false
       name: certificate_file
       required: false
     - auto: PREDEFINED
-      description: Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only.
+      description: Enable to use a Server Name Indication (SNI) certificate. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports API version 2 only.
       isArray: false
       name: enable_sni
       predefined:
       - enable
       - disable
       required: false
-    - description: The name of the Server Name Indication (SNI) policy that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports by API V2 only.
+    - description: The name of the Server Name Indication (SNI) policy that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. (dependencies - use fortiwebvm-sni-certificate-list command to get all SNI certificates). Required when enable_sni=enable. Supports API version 2 only.
       isArray: false
       name: sni_certificate
       required: false
     deprecated: false
-    description: "Create a rule for an transparent inspection server pool group (server pool rule is a member of server pool group). Transparent Inspection  -  Requests are destined for a real web server instead of the FortiWeb appliance. The FortiWeb appliance asynchronously inspects traffic arriving on a network port that belongs to a Layer 2 bridge, applies the first applicable policy, and lets permitted traffic pass through. Supports API versions 1 & 2."
+    description: "Create a rule for a transparent inspection server pool group (server pool rule is a member of server pool group). Transparent Inspection  -  Requests are destined for a real web server instead of the FortiWeb appliance. The FortiWeb appliance asynchronously inspects traffic arriving on a network port that belongs to a Layer 2 bridge, applies the first applicable policy, and lets permitted traffic pass through. Supports API versions 1 & 2."
     execution: false
     name: fortiwebvm-server-pool-transparent-inspection-rule-create
     outputs:
@@ -3403,12 +3403,12 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: The IP address of the web server to include in the pool.
       isArray: false
       name: ip
       required: false
     - defaultValue: '80'
-      description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+      description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
@@ -3420,24 +3420,24 @@ script:
       - enable
       - disable
       required: false
-    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Requried when ssl=enable."
+    - description: "The name of the certificate that FortiWeb uses to decrypt SSL-secured connections. (dependencies - use fortiwebvm-local-certificate-list command to get all the local certificates). Required when ssl=enable."
       isArray: false
       name: certificate_file
       required: false
     - auto: PREDEFINED
-      description: Enable to use a Server Name Indication (SNI) configuration. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports by API V2 only.
+      description: Enable to use a Server Name Indication (SNI) configuration. Server Name Indication allows multiple HTTPS websites to be served by the same IP address without requiring all those sites to use the same certificate. Supports API version 2 only.
       isArray: false
       name: enable_sni
       predefined:
       - enable
       - disable
       required: false
-    - description: The name of the Server Name Indication (SNI) configuration that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. Required when enable_sni=enable. Supports by API V2 only.
+    - description: The name of the Server Name Indication (SNI) configuration that specifies which certificate FortiWeb uses when encrypting or decrypting SSL-secured connections for a specified domain. Required when enable_sni=enable. Supports API version 2 only.
       isArray: false
       name: sni_policy
       required: false
     deprecated: false
-    description: Update a rule for an transparent inspection server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2.
+    description: Update a rule for a transparent inspection server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-server-pool-transparent-inspection-rule-update
   - arguments:
@@ -3454,11 +3454,11 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: The IP address of the web server to include in the pool.
       isArray: false
       name: ip
       required: true
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       defaultValue : '80'
@@ -3498,7 +3498,7 @@ script:
       name: client_certificate_file
       required: false
     deprecated: false
-    description: Create a rule for an WCCP server pool group (server pool rule is a member of server pool group). WCCP - The FortiWeb appliance allows traffic to pass through to the server pool when it receives traffic that is directed to the FortiWeb (configured as a WCCP client) by a FortiGate acting as a WCCP server. Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Create a rule for an WCCP server pool group (server pool rule is a member of server pool group). WCCP - The FortiWeb appliance allows traffic to pass through to the server pool when it receives traffic that is directed to the FortiWeb (configured as a WCCP client) by a FortiGate acting as a WCCP server. Supports API versions 1 & 2. Server pool rule advanced SSL settings are not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-wccp-rule-create
     outputs:
@@ -3522,11 +3522,11 @@ script:
       - enable
       - disable
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: The IP address of the web server to include in the pool.
       isArray: false
       name: ip
       required: false
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
@@ -3539,7 +3539,7 @@ script:
       - disable
       required: false
     - auto: PREDEFINED
-      description: Enable this option to allow FortiWeb to use Local / Multi Certifiacte certificates. Supports API version 2 only.
+      description: Enable this option to allow FortiWeb to use Local / Multi Certificate certificates. Supports API version 2 only.
       isArray: false
       name: certificate_type
       predefined:
@@ -3563,7 +3563,7 @@ script:
       name: client_certificate_file
       required: false
     deprecated: false
-    description: Update a rule for an WCCP server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Update a rule for an WCCP server pool group (server pool rule is a member of server pool group). Supports API versions 1 & 2. Server pool rule advanced SSL settings are not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-wccp-rule-update
   - arguments:
@@ -3594,22 +3594,22 @@ script:
       name: ip
       required: false
     - defaultValue: '21'
-      description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+      description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
     - defaultValue: '0'
-      description: 'Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
       isArray: false
       name: connection_limit
       required: false
     - defaultValue: '1'
-      description: 'Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+      description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
       isArray: false
       name: weight
       required: false
     - auto: PREDEFINED
-      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: health_check_inherit
       predefined:
@@ -3621,7 +3621,7 @@ script:
       name: health_check_domain
       required: false
     - auto: PREDEFINED
-      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance
+      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: backup_server
       predefined:
@@ -3647,7 +3647,7 @@ script:
       - disable
       required: false
     - defaultValue: '0'
-      description: 'Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
       isArray: false
       name: recover
       required: false
@@ -3657,7 +3657,7 @@ script:
       name: warm_up
       required: false
     - defaultValue: '10'
-      description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
+      description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       isArray: false
       name: warm_rate
       required: false
@@ -3666,7 +3666,7 @@ script:
       name: domain
       required: false
     deprecated: false
-    description: Create a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Create a rule for an FTP server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings are not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-ftp-rule-create
     outputs:
@@ -3703,20 +3703,20 @@ script:
       isArray: false
       name: ip
       required: false
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
-    - description: 'Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+    - description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
       isArray: false
       name: connection_limit
       required: false
-    - description: 'Weight, assigns relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
+    - description: 'The assigned relative preference among members. Higher values are more preferred and are assigned with connections more frequently. Relevant when the server pool group server balance=Server Balance. Size range: 1-9999'
       isArray: false
       name: weight
       required: false
     - auto: PREDEFINED
-      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: health_check_inherit
       predefined:
@@ -3728,7 +3728,7 @@ script:
       name: health_check_domain
       required: false
     - auto: PREDEFINED
-      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance
+      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: backup_server
       predefined:
@@ -3751,7 +3751,7 @@ script:
       - enable
       - disable
       required: false
-    - description: 'Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
       isArray: false
       name: recover
       required: false
@@ -3759,7 +3759,7 @@ script:
       isArray: false
       name: warm_up
       required: false
-    - description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
+    - description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       isArray: false
       name: warm_rate
       required: false
@@ -3798,18 +3798,18 @@ script:
       isArray: false
       name: ip
       required: false
-    - description: 'The IP address of the web server to include in the pool. '
+    - description: The IP address of the web server to include in the pool.
       isArray: false
       name: enable_ssl
       defaultValue: enable
       isHidden: true
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
       defaultValue: '443'
     - defaultValue: '0'
-      description: 'Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+      description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
       isArray: false
       name: connection_limit
       required: false
@@ -3825,7 +3825,7 @@ script:
       name: health_check_domain
       required: false
     - auto: PREDEFINED
-      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance
+      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: backup_server
       predefined:
@@ -3845,7 +3845,7 @@ script:
       name: client_certificate_file
       required: true
     - defaultValue: '0'
-      description: 'Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+      description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
       isArray: false
       name: recover
       required: false
@@ -3855,7 +3855,7 @@ script:
       name: warm_up
       required: false
     - defaultValue: '10'
-      description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
+      description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       isArray: false
       name: warm_rate
       required: false
@@ -3864,7 +3864,7 @@ script:
       name: domain
       required: false
     deprecated: false
-    description: Create a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Create a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings are not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-adfs-rule-create
     outputs:
@@ -3901,16 +3901,16 @@ script:
       isArray: false
       name: ip
       required: false
-    - description: "The TCP port number where the pool member listens for connections. The valid range is 1–65,535. "
+    - description: The TCP port number where the pool member listens for connections. The valid range is 1–65,535.
       isArray: false
       name: port
       required: false
-    - description: 'Connection limit, the maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
+    - description: 'Connection limit. The maximum number of concurrent connections to the backend server. 0 for no connection limit. Size range: 0-1048576'
       isArray: false
       name: connection_limit
       required: false
     - auto: PREDEFINED
-      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance
+      description: Enable to use the health check specified by health in the server pool configuration. Disable to use the health check specified by health in this pool member configuration. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: health_check_inherit
       predefined:
@@ -3922,7 +3922,7 @@ script:
       name: health_check_domain
       required: false
     - auto: PREDEFINED
-      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance
+      description: Enter enable to configure this pool member as a backup server. FortiWeb only routes connections for the pool to a backup server when all the other members of the server pool fail their server health check. Relevant when the server pool group server balance=Server Balance.
       isArray: false
       name: backup_server
       predefined:
@@ -3941,7 +3941,7 @@ script:
       isArray: false
       name: client_certificate_file
       required: false
-    - description: 'Recover, seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
+    - description: 'The number of seconds to postpone forwarding traffic after downtime when a health check indicates that this server has become available again. Size range: 0-86400'
       isArray: false
       name: recover
       required: false
@@ -3949,7 +3949,7 @@ script:
       isArray: false
       name: warm_up
       required: false
-    - description: 'Warm rate, maximum connection rate per second while the server is starting up. Size range: 1-86400'
+    - description: 'The maximum connection rate per second while the server is starting up. Size range: 1-86400.'
       isArray: false
       name: warm_rate
       required: false
@@ -3958,7 +3958,7 @@ script:
       name: domain
       required: false
     deprecated: false
-    description: Update a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings dose not supported in this command.
+    description: Update a rule for an ADFS server pool group (server pool rule is a member of server pool group). Supports API version 2 only. Server pool rule advanced SSL settings are not supported in this command.
     execution: false
     name: fortiwebvm-server-pool-adfs-rule-update
   - arguments:
@@ -3971,7 +3971,7 @@ script:
       name: rule_id
       required: true
     deprecated: false
-    description: Delete Server Pool Rule (Server Pool Rule is a member of Server Pool). Supports API versions 1 & 2.
+    description: Delete server pool rule (server pool rule is a member of server pool). Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-server-pool-rule-delete
   - arguments:
@@ -3984,7 +3984,7 @@ script:
       name: rule_id
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4004,37 +4004,37 @@ script:
     name: fortiwebvm-server-pool-rule-list
     outputs:
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.id
-      description: Sever pool rule rule ID.
+      description: Server pool rule rule ID.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.server_type
-      description: Sever pool rule type.
+      description: Server pool rule type.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.ip
-      description: Sever pool rule IP.
+      description: Server pool rule IP.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.domain
-      description: Sever pool rule domain.
+      description: Server pool rule domain.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.port
-      description: Sever pool rule port.
+      description: Server pool rule port.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.weight
-      description: Sever pool rule weight.
+      description: Server pool rule weight.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.status
-      description: Sever pool rule status.
+      description: Server pool rule status.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.backup_server
-      description: Sever pool rule backup server.
+      description: Server pool rule backup server.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.connection_limit
       description: The maximum number of concurrent connections to the backend server. 0 for no connection limit
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.http2
-      description: Wether to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
+      description: Whether to allow HTTP/2 communication between the FortiWeb and this back-end web server for HTTP/2 security inspections.
       type: String
     - contextPath: FortiwebVM.ServerPoolGroup.Rule.ssl_settings
-      description: Sever pool rule SSL settings.
+      description: Server pool rule SSL settings.
       type: String
   - arguments:
     - description: 'Return all objects that include the specified string. For example: search=test will return objects like ''test1'', ''test2'', ''5test'', and any other objects containing the test string.'
@@ -4042,7 +4042,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4073,7 +4073,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4088,7 +4088,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: List the Multi certificates. Multi-certificate configure RSA, DSA, and ECDSA certificates and reference them in server policy in Reverse Proxy mode and pserver in True Transparent Proxy mode. Supports API version 2 only.
+    description: List the multi certificates. Multi certificates configure RSA, DSA, and ECDSA certificates and reference them in server policy in Reverse Proxy mode and pserver in True Transparent Proxy mode. Supports API version 2 only.
     execution: false
     name: fortiwebvm-multi-certificate-list
     outputs:
@@ -4101,7 +4101,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4129,7 +4129,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4157,7 +4157,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4185,7 +4185,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4216,18 +4216,18 @@ script:
       isArray: false
       name: interface
       required: false
-    - description: 'The IPv4 address and subnet of the virtual server. For example: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only.'
+    - description: 'The IPv4 address and subnet of the virtual server. For example: 1.1.1.1/254.0.0.0. At least one of ipv4_address and ipv6_address is required. Supports API version 1 only.'
       isArray: false
       name: ipv4_address
       required: false
     - defaultValue: ::/0
-      description: The IPv6 address and subnet of the virtual server. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only. Supports API version 1 only.
+      description: The IPv6 address and subnet of the virtual server. At least one of ipv4_address and ipv6_address is required. Supports API version 1 only.
       isArray: false
       name: ipv6_address
       required: false
     - auto: PREDEFINED
       defaultValue: enable
-      description: Wheter to enable the virtual server group. Supports API version 1 only.
+      description: Whether to enable the virtual server group. Supports API version 1 only.
       isArray: false
       name: status
       predefined:
@@ -4236,7 +4236,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: disable
-      description: Whether uses interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address. Supports API version 1 only.
+      description: Whether to use interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address. Supports API version 1 only.
       isArray: false
       name: use_interface_ip
       predefined:
@@ -4256,16 +4256,16 @@ script:
       isArray: false
       name: interface
       required: false
-    - description: 'The IPv4 address and subnet of the virtual server. For exampl: 1.1.1.1/254.0.0.0. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only.'
+    - description: 'The IPv4 address and subnet of the virtual server. For example: 1.1.1.1/254.0.0.0. At least one of ipv4_address and ipv6_address is required. Supports API version 1 only.'
       isArray: false
       name: ipv4_address
       required: false
-    - description: The IPv4 address and subnet of the virtual server. At leaset one of ipv4_address and ipv6_address required. Supports API version 1 only.
+    - description: The IPv4 address and subnet of the virtual server. At least one of ipv4_address and ipv6_address is required. Supports API version 1 only.
       isArray: false
       name: ipv6_address
       required: false
     - auto: PREDEFINED
-      description: Wheter to enable the virtual server group. Supports API version 1 only.
+      description: Whether to enable the virtual server group. Supports API version 1 only.
       isArray: false
       name: status
       predefined:
@@ -4273,7 +4273,7 @@ script:
       - disable
       required: false
     - auto: PREDEFINED
-      description: Whether uses interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address.
+      description: Whether to use interface IP. enable - use interface IP. disable - use ipv4_address and ipv6_address.
       isArray: false
       name: use_interface_ip
       predefined:
@@ -4299,7 +4299,7 @@ script:
       name: name
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4337,7 +4337,7 @@ script:
       description: Whether the Virtual Server is enabled. Supports API version 1 only.
       type: String
     - contextPath: FortiwebVM.VirtualServerGroup.items_count
-      description: The number of items that related to the Virtual Server. Supports API version 2 only.
+      description: The number of items related to the Virtual Server. Supports API version 2 only.
       type: String
   - arguments:
     - description: 'Return all objects that include the specified string. For example: search=test will return objects like ''test1'', ''test2'', ''5test'', and any other objects containing the test string.'
@@ -4345,7 +4345,7 @@ script:
       name: search
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4360,7 +4360,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: List the Network interfaces. A network interface is a connection point that enables communication between the FortiWeb device and the network, allowing traffic to flow through for inspection and protection. Supports API versions 1 & 2.
+    description: List the network interfaces. A network interface is a connection point that enables communication between the FortiWeb device and the network, allowing traffic to flow through for inspection and protection. Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-network-interface-list
     outputs:
@@ -4386,7 +4386,7 @@ script:
       description: The network interface type.
       type: String
   - arguments:
-    - description: 'Virtual Server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all the virtual server groups). '
+    - description: 'Virtual server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all the virtual server groups). '
       isArray: false
       name: group_name
       required: true
@@ -4396,7 +4396,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: disable
-      description: Whether uses interface IP. enable - use interface IP. disable - use virtual IP.
+      description: Whether to use interface IP. enable - use interface IP. disable - use virtual IP.
       isArray: false
       name: use_interface_ip
       predefined:
@@ -4405,7 +4405,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: enable
-      description: 'Wheter to enable the virtual server item. '
+      description: 'Whether to enable the virtual server item. '
       isArray: false
       name: status
       predefined:
@@ -4417,15 +4417,15 @@ script:
       name: virtual_ip
       required: false
     deprecated: false
-    description: Create a virtual serer item (virtual server Item is a member of virtual server group in API version 2). A virtual server defines the network interface, bridge, and IP address on which traffic destined for an individual physical server or server farm will arrive in API version 2. Supports API version 2 only.
+    description: Create a virtual server item (virtual server Item is a member of virtual server group in API version 2). A virtual server defines the network interface, bridge, and IP address on which traffic destined for an individual physical server or server farm will arrive in API version 2. Supports API version 2 only.
     execution: false
     name: fortiwebvm-virtual-server-item-create
     outputs:
     - contextPath: FortiwebVM.VirtualServerGroup.Item.id
-      description: The virtual server item ID.
+      description: The Virtual server item ID.
       type: String
   - arguments:
-    - description: 'Virtual Server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all the virtual server groups). '
+    - description: 'Virtual server group name (dependencies - use fortiwebvm-virtual-server-group-list command to get all the virtual server groups). '
       isArray: false
       name: group_name
       required: true
@@ -4438,7 +4438,7 @@ script:
       name: interface
       required: false
     - auto: PREDEFINED
-      description: Whether uses interface IP. enable - use interface IP. disable - use virtual IP.
+      description: Whether to use interface IP. enable - use interface IP. disable - use virtual IP.
       isArray: false
       name: use_interface_ip
       predefined:
@@ -4446,7 +4446,7 @@ script:
       - disable
       required: false
     - auto: PREDEFINED
-      description: 'Wheter to enable the virtual server item. '
+      description: 'Whether to enable the virtual server item. '
       isArray: false
       name: status
       predefined:
@@ -4484,7 +4484,7 @@ script:
       name: item_id
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4504,7 +4504,7 @@ script:
     name: fortiwebvm-virtual-server-item-list
     outputs:
     - contextPath: FortiwebVM.VirtualServerGroup.Item.id
-      description: Virtual Server Item ID.
+      description: Virtual server item ID.
       type: String
     - contextPath: FortiwebVM.VirtualServerGroup.Item.interface
       description: The name of the network interface or bridge.
@@ -4513,7 +4513,7 @@ script:
       description: Wheter the item is enabled or disabled.
       type: String
     - contextPath: FortiwebVM.VirtualServerGroup.Item.use_interface_ip
-      description: Virtual server whether uses interface IP.
+      description: Whether virtual server uses interface IP.
       type: String
     - contextPath: FortiwebVM.VirtualServerGroup.Item.virtual_ip
       description: The virtual IP of the virtual server.
@@ -4525,7 +4525,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: Pass
-      description: Which action the FortiWeb appliance will take when a request matches the URL access rule.
+      description: The action the FortiWeb appliance will take when a request matches the URL access rule.
       isArray: false
       name: action
       predefined:
@@ -4534,7 +4534,7 @@ script:
       - Continue
       - Deny (no log)
       required: false
-    - description: 'Trigger Policy Name (dependencies - use fortiwebvm-trigger-policy-list to get the trigger policies). Relevant when: action=Alert & Deny or Deny (no log).'
+    - description: 'Trigger policy name (dependencies - use fortiwebvm-trigger-policy-list to get the trigger policies). Relevant when: action=Alert & Deny or Deny (no log).'
       isArray: false
       name: trigger_policy
       required: false
@@ -4550,19 +4550,19 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: disable
-      description: Whether to require host name.
+      description: Whether to require a host name.
       isArray: false
       name: host_status
       predefined:
       - enable
       - disable
       required: false
-    - description: 'A name of protected host that the HTTP request must be in order to match the rule (dependencies - use fortiwebvm-protected-hostname-member-list to get hosts). Required when: host_status=enable.'
+    - description: 'The name of the protected host that the HTTP request must be in order to match the rule (dependencies - use fortiwebvm-protected-hostname-member-list to get hosts). Required when: host_status=enable.'
       isArray: false
       name: host
       required: false
     deprecated: false
-    description: Create an URL access rule group. URL access rule group is a container that contains URL access rules (use fortiwebvm-url-access-rule-create/update/delete/list to manage the URL access rules). Supports API versions 1 & 2.
+    description: Create a URL access rule group. URL access rule group is a container that contains URL access rules (use fortiwebvm-url-access-rule-create/update/delete/list to manage the URL access rules). Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-url-access-rule-group-create
   - arguments:
@@ -4571,7 +4571,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: "Which action the FortiWeb appliance will take when a request matches the URL access rule."
+      description: "The action the FortiWeb appliance will take when a request matches the URL access rule."
       isArray: false
       name: action
       predefined:
@@ -4580,7 +4580,7 @@ script:
       - Continue
       - Deny (no log)
       required: false
-    - description: 'Trigger Policy Name (dependencies - use fortiwebvm-trigger-policy-list to get the trigger policies). Relevant when: action=Alert & Deny or Deny (no log).'
+    - description: 'Trigger policy name (dependencies - use fortiwebvm-trigger-policy-list to get the trigger policies). Relevant when: action=Alert & Deny or Deny (no log).'
       isArray: false
       name: trigger_policy
       required: false
@@ -4595,19 +4595,19 @@ script:
       - Informative
       required: false
     - auto: PREDEFINED
-      description: Whether to require host name.
+      description: Whether to require a host name.
       isArray: false
       name: host_status
       predefined:
       - enable
       - disable
       required: false
-    - description: 'A name of protected host that the HTTP request must be in order to match the rule (dependencies - use fortiwebvm-protected-hostname-member-list to get hosts). Required when: host_status=enable.'
+    - description: 'The name of the protected host that the HTTP request must be in order to match the rule (dependencies - use fortiwebvm-protected-hostname-member-list to get hosts). Required when: host_status=enable.'
       isArray: false
       name: host
       required: false
     deprecated: false
-    description: Update an URL access rule group. Supports API versions 1 & 2.
+    description: Update a URL access rule group. Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-url-access-rule-group-update
   - arguments:
@@ -4616,7 +4616,7 @@ script:
       name: name
       required: true
     deprecated: false
-    description: Delete an URL access rule group. Supports API versions 1 & 2.
+    description: Delete a URL access rule group. Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-url-access-rule-group-delete
   - arguments:
@@ -4625,7 +4625,7 @@ script:
       name: name
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4648,10 +4648,10 @@ script:
       description: URL access rule group name.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.action
-      description: The Action of the URL access rule group.
+      description: The action of the URL access rule group.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.host_status
-      description: Whether to enable host.
+      description: Whether to enable the host.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.host
       description: The host of the URL access rule group.
@@ -4660,7 +4660,7 @@ script:
       description: The severity of the URL access rule group.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.trigger_policy
-      description: The Trigger policy of the URL access rule group.
+      description: The trigger policy of the URL access rule group.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.count
       description: 'The count of the conditions that are related to the current URL access rule group. '
@@ -4709,7 +4709,7 @@ script:
       - IP Resolved by Specified Domain
       - Source Domain
       required: false
-    - description: 'IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. '
+    - description: 'IPv4/IPv6 IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. '
       isArray: false
       name: ip_range
       required: false
@@ -4726,19 +4726,19 @@ script:
       name: ip
       required: false
     - auto: PREDEFINED
-      description: 'Source domain type.  Relevant when source_address_type=Source Domain. '
+      description: 'Source domain type. Relevant when source_address_type=Source Domain. '
       isArray: false
       name: source_domain_type
       predefined:
       - Simple String
       - Regular Expression
       required: false
-    - description: 'Source Domain. For example: test.com. Relevant when source_address_type=Source Domain. '
+    - description: 'Source domain. For example: test.com. Relevant when source_address_type=Source Domain. '
       isArray: false
       name: source_domain
       required: false
     deprecated: false
-    description: Create an URL access rule condition (URL access rule condition is a member of URL access rule group). URL access rules define the HTTP requests that are allowed or denied based on their hostname and URL. Supports API versions 1 & 2.
+    description: Create a URL access rule condition (URL access rule condition is a member of URL access rule group). URL access rules define the HTTP requests that are allowed or denied based on their hostname and URL. Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-url-access-rule-condition-create
     outputs:
@@ -4791,7 +4791,7 @@ script:
       - IP Resolved by Specified Domain
       - Source Domain
       required: false
-    - description: 'IPv4/IPv6/IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. '
+    - description: 'IPv4/IPv6 IP range. For exampe: 1.2.3.4-1.2.3.40 or 2001::1-2001::100. Relevant when source_address_type=IP. '
       isArray: false
       name: ip_range
       required: false
@@ -4803,24 +4803,24 @@ script:
       - IPv4
       - IPv6
       required: false
-    - description: 'IP Resolved by Specified Domain. Relevant when source_address_type=IP Resolved by Specified Domain. '
+    - description: 'IP resolved by specified domain. Relevant when source_address_type=IP Resolved by Specified Domain. '
       isArray: false
       name: ip
       required: false
     - auto: PREDEFINED
-      description: 'Source Domain type.  Relevant when source_address_type=Source Domain. '
+      description: 'Source domain type. Relevant when source_address_type=Source Domain. '
       isArray: false
       name: source_domain_type
       predefined:
       - Simple String
       - Regular Expression
       required: false
-    - description: 'Source Domain. For example: test.com. Relevant when source_address_type=Source Domain. '
+    - description: 'Source domain. For example: test.com. Relevant when source_address_type=Source Domain. '
       isArray: false
       name: source_domain
       required: false
     deprecated: false
-    description: Update an URL access rule condition (URL access rule condition is a member of URL access rule group). Supports API versions 1 & 2.
+    description: Update a URL access rule condition (URL access rule condition is a member of URL access rule group). Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-url-access-rule-condition-update
   - arguments:
@@ -4833,7 +4833,7 @@ script:
       name: condition_id
       required: true
     deprecated: false
-    description: Delete an URL access rule condition (URL access rule condition is a member of URL access rule group). Supports API versions 1 & 2.
+    description: Delete a URL access rule condition (URL access rule condition is a member of URL access rule group). Supports API versions 1 & 2.
     execution: false
     name: fortiwebvm-url-access-rule-condition-delete
   - arguments:
@@ -4846,7 +4846,7 @@ script:
       name: condition_id
       required: false
     - defaultValue: '1'
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
       isArray: false
       name: page
       required: false
@@ -4884,7 +4884,7 @@ script:
       description: URL access rule condition source address type.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.ip_range
-      description: IPv4/IPv6/IP range.
+      description: IPv4/IPv6 IP range.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.domain
       description: URL access rule condition domain.
@@ -4896,16 +4896,16 @@ script:
       description: URL access rule condition domain type.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.only_method_check
-      description: Wether use HTTP method check is enable or not. Supports API version 2 only.
+      description: Whether use HTTP method check is enable or not. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.only_protocol_check
-      description: Wether use HTTP protocol check is enable or not. Supports API version 2 only.
+      description: Whether use HTTP protocol check is enable or not. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.only_method
-      description: Methods that checked. Supports API version 2 only.
+      description: Methods that were checked. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.URLAccessRuleGroup.Condition.only_protocol
-      description: Protocols that checked. Supports API version 2 only.
+      description: Protocols that were checked. Supports API version 2 only.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
   feed: false
