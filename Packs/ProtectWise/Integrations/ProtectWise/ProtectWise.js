@@ -7,12 +7,11 @@ var TIME_FIELDS = ['startedAt', 'occurredAt', 'endedAt', 'observedAt'];
 var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
 
 var getToken = function() {
-    var token = '';
-    if ((params.token) && (params.token.length > 0)) {
-        token = params.token;
-    }
-    if (token.length === 0) {
-        if (params.email.length === 0 || params.password.length === 0){
+    let token = params.credentials_api_token ? params.credentials_api_token.password : params.token;
+    let email = params.credentials_login ? params.credentials_login.identifier : params.email;
+    let password = params.credentials_login ? params.credentials_login.password : params.password;
+    if (token && token.length === 0) {
+        if ((email&&email.length === 0) || (password&&password.length === 0)){
             throw 'If token configuration is empty , you must provide email+password configuration params for auth';
         }
         var tokResult = http(
@@ -20,7 +19,7 @@ var getToken = function() {
             {
                 Headers: {'Content-Type': ['application/json']},
                 Method: 'POST',
-                Body: JSON.stringify({'email': params.email, 'password': params.password}),
+                Body: JSON.stringify({'email': email, 'password': password}),
             },
             params.insecure,
             params.proxy
