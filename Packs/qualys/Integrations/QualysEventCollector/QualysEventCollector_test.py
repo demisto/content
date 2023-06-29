@@ -17,7 +17,8 @@ END_RESPONSE_LOGS_CSV = "----END_RESPONSE_BODY_CSV"
 FOOTER = """----BEGIN_RESPONSE_FOOTER_CSV
 WARNING
 "CODE","TEXT","URL"
-"1980","17 record limit exceeded. Use URL to get next batch of results.","https://server_url/api/2.0/fo/activity_log/?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
+"1980","17 record limit exceeded. Use URL to get next batch of results.","https://server_url/api/2.0/fo/activity_log/
+?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
 ----END_RESPONSE_FOOTER_CSV"""
 
 
