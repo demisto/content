@@ -60,4 +60,3 @@ This playbook does not use any scripts.
 
 ---
 
-![Launch Job - Ansible Automation Platform](../doc_files/Launch_Job_-_Ansible_Automation_Platform.png)
