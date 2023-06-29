@@ -1817,7 +1817,6 @@ def fetch_incidents(
     # In case that all the incidents where dropped
     if data_length != 0 and not incidents:
         last_run["offset"] = offset + max_fetch
-    demisto.debug(f"{last_run=}")
     return incidents, last_run
 
 
