@@ -10,9 +10,10 @@ McAfee NSM syslog event types:
 
 *config Syslog IPS Events:*
 1. In McAfee NSM, go to **Manager** > **Setup**> **Notification** > **IPS Events** > **syslog**.
-2. In Enable Syslog Notification, click **YES .
+2. In Enable Syslog Notification, click *YES* .
 3. Click *+* and add the target server. 
    If you do not have a configured target server, click **Add** near Target Server and  fill in the target server details.
+
    ![link](https://raw.githubusercontent.com/demisto/content/2063d324e6515a85b484705df5e4d153425e5110/Packs/McAfeeNSM/doc_imgs/nsm_add_target_server.png)
 4. In Facility, select **Log Alert (note 1)**.
 5. In Severity mapping, leave the configuration as it.  It should be:
@@ -20,7 +21,7 @@ McAfee NSM syslog event types:
 6. Click the Notify for all Alerts checkbox.
 7. Click **Save**.
 
-Configure Syslog Faults Events:
+*Configure Syslog Faults Events:*
 1. In McAfee NSM, go to **Manager** > **Setup**> **Notification** > **Faults** > **syslog**.
 2. In Enable Syslog Notification, click **YES**.
 3. Fill in the "Server Name or IP Address" and "Port" fields .
@@ -31,7 +32,7 @@ Configure Syslog Faults Events:
 7. In Message Preference, click the Syslog default checkbox.
 8. Click **Save**.
 
-Configure Syslog User Activity (audit logs) Events:
+*Configure Syslog User Activity (audit logs) Events:*
 1. In McAfee NSM, go to **Manager** > **Setup**> **Notification** > **User Activity** > **syslog**.
 2. In Enable Syslog Notification, click **YES**.
 3. Fill in the "Server Name or IP Address" and "Port" fields .
