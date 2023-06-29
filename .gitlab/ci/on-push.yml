@@ -624,5 +624,5 @@ handle-dev-secrets:
   script:
     - |
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
-    - python3 ./Tests/scripts/secrets_build_scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID" -gpidp "$GSM_PROJECT_ID"
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID" -gpidp "$GSM_PROJECT_ID"
 
