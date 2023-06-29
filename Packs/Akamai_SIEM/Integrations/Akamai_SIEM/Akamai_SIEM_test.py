@@ -12,9 +12,9 @@ from CommonServerPython import urljoin
 
 """Helper functions and fixrtures"""
 BASE_URL = urljoin('https://akab-hnanog6ge5or6biz-ukavvo4zvqliqhlw.cloudsecurity.akamaiapis.net', '/siem/v1/configs')
-with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events_empty.txt', 'r') as sec_events_empty:
+with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events_empty.txt') as sec_events_empty:
     SEC_EVENTS_EMPTY_TXT = sec_events_empty.read()
-with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events.txt', 'r') as sec_events:
+with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events.txt') as sec_events:
     SEC_EVENTS_TXT = sec_events.read()
 
 

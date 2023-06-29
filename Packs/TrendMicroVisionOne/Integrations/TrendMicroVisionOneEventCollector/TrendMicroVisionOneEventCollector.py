@@ -5,9 +5,8 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any, Tuple
+from typing import Any
 from enum import Enum
-from urllib.parse import parse_qs, urlparse
 
 
 # Disable insecure warnings
@@ -139,7 +138,7 @@ class Client(BaseClient):
         headers: dict | None = None,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None
-    ) -> Tuple[List[dict], str | None]:
+    ) -> tuple[List[dict], str | None]:
         """
         Implements a generic method with pagination to retrieve logs from trend micro vision one.
 
@@ -173,8 +172,9 @@ class Client(BaseClient):
 
         log_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
 
-        if log_type not in (LogTypes.OBSERVED_ATTACK_TECHNIQUES.value, LogTypes.SEARCH_DETECTIONS.value):
+        if log_type not in (LogTypes.OBSERVED_ATTACK_TECHNIQUES.value, LogTypes.SEARCH_DETECTIONS.value) or not new_next_link:
             # only limit cases where the logs are in ascending order in order not to lose part of events of nextLink
+            # if there is no next link, limit the logs as there is no chance we would lose events
             logs = logs[:limit]
 
         if url_suffix == UrlSuffixes.SEARCH_DETECTIONS.value:
@@ -237,7 +237,7 @@ class Client(BaseClient):
         top: int = 1000,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None
-    ) -> Tuple[List[dict], str]:
+    ) -> tuple[List[dict], str | None]:
         """
         Get the observed attack techniques logs.
 
@@ -282,7 +282,7 @@ class Client(BaseClient):
         top: int = DEFAULT_MAX_LIMIT,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None
-    ) -> Tuple[List[dict], str]:
+    ) -> tuple[List[dict], str | None]:
         """
         Get the search detection logs.
 
@@ -536,7 +536,7 @@ def get_dedup_logs(
     log_type: str,
     date_format: str = DATE_FORMAT,
     latest_log_time: str = None
-) -> Tuple[List[Dict], List[str], str]:
+) -> tuple[List[Dict], List[str], str]:
     """
     dedup the logs and returns the IDs of all the latest logs.
 

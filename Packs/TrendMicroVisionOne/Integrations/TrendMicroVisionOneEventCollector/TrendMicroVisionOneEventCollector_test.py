@@ -98,10 +98,14 @@ def create_logs_mocks(
     )
     fetched_amount_of_events += len(logs)
 
-    return {
+    response = {
         'items': logs,
-        'nextLink': f'{BASE_URL}/v3.0{url_suffix}?top={top}&fetchedAmountOfEvents={fetched_amount_of_events}'
     }
+
+    if fetched_amount_of_events < num_of_events:
+        response['nextLink'] = f'{BASE_URL}/v3.0{url_suffix}?top={top}&fetchedAmountOfEvents={fetched_amount_of_events}'
+
+    return response
 
 
 def _http_request_side_effect_decorator(
@@ -355,12 +359,14 @@ class TestFetchEvents:
         workbench_logs, updated_last_run = get_workbench_logs(
             client=client,
             first_fetch='1 month ago',
-            last_run={LastRunLogsStartTimeFields.WORKBENCH.value: '2023-01-01T14:00:00Z', 'found_workbench_logs': [1, 2, 3, 4, 5, 6, 7, 8]},
+            last_run={LastRunLogsStartTimeFields.WORKBENCH.value: '2023-01-01T14:00:00Z',
+                      'found_workbench_logs': [1, 2, 3, 4, 5, 6, 7, 8]},
             limit=500
         )
 
         assert len(workbench_logs) == 192
-        assert updated_last_run == {LastRunLogsStartTimeFields.WORKBENCH.value: '2023-01-01T14:03:20Z', 'found_workbench_logs': [200]}
+        assert updated_last_run == {
+            LastRunLogsStartTimeFields.WORKBENCH.value: '2023-01-01T14:03:20Z', 'found_workbench_logs': [200]}
         assert workbench_logs[-1]['_time'] == '2023-01-01T14:03:20Z'
 
     def test_get_observed_attack_techniques_logs_no_last_run(self, mocker, client: Client):
@@ -376,7 +382,6 @@ class TestFetchEvents:
         Then:
          - make sure only 500 events are returned
          - make sure latest observed attack technique event is saved in the oat_detection_logs_time without adding 1 second to it.
-         - make sure in the cache we will have event with 500 id as its the event that happened in the last second.
         """
         from TrendMicroVisionOneEventCollector import get_observed_attack_techniques_logs
         start_freeze_time('2023-01-01T15:00:00Z')
@@ -395,18 +400,25 @@ class TestFetchEvents:
         )
 
         assert len(observed_attack_techniques_logs) == 500
-        assert updated_last_run == {'oat_detection_logs_time': '2023-01-01T14:51:39Z', 'found_oat_logs': [500]}
-        assert observed_attack_techniques_logs[-1]['_time'] == '2023-01-01T14:51:39Z'
+        assert updated_last_run == {
+            'oat_detection_start_time': '2023-01-01T14:59:59Z',
+            'dedup_found_oat_logs': [1000],
+            'pagination_found_oat_logs': [],
+            'oat_detection_next_link': ''
+        }
 
     def test_get_observed_attack_techniques_logs_with_last_run(self, mocker, client: Client):
         """
         Given:
          - last_run={
-                'oat_detection_logs_time': '2023-01-01T14:00:00Z',
-                'found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+                'oat_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                'pagination_found_oat_logs': [],
+                'oat_detection_next_link': f'{BASE_URL}/v3.0{UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value}'
+                                           f'?top=1000&fetchedAmountOfEvents=100'
             }
          - limit = 500
-         - 200 oat events
+         - 300 oat events
 
         When:
          - running get_observed_attack_techniques_logs function
@@ -414,7 +426,6 @@ class TestFetchEvents:
         Then:
          - make sure only 185 events are returned
          - make sure latest observed attack technique event is saved in the oat_detection_logs_time without adding 1 second to it.
-         - make sure in the cache we will have event with 500 id as its the event that happened in the last second.
         """
         from TrendMicroVisionOneEventCollector import get_observed_attack_techniques_logs
         start_freeze_time('2023-01-01T15:00:00Z')
@@ -422,22 +433,29 @@ class TestFetchEvents:
         mocker.patch.object(
             BaseClient,
             '_http_request',
-            side_effect=_http_request_side_effect_decorator(num_of_oat_logs=200, last_oat_time='2023-01-01T14:00:00Z')
+            side_effect=_http_request_side_effect_decorator(num_of_oat_logs=300, last_oat_time='2023-01-01T14:00:00Z')
         )
 
         observed_attack_techniques_logs, updated_last_run = get_observed_attack_techniques_logs(
             client=client,
             first_fetch='1 month ago',
             last_run={
-                'oat_detection_logs_time': '2023-01-01T14:00:00Z',
-                'found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+                'oat_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_oat_logs': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                'pagination_found_oat_logs': [],
+                'oat_detection_next_link': f'{BASE_URL}/v3.0{UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value}'
+                                           f'?top=1000&fetchedAmountOfEvents=100'
             },
             limit=500
         )
 
         assert len(observed_attack_techniques_logs) == 185
-        assert updated_last_run == {'oat_detection_logs_time': '2023-01-01T14:59:59Z', 'found_oat_logs': [200]}
-        assert observed_attack_techniques_logs[-1]['_time'] == '2023-01-01T14:59:59Z'
+        assert updated_last_run == {
+            'oat_detection_start_time': '2023-01-01T14:00:00Z',
+            'dedup_found_oat_logs': [],
+            'pagination_found_oat_logs': [],
+            'oat_detection_next_link': ''
+        }
 
     def test_get_search_detection_logs_no_last_run(self, mocker, client: Client):
         """
@@ -453,7 +471,6 @@ class TestFetchEvents:
          - make sure only 500 events are returned
          - make sure latest observed attack technique event is saved in
            the search_detection_logs_time without adding 1 second to it.
-         - make sure in the cache we will have event with 500 id as its the event that happened in the last second.
         """
         from TrendMicroVisionOneEventCollector import get_search_detection_logs
         start_freeze_time('2023-01-01T15:00:00Z')
@@ -472,13 +489,24 @@ class TestFetchEvents:
         )
 
         assert len(search_detection_logs) == 500
-        assert updated_last_run == {'search_detection_logs_time': '2023-01-01T14:43:19Z', 'found_search_detection_logs': [500]}
-        assert search_detection_logs[-1]['_time'] == '2023-01-01T14:43:19Z'
+        assert updated_last_run == {
+            'search_detection_start_time': '2023-01-01T14:59:59Z',
+            'dedup_found_search_detection_logs': [500],
+            'pagination_found_search_detection_logs': [500],
+            'search_detection_next_link': 'https://api.xdr.trendmicro.com/v3.0/search/detections?top=500'
+                                          '&fetchedAmountOfEvents=500'
+        }
 
     def test_get_search_detection_logs_with_last_run(self, mocker, client: Client):
         """
         Given:
-         - {'search_detection_logs_time': '2023-01-01T14:43:19Z', 'found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7]}
+         - last_run = {
+                'search_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7],
+                'pagination_found_search_detection_logs': [],
+                'search_detection_next_link': 'https://api.xdr.trendmicro.com/v3.0/search/detections?top=200'
+                                              '&fetchedAmountOfEvents=500'
+            }
          - limit = 500
          - 200 detection events
 
@@ -489,7 +517,6 @@ class TestFetchEvents:
          - make sure only 193 events are returned
          - make sure latest search detection log event time is saved in
            the search_detection_logs_time without adding 1 second to it.
-         - make sure in the cache we will have event with 200 id as its the event that happened in the last second.
         """
         from TrendMicroVisionOneEventCollector import get_search_detection_logs
         start_freeze_time('2023-01-01T15:00:00Z')
@@ -498,20 +525,30 @@ class TestFetchEvents:
             BaseClient,
             '_http_request',
             side_effect=_http_request_side_effect_decorator(
-                num_of_search_detection_logs=200, last_search_detection_logs='2023-01-01T14:00:00Z'
+                num_of_search_detection_logs=700, last_search_detection_logs='2023-01-01T14:00:00Z'
             )
         )
 
         search_detection_logs, updated_last_run = get_search_detection_logs(
             client=client,
             first_fetch='1 month ago',
-            last_run={'search_detection_logs_time': '2023-01-01T14:43:19Z', 'found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7]},
+            last_run={
+                'search_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_search_detection_logs': [1, 2, 3, 4, 5, 6, 7],
+                'pagination_found_search_detection_logs': [],
+                'search_detection_next_link': 'https://api.xdr.trendmicro.com/v3.0/search/detections?top=200'
+                                              '&fetchedAmountOfEvents=500'
+            },
             limit=500
         )
 
         assert len(search_detection_logs) == 193
-        assert updated_last_run == {'search_detection_logs_time': '2023-01-01T14:59:59Z', 'found_search_detection_logs': [200]}
-        assert search_detection_logs[-1]['_time'] == '2023-01-01T14:59:59Z'
+        assert updated_last_run == {
+            'search_detection_start_time': '2023-01-01T14:00:00Z',
+            'dedup_found_search_detection_logs': [],
+            'pagination_found_search_detection_logs': [],
+            'search_detection_next_link': ''
+        }
 
     def test_get_audit_logs_no_last_run(self, mocker, client: Client):
         """
