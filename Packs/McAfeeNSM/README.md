@@ -46,7 +46,7 @@ Configure Syslog Faults Events:
 By Default on Fault and IPS events (syslog) not have event time, to add event time do the followin steps:
 *IPS Events*
 1. on McAfee NSM go to Manager -> Setup -> Notification -> IPS Events -> syslog.
-2. choose target server and click on the pencil (edit)
+2. Choose the target server and click the pencil (edit).
 3. In the message part, add in the end of the string " at  $IV_ATTACK_TIME$".
 4. Click **Save**.
 
