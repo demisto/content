@@ -3050,18 +3050,18 @@ script:
       description: The subscriptionPolicies of the resource.
       type: String
   - name: azure-sentinel-resource-group-list
-    description: Lists all resource groups.
+    description: List all resource groups for a subscription.
     arguments:
     - name: subscription_id
       description: "The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided."
       type: String
       required: false
     - name: tag
-      description: The tag name. Input should be `{“Tag Name:Tag Value”}``. Operator is “equals”
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
       isArray: false
       type: String
     - name: limit
-      description: The maximum number of items to return.
+      description: Limit on the number of resource groups to return.
       defaultValue: 50
       isArray: false
       type: Number
