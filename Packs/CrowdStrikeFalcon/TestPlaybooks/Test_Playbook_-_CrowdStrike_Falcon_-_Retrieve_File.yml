@@ -858,10 +858,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "266":
     id: "266"
-    taskid: 3cb2a192-d130-4846-8cb6-601391d07d7f
+    taskid: 5b1a9e5c-2610-4f00-856a-babe62e511f2
     type: regular
     task:
-      id: 3cb2a192-d130-4846-8cb6-601391d07d7f
+      id: 5b1a9e5c-2610-4f00-856a-babe62e511f2
       version: -1
       name: Verify Context Error - File SHA512
       description: Prints an error entry with a given message
@@ -892,14 +892,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "267":
     id: "267"
-    taskid: 0f8e419e-6691-4201-8854-cdeccfb3d3e2
+    taskid: 3371de65-8bd7-4d87-8f21-c707efd5d4e2
     type: condition
     task:
-      id: 0f8e419e-6691-4201-8854-cdeccfb3d3e2
+      id: 3371de65-8bd7-4d87-8f21-c707efd5d4e2
       version: -1
       name: Verify File SHA512
       description: |
-        Verify that the 'File.Size' context key has been extracted correctly.
+        Verify that the 'File.SHA512' context key has been extracted correctly.
       type: condition
       iscommand: false
       brand: ""
@@ -919,6 +919,8 @@ tasks:
                 root: File
                 accessor: SHA512
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -936,12 +938,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "268":
     id: "268"
-    taskid: e9aef9e2-e238-4900-8ec0-867032d04738
+    taskid: d514cad4-de05-4125-8c33-97f749eb396a
     type: regular
     task:
-      id: e9aef9e2-e238-4900-8ec0-867032d04738
+      id: d514cad4-de05-4125-8c33-97f749eb396a
       version: -1
-      name: Verify Context Error - File Size
+      name: Verify Context Error - File Name
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
@@ -970,10 +972,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "269":
     id: "269"
-    taskid: 38e4710a-db6d-450b-88bb-32a57630a1d2
+    taskid: 0f9018db-341d-4d4d-8aa9-5ded9ee9dd6d
     type: condition
     task:
-      id: 38e4710a-db6d-450b-88bb-32a57630a1d2
+      id: 0f9018db-341d-4d4d-8aa9-5ded9ee9dd6d
       version: -1
       name: Verify File Name
       description: |
@@ -997,6 +999,8 @@ tasks:
                 root: File
                 accessor: Name
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
