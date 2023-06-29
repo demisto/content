@@ -12,9 +12,9 @@ from CommonServerPython import urljoin
 
 """Helper functions and fixrtures"""
 BASE_URL = urljoin('https://akab-hnanog6ge5or6biz-ukavvo4zvqliqhlw.cloudsecurity.akamaiapis.net', '/siem/v1/configs')
-with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events_empty.txt') as sec_events_empty:
+with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events_empty.txt', 'r') as sec_events_empty:
     SEC_EVENTS_EMPTY_TXT = sec_events_empty.read()
-with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events.txt') as sec_events:
+with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events.txt', 'r') as sec_events:
     SEC_EVENTS_TXT = sec_events.read()
 
 
@@ -100,7 +100,7 @@ class TestCommandsFunctions:
         assert expected_incidents == tested_incidents, "Incidents - No last time exsits and no available data"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and no available data"
 
-    @pytest.mark.get_logs
+    @pytest.mark.get_events
     def test_get_events_command_1(self, client, datadir, requests_mock):
         """Test query response without security events - check only enrty context"""
         from Akamai_SIEM import get_events_command
@@ -114,7 +114,7 @@ class TestCommandsFunctions:
 
         assert entry_context_tested == {}, "Test query response without security events - check only enrty context"
 
-    @pytest.mark.get_logs
+    @pytest.mark.get_events
     def test_get_events_command_2(self, client, datadir, requests_mock):
         """Test query response with security events - check only entry context"""
         from Akamai_SIEM import get_events_command
