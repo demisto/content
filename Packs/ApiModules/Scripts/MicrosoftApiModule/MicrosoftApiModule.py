@@ -624,7 +624,7 @@ class MicrosoftClient(BaseClient):
                  managed_identities_client_id: Optional[str] = None,
                  managed_identities_resource_uri: Optional[str] = None,
                  base_url: Optional[str] = None,
-                 command_prefix: Optional[str] = None,
+                 command_prefix: Optional[str] = "command_prefix",
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.

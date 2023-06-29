@@ -144,7 +144,8 @@ class AzureSentinelClient:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=self.azure_cloud.endpoints.resource_manager,
-            base_url=base_url
+            base_url=base_url,
+            command_prefix="azure-sentinel",
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
