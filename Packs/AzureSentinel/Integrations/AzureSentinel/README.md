@@ -2421,7 +2421,7 @@ There are no input arguments for this command.
 | AzureSentinel.Subscription.managedByTenants | String | The managedByTenants of the resource. | 
 | AzureSentinel.Subscription.tenetId | String | The tenetId of the resource. | 
 | AzureSentinel.Subscription.state | String | The state of the resource. | 
-| AzureSentinel.Subscription.subscriptionPolicies | String | The subscriptionPolicies of the resource. | 
+| AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
 
 #### Command example
 ```!azure-sentinel-subscriptions-list```
