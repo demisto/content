@@ -3041,7 +3041,7 @@ script:
       description: The managedByTenants of the resource.
       type: String
     - contextPath: AzureSentinel.Subscription.tenetId
-      description: The tenetId of the resource.
+      description: The tenet ID of the resource.
       type: String
     - contextPath: AzureSentinel.Subscription.state
       description: The state of the resource.
