@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "test"
+            "_comment": "Summary of the remediation action."
         },
         {
             "displayName": "2",
@@ -29,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "First part of remediation action details."
         },
         {
             "displayName": "3",
@@ -42,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Second part of remediation action details."
         },
         {
             "displayName": "4",
@@ -55,7 +57,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Optional additional explainer of the remediation action."
         }
     ],
     "content": true,
