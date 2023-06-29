@@ -36,7 +36,6 @@ cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
 cp ./content-test-conf/secrets_build_scripts/GoogleSecretManagerModule.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./Tests/scripts
-cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
