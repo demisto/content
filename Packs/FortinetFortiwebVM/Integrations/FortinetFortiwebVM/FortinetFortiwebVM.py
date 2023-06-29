@@ -128,7 +128,7 @@ class OutputTitle(Enum):
         "Custom whitelist Header Field member succesfuly created!"
     )
     CUSTOM_WHITELIST_LIST = "Custom whitelist members:"
-    CUSTOM_PREDIFINED_LIST = "Custom whitelist members:"
+    CUSTOM_PREDEFINED_LIST = "Custom predefined members:"
 
     PROTECTED_HOSTNAME_GROUP_CREATE = "Protected Hostname group successfully created!"
     PROTECTED_HOSTNAME_GROUP_UPDATE = "Hostname group successfully updated!"
@@ -208,15 +208,11 @@ class ErrorMessage(Enum):
     REQUEST_URL = "Request URL must start with  / ."
     REQUEST_URL_INSERT = "Please insert request_url."
     REQUEST_TYPE = 'request_type should be "Simple String"/"Regular Expression"'
-    DOMAIN_TYPE = 'domain_type should be "Simple String"/"Regular Expression"'
     NAME_TYPE = 'name_type should be "Simple String"/"Regular Expression"'
     HEADER_NAME_TYPE = 'header_name_type should be "Simple String"/"Regular Expression"'
-    HEADER_VALUE_TYPE = (
-        'header_value_type should be "Simple String"/"Regular Expression"'
-    )
     DOMAIN_INSERT = "Please insert domain."
     VALUE_INSERT = "Please insert value."
-    COUNTRIES = "Please insert counries from the list."
+    COUNTRIES = "Please insert countries from the list."
     NAME_INSERT = "Please insert name."
     DEPLOYMENT_MODE_INSERT = "Please insert deployment mode."
     VIRTUAL_SERVER = "Please insert virtual server."
@@ -5677,24 +5673,12 @@ class ClientV2(Client):
                     and args["request_url"][0] != "/"
                 ):
                     raise ValueError(ErrorMessage.REQUEST_URL.value)
-            if args.get("domain_status") and args["domain_status"] == "enable":
-                if args.get("domain_type") and args["domain_type"] not in [
-                    "Simple String",
-                    "Regular Expression",
-                ]:
-                    raise ValueError(ErrorMessage.DOMAIN_TYPE.value)
         if member_type == "Header Field":
             if args.get("header_name_type") and args["header_name_type"] not in [
                 "Simple String",
                 "Regular Expression",
             ]:
                 raise ValueError(ErrorMessage.HEADER_NAME_TYPE.value)
-            if args.get("value_status") and args["value_status"] == "enable":
-                if args.get("header_value_type") and args["header_value_type"] not in [
-                    "Simple String",
-                    "Regular Expression",
-                ]:
-                    raise ValueError(ErrorMessage.HEADER_VALUE_TYPE.value)
 
     def validate_virtual_server_item(self, args: dict[str, Any]):
         """Virtaul server item args validator.
@@ -10568,7 +10552,7 @@ def custom_predifined_whitelist_list_command(
         sub_object_id=id,
     )
     readable_output = tableToMarkdown(
-        name=OutputTitle.CUSTOM_PREDIFINED_LIST.value,
+        name=OutputTitle.CUSTOM_PREDEFINED_LIST.value,
         metadata=pagination_message,
         t=parsed_data,
         headers=["id", "name", "path", "domain", "status"],
