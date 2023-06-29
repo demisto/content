@@ -10664,7 +10664,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     :return: The new incidents ids
     :rtype: ``dict``
     """
-    demisto.debug('lb: Remove old incidents ids')
+    demisto.debug('lb: Remove old incidents ids, current time is {}'.format(current_time))
     look_back_in_seconds = look_back * 60
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
