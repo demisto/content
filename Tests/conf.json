@@ -5465,7 +5465,7 @@
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
         "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
-        "Protectwise-Test": "Issue 28168",
+        "Protectwise-Test": "Issue CRTX-86776",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
