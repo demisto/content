@@ -2509,14 +2509,14 @@ Lists all resource groups.
                 "type": "Microsoft.Resources/resourceGroups"
             },
             {
-                "id": "/subscriptions/0f907ea4/resourceGroups/demisto",
+                "id": "/subscriptions/0f907ea4/resourceGroups/demi",
                 "location": "centralus",
-                "name": "demisto",
+                "name": "demi",
                 "properties": {
                     "provisioningState": "Succeeded"
                 },
                 "tags": {
-                    "Owner": "Demisto"
+                    "Owner": "Demi"
                 },
                 "type": "Microsoft.Resources/resourceGroups"
             },
@@ -2530,4 +2530,4 @@ Lists all resource groups.
 >|Name|Location|Tags|
 >|---|---|---|
 >| cloud-shell | eastus |  |
->| demisto | centralus | Owner: Demisto |
+>| demi | centralus | Owner: Demi |
