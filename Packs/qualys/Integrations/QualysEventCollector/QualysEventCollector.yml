@@ -49,6 +49,20 @@ configuration:
   defaultvalue: "1"
   type: 19
   required: false
+- defaultvalue: 10000
+  section: Collect
+  display: Activity Logs Fetch Limit
+  name: max_fetch_activity_logs
+  additionalinfo: Limit on number of activity logs to fetch per fetch iteration.
+  required: true
+  type: 0
+- defaultvalue: 1000
+  section: Collect
+  display: Host Detections Fetch Limit
+  name: max_fetch_hosts_detections
+  additionalinfo: Limit on number of hosts to return the detections for it in a single fetch iteration.
+  required: true
+  type: 0
 description: Qualys Event Collector fetches Activity Logs (Audit Logs) and Host Vulnerabilities.
 display: Qualys Event Collector
 name: QualysEventCollector
