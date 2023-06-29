@@ -1121,8 +1121,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "46f27680ef0c8a2f47aae79e5f1d6a4f802de444"
-resolved_reference = "46f27680ef0c8a2f47aae79e5f1d6a4f802de444"
+reference = "13367e72d12bfa7be64bba6655bf0b9dd82ef22a"
+resolved_reference = "13367e72d12bfa7be64bba6655bf0b9dd82ef22a"
 
 [[package]]
 name = "deprecated"
@@ -2920,13 +2920,13 @@ PyOpenSSL = "*"
 
 [[package]]
 name = "neo4j"
-version = "5.9.0"
+version = "5.10.0"
 description = "Neo4j Bolt driver for Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "neo4j-5.9.0.tar.gz", hash = "sha256:b0abc0065f616bfd8230a48b1f6c91f9aacd7e2aea76d72d09a745ae169cf4da"},
+    {file = "neo4j-5.10.0.tar.gz", hash = "sha256:90616b2de1dc5a5e0ab17b72f0762f3496ac9f21c58bc0067f44d40c41db6a4e"},
 ]
 
 [package.dependencies]
@@ -6560,4 +6560,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "52e2fd5408bb0264dba1acfc85cf302095d207a8efaa13dc188fa2df7b620a27"
+content-hash = "d45719e7379eb2c95d35812e38a289ebd1f56b9d410b7bcbcba5088c60b0e726"
