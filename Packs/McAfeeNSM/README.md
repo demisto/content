@@ -36,7 +36,7 @@ Configure Syslog User Activity (audit logs) Events:
 2. In Enable Syslog Notification, click **YES**.
 3. Fill in the "Server Name or IP Address" and "Port" fields .
 4. In the Protocol dropdown, select **Protocol**.
-5. on *Facilities* dropdown select "Log Alert (note 1)".
+5. In the Facilities dropdown, select **Log Alert (note 1)**.
 6. on severity mapping not touch, will be like:
     ![link](https://raw.githubusercontent.com/demisto/content/53399299a79f6d8323502c6489c02b87a8720a7b/Packs/McAfeeNSM/doc_imgs/nsm_audit_severity_mapping.png)
 7. on *Forward audit* dropdown select "Allow All Auditlogs".
