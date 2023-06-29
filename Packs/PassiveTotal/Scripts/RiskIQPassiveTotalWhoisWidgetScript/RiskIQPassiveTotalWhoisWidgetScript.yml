@@ -9,7 +9,6 @@ subtype: python3
 dependson:
   must:
   - '|||pt-whois-search'
-system: false
 tags:
 - dynamic-indicator-section
 timeout: 300ns

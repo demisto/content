@@ -27,11 +27,9 @@ configuration:
   type: 4
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
 script:
   script: ""

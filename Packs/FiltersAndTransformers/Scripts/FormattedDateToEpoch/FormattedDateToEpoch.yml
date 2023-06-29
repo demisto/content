@@ -15,7 +15,6 @@ args:
   required: true
   description: Time stamp to convert
 - name: formatter
-  required: false
   description: Python 'strptime' formatter string
 scripttarget: 0
 runonce: false

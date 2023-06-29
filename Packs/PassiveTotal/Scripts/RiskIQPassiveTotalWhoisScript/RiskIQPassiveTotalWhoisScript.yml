@@ -1,12 +1,9 @@
 args:
 - default: true
   description: domain or email indicator value that need to enrich
-  isArray: false
   name: indicator_value
   required: true
-  secret: false
-comment: Enhancement script to enrich whois information for Domain and Email type
-  of indicators.
+comment: Enhancement script to enrich whois information for Domain and Email type of indicators.
 commonfields:
   id: RiskIQPassiveTotalWhoisScript
   version: -1
@@ -17,7 +14,6 @@ subtype: python3
 dependson:
   must:
   - '|||pt-whois-search'
-system: false
 tags:
 - enhancement
 timeout: '0'

@@ -22,7 +22,6 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
-  required: false
 script:
   script: >-
     var base = params.baseUrl;

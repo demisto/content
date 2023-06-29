@@ -25,7 +25,6 @@ configuration:
   name: port
   defaultvalue: "5433"
   type: 0
-  required: false
 script:
   script: ''
   type: python

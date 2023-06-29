@@ -19,11 +19,9 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 script:
   script: ''
   type: python
@@ -37,11 +35,9 @@ script:
       - all
       - unhandled
       - problems
-      description: 'select the predefined filter like in the monitoring view: all,
-        unhandled, problems'
+      description: 'select the predefined filter like in the monitoring view: all, unhandled, problems'
     - name: fields
-      description: 'the fields list that you want to get separated by a ”,”. For example:
-        fields=id,name,alias,address'
+      description: 'the fields list that you want to get separated by a ”,”. For example: fields=id,name,alias,address'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -50,8 +46,7 @@ script:
       - unreachable
       - pending
       - all
-      description: the status of hosts that you want to get (up, down, unreachable,
-        pending, all)
+      description: the status of hosts that you want to get (up, down, unreachable, pending, all)
     - name: hostgroup
       description: hostgroup id filter. For example, hostgroup=2
     - name: instance
@@ -94,11 +89,9 @@ script:
       - all
       - unhandled
       - problems
-      description: 'select the predefined filter like in the monitoring view: all,
-        unhandled, problems'
+      description: 'select the predefined filter like in the monitoring view: all, unhandled, problems'
     - name: fields
-      description: the fields list that you want to get separated by ",". For example,
-        fields=id,description,host_id
+      description: the fields list that you want to get separated by ",". For example, fields=id,description,host_id
     - name: status
       auto: PREDEFINED
       predefined:
@@ -108,8 +101,7 @@ script:
       - unknown
       - pending
       - all
-      description: the status of services that you want to get (ok, warning, critical,
-        unknown, pending, all)
+      description: the status of services that you want to get (ok, warning, critical, unknown, pending, all)
     - name: hostgroup
       description: hostgroup id filter. For example, hostgroup=2
     - name: servicegroup

@@ -13,7 +13,6 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Username
   name: authentication
   type: 9
@@ -22,7 +21,6 @@ configuration:
   name: port
   defaultvalue: "22"
   type: 0
-  required: false
   additionalinfo: Defaults to 22
 script:
   script: ''

@@ -3,8 +3,6 @@ args:
   description: The URLs or emails to process.
   isArray: true
   name: input
-  required: false
-  secret: false
 comment: Extracts domains and FQDNs from URLs and emails.
 commonfields:
   id: ExtractDomainAndFQDNFromUrlAndEmail
@@ -13,7 +11,6 @@ enabled: true
 name: ExtractDomainAndFQDNFromUrlAndEmail
 script: '-'
 subtype: python3
-system: false
 tags:
 - indicator-format
 timeout: '0'

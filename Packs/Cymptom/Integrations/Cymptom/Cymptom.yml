@@ -17,29 +17,21 @@ configuration:
   type: 4
 - display: Fetch incidents
   name: is_fetch
-  required: false
   type: 8
 - additionalinfo: Whether to use the system proxy.
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - additionalinfo: Whether to accept insecure certificates.
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - additionalinfo: Initial time to start fetching mitigations.
   defaultvalue: 3 days
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes).
-    Default is "3 days"
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Default is "3 days"
   name: first_fetch
-  required: false
   type: 0
-description: Cymptom is a Breach and Attack Simulation solution that revolutionizes
-  the existing approach by transforming attack simulation into a data analysis question.
-  Cymptom agentless scanning brings real-time always-on visibility into the entire
-  security posture.
+description: Cymptom is a Breach and Attack Simulation solution that revolutionizes the existing approach by transforming attack simulation into a data analysis question. Cymptom agentless scanning brings real-time always-on visibility into the entire security posture.
 display: Cymptom
 name: Cymptom
 script:
@@ -80,14 +72,12 @@ script:
       description: References relevant for this mitigation
       type: String
   - arguments:
-    - default: false
-      defaultValue: "60"
+    - defaultValue: "60"
       description: Timeout for operation.
       name: timeout
     - default: true
       defaultValue: "True"
-      description: Return only privileged (Domaind Admin or Local Admin) or unprivileged
-        users.
+      description: Return only privileged (Domaind Admin or Local Admin) or unprivileged users.
       name: privileged
     description: This command returns users with cracked password
     name: cymptom-get-users-with-cracked-passwords

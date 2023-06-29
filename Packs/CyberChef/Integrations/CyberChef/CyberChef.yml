@@ -11,18 +11,14 @@ configuration:
 - additionalinfo: API key if you use https://prod.apifor.io/
   display: API Key
   name: apikey
-  required: false
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: 'CyberChef is a web-application developed by GCHQ that''s been called
-  the “Cyber Swiss Army Knife”. '
+description: 'CyberChef is a web-application developed by GCHQ that''s been called the “Cyber Swiss Army Knife”. '
 display: CyberChef
 name: CyberChef
 script:
@@ -31,8 +27,7 @@ script:
     - description: input data to be used in baking
       name: input
       required: true
-    - description: 'recipe how to bake. use JSON formatting. For example:  {         "op":
-        "to decimal",         "args": {             "delimiter": "Colon"         }     }'
+    - description: 'recipe how to bake. use JSON formatting. For example:  {         "op": "to decimal",         "args": {             "delimiter": "Colon"         }     }'
       name: recipe
       required: true
     - description: 'Optional argument to define outputType. '

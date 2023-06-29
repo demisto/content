@@ -20,7 +20,6 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
-  required: false
 script:
   script: ''
   type: javascript

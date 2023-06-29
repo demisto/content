@@ -243,8 +243,6 @@ script:
     - auto: PREDEFINED
       name: override_platform
       description: If specified, it will override the target platform specified in the integration instance.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - a10

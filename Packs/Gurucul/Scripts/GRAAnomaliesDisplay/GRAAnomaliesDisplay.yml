@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: GRAAnomaliesDisplay
 script: '-'
-system: false
 type: python
 tags:
 - dynamic-section

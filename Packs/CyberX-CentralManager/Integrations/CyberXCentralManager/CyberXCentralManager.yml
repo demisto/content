@@ -15,11 +15,9 @@ configuration:
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
 description: Updates alerts in CyberX Central Management
 display: CyberX - Central Manager

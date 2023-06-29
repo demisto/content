@@ -9,7 +9,6 @@ subtype: python3
 dependson:
   must:
   - '|||pt-get-host-pairs'
-system: false
 tags:
 - dynamic-indicator-section
 timeout: 300ns

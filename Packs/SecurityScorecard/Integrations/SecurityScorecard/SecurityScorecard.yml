@@ -20,38 +20,31 @@ configuration:
   displaypassword: API Token
 - name: isFetch
   display: Fetch incidents
-  required: false
   type: 8
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
   defaultvalue: "1440"
-  required: false
   type: 19
 - name: max_fetch
   display: Fetch Limit
-  required: false
   defaultvalue: '50'
   type: 0
   additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
 - name: first_fetch
   display: First fetch
   defaultvalue: 2 days
-  required: false
   type: 0
   additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
 - name: incidentType
   display: Incident type
-  required: false
   defaultvalue: SecurityScorecard Alert
   type: 13
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
 fromversion: 6.0.0
 tests:
@@ -69,7 +62,6 @@ script:
     arguments:
     - name: limit
       description: Limit the amount of Portfolios to return. Defaults to 50.
-      required: false
     outputs:
     - contextPath: SecurityScorecard.Portfolio.id
       description: Portfolio ID
@@ -92,11 +84,8 @@ script:
     - name: portfolio_id
       description: Portfolio ID. The Portfolio ID can be retrieved using the 'securityscorecard-portfolios-list' command.
       required: true
-      default: false
     - name: grade
       description: Grade filter. To filter multiple grades, comma-separate them, e.g. A,B.
-      required: false
-      default: false
       auto: PREDEFINED
       predefined:
       - "A"
@@ -107,8 +96,6 @@ script:
       - "F"
     - name: industry
       description: Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services
-      required: false
-      default: false
       auto: PREDEFINED
       predefined:
       - "education"
@@ -122,16 +109,10 @@ script:
       - "technology"
     - name: vulnerability
       description: Vulnerability filter. #TODO NEED TO CHECK POSSIBLE VALUES.
-      required: false
-      default: false
     - name: issue_type
       description: "Comma-separated list of issue types. Possible values are: adware_installation_trail, adware_installation, alleged_breach_incident, chatter, anonymous_proxy, service_cassandra, service_couchdb, attack_detected, attack_feed, new_booter_shell, spa_browser, cdn_hosting, tlscert_expired, tlscert_revoked, tlscert_self_signed, tlscert_excessive_expiration, tlscert_weak_signature, tlscert_no_revocation, service_cloud_provider, csp_no_policy_v2, csp_unsafe_policy_v2, csp_too_broad_v2, marketing_site, cookie_missing_secure_attribute, short_term_lending_site, leaked_credentials, leaked_credentials_info, service_dns, new_defacement, ransomware_victim, domain_uses_hsts_preloading, service_elasticsearch, employee_satisfaction, service_end_of_life, service_end_of_service, exposed_personal_information, exposed_personal_information_info, admin_subdomain_v2, tlscert_extended_validation, service_ftp, patching_cadence_high, web_vuln_host_high, service_vuln_host_high, service_imap, iot_camera, industrial_control_device, insecure_https_redirect_pattern_v2, service_ldap, service_ldap_anonymous, social_network_issues, patching_cadence_low, web_vuln_host_low, service_vuln_host_low, spf_record_malformed, malware_controller, malware_1_day, malware_30_day, malware_365_day, malware_infection, malware_infection_trail, patching_cadence_medium, web_vuln_host_medium, service_vuln_host_medium, service_microsoft_sql, minecraft_server, service_mongodb, no_browser_policy, service_mysql, service_neo4j, service_networking, object_storage_bucket_with_risky_acl, open_resolver, exposed_ports, service_open_vpn, service_oracle_db, outdated_os, outdated_browser, non_malware_events_last_month, service_pop3, service_pptp, phishing, typosquat, service_postgresql, exploited_product, public_text_credit_cards, public_text_database_dump, public_text_hashes, public_text_mention, public_text_password_dump, service_pulse_vpn, service_rdp, ransomware_association, redirect_chain_contains_http_v2, service_redis, remote_access, service_smb, mail_server_unusual_port, service_soap, spf_record_wildcard, spf_record_softfail, spf_record_missing, ssh_weak_protocol, ssh_weak_cipher, ssh_weak_mac, tls_weak_protocol, github_information_leak_disclosure, google_information_leak_disclosure, cookie_missing_http_only, domain_missing_https_v2, suspicious_traffic, tls_ocsp_stapling, tls_weak_cipher, telephony, service_telnet, tor_node_events_last_month, upnp_accessible, unsafe_sri_v2, uce, service_vnc, dnssec_detected, waf_detected_v2, hsts_incorrect_v2, hosted_on_object_storage_v2, references_object_storage_v2, x_content_type_options_incorrect_v2, x_frame_options_incorrect_v2, x_xss_protection_incorrect_v2, service_rsync"
-      required: false
-      default: false
     - name: had_breach_within_last_days
       description: Domains with breaches in the last X days. Possible values are numbers, e.g. 1000.
-      required: false
-      default: false
     outputs:
     - contextPath: SecurityScorecard.Portfolio.Company.domain
       description: Company domain.
@@ -169,7 +150,6 @@ script:
     - name: domain
       description: Company domain, e.g. google.com. The company must first be added to a Portfolio in order to be able to get its score.
       required: true
-      default: false
     outputs:
     - contextPath: SecurityScorecard.Company.Score.domain
       description: Company domain.
@@ -198,11 +178,9 @@ script:
     - name: domain
       description: Company domain.
       required: true
-      default: false
     - name: severity
       isArray: true
       description: "Issue severity filter. Comma-separated list of the following values: 'positive', 'info', 'low', 'medium', 'high'."
-      required: false
     outputs:
     - contextPath: SecurityScorecard.Company.Factor.name
       description: Factor name.
@@ -237,17 +215,12 @@ script:
     - name: domain
       description: Company domain, e.g. `google.com`
       required: true
-      default: false
     - name: from
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
-      required: false
-      default: false
     - name: to
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
-      default: false
     - name: timing
       description: Timing granularity.
-      required: false
       auto: PREDEFINED
       predefined:
       - "daily"
@@ -268,17 +241,12 @@ script:
     - name: domain
       description: Company domain, e.g. google.com
       required: true
-      default: false
     - name: from
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
-      required: false
-      default: false
     - name: to
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
-      default: false
     - name: timing
       description: Timing granularity. or "monthly"
-      required: false
       auto: PREDEFINED
       predefined:
       - "daily"
@@ -317,11 +285,9 @@ script:
       predefined:
       - "my_scorecard"
       - "any_followed_company"
-      required: false
     - name: portfolios
       isArray: true
       description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
-      required: false
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
       description: Alert ID
@@ -345,7 +311,6 @@ script:
       required: true
     - name: target
       description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
-      required: false
       auto: PREDEFINED
       predefined:
       - "my_scorecard"
@@ -353,7 +318,6 @@ script:
     - name: portfolios
       isArray: true
       description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
-      required: false
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
       description: Alert ID
@@ -376,7 +340,6 @@ script:
     arguments:
     - name: portfolio_id
       description: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`
-      required: false
     outputs:
     - contextPath: SecurityScorecard.Alerts.Alert.id
       description: Alert ID

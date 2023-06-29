@@ -1,5 +1,4 @@
-comment: Set widgets to custom layout in Email, RiskIQSerialNumber and File SHA-1
-  type of indicators.
+comment: Set widgets to custom layout in Email, RiskIQSerialNumber and File SHA-1 type of indicators.
 commonfields:
   id: RiskIQPassiveTotalSSLWidgetScript
   version: -1
@@ -10,7 +9,6 @@ subtype: python3
 dependson:
   must:
   - '|||pt-ssl-cert-search'
-system: false
 tags:
 - dynamic-indicator-section
 timeout: 300ns

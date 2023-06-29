@@ -1,16 +1,8 @@
 args:
-- default: false
-  description: The end date for searching indicators.
-  isArray: false
+- description: The end date for searching indicators.
   name: to
-  required: false
-  secret: false
-- default: false
-  description: The start date for searching indicators.
-  isArray: false
+- description: The start date for searching indicators.
   name: from
-  required: false
-  secret: false
 comment: Deprecated. Use FeedMitreAttackv2 instead.
 commonfields:
   id: MITREIndicatorsByOpenIncidents
@@ -19,7 +11,6 @@ enabled: true
 name: MITREIndicatorsByOpenIncidents
 script: '-'
 subtype: python3
-system: false
 tags:
 - widget
 timeout: '0'

@@ -18,11 +18,9 @@ configuration:
   additionalinfo: appNovi token URL for authentication
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 script:
   script: '-'

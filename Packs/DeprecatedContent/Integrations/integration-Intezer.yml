@@ -20,7 +20,6 @@ configuration:
   name: useproxy
   defaultvalue: "true"
   type: 8
-  required: false
 script:
   script: >-
     var SERVER_API = 'https://analyze.intezer.com/api/';

@@ -12,7 +12,6 @@ args:
   required: true
   description: The first list. list1 must be the same size as list2.
 - name: format
-  required: false
   description: |-
     The format to join the lists by. For example, {1}-{2} joins the values for the same index in both lists, 
     where {1} is replaced with the value from list1 and {2} is replaced with the value from list2.
