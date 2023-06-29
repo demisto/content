@@ -235,7 +235,7 @@ tasks:
     task:
       id: 91dae1da-5e11-454a-896b-2711d3893013
       version: -1
-      name: Get information on the new user test test
+      name: Get information on the new user
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
