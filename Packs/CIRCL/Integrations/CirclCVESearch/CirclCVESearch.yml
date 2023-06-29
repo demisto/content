@@ -1,9 +1,22 @@
 category: Vulnerability Management
-deprecated: true
 commonfields:
-  id: CVE Search v2
+  id: CIRCL CVE Search
   version: -1
 configuration:
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A+ - 3rd party enrichment
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: https://cve.circl.lu/api/
   display: Server URL
   name: url
@@ -17,9 +30,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Deprecated. Use CIRCL CVE Search instead.
-display: CVE Search v2 (Deprecated)
-name: CVE Search v2
+description: Searches for CVE information using circl.lu.
+display: CIRCL CVE Search
+name: CIRCL CVE Search
 script:
   commands:
   - arguments:
@@ -65,7 +78,7 @@ script:
     - default: true
       description: 'The CVE ID. For example: CVE-2014-1234.'
       isArray: true
-      name: cve_id
+      name: cve
       required: true
       secret: false
     deprecated: false
@@ -76,9 +89,15 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: String
-    - contextPath: CVE.CVSS
+    - contextPath: CVE.CVSS.Score
       description: The CVSS score of the CVE.
       type: number
+    - contextPath: CVE.CVSS.Vector
+      description: The CVSS Vector of the CVE.
+      type: String
+    - contextPath: CVE.CVSS.Table
+      description: The CVSS table of the CVE.
+      type: String
     - contextPath: CVE.Published
       description: The date the CVE was published.
       type: Date
@@ -87,6 +106,18 @@ script:
       type: Date
     - contextPath: CVE.Description
       description: The description of the CVE.
+      type: String
+    - contextPath: CVE.Tags
+      description: A list of tags.
+      type: List
+    - contextPath: CVE.Relationships
+      description: A list of relationships of the CVE.
+      type: List
+    - contextPath: CVE.vulnerableconfigurations
+      description: A dictionary of CPE strings with `cpe` key for a grid.
+      type: String
+    - contextPath: CVE.vulnerableproduct
+      description: A dictionary of CPE strings with `cpe` key for a grid.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator value.
@@ -110,5 +141,5 @@ script:
   subtype: python3
   type: python
 tests:
-- CVE Search v2 - Test
-fromversion: 5.0.0
+- CIRCL CVE Search - Test
+fromversion: 6.5.0
