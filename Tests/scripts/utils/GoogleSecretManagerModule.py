@@ -14,8 +14,8 @@ class GoogleSecreteManagerModule:
             return json5.loads(response.payload.data.decode("UTF-8"))
         except Exception as e:
             logging.warning(
-                f'[yellow]Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, '
-                f'got error: {e}[/yellow]')
+                f"[yellow]Secret json is malformed for: {secret_id} version: {response.name.split('/')[-1]}, "
+                f"got error: {e}[/yellow]")
             return {}
 
     def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple()) -> list:
@@ -33,7 +33,7 @@ class GoogleSecreteManagerModule:
                     missing_attrs = [attr for attr in attr_validation if attr not in secret_value]
                     if missing_attrs:
                         missing_attrs_str = ','.join(missing_attrs)
-                        logging.error(
+                        logging.warning(
                             f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
                         continue
                     secrets.append(secret_value)
