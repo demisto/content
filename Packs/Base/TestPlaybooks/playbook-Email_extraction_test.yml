@@ -696,7 +696,7 @@ tasks:
     task:
       id: a10a8fdc-fc59-4db1-8762-9e9d96e7713a
       version: -1
-      name: check auto extract emails - no-reply@alert.gcs-web.com
+      name: check auto extract emails - no-reply@alert.test-test.com
       type: condition
       iscommand: false
       brand: ""
