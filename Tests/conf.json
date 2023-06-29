@@ -964,14 +964,6 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "integrations": "CVE Search v2",
-            "playbookID": "CVE Search v2 - Test"
-        },
-        {
-            "integrations": "CVE Search v2",
-            "playbookID": "cveReputation Test"
-        },
-        {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test",
             "fromversion": "5.0.0"
@@ -5445,6 +5437,11 @@
                 "Demisto REST API"
             ],
             "playbookID": "FeedLOLBas_test"
+        },
+        {
+            "integrations": "CIRCL CVE Search",
+            "playbookID": "CIRCL CVE Search - Test",
+            "fromversion": "6.8.0"
         }
     ],
     "skipped_tests": {
@@ -5756,6 +5753,7 @@
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
+        "CIRCL",
         "rasterize",
         "Phishing",
         "Base",
@@ -5789,7 +5787,6 @@
         "FeedMitreAttackv2",
         "URLHaus",
         "MicrosoftDefenderAdvancedThreatProtection",
-        "CVESearch",
         "CrowdStrikeIntel",
         "Shodan",
         "MailListener",
@@ -5927,8 +5924,8 @@
         "Blocklist_de Feed",
         "BruteForceBlocker Feed",
         "CSVFeed",
-        "CVE Search v2",
         "CheckPhish",
+        "CIRCL",
         "Cloudflare Feed",
         "Cofense Feed",
         "Cortex Data Lake",
