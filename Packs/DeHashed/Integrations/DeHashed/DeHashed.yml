@@ -20,6 +20,20 @@ configuration:
   display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: email_dbot_score
   type: 0
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: This integration allows you to check if your personal information such as your email, username, or password is being compromised.
 display: DeHashed
 name: DeHashed
@@ -159,6 +173,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
   dockerimage: demisto/python3:3.10.12.63474
   script: '-'
   subtype: python3

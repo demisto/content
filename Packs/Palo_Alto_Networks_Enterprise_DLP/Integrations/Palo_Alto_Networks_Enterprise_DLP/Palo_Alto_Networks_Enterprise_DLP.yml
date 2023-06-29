@@ -35,7 +35,7 @@ configuration:
   name: dlp_slack_message
   type: 12
   additionalinfo: The message to send to the user to ask for feedback.
-  defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour upload of *$file_name* on *$app_name* was blocked due to company policy. This file contains sensitive information which violates *$data_profile_name* policy. \n\n $snippets\n\n
+  defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour activity on *$app_name* was blocked due to company policy. The data in this activity contains sensitive information which violates *$data_profile_name* policy.\n\nfilename - *$file_name* \n\n $snippets\n\n
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -87,6 +87,7 @@ script:
       - EXCEPTION_NOT_REQUESTED
       - OPERATIONAL_ERROR
       - SEND_NOTIFICATION_FAILURE
+      - EXCEPTION_DENIED
       description: The user feedback
     - name: user_id
       required: true
@@ -132,7 +133,7 @@ script:
       description: The snippets of the violation.
     - name: app_name
       required: true
-      description: The name of the application that performed the upload.
+      description: The name of the application that performed the activity.
     outputs:
     - contextPath: DLP.slack_message
       description: The Slack bot message.
