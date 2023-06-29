@@ -17,7 +17,8 @@ McAfee NSM syslog event types:
 4. In Facility, select **Log Alert (note 1)**.
 5. In Severity mapping, leave the configuration as it.  It should be:
  ![link](https://raw.githubusercontent.com/demisto/content/95eff3fe52a33695a10a76209cf8f2c4edbc185f/Packs/McAfeeNSM/doc_imgs/nsm_ips_severity_mapping.png)
-6. click on the Checkbox to enable "Notify for all Alerts" and click save.
+6. Click the Notify for all Alerts checkbox.
+7. Click **Save**.
 
 *config Syslog Faults Events:*
 1. on McAfee NSM go to Manager -> Setup -> Notification -> Faults -> syslog.
