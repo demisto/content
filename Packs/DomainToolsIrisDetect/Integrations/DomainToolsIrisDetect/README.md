@@ -1,9 +1,24 @@
-DomainTools is an essential component in the security stack of mature enterprises and performance-driven security teams.
-Iris Detect helps organizations discover and monitor lookalike domains with unmatched speed and coverage.
+# DomainTools Iris Detect
 
-The DomainTools Iris Detect content pack works indepenently or alongside the DomainTools Iris Content Pack. It works with the Iris Detect APIs to help you discover, track, and act against lookalike domains. A DomainTools key provisioned for Iris Detect is required.
+#### Threat Actors Move Fast. Detect Helps You Move Faster.
 
-Configure the pack to ingest and optionally create incidents off of new, watched, or escalated domains on a scheduled basis, as frequently as hourly. Indicator mappings and layouts help you act on the domains.
+Iris Detect is an Internet infrastructure detection, monitoring, and enforcement tool built on the industry’s fastest and broadest domain discovery engine and the largest databases of domain data. Capturing key data on new domains and risk-scoring them within minutes of discovery, Detect is a game-changer for brand managers, digital risk and fraud prevention teams, and network defenders.
+
+#### Key Benefits
+
+Rapid Discovery of Infringing Domains Continuous Monitoring of Evolving Infrastructure Enforcement Actions for Dangerous Domains
+
+#### Fastest New Domain Discovery
+
+Iris Detect employs the most sophisticated and extensive new-domain discovery capabilities, across all TLDs globally. Domains are enriched with preliminary Whois, DNS, and Risk Score data. The Iris Detect for Cortex XSOAR integration can create incidents as frequently as hourly,  incidents containing mapped indicators of newly-discovered domains matching the monitored keywords.
+
+#### Watch Suspicious Domains for Changes
+
+Through ad-hoc War-Room commands or on the incidents directly, domains of interest may be added to Iris Detect’s Watchlist, which triggers automatic daily updates, looking for hosting infrastructure or webpage changes. These changes can be consumed as their own incidents or sent to a separate workflow, giving you the ability to track evolving threat campaigns, classify, and identify which domains are most likely to do harm.
+
+#### Enable Effective Enforcement
+
+Merely knowing about malicious infrastructure is not enough. Iris Detect offers impactful enforcement options: Block flagged domains from incidents directly or using ad-hoc War-Room commands. Additionally, blocked domains can appear on their own feed, enabling you to take scripted enforcement actions in your security controls. Take action by sending domains to Google Phishing Protection, which can block them in Chrome, Firefox, and Safari, among other browsers.
 
 
 ## Configure DomainTools Iris Detect on Cortex XSOAR
@@ -22,19 +37,19 @@ Configure the pack to ingest and optionally create incidents off of new, watched
    | Risk score Ranges | Optionally specify a risk score range to triage higher risk indicators to different routing. A higher number indicates higher confidence a domain is likely to be used for malicious purposes.                                                                                                                                                                                                                                                | False |
    | Include Domain Data | Includes DNS and whois data in the response                                                                                                                                                                                                                                                                                                                                                                                                   | False |
    | First fetch timestamp | For the first time the enrichment is run, specify how far back should it pull indicators. First Fetch timestamp, Default is 3 days. The maximum time range is 30 days.                                                                                                                                                                                                                                                                        | False |
-   | Maximum number of incidents to fetch | This is a required field by XSOAR and should be set to 3, one for each possible feed type: new, watched, blocked.                                                                                                                                                                                                                                                                                                                             | False |
    | Trust any certificate (not secure) | Trust any certificate \(not secure\)                                                                                                                                                                                                                                                                                                                                                                                                          | False |
    | Use system proxy settings | Use system proxy settings                                                                                                                                                                                                                                                                                                                                                                                                                     | False |
-   | Indicator Reputation | Indicators from this integration instance will be marked with this reputation.                                                                                                                                                                                                                                                                                                                                                                | False |
-   | Source Reliability | Sets the source reliability for indicators returned by this integration.                                                                                                                                                                                                                                                                                                                                                                      | True |
-   | Tags | Sets tags to be applied to indicators returned by this integration.                                                                                                                                                                                                                                                                                                                                                                           | False |
-   | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed                                                                                                                                                                                                                                                                                                                                                   | False |
-   | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.                                                                                                                                                                                                                                        | False |
-   | Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.                                                                                                  | False |
    | Incident type | Optionally specify an incident type for incidents created by this integration to work with specific playbooks                                                                                                                                                                                                                                                                                                                                 | False |
    | Fetch incidents | This is a required field by XSOAR and should be set to 3, one for each possible feed type: new, changed, blocked.                                                                                                                                                                                                                                                                                                                             | False |
+4. To ensure that fetch incidents works:
+   1. Select the **Fetches incidents** radio button.
+   2. Select **DomainTools Iris Detect - Classifier** from classifier drop-down.
+   3. Select **DomainTools Iris Detect - Incoming Mapper** from mapper drop-down.
+   4. Select **Create Incidents and Import Indicators** from Enabled on New Domains drop-down.
+   5. Select **Create Incidents and Import Indicators** from Enabled on Changed Domains drop-down.
+   6. Select **Create Incidents and Import Indicators** from Enabled on Blocked Domains drop-down.
+5. Click **Test** to validate the URLs, token, and connection.
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
@@ -54,7 +69,7 @@ Reports a domain to Google's Safe Browsing API. After approval, their block list
 
 | **Argument Name**    | **Description**                                                                                                              | **Required** |
 |----------------------|------------------------------------------------------------------------------------------------------------------------------|--------------|
-| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found in the API response when querying the "new" endpoint. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains' command. | Required     | 
 
 #### Context Output
 
@@ -111,7 +126,7 @@ Mark a given domain as blocked, which allows a script against the Iris Detect AP
 
 | **Argument Name**    | **Description**      | **Required**                                                                                                                            |
 |----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| watchlist_domain_ids | watchlist_domain_ids | List of Iris Detect domain IDs to block. The domain ID can be found in the API response when querying the "new" or "watched" endpoints. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' commands. | Required     | 
 
 #### Context Output
 
@@ -168,7 +183,7 @@ Mark a given domain as watched, which will trigger more frequent scanning by Dom
 
 | **Argument Name**    | **Description**                                                                                                               | **Required** |
 |----------------------|-------------------------------------------------------------------------------------------------------------------------------|--------------|
-| watchlist_domain_ids | List of Iris Detect domain IDs to watchlist. The domain ID can be found in the API response when querying the "new" endpoint. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains' command. | Required     | 
 
 #### Context Output
 
@@ -225,7 +240,7 @@ Ignore a given domain, removing it from new and block lists, if applicable.
 
 | **Argument Name**    | **Description**                           | **Required** |
 |----------------------|-------------------------------------------|--------------|
-| watchlist_domain_ids | List of Iris Detect domain IDs to ignore. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' command. | Required     | 
 
 #### Context Output
 
@@ -377,7 +392,7 @@ Manually retrieve new domains matching all of your monitored terms, or a specifi
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | discovered_since    | Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                         | Optional     | 
-| monitor_id          | Monitor ID from monitors response. Only used when requesting domains for a specific monitor.                                                                                        | Optional     | 
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
 | tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
 | mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
 | risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
@@ -500,7 +515,7 @@ Manually retrieve changes to domains that have been marked as "watched" by users
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | escalation_types    | escalation_types: List[str]: default None. List of escalation types to filter domains by. Valid values are: ["blocked", "google_safe"].                                             | Optional     | 
-| monitor_id          | Monitor ID from monitors response. Only used when requesting domains for a specific monitor.                                                                                        | Optional     | 
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
 | tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
 | mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
 | changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 
@@ -653,7 +668,7 @@ Manually retrieve domains that your organization has marked as ignored, matching
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
-| monitor_id          | Monitor ID from monitors response. Only used when requesting domains for a specific monitor.                                                                                        | Optional     | 
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
 | tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
 | mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
 | changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 
@@ -812,7 +827,7 @@ Manually retrieve domains that your organization has escalated to Google Safe Br
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
-| monitor_id          | Monitor ID from monitors response. Only used when requesting domains for a specific monitor.                                                                                        | Optional     | 
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
 | tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
 | mx_exists           | Filter domains by if they have an MX record in DNS.                                                                                                                                 | Optional     | 
 | changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 
@@ -962,7 +977,7 @@ Manually retrieve domains that your organization has marked as "blocklisted", ma
 
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| monitor_id          | Monitor ID from monitors response. Only used when requesting domains for a specific monitor.                                                                                        | Optional     | 
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
 | tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
 | mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
 | changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 

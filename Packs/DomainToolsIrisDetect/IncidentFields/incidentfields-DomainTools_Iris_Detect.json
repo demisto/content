@@ -46,6 +46,19 @@
             ]
         },
         {
+            "key": "monitor_term",
+            "displayName": "monitor_term",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 100,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
             "key": "domain",
             "displayName": "domain",
             "type": "shortText",

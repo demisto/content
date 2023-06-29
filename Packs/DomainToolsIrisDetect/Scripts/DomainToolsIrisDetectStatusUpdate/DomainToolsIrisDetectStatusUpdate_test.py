@@ -6,8 +6,8 @@ def test_main_success(monkeypatch):
     # Mock demisto.args
     def mock_args():
         return {
-            "old": json.dumps([{"state": "watched", "id": "1"}]),
-            "new": json.dumps([{"state": "ignored", "id": "1"}]),
+            "old": json.dumps([{"state": "watched", "id": "1", "domain": "xyz"}]),
+            "new": json.dumps([{"state": "ignored", "id": "1", "domain": "xyz"}]),
         }
 
     # Mock demisto.executeCommand

@@ -104,7 +104,9 @@ script:
   commands:
   - arguments:
     - default: false
-      description: List of Iris Detect domain IDs to escalate. The domain ID can be found in the API response when querying the "new" endpoint.
+      description: |-
+        List of Iris Detect domain IDs to escalate. The domain ID can be 
+        found using 'domaintools-iris-detect-get-new-domains' command.
       isArray: true
       name: watchlist_domain_ids
       required: true
@@ -134,7 +136,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of Iris Detect domain IDs to block. The domain ID can be found in the API response when querying the "new" or "watched" endpoints.
+      description: |-
+        List of Iris Detect domain IDs to escalate. The domain ID can be 
+        found using 'domaintools-iris-detect-get-new-domains, 
+        domaintools-iris-detect-get-watched-domains' commands.
       isArray: true
       name: watchlist_domain_ids
       required: true
@@ -164,7 +169,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of Iris Detect domain IDs to watchlist. The domain ID can be found in the API response when querying the "new" endpoint.
+      description: |-
+        List of Iris Detect domain IDs to escalate. The domain ID can be 
+        found using 'domaintools-iris-detect-get-new-domains' command.
       isArray: true
       name: watchlist_domain_ids
       required: true
@@ -197,7 +204,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of Iris Detect domain IDs to ignore.
+      description: |-
+        List of Iris Detect domain IDs to escalate. The domain ID can be 
+        found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' command.
       isArray: true
       name: watchlist_domain_ids
       required: true
@@ -310,7 +319,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Monitor ID from monitors response. Only used when requesting domains for a specific monitor.
+      description: |- 
+        Monitor ID is used when requesting domains for a specific monitor. 
+        The monitor ID can be found using the 
+        'domaintools-iris-detect-get-monitors-list' command.
       isArray: false
       name: monitor_id
       required: false
@@ -514,7 +526,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Monitor ID from monitors response. Only used when requesting domains for a specific monitor.
+      description: |- 
+        Monitor ID is used when requesting domains for a specific monitor. 
+        The monitor ID can be found using the 
+        'domaintools-iris-detect-get-monitors-list' command.
       isArray: false
       name: monitor_id
       required: false
@@ -733,7 +748,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Monitor ID from monitors response. Only used when requesting domains for a specific monitor.
+      description: |- 
+        Monitor ID is used when requesting domains for a specific monitor. 
+        The monitor ID can be found using the 
+        'domaintools-iris-detect-get-monitors-list' command.
       isArray: false
       name: monitor_id
       required: false
@@ -938,7 +956,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Monitor ID from monitors response. Only used when requesting domains for a specific monitor.
+      description: |- 
+        Monitor ID is used when requesting domains for a specific monitor. 
+        The monitor ID can be found using the 
+        'domaintools-iris-detect-get-monitors-list' command.
       isArray: false
       name: monitor_id
       required: false
@@ -1131,7 +1152,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Monitor ID from monitors response. Only used when requesting domains for a specific monitor.
+      description: |- 
+        Monitor ID is used when requesting domains for a specific monitor. 
+        The monitor ID can be found using the 
+        'domaintools-iris-detect-get-monitors-list' command.
       isArray: false
       name: monitor_id
       required: false
@@ -1351,3 +1375,5 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
+defaultclassifier: DomainTools Iris Detect - Classifier
+defaultmapperin: DomainTools Iris Detect - Incoming Mapper

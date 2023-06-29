@@ -1,10 +1,10 @@
 {
-    "id": "indicator_domaintoolsriskscorestatus",
+    "id": "indicator_irisdetectdomainstate",
     "version": -1,
-    "modified": "2023-01-24T16:23:01.245370432+05:30",
-    "name": "DomainTools Risk Score Status",
+    "modified": "2023-01-24T16:23:01.55250045+05:30",
+    "name": "Iris Detect Domain State",
     "ownerOnly": false,
-    "cliName": "domaintoolsriskscorestatus",
+    "cliName": "irisdetectdomainstate",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -19,7 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "DomainTools Iris Detect "
+        "DomainTools Iris Detect"
     ],
     "associatedToAll": false,
     "unmapped": false,

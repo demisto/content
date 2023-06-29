@@ -1,10 +1,10 @@
 {
-    "id": "indicator_domaintoolsriskscorecomponents",
+    "id": "indicator_irisdetectescalations",
     "version": -1,
-    "modified": "2023-01-24T16:23:01.159170883+05:30",
-    "name": "DomainTools Risk Score Components",
+    "modified": "2023-01-24T16:23:01.73173971+05:30",
+    "name": "Iris Detect Escalations",
     "ownerOnly": false,
-    "cliName": "domaintoolsriskscorecomponents",
+    "cliName": "irisdetectescalations",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -19,7 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "DomainTools Iris Detect "
+        "DomainTools Iris Detect"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -27,8 +27,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "proximity",
-            "displayName": "Proximity",
+            "key": "escalationtype",
+            "displayName": "Escalation Type",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -40,8 +40,8 @@
             "selectValues": null
         },
         {
-            "key": "phishing",
-            "displayName": "Phishing",
+            "key": "id",
+            "displayName": "ID",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -53,8 +53,8 @@
             "selectValues": null
         },
         {
-            "key": "malware",
-            "displayName": "Malware",
+            "key": "created",
+            "displayName": "Created",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -66,21 +66,8 @@
             "selectValues": null
         },
         {
-            "key": "spam",
-            "displayName": "Spam",
-            "type": "shortText",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "evidence",
-            "displayName": "Evidence",
+            "key": "createdby",
+            "displayName": "Created By",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,

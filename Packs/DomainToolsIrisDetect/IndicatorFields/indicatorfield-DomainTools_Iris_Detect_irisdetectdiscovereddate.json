@@ -1,10 +1,10 @@
 {
-    "id": "indicator_irisdetectdomainstatus",
+    "id": "indicator_irisdetectdiscovereddate",
     "version": -1,
-    "modified": "2023-01-24T16:23:01.663858694+05:30",
-    "name": "Iris Detect Domain Status",
+    "modified": "2023-01-24T16:23:01.439260834+05:30",
+    "name": "Iris Detect Discovered Date",
     "ownerOnly": false,
-    "cliName": "irisdetectdomainstatus",
+    "cliName": "irisdetectdiscovereddate",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -19,7 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "DomainTools Iris Detect "
+        "DomainTools Iris Detect"
     ],
     "associatedToAll": false,
     "unmapped": false,

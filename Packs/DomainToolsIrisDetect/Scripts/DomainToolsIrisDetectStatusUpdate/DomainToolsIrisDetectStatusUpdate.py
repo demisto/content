@@ -25,6 +25,13 @@ def main():
     error_message = "The changed, blocked, escalated, or ignored domain state cannot be updated to a new domain state."
     try:
         args = demisto.args()
+        domain_list: Dict = {
+            "watched": [],
+            "ignored": [],
+            "new": [],
+            "blocked": [],
+            "escalated": [],
+        }
         command_args = {}
         old_value = demisto.get(args, "old")
         new_value = demisto.get(args, "new")
@@ -41,6 +48,7 @@ def main():
         for idx, obj in enumerate(new_value):
             if obj.get("state") != old_value[idx].get("state"):
                 update_list[obj["state"]].append(obj["id"])
+                domain_list[obj["state"]].append(obj["domain"])
 
         for state, ids in update_list.items():
             if ids:
@@ -48,7 +56,16 @@ def main():
                 if state == "new":
                     demisto.error(error_message)
                     raise DemistoException(error_message)
+
                 demisto.executeCommand(commands.get(state), command_args)
+        for state, domains in domain_list.items():
+            if domains:
+                if state == "new":
+                    demisto.error(error_message)
+                    raise DemistoException(error_message)
+                for domain in domains:
+                    args = {'value': domain, 'irisdetectdomainstate': state}
+                    demisto.executeCommand('setIndicator', args)
     except Exception as err:
         return_error(f"Failed to update state. {err}")
 

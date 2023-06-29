@@ -233,8 +233,7 @@ class Client(BaseClient):
             "type": INDICATOR_TYPE,
             "rawJSON": item,
             "fields": {
-                "irisdetectterm": join_dict_values_for_keys(item.get("monitor_ids", []),
-                                                            term),
+                "irisdetectterm": item.get("monitor_term"),
                 "domainname": item.get("domain", ""),
                 "creation_date": item.get("discovered_date", ""),
                 "updated_date": item.get("changed_date", ""),
@@ -300,6 +299,8 @@ class Client(BaseClient):
             List[Dict[str, Any]]: A list containing the incident object if one was created,
             otherwise an empty list.
         """
+        for domain in domains_list:
+            domain['monitor_term'] = join_dict_values_for_keys(domain.get("monitor_ids", []), term)
         indicators = [self.create_indicator_from_detect_domain(item, term) for item in domains_list]
         if not indicators:
             return []
@@ -617,8 +618,8 @@ def format_monitor_fields(result: Dict[Any, Any]) -> Dict[str, Any]:
     """
 
     return {
-        "dt_monitor_id": result.get("id"),
         "dt_term": result.get("term"),
+        "dt_monitor_id": result.get("id"),
         "dt_state": result.get("state"),
         "dt_match_substring_variations": result.get("match_substring_variations"),
         "dt_nameserver_exclusions": result.get("nameserver_exclusions"),
@@ -1104,19 +1105,18 @@ def domaintools_iris_detect_get_monitors_list_command(
         | create_escalated_api_arguments(args),
         "monitors", DOMAINTOOLS_MONITORS_HEADER
     )
-
+    if results:
+        monitor_data = [format_monitor_fields(result) for result in results]
+        headers = list(monitor_data[0].keys())
+        readable_output = tableToMarkdown(name=title, t=monitor_data,
+                                          removeNull=True, headers=headers)
+    else:
+        readable_output = NO_DOMAINS_FOUND
     return CommandResults(
         outputs=results,
         outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Monitor",
         outputs_key_field="",
-        readable_output=(
-            tableToMarkdown(
-                name=title,
-                t=[format_monitor_fields(result) for result in results],
-            )
-            if results
-            else NO_DOMAINS_FOUND
-        ),
+        readable_output=readable_output,
     )
 
 
