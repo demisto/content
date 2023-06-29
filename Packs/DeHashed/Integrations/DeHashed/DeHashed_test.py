@@ -1,8 +1,10 @@
 import json
 import urllib
+import pytest
 
 DEHASHED_URL = "https://url.com/"  # disable-secrets-detection
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
+DEFAULT_RELIABILITY = 'B - Usually reliable'
 
 
 def load_test_data(json_path):
@@ -315,12 +317,13 @@ def test_email_command_malicious_dbot_score(mocker):
             'Indicator': 'testgamil.com',
             'Type': 'email',
             'Vendor': 'DeHashed',
-            'Score': 3
+            'Score': 3,
+            'Reliability': DEFAULT_RELIABILITY
         }
     }
     client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='MALICIOUS', email='', api_key='')
     mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
-    markdown, context, raw = email_command(client, test_data['email_command'])
+    markdown, context, raw = email_command(client, test_data['email_command'], DEFAULT_RELIABILITY)
 
     assert expected_result == context
 
@@ -345,12 +348,13 @@ def test_email_command_suspicious_dbot_score(mocker):
             'Indicator': 'testgamil.com',
             'Type': 'email',
             'Vendor': 'DeHashed',
-            'Score': 2
+            'Score': 2,
+            'Reliability': DEFAULT_RELIABILITY
         }
     }
     client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='SUSPICIOUS', email='', api_key='')
     mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
-    markdown, context, raw = email_command(client, test_data['email_command'])
+    markdown, context, raw = email_command(client, test_data['email_command'], DEFAULT_RELIABILITY)
 
     assert expected_result == context
 
@@ -372,11 +376,52 @@ def test_email_command_no_entries_returned(mocker):
             'Indicator': 'testgamil.com',
             'Type': 'email',
             'Vendor': 'DeHashed',
-            'Score': 0
+            'Score': 0,
+            'Reliability': DEFAULT_RELIABILITY
+
         }
     }
     client = Client(base_url=f'{DEHASHED_URL}', email='', api_key='')
     mocker.patch.object(client, 'dehashed_search', return_value={})
-    markdown, context, raw = email_command(client, test_data['email_command'])
+    markdown, context, raw = email_command(client, test_data['email_command'], DEFAULT_RELIABILITY)
+
+    assert expected_result == context
+
+
+@pytest.mark.parametrize("reliability",
+                         ["A+ - 3rd party enrichment",
+                          "A - Completely reliable",
+                          "B - Usually reliable",
+                          "C - Fairly reliable",
+                          "D - Not usually reliable",
+                          "E - Unreliable",
+                          "F - Reliability cannot be judged"])
+def test_email_different_reliability(mocker, reliability):
+    """
+    Given:
+        - Different source reliability param
+    When:
+        - Running email command
+    Then:
+        - Ensure the reliability specified is returned.
+    """
+    from DeHashed import Client, email_command
+
+    test_data = load_test_data('test_data/search.json')
+    expected_result = {
+        'DeHashed.Search(val.Id==obj.Id)': test_data['expected_results'][
+            'full_results'
+        ],
+        'DBotScore': {
+            'Indicator': 'testgamil.com',
+            'Type': 'email',
+            'Vendor': 'DeHashed',
+            'Score': 2,
+            'Reliability': reliability
+        }
+    }
+    client = Client(base_url=f'{DEHASHED_URL}', email_dbot_score='SUSPICIOUS', email='', api_key='')
+    mocker.patch.object(client, 'dehashed_search', return_value=test_data['api_response'])
+    markdown, context, raw = email_command(client, test_data['email_command'], reliability)
 
     assert expected_result == context
