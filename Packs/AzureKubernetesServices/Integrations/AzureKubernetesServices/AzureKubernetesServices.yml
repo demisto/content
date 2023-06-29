@@ -38,7 +38,6 @@ configuration:
   - Authorization Code
   - Device Code
   - Azure Managed Identities
-  type: 15
   section: Connect
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
@@ -51,10 +50,12 @@ configuration:
   type: 9
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
+  section: Connect
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
 - additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section
   displaypassword: Authorization code
   name: auth_code
@@ -68,11 +69,9 @@ configuration:
   additionalinfo: The Managed Identities client ID for authentication. Relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
-  type: 9
   section: Connect
   advanced: true
 - display: Default Subscription ID
-- display: Subscription ID
   name: subscription_id
   required: true
   type: 0
@@ -82,6 +81,7 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
+  additionalinfo: There are two options to insert the specified value, either in the configuration or directly within the commands. However, inserting values in both places will cause an override by the command value.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -92,6 +92,8 @@ configuration:
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
