@@ -24,7 +24,7 @@ Configure Syslog Faults Events:
 1. In McAfee NSM, go to **Manager** > **Setup**> **Notification** > **Faults** > **syslog**.
 2. In Enable Syslog Notification, click **YES**.
 3. Fill in the "Server Name or IP Address" and "Port" fields .
-4. on *facilities* dropdown select "Security/authorization (code 4)".
+4. In the Facilities dropdown, select **Security/authorization (code 4)**.
 5. severity mapping not touch, will be like:
     ![link](https://raw.githubusercontent.com/demisto/content/53399299a79f6d8323502c6489c02b87a8720a7b/Packs/McAfeeNSM/doc_imgs/nsm_faults_severity_mapping.png)
 6. on *Forward Faults* dropdown select "informational and above".
