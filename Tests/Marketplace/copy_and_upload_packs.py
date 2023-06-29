@@ -4,6 +4,7 @@ import sys
 import argparse
 import shutil
 import re
+from pathlib import Path
 from zipfile import ZipFile
 from google.cloud.storage import Blob, Bucket
 
@@ -242,7 +243,7 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
     build_index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
 
     if not os.path.exists(extract_destination_path):
-        os.mkdir(extract_destination_path)
+        Path(extract_destination_path).mkdir()
 
     if not build_index_blob.exists():
         logging.error(f"No build index was found in path: {build_index_storage_path}")

@@ -90,10 +90,10 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of the blob
 
     if not os.path.exists(extract_destination_path):
-        os.mkdir(extract_destination_path)
+        Path(extract_destination_path).mkdir()
 
     if not index_blob.exists():
-        os.mkdir(index_folder_path)
+        Path(index_folder_path).mkdir()
         logging.error(f"{storage_bucket.name} index blob does not exists")
         return index_folder_path, index_blob, index_generation
 
@@ -145,10 +145,8 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         metadata_files_in_index = glob.glob(f"{index_pack_path}/metadata-*.json")
         new_metadata_path = os.path.join(index_pack_path, f"metadata-{pack_version}.json")
 
-        if pack_version:
-            # Update the latest metadata
-            if new_metadata_path in metadata_files_in_index:
-                metadata_files_in_index.remove(new_metadata_path)
+        if pack_version and new_metadata_path in metadata_files_in_index:
+            metadata_files_in_index.remove(new_metadata_path)
 
         # Remove old files but keep metadata files
         if pack_name in index_folder_subdirectories:
@@ -170,7 +168,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         # Copy new files and add metadata for latest version
         for d in os.scandir(pack_path):
             if not os.path.exists(index_pack_path):
-                os.mkdir(index_pack_path)
+                Path(index_pack_path).mkdir()
                 logging.info(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
 
             shutil.copy(d.path, index_pack_path)
@@ -990,15 +988,15 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
                 if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
                     break
-                else:
-                    logging.info(f"Zipping {pack_name} with its dependencies")
-                    Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
-                    shutil.rmtree(pack_with_dep_path)
-                    logging.info(f"Uploading {pack_name} with its dependencies")
-                    task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
-                                                               storage_base_path, overridden_upload_path=upload_path)
-                    logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
-                                 f"uploaded successfully")
+
+                logging.info(f"Zipping {pack_name} with its dependencies")
+                Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
+                shutil.rmtree(pack_with_dep_path)
+                logging.info(f"Uploading {pack_name} with its dependencies")
+                task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
+                                                           storage_base_path, overridden_upload_path=upload_path)
+                logging.info(f"{pack_name} with dependencies was{'' if task_status else ' not'} "
+                             f"uploaded successfully")
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
