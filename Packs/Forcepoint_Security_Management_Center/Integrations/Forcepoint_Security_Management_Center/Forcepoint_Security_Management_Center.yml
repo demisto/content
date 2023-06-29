@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Forcepoint_Security_Management_Center
+  id: Forcepoint Security Management Center
   version: -1
 configuration:
 - display: Server URL
@@ -28,7 +28,7 @@ configuration:
   type: 8
 description: Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.
 display: 'Forcepoint Security Management Center'
-name: Forcepoint_Security_Management_Center
+name: Forcepoint Security Management Center
 script:
   commands:
   - arguments:

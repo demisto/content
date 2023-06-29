@@ -1,15 +1,31 @@
 import demistomock as demisto
 import pytest
 from smc import *
+import Forcepoint_Security_Management_Center
 from Forcepoint_Security_Management_Center import (create_iplist_command, update_iplist_command, list_iplist_command,
                                                    delete_iplist_command, create_host_command, list_host_command,
                                                    delete_host_command, update_host_command, create_domain_command,
                                                    list_domain_command, delete_domain_command, list_policy_template_command,
                                                    list_firewall_policy_command, create_firewall_policy_command,
-                                                   delete_firewall_policy_command, list_engine_command,
-                                                   IPList, Host, DomainName, FirewallPolicy)
+                                                   delete_firewall_policy_command, handle_rule_entities, list_engine_command,
+                                                   list_rule_command, delete_rule_command,
+                                                   IPList, Host, DomainName, FirewallPolicy, DemistoException)
 from smc.api.exceptions import ElementNotFound
 from smc.base.collection import CollectionManager
+
+
+class mock_Rule():
+    def __init__(self):
+        self.name = 'name'
+        self.tag = 'tag'
+        self.sources = mock_GenericRuleEntity()
+        self.destinations = mock_GenericRuleEntity()
+        self.action = mock_GenericRuleEntity()
+        self.services = mock_GenericRuleEntity()
+        self.comment = 'comment'
+
+    def all(self):
+        return [self]
 
 
 class mock_IPList():
@@ -34,11 +50,28 @@ class mock_Domain():
         self.comment = comment
 
 
+class mock_FirewallRule:
+
+    def __init__(self):
+        self.fw_ipv4_access_rules = mock_Rule()
+        self.fw_ipv6_access_rules = mock_Rule()
+
+
+class mock_GenericRuleEntity:
+    def __init__(self):
+        self.name = 'name'
+        self.action = 'ALLOW'
+
+    def all(self):
+        return [self]
+
+
 class mock_Policy():
     def __init__(self, name: str, comment: str):
         self.name = name
         self.comment = comment
-
+        self.fw_ipv4_access_rules = mock_Rule()
+        self.fw_ipv6_access_rules = mock_Rule()
 
 class mock_Engine():
     def __init__(self, name: str, comment: str):
@@ -46,18 +79,7 @@ class mock_Engine():
         self.comment = comment
 
 
-class mock_Rule():
-    def __init__(self):
-        self.name = 'name'
-        self.tag = 'tag'
-        self.sources = ['sources']
-        self.destinations = ['destinations']
-        self.actions = ['actions']
-        self.services = ['services']
-        self.comment = 'comment'
-
-
-def test_create_address_command(mocker):
+def test_create_iplist_command(mocker):
     """
     Given:
         - demisto args
@@ -80,11 +102,11 @@ def test_create_address_command(mocker):
 
 
 @pytest.mark.parametrize('is_overwrite,returned_iplist', [(True, ['1.2.3.4']), (False, ['1.1.1.1', '1.2.3.4'])])
-def test_update_address_command(mocker, is_overwrite, returned_iplist):
+def test_update_iplist_command(mocker, is_overwrite, returned_iplist):
     """
     Given:
         - demisto args
-        Case 1: ovrwriting the existing ip list
+        Case 1: overwriting the existing ip list
         Case 2: appending to the existing list
     When:
         - Calling function update_address_command
@@ -108,7 +130,7 @@ def test_update_address_command(mocker, is_overwrite, returned_iplist):
 
 
 @pytest.mark.parametrize('args,returned_results', [({'name': 'name'}, 1), ({'limit': '2'}, 2), ({'all_results': 'True'}, 3)])
-def test_list_address_command(mocker, args, returned_results):
+def test_list_iplist_command(mocker, args, returned_results):
     """
     Given:
         - demisto args:
@@ -187,7 +209,7 @@ def test_list_host_command(mocker, args, returned_results):
     Then:
         - Ensure the results holds the expected data and the correct number of results
     """
- 
+
     host = mock_Host(name='name', address='1.1.1.1', ipv6_address='', secondary='', comment='comment')
     mocker.patch.object(CollectionManager, 'filter', return_value=[host])
     mocker.patch.object(CollectionManager, 'limit', return_value=[host, host])
@@ -413,12 +435,12 @@ def test_create_firewall_policy_command(mocker):
     assert response.outputs.get('Name') == 'name'
 
 
-def test_firewall_policy_domain_command(mocker):
+def test_firewall_policy_delete_command(mocker):
     """
     Given:
         - demisto args
     When:
-        - Calling function delete_domain_command
+        - Calling function delete_firewall_policy_command
     Then:
         - Ensure the results holds the expected data in case of an ElementNotFound exception
     """
@@ -452,24 +474,36 @@ def test_list_engine_command(mocker, args, returned_results):
     assert len(response.outputs) == returned_results
 
 
-@pytest.mark.parametrize('args,returned_results', [({'limit': '2'}, 2), ({'all_results': 'True'}, 3)])
-def test_list_rule_command(mocker, args, returned_results):
+def test_list_rule_command(mocker):
     """
     Given:
         - demisto args:
-        Case 1: stating a specific Domain name
-        Case 2: getting 2 results
-        Case 3: getting all of the results (3 results)
     When:
-        - Calling function list_domain_command
+        - Calling function list_rule_command
     Then:
         - Ensure the results holds the expected data and the correct number of results
     """
 
-    policy = mock_Policy(name='name', comment='comment')
-    rule = mock_Rule()
-    mocker.patch.object(policy, 'fw_ipv4_access_rules.all', return_value=[rule])
-    response = list_rule_command(args)
+    policy = mock_Policy('name', 'comment')
+    mocker.patch('Forcepoint_Security_Management_Center.FirewallPolicy', return_value=policy)
+    # mocker.patch.object(Forcepoint_Security_Management_Center, 'get_all_policy_rules', return_value=[rule])
+    # mocker.patch.object(CollectionManager, 'all', return_value=[])
+    response = list_rule_command({'policy_name': 'name'})
 
-    assert 'Engines:' in response.readable_output
-    assert len(response.outputs) == returned_results
+    assert 'Rules:' in response.readable_output
+    assert len(response.outputs) == 2
+
+
+def test_delete_rule_command_no_policy(mocker):
+    """
+    Given:
+        - demisto args
+    When:
+        - Calling function delete_domain_command
+    Then:
+        - Ensure the results holds the expected data in case of an ElementNotFound exception
+    """
+    mocker.patch.object(CollectionManager, 'filter', return_value=[])
+    args = {'policy_name': 'name', 'rule_id': 'id'}
+    with pytest.raises(DemistoException, match='Firewall policy name was not found.'):
+        delete_rule_command(args)

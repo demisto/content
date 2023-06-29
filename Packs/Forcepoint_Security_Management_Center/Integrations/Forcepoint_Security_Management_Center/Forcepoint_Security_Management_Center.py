@@ -49,14 +49,7 @@ class Client:
 
 
 def extract_host_address(host: Host):
-    """extracting the ip address or the ipv6 address
-
-    Args:
-        host (Host): _description_
-
-    Returns:
-        _type_: _description_
-    """
+    """extracting the ip address or the ipv6 address"""
     address = ''
     try:
         address = host.address
@@ -83,13 +76,13 @@ def handle_rule_entities(ip_lists: list, host_list: list, domain_list: list):
     entities: List[Element] = []
 
     for ip_list in ip_lists:
-        entities.append(IPList.objects.filter(ip_list))
+        entities.extend(list(IPList.objects.filter(ip_list)))
 
     for host in host_list:
-        entities.append(Host.objects.filter(host))
+        entities.extend(list(Host.objects.filter(host)))
 
     for domain in domain_list:
-        entities.append(DomainName.objects.filter(domain))
+        entities.extend(list(DomainName.objects.filter(domain)))
 
     return entities
 
@@ -97,15 +90,19 @@ def handle_rule_entities(ip_lists: list, host_list: list, domain_list: list):
 def get_rule_from_policy(policy: FirewallPolicy, rule_id: str):
     """Gets a rule from a policy based on its ID"""
 
-    for rule in policy.fw_ipv4_access_rules.all():
-        if rule.tag == rule_id:
-            return rule
-
-    for rule in policy.fw_ipv6_access_rules.all():
+    rules = get_all_policy_rules(policy)
+    for rule in rules:
         if rule.tag == rule_id:
             return rule
 
     raise DemistoException(f"Rule with id {rule_id} was not found in policy {policy.name}.")
+
+
+def get_all_policy_rules(policy: FirewallPolicy):
+    """Gets all of the rules from a specific policy"""
+
+    rules = list(policy.fw_ipv4_access_rules.all()) + list(policy.fw_ipv6_access_rules.all())
+    return rules
 
 
 ''' COMMAND FUNCTIONS '''
@@ -671,6 +668,7 @@ def update_rule_command(args: Dict[str, Any]) -> CommandResults:
     rule = get_rule_from_policy(policy, rule_id)
     sources = handle_rule_entities(source_ip_list, source_host, source_domain)
     destinations = handle_rule_entities(dest_ip_list, dest_host, dest_domain)
+
     kwargs = {'sources': sources,
               'destinations': destinations,
               'action': action,
@@ -698,7 +696,8 @@ def list_rule_command(args: Dict[str, Any]) -> CommandResults:
     policy = FirewallPolicy(policy_name)
 
     rules = []
-    for rule in policy.fw_ipv4_access_rules.all():
+    policy_rules = get_all_policy_rules(policy)
+    for rule in policy_rules:
         rules.append({'Name': rule.name,
                       'ID': rule.tag,
                       'Sources': [source.name for source in rule.sources.all()],
@@ -713,7 +712,7 @@ def list_rule_command(args: Dict[str, Any]) -> CommandResults:
         outputs=rules,
         raw_response=rules,
         outputs_key_field='ID',
-        readable_output=tableToMarkdown(name='Firewall policies:', t=rule, removeNull=True),
+        readable_output=tableToMarkdown(name='Rules:', t=rules, removeNull=True),
     )
 
 
