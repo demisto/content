@@ -25,7 +25,7 @@ Configure Syslog Faults Events:
 2. In Enable Syslog Notification, click **YES**.
 3. Fill in the "Server Name or IP Address" and "Port" fields .
 4. In the Facilities dropdown, select **Security/authorization (code 4)**.
-5. severity mapping not touch, will be like:
+5. In Severity mapping, leave the configuration as it.  It should be:
     ![link](https://raw.githubusercontent.com/demisto/content/53399299a79f6d8323502c6489c02b87a8720a7b/Packs/McAfeeNSM/doc_imgs/nsm_faults_severity_mapping.png)
 6. on *Forward Faults* dropdown select "informational and above".
 7. on *Message Preference* click on the checkbox "Syslog default" and click save.
