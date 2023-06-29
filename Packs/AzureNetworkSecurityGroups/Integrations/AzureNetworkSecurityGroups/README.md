@@ -1,4 +1,5 @@
 Azure network security groups are used to filter network traffic to and from Azure resources in an Azure virtual network.
+This integration was integrated and tested with version 2022-09-01 of Azure Network Security Groups
 ## Configure Azure Network Security Groups on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -705,4 +706,76 @@ You will be automatically redirected to a link with the following structure:
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
+#### Base Command
+
+`azure-nsg-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureNSG.Subscription.id | String | The unique identifier of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.authorizationSource | String | The source of authorization for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionId | String | The ID of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.tenantId | String | The ID of the tenant associated with the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.displayName | String | The display name of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.state | String | The current state of the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Network Security Groups subscription. | 
+| AzureNSG.Subscription.count.type | String | The type of the Azure Network Security Groups subscription count. | 
+| AzureNSG.Subscription.count.value | Number | The value of the Azure Network Security Groups subscription count. | 
+
+#### Command example
+```!azure-nsg-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureNSG": {
+        "Subscription": [
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Access to Azure Active Directory",
+                "id": "/subscriptions/057b1785-fd",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "057b1785-fd7b-4ca",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                },
+                "tenantId": "ebac1a16-81bf-4"
+            },
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Pay-As-You-Go",
+                "id": "/subscriptions/0f907ea4",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "0f907ea4-bc",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                },
+                "tenantId": "ebac1a16-81bf-"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Network Security Groups Subscriptions list
+>|subscriptionId|tenantId|displayName|state|
+>|---|---|---|---|
+>| 057b1785-fd7b-4 | ebac1a16-81bf-449 | Access to Azure Active Directory | Enabled |
+>| 0f907ea4-bc8b-4 | ebac1a16-81bf-449 | Pay-As-You-Go | Enabled |
 
