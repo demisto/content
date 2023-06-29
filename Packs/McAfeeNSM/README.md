@@ -3,7 +3,7 @@
 This pack includes Cortex XSIAM content.
 
 ## McAfee NSM Syslog configuration
-*McAfee NSM syslog event types:*
+McAfee NSM syslog event types:
 * IPS Events
 * Faults
 * User Activity (audit logs)
