@@ -383,18 +383,6 @@ inputs:
   required: false
   description: Print output from the job that is running.
   playbookInputQuery: null
-- key: Interval
-  value:
-    simple: "1"
-  required: false
-  description: Polling frequency - how often the polling command should run (in minutes)
-  playbookInputQuery: null
-- key: Timeout
-  value:
-    simple: "15"
-  required: false
-  description: How much time (in minutes) to wait before a timeout occurs.
-  playbookInputQuery: null
 - key: return_job_events
   value:
     simple: "false"
