@@ -3038,7 +3038,7 @@ script:
       description: The authorization source of the resource.
       type: String
     - contextPath: AzureSentinel.Subscription.managedByTenants
-      description: The managedByTenants of the resource.
+      description: The subscriptions that are managed by tenants of the resource.
       type: String
     - contextPath: AzureSentinel.Subscription.tenetId
       description: The tenet ID of the resource.
