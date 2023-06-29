@@ -3061,7 +3061,7 @@ script:
       isArray: false
       type: String
     - name: limit
-      description: Limit on the number of resource groups to return.
+      description: The maximum number of resource groups to return.
       defaultValue: 50
       isArray: false
       type: Number
