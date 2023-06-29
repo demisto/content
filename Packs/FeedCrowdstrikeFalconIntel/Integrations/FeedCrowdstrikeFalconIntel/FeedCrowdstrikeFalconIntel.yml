@@ -15,8 +15,9 @@ configuration:
   type: 8
 - display: CrowdStrike API client ID
   name: client_id
-  required: true
+  required: false
   type: 4
+  hidden : true
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   display: Indicator Reputation
   name: feedReputation
@@ -103,8 +104,15 @@ configuration:
   type: 0
 - display: CrowdStrike API client secret
   name: client_secret
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: CrowdStrike API client ID
+  name: credentials_client
+  required: false
+  type: 9
+  displaypassword: CrowdStrike API client secret
+  section: Connect
 - additionalinfo: "A comma-separated list of the threat actor's target industries. For example: Aerospace,Academic."
   display: Filter by the threat actor's target industries.
   name: target_industries
@@ -160,7 +168,7 @@ script:
     description: Gets indicators from CrowdStrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isfetch: false
   longRunning: false
