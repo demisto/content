@@ -2,7 +2,6 @@
 alter event_message = arrayindex(regextract(_raw_log ,"\:\s(.*)"),0),
     event_type = arrayindex(regextract(_raw_log ,"\s([A-Za-z]+)\:\s"),0),
     target_hostname = arrayindex(regextract(_raw_log ,"\:\s([A-Za-z0-9\-\_]+)\sdetected"),0),
-    attack_description = arrayindex(regextract(_raw_log ,"bound\sattack\s([^\:]+\:\s[^\(]+)\s\("),0),
     alert_severity = arrayindex(regextract(_raw_log ,"\(severity\s\=\s([A-Za-z]+)"),0),
     attack_name = arrayindex(regextract(_raw_log ,"detected\s([^\:]+)\:"),0),
     source_ipv4 = arrayindex(regextract(_raw_log,"(\d+\.\d+\.\d+\.\d+)\:\S+\s\-\>"),0),
@@ -10,9 +9,7 @@ alter event_message = arrayindex(regextract(_raw_log ,"\:\s(.*)"),0),
     dst_ipv4 = arrayindex(regextract(_raw_log ,"\-\>\s(\d+\.\d+\.\d+\.\d+)\:\S+"),0),
     dst_port = arrayindex(regextract(_raw_log ,"\-\>\s\d+\.\d+\.\d+\.\d+\:(\d+)"),0),
     result = arrayindex(regextract(_raw_log ,"result\s\=\s([^\)]+)\)"),0),
-    proto = arrayindex(regextract(_raw_log ,"attack\s[^\:]+\:\s([A-Z]{2,})"),0),
-    observer_type = arrayindex(regextract(_raw_log ,"Fault\s\:\s([^\:]+)\:"),0),
-    cve = arrayindex(regextract(_raw_log ,"\((CVE\-\d+\-\d+)\)"),0)
+    observer_type = arrayindex(regextract(_raw_log ,"Fault\s\:\s([^\:]+)\:"),0)
 | alter xdm.event.type = if(event_type = "SyslogAlertForwarder","Alert",event_type = "SyslogFaultForwarder","Fault",event_type = "SyslogAuditLogForwarder","Audit",to_String(event_type)),
     xdm.event.description = event_message,
     xdm.target.host.hostname = target_hostname,
