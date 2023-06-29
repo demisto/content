@@ -3047,7 +3047,7 @@ script:
       description: The state of the resource.
       type: String
     - contextPath: AzureSentinel.Subscription.subscriptionPolicies
-      description: The subscriptionPolicies of the resource.
+      description: The subscription policies of the resource.
       type: String
   - name: azure-sentinel-resource-group-list
     description: List all resource groups for a subscription.
