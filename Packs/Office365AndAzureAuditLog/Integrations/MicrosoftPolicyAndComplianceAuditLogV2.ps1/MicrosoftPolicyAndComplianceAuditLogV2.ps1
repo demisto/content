@@ -1,0 +1,212 @@
+$script:COMMAND_PREFIX = "o365-auditlog"
+$script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
+
+#### Security And Compliance client - OAUTH2.0 ####
+
+class ExchangeOnlinePowershellV3Client
+{
+    [string]$url
+    [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
+    [string]$organization
+    [string]$app_id
+    [SecureString]$password
+    ExchangeOnlinePowershellV3Client(
+            [string]$url,
+            [string]$app_id,
+            [string]$organization,
+            [string]$certificate,
+            [SecureString]$password
+    )
+    {
+        $this.url = $url
+        try
+        {
+            $ByteArray = [System.Convert]::FromBase64String($certificate)
+        }
+        catch
+        {
+            throw "Could not decode the certificate. Try to re-enter it"
+        }
+        $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $password)
+
+        $this.organization = $organization
+        $this.app_id = $app_id
+    }
+    CreateSession()
+    {
+        $cmd_params = @{
+            "AppID" = $this.app_id
+            "Organization" = $this.organization
+            "Certificate" = $this.certificate
+        }
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration -WarningAction:SilentlyContinue | Out-Null
+    }
+    DisconnectSession()
+    {
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
+    }
+    [Array]SearchUnifiedAuditLog(
+        [string]$start_date,
+        [string]$end_date,
+        [string]$free_text,
+        [string]$record_type,
+        [String[]]$ip_addresses,
+        [String[]]$operations,
+        [String[]]$user_ids,
+        [int]$result_size
+    ) {
+        $cmd_args = @{
+            "StartDate" = $start_date
+            "EndDate"   = $end_date
+        }
+        if ($record_type) {
+            $cmd_args.RecordType = $record_type
+        }
+        if ($free_text) {
+            $cmd_args.FreeText = $free_text
+        }
+        if ($operations.Length -gt 0) {
+            $cmd_args.Operations = $operations
+        }
+        if ($ip_addresses.Length -gt 0) {
+            $cmd_args.IPAddresses = $ip_addresses
+        }
+        if ($user_ids.Length -gt 0) {
+            $cmd_args.UserIds = $user_ids
+        }
+        if ($result_size -gt 0) {
+            $cmd_args.ResultSize = $result_size
+        }
+        else {
+            $cmd_args.ResultSize = 5000
+        }
+        return Search-UnifiedAuditLog @cmd_args -ErrorAction Stop
+    }
+}
+
+function SearchAuditLogCommand {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory)][ExchangeOnlineClient]$client,
+        [hashtable]$kwargs
+    )
+    try {
+        $client.CreateSession()
+        if ($kwargs.end_date) {
+            $end_date = Get-Date $kwargs.end_date
+        }
+        else {
+            $end_date = Get-Date
+        }
+        try {
+            # If parse date range works, it is fine. The end date will be automatically now.
+            $start_date, $end_date = ParseDateRange $kwargs.start_date
+        }
+        catch {
+            try {
+                # If it didn't work, it should be a date.
+                $start_date = Get-Date $kwargs.start_date
+            }
+            catch {
+                # If it's not a date and not a date range - throw.
+                $start_date = $kwargs.start_date
+                throw "start_date ('$start_date') is not a date range or a valid date "
+            }
+        }
+
+        $raw_response = $client.SearchUnifiedAuditLog(
+            $start_date,
+            $end_date,
+            $kwargs.free_text,
+            $kwargs.record_type,
+                (ArgToList $kwargs.ip_addresses),
+                (ArgToList $kwargs.operations),
+                (ArgToList $kwargs.user_ids),
+                ($kwargs.result_size -as [int])
+        )
+        if ($raw_response) {
+            $list = New-Object Collections.Generic.List[PSObject]
+            foreach ($item in $raw_response) {
+                $list.add((ConvertFrom-Json $item.AuditData))
+            }
+            $context = @{
+                "$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)" = $list
+            }
+            $human_readable = TableToMarkdown $list.ToArray() "Audit log from $start_date to $end_date"
+            Write-Output $human_readable, $context, $list
+        }
+        else {
+            $human_readable = "Audit log from $start_date to $end_date is empty"
+            Write-Output $human_readable, $null, $null
+        }
+
+    }
+    finally {
+        $client.CloseSession()
+    }
+}
+
+function Main {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+    param()
+    $command = $demisto.GetCommand()
+    $command_arguments = $demisto.Args()
+    $integration_params = [Hashtable] $demisto.Params()
+
+    if ($integration_params.password.password)
+    {
+        $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
+    }
+    else
+    {
+        $password = $null
+    }
+
+    $exo_client = [ExchangeOnlinePowershellV3Client]::new(
+            $integration_params.url,
+            $integration_params.app_id,
+            $integration_params.organization,
+            $integration_params.certificate.password,
+            $password
+    )
+    try {
+        # Executing command
+        $demisto.Debug("Command being called is $command")
+        switch ($command) {
+            "test-module" {
+                throw "To complete the authentication process, run the '!o365-auditlog-auth-start' command,
+                and follow the printed instructions.
+                Then to verify the authentication was successful, run '!o365-auditlog-auth-test'."
+            }
+            "$script:COMMAND_PREFIX-search" {
+                ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $exo_client $command_arguments
+            }
+            default {
+                throw "Command $command no implemented"
+            }
+        }
+        # Return results to server
+        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+    }
+    catch {
+        $demisto.debug("Integration: $script:INTEGRATION_NAME
+            Command: $command
+            Arguments: $($command_arguments | ConvertTo-Json)
+            Error: $($_.Exception.Message)")
+        if ($command -ne "test-module") {
+            ReturnError "Error:
+            Integration: $script:INTEGRATION_NAME
+            Command: $command
+            Arguments: $($command_arguments | ConvertTo-Json)
+            Error: $($_.Exception)" | Out-Null
+        }
+        else {
+            ReturnError $_.Exception.Message
+        }
+    }
+}
+
+# Execute Main when not in Tests
+if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
+    Main
+}
