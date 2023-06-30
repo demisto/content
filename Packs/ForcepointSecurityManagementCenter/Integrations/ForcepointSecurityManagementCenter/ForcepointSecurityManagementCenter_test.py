@@ -1,20 +1,18 @@
-import demistomock as demisto
 import pytest
-from smc import *
-import Forcepoint_Security_Management_Center
-from Forcepoint_Security_Management_Center import (create_iplist_command, update_iplist_command, list_iplist_command,
-                                                   delete_iplist_command, create_host_command, list_host_command,
-                                                   delete_host_command, update_host_command, create_domain_command,
-                                                   list_domain_command, delete_domain_command, list_policy_template_command,
-                                                   list_firewall_policy_command, create_firewall_policy_command,
-                                                   delete_firewall_policy_command, handle_rule_entities, list_engine_command,
-                                                   list_rule_command, delete_rule_command,
-                                                   IPList, Host, DomainName, FirewallPolicy, DemistoException)
+from ForcepointSecurityManagementCenter import (create_iplist_command, update_iplist_command, list_iplist_command,
+                                                delete_iplist_command, create_host_command, list_host_command,
+                                                delete_host_command, update_host_command, create_domain_command,
+                                                list_domain_command, delete_domain_command, list_policy_template_command,
+                                                list_firewall_policy_command, create_firewall_policy_command,
+                                                delete_firewall_policy_command, update_rule_command, list_engine_command,
+                                                list_rule_command, delete_rule_command, create_rule_command,
+                                                commit_changes_command,
+                                                IPList, Host, DomainName, FirewallPolicy, DemistoException)
 from smc.api.exceptions import ElementNotFound
 from smc.base.collection import CollectionManager
 
 
-class mock_Rule():
+class mock_Rule:
     def __init__(self):
         self.name = 'name'
         self.tag = 'tag'
@@ -27,6 +25,12 @@ class mock_Rule():
     def all(self):
         return [self]
 
+    def create(self, name, sources, destinations, action, comment):
+        return self
+
+    def update(self, **kwargs):
+        return self
+
 
 class mock_IPList():
     def __init__(self, name: str, iplist: list, comment: str):
@@ -35,7 +39,7 @@ class mock_IPList():
         self.comment = comment
 
 
-class mock_Host():
+class mock_Host:
     def __init__(self, name: str, address: str, ipv6_address: str, secondary: str, comment: str):
         self.name = name
         self.address = address
@@ -44,7 +48,7 @@ class mock_Host():
         self.comment = comment
 
 
-class mock_Domain():
+class mock_Domain:
     def __init__(self, name: str, comment: str):
         self.name = name
         self.comment = comment
@@ -65,18 +69,39 @@ class mock_GenericRuleEntity:
     def all(self):
         return [self]
 
+    def filter(self):
+        return self
 
-class mock_Policy():
+
+class mock_Policy:
     def __init__(self, name: str, comment: str):
         self.name = name
         self.comment = comment
         self.fw_ipv4_access_rules = mock_Rule()
         self.fw_ipv6_access_rules = mock_Rule()
 
-class mock_Engine():
+
+class mock_Engine:
     def __init__(self, name: str, comment: str):
         self.name = name
         self.comment = comment
+        self.pending_changes = mock_Changes()
+
+    def objects(self):
+        return mock_GenericRuleEntity()
+
+
+class mock_Changes:
+    def __init__(self):
+        self.element_name = 'element_name'
+        self.modifier = 'modifier'
+        self.changed_on = 'changed_on'
+
+    def all(self):
+        return self
+
+    def approve_all(self):
+        return
 
 
 def test_create_iplist_command(mocker):
@@ -265,7 +290,7 @@ def test_update_host_with_host_not_found(mocker):
     args = {
         'name': 'name',
     }
-    mocker.patch('Forcepoint_Security_Management_Center.return_error', side_effect=mock_return_error)
+    mocker.patch('ForcepointSecurityManagementCenter.return_error', side_effect=mock_return_error)
     with pytest.raises(Exception) as e:
         mocker.patch.object(CollectionManager, 'filter', return_value=[])
         update_host_command(args)
@@ -284,7 +309,7 @@ def test_update_iplist_with_iplist_not_found(mocker):
     args = {
         'name': 'name',
     }
-    mocker.patch('Forcepoint_Security_Management_Center.return_error', side_effect=mock_return_error)
+    mocker.patch('ForcepointSecurityManagementCenter.return_error', side_effect=mock_return_error)
     with pytest.raises(Exception) as e:
         mocker.patch.object(CollectionManager, 'filter', return_value=[])
         update_iplist_command(args)
@@ -485,9 +510,7 @@ def test_list_rule_command(mocker):
     """
 
     policy = mock_Policy('name', 'comment')
-    mocker.patch('Forcepoint_Security_Management_Center.FirewallPolicy', return_value=policy)
-    # mocker.patch.object(Forcepoint_Security_Management_Center, 'get_all_policy_rules', return_value=[rule])
-    # mocker.patch.object(CollectionManager, 'all', return_value=[])
+    mocker.patch('ForcepointSecurityManagementCenter.FirewallPolicy', return_value=policy)
     response = list_rule_command({'policy_name': 'name'})
 
     assert 'Rules:' in response.readable_output
@@ -499,11 +522,137 @@ def test_delete_rule_command_no_policy(mocker):
     Given:
         - demisto args
     When:
-        - Calling function delete_domain_command
+        - Calling function delete_rule_command
     Then:
         - Ensure the results holds the expected data in case of an ElementNotFound exception
     """
+
     mocker.patch.object(CollectionManager, 'filter', return_value=[])
     args = {'policy_name': 'name', 'rule_id': 'id'}
     with pytest.raises(DemistoException, match='Firewall policy name was not found.'):
         delete_rule_command(args)
+
+
+def test_delete_rule_command_no_rule(mocker):
+    """
+    Given:
+        - demisto args
+    When:
+        - Calling function delete_rule_command
+    Then:
+        - Ensure the results holds the expected data in case of an ElementNotFound exception
+    """
+    rule = mock_Rule()
+    policy = mock_Policy('name', 'comment')  
+    mocker.patch.object(CollectionManager, 'filter', return_value=[policy])
+    mocker.patch('ForcepointSecurityManagementCenter.get_all_policy_rules', return_value=[rule])
+    args = {'policy_name': 'name', 'rule_id': 'test'}
+    with pytest.raises(DemistoException, match='Rule with id test was not found in policy name.'):
+        delete_rule_command(args)
+
+
+def test_create_rule_command(mocker):
+    """
+    Given:
+        - demisto args:
+    When:
+        - Calling function create_rule_command
+    Then:
+        - Ensure the results holds the expected data
+    """
+    
+    mocker.patch.object(CollectionManager, 'filter', return_value=[mock_Domain('name', 'comment')])
+    args = {
+        'policy_name': 'name',
+        'rule_name': 'name',
+        'ip_version': 'V4',
+        'source_ip_list': ['source_ip_list'],
+        'source_host': ['source_host'],
+        'source_domain': ['source_domain'],
+        'destination_ip_list': ['destination_ip_list'],
+        'destination_host': ['destination_host'],
+        'destination_domain': ['destination_domain'],
+        'action': 'ALLOW',
+        'comment': 'test_comment'
+    }
+    policy = mock_Policy('name', 'comment')
+    mocker.patch('ForcepointSecurityManagementCenter.FirewallPolicy', return_value=policy)
+    response = create_rule_command(args)
+
+    assert 'The rule name to the policy name was created successfully.' in response.readable_output
+
+
+def test_create_rule_command_no_sources_or_destinations(mocker):
+    """
+    Given:
+        - demisto args:
+    When:
+        - Calling function create_rule_command
+    Then:
+        - Ensure the results holds the expected data
+    """
+    
+    mocker.patch.object(CollectionManager, 'filter', return_value=[mock_Domain('name', 'comment')])
+    args = {
+        'policy_name': 'name',
+        'rule_name': 'name',
+        'ip_version': 'V4',
+        'action': 'ALLOW',
+        'comment': 'test_comment'
+    }
+    policy = mock_Policy('name', 'comment')
+    mocker.patch('ForcepointSecurityManagementCenter.FirewallPolicy', return_value=policy)
+
+    with pytest.raises(DemistoException, match='No sources or destinations were provided, provide at least one.'):
+        create_rule_command(args)
+
+
+def test_update_rule_command(mocker):
+    """
+    Given:
+        - demisto args:
+    When:
+        - Calling function create_rule_command
+    Then:
+        - Ensure the results holds the expected data
+    """
+
+    mocker.patch.object(CollectionManager, 'filter', return_value=[mock_Domain('name', 'comment')])
+    args = {
+        'policy_name': 'name',
+        'rule_id': 'tag',
+        'ip_version': 'V4',
+        'source_ip_list': ['source_ip_list'],
+        'source_host': ['source_host'],
+        'source_domain': ['source_domain'],
+        'destination_ip_list': ['destination_ip_list'],
+        'destination_host': ['destination_host'],
+        'destination_domain': ['destination_domain'],
+        'action': 'ALLOW',
+        'comment': 'test_comment'
+    }
+    policy = mock_Policy('name', 'comment')
+    mocker.patch('ForcepointSecurityManagementCenter.FirewallPolicy', return_value=policy)
+    response = update_rule_command(args)
+
+    assert 'The rule name to the policy name was updated successfully.' in response.readable_output
+
+
+def test_commit_changes_command(mocker):
+    """
+    Given:
+        - demisto args:
+    When:
+        - Calling function commit_changes_command
+    Then:
+        - Ensure the results holds the expected data
+    """
+    engine = mock_Engine('name', 'comment')
+    args = {
+        'engine_name': 'name',
+    }
+
+    mocker.patch('ForcepointSecurityManagementCenter.Engine', return_value=engine)
+
+    with pytest.raises(DemistoException, match='Engine name was not found.'):
+        commit_changes_command(args)

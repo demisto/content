@@ -49,7 +49,7 @@ class Client:
 
 
 def extract_host_address(host: Host):
-    """extracting the ip address or the ipv6 address"""
+    """extracts the ip address or the ipv6 address"""
     address = ''
     try:
         address = host.address
@@ -122,8 +122,12 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    client.login()
-    IPList.objects.limit(1)
+    try:
+        client.login()
+        IPList.objects.limit(1)
+    except Exception as e:
+        if 'Login failed, HTTP status code:' in str(e):
+            raise DemistoException('Login failed, please check your API key.')
     return 'ok'
 
 
@@ -632,6 +636,9 @@ def create_rule_command(args: Dict[str, Any]) -> CommandResults:
     outputs = {'Name': rule.name,
                'ID': rule.tag,
                'Action': rule.action.action,
+               'Sources': [source.name for source in rule.sources.all()],
+               'Destinations': [dest.name for dest in rule.destinations.all()],
+               'Services': [service.name for service in rule.services.all()],
                'Comment': rule.comment}
 
     return CommandResults(
@@ -778,6 +785,39 @@ def list_engine_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def commit_changes_command(args: Dict[str, Any]) -> CommandResults:
+    """commits all of the changes in the system.
+
+    Args:
+        args (Dict[str, Any]): The command args.
+
+    Returns:
+        CommandResults
+    """
+    engine_name = args.get('engine_name')
+
+    if not list(Engine.objects.filter(engine_name)):
+        raise DemistoException(f'Engine {engine_name} was not found.')
+
+    engine = Engine(engine_name)
+    changes = []
+    for change in list(engine.pending_changes.all()):
+        changes.append({'Element_name': change.element_name,
+                        'Modifier': change.modifier,
+                        'Changed_on': change.changed_on})
+
+    engine.pending_changes.approve_all()
+
+    return CommandResults(
+        outputs_prefix='ForcepointSMC.CommitChanges',
+        outputs=changes,
+        raw_response=changes,
+        outputs_key_field='Element_name',
+        readable_output=tableToMarkdown(name='The following changes have been committed:',
+                                        t=changes, removeNull=True),
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -788,8 +828,8 @@ def main() -> None:
     url = params.get('url')
     api_key = params.get('credentials', {}).get('password')
     port = params.get('port')
-    verify = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify = not argToBoolean(params.get('insecure', False))
+    proxy = argToBoolean(params.get('proxy', False))
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -848,6 +888,8 @@ def main() -> None:
             return_results(delete_rule_command(demisto.args()))
         elif command == 'forcepoint-smc-engine-list':
             return_results(list_engine_command(demisto.args()))
+        elif command == 'forcepoint-smc-commit-changes':
+            return_results(commit_changes_command(demisto.args()))
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')

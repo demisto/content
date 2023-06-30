@@ -676,6 +676,25 @@ script:
     - contextPath: ForcepointSMC.Engine.Comment
       description: 'The comment of the engine.'
       type: String
+  - arguments:
+    - default: false
+      description: The name of the engine to commit its changes to.
+      isArray: false
+      name: engine_name
+      required: false
+    description: 'Commits the current changes.'
+    execution: false
+    name: forcepoint-smc-commit-changes
+    outputs:
+    - contextPath: ForcepointSMC.Changes.Element_name
+      description: 'The element name of the commit change.'
+      type: String
+    - contextPath: ForcepointSMC.Changes.Modifier
+      description: 'The modifier of the commit change.'
+      type: String
+    - contextPath: ForcepointSMC.Changes.Changed_on
+      description: 'When was the change made.'
+      type: Date
   isfetch: false
   runonce: false
   script: '-'
