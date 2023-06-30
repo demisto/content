@@ -1,7 +1,10 @@
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
 
-from CommonServerPython import *
+
 from typing import List, Dict, Optional
 from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef, \
     AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
@@ -1776,6 +1779,28 @@ def set_password_not_expire(default_base_dn):
     else:
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
+def test_credentials():
+    args = demisto.args()
+    SERVER_IP = demisto.params().get('server_ip')
+    server = Server(SERVER_IP, get_info='ALL')
+    username = args.get('username')
+    domain_name = SERVER_IP + '\\' + username if '\\' not in username else username
+    conn = True
+    try:
+        # open socket and bind to server
+        conn = Connection(server, domain_name , password=args.get('password'), authentication=NTLM, auto_bind=True)
+        if conn:
+            conn.unbind()
+    except Exception as e:
+        return_error(domain_name + ' ' + str(e))
+
+    result = CommandResults(
+        outputs_prefix='ActiveDirectory.ValidCredentials',
+        outputs_key_field='username',
+        outputs=username,
+        readable_output="Credential with username " + username + " is valid"
+    )
+    return_results(result)
 
 def get_auto_bind_value(secure_connection, unsecure) -> str:
     """
@@ -1958,6 +1983,9 @@ def main():
         elif command == 'ad-delete-group':
             delete_group()
 
+        elif command == 'ad-test-credentials':
+            test_credentials()
+
         # IAM commands
         elif command == 'iam-get-user':
             user_profile = get_user_iam(DEFAULT_BASE_DN, args, mapper_in, mapper_out)
@@ -1999,8 +2027,10 @@ def main():
             set_library_log_detail_level(last_log_detail_level)
 
 
+
 from IAMApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
+
