@@ -158,6 +158,7 @@ class Client(BaseClient):
 
         if FeedIndicatorType.CVE == intel_type:
             ti_fields["cvedescription"] = data.get("description", "")
+            ti_fields["cvemodified"] = data.get("modified")
 
         if data.get("xMitreAliases"):
             self.add_aliases(ti_data_obj, data.get("xMitreAliases"))
@@ -210,6 +211,16 @@ class Client(BaseClient):
                 if label.get("technologies"):
                     self.add_tags(ti_data_obj, label.get("technologies"))
                     ti_fields["technologies"] = label.get("technologies")
+
+                if FeedIndicatorType.CVE == intel_type:
+                    ti_fields["cvssscore"] = label.get("cvss_score", "")
+                    ti_fields["cvssvector"] = label.get("cvss_vector", "")
+                    ti_fields["cvssversion"] = label.get("cvss_version", "")
+                    if cvss_metrics_data := label.get("cvss_metrics_data") is not None and label.get("cvss_metrics_data"):
+                        cvss_metrics_data_table = []
+                        for key, value in cvss_metrics_data:
+                            cvss_metrics_data_table.append({"metrics": key, "value": value})
+                        ti_fields["cvsstable"] = cvss_metrics_data_table
 
         if feed_tags:
             self.add_tags(ti_data_obj, feed_tags)
@@ -285,12 +296,12 @@ class Client(BaseClient):
                                     target_ti_data_obj = ta_source_obj
 
                                 if source_ti_data_obj and target_ti_data_obj:
-                                    ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj, target_ti_data_obj)
+                                    ti_relationships: dict = self.build_threat_actor_relationship_obj(source_ti_data_obj,
+                                                                                                      target_ti_data_obj)
                                     if raw_ta_obj.get(LABEL_ID) != source_ref_obj.get(LABEL_ID):
-                                        source_ti_data_obj[LABEL_RELATIONSHIPS] = []
                                         if ti_relationships:
                                             source_ti_data_obj[LABEL_RELATIONSHIPS] = [ti_relationships]
-                                else:
+                                    else:
                                         if ti_relationships:
                                             src_ti_relationships_data = [ti_relationships]
 
