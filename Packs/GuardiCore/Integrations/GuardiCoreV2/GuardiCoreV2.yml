@@ -1025,7 +1025,8 @@ script:
       name: tag
       required: false
       secret: false
-    - description: 'Type of the incident. Possible values: "Incident", "Deception", "Network Scan", "Reveal", "Experimental").'
+    - defaultValue: false
+      description: 'Type of the incident. Possible values: "Incident", "Deception", "Network Scan", "Reveal", "Experimental").'
       predefined:
       - 'Incident'
       - 'Deception'
@@ -1257,7 +1258,7 @@ script:
     - contextPath: Endpoint.MACAddress
       description: The endpoint's MAC address.
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

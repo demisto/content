@@ -148,6 +148,8 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         exclude_ids = last_run.get('LAST_RUN_IDS', [])
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
+        demisto.debug("MicrosoftGraphMail - Start fetching")
+        demisto.debug(f"MicrosoftGraphMail - Last run: {json.dumps(last_run)}")
 
         if folder_path_changed:
             # detected folder path change, get new folder id
@@ -173,7 +175,9 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
         }
         demisto.info(f"fetched {len(incidents)} incidents")
-
+        demisto.debug(f'MicrosoftGraphMail - Next run after incidents fetching: {json.dumps(next_run)}')
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
         return next_run, incidents
 
 

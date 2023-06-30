@@ -1,5 +1,2 @@
 [file:README.md]
 ignore=RM104
-
-[file:KennaV2.yml]
-ignore=IN145

@@ -285,7 +285,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Intrusion Set Details",
+                        "name": "Attack Pattern Details",
                         "static": false,
                         "w": 1,
                         "x": 1,

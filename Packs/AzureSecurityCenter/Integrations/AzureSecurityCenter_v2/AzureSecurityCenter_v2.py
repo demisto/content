@@ -1317,14 +1317,18 @@ def test_module(client: MsClient):
 def main():
     params: dict = demisto.params()
     server = params.get('server_url', '').rstrip('/') + '/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id')
+    auth_and_token_url = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id', '')
+    if not auth_and_token_url:
+        raise DemistoException('ID must be provided.')
+    enc_key = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key')
     use_ssl = not params.get('unsecure', False)
     proxy = params.get('proxy', False)
-    subscription_id = demisto.args().get("subscription_id") or params.get("default_sub_id")
+    subscription_id = demisto.args().get("subscription_id") or params.get(
+        'credentials_default_sub_id', {}).get('password') or params.get("default_sub_id")
     ok_codes = (200, 201, 202, 204)
-    certificate_thumbprint = params.get('certificate_thumbprint')
+    certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+        'password') or params.get('certificate_thumbprint')
     private_key = params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None

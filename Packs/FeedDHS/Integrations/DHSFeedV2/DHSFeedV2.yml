@@ -210,7 +210,7 @@ script:
     - contextPath: DHS.Collections.Name
       description: Collection name.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.61540
+  dockerimage: demisto/taxii2:1.0.0.63768
   feed: true
   isfetch: false
   longRunning: false

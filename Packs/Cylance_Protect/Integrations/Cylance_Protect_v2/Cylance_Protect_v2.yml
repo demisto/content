@@ -14,19 +14,31 @@ configuration:
   section: Connect
 - display: Application ID
   name: app_id
-  required: true
   type: 0
   section: Connect
+  hidden: true
 - display: Application Secret
   name: app_secret
-  required: true
   type: 4
   section: Connect
+  hidden: true
 - display: Tenant API Key
   name: tid
-  required: true
   type: 4
   section: Connect
+  hidden: true
+- display: Application ID
+  name: app_creds
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Application Secret
+- name: api_key
+  required: false
+  type: 9
+  section: Connect
+  hiddenusername: true
+  displaypassword: Tenant API Key
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -953,7 +965,7 @@ script:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.61733
+  dockerimage: demisto/pyjwt3:1.0.0.63826
   isfetch: true
   runonce: false
   script: ''

@@ -1,7 +1,9 @@
 [INGEST:vendor = barracuda, product = email_protection, target_dataset = barracuda_email_protection_raw, no_hit = keep]
 alter 
-    tmp_payload = arrayindex(regextract(_raw_log, "\[\d\]: (\{.*?$)"), 0) |
-alter
+    tmp_payload = arrayindex(regextract(_raw_log, "\[\d\]: (\{.*?$)"), 0)
+| alter
+    tmp_get_timestamp = json_extract_scalar(tmp_payload, "$.timestamp")
+| alter
     // 2020-11-29T19:49:46+0000
-    _time = to_timestamp(parse_epoch("%Y-%m-%dT%H:%M:%S%z", json_extract_scalar(tmp_payload, "$.timestamp")) , "SECONDS") |
-fields -tmp_payload;
+    _time = parse_timestamp("%Y-%m-%dT%H:%M:%S%z", tmp_get_timestamp)
+| fields -tmp_payload, tmp_get_timestamp;

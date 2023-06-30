@@ -12,6 +12,7 @@ This integration was integrated and tested with version EmailRep Alpha API v0.1 
 | apikey | API Key | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -93,6 +94,7 @@ Gets the DBot score for the given email address using the EmailRepIO reputation.
 | DBotScore.Score | Number | The actual DBot score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | EmailRepIO.Email.email | String | email address that was queried | 
 | EmailRepIO.Email.reputation | String | The reputation of the email. Possible values are: "high", "medium", "low", and "none". | 
 | EmailRepIO.Email.suspicious | Boolean | Whether the email address should be treated as suspicious or risky. | 

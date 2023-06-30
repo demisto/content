@@ -5326,14 +5326,19 @@ def main():
     params = demisto.params()
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
+    client_token = params.get('credentials_client_token', {}).get('password') or params.get('clientToken')
+    access_token = params.get('credentials_access_token', {}).get('password') or params.get('accessToken')
+    client_secret = params.get('credentials_client_secret', {}).get('password') or params.get('clientSecret')
+    if not(client_token and access_token and client_secret):
+        raise DemistoException('Client token, Access token and Client secret must be provided.')
     client = Client(
         base_url=params.get('host'),
         verify=verify_ssl,
         proxy=proxy,
         auth=EdgeGridAuth(
-            client_token=params.get('clientToken'),
-            access_token=params.get('accessToken'),
-            client_secret=params.get('clientSecret')
+            client_token=client_token,
+            access_token=access_token,
+            client_secret=client_secret
         )
     )
     command = demisto.command()

@@ -20,37 +20,48 @@ configuration:
 - additionalinfo: User's Service Account JSON key.
   display: Service Account JSON
   name: user_service_account_json
-  required: true
   type: 4
   section: Connect
+  hidden: true
+- display: Admin Email
+  name: admin_email_creds
+  type: 9
+  section: Connect
+  displaypassword: Service Account JSON
 - additionalinfo: G Suite domain administrator's email ID that acts on behalf of the end-user
   display: Admin Email
   name: admin_email
-  required: true
   type: 0
   section: Connect
-- additionalinfo: The maximum allowed value is 1000.
+  hidden: true
+- additionalinfo: |-
+    The maximum allowed value is 1000.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: true
   type: 0
   section: Collect
-- additionalinfo: |-
-    The time range to consider for the initial data fetch.
+- additionalinfo: 'The time range to consider for the initial data fetch.
+
     Formats accepted: YYYY-MM-dd, YYYY-MM-ddTHH:mm:ss, 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years.
-    Accepted timezone: UTC
-  defaultvalue: 3 days
+
+    Accepted timezone: UTC'
   display: First fetch time interval
   name: first_fetch
   required: false
   type: 0
   section: Collect
-- additionalinfo: |-
-    Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty.
-    Note: If type is present in the Filter parameter this value will be overwritten.
+  defaultvalue: 3 days
+- additionalinfo: 'Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty.
+
+    Note: If type is present in the Filter parameter this value will be overwritten.'
   display: Alert Type
   name: alert_type
+  required: false
+  type: 16
+  section: Collect
+  advanced: true
   options:
   - Customer takeout initiated
   - Malware reclassification
@@ -74,39 +85,37 @@ configuration:
   - AppMaker Default Cloud SQL setup
   - Activity Rule
   - Data Loss Prevention
-  required: false
-  type: 16
-  section: Collect
-  advanced: true
-- additionalinfo: |-
-    An advanced filter to fetch the list of alerts.
+- additionalinfo: 'An advanced filter to fetch the list of alerts.
+
     For example: source:"Google" AND type="Suspicious login".
-    Note: This value takes precedence over any filter arguments. To fetch alerts using createTime, use the first fetch time interval parameter.
+
+    Note: This value takes precedence over any filter arguments. To fetch alerts using createTime, use the first fetch time interval parameter.'
   display: Filter
   name: filter
   required: false
   type: 12
   section: Collect
   advanced: true
-- additionalinfo: Fetches the latest type of feedback for each alert.
-  display: Fetch feedback
+- display: Fetch feedback
   name: fetch_feedback
   required: false
   type: 8
   section: Collect
   advanced: true
+  additionalinfo: Fetches the latest type of feedback for each alert.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
   advanced: true
-- display: Use system proxy settings
+- advanced: true
+  display: Use system proxy settings
   name: proxy
   required: false
-  type: 8
   section: Connect
-  advanced: true
+  type: 8
+
 description: G Suite Security Alert Center allows users to fetch different alert types such as Suspicious login, Device compromised, Leaked password, and more. Users can delete or recover a single alert or a batch of alerts and retrieve the alert's metadata. This integration allows users to provide feedback for alerts and fetch existing feedback for a particular alert.
 display: G Suite Security Alert Center
 name: G Suite Security Alert Center
@@ -807,7 +816,7 @@ script:
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
       description: Status of the failed alert recovery.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.62140
+  dockerimage: demisto/googleapi-python3:1.0.0.64077
   feed: false
   isfetch: true
   longRunning: false

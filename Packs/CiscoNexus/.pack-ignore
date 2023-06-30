@@ -1,0 +1,6 @@
+[file:CiscoNexus_1_3.yml]
+ignore=PR101
+
+[file:CiscoNexusModelingRules_1_3.yml]
+ignore=MR108
+

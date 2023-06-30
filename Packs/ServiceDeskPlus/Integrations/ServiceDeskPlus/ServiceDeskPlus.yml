@@ -19,6 +19,12 @@ configuration:
   name: technician_key
   required: false
   type: 4
+  hidden: true
+- displaypassword: Technician Key
+  name:  credentials_technician_key
+  required: false
+  hiddenusername: true
+  type: 9
 - defaultvalue: https://example.com
   display: On-Premise Server URL
   name: server_url_on_premise
@@ -28,14 +34,28 @@ configuration:
   name: client_id
   required: false
   type: 4
+  hidden: true
 - display: Client Secret
   name: client_secret
   required: false
   type: 4
+  hidden: true
+- display: Client ID
+  name: credentials_client
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
 - display: Refresh Token
   name: refresh_token
   required: false
   type: 4
+  hidden: true
+- displaypassword: Refresh Token
+  name:  credentials_refresh_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -877,7 +897,7 @@ script:
     description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

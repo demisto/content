@@ -16,9 +16,15 @@ To mitigate the risk associated with this vulnerability, it is crucial for users
 - Sigma rules download
 
 **Hunting:**
-- Microsoft PowerShell hunting script
-- Advanced SIEM hunting queries
+- Cortex XDR XQL exploitation patterns hunting
+- Cortex Xpanse external facing instances hunting
+- Advanced SIEM exploitation patterns hunting
 - Indicators hunting
+
+The hunting queries are searching for the following activities:
+  - ASPX file creation by w3wp.exe
+  - IIS compiling binaries via the csc.exe on behalf of the MOVEit
+  - Detects get requests to specific exploitation related files
 
 **Mitigations:**
 - Progress official CVE-2023-34362 patch

@@ -2,4 +2,5 @@
 ignore=CJ105
 
 [file:TrendMicroDeepSecurity.yml]
-ignore=IN145
+ignore=MR108
+

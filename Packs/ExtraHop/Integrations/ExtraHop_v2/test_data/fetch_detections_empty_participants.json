@@ -9,7 +9,7 @@
         "description": "[VMware A5F9B5](https://dummy-base-url.com/extrahop/#/metrics/devices/6c078a2ea98c42378048f72636c371c8.005056a5f9b50000/overview?from=1673508360&interval_type=DT&until=1673508450) sent data on the following non-standard SSH port, SSH:7234. Devices across the network rarely establish SSH sessions on this port.",
         "categories": [
             "sec.command",
-            "sec"
+            "sec.attack"
         ],
         "risk_score": 60,
         "type": "rare_ssh_port",

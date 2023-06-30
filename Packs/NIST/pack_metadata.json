@@ -46,10 +46,6 @@
             "mandatory": false,
             "display_name": "Mail Sender (New)"
         },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "Active_Directory_Query": {
             "mandatory": false,
             "display_name": "Active Directory Query"

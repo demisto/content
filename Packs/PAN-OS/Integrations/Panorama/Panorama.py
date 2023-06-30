@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
+from functools import partial
 import enum
 import html
 
@@ -229,7 +230,7 @@ class PanosResponse():
         Namespace class for the PanosResponse
         """
 
-        def __init__(self, ignored_keys: set = None, **kwargs):
+        def __init__(self, ignored_keys: set | None = None, **kwargs):
             if not ignored_keys:
                 ignored_keys = set()
             super().__init__(**{k: v for k, v in kwargs.items() if k not in ignored_keys})
@@ -240,7 +241,7 @@ class PanosResponse():
             """
             return [] if attr == 'entry' else None
 
-    def __init__(self, response: dict, ignored_keys: set = None, illegal_chars: set = None):
+    def __init__(self, response: dict, ignored_keys: set | None = None, illegal_chars: set | None = None):
         self.raw = response
         self.ns = self.to_class(response, ignored_keys=ignored_keys, illegal_chars=illegal_chars)
 
@@ -259,14 +260,14 @@ class PanosResponse():
             return_response = return_response.get(item, {})
         return return_response
 
-    def handle_illegal_chars(self, dictionary: dict, illegal_chars: set = None):
+    def handle_illegal_chars(self, dictionary: dict, illegal_chars: set | None = None):
         if not illegal_chars:
             return dictionary
         return {
             key.replace(char, ''): val for key, val in dictionary.items() for char in illegal_chars
         }
 
-    def to_class(self, response, ignored_keys: set = None, illegal_chars: set = None) -> PanosNamespace:
+    def to_class(self, response, ignored_keys: set | None = None, illegal_chars: set | None = None) -> PanosNamespace:
         if not ignored_keys:
             ignored_keys = set()
         if not illegal_chars:
@@ -282,7 +283,7 @@ class PanosResponse():
 
 
 def http_request(uri: str, method: str, headers: dict = {},
-                 body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False, is_xml: bool = False) -> Any:
+                 body: dict = {}, params: dict = {}, files: dict | None = None, is_pcap: bool = False, is_xml: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -608,7 +609,7 @@ def add_argument_profile_setting(arg: Optional[str], field_name: str) -> str:
     return '<' + field_name + '>' + '<group>' + member_stringify_list + '</group>' + '</' + field_name + '>'
 
 
-def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
+def set_xpath_network(template: str | None = None) -> Tuple[str, Optional[str]]:
     """
     Setting template xpath relevant to panorama instances.
     """
@@ -629,7 +630,7 @@ def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
 def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
                                  destination: Any = None, negate_source: str = None,
                                  negate_destination: str = None, action: str = None, service: List[str] = None,
-                                 disable: str = None, application: List[str] = None, source_user: str = None,
+                                 disable: str = None, application: List[str] = None, source_user: List[str] = None,
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None,
@@ -652,7 +653,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         + add_argument_list(destination, 'destination', True, True)
         + add_argument_list(application, 'application', True)
         + add_argument_list(category, 'category', True)
-        + add_argument_open(source_user, 'source-user', True)
+        + add_argument_list(source_user, 'source-user', True)
         + add_argument_list(from_, 'from', True, True)  # default from will always be any
         + add_argument_list(to, 'to', True, True)  # default to will always be any
         + add_argument_list(service, 'service', True, True)
@@ -707,7 +708,7 @@ def get_pan_os_major_version() -> int:
     return major_version
 
 
-def build_xpath_filter(name_match: str = None, name_contains: str = None, filters: dict = None) -> str:
+def build_xpath_filter(name_match: str | None = None, name_contains: str | None = None, filters: dict | None = None) -> str:
     xpath_prefix = ''
     if name_match:
         xpath_prefix = f"@name='{name_match}'"
@@ -781,7 +782,6 @@ def panorama_test(fetch_params):
         raise e
     except Exception as exception_text:
         demisto.debug(f"Failed to create topology; topology commands will not work. {exception_text}")
-        pass
 
     return_results('ok')
 
@@ -1539,8 +1539,8 @@ def panorama_get_address_command(args: dict):
 
 
 @logger
-def panorama_create_address(address_name: str, fqdn: str = None, ip_netmask: str = None, ip_range: str = None,
-                            description: str = None, tags: list = None, ip_wildcard: str = None):
+def panorama_create_address(address_name: str, fqdn: str | None = None, ip_netmask: str | None = None, ip_range: str | None = None,
+                            description: str | None = None, tags: list | None = None, ip_wildcard: str | None = None):
     params = {'action': 'set',
               'type': 'config',
               'xpath': XPATH_OBJECTS + "address/entry[@name='" + address_name + "']",
@@ -1739,7 +1739,7 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
 
 
 @logger
-def panorama_list_address_groups(tag: str = None):
+def panorama_list_address_groups(tag: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -1843,7 +1843,7 @@ def panorama_get_address_group_command(args: dict):
 
 @logger
 def panorama_create_static_address_group(address_group_name: str, addresses: list,
-                                         description: str = None, tags: list = None):
+                                         description: str | None = None, tags: list | None = None):
     params = {'action': 'set',
               'type': 'config',
               'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
@@ -1864,7 +1864,7 @@ def panorama_create_static_address_group(address_group_name: str, addresses: lis
 
 
 def panorama_create_dynamic_address_group(address_group_name: str, match: Optional[str],
-                                          description: str = None, tags: list = None):
+                                          description: str | None = None, tags: list | None = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -2124,7 +2124,7 @@ def prettify_services_arr(services_arr: Union[dict, list]):
 
 
 @logger
-def panorama_list_services(tag: str = None):
+def panorama_list_services(tag: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -2235,7 +2235,7 @@ def panorama_get_service_command(service_name: str):
 
 @logger
 def panorama_create_service(service_name: str, protocol: str, destination_port: str,
-                            source_port: str = None, description: str = None, tags: list = None):
+                            source_port: str | None = None, description: str | None = None, tags: list | None = None):
     params = {
         'action': 'set',
         'type': 'config',
@@ -2363,7 +2363,7 @@ def prettify_service_groups_arr(service_groups_arr: list):
 
 
 @logger
-def panorama_list_service_groups(tag: str = None):
+def panorama_list_service_groups(tag: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -2696,9 +2696,9 @@ def panorama_get_custom_url_category_command(name: str):
 
 
 @logger
-def panorama_create_custom_url_category(custom_url_category_name: str, type_: Any = None,
+def panorama_create_custom_url_category(custom_url_category_name: str, type_: Any | None = None,
                                         sites: Optional[list] = None, categories: Optional[list] = None,
-                                        description: str = None):
+                                        description: str | None = None):
     #  In PAN-OS 9.X changes to the default behavior were introduced regarding custom url categories.
     major_version = get_pan_os_major_version()
     element = add_argument(description, 'description', False)
@@ -3459,34 +3459,75 @@ def panorama_delete_url_filter_command(url_filter_name: str):
 
 
 def prettify_rule(rule: dict):
-    pretty_rule = {
-        'Name': rule['@name'],
-        'Action': rule['action']
+
+    parse_pan_os_un_committed_data(rule, ['@admin', '@dirtyId', '@time'])
+
+    rule_get = partial(dict_safe_get, rule, default_return_value='', return_type=(str, list), raise_return_type=False)
+
+    # get rule devices:
+    entries = rule_get(['target', 'devices', 'entry'])
+    if not isinstance(entries, list):
+        entries = [entries]
+    rule_devices = [
+        entry.get('@name') for entry in entries if isinstance(entry, dict)
+    ]
+
+    # get rule profiles:
+    profile_keys = (
+        'url-filtering',
+        'data-filtering',
+        'file-blocking',
+        'virus',
+        'spyware',
+        'vulnerability',
+        'wildfire-analysis',
+    )
+    profiles = rule_get(  # pylint: disable=E1124
+        ['profile-setting', 'profiles'], return_type=dict, default_return_value={})
+    rule_profiles = {
+        key: dict_safe_get(profiles, [key, 'member'], '')
+        for key in profile_keys
     }
-    if DEVICE_GROUP:
-        pretty_rule['DeviceGroup'] = DEVICE_GROUP
-    if '@loc' in rule:
-        pretty_rule['Location'] = rule['@loc']
-    if isinstance(rule.get('category'), dict) and 'member' in rule['category']:
-        pretty_rule['CustomUrlCategory'] = rule['category']['member']
-    if isinstance(rule.get('application'), dict) and 'member' in rule['application']:
-        pretty_rule['Application'] = rule['application']['member']
-    if isinstance(rule.get('destination'), dict) and 'member' in rule['destination']:
-        pretty_rule['Destination'] = rule['destination']['member']
-    if isinstance(rule.get('from'), dict) and 'member' in rule['from']:
-        pretty_rule['From'] = rule['from']['member']
-    if isinstance(rule.get('service'), dict) and 'member' in rule['service']:
-        pretty_rule['Service'] = rule['service']['member']
-    if isinstance(rule.get('to'), dict) and 'member' in rule['to']:
-        pretty_rule['To'] = rule['to']['member']
-    if isinstance(rule.get('source'), dict) and 'member' in rule['source']:
-        pretty_rule['Source'] = rule['source']['member']
-    if isinstance(rule.get('tag'), dict) and 'member' in rule['tag']:
-        pretty_rule['Tags'] = rule['tag']['member']
-    if isinstance(rule.get('log-setting'), dict) and '#text' in rule['log-setting']:
-        pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
-    if disabled := rule.get('disabled'):
-        pretty_rule['Disabled'] = disabled
+
+    pretty_rule: Dict[str, Any] = {
+
+        'DeviceGroup': DEVICE_GROUP,
+        'Location': rule.get('@loc', ''),
+        'NegateDestination': rule.get('negate-destination', ''),
+        'Disabled': rule.get('disabled', ''),
+        'ICMPUnreachable': rule.get('icmp-unreachable', ''),
+        'Description': rule.get('description', ''),
+        'GroupTag': rule.get('group-tag', ''),
+        'LogForwardingProfile': rule.get('log-setting', ''),
+        'NegateSource': rule.get('negate-source', ''),
+        'SecurityProfileGroup': rule_get(['profile-setting', 'group', 'member']),
+        'SecurityProfile': rule_profiles,
+        'Target': {
+            'devices': rule_devices,
+            'negate': rule_get(['target', 'negate']),
+        },
+        'Name': rule.get('@name', ''),
+        'Type': rule.get('rule-type', ''),
+        'From': rule_get(['from', 'member']),
+        'DestinationDevice': rule_get(['destination-hip', 'member']),
+        'Action': rule.get('action', ''),
+        'SourceDevice': rule_get(['source-hip', 'member']),
+        'Tags': rule_get(['tag', 'member']),
+        'SourceUser': rule_get(['source-user', 'member']),
+        'Application': rule_get(['application', 'member']),
+        'Service': rule_get(['service', 'member']),
+        'To': rule_get(['to', 'member']),
+        'Source': rule_get(['source', 'member']),
+        'CustomUrlCategory': rule_get(['category', 'member']),
+        'Destination': rule_get(['destination', 'member']),
+        'Options': {
+            'LogAtSessionStart': rule.get('log-start', ''),
+            'LogForwarding': rule.get('log-setting', ''),
+            'Schedule': rule.get('schedule', ''),
+            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()), None),  # pylint: disable=E1124
+            'DisableServerResponseInspection': rule_get(['option', 'disable-server-response-inspection']),
+        }
+    }
 
     return pretty_rule
 
@@ -3498,8 +3539,7 @@ def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None)
     for rule in rules:
         if target and not target_filter(rule, target):
             continue
-        pretty_rule = prettify_rule(rule)
-        pretty_rules_arr.append(pretty_rule)
+        pretty_rules_arr.append(prettify_rule(rule))
 
     return pretty_rules_arr
 
@@ -3524,7 +3564,7 @@ def target_filter(rule: dict, target: str) -> bool:
 
 
 @logger
-def panorama_list_rules(xpath: str, name: str = None, filters: dict = None, query: str = None):
+def panorama_list_rules(xpath: str, name: str | None = None, filters: dict | None = None, query: str | None = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -3572,14 +3612,33 @@ def panorama_list_rules_command(args: dict):
 
     pretty_rules = prettify_rules(rules, target)
 
+    to_human_readable = {
+        'SecurityProfileGroup': 'Profile Group',
+        'SecurityProfile': 'Profiles',
+        'From': 'Source Zone',
+        'DestinationDevice': 'Destination Device',
+        'SourceDevice': 'Source Device',
+        'SourceUser': 'Source User',
+        'To': 'Destination Zone',
+        'Source': 'Source Address',
+        'CustomUrlCategory': 'Url Category',
+        'Destination': 'Destination Address',
+    }
+
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': rules,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
-                                         ['Name', 'Location', 'Action', 'From', 'To',
-                                          'CustomUrlCategory', 'Service', 'Tags', 'Disabled'],
+                                         ['Name', 'Location', 'Tags', 'Type',
+                                          'From', 'Source', 'SourceUser',
+                                          'SourceDevice', 'To', 'Destination',
+                                          'DestinationDevice', 'Application',
+                                          'Service', 'CustomUrlCategory', 'Action',
+                                          'SecurityProfile', 'SecurityProfileGroup',
+                                          'Options', 'Target'],
+                                         headerTransform=lambda x: to_human_readable.get(x, x),
                                          removeNull=True),
         'EntryContext': {
             "Panorama.SecurityRule(val.Name == obj.Name)": pretty_rules
@@ -3651,7 +3710,7 @@ def panorama_create_rule_command(args: dict):
     disable = args.get('disable')
     categories = argToList(args.get('category'))
     application = argToList(args.get('application'))
-    source_user = args.get('source_user')
+    source_user = argToList(args.get('source_user'))
     disable_server_response_inspection = args.get('disable_server_response_inspection')
     description = args.get('description')
     target = args.get('target')
@@ -3748,7 +3807,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str, is_commit_r
 
 @logger
 def panorama_edit_rule_items(rulename: str, element_to_change: str, element_value: List[str], behaviour: str):
-    listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']
+    listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag', 'profile-setting']
     if element_to_change not in listable_elements:
         raise Exception(f'Adding objects is only available for the following Objects types:{listable_elements}')
     if element_to_change == 'target' and not DEVICE_GROUP:
@@ -3767,18 +3826,28 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
             params['xpath'] = XPATH_SECURITY_RULES + PRE_POST + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-    params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
-    current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
-    if behaviour == 'add':
-        values = list((set(current_objects_items)).union(set(element_value)))
-    else:  # remove
-        values = [item for item in current_objects_items if item not in element_value]
-        if not values:
-            raise Exception(f'The object: {element_to_change} must have at least one item.')
+    # in this case, we want to remove the profile-setting group
+    if element_to_change == 'profile-setting':
+        params['action'] = 'set'
+        params['element'] = '<profile-setting><group/></profile-setting>'
+        values = [element_value]
+        result = http_request(URL, 'POST', body=params)
 
-    params['element'] = add_argument_list(values, element_to_change, True)
-    result = http_request(URL, 'POST', body=params)
+    else:
+        params["xpath"] = f'{params["xpath"]}/{element_to_change}'
+
+        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
+        if behaviour == 'add':
+            values = list((set(current_objects_items)).union(set(element_value)))  # type: ignore[arg-type]
+        else:  # remove
+            values = [item for item in current_objects_items if item not in element_value]
+            if not values:
+                raise Exception(f'The object: {element_to_change} must have at least one item.')
+
+        params['element'] = add_argument_list(values, element_to_change, True)
+        result = http_request(URL, 'POST', body=params)
+
     rule_output = {
         'Name': rulename,
         SECURITY_RULE_ARGS[element_to_change]: values
@@ -3827,6 +3896,8 @@ def panorama_edit_rule_command(args: dict):
         raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
     behaviour = args.get('behaviour') if 'behaviour' in args else 'replace'
+    # in this case of profile-setting add is the same as replace
+    behaviour = 'replace' if element_to_change == 'profile-setting' and behaviour == 'add' else behaviour
     if behaviour != 'replace':
         panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
     else:
@@ -5908,8 +5979,8 @@ def panorama_get_static_route_command(args: dict):
 
 @logger
 def panorama_add_static_route(xpath_network: str, virtual_router: str, static_route_name: str, destination: str,
-                              nexthop_type: str, nexthop_value: str, interface: str = None,
-                              metric: str = None) -> Dict[str, str]:
+                              nexthop_type: str, nexthop_value: str, interface: str | None = None,
+                              metric: str | None = None) -> Dict[str, str]:
     params = {
         'action': 'set',
         'type': 'config',
@@ -6076,7 +6147,7 @@ def panorama_delete_static_route_command(args: dict):
     })
 
 
-def panorama_show_device_version(target: str = None):
+def panorama_show_device_version(target: str | None = None):
     params = {
         'type': 'op',
         'cmd': '<show><system><info/></system></show>',
@@ -6731,7 +6802,7 @@ def get_security_profile(xpath: str) -> Dict:
     return result
 
 
-def get_security_profiles_command(security_profile: str = None):
+def get_security_profiles_command(security_profile: str | None = None):
     """
     Get information about profiles.
     """
@@ -6916,38 +6987,72 @@ def get_security_profiles_command(security_profile: str = None):
 
 
 @logger
-def apply_security_profile(xpath: str, profile_name: str) -> Dict:
+def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> Dict:
+    # get the rule state
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': xpath,
+        'key': API_KEY,
+    }
+    result = http_request(URL, 'GET', params=params)
+
+    # Get all profile types already existing, so we don't override them when updating
+    profile_types_result = dict_safe_get(result, ['response', 'result', 'entry', 'profile-setting', 'profiles'],
+                                         default_return_value={})
+
+    # align the response for both committed and un-committed profiles
+    parse_pan_os_un_committed_data(profile_types_result, ['@admin', '@dirtyId', '@time'])
+
+    # remove from the types the given profile type, since we update it anyway
+    profile_types = {'data-filtering', 'file-blocking', 'spyware', 'url-filtering',
+                     'virus', 'vulnerability', 'wildfire-analysis'} - {profile_type}
+
+    rule_profiles = ''
+
+    if profile_name:  # if profile_name was not provided, we remove the profile type from the rule.
+        # first we update the given profile type with the given profile name
+        rule_profiles += f"<{profile_type}><member>{profile_name}</member></{profile_type}>"
+
+    # Keeping the existing profile types
+    for p_type in profile_types:
+        if p_type in profile_types_result:
+            p_name = profile_types_result.get(p_type, {}).get('member')
+            rule_profiles += f"<{p_type}><member>{p_name}</member></{p_type}>"
+
     params = {
         'action': 'set',
         'type': 'config',
         'xpath': xpath,
         'key': API_KEY,
-        'element': f'<member>{profile_name}</member>'
+        'element': f'<profile-setting><profiles>{rule_profiles}</profiles></profile-setting>'
     }
+
     result = http_request(URL, 'POST', params=params)
 
     return result
 
 
 def apply_security_profile_command(args):
-    profile_name = args.get('profile_name')
+    profile_name = args.get('profile_name', '')  # when removing a profile, no need to a pass a profile_name
     profile_type = args.get('profile_type')
     rule_name = args.get('rule_name')
-    pre_post = args.get('rule_name')
+    pre_post = args.get('pre_post')
 
     if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
                             'Panorama instance.')
-        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/" \
-                f"profiles/{profile_type}"
+        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']"
 
     else:  # firewall instance
-        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/" \
-                f"profiles/{profile_type}"
+        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']"
 
-    apply_security_profile(xpath, profile_name)
-    return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
+    apply_security_profile(xpath, profile_name, profile_type)
+    if profile_name:
+        return_results(f'The profile {profile_type} = {profile_name} has been applied to the rule {rule_name}')
+    else:
+        return_results(f'The profile {profile_type} has been removed from the rule {rule_name}')
 
 
 @logger
@@ -7156,6 +7261,8 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     anti_spy_ware_name = args.get('anti_spyware_profile_name')
     edl = args.get('dns_signature_source')
     action = args.get('action')
+    ipv4_address = args.get('ipv4', 'pan-sinkhole-default-ip')
+    ipv6_adderss = args.get('ipv6', '::1')
     packet_capture = args.get('packet_capture', 'disable')
 
     # for Panorama instance
@@ -7170,6 +7277,7 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
                    f'<entry name="{edl}"><packet-capture>{packet_capture}</packet-capture>'
                    f'<action><{action}/></action></entry>'
                    f'</lists>'
+                   f'<sinkhole><ipv4-address>{ipv4_address}</ipv4-address><ipv6-address>{ipv6_adderss}</ipv6-address></sinkhole>'
                    f'</botnet-domains>'
     }
     if VSYS:  # if it's a firewall instance, modify the xpath param
@@ -7400,7 +7508,7 @@ def get_wildfire_best_practice_command():
     })
 
 
-def set_xpath_wildfire(template: str = None) -> str:
+def set_xpath_wildfire(template: str | None = None) -> str:
     """
     Setting wildfire xpath relevant to panorama instances.
     """
@@ -8786,7 +8894,6 @@ class Topology:
             except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
                 demisto.debug(f"Failed to connected to {hostname}, {e}")
                 # If a device fails to respond, don't add it to the topology.
-                pass
 
         topology.username = username
         topology.password = password
@@ -8895,16 +9002,16 @@ Dataclasses are split into three types;
  SummaryData: Classes that hold only summary data, and are safe to display in the incident layout
  ResultData: Classes that hold a full representation of the data, used to pass between tasks only
 
-The dataclasses are used for automatic generation of the integration YAML, as well as controlling the 
+The dataclasses are used for automatic generation of the integration YAML, as well as controlling the
 format of the result data being sent to XSOAR.
 In each dataclass, the attributes are used as below;
     _output_prefix: The prefix of the context output
     _title: The human readable title for human readable tables (using TableToMarkdown)
 
-    _summary_cls: For commands with very large resultant data, the summary dataclass stores a cutdown 
+    _summary_cls: For commands with very large resultant data, the summary dataclass stores a cutdown
         summary to avoid overloading incident layouts.
     _result_cls:
-Some dataclasses don't split the data by summary and result data, because they should never return a large 
+Some dataclasses don't split the data by summary and result data, because they should never return a large
 amount. As such, _summary_cls and _result_cls are optional.
 """
 
@@ -11589,7 +11696,6 @@ def get_topology() -> Topology:
     port = arg_to_number(arg=params.get('port', '443'))
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
-    params = demisto.params()
     api_key = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
 
     return Topology.build_from_string(
@@ -11803,7 +11909,7 @@ def pan_os_list_templates_command(args):
     )
 
 
-def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, filters: dict = None, query: str = None):
+def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] = None, filters: dict | None = None, query: str | None = None):
     _xpath = f"{XPATH_RULEBASE}{pre_post}/nat"
 
     if query:
@@ -11817,7 +11923,7 @@ def build_nat_xpath(name: Optional[str], pre_post: str, element: Optional[str] =
     return _xpath
 
 
-def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None, filters: dict = None, query: str = None):
+def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_post: Optional[str] = None, filters: dict | None = None, query: str | None = None):
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
         raise DemistoException(f'The pre_post argument must be provided for panorama instance')
@@ -12579,7 +12685,7 @@ def pan_os_delete_redistribution_profile_command(args):
     )
 
 
-def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict = None, query: str = None):
+def build_pbf_xpath(name, pre_post, element_to_change=None, filters: dict | None = None, query: str | None = None):
     _xpath = f'{XPATH_RULEBASE}{pre_post}/pbf'
 
     if query:
@@ -13069,6 +13175,337 @@ def pan_os_delete_application_group_command(args):
     )
 
 
+def build_tag_xpath(is_shared: bool = False, name: str = None) -> str:
+    """Builds the tag request xpath.
+
+    Args:
+        is_shared (bool): Whether the device group is shared.
+        name (str): The tag name.
+
+    Returns:
+        str: The xpath to send the request with.
+    """
+    _xpath = f"{XPATH_RULEBASE}tag"
+    if is_shared:
+        _xpath = "/config/shared/tag"
+    if name:
+        _xpath = f"{_xpath}/entry[@name='{name}']"
+    return _xpath
+
+
+def build_tag_element(disable_override: bool, comment: str, new_name: str = None, color: Optional[str] = None) -> str:
+    """Build the request element in XML format
+
+    Args:
+        disable_override (bool): Whether to disable overriding the tag.
+        comment (str): The comment for the tag.
+        new_name (str): When editing - the new name for the tag.
+        color (str): The color of the tag.
+
+    Returns:
+        str: The element in XML format.
+    """
+    api_disable_override = 'yes' if disable_override else 'no'
+    element = f'<disable-override>{api_disable_override}</disable-override>' \
+              f'<comments>{comment}</comments>'
+    if color:
+        element += f'<color>{color}</color>'
+    if new_name:
+        element = f'<entry name="{new_name}">{element}</entry>'
+    return element
+
+
+def pan_os_list_tag(is_shared: bool = False) -> tuple[dict, list]:
+    """builds the params and sends the request to get the list of tags.
+
+    Args:
+        is_shared (bool): If True, then the list of tags are from the shared device group.
+
+    Returns:
+        dict: The raw response of the tags list from panorama.
+        list: The list of tags from response.
+    """
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'key': API_KEY,
+        'xpath': build_tag_xpath(is_shared=is_shared)
+    }
+
+    raw_response = http_request(URL, 'GET', params=params)
+    tags_list_result = extract_tags_list(raw_response)
+    add_location(tags_list_result, is_shared_tags=is_shared)
+    return raw_response, tags_list_result
+
+
+def prettify_tags(tags: list) -> list:
+    """Prettify the keys in the tags for the HR table.
+
+    Args:
+        tags (list): The tags list.
+
+    Return:
+        list: the result of the prettify list for the table.
+    """
+    result = []
+
+    for tag in tags:
+        tag['name'] = tag.pop('@name')  # remove the '@'
+        new_tag = {'Name': tag['name'], 'Location': tag['location']}
+
+        if 'color' in tag:
+            new_tag['Color'] = tag['color']
+
+        if 'comments' in tag:
+            new_tag['Comment'] = tag['comments']
+
+        result.append(new_tag)
+    return result
+
+
+def extract_tags_list(raw_response: dict) -> list:
+    """Extracts the tags list result from the API's raw response.
+
+    Args:
+        raw_response (dict): The raw response.
+
+    Returns:
+        list: The list of tags from the response.
+    """
+    tags_list_result = raw_response.get("response", {}).get("result", {}).get("tag", {})
+    tags_list_result = [] if tags_list_result is None else tags_list_result.get("entry", [])
+
+    if not isinstance(tags_list_result, list):
+        tags_list_result = [tags_list_result]
+    return tags_list_result
+
+
+def add_location(tags_list: list, is_shared_tags: bool = False) -> None:
+    """Adds the location property to the tags.
+
+    Args:
+        tags_list (list): The given tags list.
+        is_shared_tags (bool, optional): Whether the tags are from shared location.
+    """
+    for tag in tags_list:
+        tag.update({'location': DEVICE_GROUP if not is_shared_tags else 'shared'})
+
+
+def pan_os_list_tag_command(args: dict) -> CommandResults:
+    """Sends the request and returns the result of the command pan-os-list-tag.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response, outputs and readable outputs.
+    """
+    include_shared = argToBoolean(args.get('include_shared_tags', False))
+
+    raw_response, tags_list_result = pan_os_list_tag()
+
+    if include_shared:
+        _, shared_tags_list_result = pan_os_list_tag(include_shared)
+        tags_list_result.extend(shared_tags_list_result)
+
+    for tag in tags_list_result:
+        parse_pan_os_un_committed_data(tag, ['@admin', '@dirtyId', '@time'])
+
+    prettify_tags_list = prettify_tags(tags_list_result)
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=tags_list_result,
+        readable_output=tableToMarkdown(
+            f'Tags:',
+            prettify_tags_list,
+            ['Name', 'Color', 'Comment', 'Location']
+        ),
+        outputs_prefix='Panorama.Tag',
+        outputs_key_field='name'
+    )
+
+
+def pan_os_create_tag(
+    tag_name: str,
+    disable_override: bool,
+    is_shared: bool,
+    comment: str
+) -> dict:
+    """builds the params and sends the request to create the tag.
+
+    Args:
+        tag_name (str): The tag name.
+        disable_override (bool): Whether to disable overriding the tag.
+        is_shared (bool): Whether to create the tag in the shared device group.
+        comment (str): The tag comment.
+
+    Returns:
+        dict: The raw response from panorama's API.
+    """
+    params = {
+        'xpath': build_tag_xpath(name=tag_name, is_shared=is_shared),
+        'element': build_tag_element(disable_override, comment),
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    return http_request(URL, 'GET', params=params)
+
+
+def pan_os_create_tag_command(args: dict) -> CommandResults:
+    """Creates a tag in Panorama.
+
+    Args:
+        args (dict): The commmand arguments to create the tag with.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    tag_name = args.get('name', '')
+    disable_override = argToBoolean(args.get('disable_override', False))
+    is_shared = argToBoolean(args.get('is_shared', False))
+    comment = args.get('comment', '')
+
+    raw_response = pan_os_create_tag(tag_name,
+                                     disable_override,
+                                     is_shared,
+                                     comment)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'The tag with name "{tag_name}" was created successfully.',
+    )
+
+
+def pan_os_edit_tag(
+    tag_name: str,
+    new_tag_name: str,
+    disable_override: bool,
+    comment: str,
+    color: Optional[str]
+) -> dict:
+    """builds the params and sends the request to edit the tag.
+
+    Args:
+        tag_name (str): The tag name to edit.
+        new_tag_name (str): The new tag name.
+        disable_override (bool): Whether to disable overriding the tag.
+        comment (str): The tag comment.
+
+    Returns:
+        dict: The raw response from panorama's API. 
+    """
+    params = {
+        'xpath': build_tag_xpath(name=tag_name),
+        'element': build_tag_element(disable_override, comment, new_name=new_tag_name, color=color),
+        'action': 'edit',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    try:
+        response = http_request(URL, 'GET', params=params)
+    except Exception as e:
+        if 'Status code: 12' in str(e):
+            # try in shared group
+            params['xpath'] = build_tag_xpath(name=tag_name, is_shared=True)
+            response = http_request(URL, 'GET', params=params)
+        else:
+            raise
+
+    return response
+
+
+def pan_os_edit_tag_command(args: dict) -> CommandResults:
+    """Edits the given tag in Panorama.
+
+    Args:
+        args (dict): The command arguments to edit the tag.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    tag_name = args.get('name', '')
+    new_tag_name = args.get('new_name', tag_name)
+    disable_override = args.get('disable_override')
+    comment = args.get('comment', '')
+
+    # To not override tag properties that are not given in the arguments
+    # we need to list the tags and take these properties from there
+    _, tags_list = pan_os_list_tag()
+    tags_list.extend(pan_os_list_tag(is_shared=True)[1])
+    tag_to_edit_from_list = [tag for tag in tags_list if tag['@name'] == tag_name]
+
+    try:
+        tag_to_edit = tag_to_edit_from_list[0]
+    except IndexError as e:
+        raise DemistoException(f"Can't find the tag with name '{tag_name}' in tags list.\n"
+                               f"Please run the pan-os-list-tag command and verify that the tag '{tag_name}' exists.")
+
+    parse_pan_os_un_committed_data(tag_to_edit, ['@admin', '@dirtyId', '@time'])
+
+    disable_override = disable_override if disable_override else tag_to_edit.get("disable-override", "no")
+    disable_override = argToBoolean(disable_override)
+    comment = comment if comment else tag_to_edit.get("comments", "")
+    color = tag_to_edit.get("color", "")
+
+    raw_response = pan_os_edit_tag(tag_name, new_tag_name, disable_override, comment, color)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'The tag with name "{tag_name}" was edited successfully.',
+    )
+
+
+def pan_os_delete_tag(tag_name: str) -> dict:
+    """builds the params and sends the request to delete the tag.
+
+    Args:
+        tag_name (str): The tag name to delete.
+
+    Returns:
+        dict: The raw response from panorama's API.
+    """
+    params = {
+        'xpath': build_tag_xpath(name=tag_name),
+        'action': 'delete',
+        'type': 'config',
+        'key': API_KEY
+    }
+
+    try:
+        response = http_request(URL, 'GET', params=params)
+    except Exception as e:
+        if 'Object not present' in str(e) or 'Status code: 12' in str(e):
+            # try in shared group
+            params['xpath'] = build_tag_xpath(name=tag_name, is_shared=True)
+            response = http_request(URL, 'GET', params=params)
+        else:
+            raise
+
+    return response
+
+
+def pan_os_delete_tag_command(args: dict) -> CommandResults:
+    """Deletes the tag from panorama
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    tag_name = args.get('name', '')
+
+    raw_response = pan_os_delete_tag(tag_name)
+
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'The tag with name "{tag_name}" was deleted successfully.',
+    )
+
+
 """ Fetch Incidents """
 
 
@@ -13370,7 +13807,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
     the dictionary returned is: {'X_log_type':'(example query for X_log_type)'}
 
     Args:
-        params (Dict[str, str]): instance configuration parameters 
+        params (Dict[str, str]): instance configuration parameters
 
     Returns:
         Dict[str, str]: queries per log type dictionary
@@ -13821,6 +14258,9 @@ def main():  # pragma: no cover
         elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
             apply_security_profile_command(args)
 
+        elif command == 'pan-os-remove-security-profile':
+            apply_security_profile_command(args)
+
         elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
             get_ssl_decryption_rules_command(**args)
 
@@ -14182,6 +14622,14 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_application_group_command(args))
         elif command == 'pan-os-list-templates':
             return_results(pan_os_list_templates_command(args))
+        elif command == 'pan-os-list-tag':
+            return_results(pan_os_list_tag_command(args))
+        elif command == 'pan-os-create-tag':
+            return_results(pan_os_create_tag_command(args))
+        elif command == 'pan-os-edit-tag':
+            return_results(pan_os_edit_tag_command(args))
+        elif command == 'pan-os-delete-tag':
+            return_results(pan_os_delete_tag_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

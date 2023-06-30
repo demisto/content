@@ -28,9 +28,12 @@ configuration:
   - ROUTE53_HEALTHCHECKS_PUBLISHING
   - ROUTE53_RESOLVER
   - WORKSPACES_GATEWAYS
+  - All
   required: true
   type: 16
-- additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will be included.
+  additionalinfo: The services to fetch indicators from. Default value is 'All'. If empty, all services will be included.
+  defaultvalue: 'All'
+- additionalinfo: The AWS Regions to fetch indicators by. Default value is 'All'. If empty, all regions will be included.
   display: Regions
   name: regions
   options:
@@ -67,8 +70,10 @@ configuration:
   - us-west-1
   - us-west-2
   - GLOBAL
+  - All
   required: false
   type: 16
+  defaultvalue: 'All'
 - display: Fetch indicators
   name: feed
   required: false
@@ -163,7 +168,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.61931
+  dockerimage: demisto/py3-tools:1.0.0.64131
   feed: true
   isfetch: false
   longRunning: false

@@ -22,6 +22,14 @@
     "tests": [
         {
             "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
         },
         {
@@ -960,14 +968,6 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "integrations": "CVE Search v2",
-            "playbookID": "CVE Search v2 - Test"
-        },
-        {
-            "integrations": "CVE Search v2",
-            "playbookID": "cveReputation Test"
-        },
-        {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test",
             "fromversion": "5.0.0"
@@ -1079,6 +1079,7 @@
         {
             "integrations": "Tenable.sc",
             "playbookID": "tenable-sc-test",
+            "instance_names": "Tenable_SC_secman_api_key",
             "timeout": 240
         },
         {
@@ -1196,11 +1197,6 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "timeout": 3600
-        },
-        {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable-sc-scan-test",
-            "timeout": 600
         },
         {
             "integrations": "google-vault",
@@ -3148,6 +3144,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "timeout": 1200
         },
         {
@@ -4582,7 +4579,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
+            "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
             "integrations": [
@@ -4596,7 +4593,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 160,
-            "pid_threshold": 80
+            "pid_threshold": 80,
+            "is_mockable": false
         },
         {
             "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
@@ -4809,6 +4807,7 @@
         {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -4971,7 +4970,8 @@
             "integrations": "Azure Sentinel",
             "fromversion": "5.5.0",
             "is_mockable": false,
-            "playbookID": "TestAzureSentinelPlaybookV2"
+            "playbookID": "TestAzureSentinelPlaybookV2",
+            "instance_names": "azure_sentinel_dev"
         },
         {
             "integrations": "AnsibleAlibabaCloud",
@@ -5111,6 +5111,7 @@
         {
             "playbookID": "Get Original Email - EWS v2 - test",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "EWS v2"
             ],
@@ -5440,6 +5441,11 @@
                 "Demisto REST API"
             ],
             "playbookID": "FeedLOLBas_test"
+        },
+        {
+            "integrations": "CIRCL CVE Search",
+            "playbookID": "CIRCL CVE Search - Test",
+            "fromversion": "6.8.0"
         }
     ],
     "skipped_tests": {
@@ -5463,7 +5469,7 @@
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
         "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
-        "Protectwise-Test": "Issue 28168",
+        "Protectwise-Test": "Issue CRTX-86776",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -5719,7 +5725,6 @@
         "FreshworksFreshservice": "No instance - Issue 32318",
         "FraudWatch": "No instance - Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
-        "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
         "CiscoSMA": "No instance - developed by Qmasters",
@@ -5728,7 +5733,6 @@
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "FortinetFortiwebVM": "No instance - developed by Qmasters",
         "_comment2": "~~~ UNSTABLE ~~~",
-        "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
@@ -5753,6 +5757,7 @@
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
+        "CIRCL",
         "rasterize",
         "Phishing",
         "Base",
@@ -5786,7 +5791,6 @@
         "FeedMitreAttackv2",
         "URLHaus",
         "MicrosoftDefenderAdvancedThreatProtection",
-        "CVESearch",
         "CrowdStrikeIntel",
         "Shodan",
         "MailListener",
@@ -5924,8 +5928,8 @@
         "Blocklist_de Feed",
         "BruteForceBlocker Feed",
         "CSVFeed",
-        "CVE Search v2",
         "CheckPhish",
+        "CIRCL",
         "Cloudflare Feed",
         "Cofense Feed",
         "Cortex Data Lake",

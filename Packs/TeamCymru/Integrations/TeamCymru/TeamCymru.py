@@ -6,7 +6,6 @@ import demistomock as demisto
 import urllib3
 from cymruwhois import Client  # Python interface to whois.cymru.com
 import csv
-from typing import Tuple
 import socks
 import socket
 
@@ -61,11 +60,12 @@ class CymruClient(Client):
 ''' HELPER FUNCTIONS '''
 
 
-def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
+def parse_ip_result(ip: str, ip_data: dict[str, str], reliability: str) -> CommandResults:
     """
     Arranges the IP's result from the API to the context format.
     :param ip: ip address
     :param ip_data: the ip given data (as returned from the API call)
+    :param reliability: reliability of the source providing the intelligence.
     :return: commandResult of the given IP
     """
     asn = demisto.get(ip_data, 'asn')
@@ -85,7 +85,8 @@ def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
         registrar_abuse_network=prefix,
         dbot_score=Common.DBotScore(indicator=ip,
                                     indicator_type=DBotScoreType.IP,
-                                    score=Common.DBotScore.NONE))
+                                    score=Common.DBotScore.NONE,
+                                    reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)))
 
     human_readable = tableToMarkdown(f'Team Cymru results for {ip}', ip_data, HEADERS,
                                      headerTransform=lambda header: MAPPING.get(header, header))
@@ -100,7 +101,7 @@ def parse_ip_result(ip: str, ip_data: dict[str, str]) -> CommandResults:
     )
 
 
-def validate_ip_addresses(ips_list: list[str]) -> Tuple[list[str], list[str]]:
+def validate_ip_addresses(ips_list: list[str]) -> tuple[list[str], list[str]]:
     """
     Given a list of IP addresses, returns the invalid and valid ips.
     :param ips_list: list of ip addresses
@@ -134,7 +135,7 @@ def parse_file(file_path_res: dict[str, str], delimiter: str = ",") -> List[str]
     return bulk_list
 
 
-def parse_ips_list(client: CymruClient, ips_list: list[str]) -> list[CommandResults]:
+def parse_ips_list(client: CymruClient, ips_list: list[str], reliability: str) -> list[CommandResults]:
     """
     Creates a commandResults array based on a list of IP addresses,
     this by calling the relevant functions.
@@ -151,7 +152,7 @@ def parse_ips_list(client: CymruClient, ips_list: list[str]) -> list[CommandResu
     results = client.lookupmany_dict(valid_ips)
     if results:
         for ip, ip_data in results.items():
-            command_results.append(parse_ip_result(ip, ip_data))
+            command_results.append(parse_ip_result(ip, ip_data, reliability))
     return command_results
 
 
@@ -186,7 +187,7 @@ def test_module(client: CymruClient) -> str:
     return message
 
 
-def ip_command(client: CymruClient, args: dict[str, Any]) -> list[CommandResults]:
+def ip_command(client: CymruClient, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     """
     Returns the results of 'ip' command
     :type client: ``Client``
@@ -202,18 +203,18 @@ def ip_command(client: CymruClient, args: dict[str, Any]) -> list[CommandResults
     if not ip:
         raise ValueError('IP not specified')
     if len(ip) > 1:
-        return parse_ips_list(client, ip)
+        return parse_ips_list(client, ip, reliability)
     if len(ip) == 1 and not is_ip_valid(ip[0]):
         raise ValueError(f"The given IP address: {ip[0]} is not valid")
 
     # Call the Client function and get the raw response
     result = client.lookup(ip[0])
     if result:
-        command_results.append(parse_ip_result(ip[0], result))
+        command_results.append(parse_ip_result(ip[0], result, reliability))
     return command_results
 
 
-def cymru_bulk_whois_command(client: CymruClient, args: dict[str, Any]) -> list[CommandResults]:
+def cymru_bulk_whois_command(client: CymruClient, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     """
     Returns results of 'cymru-bulk-whois' command
     :type client: ``Client``
@@ -234,7 +235,7 @@ def cymru_bulk_whois_command(client: CymruClient, args: dict[str, Any]) -> list[
     else:
         raise ValueError('No entry_id specified.')
 
-    return parse_ips_list(client, ips_list)
+    return parse_ips_list(client, ips_list, reliability)
 
 
 def setup_proxy():  # pragma: no coverage
@@ -263,7 +264,7 @@ def setup_proxy():  # pragma: no coverage
         port = int(port)
     proxy_type = scheme_to_proxy_type.get(scheme)
     if not proxy_type:
-        raise ValueError("Un supported proxy scheme: {}".format(scheme))
+        raise ValueError(f"Un supported proxy scheme: {scheme}")
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
     demisto.info("Proxy setup completed successfully.")
@@ -283,15 +284,16 @@ def main() -> None:
         org_socket = socket.socket
         setup_proxy()
         client = CymruClient()
+        reliability = demisto.params().get('integration_reliability', '')
 
         if demisto.command() == 'test-module':
             result = test_module(client)
             return_results(result)
 
         elif demisto.command() == 'ip':
-            return_results(ip_command(client, demisto.args()))
+            return_results(ip_command(client, demisto.args(), reliability))
         elif demisto.command() == 'cymru-bulk-whois':
-            return_results(cymru_bulk_whois_command(client, demisto.args()))
+            return_results(cymru_bulk_whois_command(client, demisto.args(), reliability))
         else:
             raise NotImplementedError(f"command {demisto.command()} is not implemented.")
 

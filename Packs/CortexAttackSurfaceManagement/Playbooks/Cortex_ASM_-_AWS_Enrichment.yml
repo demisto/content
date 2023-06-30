@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 0
         }
       }
     note: false
@@ -51,6 +51,7 @@ tasks:
       - "4"
       - "9"
       - "22"
+      - "29"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -536,10 +537,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 1c72f18b-885b-4405-842b-cb0214445f59
+    taskid: 9338a30d-d587-4213-86f2-881555dd5995
     type: regular
     task:
-      id: 1c72f18b-885b-4405-842b-cb0214445f59
+      id: 9338a30d-d587-4213-86f2-881555dd5995
       version: -1
       name: Set cloud grid field
       description: |-
@@ -562,7 +563,11 @@ tasks:
       val2:
         simple: n/a
       val3:
-        simple: n/a
+        complex:
+          root: AWS.EC2.Instances.NetworkInterfaces.Association
+          accessor: IpOwnerId
+          transformers:
+          - operator: FirstArrayElement
       val4:
         complex:
           root: AWS.EC2.Instances
@@ -693,7 +698,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 170
+          "y": 150
         }
       }
     note: false
@@ -776,18 +781,188 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 2e617b24-a1fd-47a4-885e-0af4e7e148bc
+    type: playbook
+    task:
+      id: 2e617b24-a1fd-47a4-885e-0af4e7e148bc
+      version: -1
+      name: AWS - Unclaimed S3 Bucket Validation
+      description: The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information.
+      playbookName: AWS - Unclaimed S3 Bucket Validation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bc2526dc-3804-438f-81f1-10e84b7c2615
+    type: condition
+    task:
+      id: bc2526dc-3804-438f-81f1-10e84b7c2615
+      version: -1
+      name: Was an S3 bucket passed back?
+      description: Determines if an S3 bucket was passed back or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: S3BucketName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d9da9c25-f69b-41fc-8b98-ce84d09e4dcf
+    type: regular
+    task:
+      id: d9da9c25-f69b-41fc-8b98-ce84d09e4dcf
+      version: -1
+      name: Set system IDs grid field (BucketName)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: Type,ID,Link
+      val1:
+        simple: S3-BucketName
+      val2:
+        complex:
+          root: S3BucketName
+      val3:
+        simple: N/A
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8c61ba73-e651-4182-8736-508a9331a0a6
+    type: condition
+    task:
+      id: 8c61ba73-e651-4182-8736-508a9331a0a6
+      version: -1
+      name: What is the sub-alert type?
+      description: Determines the ASM sub-alert type for different scans.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      Unclaimed S3 Bucket:
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: Unclaimed S3 Bucket
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.ASMRuleID
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '[\"]'
+            iscontext: true
+          right:
+            value:
+              simple: UnclaimedS3Bucket
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "29_20_#default#": 0.2,
       "4_20_#default#": 0.37,
       "9_20_#default#": 0.28
     },
     "paper": {
       "dimensions": {
-        "height": 1845,
-        "width": 1900,
-        "x": 110,
-        "y": 50
+        "height": 1895,
+        "width": 2540,
+        "x": -530,
+        "y": 0
       }
     }
   }
@@ -799,6 +974,14 @@ inputs:
       accessor: remoteip
   required: false
   description: IP address of service
+  playbookInputQuery:
+- key: ASMRuleID
+  value:
+    complex:
+      root: alert
+      accessor: asmattacksurfaceruleid
+  required: true
+  description: Attack Surface Management Rule ID.
   playbookInputQuery:
 outputs: []
 tests:

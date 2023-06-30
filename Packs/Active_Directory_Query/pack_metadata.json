@@ -2,7 +2,7 @@
     "name": "Active Directory Query",
     "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
     "support": "xsoar",
-    "currentVersion": "1.6.15",
+    "currentVersion": "1.6.16",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
@@ -16,10 +16,6 @@
         "Active Directory"
     ],
     "dependencies": {
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "Gmail": {
             "mandatory": false,
             "display_name": "Gmail"

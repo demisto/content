@@ -357,7 +357,11 @@ def vulndb_get_version_command(args: dict, client: Client):
 
 
 def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: DBotScoreReliability):
-    cve_id = args['cve_id']
+    cve_id = args.get('cve_id', '') or args.get('cve', '')
+
+    if not cve_id:
+        raise DemistoException("You must provide a value to the `cve` argument")
+
     max_size = args.get('max_size')
 
     response = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)

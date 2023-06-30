@@ -27274,7 +27274,7 @@ script:
     - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.timestamp
       description: ''
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false

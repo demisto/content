@@ -1697,7 +1697,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
             continue
         execution_metrics.success += 1
         results.append(
-            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))))
+            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data', False))))
     if len(results) == 0:
         result = CommandResults(readable_output='No IPs were found.').to_context()
         results.append(result)
@@ -1713,7 +1713,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     1 API Call
     """
     files = argToList(args['file'])
-    extended_data = argToBoolean(args.get('extended_data'))
+    extended_data = argToBoolean(args.get('extended_data', False))
     results: List[CommandResults] = list()
     execution_metrics = ExecutionMetrics()
 
@@ -1789,7 +1789,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
     1-4 API Calls for premium subscriptions
     """
     urls = argToList(args['url'])
-    extended_data = argToBoolean(args.get('extended_data'))
+    extended_data = argToBoolean(args.get('extended_data', False))
     results: List[CommandResults] = list()
     execution_metrics = ExecutionMetrics()
     for url in urls:
@@ -1840,7 +1840,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             continue
         execution_metrics.success += 1
         result = build_domain_output(client, score_calculator, domain, raw_response,
-                                     argToBoolean(args.get('extended_data')))
+                                     argToBoolean(args.get('extended_data', False)))
         results.append(result)
     if len(results) == 0:
         result = CommandResults(readable_output='No domains were found.')
@@ -2302,7 +2302,7 @@ def search_command(client: Client, args: dict) -> CommandResults:
     limit = arg_to_number_must_int(args.get('limit'), 'limit', required=True)
     raw_response = client.search(query, limit)
     data = raw_response.get('data', [])
-    if not argToBoolean(args.get('extended_data')):
+    if not argToBoolean(args.get('extended_data', False)):
         data = decrease_data_size(data)
     return CommandResults(
         f'{INTEGRATION_ENTRY_CONTEXT}.SearchResults',
@@ -2408,7 +2408,7 @@ def delete_comment(client: Client, args: dict) -> CommandResults:
 def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
     """Get last sigma analysis for a given file"""
     file_hash = args['file']
-    only_stats = argToBoolean(args['only_stats'])
+    only_stats = argToBoolean(args.get('only_stats', False))
     raw_response = client.file(file_hash)
     data = raw_response['data']
 

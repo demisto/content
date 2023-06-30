@@ -442,7 +442,7 @@ script:
       description: Breadcrumb ID
       type: number
     description: Manage  breadcrumb
-  dockerimage: demisto/python3:3.10.11.59581
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   subtype: python3

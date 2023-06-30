@@ -74,7 +74,7 @@ script:
       type: string
     description: initiates a cyber triage collection on an endpoint
   runonce: false
-  dockerimage: demisto/python3:3.10.11.59581
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No test - no instance
 fromversion: 5.0.0

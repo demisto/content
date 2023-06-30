@@ -1,3 +1,2 @@
 [file:PacketMail.yml]
-ignore=IN145,RM110
-
+ignore=RM110

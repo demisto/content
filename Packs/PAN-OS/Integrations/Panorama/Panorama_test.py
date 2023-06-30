@@ -1,10 +1,10 @@
 import json
 import io
+from defusedxml import ElementTree
 import pytest
 import requests_mock
 
 import demistomock as demisto
-from lxml import etree
 from unittest.mock import patch, MagicMock
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
@@ -738,13 +738,37 @@ def test_prettify_logs():
 
 
 prepare_security_rule_inputs = [
+    ('after', 'test_rule_name', ['user1'], '<source-user><member>user1</member></source-user>'),
+    ('after', 'test_rule_name', ['user1,user2'], '<source-user><member>user1,user2</member></source-user>'),
+]
+
+
+@pytest.mark.parametrize('where, dst, source_user, expected_result', prepare_security_rule_inputs)
+def test_prepare_security_rule_params(where, dst, source_user, expected_result):
+    """
+    Given:
+     - valid arguments for the prepare_security_rule_params function
+
+    When:
+     - running the prepare_security_rule_params utility function
+
+    Then:
+     - a valid security rule dictionary is returned.
+    """
+    from Panorama import prepare_security_rule_params
+    params = prepare_security_rule_params(api_action='set', action='drop', destination=['any'], source=['any'],
+                                          rulename='test', where=where, dst=dst, source_user=source_user)
+    assert expected_result in params.get('element', '')
+
+
+prepare_security_rule_fail_inputs = [
     ('top', 'test_rule_name'),
     ('bottom', 'test_rule_name'),
 ]
 
 
-@pytest.mark.parametrize('where, dst', prepare_security_rule_inputs)
-def test_prepare_security_rule_params(where, dst):
+@pytest.mark.parametrize('where, dst', prepare_security_rule_fail_inputs)
+def test_prepare_security_rule_params_fail(where, dst):
     """
     Given:
      - a non valid arguments for the prepare_security_rule_params function
@@ -917,11 +941,12 @@ def test_prettify_rule():
         rule = json.load(f)
 
     with open("test_data/prettify_rule.json") as f:
-        expected_prettify_rule = json.load(f)
+        expected_pretty_rule = json.load(f)
 
-    prettify_rule = prettify_rule(rule)
+    pretty_rule = prettify_rule(rule)
+    del pretty_rule['DeviceGroup']
 
-    assert prettify_rule == expected_prettify_rule
+    assert pretty_rule == expected_pretty_rule
 
 
 class TestPcap:
@@ -1168,7 +1193,8 @@ def test_apply_security_profiles_command_main_flow(mocker):
             'device-group': 'new-device-group',
             'profile_type': 'data-filtering',
             'profile_name': 'test-profile',
-            'rule_name': 'rule-test'
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
@@ -1181,9 +1207,96 @@ def test_apply_security_profiles_command_main_flow(mocker):
     assert request_mock.call_args.kwargs['params'] == {
         'action': 'set', 'type': 'config',
         'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
-                 "/rule-test/security/rules/entry[@name='rule-test']/profile-setting/profiles/data-filtering",
-        'key': 'thisisabogusAPIKEY!', 'element': '<member>test-profile</member>'}
-    assert res.call_args.args[0] == 'The profile test-profile has been applied to the rule rule-test'
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!', 'element': '<profile-setting><profiles><data-filtering>'
+                                                 '<member>test-profile</member></data-filtering></profiles>'
+                                                 '</profile-setting>'}
+    assert res.call_args.args[0] == 'The profile data-filtering = test-profile has been applied to the rule rule-test'
+
+
+def test_apply_security_profiles_command_when_one_already_exists(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-apply-security-profile command arguments including device_group
+     - same profile as already exists in the rule
+
+    When -
+        running the pan-os-apply-security-profile command through the main flow
+
+    Then
+     - Ensure the request is what's already in the API (the 'element' parameter contains all profiles in the XML)
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'spyware',
+            'profile_name': 'strict',
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
+        }
+    )
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-apply-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!',
+        'element': '<profile-setting><profiles><spyware><member>strict</member></spyware>'
+                   '<virus><member>Tap</member></virus></profiles></profile-setting>'}
+    assert res.call_args.args[0] == 'The profile spyware = strict has been applied to the rule rule-test'
+
+
+def test_remove_security_profiles_command(mocker):
+    """
+    Given
+     - integrations parameters.
+     - pan-os-remove-security-profile command arguments
+
+    When -
+        running the pan-os-remove-security-profile command through the main flow
+
+    Then
+     - Ensure the given profile type has been removed from the given rule
+    """
+    from Panorama import main
+
+    mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'device-group': 'new-device-group',
+            'profile_type': 'spyware',
+            'rule_name': 'rule-test',
+            'pre_post': 'rule-test'
+        }
+    )
+    mocker.patch('Panorama.dict_safe_get', return_value={'virus': {'member': 'Tap'}, 'spyware': {'member': 'strict'}})
+    mocker.patch.object(demisto, 'command', return_value='pan-os-remove-security-profile')
+    request_mock = mocker.patch('Panorama.http_request')
+
+    res = mocker.patch('demistomock.results')
+    main()
+
+    assert request_mock.call_args.kwargs['params'] == {
+        'action': 'set', 'type': 'config',
+        'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='new-device-group']"
+                 "/rule-test/security/rules/entry[@name='rule-test']",
+        'key': 'thisisabogusAPIKEY!',
+        'element': '<profile-setting><profiles><virus><member>Tap</member></virus></profiles></profile-setting>'}
+    assert res.call_args.args[0] == 'The profile spyware has been removed from the rule rule-test'
 
 
 class TestPanoramaEditRuleCommand:
@@ -1405,6 +1518,50 @@ class TestPanoramaEditRuleCommand:
             'key': 'thisisabogusAPIKEY!'
         }
         assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+
+    @staticmethod
+    def test_edit_rule_main_flow_remove_profile_setting_group(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-rule command arguments including device_group.
+         - arguments to remove a profile-setting group.
+        When
+         - running the pan-os-edit-rule command through the main flow.
+
+        Then
+         - make sure the API request body is correct.
+         - make sure the message is correct for the user.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "profile-setting",
+                "element_value": "some string",
+                "behaviour": "remove",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        # Check: 'action' == set (not edit)
+        assert request_mock.call_args.kwargs['body']['action'] == 'set'
+        # Ensure 'element' wasn't sent with a group (since we removed the profile-setting group)
+        assert request_mock.call_args.kwargs['body']['element'] == '<profile-setting><group/></profile-setting>'
+        # Make sure the message is correct for the user
+        assert res.call_args.args[0]['HumanReadable'] == 'Rule edited successfully.'
 
 
 def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
@@ -2492,7 +2649,7 @@ class TestDevices:
 
 def load_xml_root_from_test_file(xml_file: str):
     """Given an XML file, loads it and returns the root element XML object."""
-    return etree.parse(xml_file).getroot()
+    return ElementTree.parse(xml_file).getroot()
 
 
 MOCK_PANORAMA_SERIAL = "111222334455"
@@ -3359,6 +3516,8 @@ class TestFirewallCommand:
                                                       '<entry name="edl_name"><packet-capture>disable</packet-capture>'
                                                       '<action><allow/></action></entry>'
                                                       '</lists>'
+                                                      '<sinkhole><ipv4-address>pan-sinkhole-default-ip</ipv4-address>'
+                                                      '<ipv6-address>::1</ipv6-address></sinkhole>'
                                                       '</botnet-domains>'},
                                        MockedResponse(text='<response status="success" code="20"><msg>'
                                                            'command succeeded</msg></response>', status_code=200,
@@ -6740,3 +6899,175 @@ def test_panorama_list_rules():
     assert rules['application']['member'][0] == 'dns'
     assert mock_request.last_request.qs['xpath'][0] == \
         "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
+
+
+@pytest.mark.parametrize('include_shared', ['No', 'Yes'])
+def test_panorama_list_tags(mocker, include_shared):
+    """
+    Given:
+        - The include_shared argument.
+    When:
+        - Running the pan_os_list_tag_command method.
+    Then:
+        - Ensure the returned tags list output and HR table is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = ''
+    tags_response_xml = """<response status="success" code="19"><result total-count="1" count="1">
+        <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
+            <entry name="tag1">
+                <color>color13</color>
+            </entry>
+            <entry name="tag2">
+                <color>color39</color>
+            </entry>
+            <entry name="tag3">
+                <color>color39</color>
+                <disable-override>no</disable-override>
+                <comments>text text text</comments>
+            </entry></tag></result></response>"""
+
+    shared_tags_response_xml = """<response status="success" code="19"><result total-count="1" count="1">
+        <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
+            <entry name="sharedtag1">
+                <color>color15</color>
+            </entry>
+            <entry name="sharedtag2">
+                <color>color34</color>
+            </entry></tag></result></response>"""
+
+    tags_mock_response = MockedResponse(text=tags_response_xml, status_code=200)
+    shared_tags_mock_response = MockedResponse(text=shared_tags_response_xml, status_code=200)
+
+    mocker.patch.object(requests, 'request', side_effect=[tags_mock_response, shared_tags_mock_response])
+
+    expected_outputs_tags_list = [{"name": "tag1", "color": "color13", "location": ""},
+                                  {"name": "tag2", "color": "color39", "location": ""},
+                                  {"name": "tag3", "color": "color39", "location": "",
+                                   "disable-override": "no", "comments": "text text text"}]
+
+    expected_hr_result = '### Tags:\n|Name|Color|Comment|Location|\n|---|---|---|---|\n| tag1 | color13' \
+                         ' |  |  |\n| tag2 | color39 |  |  |\n| tag3 | color39 | text text text |  |\n'
+
+    if include_shared == 'Yes':
+        expected_outputs_tags_list.extend([
+            {"name": "sharedtag1", "color": "color15", "location": "shared"},
+            {"name": "sharedtag2", "color": "color34", "location": "shared"}
+        ])
+        expected_hr_result += '| sharedtag1 | color15 |  | shared |\n| sharedtag2 | color34 |  | shared |\n'
+
+    command_results = Panorama.pan_os_list_tag_command({"include_shared_tags": include_shared})
+
+    assert command_results.outputs == expected_outputs_tags_list
+    assert command_results.readable_output == expected_hr_result
+
+
+def test_pan_os_create_tag_command(mocker):
+    """
+    Given:
+        - The tag name to create.
+    When:
+        - Running the pan_os_create_tag_command method.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    create_tag_mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=create_tag_mock_response)
+
+    command_results = Panorama.pan_os_create_tag_command({"name": "testtag"})
+
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'The tag with name "testtag" was created successfully.'
+
+
+@pytest.mark.parametrize('is_shared', [False, True])
+def test_pan_os_edit_tag_command(mocker, is_shared):
+    """
+    Given:
+        - The command arguments to edit the tag.
+    When:
+        1. The tag is not in a shared device group.
+        2. The tag is in a shared device group.
+        - Running the pan_os_edit_tag_command method.
+    Then:
+        - Ensure the request method call counts is according to if the tag is shared.
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_first_text_response_if_shared = '<response status="error" code="12"><msg>' \
+                                             '<line>Edit breaks config validity</line></msg></response>'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+    expected_list_text_response = """<response status="success" code="19"><result total-count="1" count="1">
+        <tag admin="admin" dirtyId="6" time="2023/05/28 06:51:22">
+            <entry name="testtag">
+                <color>color39</color>
+                <disable-override>no</disable-override>
+                <comments>text text text</comments>
+            </entry></tag></result></response>"""
+    expected_request_count = 4 if is_shared else 3
+
+    edit_tag_mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    edit_tag_first_mock_response = MockedResponse(text=expected_first_text_response_if_shared, status_code=200)
+    list_tag_mr = MockedResponse(text=expected_list_text_response, status_code=200)
+
+    responses = [list_tag_mr, list_tag_mr, edit_tag_first_mock_response, edit_tag_mock_response] if is_shared else \
+        [list_tag_mr, list_tag_mr, edit_tag_mock_response]
+    request_mocker = mocker.patch.object(requests, 'request', side_effect=responses)
+
+    command_results = Panorama.pan_os_edit_tag_command({"name": "testtag", "new_name": "newtesttag"})
+
+    assert request_mocker.call_count == expected_request_count
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'The tag with name "testtag" was edited successfully.'
+
+
+@pytest.mark.parametrize('is_shared', [False, True])
+def test_pan_os_delete_tag_command(mocker, is_shared):
+    """
+    Given:
+        - The tag name to delete.
+    When:
+        1. The tag is not in a shared device group.
+        2. The tag is in a shared device group.
+        - Running the pan_os_delete_tag_command method.
+    Then:
+        - Ensure the request method call counts is according to if the tag is shared.
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'somedevice'
+
+    expected_first_text_response_if_shared = '<response status="success" code="7"><msg>Object doesn\'t exist</msg></response>'
+    expected_second_text_response_if_shared = '<response status="success" code="19"><result total-count="2" count="2">' \
+                                              '<entry name="somedevice"></entry></result></response>'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+    expected_request_count = 3 if is_shared else 1
+
+    delete_tag_mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    delete_tag_first_mock_response = MockedResponse(text=expected_first_text_response_if_shared, status_code=200)
+    delete_tag_second_mock_response = MockedResponse(text=expected_second_text_response_if_shared, status_code=200)
+
+    responses = [delete_tag_first_mock_response, delete_tag_second_mock_response,
+                 delete_tag_mock_response] if is_shared else [delete_tag_mock_response]
+    request_mocker = mocker.patch.object(requests, 'request', side_effect=responses)
+
+    command_results = Panorama.pan_os_delete_tag_command({"name": "testtag", "new_name": "newtesttag"})
+
+    assert request_mocker.call_count == expected_request_count
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'The tag with name "testtag" was deleted successfully.'

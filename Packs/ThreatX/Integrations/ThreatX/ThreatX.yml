@@ -3,19 +3,23 @@ commonfields:
   id: ThreatX
   version: -1
 configuration:
-- display: Customer Name
-  name: customer_name
-  required: true
-  type: 0
 - defaultvalue: https://provision.threatx.io
   display: ThreatX Server URL (e.g., https://provision.threatx.io)
   name: url
   required: true
   type: 0
+- display: Customer Name
+  name: customer_name
+  type: 0
+  hidden: true
 - display: API Key
   name: api_key
-  required: true
   type: 4
+  hidden: true
+- name: credentials
+  type: 9
+  display: Customer Name
+  displaypassword: API Key
 - defaultvalue: '70'
   display: IP Threshold. Minimum risk score from ThreatX to consider the IP malicious.
   name: dbot_threshold
@@ -31,8 +35,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: The ThreatX integration allows automated enforcement and intel gathering
-  actions.
+
+description: The ThreatX integration allows automated enforcement and intel gathering actions.
 display: ThreatX
 name: ThreatX
 script:
@@ -170,9 +174,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 1-Hour
-      description: 'Look-back timeframe for the query. Options are 1-Hour, 1-Day,
-        1-Week, 1-Month, or 3-Months. Note: long look-back timeframes for a large
-        number of Entities can timeout.'
+      description: 'Look-back timeframe for the query. Options are 1-Hour, 1-Day, 1-Week, 1-Month, or 3-Months. Note: long look-back timeframes for a large number of Entities can timeout.'
       isArray: false
       name: timeframe
       predefined:
@@ -184,10 +186,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Get high-level Entity information using the Entity ID, Entity Name,
-      or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot
-      entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long
-      look-back timeframes for a large number of Entities can timeout.'
+    description: 'Get high-level Entity information using the Entity ID, Entity Name, or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long look-back timeframes for a large number of Entities can timeout.'
     execution: false
     name: threatx-get-entities
     outputs:
@@ -205,8 +204,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'ID hash of the Entity. Note: this value can be retrieved using
-        the "!threatx-get-entities" command.'
+      description: 'ID hash of the Entity. Note: this value can be retrieved using the "!threatx-get-entities" command.'
       isArray: false
       name: entity_id
       required: true
@@ -233,8 +231,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities"
-        command.'
+      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
       isArray: false
       name: entity_id
       required: true
@@ -246,8 +243,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Add a new note to the entity. For example: !threatx-add-entity-note
-      entity_id=566056709695514809 message="test note"'
+    description: 'Add a new note to the entity. For example: !threatx-add-entity-note entity_id=566056709695514809 message="test note"'
     execution: true
     name: threatx-add-entity-note
   isfetch: false
@@ -255,7 +251,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

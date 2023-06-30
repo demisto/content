@@ -5,12 +5,19 @@ commonfields:
 configuration:
 - display: Service Account Private Key file contents (JSON)
   name: service_account_json
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: Project in Google Cloud Translate
+  name: project_creds
+  required: false
+  type: 9
+  displaypassword: Service Account Private Key file contents (JSON)
 - display: Project in Google Cloud Translate
   name: project
   required: false
   type: 0
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -19,6 +26,7 @@ configuration:
   name: insecure
   required: false
   type: 8
+
 description: A Google API cloud based translation service.
 display: Google Cloud Translate
 name: GoogleCloudTranslate
@@ -72,7 +80,7 @@ script:
     - contextPath: GoogleCloudTranslate.TranslateText.translated_text
       description: The translated text.
       type: String
-  dockerimage: demisto/google-cloud-translate:1.0.0.45872
+  dockerimage: demisto/google-cloud-translate:1.0.0.63615
   isfetch: false
   runonce: false
   script: '-'

@@ -1,0 +1,142 @@
+commonfields:
+  id: RecordedFutureLists
+  version: -1
+name: RecordedFutureLists
+display: 'Recorded Future - Lists'
+category: Data Enrichment & Threat Intelligence
+image:
+description: 'Search and manage watchlists in Recorded Future'
+configuration:
+- display: API URL
+  name: server_url
+  additionalinfo: "Default URL: https://api.recordedfuture.com/gw/xsoar/"
+  defaultvalue: https://api.recordedfuture.com/gw/xsoar/
+  type: 0
+  required: true
+- displaypassword: API Token
+  name: token
+  defaultvalue: ""
+  type: 9
+  hiddenusername: true
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+  commands:
+  - name: recordedfuture-lists-search
+    description: Search for lists in Recorded Future
+    arguments:
+    - name: list_names
+      required: false
+      description: Freetext name to search for
+    - name: contains
+      required: false
+      description: Filter lists based on entity types, will only include lists with the entity types specified. Default value "" includes all types
+      auto: PREDEFINED
+      predefined:
+      - entity
+      - source
+      - text
+      - custom
+      - ip
+      - domain
+      - tech_stack
+      - industry
+      - brand
+      - partner
+      - industry_peer
+      - location
+      - supplier
+      - vulnerability
+      - company
+      - hash
+      - operation
+      - attacker
+      - target
+      - method
+    - name: limit
+      required: false
+      description: Limits the amount of returned results
+    outputs:
+    - contextPath: RecordedFuture.List.id
+      description: Unique id of the list in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.name
+      description: Name of the list in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.type
+      description: Recorded future entity type
+      type: String
+    - contextPath: RecordedFuture.List.created
+      description: Timestamp of creation
+      type: String
+    - contextPath: RecordedFuture.List.updated
+      description: Timestamp of last update to the list
+      type: String
+    - contextPath: RecordedFuture.List.owner_id
+      description: Unique id of the owner in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.owner_name
+      description: Readable name of list in Recorded Future
+      type: String
+  - name: recordedfuture-lists-add-entities
+    description: Add entities to a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
+    arguments:
+    - name: list_id
+      required: true
+      description: Id of the list that should be added, can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal
+    - name: entity_ids
+      description: 'Specific ids from Recorded Future separated by comma, For urls containing commas: replace comma with %2C'
+      required: false
+    - name: freetext_names
+      description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will add the best match in the Recorded Future data. For urls containing commas: escape with %2C'
+      required: false
+    - name: entity_type
+      required: false
+      description: Type of the entities that should be added, only used together with freetext_names to improve entity resolving
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - domain
+      - malware
+      - url
+      - hash
+      - cve
+      - company
+      - person
+      - product
+      - industry
+      - country
+      - attack-vector
+      - operation
+      - mitre-identifier
+      - malware-category
+    outputs:
+    - contextPath: RecordedFuture.List.Entities.name
+      description: Name of the entity in the list
+      type: String
+    - contextPath: RecordedFuture.List.Entities.type
+      description: The Recorded Future entity type resolved during the action
+      type: String
+    - contextPath: RecordedFuture.List.Entities.id
+      description: Unique id of the entity in Recorded Future
+      type: String
+    - contextPath: RecordedFuture.List.Entities.input_value
+      description: The value inputted to the command
+      type: String
+    - contextPath: RecordedFuture.List.Entities.action_result
+      description: Entity specific result for the action
+      type: String
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

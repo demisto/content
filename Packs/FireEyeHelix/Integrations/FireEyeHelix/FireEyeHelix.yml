@@ -15,20 +15,28 @@ configuration:
   section: Connect
 - display: Customer ID
   name: h_id
-  required: true
+  required: false
   type: 0
   section: Connect
+  hidden: true
 - display: API Token
   name: token
-  required: true
+  required: false
   type: 4
   section: Connect
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  hidden: true
+- display: Customer ID
+  name: h_id_creds
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: API Token
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
   type: 0
   section: Collect
+  defaultvalue: 3 days
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -45,12 +53,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Use system proxy settings
+- advanced: true
+  display: Use system proxy settings
   name: proxy
   required: false
-  type: 8
   section: Connect
-  advanced: true
+  type: 8
+
 description: FireEye Helix is a security operations platform. FireEye Helix integrates security tools and augments them with next-generation SIEM, orchestration and threat intelligence tools such as alert management, search, analysis, investigations and reporting.
 display: FireEye Helix
 name: FireEyeHelix
@@ -2037,7 +2046,7 @@ script:
     - contextPath: FireEyeHelixSearch.State
       description: State of the search.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   longRunning: false
   longRunningPort: false

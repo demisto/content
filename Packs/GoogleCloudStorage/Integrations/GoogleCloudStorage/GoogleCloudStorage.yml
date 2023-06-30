@@ -5,8 +5,14 @@ commonfields:
 configuration:
 - display: Service Account Private Key file contents (JSON)
   name: service_account_json
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: Service Account Private Key file contents (JSON)
+  name:  credentials_service_account_json
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Default Bucket
   name: default_bucket
   required: false
@@ -508,7 +514,7 @@ script:
     description: Removes an entity from an object's Access Control List.
     execution: false
     name: gcs-delete-bucket-object-policy
-  dockerimage: demisto/google-cloud-storage:1.0.0.42893
+  dockerimage: demisto/google-cloud-storage:1.0.0.63865
   isfetch: false
   longRunning: false
   longRunningPort: false

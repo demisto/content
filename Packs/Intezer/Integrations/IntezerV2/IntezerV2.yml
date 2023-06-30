@@ -36,6 +36,7 @@ script:
       secret: false
     - default: false
       description: Should polling be enable for this command
+      defaultValue: false
       isArray: false
       name: wait_for_result
       required: false
@@ -80,6 +81,7 @@ script:
       secret: false
     - default: false
       description: Should polling be enable for this command
+      defaultValue: false
       isArray: false
       name: wait_for_result
       required: false
@@ -182,6 +184,7 @@ script:
       secret: false
     - default: false
       description: Should polling be enable for this command
+      defaultValue: false
       isArray: false
       name: wait_for_result
       required: false
@@ -637,7 +640,7 @@ script:
     - contextPath: Endpoint.Metadata
       description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.59905
+  dockerimage: demisto/py3-tools:1.0.0.63856
   isfetch: false
   runonce: false
   script: '-'

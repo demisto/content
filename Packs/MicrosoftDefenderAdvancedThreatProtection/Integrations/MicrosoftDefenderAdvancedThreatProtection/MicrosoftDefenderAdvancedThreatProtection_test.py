@@ -11,8 +11,8 @@ from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
-    get_machine_users_command, get_machine_alerts_command, SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE, \
-    get_advanced_hunting_command, create_filters_conjunction, create_filters_disjunctions, create_filter
+    get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
+    create_filters_disjunctions, create_filter, MICROSOFT_DEFENDER_FOR_ENDPOINT_API
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -27,8 +27,8 @@ def mock_demisto(mocker):
 client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False, auth_code='',
-    auth_type='', redirect_uri='')
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', auth_code='', auth_type='',
+    redirect_uri='', endpoint_type='com')
 
 
 def atp_mocker(mocker, file_name):
@@ -1260,7 +1260,7 @@ def test_fetch_fails(mocker):
 Error Type: <requests.exceptions.ConnectionError>
 Error Number: [None]
 Message: None
-""")
+""")  # noqa: E501
 
     mocker.patch.object(client_mocker, 'list_alerts_by_params', side_effect=raise_mock)
     with pytest.raises(Exception) as e:
@@ -1470,7 +1470,8 @@ class TestHuntingQueryBuilder:
             assert actual[:12] == 'some query ('
             assert '(a in ("1"))' in actual
             assert '(b in ("1","2"))' in actual
-            assert 'or' in actual and 'in' in actual
+            assert 'or' in actual
+            assert 'in' in actual
             assert 'e test_op "1","2"' in actual
             assert ' suffix' in actual
 
@@ -2320,8 +2321,8 @@ def test_get_machine_alerts_command(mocker):
     assert results.outputs[0] == MACHINE_ALERTS_OUTPUT
 
 
-@pytest.mark.parametrize('is_gcc', (True, False))
-def test_gcc_resource(mocker, is_gcc: bool):
+@pytest.mark.parametrize('endpoint_type', ("com", "gcc"))
+def test_gcc_resource(mocker, endpoint_type):
     """
     Given
          an MsClient object
@@ -2334,15 +2335,14 @@ def test_gcc_resource(mocker, is_gcc: bool):
         tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url',
         verify='use_ssl',
         proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, auth_code='',
-        auth_type='', redirect_uri='')
+        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', endpoint_type=endpoint_type,
+        auth_type='', auth_code='', redirect_uri='')
     # use requests_mock to catch a get to example.com
     req = mocker.patch.object(client.ms_client, 'http_request')
     with requests_mock.Mocker() as m:
         m.get('https://example.com')
     client.indicators_http_request('https://example.com', should_use_security_center=True)
-    assert req.call_args[1]['resource'] == {True: SECURITY_GCC_RESOURCE,
-                                            False: SECURITY_CENTER_RESOURCE}[is_gcc]
+    assert req.call_args[1]['resource'] == MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
 
 
 @pytest.mark.parametrize('page_num, page_size, res',
@@ -2640,7 +2640,7 @@ def test_create_filter(args_and_name_list, expected_result):
                           ("", "", "", "some_description", "", "", "", "contains(description, 'some_description')"),
                           ("", "some_name_equal", "", "", "", "", "", "name eq 'some_name_equal'"),
                           ("", "", "some_name_contains", "", "", "", "", "contains(name, 'some_name_contains')"),
-                          ("", "", "some_name", "", "" "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
+                          ("", "", "some_name", "", "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
                            "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and "
                            "(publishedOn ge 2020-12-16T00:00:00Z)")
                           ])
@@ -2780,7 +2780,7 @@ def test_add_backslash_infront_of_underscore_list(data_to_escape_with_backslash,
     assert result == expected_result
 
 
-@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+@pytest.mark.parametrize('client_id', ("test_client_id", None))
 def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
     """
         Given:
@@ -2791,17 +2791,18 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
             - Ensure the output are as expected.
     """
 
-    from MicrosoftDefenderAdvancedThreatProtection import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    from MicrosoftDefenderAdvancedThreatProtection import main, MANAGED_IDENTITIES_TOKEN_URL
     import re
 
     mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
-    requests_mock.get(re.compile(f'^{Resources.security_center}.*'), json={})
+    security_center = 'https://api.securitycenter.microsoft.com'
+    requests_mock.get(re.compile(f'^{security_center}.*'), json={})
 
     params = {
         'managed_identities_client_id': {'password': client_id},
         'auth_type': 'Azure Managed Identities',
-        'url': Resources.security_center
+        'url': security_center
     }
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -2812,7 +2813,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     assert 'ok' in demisto.results.call_args[0][0]
     qs = get_mock.last_request.qs
-    assert qs['resource'] == [Resources.security_center]
+    assert qs['resource'] == [security_center]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
@@ -2827,7 +2828,7 @@ def test_generate_login_url(mocker):
     """
     # prepare
     import demistomock as demisto
-    from MicrosoftDefenderAdvancedThreatProtection import main, Scopes
+    from MicrosoftDefenderAdvancedThreatProtection import main
     import MicrosoftDefenderAdvancedThreatProtection
 
     redirect_uri = 'redirect_uri'
@@ -2841,7 +2842,8 @@ def test_generate_login_url(mocker):
         'auth_id': client_id,
         'credentials': {
             'password': 'client_secret'
-        }
+        },
+        'endpoint_type': 'Worldwide',
     }
     mocker.patch.object(demisto, 'params', return_value=mocked_params)
     mocker.patch.object(demisto, 'command', return_value='microsoft-atp-generate-login-url')
@@ -2852,7 +2854,8 @@ def test_generate_login_url(mocker):
 
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
-                   f'response_type=code&scope=offline_access%20{Scopes.security_center_apt_service}' \
+                   f'response_type=code&scope=offline_access%20' \
+                   'https://securitycenter.onmicrosoft.com/windowsatpservice/.default' \
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftDefenderAdvancedThreatProtection.return_results.call_args[0][0].readable_output
     assert expected_url in res

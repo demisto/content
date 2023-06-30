@@ -15,7 +15,7 @@ from distutils.util import strtobool
 
 from packaging.version import Version
 from pathlib import Path
-from typing import Tuple, Any, Union, List, Dict, Optional
+from typing import Any
 from zipfile import ZipFile, ZIP_DEFLATED
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 
@@ -39,7 +39,7 @@ SPECIAL_DISPLAY_NAMES_PATTERN = re.compile(r'- \*\*(.+?)\*\*')
 MAX_TOVERSION = '99.99.99'
 
 
-class Pack(object):
+class Pack:
     """ Class that manipulates and manages the upload of pack's artifact and metadata to cloud storage.
 
     Args:
@@ -414,9 +414,9 @@ class Pack(object):
         if not os.path.exists(changelog_path):
             return self._current_version
 
-        with open(changelog_path, "r") as changelog_file:
+        with open(changelog_path) as changelog_file:
             changelog = json.load(changelog_file)
-            pack_versions = [Version(v) for v in changelog.keys()]
+            pack_versions = [Version(v) for v in changelog]
             pack_versions.sort(reverse=True)
 
             return str(pack_versions[0])
@@ -458,8 +458,8 @@ class Pack(object):
         return all_dep_int_imgs
 
     @staticmethod
-    def _get_all_pack_images(pack_integration_images: List, display_dependencies_images: List,
-                             dependencies_metadata: Dict,
+    def _get_all_pack_images(pack_integration_images: list, display_dependencies_images: list,
+                             dependencies_metadata: dict,
                              pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
@@ -540,9 +540,8 @@ class Pack(object):
             # already found the first integration in the pack,
             self._single_integration = False
 
-        if yaml_type == 'Playbook':
-            if yaml_content.get('name').startswith('TIM '):
-                self._is_feed = True
+        if yaml_type == 'Playbook' and yaml_content.get('name').startswith('TIM '):
+            self._is_feed = True
         if yaml_type in SIEM_RULES_OBJECTS:
             self._is_siem = True
 
@@ -743,7 +742,7 @@ class Pack(object):
 
         """
         dependencies_metadata_result = {}
-        dependencies_ids = {dep for dep in self._first_level_dependencies}
+        dependencies_ids = set(self._first_level_dependencies)
         dependencies_ids.update(self._displayed_images_dependent_on_packs)
 
         for dependency_pack_id in dependencies_ids:
@@ -751,7 +750,7 @@ class Pack(object):
 
             if os.path.exists(dependency_metadata_path):
                 # Case 1: the dependency is found in the index.zip
-                with open(dependency_metadata_path, 'r') as metadata_file:
+                with open(dependency_metadata_path) as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_metadata_result[dependency_pack_id] = dependency_metadata
             elif dependency_pack_id in packs_dict:
@@ -876,7 +875,7 @@ class Pack(object):
                     shutil.rmtree(f'{self._pack_path}/{directory}')
                     logging.info(f"Deleted {directory} directory from {self._pack_name} pack")
 
-            for root, dirs, files in os.walk(self._pack_path, topdown=True):
+            for root, _dirs, files in os.walk(self._pack_path, topdown=True):
                 for pack_file in files:
                     full_file_path = os.path.join(root, pack_file)
                     # removing unwanted files
@@ -909,12 +908,12 @@ class Pack(object):
                 with open("keyfile", "wb") as keyfile:
                     keyfile.write(signature_string.encode())
                 arg = f'./signDirectory {self._pack_path} keyfile base64'
-                signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                signing_process = subprocess.Popen(arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)  # noqa: S602
                 output, err = signing_process.communicate()
 
                 if err:
                     logging.error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
-                    return
+                    return None
 
                 logging.info(f"Signed {self._pack_name} pack successfully")
             else:
@@ -937,7 +936,7 @@ class Pack(object):
         task_status = False
         try:
             with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
-                for root, dirs, files in os.walk(source_path, topdown=True):
+                for root, _dirs, files in os.walk(source_path, topdown=True):
                     for f in files:
                         full_file_path = os.path.join(root, f)
                         relative_file_path = os.path.relpath(full_file_path, source_path)
@@ -969,28 +968,28 @@ class Pack(object):
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
             os.chdir(extract_destination_path)
 
-            subprocess.call('chmod +x ./encryptor', shell=True)
+            subprocess.call('chmod +x ./encryptor', shell=True)  # noqa: S602
 
             output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
-            subprocess.call(full_command, shell=True)
+            subprocess.call(full_command, shell=True)  # noqa: S602
 
             secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
             full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
                                                      f'{secondary_encryption_key_output_file}' \
                                                      f' "{secondary_encryption_key}"'
-            subprocess.call(full_command_with_secondary_encryption, shell=True)
+            subprocess.call(full_command_with_secondary_encryption, shell=True)  # noqa: S602
 
-            new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
-            if os.path.exists(new_artefacts):
+            new_artefacts = Path(current_working_dir, private_artifacts_dir)
+            if new_artefacts.exists():
                 shutil.rmtree(new_artefacts)
-            os.mkdir(path=new_artefacts)
-            shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
-            shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
-            shutil.copy(secondary_encryption_key_output_file, os.path.join(new_artefacts, f'{pack_name}.enc2.zip'))
+            new_artefacts.mkdir(parents=True, exist_ok=True)
+            shutil.copy(zip_pack_path, new_artefacts / f'{pack_name}_not_encrypted.zip')
+            shutil.copy(output_file, new_artefacts / f'{pack_name}.zip')
+            shutil.copy(secondary_encryption_key_output_file, new_artefacts / f'{pack_name}.enc2.zip')
             os.chdir(current_working_dir)
         except (subprocess.CalledProcessError, shutil.Error) as error:
-            print(f"Error while trying to encrypt pack. {error}")
+            logging.error(f"Error while trying to encrypt pack. {error}")
 
     def decrypt_pack(self, encrypted_zip_pack_path, decryption_key):
         """ decrypt the pack in order to see that the pack was encrypted in the first place.
@@ -1005,7 +1004,7 @@ class Pack(object):
         try:
             current_working_dir = os.getcwd()
             extract_destination_path = f'{current_working_dir}/decrypt_pack_dir'
-            os.mkdir(extract_destination_path)
+            Path(extract_destination_path).mkdir(parents=True, exist_ok=True)
 
             shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
             secondary_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
@@ -1014,9 +1013,9 @@ class Pack(object):
             output_decrypt_file_path = f"{extract_destination_path}/decrypt_pack.zip"
             os.chdir(extract_destination_path)
 
-            subprocess.call('chmod +x ./decryptor', shell=True)
+            subprocess.call('chmod +x ./decryptor', shell=True)  # noqa: S602
             full_command = f'./decryptor {secondary_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
-            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)  # noqa: S602
             stdout, stderr = process.communicate()
             shutil.rmtree(extract_destination_path)
             os.chdir(current_working_dir)
@@ -1095,9 +1094,9 @@ class Pack(object):
             if not os.path.exists(pack_index_metadata_path):
                 logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
                 task_status = True
-                return
+                return None
 
-            with open(pack_index_metadata_path, 'r') as metadata_file:
+            with open(pack_index_metadata_path) as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
 
             previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
@@ -1131,7 +1130,7 @@ class Pack(object):
                 pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            return
+            return None
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
         finally:
@@ -1374,7 +1373,7 @@ class Pack(object):
                 pack_deps_zip_suffix = os.path.join(self._pack_name, pack_with_deps_name)
                 logging.exception(f"Failed copying {pack_deps_zip_suffix}. Additional Info: {str(e)}")
 
-    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, Version, str]:
+    def get_changelog_latest_rn(self, changelog_index_path: str) -> tuple[dict, Version, str]:
         """
         Returns the changelog file contents and the last version of rn in the changelog file
         Args:
@@ -1386,7 +1385,7 @@ class Pack(object):
         logging.info(f"Found Changelog for: {self._pack_name}")
         if os.path.exists(changelog_index_path):
             try:
-                with open(changelog_index_path, "r") as changelog_file:
+                with open(changelog_index_path) as changelog_file:
                     changelog = json.load(changelog_file)
             except json.JSONDecodeError:
                 changelog = {}
@@ -1437,7 +1436,7 @@ class Pack(object):
             # and the value is not an aggregated release note
             if is_the_only_rn_in_block(release_notes_dir, version, changelog):
                 logging.info("The version is a key in the changelog file and by itself in the changelog block")
-                with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
+                with open(os.path.join(release_notes_dir, rn_filename)) as rn_file:
                     rn_lines = rn_file.read()
                 modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
                 logging.debug(f"Cleaned release notes from: {rn_lines} to: {modified_versions_dict[version]}")
@@ -1470,8 +1469,8 @@ class Pack(object):
         lowest_version = [Version(Pack.PACK_INITIAL_VERSION)]
         lower_versions: list = []
         higher_versions: list = []
-        same_block_versions_dict: dict = dict()
-        for item in changelog.keys():  # divide the versions into lists of lower and higher than given version
+        same_block_versions_dict: dict = {}
+        for item in changelog:  # divide the versions into lists of lower and higher than given version
             (lower_versions if Version(item) < Version(version) else higher_versions).append(Version(item))
         higher_nearest_version = min(higher_versions)
         lower_versions = lower_versions + lowest_version  # if the version is 1.0.0, ensure lower_versions is not empty
@@ -1480,13 +1479,13 @@ class Pack(object):
             current_version = underscore_file_name_to_dotted_version(rn_filename)
             # Catch all versions that are in the same block
             if lower_nearest_version < Version(current_version) <= higher_nearest_version:
-                with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
+                with open(os.path.join(release_notes_dir, rn_filename)) as rn_file:
                     rn_lines = rn_file.read()
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
         return same_block_versions_dict, str(higher_nearest_version)
 
     def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: Version,
-                                changelog_latest_rn: str) -> Tuple[str, str, list]:
+                                changelog_latest_rn: str) -> tuple[str, str, list]:
         """
         Prepares the release notes contents for the new release notes entry
         Args:
@@ -1498,14 +1497,14 @@ class Pack(object):
         and a list of the new rn versions that this is the first time they have been uploaded.
 
         """
-        found_versions: list = list()
-        pack_versions_dict: dict = dict()
+        found_versions: list = []
+        pack_versions_dict: dict = {}
         for filename in sorted(filter_dir_files_by_extension(release_notes_dir, '.md')):
             version = underscore_file_name_to_dotted_version(filename)
 
             # Aggregate all rn files that are bigger than what we have in the changelog file
             if Version(version) > changelog_latest_rn_version:
-                with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
+                with open(os.path.join(release_notes_dir, filename)) as rn_file:
                     rn_lines = rn_file.read()
                 pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
 
@@ -1597,7 +1596,7 @@ class Pack(object):
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
         id_set = id_set if id_set else {}
-        pack_versions_to_keep: List[str] = []
+        pack_versions_to_keep: list[str] = []
 
         try:
             # load changelog from downloaded index
@@ -1661,7 +1660,7 @@ class Pack(object):
                                          f"{modified_release_notes_lines_dict}")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
-                                all_relevant_pr_nums_for_unified = list({pr_num for _version in versions.keys()
+                                all_relevant_pr_nums_for_unified = list({pr_num for _version in versions
                                                                         for pr_num in self.get_pr_numbers_for_version(_version)})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
@@ -1715,7 +1714,7 @@ class Pack(object):
 
                 # If an 1_0_0.md release notes file exist then add it to the changelog, otherwise take the pack description
                 if os.path.exists(first_release_notes_path):
-                    with open(first_release_notes_path, 'r') as rn_file:
+                    with open(first_release_notes_path) as rn_file:
                         first_pack_release_notes = rn_file.read()
                 else:
                     first_pack_release_notes = self.description
@@ -1830,11 +1829,7 @@ class Pack(object):
         for entities_data in modified_files_data.values():
             modified_items.extend([list(item.values())[0] for item in entities_data])
 
-        for item in modified_items:
-            if len(item['marketplaces']) == 1:
-                return False
-
-        return True
+        return all(len(item['marketplaces']) != 1 for item in modified_items)
 
     @staticmethod
     def filter_entries_by_display_name(release_notes: dict, id_set: dict, marketplace="xsoar"):
@@ -2067,7 +2062,7 @@ class Pack(object):
 
         try:
 
-            for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
+            for root, _pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
                 parent_directory = root.split(os.path.sep)[-2]
 
@@ -2090,7 +2085,7 @@ class Pack(object):
                         logging.info(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
                         continue
 
-                    with open(pack_file_path, 'r') as pack_file:
+                    with open(pack_file_path) as pack_file:
                         if current_directory in PackFolders.yml_supported_folders():
                             content_item = yaml.safe_load(pack_file)
                         elif current_directory in PackFolders.json_supported_folders():
@@ -2164,6 +2159,9 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                             'fromversion': self._server_min_version,
                             'toversion': metadata_toversion,
+                            'isfetch': content_item.get('script', {}).get('isfetch', False),
+                            'isfetchevents': content_item.get('script', {}).get('isfetchevents', False),
+                            'deprecated': content_item.get('deprecated', False),
                         }
 
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
@@ -2348,7 +2346,7 @@ class Pack(object):
 
                     elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
-                        schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
+                        schema: dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
@@ -2495,7 +2493,7 @@ class Pack(object):
                 logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
                 return task_status
 
-            with open(user_metadata_path, "r") as user_metadata_file:
+            with open(user_metadata_path) as user_metadata_file:
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
                 # part of old packs are initialized with empty list
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
@@ -2832,7 +2830,7 @@ class Pack(object):
             if pack_file.endswith('_image.png'):
                 image_data['repo_image_path'] = os.path.join(root, pack_file)
             elif pack_file.endswith('.yml'):
-                with open(os.path.join(root, pack_file), 'r') as integration_file:
+                with open(os.path.join(root, pack_file)) as integration_file:
                     integration_yml = yaml.safe_load(integration_file)
                     image_data['display_name'] = integration_yml.get('display', '')
 
@@ -2852,7 +2850,7 @@ class Pack(object):
         image_data = {}
 
         if pack_file_path.endswith('.yml'):
-            with open(pack_file_path, 'r') as integration_file:
+            with open(pack_file_path) as integration_file:
                 integration_yml = yaml.safe_load(integration_file)
 
             image_data['display_name'] = integration_yml.get('display', '')
@@ -3149,8 +3147,8 @@ class Pack(object):
                     author_image_storage_path = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name,
                                                              author_image_storage_path)
                     # disable-secrets-detection-end
-                logging.info((f"Skipping uploading of {self._pack_name} pack author image "
-                              f"and use default {GCPConfig.BASE_PACK} pack image"))
+                logging.info(f"Skipping uploading of {self._pack_name} pack author image "
+                             f"and use default {GCPConfig.BASE_PACK} pack image")
             else:
                 logging.info(f"Skipping uploading of {self._pack_name} pack author image. "
                              f"The pack is defined as {self.support_type} support type")
@@ -3283,7 +3281,7 @@ class Pack(object):
         if self._pack_name in failed_packs_dict:
             return True, failed_packs_dict[self._pack_name].get('status')
         else:
-            return False, str()
+            return False, ''
 
     def is_integration_image(self, file_path: str):
         """ Indicates whether a file_path is an integration image or not
@@ -3331,7 +3329,7 @@ class Pack(object):
             os.path.basename(file_path).endswith('.yml')
         ])
 
-    def add_bc_entries_if_needed(self, release_notes_dir: str, changelog: Dict[str, Any]) -> None:
+    def add_bc_entries_if_needed(self, release_notes_dir: str, changelog: dict[str, Any]) -> None:
         """
         Receives changelog, checks if there exists a BC version in each changelog entry (as changelog entry might be
         zipped into few RN versions, check if at least one of the versions is BC).
@@ -3358,8 +3356,8 @@ class Pack(object):
         """
         if not os.path.exists(release_notes_dir):
             return
-        bc_version_to_text: Dict[str, Optional[str]] = self._breaking_changes_versions_to_text(release_notes_dir)
-        loose_versions: List[Version] = [Version(bc_ver) for bc_ver in bc_version_to_text]
+        bc_version_to_text: dict[str, str | None] = self._breaking_changes_versions_to_text(release_notes_dir)
+        loose_versions: list[Version] = [Version(bc_ver) for bc_ver in bc_version_to_text]
         predecessor_version: Version = Version('0.0.0')
         for changelog_entry in sorted(changelog.keys(), key=Version):
             rn_loose_version: Version = Version(changelog_entry)
@@ -3375,7 +3373,7 @@ class Pack(object):
                 changelog[changelog_entry].pop('breakingChanges', None)
             predecessor_version = rn_loose_version
 
-    def _calculate_bc_text(self, release_notes_dir: str, bc_version_to_text: Dict[str, Optional[str]]) -> Optional[str]:
+    def _calculate_bc_text(self, release_notes_dir: str, bc_version_to_text: dict[str, str | None]) -> str | None:
         """
         Receives BC versions to text dict for current changelog entry. Calculates text for BC entry.
         Args:
@@ -3406,8 +3404,8 @@ class Pack(object):
             # In the future this might be needed to re-thought.
             return '\n'.join(bc_version_to_text.values())  # type: ignore[arg-type]
 
-    def _handle_many_bc_versions_some_with_text(self, release_notes_dir: str, text_of_bc_versions: List[str],
-                                                bc_versions_without_text: List[str], ) -> str:
+    def _handle_many_bc_versions_some_with_text(self, release_notes_dir: str, text_of_bc_versions: list[str],
+                                                bc_versions_without_text: list[str], ) -> str:
         """
         Calculates text for changelog entry where some BC versions contain text and some don't.
         Important: Currently, implementation of aggregating BCs was decided to concat between them (and if BC version
@@ -3430,7 +3428,7 @@ class Pack(object):
         return f'{bc_with_text_str}{other_rn_text}'
 
     @staticmethod
-    def _get_release_notes_concat_str(release_notes_dir: str, rn_file_names: List[str]) -> str:
+    def _get_release_notes_concat_str(release_notes_dir: str, rn_file_names: list[str]) -> str:
         """
         Concat all RN data found in given `rn_file_names`.
         Args:
@@ -3443,13 +3441,13 @@ class Pack(object):
         concat_str: str = ''
         for rn_file_name in rn_file_names:
             rn_file_path = os.path.join(release_notes_dir, rn_file_name)
-            with open(rn_file_path, 'r') as f:
+            with open(rn_file_path) as f:
                 # Will make the concat string start with new line on purpose.
                 concat_str = f'{concat_str}\n{f.read()}'
         return concat_str
 
     @staticmethod
-    def _split_bc_versions_with_and_without_text(bc_versions: Dict[str, Optional[str]]) -> Tuple[List[str], List[str]]:
+    def _split_bc_versions_with_and_without_text(bc_versions: dict[str, str | None]) -> tuple[list[str], list[str]]:
         """
         Splits BCs to tuple of BCs text of BCs containing text, and BCs versions that do not contain BC text.
         Args:
@@ -3458,8 +3456,8 @@ class Pack(object):
         Returns:
             (Tuple[List[str], List[str]]): (text of bc versions with text, bc_versions_without_text).
         """
-        text_of_bc_versions_with_tests: List[str] = []
-        bc_versions_without_text: List[str] = []
+        text_of_bc_versions_with_tests: list[str] = []
+        bc_versions_without_text: list[str] = []
         for bc_version, bc_text in bc_versions.items():
             if bc_text:
                 text_of_bc_versions_with_tests.append(bc_text)
@@ -3468,7 +3466,7 @@ class Pack(object):
         return text_of_bc_versions_with_tests, bc_versions_without_text
 
     @staticmethod
-    def _breaking_changes_versions_to_text(release_notes_dir: str) -> Dict[str, Optional[str]]:
+    def _breaking_changes_versions_to_text(release_notes_dir: str) -> dict[str, str | None]:
         """
         Calculates every BC version in given RN dir and maps it to text if exists.
         Currently, text from a BC version is calculated in the following way:
@@ -3481,12 +3479,12 @@ class Pack(object):
         Returns:
             (Dict[str, Optional[str]]): {dotted_version, text}.
         """
-        bc_version_to_text: Dict[str, Optional[str]] = dict()
+        bc_version_to_text: dict[str, str | None] = {}
         # Get all config files in RN dir
         rn_config_file_names = filter_dir_files_by_extension(release_notes_dir, '.json')
 
         for file_name in rn_config_file_names:
-            file_data: Dict = load_json(os.path.join(release_notes_dir, file_name))
+            file_data: dict = load_json(os.path.join(release_notes_dir, file_name))
             # Check if version is BC
             if file_data.get('breakingChanges'):
                 # Processing name for easier calculations later on
@@ -3496,8 +3494,8 @@ class Pack(object):
 
     @staticmethod
     def _changelog_entry_bc_versions(predecessor_version: Version, rn_version: Version,
-                                     breaking_changes_versions: List[Version],
-                                     bc_version_to_text: Dict[str, Optional[str]]) -> Dict[str, Optional[str]]:
+                                     breaking_changes_versions: list[Version],
+                                     bc_version_to_text: dict[str, str | None]) -> dict[str, str | None]:
         """
         Gets all BC versions of given changelog entry, every BC s.t predecessor_version < BC version <= rn_version.
         Args:
@@ -3513,7 +3511,7 @@ class Pack(object):
         return {str(bc_ver): bc_version_to_text.get(str(bc_ver)) for bc_ver in breaking_changes_versions if
                 predecessor_version < bc_ver <= rn_version}
 
-    def get_pr_numbers_for_version(self, version: str) -> List[int]:
+    def get_pr_numbers_for_version(self, version: str) -> list[int]:
         """
         Get List[PullRequests] for the given version
         Args:
@@ -3530,7 +3528,7 @@ class Pack(object):
 
         return packs_version_pr_numbers
 
-    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name: str) -> Optional[str]:
+    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name: str) -> str | None:
         """ Genrate the preview image path as it stored in the gcp
         Args:
             pack_file_name: File name.
@@ -3695,7 +3693,7 @@ class Pack(object):
 # HELPER FUNCTIONS
 
 
-def get_pull_request_numbers_from_file(file_path) -> List[int]:
+def get_pull_request_numbers_from_file(file_path) -> list[int]:
     """
     Uses git and regex to find the pull request numbers for the given file
     Args:
@@ -3708,7 +3706,7 @@ def get_pull_request_numbers_from_file(file_path) -> List[int]:
     return re.findall(PULL_REQUEST_PATTERN, log_info)
 
 
-def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict, dict, dict]:
+def get_upload_data(packs_results_file_path: str, stage: str) -> tuple[dict, dict, dict, dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs together with uploaded images dicts
 
     Args:
@@ -3760,7 +3758,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
 
     """
     packs_results = load_json(packs_results_file_path)
-    packs_results[stage] = dict()
+    packs_results[stage] = {}
 
     if failed_packs:
         failed_packs_dict = {
@@ -3838,7 +3836,7 @@ def load_json(file_path: str) -> dict:
     """
     try:
         if file_path and os.path.exists(file_path):
-            with open(file_path, 'r') as json_file:
+            with open(file_path) as json_file:
                 result = json.load(json_file)
         else:
             result = {}
@@ -3847,7 +3845,7 @@ def load_json(file_path: str) -> dict:
         return {}
 
 
-def json_write(file_path: str, data: Union[list, dict]):
+def json_write(file_path: str, data: list | dict):
     """ Writes given data to a json file
 
     Args:
@@ -4101,7 +4099,7 @@ def is_ignored_pack_file(modified_file_path_parts):
     return False
 
 
-def filter_dir_files_by_extension(release_notes_dir: str, extension: str) -> List[str]:
+def filter_dir_files_by_extension(release_notes_dir: str, extension: str) -> list[str]:
     """
     Receives path to RN dir, filters only files in RN dir corresponding to the extension.
     Needed because RN directory will be extended to contain JSON files for configurations,
@@ -4148,7 +4146,7 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
         current_version = underscore_file_name_to_dotted_version(filename)
         all_rn_versions.append(Version(current_version))
     lower_versions_all_versions = [item for item in all_rn_versions if item < Version(version)] + lowest_version
-    lower_versions_in_changelog = [Version(item) for item in changelog.keys() if
+    lower_versions_in_changelog = [Version(item) for item in changelog if
                                    Version(item) < Version(version)] + lowest_version
     return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
 
@@ -4281,7 +4279,7 @@ def remove_old_versions_from_changelog(changelog: dict):
     Returns:
         (list) last pack versions
     """
-    versions_to_keep: List[str] = []
+    versions_to_keep: list[str] = []
     if not changelog:
         return versions_to_keep
 

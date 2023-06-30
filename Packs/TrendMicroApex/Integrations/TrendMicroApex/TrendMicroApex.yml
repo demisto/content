@@ -13,8 +13,14 @@ configuration:
   type: 0
 - display: API Key
   name: token
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Token
+  name:  credentials_api_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -982,7 +988,7 @@ script:
     - contextPath: TrendMicroApex.InvestigationResult.errorServers
       description: Error response if server communication is unsuccessful.
       type: String
-  dockerimage: demisto/pycef:1.0.0.23290
+  dockerimage: demisto/pycef:1.0.0.61516
   feed: false
   isfetch: false
   longRunning: false

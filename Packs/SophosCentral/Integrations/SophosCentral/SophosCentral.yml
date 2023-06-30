@@ -623,6 +623,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
+      defaultValue: false
       description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
       isArray: false
       name: get_password
@@ -664,6 +665,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
+      defaultValue: false
       description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
       isArray: false
       name: get_password
@@ -3040,7 +3042,7 @@ script:
     - contextPath: SophosCentral.DeletedUsers.deletedUserId
       description: Deleted User's Id.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

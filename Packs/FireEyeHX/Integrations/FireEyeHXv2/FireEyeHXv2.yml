@@ -1873,6 +1873,29 @@ script:
       default: false
       isArray: false
       secret: false
+    - description: Display name for the indicator.
+      name: display_name
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - description: Description for the indicator.
+      name: description
+      required: false
+      default: false
+      isArray: false
+      secret: false
+    - auto: PREDEFINED
+      description: The platform for the indicator. If not selected, the indicator will be created for all platforms.
+      name: platforms
+      required: false
+      default: false
+      isArray: true
+      secret: false
+      predefined:
+        - 'win'
+        - 'linux'
+        - 'mac'
     description: Create a new indicator.
     name: fireeye-hx-create-indicator
     outputs:
@@ -2413,7 +2436,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   longRunning: false
   longRunningPort: false

@@ -5,8 +5,14 @@ commonfields:
 configuration:
 - display: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
   name: auth_json
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: auth_json_creds
+  required: false
+  type: 9
+  displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -15,6 +21,7 @@ configuration:
   name: insecure
   required: false
   type: 8
+
 description: Image processing with Google Vision API
 display: Google Vision AI
 name: Google Vision AI
@@ -41,7 +48,7 @@ script:
     - contextPath: GoogleVisionAPI.Logo.Score
       description: The certainty score provided by the Google Vision API.
       type: Unknown
-  dockerimage: demisto/google-vision-api:1.0.0.44680
+  dockerimage: demisto/google-vision-api:1.0.0.63870
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -50,3 +57,5 @@ script:
   type: python
   subtype: python3
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

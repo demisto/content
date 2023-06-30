@@ -8,16 +8,13 @@ def create_client():
     headers = {
         'X-RFToken': token,
         'X-RF-User-Agent': "RecordedFuture.py/2.4 (Linux-5.13.0-1031-aws-x86_64-with) "
-                           "XSOAR/2.4 RFClient/2.4 (Cortex_XSOAR_6.5.0)",
+        "XSOAR/2.4 RFClient/2.4 (Cortex_XSOAR_6.5.0)",
     }
 
-    return Client(
-        base_url=base_url, verify=verify_ssl, headers=headers, proxy=False
-    )
+    return Client(base_url=base_url, verify=verify_ssl, headers=headers, proxy=False)
 
 
 class TestHelpers:
-
     def test_translate_score(self):
         from RecordedFuture import translate_score
         from CommonServerPython import Common
@@ -68,7 +65,7 @@ class TestHelpers:
             entity_type=entity_type,
             score=score,
             description=description,
-            location=location
+            location=location,
         )
 
         assert result == mock_return_value
@@ -80,7 +77,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.IP.mock_calls[0]
@@ -124,7 +121,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.Domain.mock_calls[0]
@@ -160,7 +157,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.URL.mock_calls[0]
@@ -225,7 +222,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.File.mock_calls[0]
@@ -250,7 +247,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.File.mock_calls[-1]
@@ -275,7 +272,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.File.mock_calls[-1]
@@ -300,7 +297,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.File.mock_calls[-1]
@@ -325,7 +322,7 @@ class TestHelpers:
             Common.DBotScore.SUSPICIOUS,
             '',
             # reliability=DBotScoreReliability.B
-            reliability=None
+            reliability=None,
         )
 
         mock_call = Common.File.mock_calls[-1]
@@ -334,7 +331,6 @@ class TestHelpers:
 
 
 class TestRFClient:
-
     def test_whoami(self, mocker):
         client = create_client()
 
@@ -368,21 +364,18 @@ class TestRFClient:
 
         client = create_client()
 
-        mocker.patch.object(demisto, 'params', return_value={'collective_insights': 'On'})
+        mocker.patch.object(
+            demisto, 'params', return_value={'collective_insights': 'On'}
+        )
 
         demisto.callingContext = {
-            'context': {
-                'ExecutionContext': 'to be removed',
-                'other': 'data'
-            },
-            'other': 'data'
+            'context': {'ExecutionContext': 'to be removed', 'other': 'data'},
+            'other': 'data',
         }
 
         assert client._get_writeback_data() == {
-            'context': {
-                'other': 'data'
-            },
-            'other': 'data'
+            'context': {'other': 'data'},
+            'other': 'data',
         }
 
     #
@@ -412,15 +405,12 @@ class TestRFClient:
             'params',
             return_value={
                 'collective_insights': "On",
-            }
+            },
         )
 
         mock_calling_context = {
-            'context': {
-                'ExecutionContext': 'to be removed',
-                'other': 'data'
-            },
-            'other': 'data'
+            'context': {'ExecutionContext': 'to be removed', 'other': 'data'},
+            'other': 'data',
         }
         demisto.callingContext = mock_calling_context
 
@@ -436,11 +426,9 @@ class TestRFClient:
             'demisto_command': mock_command_name,
             'demisto_args': mock_command_args,
             'callingContext': {
-                'context': {
-                    'other': 'data'
-                },
+                'context': {'other': 'data'},
                 'other': 'data',
-            }
+            },
         }
 
         mock_http_request.assert_called_once_with(
@@ -449,7 +437,7 @@ class TestRFClient:
             json_data=json_data,
             timeout=90,
             retries=3,
-            status_list_to_retry=STATUS_TO_RETRY
+            status_list_to_retry=STATUS_TO_RETRY,
         )
 
     def test_call_writeback_off(self, mocker):
@@ -478,15 +466,12 @@ class TestRFClient:
             'params',
             return_value={
                 'collective_insights': "Off",
-            }
+            },
         )
 
         mock_calling_context = {
-            'context': {
-                'ExecutionContext': 'to be removed',
-                'other': 'data'
-            },
-            'other': 'data'
+            'context': {'ExecutionContext': 'to be removed', 'other': 'data'},
+            'other': 'data',
         }
         demisto.callingContext = mock_calling_context
 
@@ -509,7 +494,7 @@ class TestRFClient:
             json_data=json_data,
             timeout=90,
             retries=3,
-            status_list_to_retry=STATUS_TO_RETRY
+            status_list_to_retry=STATUS_TO_RETRY,
         )
 
     def test_call_with_kwargs(self, mocker):
@@ -575,17 +560,9 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_response = {
-            'response': {
-                'data': 'mock data'
-            }
-        }
+        mock_response = {'response': {'data': 'mock data'}}
 
-        mocker.patch.object(
-            client,
-            '_http_request',
-            return_value=mock_response
-        )
+        mocker.patch.object(client, '_http_request', return_value=mock_response)
 
         mock_url_suffix = 'mock_url_suffix'
 
@@ -619,11 +596,7 @@ class TestRFClient:
         mock_http_request = mocker.patch.object(
             client,
             '_http_request',
-            return_value={
-                'return_error': {
-                    'message': 'mock error'
-                }
-            }
+            return_value={'return_error': {'message': 'mock error'}},
         )
 
         mock_url_suffix = 'mock_url_suffix'
@@ -644,9 +617,7 @@ class TestRFClient:
             status_list_to_retry=STATUS_TO_RETRY,
         )
 
-        mock_return_error.assert_called_once_with(
-            message='mock error'
-        )
+        mock_return_error.assert_called_once_with(message='mock error')
 
     def test_call_response_processing_404(self, mocker):
         """
@@ -678,11 +649,7 @@ class TestRFClient:
             # or if ok_codes=None - it uses requests.Response.ok to check whether response is good).
             raise DemistoException('404')
 
-        mocker.patch.object(
-            client,
-            '_http_request',
-            mock_http_request_method
-        )
+        mocker.patch.object(client, '_http_request', mock_http_request_method)
 
         spy_http_request = mocker.spy(client, '_http_request')
 
@@ -733,12 +700,10 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.fetch_incidents()
 
@@ -747,10 +712,10 @@ class TestRFClient:
                 'demisto_command': mock_command_name,
                 'demisto_args': mock_command_args,
                 'demisto_last_run': mock_last_run_dict,
-                'demisto_params': mock_params
+                'demisto_params': mock_params,
             },
             timeout=120,
-            url_suffix='/v2/alert/fetch_incidents'
+            url_suffix='/v2/alert/fetch_incidents',
         )
 
         assert response == mock_call_response
@@ -771,18 +736,14 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.entity_search()
 
-        mock_call.assert_called_once_with(
-            url_suffix='/v2/search'
-        )
+        mock_call.assert_called_once_with(url_suffix='/v2/search')
 
         assert response == mock_call_response
 
@@ -802,18 +763,14 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.get_intelligence()
 
-        mock_call.assert_called_once_with(
-            url_suffix='/v2/lookup/intelligence'
-        )
+        mock_call.assert_called_once_with(url_suffix='/v2/lookup/intelligence')
 
         assert response == mock_call_response
 
@@ -833,18 +790,14 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.get_links()
 
-        mock_call.assert_called_once_with(
-            url_suffix='/v2/lookup/links'
-        )
+        mock_call.assert_called_once_with(url_suffix='/v2/lookup/links')
 
         assert response == mock_call_response
 
@@ -864,18 +817,14 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.get_single_alert()
 
-        mock_call.assert_called_once_with(
-            url_suffix='/v2/alert/lookup'
-        )
+        mock_call.assert_called_once_with(url_suffix='/v2/alert/lookup')
 
         assert response == mock_call_response
 
@@ -895,18 +844,14 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.get_alerts()
 
-        mock_call.assert_called_once_with(
-            url_suffix='/v2/alert/search'
-        )
+        mock_call.assert_called_once_with(url_suffix='/v2/alert/search')
 
         assert response == mock_call_response
 
@@ -926,18 +871,14 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.get_alert_rules()
 
-        mock_call.assert_called_once_with(
-            url_suffix='/v2/alert/rule'
-        )
+        mock_call.assert_called_once_with(url_suffix='/v2/alert/rule')
 
         assert response == mock_call_response
 
@@ -957,16 +898,12 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
-        alert_data = {
-            'mock': 'data'
-        }
+        alert_data = {'mock': 'data'}
         response = client.alert_set_status(alert_data)
 
         mock_call.assert_called_once_with(
@@ -974,7 +911,7 @@ class TestRFClient:
             json_data={
                 'demisto_command': mock_command_name,
                 'demisto_args': mock_command_args,
-                'alerts_update_data': alert_data
+                'alerts_update_data': alert_data,
             },
         )
 
@@ -987,7 +924,7 @@ class TestRFClient:
             json_data={
                 'demisto_command': mock_command_name,
                 'demisto_args': mock_command_args,
-                'alerts_update_data': None
+                'alerts_update_data': None,
             },
         )
 
@@ -1009,16 +946,12 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
-        alert_data = {
-            'mock': 'data'
-        }
+        alert_data = {'mock': 'data'}
         response = client.alert_set_note(alert_data)
 
         mock_call.assert_called_once_with(
@@ -1026,7 +959,7 @@ class TestRFClient:
             json_data={
                 'demisto_command': mock_command_name,
                 'demisto_args': mock_command_args,
-                'alerts_update_data': alert_data
+                'alerts_update_data': alert_data,
             },
         )
 
@@ -1039,7 +972,7 @@ class TestRFClient:
             json_data={
                 'demisto_command': mock_command_name,
                 'demisto_args': mock_command_args,
-                'alerts_update_data': None
+                'alerts_update_data': None,
             },
         )
 
@@ -1061,24 +994,19 @@ class TestRFClient:
 
         client = create_client()
 
-        mock_call_response = {
-            'response': {
-                'data': 'mock response'
-            }
-        }
-        mock_call = mocker.patch.object(client, '_call', return_value=mock_call_response)
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
 
         response = client.get_triage()
 
-        mock_call.assert_called_once_with(
-            url_suffix='/v2/lookup/triage'
-        )
+        mock_call.assert_called_once_with(url_suffix='/v2/lookup/triage')
 
         assert response == mock_call_response
 
 
 class TestActions:
-
     def test_init(self, mocker):
         from RecordedFuture import Actions
 
@@ -1110,38 +1038,29 @@ class TestActions:
         result_actions = actions._process_result_actions(response=response)  # type: ignore
         assert result_actions is None
 
-    def test_process_result_actions_no_or_empty_result_actions_in_response(self, mocker):
+    def test_process_result_actions_no_or_empty_result_actions_in_response(
+        self, mocker
+    ):
         from RecordedFuture import Actions
 
         mock_client = mocker.Mock()
         actions = Actions(mock_client)
 
         # Test no results_actions in response.
-        response = {
-            'data': 'mock'
-        }
+        response = {'data': 'mock'}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
         # Test case when bool(results_actions) in response is False.
-        response = {
-            'data': 'mock',
-            'result_actions': None
-        }
+        response = {'data': 'mock', 'result_actions': None}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {
-            'data': 'mock',
-            'result_actions': list()
-        }
+        response = {'data': 'mock', 'result_actions': list()}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {
-            'data': 'mock',
-            'result_actions': dict()
-        }
+        response = {'data': 'mock', 'result_actions': dict()}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
@@ -1153,15 +1072,17 @@ class TestActions:
 
         response = {
             'data': 'mock',
-            'result_actions': [{
-                'CommandResults': {
-                    'outputs_prefix': 'mock_outputs_prefix',
-                    'outputs': 'mock_outputs',
-                    'raw_response': 'mock_raw_response',
-                    'readable_output': 'mock_readable_output',
-                    'outputs_key_field': 'mock_outputs_key_field'
-                },
-            }]
+            'result_actions': [
+                {
+                    'CommandResults': {
+                        'outputs_prefix': 'mock_outputs_prefix',
+                        'outputs': 'mock_outputs',
+                        'raw_response': 'mock_raw_response',
+                        'readable_output': 'mock_readable_output',
+                        'outputs_key_field': 'mock_outputs_key_field',
+                    },
+                }
+            ],
         }
         result_actions = actions._process_result_actions(response=response)
 
@@ -1177,11 +1098,14 @@ class TestActions:
         assert r_a.readable_output == 'mock_readable_output'
         assert r_a.outputs_key_field == 'mock_outputs_key_field'
 
-    def test_process_result_actions_create_indicator_and_default_command_results(self, mocker):
+    def test_process_result_actions_create_indicator_and_default_command_results(
+        self, mocker
+    ):
         import RecordedFuture
 
         spy_create_indicator = mocker.spy(
-            RecordedFuture, 'create_indicator',
+            RecordedFuture,
+            'create_indicator',
         )
 
         mock_client = mocker.Mock()
@@ -1189,15 +1113,17 @@ class TestActions:
 
         response = {
             'data': 'mock',
-            'result_actions': [{
-                'create_indicator': {
-                    'entity': 'mock_entity',
-                    'entity_type': 'ip',
-                    'score': 15,
-                    'description': 'mock_description',
-                    'location': {'country': 'mock_country', 'ans': 'mock_asn'},
-                },
-            }]
+            'result_actions': [
+                {
+                    'create_indicator': {
+                        'entity': 'mock_entity',
+                        'entity_type': 'ip',
+                        'score': 15,
+                        'description': 'mock_description',
+                        'location': {'country': 'mock_country', 'ans': 'mock_asn'},
+                    },
+                }
+            ],
         }
         result_actions = actions._process_result_actions(response=response)
 
@@ -1229,7 +1155,8 @@ class TestActions:
         import RecordedFuture
 
         spy_create_indicator = mocker.spy(
-            RecordedFuture, 'create_indicator',
+            RecordedFuture,
+            'create_indicator',
         )
 
         mock_client = mocker.Mock()
@@ -1237,23 +1164,24 @@ class TestActions:
 
         response = {
             'data': 'mock',
-            'result_actions': [{
-                'create_indicator': {
-                    'entity': 'mock_entity',
-                    'entity_type': 'ip',
-                    'score': 15,
-                    'description': 'mock_indicator_description',
-                },
-
-                'CommandResults': {
-                    'outputs_prefix': 'mock_outputs_prefix',
-                    'outputs': 'mock_outputs',
-                    'raw_response': 'mock_raw_response',
-                    'readable_output': 'mock_readable_output',
-                    'outputs_key_field': 'mock_outputs_key_field',
-                    'indicator': 'indicator'
+            'result_actions': [
+                {
+                    'create_indicator': {
+                        'entity': 'mock_entity',
+                        'entity_type': 'ip',
+                        'score': 15,
+                        'description': 'mock_indicator_description',
+                    },
+                    'CommandResults': {
+                        'outputs_prefix': 'mock_outputs_prefix',
+                        'outputs': 'mock_outputs',
+                        'raw_response': 'mock_raw_response',
+                        'readable_output': 'mock_readable_output',
+                        'outputs_key_field': 'mock_outputs_key_field',
+                        'indicator': 'indicator',
+                    },
                 }
-            }]
+            ],
         }
         result_actions = actions._process_result_actions(response=response)
 
@@ -1281,9 +1209,9 @@ class TestActions:
                 'Indicator': 'mock_entity',
                 'Score': 0,
                 'Type': 'ip',
-                'Vendor': 'Recorded Future v2'
+                'Vendor': 'Recorded Future v2',
             },
-            'IP(val.Address && val.Address == obj.Address)': {'Address': 'mock_entity'}
+            'IP(val.Address && val.Address == obj.Address)': {'Address': 'mock_entity'},
         }
 
     def test_fetch_incidents_with_incidents_present(self, mocker):
@@ -1305,12 +1233,10 @@ class TestActions:
             'incidents': mock_incidents_value,
             'demisto_last_run': mock_demisto_last_run_value,
             'data': 'mock',
-            'alerts_update_data': mock_alerts_update_data_value
+            'alerts_update_data': mock_alerts_update_data_value,
         }
         mock_client_fetch_incidents = mocker.patch.object(
-            client,
-            'fetch_incidents',
-            return_value=mock_client_fetch_incidents_response
+            client, 'fetch_incidents', return_value=mock_client_fetch_incidents_response
         )
 
         mock_client_alert_set_status = mocker.patch.object(
@@ -1331,7 +1257,9 @@ class TestActions:
         mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
 
         # Verify that we update alert status.
-        mock_client_alert_set_status.assert_called_once_with(mock_alerts_update_data_value)
+        mock_client_alert_set_status.assert_called_once_with(
+            mock_alerts_update_data_value
+        )
 
     def test_malware_search_command(self, mocker):
         from RecordedFuture import Actions
@@ -1341,14 +1269,14 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_entity_search = mocker.patch.object(
-            client,
-            'entity_search',
-            return_value=mock_response
+            client, 'entity_search', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
@@ -1371,14 +1299,14 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_entity_lookup = mocker.patch.object(
-            client,
-            'entity_lookup',
-            return_value=mock_response
+            client, 'entity_lookup', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
@@ -1401,18 +1329,18 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_get_intelligence = mocker.patch.object(
-            client,
-            'get_intelligence',
-            return_value=mock_response
+            client, 'get_intelligence', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
-            return_value=mock_process_result_actions_return_value
+            return_value=mock_process_result_actions_return_value,
         )
 
         result = actions.intelligence_command()
@@ -1431,18 +1359,18 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_get_links = mocker.patch.object(
-            client,
-            'get_links',
-            return_value=mock_response
+            client, 'get_links', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
-            return_value=mock_process_result_actions_return_value
+            return_value=mock_process_result_actions_return_value,
         )
 
         result = actions.get_links_command()
@@ -1461,18 +1389,18 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_get_single_alert = mocker.patch.object(
-            client,
-            'get_single_alert',
-            return_value=mock_response
+            client, 'get_single_alert', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
-            return_value=mock_process_result_actions_return_value
+            return_value=mock_process_result_actions_return_value,
         )
 
         result = actions.get_single_alert_command()
@@ -1492,9 +1420,7 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_get_single_alert = mocker.patch.object(
-            client,
-            'get_single_alert',
-            return_value=mock_response
+            client, 'get_single_alert', return_value=mock_response
         )
 
         actions = Actions(client)
@@ -1503,7 +1429,7 @@ class TestActions:
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
-            return_value=mock_process_result_actions_return_value
+            return_value=mock_process_result_actions_return_value,
         )
 
         result = actions.get_single_alert_command()
@@ -1523,9 +1449,7 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_get_alerts = mocker.patch.object(
-            client,
-            'get_alerts',
-            return_value=mock_response
+            client, 'get_alerts', return_value=mock_response
         )
 
         actions = Actions(client)
@@ -1544,9 +1468,7 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_get_alert_rules = mocker.patch.object(
-            client,
-            'get_alert_rules',
-            return_value=mock_response
+            client, 'get_alert_rules', return_value=mock_response
         )
 
         actions = Actions(client)
@@ -1565,18 +1487,18 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_alert_set_status = mocker.patch.object(
-            client,
-            'alert_set_status',
-            return_value=mock_response
+            client, 'alert_set_status', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
-            return_value=mock_process_result_actions_return_value
+            return_value=mock_process_result_actions_return_value,
         )
 
         result = actions.alert_set_status_command()
@@ -1595,18 +1517,18 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_alert_set_note = mocker.patch.object(
-            client,
-            'alert_set_note',
-            return_value=mock_response
+            client, 'alert_set_note', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
-            return_value=mock_process_result_actions_return_value
+            return_value=mock_process_result_actions_return_value,
         )
 
         result = actions.alert_set_note_command()
@@ -1625,18 +1547,18 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_get_triage = mocker.patch.object(
-            client,
-            'get_triage',
-            return_value=mock_response
+            client, 'get_triage', return_value=mock_response
         )
 
         actions = Actions(client)
 
-        mock_process_result_actions_return_value = 'mock_process_result_actions_return_value'
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
         mock_process_result_actions = mocker.patch.object(
             actions,
             '_process_result_actions',
-            return_value=mock_process_result_actions_return_value
+            return_value=mock_process_result_actions_return_value,
         )
 
         result = actions.triage_command()
@@ -1646,3 +1568,46 @@ class TestActions:
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 
         assert result == mock_process_result_actions_return_value
+
+    def test_test_module(self, mocker):
+        import RecordedFuture
+        import demistomock as demisto
+        import platform
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto, "demistoVersion", return_value={"version": "mock_version"}
+        )
+        mocker.patch.object(
+            demisto, "params", return_value={"token": {"password": "mocktoken"}}
+        )
+        mocker.patch.object(platform, "platform", return_value="mock_platform")
+        mocker.patch.object(RecordedFuture.Client, "whoami")
+        mocked_return_res = mocker.patch.object(RecordedFuture, "return_results")
+        RecordedFuture.main()
+        mocked_return_res.assert_called_with('ok')
+
+    def test_test_module_with_boom(self, mocker):
+        import RecordedFuture
+        import demistomock as demisto
+        import platform
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch.object(
+            demisto, "demistoVersion", return_value={"version": "mock_version"}
+        )
+        mocker.patch.object(
+            demisto, "params", return_value={"token": {"password": "mocktoken"}}
+        )
+        mocker.patch.object(platform, "platform", return_value="mock_platform")
+        mock_whoami = mocker.patch.object(RecordedFuture.Client, "whoami")
+        mock_whoami.side_effect = Exception("Side effect triggered")
+        mocked_return_err = mocker.patch.object(RecordedFuture, "return_error")
+        RecordedFuture.main()
+        mocked_return_err.assert_called_with(
+            message=(
+                f'Failed to execute {demisto.command()} command: Failed due to - '
+                'Unknown error. Please verify that the API URL and Token are correctly configured. '
+                'RAW Error: Side effect triggered'
+            )
+        )

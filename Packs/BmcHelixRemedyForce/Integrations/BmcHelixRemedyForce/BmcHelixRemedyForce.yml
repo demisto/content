@@ -14,21 +14,28 @@ configuration:
   defaultvalue: https://login.salesforce.com
 - display: Username
   name: username
-  required: true
+  required: false
   type: 0
+  hidden: true
 - display: Password
   name: password
-  required: true
+  required: false
   type: 4
+  hidden: true
+- display: Username
+  name: username_creds
+  required: false
+  type: 9
+  displaypassword: Password
 - additionalinfo: Incidents will be fetched based on selected type.
-  defaultvalue: BMC Remedyforce Service Request
   display: Type
   name: type
+  required: false
+  type: 15
+  defaultvalue: BMC Remedyforce Service Request
   options:
   - BMC Remedyforce Incident
   - BMC Remedyforce Service Request
-  required: false
-  type: 15
 - additionalinfo: Incidents will be fetched having this category.
   display: Category
   name: category
@@ -55,21 +62,21 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Maximum numbers of ServiceRequests or Incidents to retrieve per fetch.
-  defaultvalue: '10'
   display: Max Incidents
   name: max_fetch
   required: false
   type: 0
+  defaultvalue: '10'
 - additionalinfo: Fetch notes of the BMC Remedyforce Service Request or BMC Remedyforce Incident.
   display: Fetch Note(s)
   name: fetch_note
   required: false
   type: 8
-- additionalinfo: Incidents will be fetched based on the query. Name and LastModifiedDate fields are mandatory to be present inside the select clause of the query. Multiple 'where' clauses are not supported.
-  display: Query (If provided other filtering parameters will be ignored) e.g. select Name, LastModifiedDate from BMCServiceDesk__Incident__c where BMCServiceDesk__Impact_Id__c = 'High'
+- display: Query (If provided other filtering parameters will be ignored) e.g. select Name, LastModifiedDate from BMCServiceDesk__Incident__c where BMCServiceDesk__Impact_Id__c = 'High'
   name: query
   required: false
   type: 12
+  additionalinfo: Incidents will be fetched based on the query. Name and LastModifiedDate fields are mandatory to be present inside the select clause of the query. Multiple 'where' clauses are not supported.
 - display: Incident type
   name: incidentType
   required: false
@@ -82,12 +89,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Specify the time interval in seconds. All the RemedyForce API calls would timeout if the response is not returned within the configured time interval.
-  defaultvalue: '60'
-  display: HTTP(S) Request Timeout (in seconds)
+- display: HTTP(S) Request Timeout (in seconds)
   name: request_timeout
   required: true
   type: 0
+  additionalinfo: Specify the time interval in seconds. All the RemedyForce API calls would timeout if the response is not returned within the configured time interval.
+  defaultvalue: '60'
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -97,6 +104,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+
 description: BMC Helix Remedyforce integration enables customers to create/update service requests and incidents, update statuses, and resolve service requests and incidents with customer notes. This integration exposes standard ticketing capabilities that can be utilized as part of automation & orchestration.
 display: BMC Helix Remedyforce
 name: BMCHelixRemedyforce
@@ -1094,7 +1102,7 @@ script:
     - contextPath: BmcRemedyforce.ServiceRequest.Type
       description: The type of the service request.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

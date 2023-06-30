@@ -776,12 +776,68 @@ script:
       description: 'The solution for deleting the service record.'
       required: false
       isArray: false
+  - arguments:
+    - description: The service record ID.
+      name: id
+      required: true
+    - description: File file ID to upload.
+      name: file_id
+      required: true
+    description: Add an attachment to a service record.
+    name: sysaid-service-record-attach-file
+  - arguments:
+    - description: The service record ID.
+      name: id
+      required: true
+    - description: The attachment file ID to delete.
+      name: file_id
+      required: true
+    description: Delete an attachment from a service record.
+    name: sysaid-service-record-delete-file
+  - arguments:
+    - description: The service record ID
+      name: id
+      required: true
+    - description: List of fields to return, comma separated. If sent together with view parameter, returns both view’s fields and the requested fields.
+      name: fields
+      required: true
+    description: Returns the information for the specified service record.
+    name: sysaid-service-record-get
+    outputs:
+    - type: String
+      contextPath: SysAid.ServiceRecord.id
+      description: 'The ID of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.title
+      description: 'The title of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.status
+      description: 'The status of the service record.'
+    - type: Date
+      contextPath: SysAid.ServiceRecord.update_time
+      description: 'The modify time of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.sr_type
+      description: 'The type of the service record.'
+    - type: String
+      contextPath: SysAid.ServiceRecord.notes
+      description: 'The notes of the service record.'
+  - arguments:
+    - description: The service record ID
+      name: id
+      required: true
+      isArray: false
+    - description: The note to be added to the Service Record
+      name: note
+      required: true
+    description: Add a note to a Service Record
+    name: sysaid-service-record-add-note
   isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 defaultclassifier: SysAid Classifier
 defaultmapperin: SysAid Mapper

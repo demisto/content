@@ -630,7 +630,7 @@ script:
       type: String
     description: Queries the Analyst1 REST API and enriches the given URL with Analyst1
       indicator data.
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   subtype: python3
 fromversion: 5.0.0

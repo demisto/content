@@ -17,12 +17,14 @@ configuration:
 - additionalinfo: The maximum limit is 200.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
+  hidden: false
   name: max_fetch
   required: false
   type: 0
 - additionalinfo: 'Date or relative timestamp to start fetching incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
   defaultvalue: 3 days
   display: First fetch time interval
+  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -64,6 +66,7 @@ configuration:
     Supports comma separated values.
     Note: Categorization tags are associated with the reports which are processed.
   display: Categorization Tags
+  hidden: false
   name: categorization_tags
   required: false
   type: 0
@@ -83,14 +86,17 @@ configuration:
     Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}
     For example: {"updated_at_gt":"2020-10-26T10:48:16.834Z","categorization_tags_any":"test, snow"}
   display: Advanced Filters
+  hidden: false
   name: filter_by
   required: false
   type: 12
 - display: Use system proxy settings
+  hidden: false
   name: proxy
   required: false
   type: 8
 - display: Trust any certificate (not secure)
+  hidden: false
   name: insecure
   required: false
   type: 8
@@ -2139,7 +2145,98 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  - arguments:
+    - default: false
+      description: 'Specify ID of the report to retrieve the attachment payloads.'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: 'Specify the number of attachment payloads to retrieve per page. Note: Possible values are between 1 and 200. '
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: 'Specify a page number to retrieve the attachment payloads.'
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: 'Specify the date and time of creation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      isArray: false
+      name: created_at
+      required: false
+      secret: false
+    - default: false
+      description: 'Specify the date and time of updation, from when to retrieve the attachment payloads. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.'
+      isArray: false
+      name: updated_at
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Retrieves attachment payloads based on provided report id in the command arguments.
+      Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of a reported email attachment.
+    execution: false
+    name: cofense-report-attachment-payload-list
+    outputs:
+    - contextPath: Cofense.AttachmentPayload.id
+      description: Unique identifier of the attachment payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.type
+      description: Type of the resource of Cofense Triage.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.links.self
+      description: Link of the resource.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.attributes.mime_type
+      description: MIME type of the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.attributes.md5
+      description: MD5 hash of the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.attributes.sha256
+      description: SHA256 hash of the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.attributes.risk_score
+      description: Risk score of the payload.
+      type: Number
+    - contextPath: Cofense.AttachmentPayload.attributes.created_at
+      description: Date and time, in ISO 8601 format, when the resource was created.
+      type: Date
+    - contextPath: Cofense.AttachmentPayload.attributes.updated_at
+      description: Date and time, in ISO 8601 format, when the resource was last updated.
+      type: Date
+    - contextPath: Cofense.AttachmentPayload.relationships.attachments.links.self
+      description: Link to retrieve the attachment containing the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.relationships.attachments.links.related
+      description: Link to retrieve the detailed information of the attachment containing the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.relationships.clusters.links.self
+      description: Link to retrieve the cluster of reports containing the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.relationships.clusters.links.related
+      description: Link to retrieve the detailed information of the cluster of reports containing the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.relationships.integration_submissions.links.self
+      description: Link to retrieve the integration submissions related to attachment.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.relationships.integration_submissions.links.related
+      description: Link to retrieve the detailed information of the integration submissions related to attachment.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.relationships.reports.links.self
+      description: Link to retrieve the report with attachments containing the payload.
+      type: String
+    - contextPath: Cofense.AttachmentPayload.relationships.reports.links.related
+      description: Link to retrieve the detailed information of the report with attachments containing the payload.
+      type: String
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   isremotesyncin: true

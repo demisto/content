@@ -9,12 +9,13 @@ from AzureKubernetesServices import (API_VERSION, AKSClient,
 app_id = 'app_id'
 subscription_id = 'subscription_id'
 resource_group_name = 'resource_group_name'
+tenant_id = 'tentant_id'
 
 
 @pytest.fixture()
 def client(mocker):
     mocker.patch('AzureKubernetesServices.MicrosoftClient.get_access_token', return_value='token')
-    return AKSClient(app_id, subscription_id, resource_group_name, False, False, 'Device')
+    return AKSClient(app_id, subscription_id, resource_group_name, False, False, tenant_id, None, 'Device Code')
 
 
 def load_test_data(path):
@@ -191,4 +192,4 @@ def test_generate_login_url(mocker):
                    'response_type=code&scope=offline_access%20https://management.azure.com/.default' \
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = AzureKubernetesServices.return_results.call_args[0][0].readable_output
-    assert expected_url in res
+    assert expected_url in res, "Login URL is incorrect"

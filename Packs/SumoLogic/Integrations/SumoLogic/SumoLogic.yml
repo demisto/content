@@ -20,12 +20,20 @@ configuration:
   name: accessID
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: Access key - can be created in Sumo Logic under "Settings"
   name: accessKey
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- display: Access ID - can be created in Sumo Logic under "Settings"
+  name: credentialsAccess
+  required: false
+  type: 9
+  displaypassword: Access key - can be created in Sumo Logic under "Settings"
+  section: Connect
 - display: Use system proxy settings
   name: useproxy
   type: 8

@@ -3,67 +3,101 @@ commonfields:
   id: AzureKeyVault
   version: -1
 configuration:
+- display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  defaultvalue: Worldwide
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  section: Connect
+  advanced: true
+  additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - display: Client ID
   name: client_id
   required: false
   type: 0
-- display: Client Secret
-  name: client_secret
+  section: Connect
+- name: credentials
   required: false
   type: 9
+  displaypassword: Client Secret
+  hiddenusername: true
+  section: Connect
 - display: Tenant ID
   name: tenant_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+  section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-  display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
   type: 8
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
+  display: Use Azure Managed Identities
+  section: Connect
+  advanced: true
+- name: managed_identities_client_id
   required: false
-  hiddenusername: true
   type: 9
-- display: Subscription ID
+  additionalinfo: The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
+  section: Connect
+  advanced: true
+- display: Default Subscription ID
   name: subscription_id
   required: true
   type: 0
-- display: Resource Group Name
+  section: Connect
+- display: Default Resource Group Name
   name: resource_group_name
   required: true
   type: 0
+  section: Connect
 - display: Fetches credentials
   name: isFetchCredentials
   required: false
   type: 8
+  section: Collect
 - display: Key Vault names - comma seperated list of Key Vaults to fetch secrets from.
   name: key_vaults
   required: false
   type: 0
+  section: Collect
 - display: Secret names - comma seperated list of secrets to fetch.
   name: secrets
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Use the Azure Key Vault integration to safeguard and manage cryptographic keys and secrets used by cloud applications and services.
 display: Azure Key Vault
 name: AzureKeyVault
@@ -252,7 +286,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be accrodingly to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property.
+      description: The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be according to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network ACL property.
       isArray: false
       name: default_action
       predefined:
@@ -291,6 +325,16 @@ script:
       name: ip_rules
       required: false
       secret: false
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: Create or update a key vault in the specified subscription. If the Key Vault exists, the updated properties will overwrite the existing ones. Please use azure-key-vault-access-policy-update command if you wish to update the access policy of an existing Key Vault.
     execution: false
@@ -354,6 +398,16 @@ script:
       name: vault_name
       required: true
       secret: false
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: Delete the specified key vault.
     execution: true
@@ -365,6 +419,16 @@ script:
       name: vault_name
       required: true
       secret: false
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: Get the specified key vault.
     execution: false
@@ -434,6 +498,11 @@ script:
       name: offset
       required: false
       secret: false
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: The List operation gets information about the vaults associated with the subscription. For a limit greater than 25, more than one API call will be required and the command might take longer time.
     execution: false
@@ -598,6 +667,16 @@ script:
       - purge
       required: false
       secret: false
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      type: String
+      isArray: false
+      required: false
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      type: String
+      isArray: false
+      required: false
     deprecated: false
     description: Update access policies in a key vault in the specified subscription. The update regards only the access policy for the specified object ID.
     execution: true
@@ -1040,7 +1119,59 @@ script:
     - contextPath: AzureKeyVault.CertificatePolicy.attributes.updated
       description: Last updated time in UTC.
       type: Date
-  dockerimage: demisto/crypto:1.0.0.61689
+  - name: azure-key-vault-subscriptions-list
+    description: List all subscriptions for a tenant.
+    outputs:
+    - contextPath: AzureKeyVault.Subscription.id
+      description: Subscription ID.
+      type: String
+    - contextPath: AzureKeyVault.Subscription.displayName
+      description: Subscription display name.
+      type: String
+    - contextPath: AzureKeyVault.Subscription.state
+      description: Subscription state.
+      type: String
+    - contextPath: AzureKeyVault.Subscription.subscriptionPolicies 
+      description: Subscription policies.
+      type: Unknown
+    - contextPath: AzureKeyVault.Subscription.authorizationSource
+      description: Authorization source.
+      type: String
+    - contextPath: AzureKeyVault.Subscription.managedByTenants
+      description: Managed by tenants.
+      type: Unknown
+    - contextPath: AzureKeyVault.Subscription.tenantId
+      description: Tenant ID.
+      type: String
+  - name: azure-key-vault-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      isArray: false
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      required: false
+      defaultValue: 50
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+      required: false
+    outputs:
+    - contextPath: AzureKeyVault.ResourceGroup.id
+      description: Resource group ID.
+      type: String
+    - contextPath: AzureKeyVault.ResourceGroup.name
+      description: Resource group name.
+      type: String
+    - contextPath: AzureKeyVault.ResourceGroup.location
+      description: Resource group location.
+      type: String
+    - contextPath: AzureKeyVault.ResourceGroup.tags
+      description: Resource group tags.
+      type: Unknown
+    - contextPath: AzureKeyVault.ResourceGroup.properties.provisioningState
+      description: Resource group provisioning state.
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: false
   longRunning: false
@@ -1052,3 +1183,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+sectionorder:
+- Connect
+- Collect

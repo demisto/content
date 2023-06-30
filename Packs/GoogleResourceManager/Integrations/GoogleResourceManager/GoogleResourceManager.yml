@@ -9,23 +9,42 @@ configuration:
   type: 0
 - display: Private Key ID
   name: private_key_id
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: private_key_id_creds
+  required: false
+  type: 9
+  displaypassword: Private Key ID
+  hiddenusername: true
 - defaultvalue: ''
   display: Private Key
   name: private_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: private_key_creds
+  required: false
+  type: 9
+  displaypassword: Private Key
+  hiddenusername: true
 - defaultvalue: ''
   display: Client Email
   name: client_email
-  required: true
+  required: false
   type: 0
-- defaultvalue: ''
-  display: Client ID
+  hidden: true
+- display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 4
+  defaultvalue: ''
+  hidden: true
+- display: Client Email
+  name: client_email_creds
+  required: false
+  type: 9
+  displaypassword: Client ID
 - defaultvalue: ''
   display: Client X509 Cert URL
   name: client_x509_cert_url
@@ -39,6 +58,7 @@ configuration:
   name: insecure
   required: false
   type: 8
+
 description: Google Cloud Platform Resource Manager
 display: Google Resource Manager
 name: Google Resource Manager
@@ -56,10 +76,7 @@ script:
       required: true
     - default: false
       defaultValue: ''
-      description: The ID of the parent resource. Organizations' Name output is in
-        the format "organizations/12345" where the numbers after the forward slash
-        are the ID of the organization. To find Organization IDs available to assign
-        as a parent resource try running the grm-search-organization command.
+      description: The ID of the parent resource. Organizations' Name output is in the format "organizations/12345" where the numbers after the forward slash are the ID of the organization. To find Organization IDs available to assign as a parent resource try running the grm-search-organization command.
       isArray: false
       name: parent_id
       predefined: []
@@ -85,8 +102,7 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: 'Represents the resource type the parent_id is for. Valid resource
-        types: "organization" and "folder".'
+      description: 'Represents the resource type the parent_id is for. Valid resource types: "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -101,8 +117,7 @@ script:
       name: label_values
       predefined: []
       required: false
-    description: Request that new Project resource be created with the user-specified
-      values passed as command arguments.
+    description: Request that new Project resource be created with the user-specified values passed as command arguments.
     execution: false
     name: grm-create-project
     outputs:
@@ -110,8 +125,7 @@ script:
       description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
-      description: 'The unique, user-assigned ID of
-        the Project.'
+      description: 'The unique, user-assigned ID of the Project.'
       type: String
     - contextPath: GRM.Project.Number
       description: The number uniquely identifying the project.
@@ -187,33 +201,27 @@ script:
       name: filter
       predefined: []
       required: false
-    description: Lists projects that are visible to the user and satisfies the specified
-      filter. Projects are returned in an unspecified order.
+    description: Lists projects that are visible to the user and satisfies the specified filter. Projects are returned in an unspecified order.
     execution: false
     name: grm-list-projects
     outputs:
     - contextPath: GRM.Project.Name
-      description: The user-assigned display name
-        of the Project.
+      description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
-      description: 'The unique, user-assigned ID of
-        the Project.'
+      description: 'The unique, user-assigned ID of the Project.'
       type: String
     - contextPath: GRM.Project.Number
-      description: The number uniquely identifying
-        the project.
+      description: The number uniquely identifying the project.
       type: String
     - contextPath: GRM.Project.State
       description: The Project lifecycle state.
       type: String
     - contextPath: GRM.Project.CreateTime
-      description: The time the resource was
-        created
+      description: The time the resource was created
       type: Date
     - contextPath: GRM.Project.Label
-      description: The labels associated with this
-        Project.
+      description: The labels associated with this Project.
       type: Unknown
     - contextPath: GRM.Project.Parent.ID
       description: ID of the parent resource.
@@ -242,18 +250,14 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: The ID of the parent resource. Organizations' Name output is in
-        the format `organizations/12345` where the numbers after the forward slash
-        are the ID of the organization. To find Organization IDs available to assign
-        as a parent resource try running the grm-search-organization command.
+      description: The ID of the parent resource. Organizations' Name output is in the format `organizations/12345` where the numbers after the forward slash are the ID of the organization. To find Organization IDs available to assign as a parent resource try running the grm-search-organization command.
       isArray: false
       name: parent_id
       predefined: []
       required: true
     - default: false
       defaultValue: ''
-      description: 'The resource type the parent_id is for. Valid resource types:
-        "organization" and "folder".'
+      description: 'The resource type the parent_id is for. Valid resource types: "organization" and "folder".'
       isArray: false
       name: parent_type
       predefined: [organization, folder]
@@ -278,15 +282,12 @@ script:
       name: label_values
       predefined: []
       required: false
-    description: Updates the attributes of the Project identified by the specified
-      project_id. Currently the only fields that can be updated are the project name
-      and labels.
+    description: Updates the attributes of the Project identified by the specified project_id. Currently the only fields that can be updated are the project name and labels.
     execution: false
     name: grm-update-project
     outputs:
     - contextPath: GRM.Project.Name
-      description: The user-assigned display name
-        of the Project.
+      description: The user-assigned display name of the Project.
       type: String
     - contextPath: GRM.Project.ID
       description: The unique, user-assigned ID of the Project.
@@ -321,34 +322,24 @@ script:
       required: false
     - default: false
       defaultValue: ''
-      description: A pagination token returned from a previous call to "organizations.search"
-        that indicates from where listing should continue.
+      description: A pagination token returned from a previous call to "organizations.search" that indicates from where listing should continue.
       isArray: false
       name: page_token
       predefined: []
       required: false
     - default: false
       defaultValue: ''
-      description: "An expression for filtering the Organizations returned in the\
-        \ results. Filter rules are case-insensitive.\n\nOrganizations may be filtered\
-        \ by 'owner.directoryCustomerId' or by 'domain', where the domain is a G Suite\
-        \ domain, for example:\n\nowner.directorycustomerid:123456789\tOrganizations\
-        \ with owner.directory_customer_id equal to 123456789.\ndomain:google.com\t\
-        Organizations corresponding to the domain google.com."
+      description: "An expression for filtering the Organizations returned in the results. Filter rules are case-insensitive.\n\nOrganizations may be filtered by 'owner.directoryCustomerId' or by 'domain', where the domain is a G Suite domain, for example:\n\nowner.directorycustomerid:123456789\tOrganizations with owner.directory_customer_id equal to 123456789.\ndomain:google.com\tOrganizations corresponding to the domain google.com."
       isArray: false
       name: filter
       predefined: []
       required: false
-    description: Searches Organization resources that are visible to the user and
-      satisfies the specified filter. Organizations are returned in an unspecified
-      order. New Organizations do not necessarily appear at the end of the results.
+    description: Searches Organization resources that are visible to the user and satisfies the specified filter. Organizations are returned in an unspecified order. New Organizations do not necessarily appear at the end of the results.
     execution: false
     name: grm-search-organizations
     outputs:
     - contextPath: GRM.Organization.Name
-      description: 'The resource name of the
-        organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".'
+      description: 'The resource name of the organization. This is the organization''s relative path in the API. Its format is "organizations/[organization_id]" e.g. "organizations/1234".'
       type: String
     - contextPath: GRM.Organization.State
       description: The organization's current lifecycle state.
@@ -367,15 +358,12 @@ script:
       name: name
       predefined: []
       required: true
-    description: Fetches an Organization resource identified by the specified resource
-      name.
+    description: Fetches an Organization resource identified by the specified resource name.
     execution: false
     name: grm-get-organization
     outputs:
     - contextPath: GRM.Organization.Name
-      description: 'The resource name of the
-        organization. This is the organization''s relative path in the API. Its format
-        is "organizations/[organization_id]" e.g. "organizations/1234".'
+      description: 'The resource name of the organization. This is the organization''s relative path in the API. Its format is "organizations/[organization_id]" e.g. "organizations/1234".'
       type: String
     - contextPath: GRM.Organization.State
       description: The organization's current lifecycle state.
@@ -396,8 +384,7 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Marks the Project identified by the specified project_id to be deleted,
-      e.g., my-project-123.
+    description: Marks the Project identified by the specified project_id to be deleted, e.g., my-project-123.
     execution: true
     name: grm-delete-project
     outputs:
@@ -435,8 +422,7 @@ script:
       name: project_id
       predefined: []
       required: true
-    description: Restores the Project identified by the specified project_id, e.g.,
-      my-project-123.
+    description: Restores the Project identified by the specified project_id, e.g., my-project-123.
     execution: false
     name: grm-undelete-project
     outputs:
@@ -464,7 +450,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.36486
+  dockerimage: demisto/googleapi-python3:1.0.0.63869
   isfetch: false
   runonce: false
   script: ''
@@ -472,4 +458,4 @@ script:
   subtype: python3
 fromversion: 5.0.0
 tests:
-  - GoogleResourceManager-Test
+- GoogleResourceManager-Test

@@ -19,8 +19,7 @@ configuration:
   name: dc
   type: 0
   required: false
-  additionalinfo: The domain controller hostname. This is useful for environments
-    with DFS servers as it is used to identify the DFS domain information automatically.
+  additionalinfo: The domain controller hostname. This is useful for environments with DFS servers as it is used to identify the DFS domain information automatically.
 - display: Username
   name: credentials
   type: 9
@@ -117,15 +116,15 @@ script:
       description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Returns a list containing the names of the entries in the directory given by path.
     outputs:
-      - contextPath: SMB.Path.SharedFolder
-        description: The full path of the shared folder.
-        type: String
-      - contextPath: SMB.Path.Files
-        description: List of files under the shared folder.
-        type: Unknown
-      - contextPath: SMB.Path.Directories
-        description: List of directories under the shared folder.
-        type: Unknown
+    - contextPath: SMB.Path.SharedFolder
+      description: The full path of the shared folder.
+      type: String
+    - contextPath: SMB.Path.Files
+      description: List of files under the shared folder.
+      type: Unknown
+    - contextPath: SMB.Path.Directories
+      description: List of directories under the shared folder.
+      type: Unknown
   - name: smb-file-remove
     arguments:
     - name: file_path
@@ -135,11 +134,9 @@ script:
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
-      description: The username to use when creating a new SMB session. If empty,
-        the username from the instance configuration is used.
+      description: The username to use when creating a new SMB session. If empty, the username from the instance configuration is used.
     - name: password
-      description: The password to use for authentication. If empty, the password
-        from the instance configuration is used.
+      description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Removes a file from the server.
   - name: smb-directory-create
     arguments:
@@ -150,11 +147,9 @@ script:
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
-      description: The username to use when creating a new SMB session. If empty,
-        the username from the instance configuration is used.
+      description: The username to use when creating a new SMB session. If empty, the username from the instance configuration is used.
     - name: password
-      description: The password to use for authentication. If empty, the password
-        from the instance configuration is used.
+      description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Creates a new directory under the given path.
   - name: smb-directory-remove
     arguments:
@@ -165,13 +160,11 @@ script:
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
-      description: The username to use when creating a new SMB session. If empty,
-        the username from the instance configuration is used.
+      description: The username to use when creating a new SMB session. If empty, the username from the instance configuration is used.
     - name: password
-      description: The password to use for authentication. If empty, the password
-        from the instance configuration is used.
+      description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Removes a directory from the given path.
-  dockerimage: demisto/smbprotocol:1.0.0.46456
+  dockerimage: demisto/smbprotocol:1.0.0.63639
   isfetch: false
   runonce: false
   script: '-'

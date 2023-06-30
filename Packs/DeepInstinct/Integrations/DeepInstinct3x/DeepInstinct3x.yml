@@ -573,7 +573,7 @@ script:
     deprecated: false
     description: Remove agent from device at next check-in
     name: deepinstinctv3-remove-device
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
   isfetch: true
   runonce: false
   script: '-'

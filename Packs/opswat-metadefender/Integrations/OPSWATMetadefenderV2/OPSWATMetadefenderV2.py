@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 PARAMS = demisto.params()
 BASE_URL = PARAMS['url'] + '/' if PARAMS['url'][-1] != '/' else PARAMS['url']
 USE_SSL = not PARAMS.get('insecure', False)
-API_KEY = PARAMS.get('api_key', '')
+API_KEY = PARAMS.get('api_key_creds', {}).get('password') or PARAMS.get('api_key', '')
 USE_CLOUD = PARAMS.get('cloud', False)
 HIGH_THRESHOLD = int(PARAMS.get('highPercnt', 66))
 LOW_THRESHOLD = int(PARAMS.get('lowPercnt', 34))

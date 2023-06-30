@@ -20,12 +20,20 @@ configuration:
   name: username
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Password
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8

@@ -1,0 +1,25 @@
+{
+    "name": "Cloud Incident Response",
+    "description": "Automates the collection, investigation, and response of cloud incidents",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [
+        "Incident Response"
+    ],
+    "keywords": [
+        "Cloud",
+        "IR",
+        "Incident Response",
+        "Token Theft"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

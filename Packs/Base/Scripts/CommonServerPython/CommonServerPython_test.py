@@ -26,7 +26,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context
+    response_to_context, is_integration_command_execution
 
 try:
     from StringIO import StringIO
@@ -4258,6 +4258,69 @@ def test_get_x_content_info_headers(mocker):
     headers = get_x_content_info_headers()
     assert headers['X-Content-LicenseID'] == test_license
     assert headers['X-Content-Name'] == test_brand
+
+
+def test_script_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrics entry
+      - The command currently running is a script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time (without the execution metrics entry)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 1},
+    ]
+    return_results(mock_command_results)
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
+    assert demisto_results_mock.call_count == 2
+
+
+def test_integration_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrics entry
+      - The command currently running is an integration command
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 3 times (with the execution metrics entry included)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'integration'}]}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 19},
+    ]
+    return_results(mock_command_results)
+    execution_metrics_entry_found = False
+    for call_args in demisto_results_mock.call_args_list:
+        if execution_metrics_entry_found:
+            break
+        for args in call_args.args:
+            if execution_metrics_entry_found:
+                break
+            execution_metrics_entry_found = args["Type"] != 19
+
+    assert execution_metrics_entry_found
+    assert demisto_results_mock.call_count == 3
 
 
 def test_return_results_multiple_command_results(mocker):
@@ -8997,3 +9060,24 @@ def test_response_to_context(response, expected_results, user_predefiend_keys):
                 the second key according to predefined_keys, and the third regularly.
     """
     assert response_to_context(response, user_predefiend_keys) == expected_results
+
+
+class TestIsIntegrationCommandExecution:
+    def test_with_script_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'Scripts'}]}})
+        assert is_integration_command_execution() == False
+
+    def test_with_integration_exec(self, mocker):
+        mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
+        assert is_integration_command_execution() == True
+    data_test_problematic_cases = [
+        None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
+        {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
+        {'context': {'ExecutedCommands': [{}]}}
+    ]
+
+    @pytest.mark.parametrize('calling_context_mock', data_test_problematic_cases)
+    def test_problematic_cases(self, mocker, calling_context_mock):
+        mocker.patch.object(demisto, 'callingContext', calling_context_mock)
+        assert is_integration_command_execution() == True
+        

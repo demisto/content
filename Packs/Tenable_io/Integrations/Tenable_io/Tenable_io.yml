@@ -10,12 +10,24 @@ configuration:
   type: 0
 - display: Access key
   name: access-key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: Access key
+  name:  credentials_access_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Secret key
   name: secret-key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: secret key
+  name:  credentials_secret_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -1210,7 +1222,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Tenable.io test
 fromversion: 5.0.0

@@ -116,7 +116,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
+description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2
 script:
@@ -314,6 +314,9 @@ script:
     - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
+    - description: A comma-separated list of account IDs for watching the issue. Use the jira-get-id-by-attribute command to get the user's account ID.
+      isArray: true
+      name: watchers
     description: Creates a new issue in Jira.
     name: jira-create-issue
     outputs:
@@ -538,6 +541,21 @@ script:
   - description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
     name: get-modified-remote-data
     arguments: []
+  - arguments: []
+    description: Gets the information related to the role, including assigned users.
+    name: jira-get-project-role
+  - arguments:
+    - description: User's email address.
+      name: user_email
+    - description: Project key.
+      name: project_key
+    - description: Role name to assign the user.
+      name: role_name
+    description: Adds the user to a project.
+    name: jira-add-user-to-project
+  - arguments: []
+    description: Lists all the organizations.
+    name: jira-get-organizations
   - arguments:
     - description: The ID of the issue to edit.
       name: issueId
@@ -569,7 +587,7 @@ script:
     - contextPath: Ticket.Status
       description: The ticket status.
       type: String
-  dockerimage: demisto/oauthlib:1.0.0.58909
+  dockerimage: demisto/oauthlib:1.0.0.63821
   isfetch: true
   ismappable: true
   isremotesyncin: true

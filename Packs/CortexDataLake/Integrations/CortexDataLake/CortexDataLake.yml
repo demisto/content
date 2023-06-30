@@ -2430,7 +2430,7 @@ script:
     description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     execution: false
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.60697
+  dockerimage: demisto/python_pancloud_v2:1.0.0.62401
   feed: false
   isfetch: true
   longRunning: false

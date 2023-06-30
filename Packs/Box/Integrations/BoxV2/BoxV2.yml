@@ -15,8 +15,14 @@ configuration:
   type: 8
 - display: Credentials JSON
   name: credentials_json
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: Credentials JSON
+  name:  cred_json
+  required: false
+  hiddenusername: true
+  type: 9
 - display: User ID for Fetching Incidents
   name: as_user
   required: false
@@ -3031,7 +3037,7 @@ script:
     - contextPath: Box.Folder.item_status
       description: The status of the parent of the item.
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.53491
+  dockerimage: demisto/pyjwt3:1.0.0.63826
   feed: false
   isfetch: true
   longRunning: false

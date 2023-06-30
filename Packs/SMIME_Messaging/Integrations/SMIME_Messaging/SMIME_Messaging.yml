@@ -105,7 +105,7 @@ script:
     - contextPath: SMIME.SignedAndEncrypted.Message
       description: The raw message to send.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.61133
+  dockerimage: demisto/m2crypto:1.0.0.63715
   isfetch: false
   longRunning: false
   longRunningPort: false

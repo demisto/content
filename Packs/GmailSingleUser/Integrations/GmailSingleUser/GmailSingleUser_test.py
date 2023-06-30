@@ -250,3 +250,41 @@ def test_send_mail(gmail_client, mocker, command_args):
     assert command_args.get('to') in markdown_table
     assert command_args.get('subject') in markdown_table
     assert 'SENT' in markdown_table
+
+
+def test_send_mail_with_reference(gmail_client: Client, mocker):
+    """
+    Given:
+        - The references argument as a list type
+        - The inReplyTo argument as a str type
+    When:
+        - run client.send_mail function
+    Then:
+        - Ensure the function expects to receive the type
+          of the reference argument and the inReplyTo argument
+    """
+    mocker.patch.object(
+        gmail_client, 'send_email_request', return_value=True
+    )
+    assert gmail_client.send_mail(
+        emailto=None,
+        emailfrom=None,
+        send_as=None,
+        cc=None,
+        bcc=None,
+        subject=None,
+        body=None,
+        htmlBody=None,
+        entry_ids=None,
+        replyTo=None,
+        file_names=None,
+        attach_cid=None,
+        manualAttachObj=None,
+        transientFile=None,
+        transientFileContent=None,
+        transientFileCID=None,
+        additional_headers=None,
+        templateParams=None,
+        references=['test', 'test1'],
+        inReplyTo='test test'
+    )

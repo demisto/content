@@ -185,6 +185,7 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -424,6 +425,7 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -540,6 +542,7 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -682,6 +685,7 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -1033,6 +1037,7 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -1299,6 +1304,7 @@ script:
     - name: extended_data
       required: false
       description: Whether to return extended data (last_analysis_results).
+      defaultValue: false
     outputs:
     - contextPath: VirusTotal.Analysis.data.attributes.date
       description: Date of the analysis in epoch format.
@@ -1361,6 +1367,7 @@ script:
     - name: only_stats
       description: Print only Sigma analysis summary stats.
       required: false
+      defaultValue: false
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -1639,7 +1646,7 @@ script:
       type: String
 
   runonce: false
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

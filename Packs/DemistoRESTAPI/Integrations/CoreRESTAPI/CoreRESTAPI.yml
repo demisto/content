@@ -253,7 +253,52 @@ script:
       predefined:
         - 'true'
         - 'false'
-    description: Upload packs to Core server from url or the marketplace.
+    description: Upload packs to the core server from the URL or marketplace.
+  - name: core-api-file-upload
+    arguments:
+    - name: incident_id
+      required: false
+      description: The incident's ID.
+    - name: file_name
+      required: false
+      description: "The new file's name."
+    - name: file_content
+      description: "The new file's content."
+    - name: entry_id
+      description: "The War Room entry ID of the pack zip file."
+      required: false
+      isArray: false
+    description: Upload to the incident a file that the user provided according to the entry_id or the content of the file.
+  - name: core-api-file-delete
+    arguments:
+    - name: entry_id
+      description: "The War Room entry ID of the file."
+      required: true
+      isArray: false
+    description: Delete a file from Cortex XSOAR by entry_id.
+  - name: core-api-file-attachment-delete
+    arguments:
+    - name: incident_id
+      required: true
+      description: The incident's ID.
+    - name: file_path
+      required: true
+      description: "The file's path."
+    - name: field_name
+      defaultValue: 'attachment'
+      required: false
+      description: "Name of the field (type attachment) from which to remove the attachment."
+    description: Delete the attachment from the incident and from the Cortex XSOAR server.
+  - name: core-api-file-check
+    arguments:
+    - name: entry_id
+      description: "The War Room entry ID of the file."
+      required: true
+      isArray: false
+    description: Check if the file exists in Cortex XSOAR by entry_id.
+    outputs:
+    - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
+      contextPath: IsFileExists
   runonce: false
 tests:
 - No tests

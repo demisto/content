@@ -21,6 +21,20 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: Team Cymru provides various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
 display: 'Team Cymru'
 name: TeamCymru
@@ -155,7 +169,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/cymruwhois:1.0.0.61459
+  dockerimage: demisto/cymruwhois:1.0.0.63671
 fromversion: 6.5.0
 tests:
 - TeamCymruTest

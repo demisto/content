@@ -796,8 +796,6 @@ script:
       description: Address name.
       type: String
   - arguments:
-    - description: The name of the object to use as a filter.
-      name: name
     - description: ID of the address object to delete.
       name: object_id
       default: false
@@ -810,6 +808,8 @@ script:
     execution: false
     name: prisma-sase-address-object-delete
   - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
     - default: false
       description: The specific address object to return. If not specified, all addresses will be returned.
       isArray: false
@@ -1889,7 +1889,7 @@ script:
     execution: false
     description: Get all predefined URL categories.
     name: prisma-sase-url-category-list
-  dockerimage: demisto/python3:3.10.11.60032
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false

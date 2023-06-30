@@ -39,10 +39,18 @@ configuration:
   name: api_key_id
   required: false
   type: 4
+  hidden: true
 - display: API key secret
   name: api_key_secret
   required: false
   type: 4
+  hidden: true
+- display: API key ID
+  name: credentials_api_key
+  required: false
+  type: 9
+  displaypassword: API key secret
+  section: Connect
 description: Case management that enables visibility across your tools for continual IR improvement.
 display: IBM Resilient Systems
 name: IBM Resilient Systems

@@ -18,11 +18,23 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+  hidden: true
+- displaypassword: API Token (CB Response)
+  name:  credentials_api_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: API Key (CB Defense)
   name: apikey
   defaultvalue: ""
   type: 4
   required: false
+  hidden: true
+- displaypassword: API Key (CB Defense)
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Connector ID (CB Defense)
   name: connector
   defaultvalue: ""

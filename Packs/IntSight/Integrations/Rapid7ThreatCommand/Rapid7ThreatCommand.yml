@@ -246,6 +246,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_results
@@ -330,6 +331,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_results
@@ -485,6 +487,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: "Enrichment flag. Use True to enrich the data about the IOC. Supported IOC types are: Domains, URLs, IP addresses and file hashes. While using this argument, all the other filtering arguments are not relevant (except ioc_value). "
       isArray: false
       name: enrichment
@@ -955,6 +958,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Retrieve alert IDs only. Set to False in order to get the alerts with complete data details, and set to True in order to get a list of alerts.
       isArray: false
       name: retrieve_ids_only
@@ -1049,6 +1053,7 @@ script:
       - 'false'
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show closed/open alerts.
       isArray: false
       name: is_closed
@@ -1159,6 +1164,7 @@ script:
       - Website
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Whether to close the alert after successful remediation.
       isArray: false
       name: close_alert_after_success
@@ -1281,6 +1287,7 @@ script:
       name: comment
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Alerts' hidden status (Delete alert from the account instance only when reason is FalsePositive).
       isArray: false
       name: is_hidden
@@ -1411,6 +1418,7 @@ script:
       name: user_id
       required: true
     - auto: PREDEFINED
+      defaultValue: false
       description: If the assigned user is an MSSP user or not.
       isArray: false
       name: is_mssp
@@ -1809,6 +1817,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_results
@@ -1838,6 +1847,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_results
@@ -1905,6 +1915,7 @@ script:
       - Web Page
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show only mentions from the dark web or not.
       isArray: false
       name: only_dark_web
@@ -1987,6 +1998,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_result
@@ -2018,6 +2030,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_result
@@ -2065,6 +2078,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_result
@@ -2102,6 +2116,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_result
@@ -2127,6 +2142,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_result
@@ -2149,6 +2165,7 @@ script:
       name: limit
       required: false
     - auto: PREDEFINED
+      defaultValue: false
       description: Show all results if True.
       isArray: false
       name: all_result
@@ -2463,7 +2480,7 @@ script:
     description: Checks the reputation of a domain.
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, Tuple, Optional, List, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
+import base64
 
 MIN_PAGE_NUM = 1
 MAX_PAGE_SIZE = 50
@@ -416,7 +417,11 @@ class Client(BaseClient):
         verify: bool,
         proxy: bool,
     ):
-        headers = {'Authorization': f'Basic {api_token}'}
+        api_key = api_token + ':X'
+        api_key_bytes = api_key.encode('utf-8')
+        encoded_key = base64.b64encode(api_key_bytes).decode('utf-8')
+
+        headers = {'Authorization': f'Basic {encoded_key}'}
         super().__init__(base_url=server_url,
                          verify=verify,
                          proxy=proxy,
@@ -2475,7 +2480,7 @@ def list_freshservice_entities_command(
 
 def test_module(client: Client) -> str:
     try:
-        client.freshservice_asset_list(1, 20)
+        client.freshservice_ticket_list(1, 20)
     except DemistoException as exc:
         if exc.res is not None and exc.res.status_code in [
                 HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND,

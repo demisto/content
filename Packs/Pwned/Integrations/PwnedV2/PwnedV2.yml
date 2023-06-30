@@ -5,8 +5,14 @@ commonfields:
 configuration:
 - display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  type: 9
 - defaultvalue: '30'
   display: Maximum time per request (in seconds)
   name: max_retry_time
@@ -254,7 +260,7 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.12.63474
   type: python
 tests:
 - Pwned v2 test

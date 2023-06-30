@@ -243,7 +243,7 @@ Search playbook alerts based on filters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category | filter what playbook alert categories that is wanted. (default = all available). Possible values are: all_available, domain_abuse, vulnerability. | Optional | 
+| category | filter what playbook alert categories that is wanted. (default = all available). Possible values are: all_available, domain_abuse, vulnerability, code_repo_leakage. | Optional | 
 | limit | Limits the number of alerts to fetch. | Optional | 
 | time_since_update | Time between now and e.g. "2 hours" or "7 days" ago. | Optional | 
 | playbook_alert_status | Filter what statuses are fetched, defaults to only new status if not specified. Possible values are: new, in-progress, dismissed, resolved. | Optional | 

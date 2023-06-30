@@ -210,7 +210,7 @@ script:
     description: Resets the indicator fetch history.
     execution: false
     name: socradar-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isfetch: false
   longRunning: false

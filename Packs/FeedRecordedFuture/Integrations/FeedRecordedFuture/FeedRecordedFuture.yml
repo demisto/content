@@ -89,8 +89,14 @@ configuration:
   type: 15
 - display: API token
   name: api_token
-  required: true
+  required: false
   type: 4
+  hidden: true
+- displaypassword: API Token
+  name:  credentials_api_token
+  required: false
+  hiddenusername: true
+  type: 9
 - defaultvalue: connectApi
   display: Services
   name: services
@@ -202,7 +208,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isfetch: false
   longRunning: false

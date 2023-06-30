@@ -20,7 +20,7 @@ XSOAR_IDS_FULL_STATE = {
     'incidenttype': ['incidenttype1', 'incidenttype2'],
     'classifier': ['classifier1', 'classifier2'],
     'reputation': ['reputation1', 'reputation2'],
-    'layout': ['layout1', 'layout2']
+    'layoutscontainer': ['layout1', 'layout2']
 }
 
 
@@ -123,7 +123,7 @@ class MockScriptResponses(MockEntityResponses):
         command_uri = command_args.get('uri')
         if command_uri == '/automation/search':
             if command_args.get('body', {}).get('size') == 1:
-                script_name = command_args.get('body', {}).get('query').split('name:"')[1].split('"')[0]
+                script_name = command_args.get('body', {}).get('query').split('id:"')[1].split('"')[0]
                 if script_name in self.xsoar_state_ids:
                     # if search and found
                     return True, {'scripts': [{'id': script_name}]}
@@ -373,7 +373,7 @@ class MockReputationResponses(MockEntityResponses):
 
 
 class MockLayoutResponses(MockEntityResponses):
-    entity_name = 'layout'
+    entity_name = 'layoutscontainer'
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
@@ -449,7 +449,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'incidenttype': ['incidenttype1'],
                                                   'classifier': ['classifier1'],
                                                   'reputation': ['reputation1'],
-                                                  'layout': ['layout1']},
+                                                  'layoutscontainer': ['layout1']},
          'delete_unspecified': 'false'}, XSOAR_IDS_FULL_STATE, {
             'not_deleted': {},
             'successfully_deleted': {'job': ['job1'], 'list': ['list1'], 'pack': ['installed_pack_id1'],
@@ -457,7 +457,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                      'incidentfield': ['incidentfield1'], 'pre-process-rule': ['pre-process-rule1'],
                                      'widget': ['widget1'], 'dashboard': ['dashboard1'], 'report': ['report1'],
                                      'incidenttype': ['incidenttype1'], 'classifier': ['classifier1'],
-                                     'reputation': ['reputation1'], 'layout': ['layout1']},
+                                     'reputation': ['reputation1'], 'layoutscontainer': ['layout1']},
             'status': 'Completed'}, id='delete only included ids'),
     pytest.param(
         {'dry_run': 'false', 'exclude_ids_dict': {'job': ['job1'],
@@ -474,20 +474,20 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'incidenttype': ['incidenttype1'],
                                                   'classifier': ['classifier1'],
                                                   'reputation': ['reputation1'],
-                                                  'layout': ['layout1']}}, XSOAR_IDS_FULL_STATE, {
+                                                  'layoutscontainer': ['layout1']}}, XSOAR_IDS_FULL_STATE, {
             'not_deleted': {'pack': ['installed_pack_id1', 'Base'], 'job': ['job1'], 'list': ['list1'],
                             'script': ['script1', 'CommonUserServer'],
                             'playbook': ['playbook1'], 'integration': ['integration1'],
                             'incidentfield': ['incidentfield1'], 'pre-process-rule': ['pre-process-rule1'],
                             'widget': ['widget1'], 'dashboard': ['dashboard1'], 'report': ['report1'],
                             'incidenttype': ['incidenttype1'], 'classifier': ['classifier1'],
-                            'reputation': ['reputation1'], 'layout': ['layout1']},
+                            'reputation': ['reputation1'], 'layoutscontainer': ['layout1']},
             'successfully_deleted': {  # packs can only be deleted when included.
                 'job': ['job2'], 'list': ['list2'], 'playbook': ['playbook2'], 'script': ['script2'],
                 'integration': ['integration2'], 'incidentfield': ['incidentfield2'],
                 'pre-process-rule': ['pre-process-rule2'], 'widget': ['widget2'],
                 'dashboard': ['dashboard2'], 'report': ['report2'], 'incidenttype': ['incidenttype2'],
-                'classifier': ['classifier2'], 'reputation': ['reputation2'], 'layout': ['layout2'],
+                'classifier': ['classifier2'], 'reputation': ['reputation2'], 'layoutscontainer': ['layout2'],
                 'pack': ['installed_pack_id2'],
             },
             'status': 'Completed'}, id='dont delete excluded ids'),
@@ -506,7 +506,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'incidenttype': ['incidenttype3'],
                                                   'classifier': ['classifier3'],
                                                   'reputation': ['reputation3'],
-                                                  'layout': ['layout3']}}, XSOAR_IDS_FULL_STATE, {
+                                                  'layoutscontainer': ['layout3']}}, XSOAR_IDS_FULL_STATE, {
             'not_deleted': {'pack': ['Base'], 'script': ['CommonUserServer']},
             'successfully_deleted': {'job': ['job1', 'job2'], 'list': ['list1', 'list2'],
                                      'script': ['script1', 'script2'], 'playbook': ['playbook1', 'playbook2'],
@@ -518,7 +518,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                      'incidenttype': ['incidenttype1', 'incidenttype2'],
                                      'classifier': ['classifier1', 'classifier2'],
                                      'reputation': ['reputation1', 'reputation2'],
-                                     'layout': ['layout1', 'layout2'],
+                                     'layoutscontainer': ['layout1', 'layout2'],
                                      'pack': ['installed_pack_id1', 'installed_pack_id2']},
             'status': 'Completed'}, id='exclude unfound id'),
     pytest.param(
@@ -536,14 +536,14 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'incidenttype': ['incidenttype3'],
                                                   'classifier': ['classifier3'],
                                                   'reputation': ['reputation3'],
-                                                  'layout': ['layout3']}}, XSOAR_IDS_FULL_STATE, {
+                                                  'layoutscontainer': ['layout3']}}, XSOAR_IDS_FULL_STATE, {
             'not_deleted': {'job': ['job3'], 'pack': ['installed_pack3'], 'list': ['list3'],
                             'script': ['script3'], 'playbook': ['playbook3'], 'integration': ['integration3'],
                             'incidentfield': ['incidentfield3'], 'pre-process-rule': ['pre-process-rule3'],
                             'widget': ['widget3'], 'dashboard': ['dashboard3'], 'report': ['report3'],
                             'incidenttype': ['incidenttype3'], 'classifier': ['classifier3'],
                             'reputation': ['reputation3'],
-                            'layout': ['layout3']},
+                            'layoutscontainer': ['layout3']},
             'successfully_deleted': {},
             'status': 'Failed'}, id='include unfound id'),
     pytest.param(

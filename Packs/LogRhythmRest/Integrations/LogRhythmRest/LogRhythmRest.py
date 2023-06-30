@@ -20,7 +20,7 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-TOKEN = demisto.params().get('token', '')
+TOKEN = demisto.params().get('credentials_api_token', {}).get('password') or demisto.params().get('token', '')
 BASE_URL = demisto.params().get('url', '').strip('/')
 INSECURE = not demisto.params().get('insecure')
 CLUSTER_ID = demisto.params().get('cluster-id')
@@ -1952,7 +1952,8 @@ def lr_get_query_result(data_args):
 
 def main():
     LOG('Command being called is %s' % (demisto.command()))
-
+    if not TOKEN:
+        raise DemistoException('API token must be provided.')
     try:
         handle_proxy()
         if demisto.command() == 'test-module':

@@ -26,6 +26,12 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+  hidden: true
+- displaypassword: Authentication token
+  name:  credentials_token
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Vault enterprise namespace
   name: namespace
   defaultvalue: ""
@@ -332,7 +338,7 @@ script:
       description: Authentication lease duration in seconds, 0 if indefinitely.
       type: number
     description: Creates a new authentication token.
-  dockerimage: demisto/hashicorp:1.0.0.61490
+  dockerimage: demisto/hashicorp:1.0.0.63699
   runonce: false
 tests:
 - hashicorp_test

@@ -831,9 +831,11 @@ script:
     - name: start
       required: true
       description: Will be ignored if they start with this name
+      defaultValue: false
     - name: end
       required: true
       description: Will be ignored if they end with this name
+      defaultValue: false
     outputs:
     - contextPath: GCenter.Ignore.AssetName.id
       description: Id
@@ -881,9 +883,11 @@ script:
     - name: start
       required: true
       description: Will be ignored if they start with this name
+      defaultValue: false
     - name: end
       required: true
       description: Will be ignored if they end with this name
+      defaultValue: false
     outputs:
     - contextPath: GCenter.Ignore.KuserName.id
       description: Id
@@ -912,6 +916,7 @@ script:
     - name: start
       required: true
       description: Will be ignored if they start with this name
+      defaultValue: false
     outputs:
     - contextPath: GCenter.Ignore.MacAddress.id
       description: Id
@@ -1071,6 +1076,7 @@ script:
     - name: deep
       required: false
       description: Deep scan
+      defaultValue: false
     - name: timeout
       required: false
       description: Deep scan timeout
@@ -1378,7 +1384,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook
