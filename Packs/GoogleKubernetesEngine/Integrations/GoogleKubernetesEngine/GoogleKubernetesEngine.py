@@ -6,6 +6,7 @@ from typing import Any
 from collections.abc import Callable
 # 3-rd party packages
 from google.cloud.container_v1 import ClusterManagerClient, SetMasterAuthRequest
+from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
 from google.oauth2 import service_account
 import proto
@@ -685,7 +686,7 @@ def gcloud_node_pool_list_command(client: ClusterManagerClient, project: str, zo
                                                        zone=zone,
                                                        cluster_id=cluster,
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = proto.Message.to_dict(raw_response_msg)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
     node_pools_ec: list[dict] = [parse_node_pool(node_pool) for node_pool in raw_response_dict.get('nodePools', [])]
     entry_context = {
