@@ -5,7 +5,7 @@
 from typing import Any
 from collections.abc import Callable
 # 3-rd party packages
-from google.cloud.container_v1 import ClusterManagerClient, SetMasterAuthRequest
+from google.cloud.container_v1 import ClusterManagerClient
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
 from google.oauth2 import service_account
@@ -375,15 +375,14 @@ def gcloud_clusters_set_master_auth(client: ClusterManagerClient, project: str, 
     update = {
         "username": "admin" if basic_auth == "enable" else ""
     }
-    request = SetMasterAuthRequest(
-        action="SET_USERNAME",
-        project_id=project,
-        zone=zone,
-        cluster_id=cluster,
-        update=update,
-    )
     raw_response_msg: Message = client.set_master_auth(
-        request=request,
+        request={
+            'action': 'SET_USERNAME',
+            'project_id': project,
+            'zone': zone,
+            'cluster_id': cluster,
+            'update': update,
+        },
         timeout=API_TIMEOUT,
     )
     raw_response_dict: dict = proto.Message.to_dict(raw_response_msg)
@@ -686,7 +685,7 @@ def gcloud_node_pool_list_command(client: ClusterManagerClient, project: str, zo
                                                        zone=zone,
                                                        cluster_id=cluster,
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore=[attr-defined]
     # Entry context
     node_pools_ec: list[dict] = [parse_node_pool(node_pool) for node_pool in raw_response_dict.get('nodePools', [])]
     entry_context = {
@@ -765,12 +764,15 @@ def gcloud_set_node_pool_management(client: ClusterManagerClient, project: str, 
     if auto_upgrade:
         update['auto_upgrade'] = auto_upgrade == 'enable'
 
-    raw_response_msg: Message = client.set_node_pool_management(project_id=project,
-                                                                zone=zone,
-                                                                cluster_id=cluster,
-                                                                node_pool_id=node_pool,
-                                                                management=update,
-                                                                timeout=API_TIMEOUT)
+    raw_response_msg: Message = client.set_node_pool_management(
+        request={
+            'project_id': project,
+            'zone': zone,
+            'cluster_id': cluster,
+            'node_pool_id': node_pool,
+            'management': update,
+        },
+        timeout=API_TIMEOUT)
     raw_response_dict: dict = proto.Message.to_dict(raw_response_msg)
     # Entry context
     operation: dict = parse_operation(raw_response_dict)
