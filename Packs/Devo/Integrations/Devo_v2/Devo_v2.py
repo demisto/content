@@ -175,14 +175,14 @@ def get_types(self, linq_query, start, ts_format):
     return type_dict
 
 
-def build_link(query, start_ts_milli, end_ts_milli, mode="loxcope", linq_base=None):
+def build_link(query, start_ts_milli, end_ts_milli, mode="queryApp", linq_base=None):
     myb64str = base64.b64encode(
         (
             json.dumps(
                 {
-                    "query": query,
-                    "mode": mode,
-                    "dates": {"from": start_ts_milli, "to": end_ts_milli},
+                    "query":query,
+                    "mode":mode,
+                    "dates":{"from":start_ts_milli,"to":end_ts_milli},
                 }
             ).encode("ascii")
         )
@@ -511,7 +511,8 @@ def run_query_command(offset, items):
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
-    to_query = f"{to_query} offset {offset} limit {items}"
+    to_query_results = f"{to_query} offset {offset} limit {items}"
+    to_query_link = f"{to_query} limit {items}"
     results = list(
         ds.Reader(
             oauth_token=READER_OAUTH_TOKEN,
@@ -519,7 +520,7 @@ def run_query_command(offset, items):
             verify=not ALLOW_INSECURE,
             timeout=query_timeout,
         ).query(
-            to_query,
+            to_query_results,
             start=float(time_range[0]),
             stop=float(time_range[1]),
             output="dict",
@@ -530,7 +531,7 @@ def run_query_command(offset, items):
     COUNT_SINGLE_TABLE = len(results)
     querylink = {
         "DevoTableLink": build_link(
-            to_query,
+            to_query_link,
             int(1000 * float(time_range[0])),
             int(1000 * float(time_range[1])),
             linq_base=linq_base,
