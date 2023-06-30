@@ -605,7 +605,7 @@ def get_workbench_logs(
     workbench_log_type = LogTypes.WORKBENCH.value
     workbench_log_last_run_time = LastRunLogsStartTimeFields.WORKBENCH.value
 
-    start_time, end_time = get_datetime_range(
+    start_time, _ = get_datetime_range(
         last_run_time=last_run.get(workbench_log_last_run_time),
         first_fetch=first_fetch,
         log_type_time_field_name=workbench_log_last_run_time,
@@ -633,7 +633,9 @@ def get_workbench_logs(
     )
     parse_workbench_logs(workbench_logs)
 
-    latest_workbench_log_time = latest_log_time or end_time
+    # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
+    # progress, so we still get additional events
+    latest_workbench_log_time = latest_log_time or start_time
 
     workbench_updated_last_run = {
         workbench_log_last_run_time: latest_workbench_log_time,
@@ -726,7 +728,9 @@ def get_observed_attack_techniques_logs(
             date_format=date_format
         )
 
-        last_run_start_time = latest_log_time or end_time
+        # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
+        # progress, so we still get additional events
+        last_run_start_time = latest_log_time or start_time
 
     if new_next_link:
         # save in cache the latest log ids from first pagination
@@ -802,7 +806,7 @@ def get_search_detection_logs(
         if subsequent_pagination_log_ids:
             pagination_log_ids.extend(subsequent_pagination_log_ids)
     else:
-        start_time, end_time = get_datetime_range(
+        start_time, _ = get_datetime_range(
             last_run_time=last_run_start_time,
             first_fetch=first_fetch,
             log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
@@ -819,8 +823,9 @@ def get_search_detection_logs(
             log_type=search_detections_log_type,
             date_format=date_format
         )
-
-        last_run_start_time = latest_log_time or end_time
+        # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
+        # progress, so we still get additional events
+        last_run_start_time = latest_log_time or start_time
 
     if new_next_link:
         # save in cache the latest log ids from first pagination
@@ -899,8 +904,13 @@ def get_audit_logs(
         log_id_field_name='id',
         date_format=DATE_FORMAT
     )
-    latest_audit_log_time = latest_log_time or end_time
-    latest_audit_log_time = (dateparser.parse(latest_audit_log_time) - timedelta(seconds=1)).strftime(DATE_FORMAT)  # type: ignore
+    # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
+    # progress, so we still get additional events
+    latest_audit_log_time = latest_log_time or start_time
+    if audit_logs:
+        latest_audit_log_time = (
+            dateparser.parse(latest_audit_log_time) - timedelta(seconds=1)  # type: ignore
+        ).strftime(DATE_FORMAT)  # type: ignore
 
     for log in audit_logs:
         # pop all the hashes used to find duplicates
