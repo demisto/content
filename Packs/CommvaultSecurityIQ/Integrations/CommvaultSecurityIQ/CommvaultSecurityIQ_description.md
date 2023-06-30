@@ -1,1 +1,113 @@
- 
+ Commvault Security IQ provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
+This integration was integrated and tested with version 6.8.0 of CommvaultSecurityIQ
+
+## Configure Commvault Security IQ on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Commvault Security IQ.
+3. Click **Add instance** to create and configure a new integration instance.
+
+   | **Parameter**| **Required**|
+   | ---| ---|
+   | Long running instance| False|
+   | Commvault Webservice Url| True|
+   | Commvault API Token| True|
+   | Azure KeyVault Url| False|
+   | Azure KeyVault Tenant ID| False|
+   | Azure KeyVault Client ID| False|
+   | Azure KeyVault Client Secret| False|
+   | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;)| False|
+   | Incident type| False|
+   | Fetch incidents| False|
+   | Incidents Fetch Interval| False|
+   | Forwarding Rule| False|
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### commvault-security-disable-data-aging
+
+***
+Disables data aging on CS
+
+#### Base Command
+
+`commvault-security-disable-data-aging`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### commvault-security-generate_token
+
+***
+Generate Token
+
+#### Base Command
+
+`commvault-security-generate_token`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### commvault-security-disable-saml-provider
+
+***
+Disable SAML provider
+
+#### Base Command
+
+`commvault-security-disable-saml-provider`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### commvault-security-copy-files-list-to-war-room
+
+***
+Copy the list of affected files list to war room
+
+#### Base Command
+
+`commvault-security-copy-files-list-to-war-room`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### commvault-security-get-access-token-from-keyvault
+
+***
+Read the access token from KeyVault
+
+#### Base Command
+
+`commvault-security-get-access-token-from-keyvault`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

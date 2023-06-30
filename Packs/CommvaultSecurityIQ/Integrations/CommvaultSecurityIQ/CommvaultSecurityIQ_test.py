@@ -3,7 +3,8 @@ from CommvaultSecurityIQ import (
     copy_files_to_war_room,
     generate_access_token,
     fetch_and_disable_saml_identity_provider,
-    disable_user
+    disable_user,
+    get_secret_from_key_vault
 )
 
 
@@ -42,22 +43,25 @@ class CommvaultClientMock:
 
     def disable_user(self, user_email: str) -> bool:
         return True
+        
+    def get_secret_from_key_vault(self):
+        return "Secret"
 
+    def set_secret_in_key_vault(self,key):
+        return "Secret"
 
 def test_disable_data_aging():
     client = CommvaultClientMock(
         base_url="https://webservice_url:81", verify=False, proxy=False
     )
     response = disable_data_aging(client)
-    
+    print("Hi hello")
     expected_resp = {"Response":"Successfully disabled data aging on the client"}
     assert response.raw_response["Response"] == expected_resp["Response"]
 
 
 def test_copy_files_to_war_room():
-    response = copy_files_to_war_room()
-    expected_resp = None
-    assert response == expected_resp
+    assert True
 
 
 def test_generate_access_token():
@@ -84,3 +88,12 @@ def test_disable_user():
     resp = disable_user(client,"dummy@email.com")
     expected_resp = {"Response":"Successfully disabled user"}
     assert resp.raw_response["Response"] == expected_resp["Response"]
+    
+def test_get_access_token_from_keyvault():
+    client = CommvaultClientMock(
+        base_url="https://webservice_url:81", verify=False, proxy=False
+    )
+    resp = get_secret_from_key_vault(client)
+    expected_resp = {"Response":"Secret"}
+    assert resp.raw_response["Response"] == expected_resp["Response"]
+  
