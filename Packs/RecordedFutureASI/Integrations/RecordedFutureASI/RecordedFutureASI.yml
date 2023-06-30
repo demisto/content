@@ -70,7 +70,7 @@ script:
     - name: expand_issues
       description: true/false to make an incident per host & per new issue
     description: Gets the issues for a project from a particular snapshot (defaults to recent)
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.62631
   isfetch: true
   runonce: false
   subtype: python3

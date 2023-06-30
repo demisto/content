@@ -9,6 +9,8 @@ from typing import Dict, List, Any
 import traceback
 from itertools import groupby
 
+STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
+
 
 def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
@@ -25,13 +27,11 @@ def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return owners
 
 
-def rank(owners: List[Dict[str, Any]], k: int = 5) -> List[Dict[str, Any]]:
+def rank(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Return up to k owners with the highest ranking scores
+    Sort owners by ranking score
     """
-    if k <= 0:
-        raise ValueError(f'Number of owners k={k} must be greater than zero')
-    return sorted(owners, key=lambda x: x['Ranking Score'])[:k]
+    return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)
 
 
 def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
@@ -51,12 +51,12 @@ def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
         2. whitespace-stripped and lower-cased name
         3. empty string if neither exists
     """
-    if owner.get('Email', ''):
-        owner['Canonicalization'] = owner['Email'].strip().lower()
-        owner['Email'] = owner['Canonicalization']
-    elif owner.get('Name', ''):
-        owner['Canonicalization'] = owner['Name'].strip().lower()
-        owner['Name'] = owner['Canonicalization']
+    if owner.get('email', ''):
+        owner['Canonicalization'] = owner['email'].strip().lower()
+        owner['email'] = owner['Canonicalization']
+    elif owner.get('name', ''):
+        owner['Canonicalization'] = owner['name'].strip().lower()
+        owner['name'] = owner['Canonicalization']
     else:
         owner['Canonicalization'] = ''
     return owner
@@ -92,20 +92,20 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     sorted_owners = sorted(owners, key=lambda owner: owner['Canonicalization'])
     for key, group in groupby(sorted_owners, key=lambda owner: owner['Canonicalization']):
         duplicates = list(group)
-        email = duplicates[0].get('Email', '')
+        email = duplicates[0].get('email', '')
         # the if condition in the list comprehension below defends against owners whose Name value is None (not sortable)
         names = sorted(
-            [owner.get('Name', '') for owner in duplicates if owner.get('Name')],
+            [owner.get('name', '') for owner in duplicates if owner.get('name')],
             key=lambda x: len(x), reverse=True
         )
         name = names[0] if names else ''
         # aggregate Source by union
-        source = ' | '.join(sorted(
-            set(owner.get('Source', '') for owner in duplicates if owner.get('Source', ''))
+        source = STRING_DELIMITER.join(sorted(
+            set(owner.get('source', '') for owner in duplicates if owner.get('source', ''))
         ))
         # take max Timestamp if there's at least one; else empty string
         timestamps = sorted(
-            [owner.get('Timestamp', '') for owner in duplicates if owner.get('Timestamp', '')], reverse=True
+            [owner.get('timestamp', '') for owner in duplicates if owner.get('timestamp', '')], reverse=True
         )
         timestamp = timestamps[0] if timestamps else ''
         owner = {
@@ -119,11 +119,14 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         # aggregate remaining keys according to type
         all_keys = set(k for owner in duplicates for k in owner.keys())
         keys_to_types = {k: type(owner[k]) for owner in duplicates for k in owner.keys()}
-        other_keys = all_keys - {'Name', 'Email', 'Source', 'Timestamp', 'Canonicalization'}
+        other_keys = []
+        for key in all_keys:
+            if key.lower() not in {'name', 'email', 'source', 'timestamp', 'canonicalization'}:
+                other_keys.append(key)
         for other in other_keys:
             if keys_to_types[other] == str:
                 # union over strings
-                owner[other] = ' | ' .join(sorted(
+                owner[other] = STRING_DELIMITER.join(sorted(
                     set(owner.get(other, '') for owner in duplicates if owner.get(other, ''))
                 ))
             elif keys_to_types[other] in (int, float):
@@ -138,10 +141,10 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
 
 def main():
     try:
-        owners = demisto.args().get("owners", [])
-        top_k = justify(rank(score(aggregate(canonicalize(owners)))))
-        demisto.executeCommand("setAlert", {"asmserviceowner": top_k})
-        return_results(CommandResults(readable_output='top 5 service owners written to asmserviceowner'))
+        unranked = demisto.args().get("owners", [])
+        ranked = justify(rank(score(aggregate(canonicalize(unranked)))))
+        demisto.executeCommand("setAlert", {"asmserviceowner": ranked})
+        return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

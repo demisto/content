@@ -3,48 +3,65 @@ commonfields:
   id: Azure Kubernetes Services
   version: -1
 configuration:
-- defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
-  display: Application ID
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Azure AD endpoint parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
+- display: Application ID
   name: app_id
   required: false
+  defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
   type: 0
-- additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
-  display: Authentication Type
+  hidden: false
+- display: Authentication Type
   name: auth_type
   required: true
+  type: 15
+  additionalinfo: Type of authentication. Can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   defaultvalue: Device Code
   options:
   - Authorization Code
   - Device Code
   - Azure Managed Identities
-  type: 15
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
   type: 0
 - display: Client Secret (for authorization code mode)
-  displaypassword: Client Secret (for authorization code mode)
-  hiddenusername: true
   name: credentials
   required: false
   type: 9
+  displaypassword: Client Secret (for authorization code mode)
+  hiddenusername: true
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code
+- additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section
   displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
-  hiddenusername: true
   name: auth_code
   required: false
-  type: 9
-- additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
+  display: Authorization code
+- name: managed_identities_client_id
+  required: false
+  type: 9
+  additionalinfo: The Managed Identities client ID for authentication. Relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
 - display: Subscription ID
   name: subscription_id
   required: true
@@ -53,17 +70,6 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- defaultvalue: https://login.microsoftonline.com
-  display: Azure AD endpoint
-  name: azure_ad_endpoint
-  options:
-  - https://login.microsoftonline.com
-  - https://login.microsoftonline.us
-  - https://login.microsoftonline.de
-  - https://login.chinacloudapi.cn
-  required: false
-  type: 15
-  additionalinfo: Azure AD endpoint associated with a national cloud.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -72,6 +78,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: https://login.microsoftonline.com
+  display: Azure AD endpoint
+  name: azure_ad_endpoint
+  required: false
+  type: 0
+  advanced: true
+  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services
 name: Azure Kubernetes Services
@@ -288,7 +302,7 @@ script:
     execution: false
     name: azure-ks-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: false
   longRunning: false
@@ -298,3 +312,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

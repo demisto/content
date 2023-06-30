@@ -8,27 +8,27 @@ An attacker is attempting to encrypt the victim files for either extortion or de
 
 Investigate the executed process image and verify if it is malicious using:
 
-* XDR trusted signers
+XDR trusted signers
 
-* VT trusted signers
+VT trusted signers
 
-* VT detection rate
+VT detection rate
 
-* NSRL DB
+NSRL DB
 
 **Response Actions:**
 
 The playbook’s first response action is a remediation plan which includes two sub-playbooks, **Containment Plan** and **Eradication Plan**, which is based on the initial data provided within the alert. In that phase, the playbooks will execute:
 
-* Auto endpoint isolation
+Auto endpoint isolation
 
-* Auto block indicators
+Auto block indicators
 
-* Auto file quarantine
+Auto file quarantine
 
-* Auto user disable
+Auto user disable
 
-* Auto process termination
+Auto process termination
 
 Next, the playbook executes an enrichment and response phase which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account Enrichment - Generic v2.1**.
 The Ransomware Enrich and Contain playbook does the following:
@@ -45,11 +45,11 @@ When the playbook executes, it checks for additional activity using the Endpoint
 
 **This phase will execute the following containment actions:**
 
-* Manual block indicators
+Manual block indicators
 
-* Manual file quarantine
+Manual file quarantine
 
-* Auto endpoint isolation
+Auto endpoint isolation
 
 Finally, the recovery phase is executed. If the analysts decides to continue with the investigation rather than recover and close the alert, a manual task with **CISA** official ransomware investigation checklist is provided for further investigation.
 
@@ -65,15 +65,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Endpoint Investigation Plan
-* Enrichment for Verdict
-* Recovery Plan
-* Ransomware Advanced Analysis
-* Handle False Positive Alerts
-* Containment Plan
-* Ransomware Enrich and Contain
 * Account Enrichment - Generic v2.1
 * Eradication Plan
+* Ransomware Advanced Analysis
+* Ticket Management - Generic
+* Handle False Positive Alerts
+* Endpoint Investigation Plan
+* Ransomware Enrich and Contain
+* Recovery Plan
+* Containment Plan
+* Enrichment for Verdict
 
 ### Integrations
 
@@ -85,6 +86,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
+* setParentIncidentField
 * closeInvestigation
 
 ## Playbook Inputs
@@ -103,6 +105,25 @@ This playbook does not use any scripts.
 | FileSHA256 | The file SHA256 to investigate. | alert.initiatorsha256 | Optional |
 | FilePath | The file path to investigate. | alert.initiatorpath | Optional |
 | IP | The IP address to investigate. | alert.hostip | Optional |
+| ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | False | Optional |
+| serviceNowShortDescription | A short description of the ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
+| serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
+| serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
+| serviceNowSeverity | The severity of the new ticket. Leave empty for ServiceNow default severity. |  | Optional |
+| serviceNowTicketType | The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
+| serviceNowCategory | The category of the ServiceNow ticket. |  | Optional |
+| serviceNowAssignmentGroup | The group to which to assign the new ticket. |  | Optional |
+| ZendeskPriority | The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low". |  | Optional |
+| ZendeskRequester | The user who requested this ticket. |  | Optional |
+| ZendeskStatus | The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed". |  | Optional |
+| ZendeskSubject | The value of the subject field for this ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
+| ZendeskTags | The array of tags applied to this ticket. |  | Optional |
+| ZendeskType | The type of this ticket. Allowed values are "problem", "incident", "question", or "task". |  | Optional |
+| ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
+| ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
+| description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

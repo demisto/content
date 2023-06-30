@@ -1050,3 +1050,57 @@ Add a new custom field and add it to the incident type&#39;s layout:
 6. Click on the 'V' option in the 'V/X' menu.
 7. You can see the new status under 'Jira Status'.
 8. Go to Jira, within approximately one minute you will be able to see the new status there as well.
+### jira-add-user-to-project
+
+***
+Adds the user to a project.
+
+#### Base Command
+
+`jira-add-user-to-project`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_email | User's email address. | Optional | 
+| project_key | Project key. | Optional | 
+| role_name | Role name to assign the user. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### jira-get-project-role
+
+***
+Gets the information related to the role, including assigned users.
+
+#### Base Command
+
+`jira-get-project-role`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### jira-get-organizations
+
+***
+Lists all the organizations.
+
+#### Base Command
+
+`jira-get-organizations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

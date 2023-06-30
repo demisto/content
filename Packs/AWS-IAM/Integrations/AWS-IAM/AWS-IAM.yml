@@ -526,10 +526,10 @@ script:
     name: aws-iam-add-user-to-group
   - arguments:
     - default: false
-      description: The name of the IAM user that the new key will belong to.
+      description: The name of the IAM user that the new key will belong to. If username is not provided, the account name configured in your integration will be used.
       isArray: false
       name: userName
-      required: true
+      required: false
       secret: false
     - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
@@ -568,10 +568,10 @@ script:
       type: date
   - arguments:
     - default: false
-      description: The name of the user whose key you want to update.
+      description: The name of the user whose key you want to update. If username is not provided, the account name configured in your integration will be used.
       isArray: false
       name: userName
-      required: true
+      required: false
       secret: false
     - default: false
       description: The access key ID of the secret access key you want to update.
@@ -989,10 +989,10 @@ script:
     name: aws-iam-create-login-profile
   - arguments:
     - default: false
-      description: he name of the user whose access key pair you want to delete.
+      description: The name of the user whose access key pair you want to delete. If username is not provided, the account name configured in your integration will be used.
       isArray: false
       name: userName
-      required: true
+      required: false
       secret: false
     - default: false
       description: The access key ID for the access key ID and secret access key you want to delete.
@@ -1507,6 +1507,12 @@ script:
     - contextPath: AWS.IAM.Roles.MaxSessionDuration
       description: The maximum session duration (in seconds) for the specified role.
       type: number
+    - contextPath: AWS.IAM.Roles.Tags.Key
+      description: The tag key.
+      type: string
+    - contextPath: AWS.IAM.Roles.Tags.Value
+      description: The tag value.
+      type: string
   - arguments:
     - default: false
       description: The name of the role to delete.
@@ -2304,7 +2310,171 @@ script:
     - contextPath: AWS.IAM.Users.LoginProfile.PasswordResetRequired
       description: Specifies whether the user is required to set a new password on next sign-in.
       type: Boolean
-  dockerimage: demisto/boto3py3:1.0.0.62350
+  - arguments:
+    - default: false
+      description: The policy document. You must provide policies in JSON format in IAM.
+      isArray: false
+      name: policyDocument
+      required: true
+      secret: false
+    - default: false
+      description: The name of the policy document.
+      isArray: false
+      name: policyName
+      required: true
+      secret: false
+    - default: false
+      description: The name of the role to associate the policy with.
+      isArray: false
+      name: roleName
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds or updates an inline policy document that is embedded in the specified IAM role.
+    execution: false
+    name: aws-iam-put-role-policy
+  - arguments:
+    - default: false
+      description: The policy document. You must provide policies in JSON format in IAM.
+      isArray: false
+      name: policyDocument
+      required: true
+      secret: false
+    - default: false
+      description: The name of the policy document.
+      isArray: false
+      name: policyName
+      required: true
+      secret: false
+    - default: false
+      description: The name of the user to associate the policy with.
+      isArray: false
+      name: userName
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds or updates an inline policy document that is embedded in the specified IAM user.
+    execution: false
+    name: aws-iam-put-user-policy
+  - arguments:
+    - default: false
+      description: The policy document. You must provide policies in JSON format in IAM.
+      isArray: false
+      name: policyDocument
+      required: true
+      secret: false
+    - default: false
+      description: The name of the policy document.
+      isArray: false
+      name: policyName
+      required: true
+      secret: false
+    - default: false
+      description: The name of the group to associate the policy with.
+      isArray: false
+      name: groupName
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds or updates an inline policy document that is embedded in the specified IAM group.
+    execution: false
+    name: aws-iam-put-group-policy
+  - arguments:
+    - default: false
+      description: The name of the IAM role to which you want to add tags.
+      isArray: false
+      name: roleName
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds one or more tags to an IAM role. The role can be a regular role or a service-linked role. If a tag with the same key name already exists, then that tag is overwritten with the new value.
+    execution: false
+    name: aws-iam-tag-role
+  - arguments:
+    - default: false
+      description: The name of the IAM user to which you want to add tags.
+      isArray: false
+      name: userName
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of Key:Value tag objects. I.e., Key1:Value1,Key2:Value2
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds one or more tags to an IAM user. If a tag with the same key name already exists, then that tag is overwritten with the new value.
+    execution: false
+    name: aws-iam-tag-user
+  - arguments:
+    - default: false
+      description: The name of the IAM role to which you want to untag.
+      isArray: false
+      name: userName
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of tag keys.
+      isArray: true
+      name: tagKeys
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes the specified tags from the user.
+    execution: false
+    name: aws-iam-untag-user
+  - arguments:
+    - default: false
+      description: The name of the IAM role to which you want to untag.
+      isArray: false
+      name: roleName
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of tag keys.
+      isArray: true
+      name: tagKeys
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes the specified tags from the role.
+    execution: false
+    name: aws-iam-untag-role
+  - arguments:
+    - default: false
+      description: The identifier of an access key.
+      isArray: false
+      name: accessKeyId
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves information about when the specified access key was last used. The information includes the date and time of last use, along with the AWS service and region that were specified in the last request made with that key.
+    execution: false
+    name: aws-iam-get-access-key-last-used
+    outputs:
+    - contextPath: AWS.IAM.AccessKey.ID
+      description: The access key ID.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.UserName
+      description: The username owning the given access key.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.LastUsedServiceName
+      description: The name of the service that last used the given access key.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.LastUsedRegion
+      description: The name of the region where the given access key was last used in.
+      type: string
+    - contextPath: AWS.IAM.AccessKey.LastUsedDate
+      description: The date when the given access key was last used.
+      type: string
+  dockerimage: demisto/boto3py3:1.0.0.63846
   feed: false
   isfetch: false
   longRunning: false

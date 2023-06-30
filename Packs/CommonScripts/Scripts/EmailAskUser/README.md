@@ -4,10 +4,10 @@ Asks a user a question via email and process the reply directly into the investi
 
 Cortex XSOAR can use email responses within the system, e.g. when an external user's approval is required. To do this, you will create an email template with multiple choice options (e.g. Reply "Yes" if you approve and "No" if you do not).
 
-**Before starting you will need to configure an integration capable for sending and receiving emails, such as: Mail Listener v2 and Mail Sender (New), GMail, EWS O365, O365 Outlook Mail Single User. The instance that will receive the response must be set to fetch incidents.**
+**Before starting, you will need to configure an integration capable for sending and receiving emails, such as: Mail Listener v2 and Mail Sender (New), GMail, EWS O365, O365 Outlook Mail Single User. The instance that will receive the response must be set to fetch incidents.**
 
 The user who receives the mail will respond accordingly and when an answer is received, it will trigger a task to handle the response.
-This is a two step task. The first, is to send an email asking the user for information. The second step, is to receive the answer and trigger a process of handling it in Cortex XSOAR.
+This is a two-step task. The first, is to send an email asking the user for information. The second step, is to receive the answer and trigger a process of handling it in Cortex XSOAR.
 
 The outgoing email contains a token that will be used when the user responds to the email. According to the token, the response will be directed to the relevant incident.
 
@@ -52,34 +52,34 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 ## Script Data
 ---
 
-| **Name** | **Description** |
-| --- | --- |
-| Script Type | javascript |
-| Tags | email |
-| Cortex XSOAR Version | 4.0.0+ |
+| **Name**             | **Description** |
+|----------------------|-----------------|
+| Script Type          | javascript      |
+| Tags                 | email           |
+| Cortex XSOAR Version | 4.0.0+          |
 
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| email | The email of the user to ask. |
-| subject | The subject for the email. |
-| message | The message sent to the user you are going to ask. |
-| option1 | The first option for a user reply.The default is "yes". |
-| option2 | The second option for the user reply. The default is "no". |
-| additionalOptions | The comma delimited list of additional options if there are more than 2. |
-| task | Which task the reply will close. If none, then no playbook tasks will be closed. |
-| roles | Send mail to all users of these roles (a CSV list). |
-| attachIds | The attachments. |
-| bodyType | The type of email body to send. Can be, "text" or "HTML". |
-| replyAddress | The reply address for the html links. |
-| replyEntriesTag | The tag to add on email reply entries. |
-| persistent | Whether to use one-time entitlement or a persistent one. |
-| retries | How many times to try and create an entitlement in case of a failure. |
-| cc | The CC email address. |
-| bcc | The BCC email address. |
-| playbookTaskID | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all plabooks |
+| **Argument Name** | **Description**                                                                                                        |
+|-------------------|------------------------------------------------------------------------------------------------------------------------|
+| email             | The email of the user to ask.                                                                                          |
+| subject           | The subject for the email.                                                                                             |
+| message           | The message sent to the user you are going to ask.                                                                     |
+| option1           | The first option for a user reply.The default is "yes".                                                                |
+| option2           | The second option for the user reply. The default is "no".                                                             |
+| additionalOptions | The comma delimited list of additional options if there are more than 2.                                               |
+| task              | Which task the reply will close. If none, then no playbook tasks will be closed.                                       |
+| roles             | Send mail to all users of these roles (a CSV list).                                                                    |
+| attachIds         | The attachments.                                                                                                       |
+| bodyType          | The type of email body to send. Can be, "text" or "HTML".                                                              |
+| replyAddress      | The reply address for the html links.                                                                                  |
+| replyEntriesTag   | The tag to add on email reply entries.                                                                                 |
+| persistent        | Whether to use one-time entitlement or a persistent one.                                                               |
+| retries           | How many times to try and create an entitlement in case of a failure.                                                  |
+| cc                | The CC email address.                                                                                                  |
+| bcc               | The BCC email address.                                                                                                 |
+| playbookTaskID    | The subplaybook ID, use `${currentPlaybookID}` to get from the context, `all` to complete all tasks from all plabooks. |
 
 ## Outputs
 ---

@@ -16,15 +16,22 @@ configuration:
   name: apiKey
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
+- name: apikey_creds
+  type: 9
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
+
 script:
   script: ''
   type: javascript
@@ -458,3 +465,5 @@ script:
       description: The public URL to a binary file to be posted into the room. Only one file is allowed per message. Uploaded files are automatically converted into a format that all Spark clients can render. For the supported media types and the behavior of uploads, see the Message AttachmentsGuide.
     description: Sends a message to a room, by name or room ID.
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
