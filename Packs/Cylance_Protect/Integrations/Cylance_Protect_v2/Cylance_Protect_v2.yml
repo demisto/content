@@ -965,7 +965,7 @@ script:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.62977
+  dockerimage: demisto/pyjwt3:1.0.0.63826
   isfetch: true
   runonce: false
   script: ''
