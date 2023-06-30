@@ -1,5 +1,6 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 ''' IMPORTS '''
 
@@ -189,8 +190,13 @@ def gcs_create_bucket(client, args):
     bucket_name = args['bucket_name']
     bucket_acl = args.get('bucket_acl', '')
     default_object_acl = args.get('default_object_acl', '')
+    location = args['location']
+    uniform_bucket_level_access = args['uniform_bucket_level_access']
 
-    bucket = client.create_bucket(bucket_name)
+    bucket = client.create_bucket(bucket_name, location=location)
+    if uniform_bucket_level_access:
+        bucket.iam_configuration.uniform_bucket_level_access_enabled = True
+        bucket.patch()
     if bucket_acl:
         bucket.acl.save_predefined(bucket_acl)
     if default_object_acl:
