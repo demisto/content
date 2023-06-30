@@ -5,19 +5,13 @@ import json
 
 ARGS = demisto.args()
 OVERRIDE_BUILTINS = {'__builtins__': None}
+EVAL_BLACKLIST = ('.__', '*', ':')
 
 
 def evaluate_condition(condition: str) -> bool:
-
-    try:
-        result = eval(condition, OVERRIDE_BUILTINS)  # noqa: PGH001
-    except Exception:
-        raise SyntaxError(f'Invalid expression: {condition!r}')
-
-    if not isinstance(result, bool):
-        raise TypeError(f'Condition {condition!r} is not a valid boolean expression.')
-
-    return result
+    if any(op in condition for op in EVAL_BLACKLIST):
+        raise SyntaxError(condition)
+    return eval(condition, OVERRIDE_BUILTINS)  # noqa: PGH001
 
 
 def main():
@@ -34,10 +28,11 @@ def main():
             default['else']
         )
 
-    except Exception as e:
-        raise DemistoException(f'Error in IfElif Transformer:\n{e.args}')
+        return_results(result)
 
-    return_results(result)
+    except Exception as e:
+        demisto.debug(str(e))
+        return_error('Error in IfElif Transformer. Make sure you entered the values correctly.')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
