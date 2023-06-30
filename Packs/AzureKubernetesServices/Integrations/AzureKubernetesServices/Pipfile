@@ -28,7 +28,7 @@ sendgrid = "==6.6.0"
 blessings = "==1.7"
 slack-sdk = "==3.11.2"
 GitPython = "==3.1.11"
-PyPDF2 = "==1.26.0"
+PyPDF2 = "==1.27.9"
 
 [packages]
 cryptography = "*"
