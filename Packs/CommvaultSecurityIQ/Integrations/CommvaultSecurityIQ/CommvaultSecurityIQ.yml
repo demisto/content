@@ -3,7 +3,11 @@ commonfields:
   id: CommvaultSecurityIQ
   version: -1
 configuration:
-- display: Long running instance
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Long running instance ( Only select it, if Fetch Incidents was not selected )
   name: longRunning
   required: false
   type: 8
@@ -12,7 +16,7 @@ configuration:
   required: true
   type: 0
 - display: Commvault API Token
-  name: Commvault API Token
+  name: CommvaultAPIToken
   required: true
   type: 4
 - display: Azure KeyVault Url
@@ -31,7 +35,7 @@ configuration:
   name: AzureKeyVaultClientSecret
   required: false
   type: 4
-- display: Port mapping (<port> or <host port>:<docker port>)
+- display: Port mapping (<port> or <host port>:<docker port>) (Only for Long running Integration)
   name: longRunningPort
   required: false
   type: 0
@@ -39,31 +43,36 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - defaultvalue: '60'
-  display: Incidents Fetch Interval
+  display: Incidents Fetch Interval (Only for Fetch Incidents)
   name: incidentFetchInterval
   required: false
   type: 19
-- display: Forwarding Rule
+- display: Forwarding Rule (Only for Long running Integration)
   name: forwardingRule
   options:
   - Syslog
   - Webhook
   required: false
   type: 15
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- defaultvalue: 1 day 
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) (Only for Fetch Incidents)
   name: first_fetch
   required: false
   type: 0
-- name: max_fetch
+- display: Max events to fetch. Maximum events that can be fetch is 200 (Only for Fetch Incidents)
+  name: max_fetch
   required: false
   type: 0
   defaultvalue: '50'
+- display: Certificate
+  name: certificate
+  type: 12
+  required: false
+- display: Private key
+  name: private_key
+  type: 12
+  required: false
 description: Commvault Security IQ provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
 display: Commvault Security IQ
 name: CommvaultSecurityIQ
@@ -72,7 +81,7 @@ script:
   - deprecated: false
     description: Disables data aging on CS
     execution: false
-    name: disable-data-aging
+    name: commvault-security-disable-data-aging
     outputs:
     - contextPath: CommvaultSecurityIQ.Response
       description: Status returned after calling disable data aging API
@@ -80,15 +89,23 @@ script:
   - deprecated: false
     description: Generate Token
     execution: false
-    name: generate-token
+    name: commvault-security-generate-token
     outputs:
     - contextPath: CommvaultSecurityIQ.Response
       description: Status indicating whether successfully generated access token or not 
       type: string
   - deprecated: false
+    description: Read the access token from KeyVault
+    execution: false
+    name: commvault-security-get-access-token-from-keyvault
+    outputs:
+    - contextPath: CommvaultSecurityIQ.Response
+      description: Status returned after getting the access token from KeyVault 
+      type: string
+  - deprecated: false
     description: Disable SAML provider
     execution: false
-    name: disable-saml-provider
+    name: commvault-security-disable-saml-provider
     outputs:
     - contextPath: CommvaultSecurityIQ.Response
       description: Status indicating whether successfully disabled SAML provider or not
@@ -96,13 +113,14 @@ script:
   - deprecated: false
     description: Copy the list of affected files list to war room
     execution: false
-    name: copy-files-list-to-war-room
+    name: commvault-security-copy-files-list-to-war-room
   - deprecated: false
     description: Disables user
     execution: false
-    name: disable-user
+    name: commvault-security-disable-user
     arguments:
     - name: user_email
+      description: Email id of the user to be disabled.
       required: true
       type: textArea
     outputs:

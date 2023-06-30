@@ -29,14 +29,14 @@ This integration was integrated and tested with version 6.8.0 of CommvaultSecuri
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### disable-data-aging
+### commvault-security-disable-data-aging
 
 ***
 Disables data aging on CS
 
 #### Base Command
 
-`disable-data-aging`
+`commvault-security-disable-data-aging`
 
 #### Input
 
@@ -45,14 +45,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### generate_token
+### commvault-security-generate_token
 
 ***
 Generate Token
 
 #### Base Command
 
-`generate_token`
+`commvault-security-generate_token`
 
 #### Input
 
@@ -61,14 +61,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### disable-saml-provider
+### commvault-security-disable-saml-provider
 
 ***
 Disable SAML provider
 
 #### Base Command
 
-`disable-saml-provider`
+`commvault-security-disable-saml-provider`
 
 #### Input
 
@@ -77,14 +77,30 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-### copy-files-list-to-war-room
+### commvault-security-copy-files-list-to-war-room
 
 ***
 Copy the list of affected files list to war room
 
 #### Base Command
 
-`copy-files-list-to-war-room`
+`commvault-security-copy-files-list-to-war-room`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### commvault-security-get-access-token-from-keyvault
+
+***
+Read the access token from KeyVault
+
+#### Base Command
+
+`commvault-security-get-access-token-from-keyvault`
 
 #### Input
 

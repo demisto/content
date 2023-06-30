@@ -10,6 +10,7 @@ from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from typing import Any, Dict, List, Optional, Tuple
 
+import dateparser
 import requests
 import syslogmp
 import urllib3
@@ -21,6 +22,7 @@ from gevent.server import StreamServer
 from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
 from urllib.parse import urlparse
+
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -90,8 +92,8 @@ async def handle_post(
 ):
     global client
     try:
-        incident_type: Optional[str] = demisto.params().get(
-            "incident_type", "Suspicious File Activity"
+        incidentType: Optional[str] = demisto.params().get(
+            "incidentType", "Suspicious File Activity"
         )
         current_date = datetime.utcnow()
         epoch = datetime(1970, 1, 1)
@@ -162,7 +164,7 @@ async def handle_post(
                 content="Authorization failed.",
             )
 
-    client.create_incident(incident_body, timestamp, incident_type, False)  # type: ignore
+    client.create_incident(incident_body, timestamp, incidentType, False)  # type: ignore
 
     return "OK"
 
@@ -439,7 +441,7 @@ class Client(BaseClient):
             params: Optional[dict] = None,
             json_data: Optional[Dict[str, Any]] = None,
             ignore_empty_response: bool = False,
-            headers: Optional[dict] = None,
+            headers: Optional[dict] = None
     ) -> Dict:
         """
         Function to make http calls
@@ -535,28 +537,21 @@ class Client(BaseClient):
     def prepare_globals_and_create_server(
             self,
             port: int,
-            certificate: Optional[str],
-            private_key: Optional[str],
+            certificate_path: Optional[str],
+            private_key_path: Optional[str],
     ) -> StreamServer:
         """
         Prepares global environments of LOG_FORMAT and creates the server to listen
         to Syslog messages.
         Args:
             port (int): Port
-            certificate (Optional[str]): Certificate. For SSL connection.
-            private_key (Optional[str]): Private key. For SSL connection.
+            certificate_path (Optional[str]): Certificate path. For SSL connection.
+            private_key_path (Optional[str]): Private key path. For SSL connection.
 
         Returns:
             (StreamServer): Server to listen to Syslog messages.
         """
-        if certificate and private_key:
-            with NamedTemporaryFile(delete=False) as certificate_file:
-                certificate_path = certificate_file.name
-                certificate_file.write(bytes(certificate, "utf-8"))
-
-            with NamedTemporaryFile(delete=False) as private_key_file:
-                private_key_path = private_key_file.name
-                private_key_file.write(bytes(private_key, "utf-8"))
+        if certificate_path and private_key_path:
             server = StreamServer(
                 ("0.0.0.0", port),
                 self.perform_long_running_execution,
@@ -610,8 +605,8 @@ class Client(BaseClient):
         """
         Function to start long running loop
         """
-        incident_type: str = demisto.params().get(
-            "incident_type", "Suspicious File Activity"
+        incidentType: str = demisto.params().get(
+            "incidentType", "Suspicious File Activity"
         )
 
         extracted_message = self.parse_incoming_message(socket_data)
@@ -621,13 +616,13 @@ class Client(BaseClient):
             demisto.debug("Failed in parsing the message ")
         if extracted_message:
             dts = datetime.fromisoformat(extracted_message["timestamp"])
-            self.create_incident(extracted_message, dts, incident_type, False)
+            self.create_incident(extracted_message, dts, incidentType, False)
 
     def create_incident(
             self,
             extracted_message: Union[List, Dict[str, Any]],
             date_obj: datetime,
-            incident_type: str,
+            incidentType: str,
             is_fetch: bool,
     ) -> None:
         """
@@ -642,7 +637,7 @@ class Client(BaseClient):
                 "name": f"Suspicious File Activity Detected at [{date_str}]",
                 "rawJSON": json.dumps(message_),
                 "occurred": message_["occurred"],
-                "type": incident_type,
+                "type": incidentType,
                 "details": "\n".join(
                     [f"{k}: {v}" for k, v in message_.items() if v]
                 ),
@@ -655,7 +650,7 @@ class Client(BaseClient):
             demisto.createIncidents(incidents)
             # self.define_indicator(extracted_message["originating_client"])
 
-    def get_events_list(self) -> Optional[List]:
+    def get_events_list(self, last_run, first_fetch_time,max_fetch) -> Optional[List]:
         """
         Function to get events
         """
@@ -663,17 +658,20 @@ class Client(BaseClient):
         current_date = datetime.utcnow()
         epoch = datetime(1970, 1, 1)
         seconds_since_epoch = int((current_date - epoch).total_seconds())
-        interval = demisto.params().get("incidentFetchInterval")
-        from_time = int(seconds_since_epoch - int(interval) * 60)
+        fromtime = last_run.get('last_fetch')
+        if fromtime is None:
+            fromtime = str(dateparser.parse(first_fetch_time))
+            fromtime = int(time.mktime(datetime.fromisoformat(fromtime).timetuple()))
         event_endpoint = f"""/events?level=10&showInfo=false&showMinor=false
-        &showMajor=true&showCritical=false&lastDuration=1
-        &fromTime={from_time}&toTime={seconds_since_epoch}"""
+        &showMajor=true&showCritical=false&showAnomalous=true
+        &fromTime={fromtime}&toTime={seconds_since_epoch}&showAnomalous=true"""
         headers = self.headers
-        headers["pagingInfo"] = "-1"
+        headers["pagingInfo"] = "0,{mfetch}".format(mfetch=max_fetch)
         resp = self.http_request("GET", event_endpoint, None, headers=headers)
+        last_run_new = {'last_fetch': seconds_since_epoch}
         if resp and resp["commservEvents"]:
-            return resp["commservEvents"]
-        return None
+            return resp["commservEvents"], last_run_new
+        return None, last_run_new
 
     def get_subclient_content_list(
             self, subclient_id: Union[int, str]
@@ -1050,6 +1048,7 @@ class Client(BaseClient):
         response = self.http_request("GET", "/IdentityServers")
         if "errorMessage" in response:
             return False
+
         saml_identity_servers = [
             s for s in response["identityServers"] if s["type"] == 1
         ]
@@ -1152,47 +1151,30 @@ class Client(BaseClient):
         Validate Azure Keyvault Configuration
         :return: True/False
         """
-        if (
-                self.keyvault_url is not None
-                or self.keyvault_client_id is not None
+        if (self.keyvault_url is not None or self.keyvault_client_id is not None
                 or self.keyvault_client_secret is not None
-                or self.keyvault_tenant_id is not None
-        ):
-            if (
-                    self.keyvault_url is None
-                    or self.keyvault_client_id is None
+                or self.keyvault_tenant_id is not None):
+            if (self.keyvault_url is None or self.keyvault_client_id is None
                     or self.keyvault_client_secret is None
-                    or self.keyvault_tenant_id is None
-            ):
+                    or self.keyvault_tenant_id is None):
                 return False
-        else:
-            if self.get_key_vault_access_token() is None:
-                return False
+            else:
+                if self.get_key_vault_access_token() is None:
+                    return False
         return True
 
     def run_uvicorn_server(
-            self, port: int, certificate: Optional[str], private_key: Optional[str]
-    ) -> None:
+            self, port: int, certificate_path: Optional[str], private_key_path: Optional[str]) -> None:
         """
         Start uvicorn server
         """
         while True:
-
-            certificate_path = ""
-            private_key_path = ""
             try:
                 ssl_args = {}
 
-                if certificate and private_key:
-                    with NamedTemporaryFile(delete=False) as certificate_file:
-                        certificate_path = certificate_file.name
-                        certificate_file.write(bytes(certificate, "utf-8"))
+                if certificate_path and private_key_path:
 
                     ssl_args["ssl_certfile"] = certificate_path
-
-                    with NamedTemporaryFile(delete=False) as private_key_file:
-                        private_key_path = private_key_file.name
-                        private_key_file.write(bytes(private_key, "utf-8"))
 
                     ssl_args["ssl_keyfile"] = private_key_path
                     demisto.debug("Starting HTTPS Server")
@@ -1230,14 +1212,18 @@ class Client(BaseClient):
                 time.sleep(5)
 
 
-def fetch_incidents(client: Client) -> List:
-    incident_type = demisto.params().get(
-        "incident_type", "Suspicious File Activity"
+def fetch_incidents(client, last_run, first_fetch_time) -> List:
+    incidentType = demisto.params().get(
+        "incidentType", "Suspicious File Activity"
     )
-    events = client.get_events_list()
+
+    max_fetch = demisto.params().get('max_fetch')
+
+    events, last_run_new = client.get_events_list({} if (last_run is None) else last_run, first_fetch_time,max_fetch)
+
     if events is None:
         demisto.info("There are no events")
-        return
+        return [], None
     current_date = datetime.utcnow()
     epoch = datetime(1970, 1, 1)
 
@@ -1246,8 +1232,13 @@ def fetch_incidents(client: Client) -> List:
 
     domain = client.get_host()
 
+    events = sorted(events, key=lambda d: d['timeSource'])
+
+    lasttimestamp = None
+
     for event in events:
         if event["eventCodeString"] == "14:337":
+            lasttimestamp = {'last_fetch': str(event['timeSource'])}
             event_id = event[
                 field_mapper(
                     Constants.event_id, Constants.source_fetch_incidents
@@ -1284,15 +1275,9 @@ def fetch_incidents(client: Client) -> List:
             det = client.get_incident_details(event[Constants.description])
             incident.update(det)  # type: ignore
             out.append(incident)
-    if len(out) == 0:
-        demisto.incidents([])
-    else:
-        client.create_incident(
-            out,
-            datetime.fromtimestamp(seconds_since_epoch),
-            incident_type,
-            True,
-        )
+    if lasttimestamp is None:
+        lasttimestamp={'last_fetch': str(seconds_since_epoch) }
+    return lasttimestamp,out
 
 
 def disable_data_aging(client):
@@ -1314,23 +1299,20 @@ def disable_data_aging(client):
 
 
 def copy_files_to_war_room():
-    try:
-        files = demisto.incident()["CustomFields"]["fileslist"]
-        out_resp = ""
-        for file_ in files:
-            out_resp = (
-                    out_resp
-                    + file_["folder"]
-                    + "\\"
-                    + file_["filename"]
-                    + "\n"
-            )
-        demisto.results(
-            fileResult("Suspiciousfiles.txt", str(out_resp).encode())
+    files = demisto.incident()["CustomFields"]["fileslist"]
+    out_resp = ""
+    for file_ in files:
+        out_resp = (
+                out_resp
+                + file_["folder"]
+                + "\\"
+                + file_["filename"]
+                + "\n"
         )
-        return "Copied files to the War Room with the file name Suspiciousfiles.txt"
-    except Exception:
-        return None
+    demisto.results(
+        fileResult("Suspiciousfiles.txt", str(out_resp).encode())
+    )
+    return "Copied files to the War Room with the file name Suspiciousfiles.txt"
 
 
 def generate_access_token(client, cv_api_token):
@@ -1338,7 +1320,9 @@ def generate_access_token(client, cv_api_token):
     if client.generate_access_token(cv_api_token):
         resp = "Successfully generated access token"
     else:
-        resp = "Could not generate access token"
+        raise DemistoException(
+            f"Could not generate access token"
+        )
     return CommandResults(
         outputs_prefix='CommvaultSecurityIQ.Response',
         outputs_key_field='Response',
@@ -1352,7 +1336,7 @@ def fetch_and_disable_saml_identity_provider(client):
     if client.fetch_and_disable_saml_identity_provider():
         resp = "Successfully disabled SAML identity provider"
     else:
-        resp = "Could not disable SAML identity provider"
+        raise DemistoException("Could not disable SAML identity provider :- {}".format(response['errorMessage']))
     return CommandResults(
         outputs_prefix='CommvaultSecurityIQ.Response',
         outputs_key_field='Response',
@@ -1366,7 +1350,19 @@ def disable_user(client, user_email):
     if client.disable_user(user_email):
         resp = "Successfully disabled user"
     else:
-        resp = "Could not disable user"
+        raise DemistoException(f"Could not disable user :- {user_email}")
+    return CommandResults(
+        outputs_prefix='CommvaultSecurityIQ.Response',
+        outputs_key_field='Response',
+        outputs={"Response": resp}
+    )
+
+
+def get_secret_from_key_vault(client):
+    client.set_secret_in_key_vault("")
+    resp = client.get_secret_from_key_vault()
+    if resp is None:
+        raise DemistoException(f"Could not get access token fro keyvault")
     return CommandResults(
         outputs_prefix='CommvaultSecurityIQ.Response',
         outputs_key_field='Response',
@@ -1381,11 +1377,13 @@ def main() -> None:
     global client
     params = demisto.params()
     command = demisto.command()
+
+    first_fetch_time = params.get('first_fetch', '1 day').strip()
     message_regex: Optional[str] = params.get("message_regex")
     certificate: Optional[str] = params.get("certificate")
     private_key: Optional[str] = params.get("private_key")
     cv_webservice_url: str = params.get("CVWebserviceUrl")
-    cv_api_token: str = params.get("Commvault API Token")
+    cv_api_token: str = params.get("CommvaultAPIToken")
     is_fetch: List[str] = params.get("isFetch")
     client = Client(base_url=cv_webservice_url, verify=False, proxy=False)
     is_valid_cv_token = None
@@ -1453,32 +1451,61 @@ def main() -> None:
                 raise error
             return_results("ok")
         elif command == "fetch-incidents":
-            fetch_incidents(client)
-
-        elif command == "long-running-execution":
-            if forwarding_rule_type == Constants.source_syslog:
-                server: StreamServer = (
-                    client.prepare_globals_and_create_server(
-                        port, certificate, private_key
-                    )
+            last_fetch,out = fetch_incidents(client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time)
+            if len(out) == 0:
+                demisto.incidents([])
+            else:
+                client.create_incident(
+                    out,
+                    datetime.fromtimestamp(seconds_since_epoch),
+                    incidentType,
+                    True,
                 )
-                server.serve_forever()
-            if forwarding_rule_type == Constants.source_webhook:
-                client.run_uvicorn_server(port, certificate, private_key)
-
-        elif command == "disable-data-aging":
+            demisto.setLastRun(last_fetch)
+        elif command == "long-running-execution":
+            try:
+                certificate_path = ""
+                private_key_path = ""
+                if certificate and private_key:
+                    with NamedTemporaryFile(delete=False) as certificate_file:
+                        certificate_path = certificate_file.name
+                        certificate_file.write(bytes(certificate, "utf-8"))
+                    with NamedTemporaryFile(delete=False) as private_key_file:
+                        private_key_path = private_key_file.name
+                        private_key_file.write(bytes(private_key, "utf-8"))
+                if forwarding_rule_type == Constants.source_syslog:
+                    server: StreamServer = (
+                        client.prepare_globals_and_create_server(
+                            port, certificate_path, private_key_path
+                        )
+                    )
+                    server.serve_forever()
+                if forwarding_rule_type == Constants.source_webhook:
+                    client.run_uvicorn_server(port, certificate_path, private_key_path)
+            except Exception as error:
+                demisto.error(
+                    f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
+                )
+                demisto.updateModuleHealth(f"An error occurred: {str(error)}")
+            finally:
+                if certificate_path:
+                    os.unlink(certificate_path)
+                if private_key_path:
+                    os.unlink(private_key_path)
+                time.sleep(5)
+        elif command == "commvault-security-disable-data-aging":
             return_results(disable_data_aging(client))
-        elif command == "generate-token":
+        elif command == "commvault-security-generate-token":
             return_results(generate_access_token(client, cv_api_token))
-        elif command == "disable-saml-provider":
+        elif command == "commvault-security-disable-saml-provider":
             return_results(fetch_and_disable_saml_identity_provider(client))
-        elif command == "disable-user":
+        elif command == "commvault-security-disable-user":
             user_email = demisto.args()["user_email"]
             return_results(disable_user(client, user_email))
-        elif command == "get-access-token-from-keyvault":
+        elif command == "commvault-security-get-access-token-from-keyvault":
             client.set_secret_in_key_vault("")
-            client.get_secret_from_key_vault()
-        elif command == "copy-files-list-to-war-room":
+            return_results(client.get_secret_from_key_vault())
+        elif command == "commvault-security-copy-files-list-to-war-room":
             return_results(copy_files_to_war_room())
         else:
             raise NotImplementedError(

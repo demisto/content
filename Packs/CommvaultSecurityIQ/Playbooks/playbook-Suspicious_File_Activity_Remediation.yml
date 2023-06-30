@@ -60,7 +60,7 @@ tasks:
       id: a9450044-0590-46d4-8fff-e5e41af55ea8
       iscommand: true
       name: Disabling Data Aging
-      script: CommvaultSecurityIQ|||disable-data-aging
+      script: CommvaultSecurityIQ|||commvault-security-disable-data-aging
       tags:
       - DisableDataAging
       type: regular
