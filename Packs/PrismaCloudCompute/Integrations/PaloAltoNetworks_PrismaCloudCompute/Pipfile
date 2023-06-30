@@ -28,7 +28,7 @@ pandas = "==1.2.0"
 timeout-decorator = "==0.5.0"
 sendgrid = "==6.6.0"
 GitPython = "==3.1.11"
-PyPDF2 = "==1.26.0"
+PyPDF2 = "==1.27.9"
 
 [requires]
 python_version = "3.9"
