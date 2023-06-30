@@ -620,7 +620,7 @@ handle-dev-secrets:
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
 #    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == test-gitlab-secret'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == "test-gitlab-secret"'
   stage: unittests-and-validations
   script:
     - |
