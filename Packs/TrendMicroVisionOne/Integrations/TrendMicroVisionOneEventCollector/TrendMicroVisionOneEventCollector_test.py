@@ -177,6 +177,92 @@ def start_freeze_time(timestamp):
 
 class TestFetchEvents:
 
+    def test_fetch_events_main_flow_no_new_logs(self, mocker):
+        """
+        Given:
+           - no logs from any kind
+           - last_run = {
+                'workbench_start_time': '2023-01-01T14:00:00Z',
+                'found_workbench_logs': [],
+                'oat_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_oat_logs': [],
+                'pagination_found_oat_logs': [],
+                'oat_detection_next_link': '',
+                'search_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_search_detection_logs': [],
+                'pagination_found_search_detection_logs': [],
+                'search_detection_next_link': '',
+                'audit_start_time': '2023-01-01T14:00:00Z',
+                'found_audit_logs': []
+            }
+           - max_fetch = 1000
+
+        When:
+           - running fetch-events through the main flow
+
+        Then:
+           - make sure no events are returned
+           - make sure no last run time remains the same for every log.
+
+        """
+        from TrendMicroVisionOneEventCollector import main
+
+        start_freeze_time('2023-01-01T15:00:00Z')
+
+        mocker.patch.object(demisto, 'params', return_value={"max_fetch": 1000})
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(
+            demisto,
+            'getLastRun',
+            return_value={
+                'workbench_start_time': '2023-01-01T14:00:00Z',
+                'found_workbench_logs': [],
+                'oat_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_oat_logs': [],
+                'pagination_found_oat_logs': [],
+                'oat_detection_next_link': '',
+                'search_detection_start_time': '2023-01-01T14:00:00Z',
+                'dedup_found_search_detection_logs': [],
+                'pagination_found_search_detection_logs': [],
+                'search_detection_next_link': '',
+                'audit_start_time': '2023-01-01T14:00:00Z',
+                'found_audit_logs': []
+            }
+        )
+        mocker.patch.object(
+            BaseClient,
+            '_http_request',
+            side_effect=_http_request_side_effect_decorator(
+                last_workbench_time="2023-01-01T14:00:00Z",
+                last_audit_log_time="2023-01-01T14:00:00Z",
+                last_oat_time="2023-01-01T14:00:00Z",
+                last_search_detection_logs="2023-01-01T14:00:00Z"
+            )
+        )
+
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
+        send_events_to_xsiam_mocker = mocker.patch('TrendMicroVisionOneEventCollector.send_events_to_xsiam')
+        main()
+
+        assert set_last_run_mocker.call_args.args[0] == {
+            'workbench_start_time': '2023-01-01T14:00:00Z',
+            'found_workbench_logs': [],
+            'oat_detection_start_time': '2023-01-01T14:00:00Z',
+            'dedup_found_oat_logs': [],
+            'pagination_found_oat_logs': [],
+            'oat_detection_next_link': '',
+            'search_detection_start_time': '2023-01-01T14:00:00Z',
+            'dedup_found_search_detection_logs': [],
+            'pagination_found_search_detection_logs': [],
+            'search_detection_next_link': '',
+            'audit_start_time': '2023-01-01T14:00:00Z',
+            'found_audit_logs': []
+        }
+
+        assert send_events_to_xsiam_mocker.call_count == 1
+        # 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
+        assert len(send_events_to_xsiam_mocker.call_args.kwargs['events']) == 0
+
     def test_fetch_events_main_flow_no_last_run(self, mocker):
         """
         Given:
