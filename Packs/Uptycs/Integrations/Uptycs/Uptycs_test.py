@@ -2390,6 +2390,10 @@ def test_uptycs_create_lookuptable(mocker, requests_mock):
     mocker.patch("Uptycs.SECRET", new=SECRET)
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+    # Mocking demisto.getFilePath
+    mocker.patch.object(demisto, "getFilePath", return_value={
+        'path': './test_data/look_up_table_test.csv'
+    })
 
     mock_response = {
         "active": True,
