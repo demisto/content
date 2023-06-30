@@ -246,6 +246,7 @@ script:
       name: add-to-context
       required: false
       secret: false
+      defaultValue: false
     - default: false
       description: Raw JSON file event query to be used for search.
       isArray: false
@@ -1034,7 +1035,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.61519
+  dockerimage: demisto/py42:1.0.0.63737
   feed: false
   isfetch: true
   longRunning: false

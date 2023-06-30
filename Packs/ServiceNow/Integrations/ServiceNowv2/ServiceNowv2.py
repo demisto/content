@@ -1,5 +1,4 @@
 import re
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
@@ -2130,6 +2129,7 @@ def fetch_incidents(client: Client) -> list:
     incidents = []
 
     last_run = demisto.getLastRun()
+    demisto.debug("ServiceNowv2 - Start fetching")
 
     start_snow_time, end_snow_time = get_fetch_run_time_range(
         last_run=last_run, first_fetch=client.fetch_time, look_back=client.look_back, date_format=DATE_FORMAT
@@ -2148,10 +2148,11 @@ def fetch_incidents(client: Client) -> list:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
 
-    demisto.info(f'Fetching ServiceNow incidents. with the query params: {str(query_params)}')
+    demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
+    demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
-
     count = 0
+    skipped_incidents = 0
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
 
@@ -2171,10 +2172,15 @@ def fetch_incidents(client: Client) -> list:
 
         try:
             if datetime.strptime(ticket[client.timestamp_field], DATE_FORMAT) < snow_time_as_date:
+                skipped_incidents += 1
+                demisto.debug(
+                    f"ServiceNowV2 - -Skipping incident with sys_id={ticket.get('sys_id')} and date="
+                    f"{ticket.get(client.timestamp_field)} because its creation time is smaller than the last fetch.")
                 continue
             parse_dict_ticket_fields(client, ticket)
         except Exception as e:
-            demisto.debug(f"got the following error: {e}")
+            demisto.debug(f"Got the following error: {e}")
+
         incidents.append({
             'name': f"ServiceNow Incident {ticket.get(client.incident_name)}",
             'labels': [
@@ -2201,7 +2207,11 @@ def fetch_incidents(client: Client) -> list:
         id_field='sys_id',
         date_format=DATE_FORMAT
     )
-    demisto.debug(f'last run at the end of the incidents fetching {last_run}')
+
+    demisto.debug(f"ServiceNowV2 - Last run after incidents fetching: {json.dumps(last_run)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents before filtering: {len(tickets_response)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"ServiceNowV2 - Number of incidents skipped: {skipped_incidents}")
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
@@ -2471,9 +2481,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
     if close_incident != 'None':
-        server_close_custom_state = params.get('server_close_custom_state')
-
-        if server_close_custom_state or (ticket.get('closed_at') and close_incident == 'closed') \
+        server_close_custom_state = params.get('server_close_custom_state', '')
+        ticket_state = ticket.get('state', '')
+        # The first condition is for closing the incident if the ticket's state is in the
+        # `Mirrored XSOAR Ticket custom close state code` parameter, which is configured by the user in the
+        # integration configuration.
+        if (ticket_state and ticket_state in server_close_custom_state) \
+            or (ticket.get('closed_at') and close_incident == 'closed') \
                 or (ticket.get('resolved_at') and close_incident == 'resolved'):
             demisto.debug(f'SNOW ticket changed state- should be closed in XSOAR: {ticket}')
             entries.append({
@@ -2481,7 +2495,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Contents': {
                     'dbotIncidentClose': True,
                     'closeNotes': ticket.get("close_notes"),
-                    'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
+                    'closeReason': converts_state_close_reason(ticket_state, server_close_custom_state)
                 },
                 'ContentsFormat': EntryFormat.JSON
             })

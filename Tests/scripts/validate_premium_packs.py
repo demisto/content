@@ -36,6 +36,7 @@ def options_handler():
                         required=False)
     parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file', required=True)
+    parser.add_argument('--build_number', help='CI build number where the instances were created', required=True)
 
     options = parser.parse_args()
     return options
@@ -233,7 +234,8 @@ def main():
     hosts, _ = XSOARBuild.get_servers(ami_env=options.ami_env)
     internal_ip, tunnel_port = list(hosts.items())[0]
     username, password = extract_credentials_from_secret(options.secret)
-    server = XSOARServer(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password)
+    server = XSOARServer(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password,
+                         build_number=options.build_number)
 
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)

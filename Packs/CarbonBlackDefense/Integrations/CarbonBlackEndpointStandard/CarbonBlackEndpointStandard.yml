@@ -2024,7 +2024,7 @@ script:
     - contextPath: CarbonBlackDefense.Alert.policy_applied
       description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

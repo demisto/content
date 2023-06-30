@@ -5,8 +5,14 @@ commonfields:
 configuration:
 - display: User's Service Account JSON
   name: user_service_account_json
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: user_service_account_json_creds
+  required: false
+  type: 9
+  displaypassword: User's Service Account JSON
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -15,6 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+
 description: Google Calendar is a time-management and scheduling calendar service developed by Google. This integration helps you to perform various tasks on the access control list (ACL).
 display: Google Calendar
 name: GoogleCalendar
@@ -22,8 +29,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Identifier of the calendar. To access the primary calendar
-        of the currently logged in user, use the "primary" keyword.
+      description: Identifier of the calendar. To access the primary calendar of the currently logged in user, use the "primary" keyword.
       isArray: false
       name: calendar_id
       required: true
@@ -84,8 +90,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The email address of a user or group, or the name of a domain,
-        depending on the scope type. Omitted for type "default".
+      description: The email address of a user or group, or the name of a domain, depending on the scope type. Omitted for type "default".
       isArray: false
       name: scope_value
       required: false
@@ -125,16 +130,14 @@ script:
       description: The type of the scope.
       type: String
     - contextPath: GoogleCalendar.Acl.scopeValue
-      description: The email address of a user or group, or the name of a domain,
-        depending on the scope type.
+      description: The email address of a user or group, or the name of a domain, depending on the scope type.
       type: String
     - contextPath: GoogleCalendar.Acl.role
       description: The role assigned to the scope.
       type: String
   - arguments:
     - default: false
-      description: Calendar identifier. If you want to access the primary calendar
-        of the currently logged in user, use the "primary" keyword.
+      description: Calendar identifier. If you want to access the primary calendar of the currently logged in user, use the "primary" keyword.
       isArray: false
       name: calendar_id
       required: true
@@ -161,9 +164,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to include deleted ACLs in the result. Deleted ACLs are
-        represented by the role "none". Deleted ACLs will always be included
-        if syncToken is provided. Default is "false".
+      description: Whether to include deleted ACLs in the result. Deleted ACLs are represented by the role "none". Deleted ACLs will always be included if syncToken is provided. Default is "false".
       isArray: false
       name: show_deleted
       predefined:
@@ -203,8 +204,7 @@ script:
       description: The type of the scope.
       type: String
     - contextPath: GoogleCalendar.Acl.scopeValue
-      description: The email address of a user or group, or the name of a domain,
-        depending on the scope type.
+      description: The email address of a user or group, or the name of a domain, depending on the scope type.
       type: String
     - contextPath: GoogleCalendar.Acl.role
       description: The role assigned to the scope.
@@ -219,10 +219,9 @@ script:
       description: Token used to access the next page of this result.
       type: String
     - contextPath: GoogleCalendar.PageToken.Acl.nextSyncToken
-      description: Token used at a later point in time to retrieve only the entries
-        that have changed since this result was returned.
+      description: Token used at a later point in time to retrieve only the entries that have changed since this result was returned.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.62140
+  dockerimage: demisto/googleapi-python3:1.0.0.63869
   feed: false
   isfetch: false
   longRunning: false

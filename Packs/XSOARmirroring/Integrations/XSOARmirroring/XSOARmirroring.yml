@@ -20,8 +20,15 @@ configuration:
 - display: API Key
   name: apikey
   type: 4
-  required: true
+  required: false
   additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
+  hidden: true
+- displaypassword: API Key
+  name:  credentials_api_key
+  required: false
+  hiddenusername: true
+  additionalinfo: The API key to access the server. The key must be provided by the server to which you are connecting.
+  type: 9
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -144,7 +151,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   subtype: python3

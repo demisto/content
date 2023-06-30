@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import json
 import traceback
 from collections import defaultdict
@@ -7,7 +10,6 @@ from requests import Response
 
 import urllib3
 
-from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -69,6 +71,13 @@ TICKET_STATUS_MAP = {
     "3": "acknowledged"  # archived
 }
 
+TICKET_SEVERITY = {
+    "0-39": 1,  # low
+    "40-69": 2,  # medium
+    "70-89": 3,  # high
+    "90-100": 4  # critical
+}
+
 VALID_ALERT_RULE_REFIRE_INTERVALS = ["300", "600", "900", "1800", "3600", "7200", "14400"]
 
 VALID_ALERT_RULE_TYPE = ["threshold", "detection"]
@@ -93,7 +102,7 @@ VALID_METRICS_KEYS = ["cycle", "from", "metric_category", "metric_specs", "objec
 
 VALID_DETECTION_KEYS = ["filter", "limit", "offset", "from", "until", "sort", "mod_time"]
 
-VALID_FILTER_KEYS = ["assignee", "category", "resolution", "risk_score_min", "status", "ticket_id", "types"]
+VALID_FILTER_KEYS = ["assignee", "categories", "category", "resolution", "risk_score_min", "status", "ticket_id", "types"]
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -836,6 +845,25 @@ def validate_detections_list_arguments(body: Dict) -> None:
         body["offset"] = 0
 
 
+def add_default_category_for_filter_of_detection_list(_filter: Dict) -> None:
+    """Set a default category for filter argument.
+
+    Args:
+        _filter: Filter argument for detection list command.
+    """
+    if "category" not in _filter:
+        if "categories" not in _filter:
+            _filter["categories"] = ["sec.attack"]
+        elif isinstance(_filter.get("categories"), list):
+            valid_categories = []
+            for category in _filter.get("categories", []):
+                if isinstance(category, str):
+                    category = category.strip()
+                    if category:
+                        valid_categories.append(category)
+            _filter["categories"] = valid_categories if valid_categories else ["sec.attack"]
+
+
 def format_protocol_stack(protocol_list: List) -> str:
     """Formats the protocol stack.
 
@@ -1427,6 +1455,8 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
                         'name': str(detection.get("type", "")),
                         'occurred': datetime.utcfromtimestamp(detection['start_time'] / 1000).strftime(
                             DATE_FORMAT),
+                        'severity': next((severity for range_str, severity in TICKET_SEVERITY.items() if
+                                          detection.get("risk_score") in range(*map(int, range_str.split("-")))), None),
                         'rawJSON': json.dumps(detection)
                     }
                     incidents.append(incident)
@@ -1471,23 +1501,23 @@ def fetch_incidents(client: ExtraHopClient, params: Dict, last_run: Dict, on_clo
     if last_run.get("version_recheck_time", 1581852287000) < int(now.timestamp() * 1000):
         version = get_extrahop_server_version(client)
         last_run["version_recheck_time"] = int(next_day.timestamp() * 1000)
-        if version < "9.1.2":
+        if version < "9.3.0":
             raise DemistoException(
-                "This integration works with ExtraHop firmware version greater than or equal to 9.1.2")
+                "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
-    advanced_filter = params.get('advanced_filter', '{}')
-    try:
-        filter = json.loads(advanced_filter)
-    except json.JSONDecodeError as error:
-        raise ValueError("Invalid JSON string provided for advanced filter.") from error
+    advanced_filter = params.get("advanced_filter")
+    if advanced_filter and advanced_filter.strip():
+        try:
+            _filter = json.loads(advanced_filter)
+            add_default_category_for_filter_of_detection_list(_filter)
+        except json.JSONDecodeError as error:
+            raise ValueError("Invalid JSON string provided for advanced filter.") from error
+    else:
+        _filter = {"categories": ["sec.attack"]}
 
-    advanced_filter = {}
-    advanced_filter["filter"] = filter
-    advanced_filter["mod_time"] = fetch_params["detection_start_time"]
-    advanced_filter["until"] = 0
-    advanced_filter["limit"] = MAX_FETCH
-    advanced_filter["offset"] = fetch_params["offset"]
-    advanced_filter["sort"] = [{"direction": "asc", "field": "mod_time"}]
+    advanced_filter = {"filter": _filter, "mod_time": fetch_params["detection_start_time"], "until": 0,
+                       "limit": MAX_FETCH, "offset": fetch_params["offset"],
+                       "sort": [{"direction": "asc", "field": "mod_time"}]}
 
     incidents, next_run = fetch_extrahop_detections(client, advanced_filter, last_run, on_cloud)
     demisto.info(f"Extrahop next_run is {next_run}")
@@ -1995,13 +2025,12 @@ def detections_list_command(client: ExtraHopClient, args: Dict[str, Any], on_clo
         CommandResults object.
     """
     version = get_extrahop_server_version(client)
-    if version < "9.1.2":
+    if version < "9.3.0":
         raise DemistoException(
-            "This integration works with ExtraHop firmware version greater than or equal to 9.1.2")
+            "This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
 
     body = {}
     if advanced_filter:
-        validate_detections_list_arguments(advanced_filter)
         body = advanced_filter
 
     else:
@@ -2012,12 +2041,15 @@ def detections_list_command(client: ExtraHopClient, args: Dict[str, Any], on_clo
         sort = args.get("sort")
         until_time = arg_to_number(args.get("until"))
         mod_time = arg_to_number(args.get("mod_time"))
-        if filter_query:
+        if filter_query and filter_query.strip():
             try:
                 filter_query = json.loads(filter_query)
+                add_default_category_for_filter_of_detection_list(filter_query)
                 body["filter"] = filter_query
             except json.JSONDecodeError:
                 raise ValueError("Invalid json string provided for filter.")
+        else:
+            body["filter"] = {"categories": ["sec.attack"]}
 
         if isinstance(from_time, int):
             body["from"] = from_time
@@ -2054,7 +2086,7 @@ def detections_list_command(client: ExtraHopClient, args: Dict[str, Any], on_clo
         if isinstance(mod_time, int):
             body["mod_time"] = mod_time
 
-        validate_detections_list_arguments(body)
+    validate_detections_list_arguments(body)
 
     detections = client.detections_list(body)
 
@@ -2191,8 +2223,8 @@ def test_module(client: ExtraHopClient) -> str:
     """
     response = client.test_connection()
     version = get_extrahop_server_version(client)
-    if version < "9.1.2":
-        raise DemistoException("This integration works with ExtraHop firmware version greater than or equal to 9.1.2")
+    if version < "9.3.0":
+        raise DemistoException("This integration works with ExtraHop firmware version greater than or equal to 9.3.0")
     if response:
         return "ok"
     raise ValueError("Failed to establish connection with provided credentials.")

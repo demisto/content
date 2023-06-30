@@ -10,9 +10,16 @@ configuration:
   defaultvalue: 'true'
 - display: Authorization Code
   name: auth_code
-  required: true
+  required: false
   type: 4
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  hidden: true
+- displaypassword: Authorization Code
+  name:  credentials_auth_code
+  required: false
+  hiddenusername: true
+  type: 9
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -123,7 +130,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: proofpoint-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isfetch: false
   longRunning: false

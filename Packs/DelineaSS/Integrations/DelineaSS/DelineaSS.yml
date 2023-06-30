@@ -16,6 +16,7 @@ configuration:
   required: false
   type: 8
 - display: Use system proxy settings
+  hidden: false
   name: proxy
   required: false
   type: 8
@@ -38,6 +39,12 @@ script:
       isArray: false
       name: secret_id
       required: true
+      secret: false
+    - default: false
+      description: Notes to get the password
+      isArray: false
+      name: autoComment
+      required: false
       secret: false
     deprecated: false
     description: Extracting the password field from the required secret
@@ -1117,7 +1124,7 @@ script:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false
