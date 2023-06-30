@@ -1,0 +1,21 @@
+{
+    "name": "Okta v2",
+    "description": "Corrected API parameter for command \"okta-search\". It was using \"q\" which was replaced by \"search\" as per Okta API documentation https://developer.okta.com/docs/reference/api/users/#list-users-with-search",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Vipul Kaneriya",
+    "url": "",
+    "email": "",
+    "created": "2023-06-30T15:38:24Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "vipulkaneriya"
+    ]
+}
