@@ -1,5 +1,7 @@
 import hashlib
 
+import dateparser
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -345,7 +347,7 @@ class Client(BaseClient):
         Returns:
             List[Dict]: The audit logs that were found.
         """
-        # will retrieve all the events that are only more than detected_start_datetime, does not support miliseconds
+        # will retrieve all the events that are only more or equal than detected_start_datetime, does not support miliseconds
         # start_datetime can be maximum 180 days ago
         params = {'startDateTime': start_datetime, 'top': top, 'orderBy': order_by}
 
@@ -633,8 +635,10 @@ def get_workbench_logs(
     )
     parse_workbench_logs(workbench_logs)
 
-    # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
-    # progress, so we still get additional events
+    # if there aren't any workbench logs and there is cache, it means this is the first time we don't see workbench logs after
+    # the last fetch we did see workbench logs
+    if last_run.get(workbench_cache_time_field_name) and not workbench_logs:
+        start_time = dateparser.parse(start_time) + timedelta(seconds=1)
     latest_workbench_log_time = latest_log_time or start_time
 
     workbench_updated_last_run = {
@@ -728,8 +732,10 @@ def get_observed_attack_techniques_logs(
             date_format=date_format
         )
 
-        # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
-        # progress, so we still get additional events
+        # if there aren't any oat logs and there is cache, it means this is the first time we don't see oat logs after
+        # the last fetch we did see oat logs
+        if last_run.get(observed_attack_technique_dedup) and not observed_attack_techniques_logs:
+            start_time = dateparser.parse(start_time) + timedelta(seconds=1)
         last_run_start_time = latest_log_time or start_time
 
     if new_next_link:
@@ -823,8 +829,10 @@ def get_search_detection_logs(
             log_type=search_detections_log_type,
             date_format=date_format
         )
-        # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
-        # progress, so we still get additional events
+        # if there aren't any search logs and there is cache, it means this is the first time we don't see search logs after
+        # the last fetch we did see search logs
+        if last_run.get(search_detection_dedup) and not search_detection_logs:
+            start_time = dateparser.parse(start_time) + timedelta(seconds=1)
         last_run_start_time = latest_log_time or start_time
 
     if new_next_link:
@@ -904,13 +912,11 @@ def get_audit_logs(
         log_id_field_name='id',
         date_format=DATE_FORMAT
     )
-    # if there aren't any audit logs we should stick with start time always until we get more logs, the end-time will keep
-    # progress, so we still get additional events
+    # if there aren't any audit logs and there is cache, it means this is the first time we don't see audit logs after
+    # the last fetch we did see audit logs
+    if last_run.get(audit_cache_time_field_name) and not audit_logs:
+        start_time = dateparser.parse(start_time) + timedelta(seconds=1)
     latest_audit_log_time = latest_log_time or start_time
-    if audit_logs:
-        latest_audit_log_time = (
-            dateparser.parse(latest_audit_log_time) - timedelta(seconds=1)  # type: ignore
-        ).strftime(DATE_FORMAT)  # type: ignore
 
     for log in audit_logs:
         # pop all the hashes used to find duplicates
