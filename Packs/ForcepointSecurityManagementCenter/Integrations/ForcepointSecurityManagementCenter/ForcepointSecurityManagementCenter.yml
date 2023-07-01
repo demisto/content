@@ -39,7 +39,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of IP addresses
+      description: A comma-separated list of IP addresses.
       isArray: false
       name: addresses
       required: false
@@ -231,7 +231,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of a specific host to fetch.
+      description: The name of the host to update.
       isArray: false
       name: name
       required: true
@@ -255,15 +255,6 @@ script:
       description: The comment to add to the host.
       isArray: false
       name: comment
-      required: false
-    - default: false
-      description: If false, the list of addresses will be appended to the existing one. Else, the list will be overwritten. Default is False.
-      isArray: false
-      name: is_overwrite
-      options:
-      - 'False'
-      - 'True'
-      defaultvalue: False
       required: false
     description: 'Updates a host.'
     execution: false
@@ -378,14 +369,14 @@ script:
       isArray: false
       name: all_results
       required: false
-    description: 'Lists the Domains in the system.'
+    description: 'Lists the policy templates in the system.'
     execution: false
     name: forcepoint-smc-policy-template-list
     outputs:
-    - contextPath: ForcepointSMC.Policy.Name
-      description: 'The name of the firewall policy.'
+    - contextPath: ForcepointSMC.PolicyTemplate.Name
+      description: 'The name of the firewall policy template.'
       type: String
-    - contextPath: ForcepointSMC.Policy.Comment
+    - contextPath: ForcepointSMC.PolicyTemplate.Comment
       description: 'The comment of the firewall policy.'
       type: String
   - arguments:
@@ -530,7 +521,7 @@ script:
     - contextPath: ForcepointSMC.Rule.Action
       description: 'The action of the rule.'
       type: String
-    - contextPath: ForcepointSMC.Policy.Comment
+    - contextPath: ForcepointSMC.Rule.Comment
       description: 'The comment of the rule.'
       type: String
   - arguments:
@@ -587,7 +578,7 @@ script:
       description: The action of the rule.
       isArray: false
       name: action
-      required: false
+      required: true
       options:
       - allow
       - continue

@@ -127,7 +127,9 @@ def test_module(client: Client) -> str:
         IPList.objects.limit(1)
     except Exception as e:
         if 'Login failed, HTTP status code:' in str(e):
-            raise DemistoException('Login failed, please check your API key.')
+            raise DemistoException('Login failed, please check your API key or your server URL.')
+        else:
+            raise e
     return 'ok'
 
 
@@ -336,17 +338,17 @@ def update_host_command(args: Dict[str, Any]) -> CommandResults:
         CommandResults
     """
     name = args.get('name')
-    address = args.get('address', '')
-    ipv6_address = args.get('ipv6_address', '')
-    secondary = args.get('secondary_address', '')
-    comment = args.get('comment', '')
-    is_overwrite = args.get('is_overwrite', False)
+    kwargs = {'name': name,
+              'address': args.get('address', ''),
+              'ipv6_address': args.get('ipv6_address', ''),
+              'secondary': args.get('secondary_address', ''),
+              'comment': args.get('comment', '')}
+    remove_nulls_from_dictionary(kwargs)
 
     if not list(Host.objects.filter(name)):
         raise DemistoException(f'Host {name} was not found.')
 
-    host = Host.update_or_create(name=name, address=address, ipv6_address=ipv6_address,
-                                 secondary=secondary, comment=comment, append_lists=not is_overwrite)
+    host = Host.update_or_create(**kwargs)
 
     address, ipv6_address = extract_host_address(host)
     outputs = {'Name': host.name,
@@ -805,6 +807,9 @@ def commit_changes_command(args: Dict[str, Any]) -> CommandResults:
         changes.append({'Element_name': change.element_name,
                         'Modifier': change.modifier,
                         'Changed_on': change.changed_on})
+
+    if not changes:
+        return CommandResults(readable_output='No commit changes were found.')
 
     engine.pending_changes.approve_all()
 
