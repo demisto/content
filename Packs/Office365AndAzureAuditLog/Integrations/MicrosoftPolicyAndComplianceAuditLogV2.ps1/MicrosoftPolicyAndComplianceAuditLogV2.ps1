@@ -87,7 +87,7 @@ class ExchangeOnlinePowershellV3Client
 function SearchAuditLogCommand {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][ExchangeOnlineClient]$client,
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
         [hashtable]$kwargs
     )
     try {
@@ -162,7 +162,7 @@ function Main {
         $password = $null
     }
 
-    $exo_client = [ExchangeOnlinePowershellV3Client]::new(
+    $audit_log_client = [ExchangeOnlinePowershellV3Client]::new(
             $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
@@ -179,7 +179,7 @@ function Main {
                 Then to verify the authentication was successful, run '!o365-auditlog-auth-test'."
             }
             "$script:COMMAND_PREFIX-search" {
-                ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $exo_client $command_arguments
+                ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $audit_log_client $command_arguments
             }
             default {
                 throw "Command $command no implemented"
