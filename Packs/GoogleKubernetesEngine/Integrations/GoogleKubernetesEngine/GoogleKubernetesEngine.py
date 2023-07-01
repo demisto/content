@@ -685,7 +685,7 @@ def gcloud_node_pool_list_command(client: ClusterManagerClient, project: str, zo
                                                        zone=zone,
                                                        cluster_id=cluster,
                                                        timeout=API_TIMEOUT)
-    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore=[attr-defined]
+    raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     # Entry context
     node_pools_ec: list[dict] = [parse_node_pool(node_pool) for node_pool in raw_response_dict.get('nodePools', [])]
     entry_context = {
