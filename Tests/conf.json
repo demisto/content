@@ -22,6 +22,10 @@
     "tests": [
         {
             "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
         },
         {
