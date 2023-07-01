@@ -8,7 +8,7 @@ from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, storage_bucket):
+def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, storage_bucket, storge_base_path: str):
     """
     Iterates over the readme_url_data_list and calls the download_readme_image_from_url_and_upload_to_gcs
     Args:
@@ -25,12 +25,15 @@ def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, stor
     for pack_name, images_data in readme_urls_data_dict.items():
         for readme_url_data in images_data:
             readme_original_url = readme_url_data.get('original_read_me_url')
-            gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
+            final_dst_image_path = str(readme_url_data.get('final_dst_image_path'))
             image_name = str(readme_url_data.get('image_name'))
+            relative_image_path = str(readme_url_data.get('relative_image_path'))
+
+            logging.debug(f'image_final_storage_des ={final_dst_image_path}')
 
             download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
-                                                             gcs_storage_path,
-                                                             image_name, storage_bucket)
+                                                             relative_image_path,
+                                                             image_name, storge_base_path, storage_bucket)
 
         pack_images_names[pack_name] = [
             image_name.get('image_name') for image_name in images_data
@@ -39,8 +42,8 @@ def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, stor
     return pack_images_names
 
 
-def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
-                                                     image_name: str, storage_bucket):
+def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, relative_image_path: str,
+                                                     image_name: str, storage_base_path, storage_bucket):
     # sourcery skip: extract-method
     """
         Download the image from the endpoint url and save locally.
@@ -68,6 +71,8 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
             with open(image_name, 'wb') as f:
                 shutil.copyfileobj(r.raw, f)
             # init the blob with the correct path to save the image on gcs
+            gcs_storage_path = os.path.join(storage_base_path, relative_image_path)
+            logging.info(f'{gcs_storage_path=}')
             readme_image = storage_bucket.blob(gcs_storage_path)
             # load the file from local memo to the gcs
             with open(image_name, "rb") as image_file:
@@ -102,7 +107,7 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
         bool: Whether the operation succeeded.
     """
     logging.debug('Starting readme images copy.')
-    readme_images = {}
+    readme_images: dict = {}
     if readme_images := images_data.get(BucketUploadFlow.README_IMAGES):
         for pack_name, pack_readme_images_list in readme_images.items():
             task_status = True
