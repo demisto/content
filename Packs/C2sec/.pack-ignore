@@ -2,8 +2,10 @@
 ignore=RM104
 
 [file:C2sec.yml]
-ignore=IN145,BA124
+ignore=BA124
 
 [file:C2sec_image.png]
 ignore=IM111
 
+[known_words]
+irisk

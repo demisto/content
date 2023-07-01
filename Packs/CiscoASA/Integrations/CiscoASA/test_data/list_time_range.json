@@ -1,0 +1,70 @@
+{
+    "kind": "collection#TimeRange",
+    "selfLink": "selfLink",
+    "rangeInfo": {
+        "offset": 0,
+        "limit": 2,
+        "total": 2
+    },
+    "items": [
+        {
+            "kind": "object#TimeRange",
+            "selfLink": "items[0]_selfLink",
+            "name": "trUserTest",
+            "objectId": "trUserTest",
+            "value": {
+                "start": "now",
+                "end": "03:47 May 14 2014",
+                "periodic": [
+                    {
+                        "frequency": "Wednesday to Thursday",
+                        "startHour": 4,
+                        "startMinute": 3,
+                        "endHour": 23,
+                        "endMinute": 59
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "object#TimeRange",
+            "selfLink": "items[1]_selfLink",
+            "name": "tr_periodic_test",
+            "objectId": "tr_periodic_test",
+            "value": {
+                "start": "now",
+                "end": "never",
+                "periodic": [
+                    {
+                        "frequency": "weekend",
+                        "startHour": 3,
+                        "startMinute": 3,
+                        "endHour": 4,
+                        "endMinute": 1
+                    },
+                    {
+                        "frequency": "daily",
+                        "startHour": 4,
+                        "startMinute": 0,
+                        "endHour": 5,
+                        "endMinute": 1
+                    },
+                    {
+                        "frequency": "Tuesday Thursday Saturday ",
+                        "startHour": 0,
+                        "startMinute": 0,
+                        "endHour": 1,
+                        "endMinute": 1
+                    },
+                    {
+                        "frequency": "weekdays",
+                        "startHour": 12,
+                        "startMinute": 0,
+                        "endHour": 13,
+                        "endMinute": 1
+                    }
+                ]
+            }
+        }
+    ]
+}

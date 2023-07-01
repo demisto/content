@@ -179,7 +179,7 @@ script:
     description: Update a specific violation
     execution: false
     name: gamma-update-violation
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false
