@@ -29,6 +29,7 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
+    "aliasTo": "originalalertid",
     "fromVersion": "6.0.0",
     "marketplaces": [
         "xsoar"

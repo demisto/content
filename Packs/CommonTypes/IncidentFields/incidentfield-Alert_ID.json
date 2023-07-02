@@ -32,6 +32,7 @@
 	"unsearchable": false,
 	"useAsKpi": false,
 	"validationRegex": "",
+	"aliasTo": "originalalertid",
 	"version": -1,
 	"fromVersion": "5.0.0",
 	"marketplaces": [
