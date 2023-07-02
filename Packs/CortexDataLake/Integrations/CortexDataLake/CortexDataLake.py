@@ -897,7 +897,7 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
 ''' COMMANDS FUNCTIONS '''
 
 
-def integration_test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query, fetch_subtype, fetch_severity, first_fetch):
+def test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query, fetch_subtype, fetch_severity, first_fetch):
     if is_fetch:
         fetch_time, _ = parse_date_range(first_fetch)
         fetch_time = fetch_time.replace(microsecond=0)
@@ -1183,7 +1183,7 @@ def main():
 
     try:
         if command == 'test-module':
-            integration_test_module(client, fetch_table, fetch_fields, params.get('isFetch'), params.get('filter_query', ''),
+            test_module(client, fetch_table, fetch_fields, params.get('isFetch'), params.get('filter_query', ''),
                         params.get('firewall_subtype'), params.get('firewall_severity'),
                         params.get('first_fetch_timestamp', '24 hours').strip())
         elif command == 'cdl-query-logs':
