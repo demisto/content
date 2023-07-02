@@ -22,6 +22,11 @@
     "tests": [
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
+            "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
+            "instance_names": "microsoft_defender_atp_dev"
+        },
+        {
+            "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE SIEM ingestion - Get Incident Data",
             "instance_names": "microsoft_defender_atp_dev"
         },
