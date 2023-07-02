@@ -1110,7 +1110,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "speed_up_prepare_IncidentToAlertScripts"
-resolved_reference = "86ebbe546aabd4c7e69a811e738f095a206aa2f4"
+resolved_reference = "022007126929226ab0e4787efb25d700195d9158"
 
 [[package]]
 name = "deprecated"
