@@ -38,7 +38,7 @@ script:
       required: true
     description: Send Text Message as a prompt to ChatGPT
     name: chatgpt-send-prompt
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3
