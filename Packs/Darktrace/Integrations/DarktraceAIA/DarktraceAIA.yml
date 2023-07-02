@@ -200,7 +200,6 @@ script:
       description: Group category
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   runonce: false
   script: '-'
