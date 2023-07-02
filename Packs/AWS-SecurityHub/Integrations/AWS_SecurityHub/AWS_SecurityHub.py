@@ -491,7 +491,16 @@ def generate_kwargs_for_get_findings(args: dict) -> dict:
     return kwargs
 
 
-def is_advanced_filters_contain_all_fields(filters_list):
+def is_advanced_filters_contain_all_fields(filters_list: list) -> bool:
+    """
+    Check if all the filters in the list contain the fields "name", "value", and "comparison".
+
+    Args:
+        filters_list (list): A list of filters.
+
+    Returns:
+        bool: True if all the filters contain the fields "name", "value", and "comparison", False otherwise.
+    """
     return any(
         "name" not in filters_list
         or "value" not in filter_str
@@ -500,7 +509,17 @@ def is_advanced_filters_contain_all_fields(filters_list):
     )
 
 
-def is_fields_in_right_order(filters_list):
+def is_advanced_filter_fields_in_right_order(filters_list: list) -> bool:
+    """
+    Check if the fields "name", "value", and "comparison" appear in the correct order in each filter string in the list.
+
+    Args:
+        filters_list (list): A list of filter strings.
+
+    Returns:
+        bool: True if the fields "name", "value", and "comparison" appear in the correct order
+        in each filter string in the list, False otherwise.
+    """
     for filter_str in filters_list:
         name_index = filter_str.find('name=')
         value_index = filter_str.find('value=')
@@ -513,7 +532,7 @@ def is_fields_in_right_order(filters_list):
 def is_valid_advanced_filters(string_filters: str) -> bool:
     filters_list = string_filters.split(';')
     return is_advanced_filters_contain_all_fields(filters_list)\
-        and is_fields_in_right_order(filters_list)
+        and is_advanced_filter_fields_in_right_order(filters_list)
 
 
 def parse_filter_field(string_filters) -> dict:
