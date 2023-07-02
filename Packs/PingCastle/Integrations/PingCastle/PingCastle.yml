@@ -41,8 +41,6 @@ script:
       description: The XML report sent by Ping Castle
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
   longRunning: true
   longRunningPort: true
   script: '-'

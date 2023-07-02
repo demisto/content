@@ -80,12 +80,10 @@ configuration:
   type: 15
 - display: API token
   name: api_token
-  required: false
   type: 4
   hidden: true
 - displaypassword: API Token
-  name:  credentials_api_token
-  required: false
+  name: credentials_api_token
   hiddenusername: true
   type: 9
 - defaultvalue: connectApi

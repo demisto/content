@@ -968,7 +968,6 @@ script:
     description: Checks the reputation of an app in Zimperium.
     name: file
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   runonce: false
   script: '-'

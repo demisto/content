@@ -13,9 +13,8 @@ configuration:
   type: 8
 - display: CrowdStrike API client ID
   name: client_id
-  required: false
   type: 4
-  hidden : true
+  hidden: true
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   display: Indicator Reputation
   name: feedReputation
@@ -91,12 +90,10 @@ configuration:
   type: 0
 - display: CrowdStrike API client secret
   name: client_secret
-  required: false
   type: 4
   hidden: true
 - display: CrowdStrike API client ID
   name: credentials_client
-  required: false
   type: 9
   displaypassword: CrowdStrike API client secret
   section: Connect

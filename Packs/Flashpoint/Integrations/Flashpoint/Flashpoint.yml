@@ -1024,7 +1024,6 @@ script:
       description: Sort value of the IoC.
       type: Unknown
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   runonce: false
   subtype: python3

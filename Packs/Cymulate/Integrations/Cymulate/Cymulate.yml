@@ -75,7 +75,6 @@ script:
       description: The cymulate's Attack ID of the incident
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
   runonce: false
   script: '-'
