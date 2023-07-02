@@ -10,7 +10,7 @@ configuration:
   type: 4
 - additionalinfo: This is the URL provided by MS-ISAC for the base of all endpoints
   defaultvalue: https://socapi.cisecurity.org
-  display: ""
+  display: Server URL
   name: url
   required: true
   type: 0

@@ -3,7 +3,7 @@ commonfields:
   id: Viper
   version: -1
 configuration:
-- display: ""
+- display: Server URL
   name: url
   required: true
   type: 0
