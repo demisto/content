@@ -100,7 +100,7 @@ script:
       name: from_time
     description: Gets indicators from the feed.
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   runonce: false
   script: '-'
