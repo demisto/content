@@ -1,0 +1,80 @@
+# This is a template, used and modified by the demisto-sdk pre-commit command. 
+
+exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-json
+      - id: check-yaml
+      - id: check-ast
+      - id: check-merge-conflict
+      - id: debug-statements
+        language_version: python3
+      - id: name-tests-test
+        files: .+_test.py$
+
+  - repo: https://github.com/hadialqattan/pycln
+    rev: v2.1.2
+    hooks:
+      - id: pycln
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: "v0.0.272"
+    hooks:
+      - id: ruff
+
+  - repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: "v2.0.1"
+    hooks:
+      - id: autopep8
+  - repo: local
+    hooks:
+
+      - id: is-circle-changed
+        name: is-circle-changed
+        description: Checks if circle files are changed, and checkout to current if it is.
+        entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" true
+        language: script
+        pass_filenames: false
+
+      - id: is-gitlab-changed
+        name: is-gitlab-changed
+        description: Checks if gitlab files are changed, and checkout to current if it is.
+        entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" true
+        language: script
+        pass_filenames: false
+
+  - repo: https://github.com/demisto/demisto-sdk
+    rev: ""
+    hooks:
+      - id: mypy
+        args:
+          [
+            --ignore-missing-imports,
+            --check-untyped-defs,
+            --show-error-codes,
+            --follow-imports=silent,
+            --allow-redefinition,
+            # `--python-version` argument is replaced in runtime
+            --python-version=3.10,
+          ]
+        exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests"
+
+      # enable with --test
+      - id: run-unit-tests
+
+      - id: format
+        # update docker image to the latest version, assume no
+        args: ["-ud", "-n", "--no-validate", "-g"]
+
+      - id: validate
+        args: ["-g"]
+
+      - id: secrets
+        args: ["--ignore-entropy"]
+
+      - id: no-implicit-optional
+        # remove this argument when this hook is ready to use
+        skip: true

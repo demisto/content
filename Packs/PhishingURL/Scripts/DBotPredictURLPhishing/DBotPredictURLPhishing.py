@@ -285,7 +285,7 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
 def verdict_to_int(verdict):
     if verdict == MALICIOUS_VERDICT:
         return 3
-    if verdict == BENIGN_VERDICT or verdict == BENIGN_VERDICT_WHITELIST:
+    if verdict in (BENIGN_VERDICT, BENIGN_VERDICT_WHITELIST):
         return 1
     if verdict == SUSPICIOUS_VERDICT:
         return 2
@@ -472,8 +472,9 @@ def extract_created_date(entry_list: List):
         if is_error(entry):
             continue
         else:
-            date_str = entry['EntryContext'].get('Domain(val.Name && val.Name == obj.Name)', {}).get('WHOIS', {}).get(
-                'CreationDate', None)
+            date_str = (
+                entry.get('EntryContext') or {}
+            ).get('Domain(val.Name && val.Name == obj.Name)', {}).get('WHOIS', {}).get('CreationDate')
             if date_str:
                 date = datetime.strptime(date_str, '%d-%m-%Y')
                 threshold_date = datetime.now() - timedelta(days=THRESHOLD_NEW_DOMAIN_MONTHS * 30)
