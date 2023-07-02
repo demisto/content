@@ -10,7 +10,9 @@ import uuid
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
 from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
 from stix2 import Tool, CourseOfAction
-from typing import Any, Callable
+from stix2.exceptions import InvalidValueError
+from typing import Any
+from collections.abc import Callable
 
 SCOs: dict[str, str] = {  # pragma: no cover
     "md5": "file:hashes.md5",
@@ -129,13 +131,13 @@ def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value:
     elif stix_type == 'windows-registry-key':
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
     elif stix_type == 'file':
-        if 'md5' == get_hash_type(value):
+        if get_hash_type(value) == 'md5':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
-        elif 'sha1' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha1':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
-        elif 'sha256' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha256':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
-        elif 'sha512' == get_hash_type(value):
+        elif get_hash_type(value) == 'sha512':
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
         else:
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
@@ -236,10 +238,7 @@ def main():
         xsoar_indicator = all_args[indicator_fields]
         demisto_indicator_type = xsoar_indicator.get('indicator_type', 'Unknown')
 
-        if doubleBackslash:
-            value = xsoar_indicator.get('value', '').replace('\\', r'\\')
-        else:
-            value = xsoar_indicator.get('value', '')
+        value = xsoar_indicator.get("value", "").replace("\\", "\\\\") if doubleBackslash else xsoar_indicator.get("value", "")
 
         if demisto_indicator_type in XSOAR_TYPES_TO_STIX_SCO and is_sco:
             stix_type = XSOAR_TYPES_TO_STIX_SCO.get(demisto_indicator_type)
@@ -324,12 +323,13 @@ def main():
 
                 except (KeyError, TypeError) as e:
                     demisto.info(
-                        "Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type, value))
-                    demisto.info("Export failure excpetion: {}".format(e))
+                        f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible")
+                    demisto.info(f"Export failure excpetion: {e}")
                     continue
-            
-            except stix2.exceptions.InvalidValueError as e:
-                demisto.info(f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
+
+            except InvalidValueError as e:
+                demisto.info(
+                    f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                 demisto.debug(f"Export failure exception: {e}")
                 continue
     if len(indicators) > 1:
