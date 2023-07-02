@@ -37,7 +37,7 @@ PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).g
     or demisto.params().get('key', '')
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
-
+URL_REGEX = r'https?://[^\s]*'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
@@ -296,8 +296,8 @@ def urlify_hyperlinks(message: str, url_header: str | None = EXTERNAL_FORM_URL_D
     url_header = url_header or EXTERNAL_FORM_URL_DEFAULT_HEADER
     formatted_message: str = message
 
-    for url_match in re.finditer(urlRegex, message):
-        url: str = url_match.group()
+    for url_match in re.finditer(URL_REGEX, message):
+        url = url_match.group()
         # is the url is a survey link coming from Data Collection task
         formatted_message = formatted_message.replace(url, f'[{url_header if EXTERNAL_FORM in url else url}]({url})')
     return formatted_message
