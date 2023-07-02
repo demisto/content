@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto_sdk =  {git = "https://github.com/demisto/demisto-sdk.git", rev= "9a3500c2e6c5381dbac1f09b1d7e58007420965c"}
+demisto_sdk =  {git = "https://github.com/demisto/demisto-sdk.git", branch= "test-modeling-rules-support-for-dataset-loading"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 dateparser = "^1.1.8"
