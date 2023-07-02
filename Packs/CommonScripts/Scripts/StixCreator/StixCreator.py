@@ -310,7 +310,7 @@ def main():
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
 
                     if indicator_type == 'report':
-                        kwargs['name'] = xsoar_indicator.get('name', '')
+                        kwargs['name'] = xsoar_indicator.get('value', '')
                         kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
                         kwargs['object_refs'] = [xsoar_indicator.get('id', '')]
 
@@ -331,6 +331,7 @@ def main():
             except stix2.exceptions.InvalidValueError as e:
                 demisto.info(f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                 demisto.debug(f"Export failure exception: {e}")
+                continue
     if len(indicators) > 1:
         bundle = Bundle(indicators, allow_custom=True)
         context = {
