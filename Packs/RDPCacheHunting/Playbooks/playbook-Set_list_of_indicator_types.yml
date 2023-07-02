@@ -72,6 +72,8 @@ tasks:
                   simple: ','
       listName:
         simple: indicatorsTypes
+      retry-count:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -126,6 +128,8 @@ tasks:
                   simple: ','
       listName:
         simple: indicatorsTypes
+      retry-count:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -180,6 +184,8 @@ tasks:
                   simple: ','
       listName:
         simple: indicatorsTypes
+      retry-count:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -234,6 +240,8 @@ tasks:
                   simple: ','
       listName:
         simple: indicatorsTypes
+      retry-count:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -288,6 +296,8 @@ tasks:
                   simple: ','
       listName:
         simple: indicatorsTypes
+      retry-count:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -342,6 +352,8 @@ tasks:
                   simple: ','
       listName:
         simple: indicatorsTypes
+      retry-count:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
