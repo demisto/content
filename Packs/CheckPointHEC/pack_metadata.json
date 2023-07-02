@@ -1,0 +1,27 @@
+{
+    "name": "CheckPointHEC",
+    "description": "The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Check Point Harmony Email & Collaboration",
+    "url": "https://www.avanan.com/support",
+    "email": "support@avanan.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "christiang@avanan.com"
+    ],
+    "githubUser": [
+        "chesstrian"
+    ],
+    "dependencies": {},
+    "displayedImages": []
+}
