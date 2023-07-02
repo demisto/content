@@ -635,7 +635,9 @@ def get_workbench_logs(
     )
     parse_workbench_logs(workbench_logs)
 
-    latest_workbench_log_time = latest_log_time or (dateparser.parse(start_time) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+    latest_workbench_log_time = latest_log_time or (
+        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+    ).strftime(DATE_FORMAT)  # type: ignore
 
     workbench_updated_last_run = {
         workbench_log_last_run_time: latest_workbench_log_time,
@@ -728,7 +730,9 @@ def get_observed_attack_techniques_logs(
             date_format=date_format
         )
 
-        last_run_start_time = latest_log_time or (dateparser.parse(start_time) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+        last_run_start_time = latest_log_time or (
+            dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+        ).strftime(DATE_FORMAT)  # type: ignore
 
     if new_next_link:
         # save in cache the latest log ids from first pagination
@@ -822,7 +826,9 @@ def get_search_detection_logs(
             date_format=date_format
         )
 
-        last_run_start_time = latest_log_time or (dateparser.parse(start_time) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+        last_run_start_time = latest_log_time or (
+            dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+        ).strftime(DATE_FORMAT)  # type: ignore
 
     if new_next_link:
         # save in cache the latest log ids from first pagination
@@ -902,7 +908,9 @@ def get_audit_logs(
         date_format=DATE_FORMAT
     )
 
-    latest_audit_log_time = latest_log_time or (dateparser.parse(start_time) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+    latest_audit_log_time = latest_log_time or (
+        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+    ).strftime(DATE_FORMAT)  # type: ignore
 
     for log in audit_logs:
         # pop all the hashes used to find duplicates
