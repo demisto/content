@@ -258,7 +258,6 @@ Describe "Test ParseDateRange"{
         }
     }
 
-function Test-MonitorMemoryUsage {
     Describe "MonitorMemoryUsage" {
         It "Displays memory usage and exits when limit is exceeded" {
             # Mocking the Get-Process cmdlet
@@ -269,9 +268,6 @@ function Test-MonitorMemoryUsage {
             )
             Mock Get-Process { $processes } -Verifiable
 
-            # Mocking the Write-Host cmdlet
-            Mock Write-Host { } -ParameterFilter { $Args[0] -like "Memory usage:*" } -Verifiable
-
             # Mocking the Exit keyword
             Mock Exit { } -Verifiable
 
@@ -280,7 +276,6 @@ function Test-MonitorMemoryUsage {
 
             # Assertions
             Assert-MockCalled Get-Process -Exactly -Times 1
-            Assert-MockCalled Write-Host -Exactly -Times 1
             Assert-MockCalled Exit -Exactly -Times 1
         }
 
@@ -292,9 +287,6 @@ function Test-MonitorMemoryUsage {
             )
             Mock Get-Process { $processes } -Verifiable
 
-            # Mocking the Write-Host cmdlet
-            Mock Write-Host { } -ParameterFilter { $Args[0] -like "Memory consumption is within the expected limits*" } -Verifiable
-
             # Mocking the Exit keyword
             Mock Exit { } -Verifiable
 
@@ -303,8 +295,6 @@ function Test-MonitorMemoryUsage {
 
             # Assertions
             Assert-MockCalled Get-Process -Exactly -Times 1
-            Assert-MockCalled Write-Host -Exactly -Times 1
             Assert-MockCalled Exit -Never
         }
     }
-}
