@@ -257,3 +257,54 @@ Describe "Test ParseDateRange"{
             { ParseDateRange("3 planets") } | Should -Throw
         }
     }
+
+function Test-MonitorMemoryUsage {
+    Describe "MonitorMemoryUsage" {
+        It "Displays memory usage and exits when limit is exceeded" {
+            # Mocking the Get-Process cmdlet
+            $processes = @(
+                [PSCustomObject]@{ WS = 100MB },
+                [PSCustomObject]@{ WS = 200MB },
+                [PSCustomObject]@{ WS = 501MB }
+            )
+            Mock Get-Process { $processes } -Verifiable
+
+            # Mocking the Write-Host cmdlet
+            Mock Write-Host { } -ParameterFilter { $Args[0] -like "Memory usage:*" } -Verifiable
+
+            # Mocking the Exit keyword
+            Mock Exit { } -Verifiable
+
+            # Calling the function
+            MonitorMemoryUsage
+
+            # Assertions
+            Assert-MockCalled Get-Process -Exactly -Times 1
+            Assert-MockCalled Write-Host -Exactly -Times 1
+            Assert-MockCalled Exit -Exactly -Times 1
+        }
+
+        It "Does not exit when memory usage is within the limit" {
+            # Mocking the Get-Process cmdlet
+            $processes = @(
+                [PSCustomObject]@{ WS = 100MB },
+                [PSCustomObject]@{ WS = 200MB }
+            )
+            Mock Get-Process { $processes } -Verifiable
+
+            # Mocking the Write-Host cmdlet
+            Mock Write-Host { } -ParameterFilter { $Args[0] -like "Memory consumption is within the expected limits*" } -Verifiable
+
+            # Mocking the Exit keyword
+            Mock Exit { } -Verifiable
+
+            # Calling the function
+            MonitorMemoryUsage
+
+            # Assertions
+            Assert-MockCalled Get-Process -Exactly -Times 1
+            Assert-MockCalled Write-Host -Exactly -Times 1
+            Assert-MockCalled Exit -Never
+        }
+    }
+}
