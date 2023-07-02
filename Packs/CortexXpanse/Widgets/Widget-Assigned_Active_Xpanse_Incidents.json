@@ -1,0 +1,37 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#1DB846": {
+                    "value": 1
+                }
+            },
+            "type": "above"
+        },
+        "valuesFormat": "abbreviated"
+    },
+    "query": "sourceBrand:\"Cortex Xpanse\" and type:\"Xpanse Alert\" and -owner:\"\" -status:closed",
+    "modified": "2023-03-21T20:00:04.081795659Z",
+    "name": "Assigned Active Xpanse Incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "c21d76eb-3bf8-43e3-891e-7c552a62dc0a",
+    "widgetType": "trend",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

@@ -1686,7 +1686,16 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+
+        account_json = params.get('user_creds', {}).get('password') or params.get('user_service_account_json')
+        user_id = params.get('user_creds', {}).get('identifier') or params.get('user_id', '')
+        params['user_id'] = user_id
+        params['user_service_account_json'] = account_json
+
+        if not account_json:
+            raise DemistoException('Please fill out the User\'s Service Account JSON field.')
+
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json)
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
@@ -1698,7 +1707,7 @@ def main() -> None:
         gsuite_client = GSuiteClient(service_account_dict,
                                      base_url='https://www.googleapis.com/', verify=verify_certificate, proxy=proxy,
                                      headers=headers,
-                                     user_id=params.get('user_id', ''))
+                                     user_id=user_id)
 
         # Trim the arguments
         args = GSuiteClient.strip_dict(demisto.args())

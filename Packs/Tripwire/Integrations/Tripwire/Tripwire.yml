@@ -41,7 +41,6 @@ configuration:
   section: Collect
 - additionalinfo: Rules IDs of elements versions to fetch, comma seperated.
   display: Rule ids
-  hidden: false
   name: rule_oids
   required: false
   type: 12
@@ -49,7 +48,6 @@ configuration:
   advanced: true
 - additionalinfo: Nodes IDs of elements versions to fetch, comma seperated.
   display: Node ids
-  hidden: false
   name: node_oids
   required: false
   type: 12
@@ -541,7 +539,7 @@ script:
     - contextPath: Tripwire.Nodes.version
       description: Versions of nodes.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

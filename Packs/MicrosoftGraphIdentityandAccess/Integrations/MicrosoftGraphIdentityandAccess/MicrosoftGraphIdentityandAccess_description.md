@@ -1,4 +1,4 @@
-## Authorization
+### Device Code Flow
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
 To connect to Microsoft Graph Identity & Access using either Cortex XSOAR Graph app or the Self-Deployed Graph app:
@@ -18,6 +18,15 @@ A detailed explanation on how to register an app can be found [here](https://doc
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with 
 mobile and desktop flows enabled.
+
+### Client Credentials Flow
+___
+Follow these steps for a self-deployed configuration:
+
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration.
+2. Enter your Client/Application ID in the ***Application ID*** parameter. 
+3. Enter your Client Secret in the ***Client Secret*** parameter.
+4. Enter your Tenant ID in the ***Tenant ID*** parameter.
 
 ### Required Permissions
 RoleManagement.ReadWrite.Directory - Application

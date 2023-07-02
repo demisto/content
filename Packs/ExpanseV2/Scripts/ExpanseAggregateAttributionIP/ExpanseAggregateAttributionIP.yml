@@ -1,4 +1,3 @@
-enabled: false
 name: ExpanseAggregateAttributionIP
 comment: Aggregate entries from multiple sources into AttributionIP
 commonfields:

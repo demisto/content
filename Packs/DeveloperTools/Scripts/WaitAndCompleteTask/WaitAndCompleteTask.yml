@@ -62,7 +62,6 @@ comment: Wait and complete tasks by given status. Used for test playbooks.
 commonfields:
   id: WaitAndCompleteTask
   version: -1
-enabled: false
 name: WaitAndCompleteTask
 outputs:
 - contextPath: WaitAndCompleteTask.CompletedTask

@@ -1405,7 +1405,7 @@ script:
       - Read
       - Unread
     description: Update the status of an email to read / unread.
-  dockerimage: demisto/crypto:1.0.0.61689
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: true
   longRunning: false

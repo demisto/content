@@ -1,0 +1,6 @@
+[file:MicrosoftIntuneParsingRules.yml]
+ignore=PR101
+
+[file:MicrosoftIntune_1_3.yml]
+ignore=MR108
+

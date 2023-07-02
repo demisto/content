@@ -4,7 +4,6 @@ comment: |-
 commonfields:
   id: ZTAPParseLinks
   version: -1
-enabled: false
 name: ZTAPParseLinks
 script: '-'
 system: false

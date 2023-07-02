@@ -1194,3 +1194,105 @@
 </tr>
 </tbody>
 </table>
+
+
+### cisco-ise-create-endpoint
+
+***
+Creates a new endpoint on Cisco ISE according to the passed MAC address and custom attribute list.
+
+#### Base Command
+
+`cisco-ise-create-endpoint`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mac_address | MAC address of the endpoint (format: 11:22:33:44:55:66). | Required | 
+| attributes_map | A list of custom attributes. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoISE.Endpoint.MACAddress | string | MAC address of the new endpoint. | 
+### cisco-ise-get-nodes
+
+***
+Returns data for all Cisco ISE nodes in the deployment.
+
+#### Base Command
+
+`cisco-ise-get-nodes`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoISE.NodesData | unknown | Details of all deployment ISE nodes. | 
+### cisco-ise-get-endpoint-id-by-name
+
+***
+Returns an EndpointID using its name (Available on ISE 2.3 and later versions).
+
+#### Base Command
+
+`cisco-ise-get-endpoint-id-by-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mac_address | MAC address of the endpoint (format: 11:22:33:44:55:66). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.ID | string | Endpoint ID. | 
+| Endpoint.MACAddress | string | Endpoint MAC address. | 
+### cisco-ise-remove-policy
+
+***
+Removes an Adapative Network Control policy from an endpoint.
+
+#### Base Command
+
+`cisco-ise-remove-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mac_address | The MAC address from which to remove the policy. | Required | 
+| policy_name | The name of the policy to remove from the endpoint. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoISE.Endpoint.MACAddress | string | The MAC address of the endpoint. | 
+| CiscoISE.Endpoint.PolicyName | string | The policy name that was removed from the endpoint. | 
+### cisco-ise-get-session-data-by-ip
+
+***
+Queries an IP address and returns its session data from an active endpoint.
+
+#### Base Command
+
+`cisco-ise-get-session-data-by-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip_address | IP address to query in the ISE platform. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

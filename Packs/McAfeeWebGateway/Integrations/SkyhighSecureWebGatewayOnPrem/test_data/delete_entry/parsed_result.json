@@ -1,0 +1,3 @@
+{
+    "HumanReadable": "### Deleted List entry at position 0\n|ListID|Position|Name|Description|\n|---|---|---|---|\n| com.scur.type.regex.386 | 0 | http*://evil.corp/* | ticket #1: This is an evil domain |\n"
+}

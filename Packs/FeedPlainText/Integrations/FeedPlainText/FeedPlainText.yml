@@ -12,8 +12,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: It is possible to provide an API key header instead. See the description
-    for more details.
+- additionalinfo: It is possible to provide an API key header instead. See the description for more details.
   display: Username
   name: credentials
   required: false
@@ -24,8 +23,7 @@ configuration:
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then
-    the value set as Indicator Type will be ignored. If the "Custom" option is selected, the Custom Indicator Type parameter must be provided.
+- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored. If the "Custom" option is selected, the Custom Indicator Type parameter must be provided.
   display: Indicator Type
   name: indicator_type
   options:
@@ -48,15 +46,12 @@ configuration:
   - Custom
   required: false
   type: 15
-- additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the 
-    Indicator Type field.
+- additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the Indicator Type field.
   display: Custom Indicator Type
-  hidden: false
   name: custom_indicator_type
   required: false
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -80,8 +75,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -111,9 +105,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -143,28 +135,21 @@ configuration:
   required: false
   type: 8
 - display: Feed name
-  hidden: false
   name: feed_name
   required: false
   type: 0
-- additionalinfo: JSON string of patterns to extract from the text response. See the
-    description for more details.
+- additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Indicator extraction pattern
-  hidden: false
   name: indicator
   required: false
   type: 12
-- additionalinfo: JSON string of patterns to extract from the text response. See the
-    description for more details.
+- additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Fields extraction pattern
-  hidden: false
   name: fields
   required: false
   type: 12
-- additionalinfo: CSV list of headers to send in the HTTP request in the format of
-    "header_name:header_value".
+- additionalinfo: CSV list of headers to send in the HTTP request in the format of "header_name:header_value".
   display: Headers
-  hidden: false
   name: headers
   required: false
   type: 0
@@ -176,16 +161,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return to the output. The default
-        value is 50.
+      description: The maximum number of results to return to the output. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: The indicator type. If the configuration parameter 'Auto detect
-        indicator type' is marked true for the integration instance, then this value
-        will be ignored.
+      description: The indicator type. If the configuration parameter 'Auto detect indicator type' is marked true for the integration instance, then this value will be ignored.
       isArray: false
       name: indicator_type
       required: false

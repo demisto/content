@@ -9,7 +9,6 @@ comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP
 commonfields:
   id: FormatURL
   version: -1
-enabled: false
 name: FormatURL
 outputs:
 - contextPath: URL

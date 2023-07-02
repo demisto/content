@@ -37,12 +37,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-      is provided then incidents of all the statuses will be fetched. Note: an incident
-      whose status was changed to a filtered status after its creation time will not
-      be fetched.'
+- additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: an incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Soc Statuses to Fetch
-  hidden: false
   name: soc_status
   options:
   - Not Reviewed
@@ -427,7 +423,7 @@ script:
     - contextPath: Perch.Indicator.CreatedBy
       description: ID of user that created the incident.
       type: Number
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false

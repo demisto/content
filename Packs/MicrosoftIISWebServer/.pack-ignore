@@ -1,0 +1,9 @@
+[file:MicrosoftIISWebServerModelingRules.yml]
+ignore=MR108
+
+[file:MicrosoftIISWebServerModelingRules_1_3.yml]
+ignore=MR108
+
+[file:MicrosoftIISWebServer.yml]
+ignore=PR101
+

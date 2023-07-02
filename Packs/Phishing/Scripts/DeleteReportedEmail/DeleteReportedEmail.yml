@@ -38,7 +38,6 @@ comment: 'Use this script to delete a reported phishing email from the mailbox i
 commonfields:
   id: DeleteReportedEmail
   version: -1
-enabled: false
 name: DeleteReportedEmail
 polling: true
 outputs:

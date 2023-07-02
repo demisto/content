@@ -154,6 +154,10 @@
         "FeedFastly": {
             "mandatory": false,
             "display_name": "Fastly IP Feed"
+        },
+        "FeedLOLBAS": {
+                "mandatory": false,
+                "display_name": "LOLBAS Tools Feed"
         }
     },
     "marketplaces": [

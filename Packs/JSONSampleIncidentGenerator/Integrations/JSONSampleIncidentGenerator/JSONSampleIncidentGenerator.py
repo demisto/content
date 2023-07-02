@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import json
 from datetime import datetime
 
@@ -20,13 +22,24 @@ def main() -> None:
 
             incidents = []
 
-            incident = {
-                'name': incident_name,
-                'details': json.dumps(data),
-                'occurred': datetime.now().isoformat().split("Z", 1)[0] + "Z",
-                'rawJSON': json.dumps(data)
-            }
-            incidents.append(incident)
+            if isinstance(data, list):
+                for i in data:
+                    incident = {
+                        'name': incident_name,
+                        'details': json.dumps(i),
+                        'occurred': datetime.now().isoformat().split("Z", 1)[0] + "Z",
+                        'rawJSON': json.dumps(i)
+                    }
+                    incidents.append(incident)
+            else:
+                incident = {
+                    'name': incident_name,
+                    'details': json.dumps(data),
+                    'occurred': datetime.now().isoformat().split("Z", 1)[0] + "Z",
+                    'rawJSON': json.dumps(data)
+                }
+                incidents.append(incident)
+
             demisto.incidents(incidents)
 
         elif demisto.command() == 'json-sample-incident-generator-command':

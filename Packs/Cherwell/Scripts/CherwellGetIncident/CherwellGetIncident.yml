@@ -19,7 +19,6 @@ comment: This script is an example script of how to retrieve an incident from Ch
 commonfields:
   id: CherwellGetIncident
   version: -1
-enabled: false
 name: CherwellGetIncident
 outputs:
 - contextPath: Cherwell.BusinessObjects.RecordId
