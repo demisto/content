@@ -37,7 +37,6 @@ PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).g
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 
-URL_REGEX: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[:/$_@.&+#-]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
@@ -288,16 +287,16 @@ def is_investigation_mirrored(investigation_id: str, mirrored_channels: list) ->
 
 def urlify_hyperlinks(message: str, url_header: str | None = EXTERNAL_FORM_URL_DEFAULT_HEADER) -> str:
     """
-    Turns URL to markdown hyper-link
+    Converts URLs to Markdown-format hyperlinks.
     e.g. https://www.demisto.com -> [https://www.demisto.com](https://www.demisto.com)
     :param message: Message to look for URLs in
-    :return: Formatted message with hyper-links
+    :return: Formatted message with hyperlinks.
     """
     url_header = url_header or EXTERNAL_FORM_URL_DEFAULT_HEADER
     formatted_message: str = message
-    # URLify markdown hyperlinks
-    urls = re.findall(URL_REGEX, message)
-    for url in urls:
+
+    for url_match in re.finditer(urlRegex, message):
+        url: str = url_match.group()
         # is the url is a survey link coming from Data Collection task
         formatted_message = formatted_message.replace(url, f'[{url_header if EXTERNAL_FORM in url else url}]({url})')
     return formatted_message
