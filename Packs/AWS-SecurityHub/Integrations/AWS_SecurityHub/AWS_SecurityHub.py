@@ -491,6 +491,31 @@ def generate_kwargs_for_get_findings(args: dict) -> dict:
     return kwargs
 
 
+def is_advanced_filters_contain_all_fields(filters_list):
+    return any(
+        "name" not in filters_list
+        or "value" not in filter_str
+        or "comparison" not in filter_str
+        for filter_str in filters_list
+    )
+
+
+def is_fields_in_right_order(filters_list):
+    for filter_str in filters_list:
+        name_index = filter_str.find('name=')
+        value_index = filter_str.find('value=')
+        comparison_index = filter_str.find('comparison=')
+        if not name_index < value_index < comparison_index:
+            return False
+    return True
+
+
+def is_valid_advanced_filters(string_filters: str) -> bool:
+    filters_list = string_filters.split(';')
+    return is_advanced_filters_contain_all_fields(filters_list)\
+        and is_fields_in_right_order(filters_list)
+
+
 def parse_filter_field(string_filters) -> dict:
     """
     Parses string with sets of name, value and comparison into a dict
@@ -500,17 +525,15 @@ def parse_filter_field(string_filters) -> dict:
     Returns:
         A dict of the form {<name1>:[{'Value': <value1>, 'Comparison': <comparison1>}],<name2>:[{...}]}
     """
-    filters = {}
-    regex = re.compile(r'name=([\w\d_:.-]+),value=([\w\d_:.-]*),comparison=([ /\w\d@_,.\*-]+)', flags=re.I)
-    regex_parse_result = regex.findall(string_filters)
-    if regex_parse_result:
-        for name, value, comparison in regex_parse_result:
-            filters.update({
-                name: [{
-                    'Value': value,
-                    'Comparison': comparison.upper()
-                }]
-            })
+    filters: dict = {}
+    if not is_valid_advanced_filters(string_filters):
+        demisto.info(f'Advanced filters does not contain all fields or fields are not in\
+            the correct order: name,value,comparison: {string_filters}')
+    elif ',' in string_filters: # TODO consider using Array to List from CSP
+        filters_list = string_filters.split(';')
+        filters = {split_str[0].split('=')[1]: [{'Value': split_str[1].split('=')[1],
+                                                 'Comparison':split_str[2].split('=')[1].upper()}]
+                   for split_str in [filter_str.split(',') for filter_str in filters_list]}
     else:
         demisto.info(f'could not parse filter: {string_filters}')
 
