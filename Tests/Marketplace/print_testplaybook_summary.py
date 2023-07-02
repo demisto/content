@@ -15,11 +15,10 @@ def options_handler():
 
 
 def read_file_contents(file_path: str) -> list:
-    contents = []
     if os.path.isfile(file_path):
         with open(file_path, 'r') as file:
-            contents = file.read().splitlines()
-    return contents
+            return file.read().splitlines()
+    return []
 
 
 def print_test_summary(failed_tests_path, succeeded_tests_path) -> None:
