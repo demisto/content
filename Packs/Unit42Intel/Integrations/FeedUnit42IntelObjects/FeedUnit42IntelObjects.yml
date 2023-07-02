@@ -60,7 +60,7 @@ configuration:
   - WHITE
   required: false
   type: 15
-- defaultvalue: '10'
+- defaultvalue: '300'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
