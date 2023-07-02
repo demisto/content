@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: dea6b43c-829a-4120-8aab-b0348cdb9e9d
+    taskid: b22cfe1e-5e21-4e31-8f14-5c11c13e84b3
     type: regular
     task:
-      id: dea6b43c-829a-4120-8aab-b0348cdb9e9d
+      id: b22cfe1e-5e21-4e31-8f14-5c11c13e84b3
       version: -1
       name: OCR
       description: Extracts text from an image.
@@ -85,6 +85,8 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+      execution-timeout:
+        simple: "300"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -438,10 +440,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4e5fa482-50e7-4326-8d3b-2606266d95d4
+    taskid: 4bc78403-23a5-4f01-80ed-407c8d375421
     type: regular
     task:
-      id: 4e5fa482-50e7-4326-8d3b-2606266d95d4
+      id: 4bc78403-23a5-4f01-80ed-407c8d375421
       version: -1
       name: Set String Sifter results in the layout
       description: Creates a Grid table from items or key-value pairs.
@@ -458,7 +460,7 @@ tasks:
       context_path:
         simple: Stringsifter.Results
       grid_id:
-        simple: stringsifter
+        simple: rdpcachehuntingstringsifter
       keys:
         simple: Rating,Word
     separatecontext: false
@@ -507,10 +509,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: b915ddc2-5255-41f8-8b85-85b9956bb759
+    taskid: 5a935b29-cd06-4cc7-8205-041f2251043b
     type: regular
     task:
-      id: b915ddc2-5255-41f8-8b85-85b9956bb759
+      id: 5a935b29-cd06-4cc7-8205-041f2251043b
       version: -1
       name: Set strings similarity results in the layout
       description: Creates a Grid table from items or key-value pairs.
@@ -526,17 +528,11 @@ tasks:
         simple: Found String,MITRE ATT&CK Tool,Similarity Ratio
       context_path:
         complex:
-          root: similarityCheck
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: similarityCheck
-                iscontext: true
+          root: StringSimilarity
       grid_id:
-        simple: stringssimilarity
+        simple: incidentrdpachehuntingstringssimilarity
       keys:
-        simple: StringFromText,StringFromList,similarityRatio
+        simple: StringA,StringB,SimilarityRatio
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -654,10 +650,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: f9e8f06a-e5ad-4784-857a-a85637633d28
+    taskid: 035cff76-bba4-433b-8c06-b85630b9011c
     type: regular
     task:
-      id: f9e8f06a-e5ad-4784-857a-a85637633d28
+      id: 035cff76-bba4-433b-8c06-b85630b9011c
       version: -1
       name: Set the original collage in the layout
       description: Set a value in context under the key you entered.
@@ -1069,10 +1065,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 6708e984-cef0-442b-8fe4-94d8f709e615
+    taskid: 2cee3a5b-a32e-4d45-8e60-6474db0e5fb5
     type: regular
     task:
-      id: 6708e984-cef0-442b-8fe4-94d8f709e615
+      id: 2cee3a5b-a32e-4d45-8e60-6474db0e5fb5
       version: -1
       name: Preprocess Grayscale Image
       description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
@@ -1086,6 +1082,8 @@ tasks:
     scriptarguments:
       action:
         simple: grayscale
+      execution-timeout:
+        simple: "300"
       file_entry_id:
         complex:
           root: File
@@ -1124,10 +1122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: eecb86f7-83b0-4b1f-8dcd-8adf43795dd0
+    taskid: d86b07da-a9ee-49d1-8c0f-366faa5a0820
     type: regular
     task:
-      id: eecb86f7-83b0-4b1f-8dcd-8adf43795dd0
+      id: d86b07da-a9ee-49d1-8c0f-366faa5a0820
       version: -1
       name: Preprocess Sharpened Image
       description: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.

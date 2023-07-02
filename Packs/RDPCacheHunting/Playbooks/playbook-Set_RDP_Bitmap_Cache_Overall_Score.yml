@@ -1,40 +1,27 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: This playbook sets the RDP bitmap cache overall score
 id: Set RDP Bitmap Cache Overall Score
-inputs: []
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Set RDP Bitmap Cache Overall Score
-outputs:
-- contextPath: OverallScore
-  description: The overall score
-  type: unknown
+description: This playbook sets the RDP bitmap cache overall score
 starttaskid: "0"
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 8b0133d1-1edd-44d1-87fa-0fc464c5d9a9
+    type: start
+    task:
+      id: 8b0133d1-1edd-44d1-87fa-0fc464c5d9a9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 8b0133d1-1edd-44d1-87fa-0fc464c5d9a9
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 8b0133d1-1edd-44d1-87fa-0fc464c5d9a9
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -42,45 +29,50 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    continueonerrortype: ""
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e5476299-d8a2-40c7-85cd-7bee749abd33
+    type: regular
+    task:
+      id: e5476299-d8a2-40c7-85cd-7bee749abd33
+      version: -1
+      name: Set string similarity score
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       key:
         simple: OverallScore
       value:
         complex:
-          accessor: similarityRatio
-          root: similarityCheck
+          root: StringSimilarity
+          accessor: SimilarityScore
           transformers:
           - operator: SumList
-          - args:
+          - operator: multiply
+            args:
               by:
                 value:
                   simple: "5"
-            operator: multiply
+          - operator: precision
+            args:
+              by:
+                value:
+                  simple: "1"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 83aa6865-e2a6-4de8-85d5-b0afcbe87fc3
-      iscommand: false
-      name: Set string similarity score
-      scriptName: Set
-      type: regular
-      version: -1
-    taskid: 83aa6865-e2a6-4de8-85d5-b0afcbe87fc3
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -88,57 +80,57 @@ tasks:
           "y": 180
         }
       }
-  "2":
-    continueonerrortype: ""
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 14a86f81-5491-44ab-845b-2c0203e0cd5c
+    type: regular
+    task:
+      id: 14a86f81-5491-44ab-845b-2c0203e0cd5c
+      version: -1
+      name: Set Stringsifter score
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       key:
         simple: OverallScore
       value:
         complex:
-          accessor: Rating
+          root: Stringsifter.Results
           filters:
-          - - left:
-                iscontext: true
+          - - operator: in
+              left:
                 value:
                   simple: Stringsifter.Results.Word
-              operator: in
-              right:
                 iscontext: true
+              right:
                 value:
                   simple: ExtractedIndicators.Executables
-          root: Stringsifter.Results
+                iscontext: true
+          accessor: Rating
           transformers:
           - operator: uniq
-          - args:
+          - operator: append
+            args:
               item:
-                iscontext: true
                 value:
                   simple: OverallScore
-            operator: append
+                iscontext: true
           - operator: SumList
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 14a86f81-5491-44ab-845b-2c0203e0cd5c
-      iscommand: false
-      name: Set Stringsifter score
-      scriptName: Set
-      type: regular
-      version: -1
-    taskid: 14a86f81-5491-44ab-845b-2c0203e0cd5c
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -146,27 +138,27 @@ tasks:
           "y": 340
         }
       }
-  "3":
-    continueonerrortype: ""
-    id: "3"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3f61f97e-6611-4589-8a4f-0e2503cb52de
+    type: title
     task:
-      brand: ""
       id: 3f61f97e-6611-4589-8a4f-0e2503cb52de
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 3f61f97e-6611-4589-8a4f-0e2503cb52de
-    timertriggers: []
-    type: title
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -174,7 +166,14 @@ tasks:
           "y": 500
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -187,6 +186,11 @@ view: |-
       }
     }
   }
+inputs: []
+outputs:
+- contextPath: OverallScore
+  description: The overall score
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
