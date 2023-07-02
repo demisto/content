@@ -1414,6 +1414,10 @@ def test_update_message(requests_mock):
 
 def test_direct_message_handler(mocker, requests_mock):
     from MicrosoftTeams import direct_message_handler
+
+    mocker.patch('MicrosoftTeams.get_graph_access_token', return_value="token")
+    mocker.patch('MicrosoftTeams.get_bot_access_token', return_value="token")
+
     create_incidents_mocker = mocker.patch.object(
         demisto,
         'createIncidents',
