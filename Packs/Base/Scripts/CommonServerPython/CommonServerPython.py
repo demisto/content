@@ -10671,7 +10671,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     new_found_incidents_ids = {}
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time <= deletion_threshold_in_seconds:
+        if current_time - addition_time < deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
             demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
         else:
@@ -10752,9 +10752,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
                   "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
     remove_incident_ids = True
 
-    new_incidentes_ids = {incident.get(id_field) for incident in incidents} - set(last_run.get('found_incident_ids', []))
 
-    if len(new_incidentes_ids) == 0:
+    if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
         }
@@ -10764,9 +10763,11 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         new_last_run = {
             'time': latest_incident_fetched_time,
         }
-        # we are still on the same time, no need to remove current incident ids
         if latest_incident_fetched_time == start_fetch_time:
+            # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
+            # As we stuck, we need to update the limit anyway (even if the `lookback` is off)
+            new_last_run['limit'] = len(incidents) + fetch_limit
 
     new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
 
