@@ -1,6 +1,7 @@
 [MODEL: dataset = microsoft_adfs_raw]
 // filter event ids based on XDRC configuration.
-filter event_id in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206", "1207")
+alter eventID=to_string(event_id)
+| filter eventID in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206", "1207")
 // xml part
 | alter accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
@@ -57,7 +58,7 @@ filter event_id in ("510", "1200", "1201", "1202", "1203", "1204", "1205", "1206
     xdm.network.application_protocol = auth_protocol,
     xdm.source.ipv4 = ip_address,
     xdm.source.user_agent = coalesce(user_agent,user_agent2),
-    xdm.event.id = to_string(event_id),
+    xdm.event.id = to_string(eventID),
     xdm.event.type = event_type_connection,
     xdm.session_context_id = to_string(record_id),
     xdm.source.user.username = coalesce(userName ,accountName),
