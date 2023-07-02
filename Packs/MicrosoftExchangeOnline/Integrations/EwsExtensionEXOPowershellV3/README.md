@@ -12,12 +12,13 @@ which utilizes the [EXO v3 module](https://docs.microsoft.com/en-us/powershell/e
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Exchange Online URL |  | True |
-    | Certificate | A pfx certificate encoded in Base64. | True |
+    | Name | The name of the integration | True |
+    | Exchange Online URL | https://outlook.office365.com | True |
+    | Certificate | A txt certificate encoded in Base64. | True |
     | The organization used in app-only authentication. |  | True |
     | The application ID from the Azure portal |  | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
