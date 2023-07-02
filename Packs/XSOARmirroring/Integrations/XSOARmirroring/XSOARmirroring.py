@@ -293,7 +293,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             last_fetch = int(last_fetch)
             last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
         except Exception:
-            demisto.info(f'Could not parse {last_fetch=}')
+            pass
 
     latest_created_time = dateparser.parse(last_fetch)  # type: ignore[arg-type]
     incidents_result: List[Dict[str, Any]] = []
@@ -713,10 +713,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
         if parsed_args.remote_incident_id:
             # First, get the incident as we need the version
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
-            custom_fields = argToList(demisto.params().get('custom_fields'))
             for changed_key in parsed_args.delta.keys():
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-                if changed_key in old_incident.get('CustomFields', {}).keys() or changed_key in custom_fields:
+                if changed_key in old_incident.get('CustomFields', {}).keys():
                     old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
 
             parsed_args.data = old_incident
@@ -758,7 +757,9 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
 
 
 def main() -> None:
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('apikey')
+    if not api_key:
+        raise DemistoException('API Key must be provided.')
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
 
