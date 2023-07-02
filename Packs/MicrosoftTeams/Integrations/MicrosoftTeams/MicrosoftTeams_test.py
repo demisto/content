@@ -979,7 +979,8 @@ def test_is_investigation_mirrored():
 
 @pytest.mark.parametrize('message, expected_result', [
     ("Visit https://github.com/demisto/content and https://xsoar.pan.dev",
-     "Visit [https://github.com/demisto/content](https://github.com/demisto/content) and [https://xsoar.pan.dev](https://xsoar.pan.dev)"),
+     "Visit [https://github.com/demisto/content](https://github.com/demisto/content) and "
+     "[https://xsoar.pan.dev](https://xsoar.pan.dev)"),
     ("Link: https://xsoar.pan.dev/page?parametized=true",
      "Link: [https://xsoar.pan.dev/page?parametized=true](https://xsoar.pan.dev/page?parametized=true)"),
 ])
