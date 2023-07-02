@@ -1109,8 +1109,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "3312a7a93f88d26544c95e81914ec35444345736"
-resolved_reference = "3312a7a93f88d26544c95e81914ec35444345736"
+reference = "d571de8bcd75931bced0aa70854ac1050569587f"
+resolved_reference = "d571de8bcd75931bced0aa70854ac1050569587f"
 
 [[package]]
 name = "deprecated"
@@ -5913,14 +5913,14 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.7.0"
+version = "4.7.1"
 description = "Backported and Experimental Type Hints for Python 3.7+"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "typing_extensions-4.7.0-py3-none-any.whl", hash = "sha256:5d8c9dac95c27d20df12fb1d97b9793ab8b2af8a3a525e68c80e21060c161771"},
-    {file = "typing_extensions-4.7.0.tar.gz", hash = "sha256:935ccf31549830cda708b42289d44b6f74084d616a00be651601a4f968e77c82"},
+    {file = "typing_extensions-4.7.1-py3-none-any.whl", hash = "sha256:440d5dd3af93b060174bf433bccd69b0babc3b15b1a8dca43789fd7f61514b36"},
+    {file = "typing_extensions-4.7.1.tar.gz", hash = "sha256:b75ddc264f0ba5615db7ba217daeb99701ad295353c45f9e95963337ceeeffb2"},
 ]
 
 [[package]]
@@ -6535,4 +6535,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "f5179eb5754bcbe2931cbc75291668623fd9fc9b218d47bc367a39de23b0dfe9"
+content-hash = "170dd9e21e40a56ba6b6469d98aba2278d9ca8a6c0863197fdd09a1a867c4075"
