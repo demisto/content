@@ -329,7 +329,7 @@ def test_mirror_investigation(mocker, requests_mock):
         'membershipType': 'standard'
     }
     assert requests_mock.request_history[3].json() == {
-        'text': 'This channel was created to mirror [incident 2](https://test-address:8443#/WarRoom/2) between '
+        'text': 'This channel was created to mirror [incident 2](https://test-address:8443/#/WarRoom/2) between '
                 'Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, you need to'
                 ' mention the Demisto Bot in the message.',
         'type': 'message'
@@ -747,7 +747,7 @@ def test_send_message_server_notifications_incident_opened(mocker, requests_mock
         'args',
         return_value={
             'channel': 'incidentNotificationChannel',
-            'message': 'user has reported an incident tadam.\nView it on https://server#/WarRoom/3247',
+            'message': 'user has reported an incident tadam.\nView it on https://server/#/WarRoom/3247',
             'messageType': 'incidentOpened',
             'severity': 1,
             'to': ''
@@ -805,7 +805,7 @@ def test_send_message_server_notifications_incident_changed(mocker, requests_moc
         'args',
         return_value={
             'channel': 'incidentNotificationChannel',
-            'message': 'DBot has updated an incident tadam.\nView it on https://server#/WarRoom/3247',
+            'message': 'DBot has updated an incident tadam.\nView it on https://server/#/WarRoom/3247',
             'messageType': 'incidentChanged',
             'severity': 1,
             'to': ''
