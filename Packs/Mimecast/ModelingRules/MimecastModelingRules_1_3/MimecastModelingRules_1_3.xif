@@ -20,7 +20,7 @@ filter
     xdm.observer.unique_identifier = acc,
     xdm.event.id = aCode,
     xdm.email.attachment.filename = AttNames,
-    xdm.email.recipients = arrayconcat(rcpts, recipients),
+    xdm.email.recipients = arrayconcat(rcpt_array, recipient_array),
     xdm.email.message_id = MsgId,
     xdm.email.sender = Sender,
     xdm.email.subject = Subject,
