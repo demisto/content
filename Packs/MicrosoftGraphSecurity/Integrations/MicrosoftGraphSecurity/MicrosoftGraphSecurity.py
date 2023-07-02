@@ -265,10 +265,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
     last_run = demisto.getLastRun()
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    if not last_run:  # if first time running
-        new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
-    else:
-        new_last_run = last_run
+    new_last_run = last_run if last_run else {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     demisto_incidents: list = []
     time_from = new_last_run.get('time')
     time_to = datetime.now().strftime(timestamp_format)
@@ -599,7 +596,7 @@ def update_alert_command(client: MsGraphClient, args):
     human_readable = f'Alert {alert_id} has been successfully updated.'
     if status and API_VER == API_V1 and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
         human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
-Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
+Microsoft Graph Security API integrated applications but not reflected in the provider`s management experience.\n \
         For more details, see the \
 [Microsoft documentation](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#alerts)'
     return human_readable, ec, context

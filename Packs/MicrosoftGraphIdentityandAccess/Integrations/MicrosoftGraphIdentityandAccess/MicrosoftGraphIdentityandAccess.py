@@ -2,8 +2,6 @@
 An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
-from typing import Tuple
-
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -144,7 +142,7 @@ class Client:  # pragma: no cover
             THe created IP named location
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http # noqa
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http
         """
         return self.ms_client.http_request(
             'POST', 'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
@@ -191,7 +189,7 @@ class Client:  # pragma: no cover
             a list of dictionaries with the object from the api
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http # noqa
+            https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http
         """
         odata_query = '?'
         if limit:

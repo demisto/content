@@ -153,10 +153,10 @@ def tags_arg_to_request_format(tags):
 
 
 def test_connection(client, params):
-    if not client.ms_client.managed_identities_client_id:
-        if (params.get('self_deployed', False) and not params.get('client_credentials')
-           and not (params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
-            return_error('You must enter an authorization code in a self-deployed configuration.')
+    if not client.ms_client.managed_identities_client_id \
+        and (params.get('self_deployed', False) and not params.get('client_credentials')
+             and not (params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
+        return_error('You must enter an authorization code in a self-deployed configuration.')
 
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     try:

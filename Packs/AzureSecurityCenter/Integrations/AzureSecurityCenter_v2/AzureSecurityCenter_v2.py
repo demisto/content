@@ -981,10 +981,7 @@ def list_jit_command(client: MsClient, args: dict):
             rules_summary_array = []
             for rule in rules_data:
                 ID = rule.get("id")
-                if isinstance(ID, str):
-                    vm_name = ID.split("/")[-1]
-                else:
-                    vm_name = None  # type: ignore
+                vm_name = ID.split("/")[-1] if isinstance(ID, str) else None
                 vm_ports = [str(port.get("number")) for port in rule.get("ports")]
                 rules_summary_array.append(
                     "({}: {})".format(vm_name, ", ".join(vm_ports))

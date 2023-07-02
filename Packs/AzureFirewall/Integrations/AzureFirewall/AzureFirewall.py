@@ -890,10 +890,10 @@ def filter_policy_rules_collection(rules_collections: list, rule_type: str) -> l
 
         if isinstance(current_collections, list) and len(current_collections) > 0:
             rule_collection = current_collections[0]
-            if rule_collection.get("ruleCollectionType") == collection_key:
-                if isinstance(rule_collection.get("rules"), list) and len(rule_collection.get("rules")) > 0:
-                    if rule_collection.get("rules")[0].get("ruleType") == rule_key:
-                        collections.append(collection)
+            if rule_collection.get("ruleCollectionType") == collection_key \
+                    and isinstance(rule_collection.get("rules"), list) \
+                    and len(rule_collection.get("rules")) > 0 and rule_collection.get("rules")[0].get("ruleType") == rule_key:
+                collections.append(collection)
 
     return collections
 

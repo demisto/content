@@ -1,3 +1,4 @@
+
 from requests import Response
 from MicrosoftApiModule import *
 import demistomock as demisto
@@ -99,14 +100,23 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
                            retry_on_rate_limit=retry_on_rate_limit)
 
 
-def test_error_parser(mocker):
+@pytest.mark.parametrize('error_content, status_code, expected_response', [
+    (b'{"error":{"code":"code","message":"message"}}', 401, 'code: message'),
+    (b'{"error": "invalid_grant", "error_description": "AADSTS700082: The refresh token has expired due to inactivity.'
+     b'\\u00a0The token was issued on 2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.'
+     b'\\r\\nTrace ID: test\\r\\nCorrelation ID: test\\r\\nTimestamp: 2023-07-02 06:40:26Z", '
+     b'"error_codes": [700082], "timestamp": "2023-07-02 06:40:26Z", "trace_id": "test", "correlation_id": "test",'
+     b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}', 400,
+     'invalid_grant. \nThe refresh token has expired due to inactivity.\nYou can run the ***command_prefix-auth-reset*** '
+     'command to reset the authentication process.')])
+def test_error_parser(mocker, error_content, status_code, expected_response):
     mocker.patch.object(demisto, 'error')
     client = self_deployed_client()
     err = Response()
-    err.status_code = 401
-    err._content = b'{"error":{"code":"code","message":"message"}}'
+    err.status_code = status_code
+    err._content = error_content
     response = client.error_parser(err)
-    assert response == 'code: message'
+    assert response == expected_response
 
 
 def test_page_not_found_error(mocker):
