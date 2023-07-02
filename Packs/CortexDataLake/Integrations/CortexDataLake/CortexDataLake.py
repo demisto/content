@@ -897,7 +897,7 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
 ''' COMMANDS FUNCTIONS '''
 
 
-def test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query, fetch_subtype, fetch_severity, first_fetch):
+def integration_test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query, fetch_subtype, fetch_severity, first_fetch):
     if is_fetch:
         fetch_time, _ = parse_date_range(first_fetch)
         fetch_time = fetch_time.replace(microsecond=0)
@@ -1103,7 +1103,10 @@ def build_query(args, table_name):
     query_start_time, query_end_time = query_timestamp(args)
     timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
                            f'TIMESTAMP("{query_end_time}") '
-    limit = args.get('limit', '5')
+    limit = args.get('limit')
+    # Added this to prevent an empty limit e.g. limit = ''
+    if not limit:
+        limit = '5'
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
     query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'  # noqa: S608
     return fields, query
@@ -1180,7 +1183,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client, fetch_table, fetch_fields, params.get('isFetch'), params.get('filter_query', ''),
+            integration_test_module(client, fetch_table, fetch_fields, params.get('isFetch'), params.get('filter_query', ''),
                         params.get('firewall_subtype'), params.get('firewall_severity'),
                         params.get('first_fetch_timestamp', '24 hours').strip())
         elif command == 'cdl-query-logs':
