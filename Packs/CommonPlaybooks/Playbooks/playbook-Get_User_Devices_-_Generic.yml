@@ -1,0 +1,595 @@
+id: Get User Devices - Generic
+version: -1
+name: Get User Devices - Generic
+description: |-
+  This playbook retrieves information on all of the associated user devices.
+  In order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:
+  - Name
+  - Serial Number
+  - ID
+  - Model
+  - MAC Address
+  - OS
+  - Integration
+
+  Note that not all of the supported integrations will be able to retrieve this information.
+
+  In order to get the full list of supported integrations, read the following sub-playbooks descriptions:
+  - Get User Devices by Username - Generic
+  - Get User Devices by Email Address - Generic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 454cb663-ccde-4a62-8b49-30eb544b3bc0
+    type: start
+    task:
+      id: 454cb663-ccde-4a62-8b49-30eb544b3bc0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: cf8dc377-5329-470d-844e-791d70e71811
+    type: playbook
+    task:
+      id: cf8dc377-5329-470d-844e-791d70e71811
+      version: -1
+      name: Get User Devices by Username - Generic
+      playbookName: Get User Devices by Username - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      CustomADAttribute:
+        complex:
+          root: inputs.CustomADAttribute
+      GsuiteCustomerID:
+        complex:
+          root: inputs.GsuiteCustomerID
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9c31b9f0-e095-4389-8f58-729f0c4ec788
+    type: playbook
+    task:
+      id: 9c31b9f0-e095-4389-8f58-729f0c4ec788
+      version: -1
+      name: Get User Devices by Email Address - Generic
+      playbookName: Get User Devices by Email Address - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      CustomADAttribute:
+        complex:
+          root: inputs.CustomADAttribute
+      GsuiteCustomerID:
+        complex:
+          root: inputs.GsuiteCustomerID
+      UserEmail:
+        complex:
+          root: inputs.UserEmail
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 31a7a2ae-9ab4-43fd-8ad3-aed6423e566a
+    type: regular
+    task:
+      id: 31a7a2ae-9ab4-43fd-8ad3-aed6423e566a
+      version: -1
+      name: Set UserDevices
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: UserDevices
+      value:
+        complex:
+          root: UserDevices
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: UserDevices
+                iscontext: true
+              raw: {}
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0554518b-dd22-4f68-83d5-7bdf164d2b4d
+    type: title
+    task:
+      id: 0554518b-dd22-4f68-83d5-7bdf164d2b4d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 890,
+        "x": 190,
+        "y": 90
+      }
+    }
+  }
+inputs:
+- key: UserEmail
+  value: {}
+  required: false
+  description: The email address of the user.
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: The username of the user.
+- key: GsuiteCustomerID
+  value: {}
+  required: false
+  description: If Google Workspace, a customer ID is needed.
+  playbookInputQuery:
+- key: CustomADAttribute
+  value: {}
+  required: false
+  description: |-
+    A custom Active Directory attribute.
+    In case there is a custom attribute in Active Directory which stores the name of the computer assigned to the user in the user object, it would be fetched.
+  playbookInputQuery:
+outputs:
+- contextPath: UserDevices
+  description: Devices retrieved by this playbook.
+  type: unknown
+- contextPath: GSuite.MobileDevices.MobileListObjects
+  description: A list of mobile device objects.
+- contextPath: GSuite.MobileDevices.MobileListObjects.kind
+  description: The type of the API resource.
+- contextPath: GSuite.MobileDevices.MobileListObjects.etag
+  description: ETag of the resource.
+- contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
+  description: The unique ID the API service uses to identify the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
+  description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
+- contextPath: GSuite.MobileDevices.MobileListObjects.name
+  description: A list of the owner's usernames.
+- contextPath: GSuite.MobileDevices.MobileListObjects.email
+  description: A list of the owner's email addresses.
+- contextPath: GSuite.MobileDevices.MobileListObjects.model
+  description: The mobile device's model name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.os
+  description: The mobile device's operating system.
+- contextPath: GSuite.MobileDevices.MobileListObjects.type
+  description: The type of mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.status
+  description: The mobile device's status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
+  description: The IMEI/MEID unique identifier for Android hardware.
+- contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
+  description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
+- contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
+  description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
+- contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
+  description: Information about the mobile device such as the operating system version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
+  description: The mobile device's serial number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.imei
+  description: The mobile device's IMEI number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.meid
+  description: The mobile device's MEID number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.wifiMacAddress
+  description: The mobile device's MAC address on Wi-Fi networks.
+- contextPath: GSuite.MobileDevices.MobileListObjects.networkOperator
+  description: Mobile device mobile or network operator.
+- contextPath: GSuite.MobileDevices.MobileListObjects.defaultLanguage
+  description: The default locale used on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.managedAccountIsOnOwnerProfile
+  description: Boolean indicating if this account is on the owner/primary profile.
+- contextPath: GSuite.MobileDevices.MobileListObjects.deviceCompromisedStatus
+  description: The compromised device status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.buildNumber
+  description: The mobile device's operating system build number.
+- contextPath: GSuite.MobileDevices.MobileListObjects.kernelVersion
+  description: The mobile device's kernel version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.basebandVersion
+  description: The mobile device's baseband version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.unknownSourcesStatus
+  description: Unknown sources enabled or disabled on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.adbStatus
+  description: Whether adb (USB debugging) is enabled on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.developerOptionsStatus
+  description: Whether developer options are enabled on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.otherAccountsInfo
+  description: A list of accounts added on the device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.supportsWorkProfile
+  description: Work profile supported on the mobile device.
+- contextPath: GSuite.MobileDevices.MobileListObjects.manufacturer
+  description: Mobile device manufacturer.
+- contextPath: GSuite.MobileDevices.MobileListObjects.releaseVersion
+  description: Mobile device release version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.securityPatchLevel
+  description: Mobile device security patch level.
+- contextPath: GSuite.MobileDevices.MobileListObjects.brand
+  description: Mobile device brand.
+- contextPath: GSuite.MobileDevices.MobileListObjects.bootloaderVersion
+  description: Mobile device bootloader version.
+- contextPath: GSuite.MobileDevices.MobileListObjects.hardware
+  description: Mobile device hardware.
+- contextPath: GSuite.MobileDevices.MobileListObjects.encryptionStatus
+  description: Mobile device encryption status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.devicePasswordStatus
+  description: Mobile device password status.
+- contextPath: GSuite.MobileDevices.MobileListObjects.privilege
+  description: DM agent permission.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.packageName
+  description: The application's package name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.displayName
+  description: The application's display name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionName
+  description: The application's version name.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.versionCode
+  description: The application's version code.
+- contextPath: GSuite.MobileDevices.MobileListObjects.applications.permission
+  description: The list of permissions of this application.
+- contextPath: JAMF.Computer
+  description: Jamf computer object.
+  type: unknown
+- contextPath: JAMF.MobileDevice
+  description: Jamf mobile device object.
+  type: unknown
+- contextPath: JAMF.Computer.id
+  description: The computer ID.
+- contextPath: JAMF.Computer.name
+  description: The computer name.
+- contextPath: JAMF.Computer.udid
+  description: The computer UDID.
+- contextPath: JAMF.Computer.serial_number
+  description: The computer serial number.
+- contextPath: JAMF.Computer.mac_address
+  description: The computer MAC address.
+- contextPath: JAMF.Computer.alt_mac_address
+  description: The computer alt MAC address.
+- contextPath: JAMF.Computer.asset_tag
+  description: The computer asset tag.
+- contextPath: JAMF.Computer.bar_code_1
+  description: The computer barcode 1.
+- contextPath: JAMF.Computer.bar_code_2
+  description: The computer barcode 2.
+- contextPath: JAMF.Computer.username
+  description: The computer username.
+- contextPath: JAMF.Computer.realname
+  description: The computer real name.
+- contextPath: JAMF.Computer.email
+  description: The computer email address.
+- contextPath: JAMF.Computer.email_address
+  description: The computer email address.
+- contextPath: JAMF.Computer.room
+  description: The computer room.
+- contextPath: JAMF.Computer.position
+  description: The computer position.
+- contextPath: JAMF.Computer.building
+  description: The computer building.
+- contextPath: JAMF.Computer.building_name
+  description: The computer building name.
+- contextPath: JAMF.Computer.department
+  description: The computer department.
+- contextPath: JAMF.Computer.department_name
+  description: The computer department name.
+- contextPath: JAMF.MobileDevice.id
+  description: The mobile device ID.
+- contextPath: JAMF.MobileDevice.name
+  description: The mobile device name.
+- contextPath: JAMF.MobileDevice.udid
+  description: The mobile device UDID.
+- contextPath: JAMF.MobileDevice.serial_number
+  description: The mobile device serial number.
+- contextPath: JAMF.MobileDevice.mac_address
+  description: The mobile device MAC address.
+- contextPath: JAMF.MobileDevice.wifi_mac_address
+  description: The mobile device WI-FI MAC address.
+- contextPath: JAMF.MobileDevice.username
+  description: The mobile device username.
+- contextPath: JAMF.MobileDevice.realname
+  description: The mobile device real name.
+- contextPath: JAMF.MobileDevice.email
+  description: The mobile device user email address.
+- contextPath: JAMF.MobileDevice.email_address
+  description: The mobile device user email address.
+- contextPath: JAMF.MobileDevice.room
+  description: The mobile device room.
+- contextPath: JAMF.MobileDevice.position
+  description: The mobile device position.
+- contextPath: JAMF.MobileDevice.building
+  description: The mobile device building.
+- contextPath: JAMF.MobileDevice.building_name
+  description: The mobile device building name.
+- contextPath: JAMF.MobileDevice.department
+  description: The mobile device department.
+- contextPath: JAMF.MobileDevice.department_name
+  description: The mobile device department name.
+- contextPath: PaloAltoNetworksXDR.Endpoint
+  description: Endpoint object.
+  type: unknown
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+  description: The endpoint ID.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+  description: The endpoint name.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
+  description: The endpoint type.
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+  description: The status of the endpoint.
+- contextPath: PaloAltoNetworksXDR.Endpoint.os_type
+  description: The endpoint OS type.
+- contextPath: PaloAltoNetworksXDR.Endpoint.ip
+  description: A list of IP addresses.
+- contextPath: PaloAltoNetworksXDR.Endpoint.users
+  description: A list of users.
+- contextPath: PaloAltoNetworksXDR.Endpoint.domain
+  description: The endpoint domain.
+- contextPath: PaloAltoNetworksXDR.Endpoint.alias
+  description: The endpoint's aliases.
+- contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+- contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+- contextPath: PaloAltoNetworksXDR.Endpoint.content_version
+  description: Content version.
+- contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
+  description: Installation package.
+- contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
+  description: Active directory.
+- contextPath: PaloAltoNetworksXDR.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
+  description: Endpoint version.
+- contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+- contextPath: PaloAltoNetworksXDR.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+- contextPath: PaloAltoNetworksXDR.Endpoint.count
+  description: Number of endpoints returned.
+- contextPath: Endpoint.Hostname
+  description: The hostname that is mapped to this endpoint.
+- contextPath: Endpoint.ID
+  description: The unique ID within the tool retrieving the endpoint.
+- contextPath: Endpoint.IPAddress
+  description: The IP address of the endpoint.
+- contextPath: Endpoint.Domain
+  description: The domain of the endpoint.
+- contextPath: Endpoint.OS
+  description: The endpoint's operation system.
+- contextPath: Endpoint.Status
+  description: The endpoint's status.
+- contextPath: Endpoint.IsIsolated
+  description: The endpoint's isolation status.
+- contextPath: Endpoint.MACAddress
+  description: The endpoint's MAC address.
+- contextPath: Endpoint.Vendor
+  description: The integration name of the endpoint vendor.
+- contextPath: MicrosoftATP.UserMachine.Username
+  description: The username.
+- contextPath: MicrosoftATP.UserMachine.Machines
+  description: User machines.
+  type: unknown
+- contextPath: MicrosoftATP.UserMachine.Machines.ID
+  description: The machine ID.
+- contextPath: MicrosoftATP.UserMachine.Machines.ComputerDNSName
+  description: The machine DNS name.
+- contextPath: MicrosoftATP.UserMachine.Machines.FirstSeen
+  description: The first date and time the machine was observed by Microsoft Defender ATP.
+- contextPath: MicrosoftATP.UserMachine.Machines.OSPlatform
+  description: The operating system platform.
+- contextPath: MicrosoftATP.UserMachine.Machines.OSVersion
+  description: The operating system version.
+- contextPath: MicrosoftATP.UserMachine.Machines.OSProcessor
+  description: The operating system processor.
+- contextPath: MicrosoftATP.UserMachine.Machines.LastExternalIPAddress
+  description: The last IP through which the machine accessed the internet.
+- contextPath: MicrosoftATP.UserMachine.Machines.OSBuild
+  description: The operating system build number.
+- contextPath: MicrosoftATP.UserMachine.Machines.HealthStatus
+  description: The machine health status.
+- contextPath: MicrosoftATP.UserMachine.Machines.RBACGroupID
+  description: The machine RBAC group ID.
+- contextPath: MicrosoftATP.UserMachine.Machines.RBACGroupName
+  description: The machine RBAC group name.
+- contextPath: MicrosoftATP.UserMachine.Machines.RiskScore
+  description: The machine risk score.
+- contextPath: MicrosoftATP.UserMachine.Machines.ExposureLevel
+  description: The machine exposure level.
+- contextPath: MicrosoftATP.UserMachine.Machines.IsAADJoined
+  description: True if machine is AAD joined, False otherwise.
+- contextPath: MicrosoftATP.UserMachine.Machines.AADDeviceID
+  description: The AAD device ID.
+- contextPath: MicrosoftATP.UserMachine.Machines.MachineTags
+  description: Set of machine tags.
+- contextPath: MicrosoftATP.v.Machines.LastIPAddress
+  description: The last IP on the machine.
+- contextPath: ServiceNow.Computer
+  description: Computer object.
+  type: unknown
+- contextPath: ServiceNow.Computer.ID
+  description: Computer system ID.
+- contextPath: ServiceNow.Computer.AssetTag
+  description: Computer asset tag.
+- contextPath: ServiceNow.Computer.Name
+  description: Computer name.
+- contextPath: ServiceNow.Computer.DisplayName
+  description: Computer display name.
+- contextPath: ServiceNow.Computer.SupportGroup
+  description: Computer support group.
+- contextPath: ServiceNow.Computer.OperatingSystem
+  description: Computer operating system.
+- contextPath: ServiceNow.Computer.Company
+  description: Computer company system ID.
+- contextPath: ServiceNow.Computer.AssignedTo
+  description: Computer assigned to user system ID.
+- contextPath: ServiceNow.Computer.State
+  description: Computer state.
+- contextPath: ServiceNow.Computer.Cost
+  description: Computer cost.
+- contextPath: ServiceNow.Computer.Comments
+  description: Computer comments.
+- contextPath: UserDevices.Name
+  description: Devices names retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.SerialNumber
+  description: Devices serial numbers retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.ID
+  description: Devices IDs retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.Model
+  description: Devices models retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.OS
+  description: Devices operating systems retrieved by this playbook.
+  type: unknown
+- contextPath: UserDevices.Integration
+  description: The integration which retrieved the devices.
+  type: unknown
+- contextPath: UserDevices.MACAddress
+  description: Devices MAC Address retrieved by this playbook.
+  type: unknown
+- contextPath: MicrosoftGraph.profileType
+  description: Device profile type.
+  type: unknown
+- contextPath: MicrosoftGraph.operatingSystemVersion
+  description: Device OS version.
+  type: unknown
+- contextPath: MicrosoftGraph.displayName
+  description: Device display name.
+  type: unknown
+- contextPath: MicrosoftGraph.operatingSystem
+  description: Device OS.
+  type: unknown
+- contextPath: MicrosoftGraph.deviceId
+  description: Device ID.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
+marketplaces:
+  - xsoar
+  - marketplacev2

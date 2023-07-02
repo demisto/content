@@ -106,7 +106,6 @@ def test_convert_to_incident(mail_string, mail_date):
     from MailListenerV2 import Email
     email = Email(mail_string, False, False, 0)
     incident = email.convert_to_incident()
-    assert incident['attachment'] == []
     assert incident['occurred'] == mail_date
     assert incident['details'] == email.text or email.html
     assert incident['name'] == email.subject
@@ -114,74 +113,76 @@ def test_convert_to_incident(mail_string, mail_date):
 
 @pytest.mark.parametrize(
     'time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
+    # noqa: E501
     [
         (
-            datetime(year=2020, month=10, day=1),
-            False,
-            ['test1@mail.com', 'test2@mail.com'],
-            ['test1.com', 'domain2.com'],
-            4,
-            [
-                'OR',
-                'OR',
-                'OR',
-                'FROM',
-                'domain2.com',
-                'FROM',
-                'test1.com',
-                'FROM',
-                'test1@mail.com',
-                'FROM',
-                'test2@mail.com',
-                'SINCE',
-                datetime(year=2020, month=10, day=1),
-                'UID',
-                '4:*'
-            ]
+                datetime(year=2020, month=10, day=1),  # noqa: E126
+                False,  # noqa: E126
+                ['test1@mail.com', 'test2@mail.com'],
+                ['test1.com', 'domain2.com'],
+                4,
+                [
+                    'OR',
+                    'OR',
+                    'OR',
+                    'FROM',
+                    'domain2.com',
+                    'FROM',
+                    'test1.com',
+                    'FROM',
+                    'test1@mail.com',
+                    'FROM',
+                    'test2@mail.com',
+                    'SINCE',
+                    datetime(year=2020, month=10, day=1),
+                    'UID',
+                    '4:*'
+                ]
         ),
         (
-            datetime(year=2020, month=10, day=1),
-            True,
-            ['test1@mail.com', 'test2@mail.com'],
-            ['test1.com', 'domain2.com'],
-            4,
-            [
-                'OR',
-                'OR',
-                'OR',
-                'HEADER',
-                'FROM',
-                'domain2.com',
-                'HEADER',
-                'FROM',
-                'test1.com',
-                'HEADER',
-                'FROM',
-                'test1@mail.com',
-                'HEADER',
-                'FROM',
-                'test2@mail.com',
-                'SINCE',
-                datetime(year=2020, month=10, day=1),
-                'UID',
-                '4:*'
-            ]
+                datetime(year=2020, month=10, day=1),  # noqa: E126
+                True,  # noqa: E126
+                ['test1@mail.com', 'test2@mail.com'],
+                ['test1.com', 'domain2.com'],
+                4,
+                [
+                    'OR',
+                    'OR',
+                    'OR',
+                    'HEADER',
+                    'FROM',
+                    'domain2.com',
+                    'HEADER',
+                    'FROM',
+                    'test1.com',
+                    'HEADER',
+                    'FROM',
+                    'test1@mail.com',
+                    'HEADER',
+                    'FROM',
+                    'test2@mail.com',
+                    'SINCE',
+                    datetime(year=2020, month=10, day=1),
+                    'UID',
+                    '4:*'
+                ]
         ),
         (
-            None,
-            '',
-            [],
-            [],
-            1,
-            [
-                'UID',
-                '1:*'
-            ]
+                None,  # noqa: E126
+                '',  # noqa: E126
+                [],
+                [],
+                1,
+                [
+                    'UID',
+                    '1:*'
+                ]
         )
     ]
 )
 def test_generate_search_query(
-        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from,
+        expected_query
 ):
     """
     Given:
@@ -254,3 +255,20 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
     assert mail_mocker.call_args[0][0] == expected
+
+
+def test_get_eml_attachments():
+    from MailListenerV2 import Email
+    import email
+    # Test an email with a PNG attachment
+    with open(
+            'test_data/eml-with-jpeg.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+    assert res == []
+    # Test an email with EML attachment
+    with open(
+            'test_data/eml-with-eml-with-attachment.eml', "rb") as f:
+        msg = email.message_from_bytes(f.read())
+    res = Email.get_eml_attachments(msg.as_bytes())
+    assert res[0]['filename'] == 'Test with an image.eml'

@@ -11,7 +11,6 @@ comment: Parse Compliance alert raw JSON data
 commonfields:
   id: PrismaCloudComputeParseComplianceAlert
   version: -1
-enabled: false
 name: PrismaCloudComputeParseComplianceAlert
 outputs:
 - contextPath: PrismaCloudCompute.ComplianceAlert.compliance.description

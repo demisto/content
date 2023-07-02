@@ -9,7 +9,6 @@ comment: Add into the incident's context the system internal DBot score for the 
 commonfields:
   id: GetIndicatorDBotScore
   version: -1
-enabled: false
 name: GetIndicatorDBotScore
 outputs:
 - contextPath: DBotScore.Indicator

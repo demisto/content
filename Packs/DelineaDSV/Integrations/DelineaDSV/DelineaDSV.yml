@@ -8,12 +8,10 @@ configuration:
   required: true
   type: 0
 - display: Username
-  hidden: false
   name: client_id
   required: true
   type: 0
 - display: Password
-  hidden: false
   name: client_secret
   required: true
   type: 4

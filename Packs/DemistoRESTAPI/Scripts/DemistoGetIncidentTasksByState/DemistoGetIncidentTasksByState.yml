@@ -6,7 +6,7 @@ script: ''
 type: javascript
 tags:
 - Utility
-comment: Deprecated. No available replacement.
+comment: Deprecated. Use GetIncidentTasksByState instead.
 enabled: true
 args:
 - name: incidentId

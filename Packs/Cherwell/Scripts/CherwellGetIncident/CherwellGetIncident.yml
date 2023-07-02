@@ -19,7 +19,6 @@ comment: This script is an example script of how to retrieve an incident from Ch
 commonfields:
   id: CherwellGetIncident
   version: -1
-enabled: false
 name: CherwellGetIncident
 outputs:
 - contextPath: Cherwell.BusinessObjects.RecordId
@@ -57,8 +56,10 @@ tags: [Cherwell]
 dependson:
   must:
   - Cherwell|||cherwell-get-business-object
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.11.58677
 subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

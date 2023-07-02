@@ -69,7 +69,6 @@ comment: "Builds A JSON array based on the values provided by the user for the '
 commonfields:
   id: ThreatstreamBuildIocImportJson
   version: -1
-enabled: false
 name: ThreatstreamBuildIocImportJson
 outputs:
 - contextPath: ThreatstreamBuildIocImportJson

@@ -1,14 +1,12 @@
 args:
 - default: false
-  description: A comma-separated list of indicators values. For example, for IP indicators,
-    "1.1.1.1,2.2.2.2".
+  description: A comma-separated list of indicators values. For example, for IP indicators, "1.1.1.1,2.2.2.2".
   isArray: true
   name: indicators_values
   required: true
   secret: false
 - default: false
-  description: A comma-separated list of tags to add to the indicators. For example,
-    "tag1,tag2,tag3".
+  description: A comma-separated list of tags to add to the indicators. For example, "tag1,tag2,tag3".
   isArray: true
   name: tags
   required: true
@@ -19,7 +17,6 @@ comment: |-
 commonfields:
   id: AppendindicatorFieldWrapper
   version: -1
-enabled: false
 name: AppendindicatorFieldWrapper
 script: '-'
 subtype: python3

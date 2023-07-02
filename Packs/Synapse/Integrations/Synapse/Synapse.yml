@@ -24,25 +24,18 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: 'Optionally set display timezone for timestamps. Default is UTC.
-    Ex: "US/Eastern"'
+- additionalinfo: 'Optionally set display timezone for timestamps. Default is UTC. Ex: "US/Eastern"'
   display: Timezone (optional)
   name: timezone
   required: false
   type: 0
-- additionalinfo: Tag that denotes indicator is malicious (i.e. "threat.mal" or "mal.foo.bar").
-    Depends on custom tag heirarchy. Use highest heirarchical tag that is considered
-    malicious.
+- additionalinfo: Tag that denotes indicator is malicious (i.e. "threat.mal" or "mal.foo.bar"). Depends on custom tag heirarchy. Use highest heirarchical tag that is considered malicious.
   display: Malicious Tag
-  hidden: false
   name: bad_tag
   required: false
   type: 0
-- additionalinfo: Tag that denotes indicator is benign (i.e. "omit.benign" or "legit.beign").
-    Depends on custom tag heirarchy. Use highest heirarchical tag that is considered
-    benign.
+- additionalinfo: Tag that denotes indicator is benign (i.e. "omit.benign" or "legit.beign"). Depends on custom tag heirarchy. Use highest heirarchical tag that is considered benign.
   display: Benign Tag
-  hidden: false
   name: good_tag
   required: false
   type: 0
@@ -457,8 +450,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query the Synapse data model and return details for given type or
-      form (i.e. "inet:ipv4" for an IPv4 IP address).
+    description: Query the Synapse data model and return details for given type or form (i.e. "inet:ipv4" for an IPv4 IP address).
     execution: false
     name: synapse-query-model
     outputs:
