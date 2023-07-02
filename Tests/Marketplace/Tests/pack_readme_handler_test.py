@@ -47,7 +47,7 @@ def test_download_readme_images_from_artifacts(mocker):
         return_value=None,
     )
     pack_images_names = download_readme_images_from_artifacts(
-        Path(readme_images_artifact_path), "storage_bucket"
+        Path(readme_images_artifact_path), "storage_bucket", "storage_base_path"
     )
     expected_res = {
         "AWS-Enrichment-Remediation": [
