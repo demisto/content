@@ -5,25 +5,25 @@
 The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
 
 **Cloud Enrichment:**
-- Enriches the involved resources
-- Enriches the involved identities
-- Enriches the involved IPs
+- Enriches the involved resources.
+- Enriches the involved identities.
+- Enriches the involved IPs.
 
 **Verdict Decision Tree:**
-- Determines the appropriate verdict based on the investigation findings
+- Determines the appropriate verdict based on the investigation findings.
 
 **Early Containment using the Cloud Response - Generic Playbook:**
-- Implements early containment measures to prevent further impact
+- Implements early containment measures to prevent further impact.
 
 **Cloud Persistence Threat Hunting:**
-- Conducts threat hunting activities to identify any cloud persistence techniques
+- Conducts threat hunting activities to identify any cloud persistence techniques.
 
 **Enriching and Responding to Hunting Findings:**
-- Performs additional enrichment and responds to the findings from threat hunting
+- Performs additional enrichment and responds to the findings from threat hunting.
 
 **Verdict Handling:**
-- Handles false positives identified during the investigation
-- Handles true positives by initiating appropriate response actions
+- Handles false positives identified during the investigation.
+- Handles true positives by initiating appropriate response actions.
 
 ### Supported Alerts
 
@@ -82,10 +82,10 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | alert_id | The alert ID. | alert.investigationId | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. |  | Optional |
+| InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. |  | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
 | earlyContainment | Whether to execute early containment.<br/>This action allows you to respond rapidly but have higher probability for false positives. | True | Optional |
-| VPNIPList | This input can process to types of data:<br/>1. A comma separated list of internal IPs assigned by the VPN provider using a XSIAM list or an hardcoded array.<br/>2. A link to an IP list which will be processed and extract the IP dynamically which each execution.<br/><br/>For CIDRs please use the InternalRange input. |  | Optional |
+| VPNIPList | This input can process two types of data:<br/>1. A comma-separated list of internal IPs assigned by the VPN provider using a XSIAM list or an hardcoded array.<br/>2. A link to an IP list which will be processed and extract the IP dynamically which each execution.<br/><br/>For CIDRs, use the InternalRange input. |  | Optional |
 | SOCEmailAddress | The SOC email address to alert about the investigation progress. |  | Optional |
 
 ## Playbook Outputs
