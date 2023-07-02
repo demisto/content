@@ -460,7 +460,7 @@ script:
       on header or refresh-token cookie.
     execution: false
     name: picus-get-access-token
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: false
   longRunning: false

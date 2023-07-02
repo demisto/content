@@ -818,7 +818,7 @@ script:
     - contextPath: LogPoint.SearchLogs
       description: Search results.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   feed: false
   isfetch: true
   longRunning: false
@@ -831,6 +831,6 @@ tests:
 - LogPoint SIEM Integration - Test Playbook 1
 - LogPoint SIEM Integration - Test Playbook 2
 - LogPoint SIEM Integration - Test Playbook 3
-defaultmapperin: LogPoint-mapper
+defaultmapperin: LogPoint SIEM Integration - Incoming Mapper
 defaultclassifier:
 fromversion: 6.0.0

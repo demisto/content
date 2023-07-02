@@ -273,7 +273,7 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

@@ -200,7 +200,7 @@ script:
     - contextPath: BlueCat.AddressManager.Range.Parents.CIDR
       description: Classless Inter-Domain Routing.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: false
   longRunning: false
   longRunningPort: false
