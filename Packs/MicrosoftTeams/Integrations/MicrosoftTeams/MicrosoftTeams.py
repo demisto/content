@@ -224,7 +224,7 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
     type_pattern: str = r'(?<=type=).*'
     json_match: Match[str] | None = re.search(json_pattern, message)
     created_incident: dict | list = []
-    data: str = ''
+    data = ''
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
             data = 'No other properties other than json should be specified.'
@@ -310,7 +310,7 @@ def get_team_member(integration_context: dict, team_member_id: str) -> dict:
     :param team_member_id: Team member ID to search for
     :return: Found team member object
     """
-    team_member: dict = {}
+    team_member = {}
     teams: list = json.loads(integration_context.get('teams', '[]'))
 
     for team in teams:
@@ -373,7 +373,7 @@ def process_tasks_list(data_by_line: list) -> dict:
     :param data_by_line: List of tasks to process
     :return: Adaptive card of assigned tasks
     """
-    body: list = []
+    body = []
     for line in data_by_line[2:]:
         split_data: list = [stat.strip() for stat in line.split('|')]
         body.append({
@@ -406,7 +406,7 @@ def process_incidents_list(data_by_line: list) -> dict:
     :param data_by_line: List of incidents to process
     :return: Adaptive card of assigned incidents
     """
-    body: list = []
+    body = []
     for line in data_by_line[2:]:
         split_data: list = [stat.strip() for stat in line.split('|')]
         body.append({
@@ -477,7 +477,7 @@ def process_ask_user(message: str) -> dict:
             'text': text
         }
     ]
-    actions: list = []
+    actions = []
     for option in options:
         actions.append({
             'type': 'Action.Submit',
@@ -757,7 +757,7 @@ def validate_auth_header(headers: dict) -> bool:
 
     unverified_headers: dict = jwt.get_unverified_header(jwt_token)
     key_id: str = unverified_headers.get('kid', '')
-    key_object: dict = {}
+    key_object = {}
 
     # Check if we got the requested key in cache
     for key in keys:
@@ -1957,8 +1957,8 @@ def send_message():
         raise ValueError('Provide either message or adaptive to send, not both.')
 
     integration_context: dict = get_integration_context()
-    channel_id: str = ''
-    personal_conversation_id: str = ''
+    channel_id = ''
+    personal_conversation_id = ''
     if channel_name:
         channel_id = get_channel_id_for_send_notification(channel_name, message_type)
     elif team_member:
@@ -2012,7 +2012,7 @@ def get_channel_id_for_send_notification(channel_name: str, message_type: str):
     """
     team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
     team_aad_id: str = get_team_aad_id(team_name)
-    investigation_id: str = ''
+    investigation_id = ''
     if message_type == MESSAGE_TYPES['mirror_entry']:
         # Got an entry from the War Room to mirror to Teams
         # Getting investigation ID in case channel name is custom and not the default
@@ -2043,9 +2043,9 @@ def mirror_investigation():
     if not team_name:
         team_name = demisto.params().get('team', '')
     team_aad_id: str = get_team_aad_id(team_name)
-    mirrored_channels: list = []
+    mirrored_channels = []
     teams: list = json.loads(integration_context.get('teams', '[]'))
-    team: dict = {}
+    team = {}
     for team in teams:
         if team.get('team_aad_id', '') == team_aad_id:
             if team.get('mirrored_channels'):
@@ -2071,7 +2071,7 @@ def mirror_investigation():
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
-        warroom_link: str = f'{server_link}/#/WarRoom/{investigation_id}'
+        warroom_link = f'{server_link}/#/WarRoom/{investigation_id}'
         conversation: dict = {
             'type': 'message',
             'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
@@ -2248,9 +2248,9 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     user_email: str = team_member.get('user_email', '')
     demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
 
-    formatted_message: str = ''
+    formatted_message = ''
 
-    attachment: dict = {}
+    attachment = {}
 
     return_card: bool = False
 
