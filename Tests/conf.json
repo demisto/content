@@ -44,10 +44,6 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test Playbook - CrowdStrike Falcon - Get Detections by Incident"
-        },
-        {
-            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data"
         },
         {
