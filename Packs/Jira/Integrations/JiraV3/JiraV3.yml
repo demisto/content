@@ -1,8 +1,8 @@
 commonfields:
-  id: Jira V3 Test
+  id: Jira V3
   version: -1
-name: Jira V3 Test
-display: Atlassian Jira v3 Test
+name: Jira V3
+display: Atlassian Jira v3
 category: Case Management
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR. The integration now supports both OnPrem, and Cloud instances.
 configuration:
@@ -42,7 +42,7 @@ configuration:
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
 - display: Issue index to start fetching incidents from
-  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.
+  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
   required: false
   defaultvalue: 0
