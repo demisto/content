@@ -38,8 +38,8 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
     @staticmethod
     def get_email_content_as_text_and_html(email):
-        email_body = email.get('body') or ()  # email body including replyTo emails.
-        email_unique_body = email.get('uniqueBody') or ()  # email-body without replyTo emails.
+        email_body: tuple = email.get('body') or ()  # email body including replyTo emails.
+        email_unique_body: tuple = email.get('uniqueBody') or ()  # email-body without replyTo emails.
 
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
