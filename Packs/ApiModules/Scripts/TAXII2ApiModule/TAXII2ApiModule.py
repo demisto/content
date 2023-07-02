@@ -600,9 +600,6 @@ class Taxii2FeedClient:
         :param report_obj: report object
         :return: report extracted from the report object in cortex format
         """
-        if self.is_sub_report(report_obj):
-            return []
-
         report = {
             "type": ThreatIntel.ObjectsNames.REPORT,
             "value": report_obj.get('name'),
