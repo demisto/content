@@ -180,7 +180,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - !reference [.download-demisto-conf]
     - |
-      export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
     - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
