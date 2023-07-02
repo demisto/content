@@ -327,6 +327,12 @@ ignore=IF100
 [file:incidentfield-Original_Events.json]
 ignore=IF100
 
+[file:incidentfield-Failed_Logon_Events.json]
+ignore=IF100
+
+[file:incidentfield-Failed_Logon_Events_Timeframe.json]
+ignore=IF100
+
 [file:classifier-Mail-listener.json]
 ignore=BA101
 
@@ -397,4 +403,4 @@ TLDs
 mailto
 Misconfiguration
 CloudTrail
-
+ThreatCommand

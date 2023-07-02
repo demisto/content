@@ -19,7 +19,6 @@ comment: 'This is a wrapper to isolate or unisolate hash lists from Cortex XDR, 
 commonfields:
   id: IsolationAssetWrapper
   version: -1
-enabled: false
 name: IsolationAssetWrapper
 outputs:
   # MSDE outputs

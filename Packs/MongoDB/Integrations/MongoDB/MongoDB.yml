@@ -18,12 +18,10 @@ configuration:
   type: 0
 - defaultvalue: 'false'
   display: Use SSL/TLS secured connection
-  hidden: false
   name: use_ssl
   required: false
   type: 8
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
   required: false
   type: 8

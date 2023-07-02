@@ -103,7 +103,8 @@ def html_to_text(html):
     try:
         parser.feed(html)
         parser.close()
-    except Exception:
+    except Exception as e:
+        demisto.error(f'The following error occurred while parsing the HTML: {e}')
         pass
     return parser.get_text()
 
@@ -166,7 +167,7 @@ def parse_mail_parts(parts):
     html = ''
     attachments = []  # type: list
     for part in parts:
-        if 'multipart' in part['mimeType']:
+        if 'multipart' in part['mimeType'] and part.get('parts'):
             part_body, part_html, part_attachments = parse_mail_parts(
                 part['parts'])
             body += part_body
@@ -190,10 +191,45 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
+def format_fields_argument(fields: list[str]) -> list[str] | None:
+    """
+    Checks if the filter fields are valid, if so returns the valid fields,
+    otherwise returns `None`, when given an empty list returns `None`.
+    """
+    all_valid_fields = (
+        "Type",
+        "Mailbox",
+        "ThreadId",
+        "Labels",
+        "Headers",
+        "Attachments",
+        "RawData",
+        "Format",
+        "Subject",
+        "From",
+        "To",
+        "Body",
+        "Cc",
+        "Bcc",
+        "Date",
+        "Html",
+        "Attachment Names",
+    )
+    lower_filter_fields = {field.lower() for field in fields}
+    if valid_fields := [field for field in all_valid_fields if field.lower() in lower_filter_fields]:
+        valid_fields.append('ID')
+        return valid_fields
+    return None
+
+
+def filter_by_fields(full_mail: dict[str, Any], filter_fields: list[str]) -> dict:
+    return {field: full_mail.get(field) for field in filter_fields}
+
+
 def parse_privileges(raw_privileges):
     privileges = []
     for p in raw_privileges:
-        privilege = assign_params(**{'ServiceID': p.get('serviceId'), 'Name': p.get('privilegeName')})
+        privilege = assign_params(ServiceID=p.get('serviceId'), Name=p.get('privilegeName'))
         if privilege:
             privileges.append(privilege)
     return privileges
@@ -300,7 +336,7 @@ def get_email_context(email_data, mailbox):
     context_headers = email_data.get('payload', {}).get('headers', [])
     context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
-    headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+    headers = {h['Name'].lower(): h['Value'] for h in context_headers}
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
@@ -441,11 +477,13 @@ def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     return command_results
 
 
-def emails_to_entry(title, raw_emails, format_data, mailbox):
+def emails_to_entry(title, raw_emails, format_data, mailbox, fields: list[str] | None = None):
     gmail_emails = []
     emails = []
     for email_data in raw_emails:
         context_gmail, _, context_email, occurred, occurred_is_valid = get_email_context(email_data, mailbox)
+        if fields:
+            context_gmail = filter_by_fields(context_gmail, fields)
         gmail_emails.append(context_gmail)
         emails.append(context_email)
 
@@ -796,7 +834,7 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
         args.update({'list_accounts': batch})
         command_results.append(
             CommandResults(
-                readable_output='Serching mailboxes, please wait...',
+                readable_output='Searching mailboxes, please wait...',
                 scheduled_command=ScheduledCommand(
                     command='gmail-search-all-mailboxes',
                     next_run_in_seconds=10,
@@ -1349,7 +1387,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
     _in = args.get('in', '')
 
     query = args.get('query', '')
-    fields = args.get('fields')
+    fields = format_fields_argument(argToList(args.get('fields')))
     label_ids = [lbl for lbl in args.get('labels-ids', '').split(',') if lbl != '']
     max_results = int(args.get('max-results', 100))
     page_token = args.get('page-token')
@@ -1378,7 +1416,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
             return {'Mailbox': mailbox, 'q': q}
         return None
     if mails:
-        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
+        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox, fields)
         return res
     return None
 
@@ -1404,7 +1442,6 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'userId': user_id,
         'q': q,
         'maxResults': max_results,
-        'fields': fields,
         'labelIds': label_ids,
         'pageToken': page_token,
         'includeSpamTrash': include_spam_trash,
@@ -2611,7 +2648,7 @@ def fetch_incidents():
     return incidents
 
 
-def main():
+def main():  # pragma: no cover
     global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
     ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
     if '@' not in ADMIN_EMAIL:

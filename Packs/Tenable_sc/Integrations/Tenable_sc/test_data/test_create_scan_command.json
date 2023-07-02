@@ -1,0 +1,35 @@
+{
+    "test_case_1":{
+        "args": {
+            "enabled": "true",
+            "ip_list": "8.8.8.8",
+            "name": "test_scan",
+            "policy_id": "1",
+            "repository_id": "1"
+          },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"assets":[],"canManage":"true","canUse":"true","classifyMitigatedAge":"0",
+        "createdTime":"1687096010","creator":{"firstname":"Yuval","id":"39","lastname":"test","username":"yuv","uuid":"uuid"},
+        "credentials":[],"description":"","dhcpTracking":"false","emailOnFinish":"false","emailOnLaunch":"false","id":"2025",
+        "ipList":"8.8.8.8","maxScanTime":"3600","modifiedTime":"1687096010","name":"test_scan","numDependents":"0",
+        "owner":{"firstname":"Yuval","id":"39","lastname":"test","username":"yuv","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},"plugin":{"description":"","id":-1,"name":"","type":""},
+        "policy":{"context":"","creator":{"firstname":"testadmin","id":"2","lastname":"testadmin","username":"testadmin","uuid":"uuid"},
+        "description":"","id":"1","name":"Network Scan","tags":"","uuid":"uuid"},
+        "policyPrefs":[{"name":"MODE|advanced","value":"default"},{"name":"MODE|assessment","value":"default"},
+        {"name":"MODE|discovery","value":"portscan_common"},{"name":"[authPref]adsi","value":"HQTtnlKXyqc9vAZFRUwe+PvRPT/7jkgkW5AUwj2GIyA="},
+        {"name":"[authPref]altiris","value":"26Uzzxw4ZczrO+2LZm4f0rG3PWqXMa1lKZsgWnro3Do="}],
+        "reports":[],"repository":{"description":"","id":"1","name":"Local","type":"Local","uuid":"uuid"},
+        "rolloverType":"template","scanningVirtualHosts":"false",
+        "schedule":{"enabled":"true","id":"3222","nextRun":0,"objectType":"scan","repeatRule":"","start":"","type":"template"},
+        "status":"0","timeoutAction":"import","type":"policy","uuid":"uuid",
+        "zone":{"description":"","id":-1,"name":""}},"timestamp":1687096010,"type":"regular","warnings":[]},
+        "expected_hr": "### Scan created successfully\n|ID|CreatorID|Name|Type|CreationTime|\n|---|---|---|---|---|\n| 2025 | 39 | test_scan | policy | 2023-06-18T13:46:50Z |\n",
+        "expected_ec": {
+            "CreationTime": "2023-06-18T13:46:50Z",
+            "CreatorID": "39",
+            "ID": "2025",
+            "Name": "test_scan",
+            "Type": "policy"
+          }
+    }
+}

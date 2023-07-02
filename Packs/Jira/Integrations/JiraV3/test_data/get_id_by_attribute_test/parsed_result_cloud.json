@@ -1,0 +1,19 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "Attribute": "fred@example.com",
+        "AccountId": "1234"
+    },
+    "HumanReadable": "The account ID that holds the attribute `fred@example.com`: 1234",
+    "EntryContext": {
+        "Jira.User(val.AccountId && val.AccountId == obj.AccountId)": {
+            "Attribute": "fred@example.com",
+            "AccountId": "1234"
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

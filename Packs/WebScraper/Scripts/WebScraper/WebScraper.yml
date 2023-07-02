@@ -44,7 +44,6 @@ comment: An Automation Script to Web Scrap a URL or HTML Page
 commonfields:
   id: WebScraper
   version: -1
-enabled: false
 name: WebScraper
 outputs:
 - contextPath: WebScraper.Tree

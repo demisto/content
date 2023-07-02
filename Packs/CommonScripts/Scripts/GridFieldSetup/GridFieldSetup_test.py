@@ -13,7 +13,8 @@ incident_contains_field_in_root = {
 
 
 def test_append(mocker):
-    args = {'keys': 'Link,EntryID', 'val1': 'www.google.com', 'val2': 'AWS', 'gridfield': 'urlsslverification'}
+    args = {'keys': 'Link,EntryID,TimeStamp', 'val1': 'www.google.com', 'val2': 'AWS', 'val3': 'TIMESTAMP',
+            'gridfield': 'urlsslverification'}
     mocker.patch.object(demisto, 'incidents', return_value=[incident_contains_field_in_root])
     mocker.patch.object(demisto, 'executeCommand', return_value='Done')
     entry = grid_field_setup_command(args)

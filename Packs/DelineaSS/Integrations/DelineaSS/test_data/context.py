@@ -140,8 +140,8 @@ SECRET_GET_CONTENT = {
         'lastPasswordChangeAttempt': '2020-11-10T10:32:59.217',
         'secretTemplateName': 'Unix Account (SSH)',
         'responseCodes': []
-        }
     }
+}
 
 SECRET_PASSWORD_UPDATE_CONTEXT = {
     'Delinea.Secret.Newpassword(val.secret_newpassword && val.secret_newpassword == obj.secret_newpassword)': {
@@ -160,33 +160,33 @@ SECRET_CHECKOUT_CONTEXT = {
 }
 
 SECRET_CHECKIN_CONTEXT = {
-  "Delinea.Secret.Checkin(val.secret_checkin && val.secret_checkin == obj.secret_checkin)": {
-    "active": "true",
-    "autoChangeEnabled": "false",
-    "checkOutEnabled": "true",
-    "checkedOut": "false",
-    "createDate": "2020-11-02T18:06:07.357",
-    "daysUntilExpiration": "null",
-    "doubleLockEnabled": "false",
-    "extendedFields": "null",
-    "folderId": -1,
-    "hidePassword": "false",
-    "id": 4,
-    "inheritsPermissions": "false",
-    "isOutOfSync": "false",
-    "isRestricted": "true",
-    "lastAccessed": "null",
-    "lastHeartBeatStatus": "Success",
-    "lastPasswordChangeAttempt": "2020-11-11T08:49:59.873",
-    "name": "g1-machine",
-    "outOfSyncReason": "",
-    "requiresApproval": "false",
-    "requiresComment": "false",
-    "responseCodes": "null",
-    "secretTemplateId": 6007,
-    "secretTemplateName": "Unix Account (SSH)",
-    "siteId": 1
-  }
+    "Delinea.Secret.Checkin(val.secret_checkin && val.secret_checkin == obj.secret_checkin)": {
+        "active": "true",
+        "autoChangeEnabled": "false",
+        "checkOutEnabled": "true",
+        "checkedOut": "false",
+        "createDate": "2020-11-02T18:06:07.357",
+        "daysUntilExpiration": "null",
+        "doubleLockEnabled": "false",
+        "extendedFields": "null",
+        "folderId": -1,
+        "hidePassword": "false",
+        "id": 4,
+        "inheritsPermissions": "false",
+        "isOutOfSync": "false",
+        "isRestricted": "true",
+        "lastAccessed": "null",
+        "lastHeartBeatStatus": "Success",
+        "lastPasswordChangeAttempt": "2020-11-11T08:49:59.873",
+        "name": "g1-machine",
+        "outOfSyncReason": "",
+        "requiresApproval": "false",
+        "requiresComment": "false",
+        "responseCodes": "null",
+        "secretTemplateId": 6007,
+        "secretTemplateName": "Unix Account (SSH)",
+        "siteId": 1
+    }
 }
 
 SECRET_DELETE_CONTEXT = {
@@ -198,17 +198,17 @@ SECRET_DELETE_CONTEXT = {
 }
 
 FOLDER_CREATE_CONTEXT = {
-  "Delinea.Folder.Create(val.folder && val.folder == obj.folder)": {
-    "childFolders": "null",
-    "folderName": "xsoarFolderTest3",
-    "folderPath": "\\Personal Folders\\XSOAR integration\\xsoarFolderTest3",
-    "folderTypeId": 1,
-    "id": 7,
-    "inheritPermissions": "false",
-    "inheritSecretPolicy": "false",
-    "parentFolderId": 3,
-    "secretPolicyId": -1,
-    "secretTemplates": "null"
+    "Delinea.Folder.Create(val.folder && val.folder == obj.folder)": {
+        "childFolders": "null",
+        "folderName": "xsoarFolderTest3",
+        "folderPath": "\\Personal Folders\\XSOAR integration\\xsoarFolderTest3",
+        "folderTypeId": 1,
+        "id": 7,
+        "inheritPermissions": "false",
+        "inheritSecretPolicy": "false",
+        "parentFolderId": 3,
+        "secretPolicyId": -1,
+        "secretTemplates": "null"
     }
 }
 
@@ -244,7 +244,7 @@ USER_DELETE_CONTEXT = {
 }
 
 SECRET_CREATE_CONTEXT = {
-  "Delinea.Secret.Create(val.secret && val.secret == obj.secret)": {
+    "Delinea.Secret.Create(val.secret && val.secret == obj.secret)": {
         "accessRequestWorkflowMapId": -1,
         "active": "true",
         "allowOwnersUnrestrictedSshCommands": "false",
@@ -303,85 +303,85 @@ SECRET_CREATE_CONTEXT = {
 
 USER_CREATE_CONTEXT = {
     "Delinea.User.Create(val.user && val.user == obj.user)": {
-        "adAccountExpires":"0001-01-01T00:00:00",
-		"adGuid":"null",
-		"created":"2022-06-01T08:31:15.275Z",
-		"dateOptionId":-1,
-		"displayName":"UserOne",
-		"domainId":-1,
-		"duoTwoFactor":"false",
-		"emailAddress":"null",
-		"enabled":"true",
-		"externalUserSource":"None",
-		"fido2TwoFactor":"false",
-		"id":29,
-		"ipAddressRestrictions":"null",
-		"isApplicationAccount":"false",
-		"isEmailCopiedFromAD":"false",
-		"isEmailVerified":"false",
-		"isLockedOut":"false",
-		"lastLogin":"0001-01-01T00:00:00",
-		"lastSessionActivity":"null",
-		"lockOutReason":"null",
-		"lockOutReasonDescription":"null",
-		"loginFailures":0,
-	    "mustVerifyEmail":"false",
-		"oathTwoFactor":"false",
-		"oathVerified":"false",
-		"passwordLastChanged":"0001-01-01T00:00:00",
-		"personalGroupId":0,
-		"radiusTwoFactor":"false",
-		"radiusUserName":"null",
-		"resetSessionStarted":"0001-01-01T00:00:00",
-		"slackId":"null",
-		"timeOptionId":-1,
-		"twoFactor":"false",
-		"unixAuthenticationMethod":"Password",
-		"userLcid":0,
-		"userName":"UserOne",
-		"verifyEmailSentDate":"0001-01-01T00:00:00"
+        "adAccountExpires": "0001-01-01T00:00:00",
+        "adGuid": "null",
+        "created": "2022-06-01T08:31:15.275Z",
+        "dateOptionId": -1,
+        "displayName": "UserOne",
+        "domainId": -1,
+        "duoTwoFactor": "false",
+        "emailAddress": "null",
+        "enabled": "true",
+        "externalUserSource": "None",
+        "fido2TwoFactor": "false",
+        "id": 29,
+        "ipAddressRestrictions": "null",
+        "isApplicationAccount": "false",
+        "isEmailCopiedFromAD": "false",
+        "isEmailVerified": "false",
+        "isLockedOut": "false",
+        "lastLogin": "0001-01-01T00:00:00",
+        "lastSessionActivity": "null",
+        "lockOutReason": "null",
+        "lockOutReasonDescription": "null",
+        "loginFailures": 0,
+        "mustVerifyEmail": "false",
+        "oathTwoFactor": "false",
+        "oathVerified": "false",
+        "passwordLastChanged": "0001-01-01T00:00:00",
+        "personalGroupId": 0,
+        "radiusTwoFactor": "false",
+        "radiusUserName": "null",
+        "resetSessionStarted": "0001-01-01T00:00:00",
+        "slackId": "null",
+        "timeOptionId": -1,
+        "twoFactor": "false",
+        "unixAuthenticationMethod": "Password",
+        "userLcid": 0,
+        "userName": "UserOne",
+        "verifyEmailSentDate": "0001-01-01T00:00:00"
     }
 }
 
 USER_UPDATE_CONTEXT = {
     "Delinea.User.Update(val.user && val.user == obj.user)": {
-        "unixAuthenticationMethod":"Password",
-		"enabled":"true",
-		"passwordLastChanged":"0001-01-01T00:00:00",
-		"isEmailCopiedFromAD":"false",
-		"isApplicationAccount":"false",
-		"lockOutReason":"null",
-		"created":"2022-06-01T08:09:39",
-		"radiusUserName":"UserOne",
-		"radiusTwoFactor":"false",
-		"verifyEmailSentDate":"0001-01-01T00:00:00",
-		"adAccountExpires":"0001-01-01T00:00:00",
-		"slackId":"null",
-		"adGuid":"null",
-		"displayName":"myTestUser",
-		"oathVerified":"false",
-		"lastSessionActivity":"null",
-		"externalUserSource":"None",
-		"loginFailures":0,
-		"lastLogin":"0001-01-01T00:00:00",
-		"ipAddressRestrictions":"null",
-		"oathTwoFactor":"false",
-		"lockOutReasonDescription":"null",
-		"userName":"UserOne",
-		"fido2TwoFactor":"false",
-		"emailAddress":"null",
-		"resetSessionStarted":"0001-01-01T00:00:00",
-		"mustVerifyEmail":"false",
-		"isEmailVerified":"false",
-		"personalGroupId":0,
-		"isLockedOut":"false",
-		"id":28,
-		"twoFactor":"false",
-		"duoTwoFactor":"false",
-		"timeOptionId":-1,
-		"userLcid":0,
-		"dateOptionId":-1,
-		"domainId":-1
+        "unixAuthenticationMethod": "Password",
+        "enabled": "true",
+        "passwordLastChanged": "0001-01-01T00:00:00",
+        "isEmailCopiedFromAD": "false",
+        "isApplicationAccount": "false",
+        "lockOutReason": "null",
+        "created": "2022-06-01T08:09:39",
+        "radiusUserName": "UserOne",
+        "radiusTwoFactor": "false",
+        "verifyEmailSentDate": "0001-01-01T00:00:00",
+        "adAccountExpires": "0001-01-01T00:00:00",
+        "slackId": "null",
+        "adGuid": "null",
+        "displayName": "myTestUser",
+        "oathVerified": "false",
+        "lastSessionActivity": "null",
+        "externalUserSource": "None",
+        "loginFailures": 0,
+        "lastLogin": "0001-01-01T00:00:00",
+        "ipAddressRestrictions": "null",
+        "oathTwoFactor": "false",
+        "lockOutReasonDescription": "null",
+        "userName": "UserOne",
+        "fido2TwoFactor": "false",
+        "emailAddress": "null",
+        "resetSessionStarted": "0001-01-01T00:00:00",
+        "mustVerifyEmail": "false",
+        "isEmailVerified": "false",
+        "personalGroupId": 0,
+        "isLockedOut": "false",
+        "id": 28,
+        "twoFactor": "false",
+        "duoTwoFactor": "false",
+        "timeOptionId": -1,
+        "userLcid": 0,
+        "dateOptionId": -1,
+        "domainId": -1
     }
 }
 
@@ -420,8 +420,8 @@ SECRET_GET_CREDENTIALS_CONTEXT = {
     'Delinea.Secret.Fetch.Credentials(val.credentials && val.credentials == obj.credentials)': [
         {
             'name': '4',
-            'password': 'test00111',
-            'user': 'andy'
+            'password': 'password',
+            'user': 'user'
         }
     ]
 
@@ -433,4 +433,42 @@ SECRET_SEARCH_NAME_CONTEXT = {
         3566,
         4241
     ]
+}
+
+
+SECRET_SEARCH_CONTEXT = {
+    'Delinea.Secret.Secret(val.search_secret && val.search_secret == obj.search_secret)': [
+        967,
+        966
+    ]
+}
+
+
+FOLDER_SEARCH_CONTEXT = {
+    'Delinea.Folder.Id(val.folder_id && val.folder_id == obj.folder_id)': [
+        145
+    ]
+}
+
+USER_SEARCH_CONTEXT = {
+    'Delinea.User.Search(val.user && val.user == obj.user)': [
+        {
+            "id": 236,
+            "userName": "adil@jim",
+            "displayName": "Adil",
+            "lastLogin": "2023-04-11T23:09:56",
+            "created": "2023-04-11T22:18:05",
+            "enabled": True,
+            "loginFailures": 0,
+            "emailAddress": "dummyemail",
+            "domainId": -1,
+            "domainName": None,
+            "isLockedOut": False,
+            "isApplicationAccount": False,
+            "twoFactorMethod": "None",
+            "externalUserSource": "Platform",
+            "platformIntegrationType": "Native"
+        }
+    ]
+
 }

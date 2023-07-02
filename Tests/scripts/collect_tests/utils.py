@@ -49,6 +49,7 @@ class Machine(Enum):
     V6_6 = Version('6.6')
     V6_8 = Version('6.8')
     V6_9 = Version('6.9')
+    V6_10 = Version('6.10')
     MASTER = 'Master'
 
     @staticmethod

@@ -2,7 +2,6 @@ comment: Widget script to view information about the relationship between an ind
 commonfields:
   id: FeedRelatedIndicatorsWidget
   version: -1
-enabled: false
 name: FeedRelatedIndicatorsWidget
 script: '-'
 subtype: python3

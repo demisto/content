@@ -24,21 +24,18 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: If true, only Palo Alto Networks Vulnerability issues will be pulled.
-    If false, all issues will be pulled.
+- additionalinfo: If true, only Palo Alto Networks Vulnerability issues will be pulled. If false, all issues will be pulled.
   defaultvalue: 'true'
   display: Only Pull Palo Alto Networks Vulnerability Issues
   name: onlyPullPanCveIssues
   required: false
   type: 8
 - display: Use system proxy settings
-  hidden: false
   name: proxy
   required: false
   type: 8
 - defaultvalue: INFO
   display: Lowest Issue Severity To Pull
-  hidden: false
   name: issueSeverity
   options:
   - CRITICAL
@@ -49,7 +46,6 @@ configuration:
   type: 15
 - defaultvalue: '20'
   display: Number of issues to pull per fetch
-  hidden: false
   name: maxPullSize
   required: false
   type: 0

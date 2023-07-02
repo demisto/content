@@ -236,7 +236,7 @@ class Client:
         html = u''
         attachments = []  # type: list
         for part in parts:
-            if 'multipart' in part['mimeType']:
+            if 'multipart' in part['mimeType'] and part.get('parts'):
                 part_body, part_html, part_attachments = self.parse_mail_parts(
                     part['parts'])
                 body += part_body
@@ -910,7 +910,7 @@ class Client:
         if inReplyTo:
             message['In-Reply-To'] = self.header(' '.join(inReplyTo.split()))
         if references:
-            message['References'] = self.header(' '.join(references.split()))
+            message['References'] = self.header(' '.join(references))
 
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):

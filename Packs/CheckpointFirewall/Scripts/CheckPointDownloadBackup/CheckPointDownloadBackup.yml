@@ -5,11 +5,10 @@ args:
   name: device
   required: true
   secret: false
-comment: Downloads the Check Point policy backup to the Cortex XSOAR War Room.
+comment: Deprecated. Use ssh command instead. Downloads the Check Point policy backup to the Cortex XSOAR War Room.
 commonfields:
   id: CheckPointDownloadBackup
   version: -1
-enabled: false
 name: CheckPointDownloadBackup
 script: '-'
 subtype: python3
@@ -18,5 +17,6 @@ timeout: '0'
 type: python
 fromversion: 5.0.0
 tests:
-- No tests
+- No tests (deprecated)
 dockerimage: demisto/python3:3.9.8.24399
+deprecated: true

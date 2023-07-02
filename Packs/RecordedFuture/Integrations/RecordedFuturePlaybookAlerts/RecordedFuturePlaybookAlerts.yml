@@ -48,6 +48,7 @@ configuration:
   - All Available
   - Domain Abuse
   - Vulnerability
+  - Code Repo Leakage
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
@@ -82,7 +83,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.12.63474
   commands:
   - name: recordedfuture-playbook-alerts-details
     description: Get Playbook alert details by id.
@@ -537,6 +538,7 @@ script:
       - all_available
       - domain_abuse
       - vulnerability
+      - code_repo_leakage
     - name: limit
       required: false
       description: Limits the number of alerts to fetch.

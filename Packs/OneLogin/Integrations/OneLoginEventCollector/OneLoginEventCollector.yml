@@ -12,7 +12,6 @@ configuration:
   additionalinfo: The API Key to use for connection.
   name: credentials
   required: true
-  hiddenusername: false
   type: 9
 - display: The maximum number of events per fetch
   name: limit
@@ -76,7 +75,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of type IDs of events to include. 
+      description: A comma-separated list of type IDs of events to include.
       isArray: false
       name: event_type_id
       required: false
@@ -86,7 +85,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.56082
+  dockerimage: demisto/python3:3.10.11.61265
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0

@@ -12,3 +12,7 @@ ignore=IM111
 
 [known_words]
 whitelist
+
+[file:SentinelOneModelingRules.yml]
+ignore=MR108
+
