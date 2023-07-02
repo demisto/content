@@ -9,25 +9,25 @@ description: |-
   The **Cloud Token Theft Response Playbook** provides a structured and comprehensive flow to effectively respond to and mitigate alerts involving the theft of cloud tokens. The playbook supports AWS, GCP, and Azure and executes the following:
 
   **Cloud Enrichment:**
-  - Enriches the involved resources
-  - Enriches the involved identities
-  - Enriches the involved IPs
+  - Enriches the involved resources.
+  - Enriches the involved identities.
+  - Enriches the involved IPs.
 
   **Verdict Decision Tree:**
-  - Determines the appropriate verdict based on the investigation findings
+  - Determines the appropriate verdict based on the investigation findings.
 
   **Early Containment using the Cloud Response - Generic Playbook:**
-  - Implements early containment measures to prevent further impact
+  - Implements early containment measures to prevent further impact.
 
   **Cloud Persistence Threat Hunting:**
-  - Conducts threat hunting activities to identify any cloud persistence techniques
+  - Conducts threat hunting activities to identify any cloud persistence techniques.
 
   **Enriching and Responding to Hunting Findings:**
-  - Performs additional enrichment and responds to the findings from threat hunting
+  - Performs additional enrichment and responds to the findings from threat hunting.
 
   **Verdict Handling:**
-  - Handles false positives identified during the investigation
-  - Handles true positives by initiating appropriate response actions
+  - Handles false positives identified during the investigation.
+  - Handles true positives by initiating appropriate response actions.
 
   ---
 starttaskid: "0"
@@ -477,9 +477,9 @@ tasks:
         - GCP
 
         The response actions available are:
-        - Terminate/Shut down/Power off an instance
-        - Delete/Disable a user
-        - Delete/Revoke/Disable credentials
+        - Terminate/Shut down/Power off an instance.
+        - Delete/Disable a user.
+        - Delete/Revoke/Disable credentials.
         - Block indicators
       playbookName: Cloud Response - Generic
       type: playbook
@@ -848,10 +848,10 @@ tasks:
         - GCP
 
         The response actions available are:
-        - Terminate/Shut down/Power off an instance
-        - Delete/Disable a user
-        - Delete/Revoke/Disable credentials
-        - Block indicators
+        - Terminate/Shut down/Power off an instance.
+        - Delete/Disable a user.
+        - Delete/Revoke/Disable credentials.
+        - Block indicators.
       playbookName: Cloud Response - Generic
       type: playbook
       iscommand: false
@@ -1218,10 +1218,10 @@ tasks:
       description: |-
         Enrich IP addresses using one or more integrations.
 
-        - Resolve IP addresses to hostnames (DNS)
-        - Provide threat information
-        - Separate internal and external IP addresses
-        - For internal IP addresses, get host information
+        - Resolve IP addresses to hostnames (DNS).
+        - Provide threat information.
+        - Separate internal and external IP addresses.
+        - For internal IP addresses, get host information.
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -1659,10 +1659,10 @@ tasks:
         - GCP
 
         The response actions available are:
-        - Terminate/Shut down/Power off an instance
-        - Delete/Disable a user
-        - Delete/Revoke/Disable credentials
-        - Block indicators
+        - Terminate/Shut down/Power off an instance.
+        - Delete/Disable a user.
+        - Delete/Revoke/Disable credentials.
+        - Block indicators.
       playbookName: Cloud Response - Generic
       type: playbook
       iscommand: false
@@ -1793,7 +1793,7 @@ tasks:
       id: 6d1c856f-4737-4871-8144-a2190b328b79
       version: -1
       name: Process the VPN IP list
-      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      description: This script will extract indicators from a given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
@@ -2255,7 +2255,7 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas.
+  description: A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation.
   playbookInputQuery:
 - key: ResolveIP
   value:
@@ -2275,11 +2275,11 @@ inputs:
   value: {}
   required: false
   description: |-
-    This input can process to types of data:
-    1. A comma separated list of internal IPs assigned by the VPN provider using a XSIAM list or an hardcoded array.
+    This input can process two types of data:
+    1. A comma-separated list of internal IPs assigned by the VPN provider using a XSIAM list or an hardcoded array.
     2. A link to an IP list which will be processed and extract the IP dynamically which each execution.
 
-    For CIDRs please use the InternalRange input.
+    For CIDRs, use the InternalRange input.
   playbookInputQuery:
 - key: SOCEmailAddress
   value: {}
