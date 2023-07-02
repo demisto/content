@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 import ast
+from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -101,7 +102,7 @@ class MsClient:
             certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.management_azure,
-            command_prefix = "azure-sc"
+            command_prefix="azure-sc"
         )
         self.server = server
         self.subscription_id = subscription_id
@@ -1402,8 +1403,6 @@ def main():
         LOG.print_log()
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

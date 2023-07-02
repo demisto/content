@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import urllib3
 import copy
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -735,8 +736,6 @@ def main() -> None:
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 ''' ENTRY POINT '''
 

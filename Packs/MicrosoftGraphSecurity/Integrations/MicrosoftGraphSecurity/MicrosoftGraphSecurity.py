@@ -4,6 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Any
+from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -773,8 +774,6 @@ def main():
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

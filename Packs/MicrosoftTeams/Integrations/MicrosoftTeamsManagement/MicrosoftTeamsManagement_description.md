@@ -1,5 +1,4 @@
 ## Authorization
-In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 ##### There are three ways to authenticate to the Microsoft Graph Services:
 1. *Client Credentials Flow* (Recommended).
 2. *Device Code Flow*.
@@ -26,16 +25,14 @@ to link Microsoft Graph Services with Cortex XSOAR.
 
 In order to connect to Microsoft Graph Services using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
 1. Fill in the required parameters.
-2. Run the ***!msgraph-apps-auth-start*** command.
-3. Follow the instructions that appear.
-4. Run the ***!msgraph-apps-auth-complete*** command.
-1. In the instance configuration, under the ***Authentication Type*** field select the ***Device*** option.
-2. Fill in the required parameters.
-3. Run the ***!msgraph-apps-auth-start*** command.
-4. Follow the instructions that appear.
-5. Run the ***!msgraph-apps-auth-complete*** command.
+2. In the instance configuration, under the ***Authentication Type*** field select the ***Device*** option.
+3. Fill in the required parameters.
+4. Run the ***!msgraph-apps-auth-start*** command.
+5. Follow the instructions that appear.
+6. Run the ***!msgraph-apps-auth-complete*** command.
 
 At the end of the process you'll see a message that you've logged in successfully.
+In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
 #### Cortex XSOAR Azure App
 

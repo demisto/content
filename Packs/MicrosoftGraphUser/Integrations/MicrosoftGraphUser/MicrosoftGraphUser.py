@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from urllib.parse import quote
 import urllib3
+from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
 
@@ -536,8 +537,6 @@ def main():
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

@@ -2,6 +2,7 @@ from typing import Any
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 
@@ -514,8 +515,6 @@ def main():
     except Exception as err:
         return_error(str(err))
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

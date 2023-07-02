@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 import jwt
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from MicrosoftApiModule import *   # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -621,8 +622,6 @@ def main():
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
-
-from MicrosoftApiModule import *   # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

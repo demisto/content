@@ -2,6 +2,7 @@ from dateparser import parse
 from pytz import utc
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -994,9 +995,6 @@ def main():  # pragma: no cover
     # Log exceptions
     except Exception as exc:
         return_error(f'Failed to execute {command} command. Error: {str(exc)}', error=exc)
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover

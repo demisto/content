@@ -1,8 +1,8 @@
+# IMPORTS
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-# IMPORTS
-
+from MicrosoftApiModule import *  # noqa: E402
 import urllib3
 
 # Disable insecure warnings
@@ -396,9 +396,6 @@ def main():
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

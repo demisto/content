@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from MicrosoftApiModule import *  # noqa: E402
 
 """ IMPORTS """
 import urllib3
@@ -871,8 +872,6 @@ def main():
             f"Failed to execute {demisto.command()} command. Error: {str(err)}", err
         )
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

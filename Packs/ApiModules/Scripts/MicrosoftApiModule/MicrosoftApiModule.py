@@ -34,6 +34,7 @@ AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
+REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
 SESSION_STATE = 'session_state'
 
 # Deprecated, prefer using AZURE_CLOUDS
@@ -126,7 +127,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
-TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005,
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
                              }  # See: https://login.microsoftonline.com/error?code=
 
 
@@ -842,10 +843,7 @@ class MicrosoftClient(BaseClient):
         access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
         valid_until_keyword = f'{scope}_valid_until' if scope else 'valid_until'
 
-        if self.multi_resource:
-            access_token = integration_context.get(resource)
-        else:
-            access_token = integration_context.get(access_token_keyword)
+        access_token = integration_context.get(resource) if self.multi_resource else integration_context.get(access_token_keyword)
 
         valid_until = integration_context.get(valid_until_keyword)
 
@@ -1219,14 +1217,19 @@ class MicrosoftClient(BaseClient):
             response = error.json()
             demisto.error(str(response))
             inner_error = response.get('error', {})
+            error_codes = response.get("error_codes", [""])
+            err_desc = response.get('error_description', '')
+
             if isinstance(inner_error, dict):
                 err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
             else:
                 err_str = inner_error
+                re_search = re.search(REGEX_SEARCH_ERROR_DESC, err_desc)
+                err_str += f". \n{re_search['desc']}" if re_search else ""
+
             if err_str:
-                if set(response.get("error_codes", [""])).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                    err_str += f"\nThere may be an issue with the *Authorization code* parameter. " \
-                               f"You can run the ***{self.command_prefix}-auth-reset*** command " \
+                if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                    err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
                                f"to reset the authentication process."
                 return err_str
             # If no error message
@@ -1336,7 +1339,7 @@ class MicrosoftClient(BaseClient):
         response = self.device_auth_request()
         message = response.get('message', '')
         re_search = re.search(REGEX_SEARCH_URL, message)
-        url = re_search.group('url') if re_search else None
+        url = re_search['url'] if re_search else None
         user_code = response.get('user_code')
 
         return f"""### Authorization instructions

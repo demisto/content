@@ -1556,3 +1556,19 @@ For more details about the authentication used in this integration, see <a href=
 </pre>
 <h5>Human Readable Output</h5>
 <p>Event was deleted successfully.</p>
+### msgraph-calendar-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-calendar-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

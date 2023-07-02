@@ -358,8 +358,8 @@ def test_module(client: AzureNSGClient) -> str:
     # either manually or by using an API that uses them.
     if "Device" in client.connection_type:
         raise DemistoException("Please enable the integration and run `!azure-nsg-auth-start`"
-                               "and `!azure-nsg-auth-complete` to log in."
-                               "You can validate the connection by running `!azure-nsg-auth-test`\n"
+                               "and `!azure-nsg-auth-complete` to log in.\n "
+                               "You can validate the connection by running `!azure-nsg-auth-test`.\n"
                                "For more details press the (?) button.")
     elif client.connection_type == 'Azure Managed Identities':
         client.ms_client.get_access_token()

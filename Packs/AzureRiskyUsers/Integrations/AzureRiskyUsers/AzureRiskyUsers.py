@@ -7,6 +7,7 @@ import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from typing import Any
+from MicrosoftApiModule import *  # noqa: E402
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
@@ -425,8 +426,9 @@ def test_module(client: Client):
     """
     if client.authentication_type == DEVICE_FLOW:  # Device Code flow
         raise DemistoException('When using device code flow configuration, please enable the integration and run '
-                               'the azure-risky-users-auth-start command. Follow the instructions that will be printed'
-                               ' as the output of the command.')
+                               'the `azure-risky-users-auth-start` command. Follow the instructions that will be printed'
+                               ' as the output of the command.\n '
+                               'You can validate the connection by running `!azure-risky-users-auth-test`.\n')
 
     test_connection(client)
     return "ok"
@@ -503,9 +505,6 @@ def main():
 
     except Exception as e:
         return_error(str(e))
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

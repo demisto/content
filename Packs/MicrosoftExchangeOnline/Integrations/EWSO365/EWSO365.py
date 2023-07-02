@@ -57,6 +57,7 @@ from exchangelib import (
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import EXCHANGE_O365
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from MicrosoftApiModule import *  # noqa: E402
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -2613,7 +2614,6 @@ def log_memory():
         demisto.debug(f'memstat\n{str(subprocess.check_output(["ps", "-opid,comm,rss,vsz"]))}')
 
 
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
