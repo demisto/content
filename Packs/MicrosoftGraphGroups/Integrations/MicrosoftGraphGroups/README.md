@@ -1105,8 +1105,8 @@ There are no context output for this command.
 <p>
   <code>!msgraph-groups-remove-member group_id="id" user_id="id"</code>
 </p>
-<h5>Context Example</h5>Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/README.mdPacks/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/README.md
-<pre>Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/README.md
+<h5>Context Example</h5>
+<pre>
 {}
 </pre>
 <h5>Human Readable Output</h5>

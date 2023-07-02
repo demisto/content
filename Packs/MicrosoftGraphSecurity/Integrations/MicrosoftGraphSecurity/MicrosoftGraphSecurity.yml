@@ -867,7 +867,7 @@ script:
     execution: false
     name: ms-graph-security-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.58768
+  dockerimage: demisto/crypto:1.0.0.63672
   feed: false
   isfetch: true
   longRunning: false
