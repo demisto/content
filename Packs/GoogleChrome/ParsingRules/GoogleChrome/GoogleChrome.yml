@@ -1,5 +1,5 @@
-name: Google Chrome
-id: Google_Chrome
+name: Google Chrome Parsing Rule
+id: Google_Chrome_ParsingRule
 fromversion: 8.2.0
 tags: []
 rules: ''
