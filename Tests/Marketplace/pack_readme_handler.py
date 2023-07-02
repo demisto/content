@@ -24,7 +24,7 @@ def download_readme_images_from_artifacts(readme_urls_data_dict_path: Path, stor
 
     for pack_name, images_data in readme_urls_data_dict.items():
         for readme_url_data in images_data:
-            readme_original_url = readme_url_data.get('original_read_me_url')
+            readme_original_url = readme_url_data.get('original_readme_url')
             final_dst_image_path = str(readme_url_data.get('final_dst_image_path'))
             image_name = str(readme_url_data.get('image_name'))
             relative_image_path = str(readme_url_data.get('relative_image_path'))
@@ -108,7 +108,7 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
     """
     logging.debug('Starting readme images copy.')
     readme_images: dict = {}
-    if readme_images := images_data.get(BucketUploadFlow.README_IMAGES):
+    if readme_images := images_data.get(BucketUploadFlow.README_IMAGES, {}):
         for pack_name, pack_readme_images_list in readme_images.items():
             task_status = True
             err_msg = f"Failed copying {pack_name} pack readme images."
