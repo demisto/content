@@ -51,13 +51,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Entity Enrichment - Generic v3
-* Cortex XDR - XCloud Token Theft - Set Verdict
+* IP Enrichment - Generic v2
 * Cloud Threat Hunting - Persistence
+* Cortex XDR - XCloud Token Theft - Set Verdict
 * TIM - Indicator Relationships Analysis
+* Entity Enrichment - Generic v3
 * Cloud Enrichment - Generic
 * Cloud Response - Generic
-* IP Enrichment - Generic v2
 
 ### Integrations
 
@@ -65,15 +65,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* LoadJSON
 * ParseHTMLIndicators
+* LoadJSON
 
 ### Commands
 
-* closeInvestigation
 * xdr-get-cloud-original-alerts
-* setIncident
 * xdr-update-incident
+* setIncident
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -83,10 +83,13 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | alert_id | The alert ID. | alert.investigationId | Optional |
 | InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. |  | Optional |
-| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
+| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | False | Optional |
 | earlyContainment | Whether to execute early containment.<br/>This action allows you to respond rapidly but have higher probability for false positives. | True | Optional |
 | VPNIPList | This input can process two types of data:<br/>1. A comma-separated list of internal IPs assigned by the VPN provider using a XSIAM list or an hardcoded array.<br/>2. A link to an IP list which will be processed and extract the IP dynamically which each execution.<br/><br/>For CIDRs, use the InternalRange input. |  | Optional |
-| SOCEmailAddress | The SOC email address to alert about the investigation progress. |  | Optional |
+| autoResourceRemediation | Whether to execute the resource remediation automatically. | False | Optional |
+| autoAccessKeyRemediation | Whether to execute the access key remediation automatically. | False | Optional |
+| autoUserRemediation | Whether to execute the user remediation automatically. | False | Optional |
+| autoBlockIndicators | Whether to execute the indicators remediation automatically. | False | Optional |
 
 ## Playbook Outputs
 

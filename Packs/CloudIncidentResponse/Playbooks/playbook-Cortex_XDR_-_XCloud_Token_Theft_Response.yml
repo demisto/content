@@ -498,13 +498,17 @@ tasks:
       GCP-userRemediationType:
         simple: Disable
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoUserRemediation
       cloudProvider:
         complex:
           root: incident.xdralerts
@@ -565,7 +569,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -921,9 +927,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: containmentsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -987,7 +991,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1636,9 +1642,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: containmentsla
-      action: start
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1690,13 +1694,17 @@ tasks:
           root: CloudIndicators
           accessor: access_key_id
       autoAccessKeyRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoAccessKeyRemediation
       autoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoResourceRemediation
       autoUserRemediation:
-        simple: "True"
+        complex:
+          root: inputs.autoUserRemediation
       cloudProvider:
         complex:
           root: incident.xdralerts
@@ -2222,7 +2230,6 @@ view: |-
       "19_15_yes": 0.65,
       "19_20_#default#": 0.48,
       "23_51_Yes": 0.61,
-      "23_9_#default#": 0.25,
       "36_35_Yes": 0.41,
       "36_37_#default#": 0.8,
       "38_39_Yes": 0.42,
@@ -2259,7 +2266,7 @@ inputs:
   playbookInputQuery:
 - key: ResolveIP
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
@@ -2281,10 +2288,29 @@ inputs:
 
     For CIDRs, use the InternalRange input.
   playbookInputQuery:
-- key: SOCEmailAddress
-  value: {}
+- key: autoResourceRemediation
+  value:
+    simple: "False"
   required: false
-  description: The SOC email address to alert about the investigation progress.
+  description: Whether to execute the resource remediation automatically.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the access key remediation automatically.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation automatically.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the indicators remediation automatically.
   playbookInputQuery:
 outputs: []
 tests:
