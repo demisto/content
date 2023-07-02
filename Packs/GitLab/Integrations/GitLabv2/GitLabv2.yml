@@ -13,6 +13,12 @@ configuration:
   hiddenusername: true
   required: true
   type: 9
+- displaypassword: Trigger Token
+  additionalinfo: The trigger token in order to run pipelines. For more info see https://docs.gitlab.com/ee/ci/triggers
+  name: trigger_token
+  hiddenusername: true
+  required: false
+  type: 9
 - display: Project ID
   additionalinfo: The project ID, it can be found under the project name.
   name: project_id
@@ -3670,33 +3676,18 @@ script:
       description: Project ID on winch to run the pipeline.
       isArray: false
       name: project_id
-      required: true
-      secret: false
-    - default: false
-      description: "Token to trigger the pipeline. See here how to generate: https://docs.gitlab.com/ee/ci/triggers/index.html#create-a-trigger-token"
-      isArray: false
-      name: token
-      required: true
+      required: false
       secret: false
     - default: false
       description: The branch on which to run the pipeline. Default is 'master'.
       isArray: false
-      name: branch
+      name: ref_branch
       required: false
       secret: false
-    - auto: PREDEFINED
-      description: The 'nightly' variable value (True/False) affects only on master. Default is 'True'.
-      isArray: false
-      name: nightly
-      required: false
-      secret: false
-      predefined:
-      - 'true'
-      - 'false'
     - default: false
-      description: On which Slack channel to notify about the success/failure of this pipeline
+      description: json contains the pipeline variables.
       isArray: false
-      name: slack_channel
+      name: trigger_variables
       required: false
       secret: false
     description: Triggers a GitLab pipeline on a selected project and branch.
@@ -3748,7 +3739,7 @@ script:
       description: State of the user who triggered the pipeline.
       type: String
     - contextPath: GitLab.Pipeline.user.avatar_url
-      description: Avatar URL of the user who trigerred the pipeline.
+      description: Avatar URL of the user who triggered the pipeline.
       type: String
     - contextPath: GitLab.Pipeline.user.web_url
       description: Web URL of the user who triggered the pipeline.

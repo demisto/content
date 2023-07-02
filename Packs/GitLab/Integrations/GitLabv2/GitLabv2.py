@@ -19,9 +19,10 @@ JOB_FIELDS_TO_EXTRACT = {'created_at', 'started_at', 'finished_at', 'duration', 
 
 
 class Client(BaseClient):
-    def __init__(self, project_id, base_url, verify, proxy, headers):
+    def __init__(self, project_id, base_url, verify, proxy, headers, trigger_token):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.project_id = project_id
+        self.trigger_token = trigger_token
 
     def group_projects_list_request(self, params: dict | None, group_id: str | None) -> dict:
         headers = self._headers
@@ -316,7 +317,7 @@ class Client(BaseClient):
 
     def gitlab_trigger_pipeline(self, project_id: str, data: dict):
         suffix = f'projects/{project_id}/trigger/pipeline'
-        return self._http_request('post', suffix, data=data)
+        return self._http_request('POST', suffix, data=data)
 
 
 ''' HELPER FUNCTIONS '''
@@ -1708,23 +1709,21 @@ def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> Com
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (dict) XSOAR arguments:
-            - 'project_id' (Required): Project ID on winch to run the pipeline.
-            - 'token' (Required): Trigger token to run the pipeline.
-            - 'branch': The branch on which to run the pipeline. Default is 'master'
-            - 'nightly': The 'nightly' variable value (True/False) affects only on master. Default is 'True'.
-            - 'slack_channel': On which Slack channel to notify about the success/failure of this pipeline
-                (affects only if 'nightly' set to true). Default is 'dmst-build'.
+            - 'project_id': Project ID on winch to run the pipeline.
+            - 'ref_branch': The branch on which to run the pipeline. Default is 'master'
 
     Returns:
         (CommandResults).
     """
+    project_id = args.get('project_id') or client.project_id
     data = {
-        'token': args.get('token'),
-        'ref': args.get('branch', 'master'),
-        'variables[NIGHTLY]': args.get('nightly', 'true'),
-        'variables[SLACK_CHANNEL]': args.get('slack_channel', 'dmst-build'),
+        'token': client.trigger_token,
+        'ref': args.get('ref_branch', 'master'),
     }
-    response = client.gitlab_trigger_pipeline(args.get('project_id'), data)
+    for key, value in json.loads(args.get('trigger_variables', '{}')).items():
+        data[f'variables[{key}]'] = value
+
+    response = client.gitlab_trigger_pipeline(project_id, data)
 
     outputs = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
     human_readable = f'## Pipeline for branch {outputs.get("ref")} [triggered]({outputs.get("web_url")}) successfully.'
@@ -1763,6 +1762,7 @@ def main() -> None:  # pragma: no cover
     LOG(f'Command being called is {command}')
     server_url = params.get('url', '')
     project_id = arg_to_number(params.get('project_id'), required=True)
+    trigger_token = params.get('trigger_token', {}).get('password')
     commands = {'gitlab-group-project-list': group_project_list_command,
                 'gitlab-issue-create': create_issue_command,
                 'gitlab-branch-create': branch_create_command,
@@ -1802,7 +1802,7 @@ def main() -> None:  # pragma: no cover
                 }
 
     try:
-        client = Client(project_id, urljoin(server_url, ""), verify_certificate, proxy, headers=headers)
+        client = Client(project_id, urljoin(server_url, ""), verify_certificate, proxy, headers, trigger_token)
         if project_id and verify_project_id(client, project_id):
             if demisto.command() == 'test-module':
                 return_results(test_module(client))
