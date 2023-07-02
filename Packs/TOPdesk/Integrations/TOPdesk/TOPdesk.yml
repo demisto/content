@@ -5872,7 +5872,7 @@ script:
       is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   script: ''
