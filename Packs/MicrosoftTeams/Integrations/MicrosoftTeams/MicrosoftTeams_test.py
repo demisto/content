@@ -329,7 +329,7 @@ def test_mirror_investigation(mocker, requests_mock):
         'membershipType': 'standard'
     }
     assert requests_mock.request_history[3].json() == {
-        'text': 'This channel was created to mirror [incident 2](https://test-address:8443/#/WarRoom/2) between '
+        'text': 'This channel was created to mirror [incident 2](https://test-address.com:8443/#/WarRoom/2) between '
                 'Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, you need to'
                 ' mention the Demisto Bot in the message.',
         'type': 'message'
@@ -747,7 +747,7 @@ def test_send_message_server_notifications_incident_opened(mocker, requests_mock
         'args',
         return_value={
             'channel': 'incidentNotificationChannel',
-            'message': 'user has reported an incident tadam.\nView it on https://server/#/WarRoom/3247',
+            'message': 'user has reported an incident tadam.\nView it on https://server.com/#/WarRoom/3247',
             'messageType': 'incidentOpened',
             'severity': 1,
             'to': ''
@@ -805,7 +805,7 @@ def test_send_message_server_notifications_incident_changed(mocker, requests_moc
         'args',
         return_value={
             'channel': 'incidentNotificationChannel',
-            'message': 'DBot has updated an incident tadam.\nView it on https://server/#/WarRoom/3247',
+            'message': 'DBot has updated an incident tadam.\nView it on https://server.com/#/WarRoom/3247',
             'messageType': 'incidentChanged',
             'severity': 1,
             'to': ''
@@ -1454,20 +1454,24 @@ def test_direct_message_handler(mocker, requests_mock):
     message: str = 'create incident name=GoFish type=Phishing'
     mocker.patch.object(demisto, 'findUser', return_value=None)
     direct_message_handler(integration_context, request_body, conversation, message)
-    assert requests_mock.request_history[0].json() == {
-        'text': "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. You're not "
-                "allowed to run any command", 'type': 'message'
-    }
+
+    response = requests_mock.request_history[0].json()
+
+    assert response['type'] == "message"
+    assert response['text'] == \
+           "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
+           "You're not allowed to run any command"
 
     # verify create incident successfully
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})
     direct_message_handler(integration_context, request_body, conversation, message)
+    response = requests_mock.request_history[1].json()
 
-    assert requests_mock.request_history[1].json() == {
-        'text': "Successfully created incident incidentnumberfour.\n"
-                "View it on: [https://test-address:8443/#/WarRoom/4](https://test-address:8443/#/WarRoom/4)",
-        'type': 'message'
-    }
+    assert response['type'] == "message"
+    assert response['text'] == "Successfully created incident incidentnumberfour.\n" \
+                               "View it on: [https://test-address.com:8443/#/WarRoom/4]" \
+                               "(https://test-address.com:8443/#/WarRoom/4)"
+
     create_incidents_mocker.assert_called_with(expected_created_incident, userID=expected_assigned_user)
 
     # verify get my incidents
