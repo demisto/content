@@ -537,13 +537,13 @@ script:
     description: >
       List the existing channels
       You can only retrieve the channel information for the authorized user.
-      in order to get public channel by its name (for example Admins_to_delete_4)  you need to run command zoom-list-account-public-channels without channel_id param and found what channel_id fits channel name
+      In order to get a public channel by its name (for example Admins_to_delete_4)  you need to run the command zoom-list-account-public-channels without the channel_id param and find which channel_id fits the channel name.
     arguments:
     - description: Number of channels to return. Max 300. The default is 50.
       name: page-size
       type: int
     - description: >
-        The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
+        The next page token is used to get the next page. IMPORTANT: You must pass the same page size that you passed in the first call.
       name: next_page_token
       required: false
       type: string
@@ -556,7 +556,7 @@ script:
       required: false
       description: The total amunt of results to show.
     - name: channel_id
-      description: A channel ID. this is for a singel channel
+      description: A channel ID. This is for a single channel.
       required: false
       type: string
     outputs:
@@ -612,20 +612,20 @@ script:
         2 — A private channel with members that belong to a Zoom account. All members of this channel are from the same organization and must be invited to join.
         3 — A public channel. Anyone can search for and join this channel.
         4 — An instant channel. This type of channel is created by adding members to a new chat.
-        5 — A public channel. Anyone can join this channel and invite members from other Zoom accounts.Allowed: 0┃1┃2┃3┃4┃5
+        5 — A public channel. Anyone can join this channel and invite members from other Zoom accounts.
     - contextPath: Zoom.Channels.channel_url
-      description: The URL of the Zoom Chat channel.
+      description: The URL of the Zoom chat channel.
       type: string
   - name: zoom-list-user-channels
     description: >
-      List the existing channels
-      in order get user id by user email - use existing command zoom-list-users  In order to get user channel by its name customer need to run command zoom-list-user-channels without channel_id param and found what channel_id fits channel name
+      List the existing channels.
+      In order get the user ID by user email - use the existing command zoom-list-users.  In order to get the user channel by its name, run the command zoom-list-user-channels without the channel_id param and find which channel_id fits the channel name.
     arguments:
     - description: Number of channels to return. Max 300. The default is 50.
       name: page-size
       type: int
     - description: >
-        The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
+        The next page token is used to get the next page. IMPORTANT: You must pass the same page size that you passed in the first call.
       name: next_page_token
       required: false
       type: string
@@ -638,33 +638,33 @@ script:
       required: false
       description: The total amunt of results to show.
     - name: channel_id
-      description: A channel ID. this is for a singel channel
+      description: A channel ID. This is for a single channel.
       required: false
       type: string
     - name: user_id
-      description: email or user ID
+      description: Email or user ID.
       required: true
       type: string
     outputs:
     - contextPath: Zoom.Channel.id
-      description: The ID of the created channel
+      description: The ID of the created channel.
       type: string
     - contextPath: Zoom.Channel.name
-      description: The name of the created channel
+      description: The name of the created channel.
       type: string
     - contextPath: Zoom.Channel.type
-      description: created channel type
+      description: The created channel type.
       type: string
     - contextPath: Zoom.Channel.url
       description: created channel url
       type: string
   - name: zoom-create-channel
     description: >
-      Creates a channel for a user
+      Creates a channel for a user.
       Use existing command zoom-list-users to get  user id  by email (only if user has email address as part of user parameters)
     execution: true
     arguments:
-    - description: Email or unique identifier of the user
+    - description: Email or unique identifier of the user.
       name: user_id
       required: true
     - description: The member(s) to include in the channel. A maximum of 20 members can be added to the channel at once with this API.
@@ -675,7 +675,7 @@ script:
         Who can add new channel members:
         * 1 - All channel members can add new members.
         * 2 - Only channel owner and administrators can add new members.
-        Note: This setting can only be modified by the channel owner.Default: 1 Allowed: 1┃2 
+        Note: This setting can only be modified by the channel owner. Default: 1 
       name: add_member_permissions
       required: false
       auto: PREDEFINED
@@ -686,7 +686,7 @@ script:
         The channel members' posting permissions:
         * 1 — All chat channel members can post to the channel.
         * 2 — Only the channel owner and administrators can post to the channel.
-        * 3 — Only the channel owner, administrators and certain members can post to the channel.Default: 1 Allowed: 1┃2┃3
+        * 3 — Only the channel owner, administrators and certain members can post to the channel. Default: 1 
       name: posting_permissions
       required: false
       auto: PREDEFINED
@@ -702,7 +702,7 @@ script:
       - "false"
       defaultValue: true
       required: false
-    - description: The name of the channel. Constraints Max 128 chars
+    - description: The name of the channel. Maximum of 128 characters.
       name: channel_name
       required: true
     - description: >
@@ -710,7 +710,7 @@ script:
         1: Private channel. In this type of channel, members must be invited to join a channel.
         2: Private channel with members that belong to one Zoom account. Members in this channel should be invited and the members should be from the same organization.
         3: Public channel. Anyone can search for this channel and join the channel.
-        4: New chat. This is an instant channel which can be created by adding members to a new chat.Allowed: 1┃2┃3┃4
+        4: New chat. This is an instant channel which can be created by adding members to a new chat.
       name: channel_type
       required: true
       auto: PREDEFINED
@@ -739,7 +739,7 @@ script:
         4: Group chat. This is an instant channel which can be created by adding members to a new chat.
         Allowed: 1┃2┃3┃4
     - contextPath: Zoom.Channel.url
-      description: The URL of the Zoom Chat channel.
+      description: The URL of the Zoom chat channel.
       type: string
   - arguments:
     - description: Unique Identifier of a channel.
